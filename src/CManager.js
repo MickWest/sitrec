@@ -1,4 +1,4 @@
-import {assert, getFileExtensionIncludingAttachments, isHttpOrHttps, loadImage, versionString} from "./utils.js";
+import {assert, getFileExtensionIncludingAttachments, isHttpOrHttps, versionString} from "./utils.js";
 
 import JSZip from "./js/jszip.js"
 import {parseXml} from "./KMLUtils";

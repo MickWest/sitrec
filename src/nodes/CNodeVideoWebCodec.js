@@ -1,11 +1,9 @@
 import {CVideoData, CNodeVideoView} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
-//import {MP4Demuxer} from "../js/mp4-decode/demuxer_mp4";  // the new on
 import {infoDiv, Sit} from "../Globals";
-import {FileManager} from "../CManager";
-import {assert, versionString} from "../utils";
+import {assert, loadImage, versionString} from "../utils";
 import {par} from "../par";
-import {SetupGUIFrames, updateGUIFrames} from "../JetGUI";
+import { updateGUIFrames} from "../JetGUI";
 import {updateFrameSlider} from "../FrameSlider";
 import {isLocal} from "../../config";
 
@@ -51,9 +49,9 @@ export class CVideoWebCodecData extends CVideoData {
         }
 
         if (this.incompatible) {
-            console.log("Requires up-todate WebCodec Browser (Chrome/Edge/Safari")
+            console.log("Requires up-to-date WebCodec Browser (Chrome/Edge/Safari")
             this.errorImage = null;
-            FileManager.loadImage('./images/errorImage.png', "errorImage").then(result => {
+            loadImage('./data/images/errorImage.png').then(result => {
                 this.errorImage = result;
             })
             return;
@@ -587,7 +585,7 @@ export class CVideoWebCodecData extends CVideoData {
                 // i.e. we have the usable images in this.imageCache
                 // and the ImageData version in this.imageDataCache
                 this.ctx_tmp.drawImage(image,0,0)
-                var imageData = this.ctx_tmp.getImageData(0,0,this.width, this.height)
+                const imageData = this.ctx_tmp.getImageData(0,0,this.width, this.height)
                 this.imageDataCache[frameNumber] = imageData
             }
 
