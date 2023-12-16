@@ -12,7 +12,6 @@ Also some packages are from node.
 
 That builds everything into the "dist" folder, from which you can run it
 EXCEPT for:
-- the videos, including the three stored as individual frames)
 - sitRecServer
 
 See webpack.common.js for details of what is copied over
