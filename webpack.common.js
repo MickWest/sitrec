@@ -1,0 +1,131 @@
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack=require('webpack')
+const CopyPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+
+const InstallPaths = require('./config-install')
+
+function getFormattedLocalDateTime() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+console.log(getFormattedLocalDateTime());
+
+// example install of several of the above, in the project dir (using terminal in PHPStorm)
+// npm install copy-webpack-plugin --save-dev
+
+module.exports = {
+    mode: 'development',
+    entry: {
+        index: './src/index.js',
+    },
+
+//    devtool: 'eval',
+    module: {
+
+
+        rules: [
+            /*
+            { // erm - do I need this? babel is for transpiling down to earlier verisons of js?
+                test: /\.js$/,
+                loader: "babel-loader",
+                exclude: "/node_modules/",
+            },
+            */
+
+            // {
+            //     test: /\.tsx?$/,
+            //   //  include: path.resolve(__dirname, 'src'),
+            //     use: 'ts-loader',
+            //     exclude: /node_modules/,
+            // },
+
+
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                ],
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.js'],
+
+        // Mick, this is to ensure one common three.js module when using things like the jsm line examples.
+        alias: {
+            'three': path.resolve(__dirname, 'three.js/build/three.module.js'),
+        },
+//        extensions: ['.tsx', '.ts', '.js'],
+//        extensions: ['.tsx', '.ts'],
+    },
+    plugins: [
+        new MiniCssExtractPlugin(),
+        new HtmlWebpackPlugin({
+            title: "Sitrec - Metabunk's Situation Recreation Tool",
+        }),
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'], // for map33
+        }),
+        new webpack.ProvidePlugin({
+            // Fix for jquery issues with normal import under Webpack. Possibly circular dependencies
+            $: "jquery",
+            jQuery: "jquery",
+        }),
+        new CopyPlugin({
+
+            patterns: [
+                // copies the data directory
+                { from: "data", to: "./data"},
+                { from: "sitrecServer", to: "./sitrecServer"},
+
+                // Web worker source code needs to be loaded at run time
+                // so we just copy it over
+                // This is currently not used
+                { from: "./src/workers/*.js", to:""},
+                { from: "./src/PixelFilters.js", to:"./src"},
+            ],
+        }),
+        new webpack.DefinePlugin({
+            'process.env.BUILD_TIME': JSON.stringify(getFormattedLocalDateTime())
+        }),
+],
+
+    // This is needed because I do some "await"s at the top level (not in async functions)
+    // maybe I shouldn't
+    experiments: {
+        topLevelAwait: true
+    },
+
+    // This is to keep class names, which I use for the data driven construction
+    // needs: npm i -D terser-webpack-plugin
+    // see: https://stackoverflow.com/questions/50903065/how-to-disable-webpack-minification-for-classes-names#:~:text=3-,Install,-Terser%20Plugin%20to
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    keep_classnames: true,
+                },
+            }),
+        ],
+    },
+
+    output: {
+        filename: '[name].[contenthash].bundle.js', // each entry translates into one of these bundles
+        //      path: path.resolve(__dirname, 'dist'),
+      //  path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/sitrec',
+        path: InstallPaths.dev_path,
+        clean: true, // this deleted the contents of path (dist)
+    },
+};

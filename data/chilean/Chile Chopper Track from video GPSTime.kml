@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Chile Chopper Track from video GPS/Time</name>
+	<open>1</open>
+	<StyleMap id="msn_heliport">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_heliport</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_heliport</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_heliport">
+		<IconStyle>
+			<scale>1.4</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/heliport.png</href>
+			</Icon>
+			<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
+		</IconStyle>
+		<LineStyle>
+			<width>3</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_heliport">
+		<IconStyle>
+			<scale>1.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/heliport.png</href>
+			</Icon>
+			<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
+		</IconStyle>
+		<LineStyle>
+			<width>3</width>
+		</LineStyle>
+	</Style>
+		<Placemark>
+
+		</Placemark>
+		<Placemark>
+
+		</Placemark>
+	<Placemark>
+		<name>Chopper</name>
+		<description>Converted by Metabunk</description>
+		<styleUrl>#msn_heliport</styleUrl>
+		<gx:Track>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<when>2014-11-11T16:51:55Z</when>
+			<when>2014-11-11T16:52:35Z</when>
+			<when>2014-11-11T16:53:08Z</when>
+			<when>2014-11-11T16:55:09Z</when>
+			<when>2014-11-11T16:55:42Z</when>
+			<when>2014-11-11T16:57:27Z</when>
+			<when>2014-11-11T16:58:43Z</when>
+			<when>2014-11-11T17:00:10Z</when>
+			<when>2014-11-11T17:00:43Z</when>
+			<when>2014-11-11T17:01:37Z</when>
+			<when>2014-11-11T17:01:54Z</when>
+			<gx:coord>-71.91249999999999 -34.09527778 1382</gx:coord>
+			<gx:coord>-71.90333333 -34.07138889 1382</gx:coord>
+			<gx:coord>-71.89583333 -34.05194444 1382</gx:coord>
+			<gx:coord>-71.86944444 -33.98333333 1382</gx:coord>
+			<gx:coord>-71.86222222000001 -33.96416667 1382</gx:coord>
+			<gx:coord>-71.83638888999999 -33.90444444 1382</gx:coord>
+			<gx:coord>-71.82250000000001 -33.86027778 1382</gx:coord>
+			<gx:coord>-71.80305556 -33.80916667 1382</gx:coord>
+			<gx:coord>-71.79555556 -33.78972222 1382</gx:coord>
+			<gx:coord>-71.78333333 -33.7575 1382</gx:coord>
+			<gx:coord>-71.77944444000001 -33.7475 1382</gx:coord>
+		</gx:Track>
+	</Placemark>
+</Document>
+</kml>

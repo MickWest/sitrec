@@ -1,0 +1,44 @@
+cd ~/Dropbox/metabunk/sitrec
+
+install all the mode packages with
+npm install
+
+build with:
+npm run build
+
+This just runs the script in package.json, but in the node environment. Webpack is part of node.
+so needs to be in that environment (i.e. NOT brew install webpack).
+Also some packages are from node.
+
+That builds everything into the "dist" folder, from which you can run it
+EXCEPT for:
+- the videos, including the three stored as individual frames)
+- sitRecServer
+
+See webpack.common.js for details of what is copied over
+
+npm run deploy
+
+will build an optimized version into the deploy folder, which can then be copied into the web root.
+
+Mick:
+
+
+php.ini in:
+/opt/homebrew/etc/php/8.2/php.ini
+
+upload_max_filesize = 100M
+post_max_size = 100M
+
+restart it with:
+brew services restart php
+
+
+
+NGINX
+http {
+    ...
+    client_max_body_size 100M;
+}
+
+/////////////////////////////////

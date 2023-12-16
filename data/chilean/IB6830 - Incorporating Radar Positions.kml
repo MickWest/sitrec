@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>IB6830 - Incorporating Radar Positions.kml</name>
+	<StyleMap id="msn_airports0000">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#sn_airports000</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#sh_airports00</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="sh_airports00">
+		<IconStyle>
+			<scale>1.4</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/airports.png</href>
+			</Icon>
+			<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ffff7c0b</color>
+			<width>3</width>
+		</LineStyle>
+	</Style>
+	<Style id="sn_airports000">
+		<IconStyle>
+			<scale>1.2</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/airports.png</href>
+			</Icon>
+			<hotSpot x="0.5" y="0" xunits="fraction" yunits="fraction"/>
+		</IconStyle>
+		<LineStyle>
+			<color>ffff7c0b</color>
+			<width>3</width>
+		</LineStyle>
+	</Style>
+	<Placemark>
+		<name>IB6830</name>
+		<open>1</open>
+		<description>SCEL - LEMD</description>
+		<styleUrl>#msn_airports0000</styleUrl>
+		<gx:Track>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<when>2014-11-11T16:43:40Z</when>
+			<when>2014-11-11T16:43:58Z</when>
+			<when>2014-11-11T16:44:19Z</when>
+			<when>2014-11-11T16:44:40Z</when>
+			<when>2014-11-11T16:45:00Z</when>
+			<when>2014-11-11T16:45:21Z</when>
+			<when>2014-11-11T16:45:40Z</when>
+			<when>2014-11-11T16:46:01Z</when>
+			<when>2014-11-11T16:46:21Z</when>
+			<when>2014-11-11T16:46:39Z</when>
+			<when>2014-11-11T16:46:59Z</when>
+			<when>2014-11-11T16:47:21Z</when>
+			<when>2014-11-11T16:47:40Z</when>
+			<when>2014-11-11T16:48:00Z</when>
+			<when>2014-11-11T16:48:40Z</when>
+			<when>2014-11-11T16:49:03Z</when>
+			<when>2014-11-11T16:49:34Z</when>
+			<when>2014-11-11T16:50:04Z</when>
+			<when>2014-11-11T16:50:35Z</when>
+			<when>2014-11-11T16:51:06Z</when>
+			<when>2014-11-11T16:51:36Z</when>
+			<when>2014-11-11T16:52:07Z</when>
+			<when>2014-11-11T16:52:38Z</when>
+			<when>2014-11-11T16:53:08Z</when>
+			<when>2014-11-11T16:53:39Z</when>
+			<when>2014-11-11T16:54:00Z</when>
+			<when>2014-11-11T16:54:40Z</when>
+			<when>2014-11-11T16:55:21Z</when>
+			<when>2014-11-11T16:56:00Z</when>
+			<when>2014-11-11T16:56:41Z</when>
+			<when>2014-11-11T16:57:21Z</when>
+			<when>2014-11-11T16:58:01Z</when>
+			<when>2014-11-11T16:58:39Z</when>
+			<when>2014-11-11T16:59:22Z</when>
+			<when>2014-11-11T17:00:00Z</when>
+			<when>2014-11-11T17:01:01Z</when>
+			<when>2014-11-11T17:01:42Z</when>
+			<when>2014-11-11T17:02:19Z</when>
+			<when>2014-11-11T17:03:02Z</when>
+			<when>2014-11-11T17:03:33Z</when>
+			<when>2014-11-11T17:04:22Z</when>
+			<when>2014-11-11T17:05:01Z</when>
+			<when>2014-11-11T17:05:42Z</when>
+			<when>2014-11-11T17:06:16Z</when>
+			<when>2014-11-11T17:07:03Z</when>
+			<when>2014-11-11T17:07:38Z</when>
+			<gx:coord>-70.80167 -33.40993 579.0000000000002</gx:coord>
+			<gx:coord>-70.80046 -33.4243 792.0000000000001</gx:coord>
+			<gx:coord>-70.79903 -33.44302 1006</gx:coord>
+			<gx:coord>-70.79848 -33.46287 1097</gx:coord>
+			<gx:coord>-70.79799 -33.48244 1158</gx:coord>
+			<gx:coord>-70.79724 -33.50532 1250</gx:coord>
+			<gx:coord>-70.79618000000001 -33.52706 1311</gx:coord>
+			<gx:coord>-70.7963 -33.54903 1554</gx:coord>
+			<gx:coord>-70.81352 -33.5752 1768</gx:coord>
+			<gx:coord>-70.83766 -33.5853 1951</gx:coord>
+			<gx:coord>-70.86628 -33.58371 2134</gx:coord>
+			<gx:coord>-70.89461 -33.57287 2377</gx:coord>
+			<gx:coord>-70.92768 -33.56538 2621</gx:coord>
+			<gx:coord>-70.96326999999999 -33.56516 2865</gx:coord>
+			<gx:coord>-71.02571 -33.57294 3200</gx:coord>
+			<gx:coord>-71.06669861921453 -33.57993528448222 3292</gx:coord> 
+			<gx:coord>-71.12199147956382 -33.58614869424705 3444</gx:coord>
+			<gx:coord>-71.18355777070336 -33.59540405974745 3566</gx:coord> 
+			<gx:coord>-71.24522741233621 -33.60350950468406 3840</gx:coord> 
+			<gx:coord>-71.3069569144085 -33.61495639893017 4206</gx:coord> 
+			<gx:coord>-71.38026410854106 -33.61666800223695 4572</gx:coord> 
+			<gx:coord>-71.43967859835983 -33.59213188338614 4816</gx:coord> 
+			<gx:coord>-71.46532620643652 -33.55859505224966 4999</gx:coord> 
+			<gx:coord>-71.4672258558015 -33.48195365801053 5273</gx:coord> 
+			<gx:coord>-71.4330016723513 -33.42806325829523 5639</gx:coord> 
+			<gx:coord>-71.39915000000001 -33.39148 5791.000000000003</gx:coord>
+			<gx:coord>-71.34202000000001 -33.32367 6126.000000000001</gx:coord>
+			<gx:coord>-71.29073 -33.25255 6431.000000000002</gx:coord>
+			<gx:coord>-71.24034 -33.18192 6706</gx:coord>
+			<gx:coord>-71.18564000000001 -33.10611 6980</gx:coord>
+			<gx:coord>-71.13175 -33.0314 7224.000000000001</gx:coord>
+			<gx:coord>-71.07902 -32.95816 7468.000000000001</gx:coord>
+			<gx:coord>-71.02448 -32.88231 7650</gx:coord>
+			<gx:coord>-70.96789 -32.8033 7894</gx:coord>
+			<gx:coord>-70.92411 -32.74219 8137.999999999999</gx:coord>
+			<gx:coord>-70.83320000000001 -32.61484 8443</gx:coord>
+			<gx:coord>-70.76591000000001 -32.52042 8870</gx:coord>
+			<gx:coord>-70.71266 -32.44537 8992</gx:coord>
+			<gx:coord>-70.65083 -32.35812 9205</gx:coord>
+			<gx:coord>-70.61091999999999 -32.30176 9327.000000000004</gx:coord>
+			<gx:coord>-70.53712 -32.19713 9449</gx:coord>
+			<gx:coord>-70.48768 -32.12704 9449</gx:coord>
+			<gx:coord>-70.42533 -32.03842 9449</gx:coord>
+			<gx:coord>-70.3783 -31.97212 9449</gx:coord>
+			<gx:coord>-70.29680999999999 -31.88032 9449</gx:coord>
+			<gx:coord>-70.22626 -31.82094 9449</gx:coord>
+		</gx:Track>
+	</Placemark>
+</Document>
+</kml>
