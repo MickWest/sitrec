@@ -1,4 +1,4 @@
-cd ~/Dropbox/metabunk/sitrec
+cd sitrec_source
 
 install all the mode packages with
 npm install
