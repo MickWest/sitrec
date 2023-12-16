@@ -87,7 +87,7 @@ class AttributeNode extends Node {
 
 			console.warn( `AttributeNode: Attribute "${ attributeName }" not found.` );
 
-			return builder.getConst( nodeType );
+			return builder.generateConst( nodeType );
 
 		}
 
@@ -99,4 +99,4 @@ export default AttributeNode;
 
 export const attribute = ( name, nodeType ) => nodeObject( new AttributeNode( name, nodeType ) );
 
-addNodeClass( AttributeNode );
+addNodeClass( 'AttributeNode', AttributeNode );

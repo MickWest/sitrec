@@ -16,8 +16,6 @@ class Bindings extends DataMap {
 
 		this.pipelines.bindings = this; // assign bindings to pipelines
 
-		this.updateMap = new WeakMap();
-
 	}
 
 	getForRender( renderObject ) {
@@ -48,9 +46,9 @@ class Bindings extends DataMap {
 
 		if ( data.bindings === undefined ) {
 
-			const nodeBuilder = this.nodes.getForCompute( computeNode );
+			const nodeBuilderState = this.nodes.getForCompute( computeNode );
 
-			const bindings = nodeBuilder.getBindings();
+			const bindings = nodeBuilderState.bindings.compute;
 
 			data.bindings = bindings;
 
@@ -82,9 +80,7 @@ class Bindings extends DataMap {
 
 			if ( binding.isSampledTexture ) {
 
-				const store = binding.store === true;
-
-				this.textures.updateTexture( binding.texture, { store } );
+				this.textures.updateTexture( binding.texture );
 
 			} else if ( binding.isStorageBuffer ) {
 
@@ -102,24 +98,25 @@ class Bindings extends DataMap {
 
 		const { backend } = this;
 
-		const updateMap = this.updateMap;
-		const frame = this.info.render.frame;
-
 		let needsBindingsUpdate = false;
 
 		// iterate over all bindings and check if buffer updates or a new binding group is required
 
 		for ( const binding of bindings ) {
 
-			const isUpdated = updateMap.get( binding ) === frame;
+			if ( binding.isNodeUniformsGroup ) {
 
-			if ( isUpdated ) continue;
+				const updated = this.nodes.updateGroup( binding );
+
+				if ( ! updated ) continue;
+
+			}
 
 			if ( binding.isUniformBuffer ) {
 
-				const needsUpdate = binding.update();
+				const updated = binding.update();
 
-				if ( needsUpdate ) {
+				if ( updated ) {
 
 					backend.updateBinding( binding );
 
@@ -129,17 +126,15 @@ class Bindings extends DataMap {
 
 				if ( binding.needsBindingsUpdate ) needsBindingsUpdate = true;
 
-				const needsUpdate = binding.update();
+				const updated = binding.update();
 
-				if ( needsUpdate ) {
+				if ( updated ) {
 
 					this.textures.updateTexture( binding.texture );
 
 				}
 
 			}
-
-			updateMap.set( binding, frame );
 
 		}
 
@@ -150,14 +145,6 @@ class Bindings extends DataMap {
 			this.backend.updateBindings( bindings, pipeline );
 
 		}
-
-	}
-
-	dispose() {
-
-		super.dispose();
-
-		this.updateMap = new WeakMap();
 
 	}
 

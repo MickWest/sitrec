@@ -15,10 +15,12 @@ class Textures extends DataMap {
 
 	}
 
-	updateRenderTarget( renderTarget ) {
+	updateRenderTarget( renderTarget, activeMipmapLevel = 0 ) {
 
 		const renderTargetData = this.get( renderTarget );
+
 		const sampleCount = renderTarget.samples === 0 ? 1 : renderTarget.samples;
+		const depthTextureMips = renderTargetData.depthTextureMips || ( renderTargetData.depthTextureMips = {} );
 
 		let texture, textures;
 
@@ -36,7 +38,10 @@ class Textures extends DataMap {
 
 		const size = this.getSize( texture );
 
-		let depthTexture = renderTarget.depthTexture || renderTargetData.depthTexture;
+		const mipWidth = size.width >> activeMipmapLevel;
+		const mipHeight = size.height >> activeMipmapLevel;
+
+		let depthTexture = renderTarget.depthTexture || depthTextureMips[ activeMipmapLevel ];
 		let textureNeedsUpdate = false;
 
 		if ( depthTexture === undefined ) {
@@ -44,8 +49,10 @@ class Textures extends DataMap {
 			depthTexture = new DepthTexture();
 			depthTexture.format = DepthStencilFormat;
 			depthTexture.type = UnsignedInt248Type;
-			depthTexture.image.width = size.width;
-			depthTexture.image.height = size.height;
+			depthTexture.image.width = mipWidth;
+			depthTexture.image.height = mipHeight;
+
+			depthTextureMips[ activeMipmapLevel ] = depthTexture;
 
 		}
 
@@ -54,8 +61,8 @@ class Textures extends DataMap {
 			textureNeedsUpdate = true;
 			depthTexture.needsUpdate = true;
 
-			depthTexture.image.width = size.width;
-			depthTexture.image.height = size.height;
+			depthTexture.image.width = mipWidth;
+			depthTexture.image.height = mipHeight;
 
 		}
 
@@ -63,6 +70,8 @@ class Textures extends DataMap {
 		renderTargetData.height = size.height;
 		renderTargetData.textures = textures;
 		renderTargetData.depthTexture = depthTexture;
+		renderTargetData.depth = renderTarget.depthBuffer;
+		renderTargetData.stencil = renderTarget.stencilBuffer;
 
 		if ( renderTargetData.sampleCount !== sampleCount ) {
 
@@ -73,8 +82,9 @@ class Textures extends DataMap {
 
 		}
 
-		const options = { sampleCount };
+		//
 
+		const options = { sampleCount };
 
 		for ( let i = 0; i < textures.length; i ++ ) {
 
@@ -153,9 +163,7 @@ class Textures extends DataMap {
 
 		//
 
-		if ( isRenderTarget || options.store === true ) {
-
-			//if ( options.store === true ) options.levels = 1; /* no mipmaps? */
+		if ( isRenderTarget || texture.isStorageTexture === true ) {
 
 			backend.createSampler( texture );
 			backend.createTexture( texture, options );
@@ -186,7 +194,7 @@ class Textures extends DataMap {
 
 						for ( const image of texture.images ) {
 
-							images.push( this._getUploadImage( image ) );
+							images.push( image );
 
 						}
 
@@ -194,7 +202,7 @@ class Textures extends DataMap {
 
 					} else {
 
-						options.image = this._getUploadImage( image );
+						options.image = image;
 
 					}
 
@@ -208,7 +216,7 @@ class Textures extends DataMap {
 
 					backend.updateTexture( texture, options );
 
-					if ( options.needsMipmaps ) backend.generateMipmaps( texture );
+					if ( options.needsMipmaps && texture.mipmaps.length === 0 ) backend.generateMipmaps( texture );
 
 				}
 
@@ -300,7 +308,7 @@ class Textures extends DataMap {
 
 		if ( this.isEnvironmentTexture( texture ) ) return true;
 
-		return ( texture.isCompressedTexture !== true ) /*&& ( texture.generateMipmaps === true )*/ && ( texture.minFilter !== NearestFilter ) && ( texture.minFilter !== LinearFilter );
+		return ( texture.isCompressedTexture === true ) || ( ( texture.minFilter !== NearestFilter ) && ( texture.minFilter !== LinearFilter ) );
 
 	}
 
@@ -309,38 +317,6 @@ class Textures extends DataMap {
 		const mapping = texture.mapping;
 
 		return ( mapping === EquirectangularReflectionMapping || mapping === EquirectangularRefractionMapping ) || ( mapping === CubeReflectionMapping || mapping === CubeRefractionMapping );
-
-	}
-
-	_getUploadImage( image ) {
-
-		if ( this._isHTMLImage( image ) ) {
-
-			return this._imageToCanvas( image );
-
-		}
-
-		return image;
-
-	}
-
-	_imageToCanvas( image ) {
-
-		const { width, height } = image;
-
-		// eslint-disable-next-line compat/compat
-		const canvas = new OffscreenCanvas( width, height );
-
-		const context = canvas.getContext( '2d' );
-		context.drawImage( image, 0, 0, width, height );
-
-		return canvas;
-
-	}
-
-	_isHTMLImage( image ) {
-
-		return ( typeof HTMLImageElement !== 'undefined' && image instanceof HTMLImageElement ) || ( typeof HTMLCanvasElement !== 'undefined' && image instanceof HTMLCanvasElement );
 
 	}
 

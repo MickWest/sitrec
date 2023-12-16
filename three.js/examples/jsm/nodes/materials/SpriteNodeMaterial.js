@@ -21,13 +21,6 @@ class SpriteNodeMaterial extends NodeMaterial {
 		this.lights = false;
 		this.normals = false;
 
-		this.colorNode = null;
-		this.opacityNode = null;
-
-		this.alphaTestNode = null;
-
-		this.lightNode = null;
-
 		this.positionNode = null;
 		this.rotationNode = null;
 		this.scaleNode = null;
@@ -38,7 +31,7 @@ class SpriteNodeMaterial extends NodeMaterial {
 
 	}
 
-	constructPosition( { object, context } ) {
+	setupPosition( { object, context } ) {
 
 		// < VERTEX STAGE >
 
@@ -100,4 +93,4 @@ class SpriteNodeMaterial extends NodeMaterial {
 
 export default SpriteNodeMaterial;
 
-addNodeMaterial( SpriteNodeMaterial );
+addNodeMaterial( 'SpriteNodeMaterial', SpriteNodeMaterial );
