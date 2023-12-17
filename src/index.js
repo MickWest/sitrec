@@ -92,12 +92,6 @@ sortedKeys.forEach(key => {
 // Add the "Test All" option
 selectableSitches["* Test All *"] = "testall";
 
-
-
-//console.log("setSit")
-//setSit(defaultSit)
-
-
 console.log("SITREC START")
 
 console.log("Three.JS Revision = " + REVISION)

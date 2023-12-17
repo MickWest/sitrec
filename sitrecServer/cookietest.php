@@ -15,6 +15,6 @@
  //   if (in_array(18,$user->secondary_group_ids))
  //       print ("Group 18<br>");
 
-    print($user->username."<br>"); # = "Mick West"
+    print($user->username."<br>");
 
     exit(0);
