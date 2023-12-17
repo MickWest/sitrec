@@ -16,11 +16,10 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
     constructor(v) {
         super(v);
 
+        this.input("track")
         this.optionalInputs(["wind", "airTrack"])
 
         this.tiltType = v.tiltType ?? "velocity"
-
-        this.modelLength = v.modelLength ?? 45;  // length in blender units (meters) of the model
 
         const data = FileManager.get(v.TargetObjectFile ?? "TargetObjectFile")
 
@@ -179,16 +178,6 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
     recalculate() {
         super.recalculate()
-
-        // Size was coming from the "Plane Size ft"
-        // but it's actually arriving here in meters,
-//        const scale = this.in.size.v0
-// We no longer use size, models must be correctly sized
-
-        if (this.model != undefined) {
-//            this.model.scale.setScalar(scale / this.modelLength);
-            this.model.scale.setScalar(1);
-        }
         this.propagateLayerMask()
 
     }

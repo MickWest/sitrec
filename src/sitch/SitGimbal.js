@@ -369,7 +369,6 @@ export const SitGimbal = {
                 )
             },
 
-            modelLength: 19,
 
 
 
@@ -478,10 +477,6 @@ export const SitGimbalNear = {
                     }, gui)
                 )
             },
-            modelLength: 40,
-
-
-
             tiltType: "axialPull",
             wind:"targetWind",
 

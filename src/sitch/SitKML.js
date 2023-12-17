@@ -85,15 +85,12 @@ export const SitKML = {
         mainCamera.layers.enable(LAYER.HELPERS)
         setMainCamera(mainCamera); // setting the global value, enabling keyboard controls, etc.
 
-
-
-
         gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
             mainCamera.fov = value
             mainCamera.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
-        // Duplicate from SetupCommon, but suing gui not guiTweaks
+        // Duplicate from SetupCommon, but using gui not guiTweaks
         new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles})
 
         if (this.terrain !== undefined) {
@@ -118,8 +115,6 @@ export const SitKML = {
             camera: mainCamera,
 
             renderFunction: function() {
-
-
                 this.renderer.render(GlobalScene, this.camera);
             },
 
@@ -132,9 +127,7 @@ export const SitKML = {
 
         }, Sit.mainView))
 
-     //   view.camera = mainCamera;
         view.addOrbitControls(this.renderer);
-
 
         addDefaultLights(Sit.brightness)
 
@@ -217,6 +210,7 @@ export const SitKML = {
             })
 
 
+            // plae-sized sphere displaye din look view
             new CNodeDisplayTargetSphere({
                 inputs: {
                     track: "KMLOther",
@@ -250,7 +244,6 @@ export const SitKML = {
             track: "KMLTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
             width: 2,
-          //  toGround:5*30, // spacing for lines to ground
             layers:LAYER.MASK_HELPERS,
         })
 
@@ -289,7 +282,7 @@ export const SitKML = {
 
 
         // Data for all the lines of sight
-        // NOT CURRENTLY USED in the KML sitches where were track on KML from another.
+        // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
         new CNodeLOSTrackTarget({
             id:"JetLOS",
             cameraTrack: "KMLTrack",
@@ -313,22 +306,8 @@ export const SitKML = {
             // optional target model
             if (Sit.targetObject) {
                 new CNodeDisplayTargetModel({
-                    inputs: {
-                        track: "KMLTargetAverage",
-                        size: new CNodeScale("sizeScaledPlane", scaleF2M,
-                            new CNodeGUIValue({
-                                value: Sit.targetSize,
-                                start: 1,
-                                end: 2000,
-                                step: 0.1,
-                                desc: "Plane size ft"
-                            }, gui)
-                        )
-                    },
+                    track: "KMLTargetAverage",
                     TargetObjectFile: Sit.targetObject.file,
-                    modelLength: 1,
-
-                    //  model: FA182,
                     layers: LAYER.MASK_NAR,
                 })
             } else {
