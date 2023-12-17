@@ -1,0 +1,66 @@
+// HOST and LOCAL are the root locations of Sitrec
+// HOST = Remote host, like metabunk.org
+// LOCAL = My dev machine, for development and debugging
+// note my local is in dist, one level deeper than the HOST because I run directly from the dev build
+
+// While we can automatically detect the host, there are situations when we want/need to run
+// the sitrecServer tools on the remote host, not on the local dev machine
+// so we need to hardwire it below.
+//export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
+export const SITREC_DOMAIN = window.location.hostname
+const SITREC_HOST = window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+const SITREC_LOCAL = "http://localhost/sitrec/"
+
+// regular expression that allows us to detect if we are local
+// for http://localhost, or https://localhost
+const SITREC_LOCAL_RE = '^https?:\/\/localhost'
+
+// For the various php based servers in sitrecServer it's different,
+// as it's not included in the dist folder
+// and needs to be deployed separately
+// you can have these wherever you like.
+// (on the same domain, as the proxy allows us to safely bypass same-origin policy
+export const SITREC_DEV_DOMAIN = "www.metabunk.org"
+const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
+const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
+const SITREC_LOCAL_SERVER = "http://localhost/sitrec/sitRecServer/"
+
+// local host might not have a capability to act as a php server,
+// so we can tell Sitrec to use the remote for the proxies
+// by setting SITREC_SERVER_OK_LOCAL to false;
+// This makes development a bit harder, as you have to have development code on production server
+// you can set SITREC_LOCAL_SERVER to a second non-local address for testing
+// and also set SITREC_SERVER_OK_LOCAL to true to force it to use that.
+const SITREC_SERVER_OK_LOCAL = true;
+
+const re_localhost = new RegExp(SITREC_LOCAL_RE);
+
+export var isLocal = false;
+
+var checked = false;
+
+export function checkLocal() {
+    if (!checked) {
+        console.log("Running on " + window.location.href)
+        if (re_localhost.test(window.location.href)) {
+            console.log("Running on localhost")
+            isLocal = true;
+        } else {
+            console.log("Not running on localhost");
+        }
+        checked = true;
+    }
+}
+
+// This is called at the start of index.js
+// but, we want to set the paths here and now, so we
+// force a call before that. Do we still need to call it again?
+checkLocal();
+
+export const SITREC_ROOT = isLocal? SITREC_LOCAL : SITREC_HOST
+export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
+    (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
+
+console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
+console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
+
