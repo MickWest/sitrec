@@ -1,3 +1,9 @@
+First edit:
+config.js.example
+and
+config-install.js.example
+(rename to remove .example, edit paths)
+
 cd sitrec_source
 
 install all the mode packages with
@@ -10,18 +16,17 @@ This just runs the script in package.json, but in the node environment. Webpack 
 so needs to be in that environment (i.e. NOT brew install webpack).
 Also some packages used by the Sitrec client are from node.
 
-That builds everything into the "dist" folder, from which you can run it
-EXCEPT for:
-- sitRecServer
-
 See webpack.common.js for details of what is copied over
+
 
 npm run deploy
 
 will build an optimized version into the deploy folder, which can then be copied into the web root.
 
-Mick:
-
+------------------------------------------------------------------------
+For file uploading, currently we ust use the POST method, which
+require a change to the default PH install to allow larger files
+(Paths here are Mick's, included as examples)
 
 php.ini in:
 /opt/homebrew/etc/php/8.2/php.ini
@@ -32,12 +37,15 @@ post_max_size = 100M
 restart it with:
 brew services restart php
 
+nginx.conf in
+/usr/local/etc/nginx/nginx.conf
 
-
-NGINX
 http {
     ...
     client_max_body_size 100M;
 }
+
+restart:
+sudo nginx -s reload
 
 /////////////////////////////////
