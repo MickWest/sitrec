@@ -399,15 +399,21 @@ export const SitFlir1 = {
             track: "LOSTraverseSelect",
             TargetObjectFile: "TargetObjectFile",
             wind:"targetWind",
-
-            //  model: FA182,
             layers: LAYER.MASK_NAR,
         })
 
           new CNodeDisplayTargetSphere({
              inputs: {
                  track: "LOSTraverseSelect",
-                 size: "sizeScaled",
+                 size: new CNodeScale("sizeScaled", scaleF2M,
+                     new CNodeGUIValue({
+                         value: Sit.targetSize,
+                         start: 0,
+                         end: 500,
+                         step: 0.1,
+                         desc: "Target size ft"
+                     }, gui)
+                 )
              },
 
              layers: LAYER.MASK_NAR,
