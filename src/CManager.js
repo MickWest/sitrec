@@ -1,4 +1,4 @@
-import {assert, getFileExtensionIncludingAttachments, isHttpOrHttps, versionString} from "./utils.js";
+import {assert, getFileExtension, isHttpOrHttps, versionString} from "./utils.js";
 
 import JSZip from "./js/jszip.js"
 import {parseXml} from "./KMLUtils";
@@ -39,9 +39,16 @@ class CManager {
         }
     }
 
+    // returns just the data member object (a parsed arraybuffer, type varies)
     get(id) {
         assert(this.list[id] !== undefined, "Missing Managed object "+id+", use exists() if you are just checking")
         return this.list[id].data
+    }
+
+    // returns the full object, so you can check filename, etc.
+    getInfo(id) {
+        assert(this.list[id] !== undefined, "Missing Managed object "+id+", use exists() if you are just checking")
+        return this.list[id]
     }
 
     iterate (callback) {
@@ -174,7 +181,7 @@ class CFileManager extends CManager {
 
 
     detectTLE(filename) {
-        const fileExt = getFileExtensionIncludingAttachments(filename);
+        const fileExt = getFileExtension(filename);
         const isTLE = (fileExt === "txt" || fileExt === "tle");
         return isTLE;
     }
@@ -300,7 +307,7 @@ class CFileManager extends CManager {
         if (filename.startsWith(SITREC_SERVER + "proxy.php")) {
             fileExt = "txt"
         } else {
-            fileExt = getFileExtensionIncludingAttachments(filename);
+            fileExt = getFileExtension(filename);
         }
         return fileExt
     }

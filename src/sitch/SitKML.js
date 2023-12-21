@@ -39,7 +39,7 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
 import {FileManager} from "../CManager";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
-import {CNodeSmoothedPositionTrack} from "../nodes/CNodeTrack";
+import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "../nodes/CNodeTrack";
 import {AddTimeDisplayToUI} from "../UIHelpers";
 import {setMainCamera} from "../Globals";
 import {PTZControls} from "../PTZControls";
@@ -133,27 +133,10 @@ export const SitKML = {
 
         addDefaultLights(Sit.brightness)
 
-        // what type of track is the
-
-        // given a source file id:
-        // first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
-        // the create a track node from that
-        // Note, the track node might be recalculated, as it depends on the global start time
-        function makeTrackFromDataFile(sourceFile, dataID, trackID) {
-
-            new CNodeKMLDataTrack({
-                id:dataID,
-                KMLFile: sourceFile,
-            })
-
-            new CNodeTrackFromTimed({
-                id:trackID,
-                timedData: dataID,
-            })
-
-        }
 
         makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
+
+
         makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
 
         // new CNodeKMLDataTrack({

@@ -427,17 +427,17 @@ export function isSubdomain(domainToCheck, baseDomain) {
 // console.log(isSubdomain("test.com", "example.org"));         // Should return false
 
 
-export function getFileExtension(url) {
-    // Find the last dot in the URL
-    const lastDotIndex = url.lastIndexOf('.');
-
-    // Extract the extension from the last dot to the end of the string
-    // If there is no dot, or it's the first character (unlikely for URLs but could be for file paths), return an empty string
-    if (lastDotIndex === -1 || lastDotIndex === 0) return '';
-
-    // Return the substring from the character after the dot to the end of the string
-    return url.substring(lastDotIndex);
-}
+// export function getFileExtension(url) {
+//     // Find the last dot in the URL
+//     const lastDotIndex = url.lastIndexOf('.');
+//
+//     // Extract the extension from the last dot to the end of the string
+//     // If there is no dot, or it's the first character (unlikely for URLs but could be for file paths), return an empty string
+//     if (lastDotIndex === -1 || lastDotIndex === 0) return '';
+//
+//     // Return the substring from the character after the dot to the end of the string
+//     return url.substring(lastDotIndex);
+// }
 
 // Example usage
 // var url = "http://example.com/file.html";
@@ -449,7 +449,7 @@ export function isHttpOrHttps(url) {
     return pattern.test(url);
 }
 
-export function getFileExtensionIncludingAttachments(filename) {
+export function getFileExtension(filename) {
     var splitDot = filename.split('.')
     var fileExt = splitDot.pop();
     // if the extension ends in a / then we are probably trying to load an attachment
@@ -460,7 +460,7 @@ export function getFileExtensionIncludingAttachments(filename) {
         var beforeExt = splitDot.pop();
         fileExt = beforeExt.split('-').pop()
     }
-    return fileExt;
+    return fileExt.toLowerCase();
 }
 
 // Finds the current browser URL, strips off the parameters, and adds new ones

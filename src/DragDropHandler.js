@@ -4,7 +4,7 @@ import {addKMLMarkers, addKMLTracks} from "./KMLNodeUtils";
 import {FileManager} from "./CManager";
 import {NodeMan, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
-import {getFileExtensionIncludingAttachments, isSubdomain} from "./utils";
+import {getFileExtension, isSubdomain} from "./utils";
 
 // The DragDropHandler is more like the local client file handler, with rehosting.
 class CDragDropHandler {
@@ -124,7 +124,7 @@ class CDragDropHandler {
                     fileManagerEntry.dynamicLink = true;
                     fileManagerEntry.filename = x.filename;
                     fileManagerEntry.staticURL = newStaticURL;
-                    const fileExt = getFileExtensionIncludingAttachments(x.filename);
+                    const fileExt = getFileExtension(x.filename);
 
                     // very rough figuring out what to do with it
                     // TODO: multiple TLEs, Videos, images.

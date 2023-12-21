@@ -1,11 +1,14 @@
 import {CNode} from "./CNode";
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {RollingAverage} from "../utils";
+import {getFileExtension, RollingAverage} from "../utils";
 import {DebugSphere, V3} from "../threeExt";
 import {CatmullRomCurve3} from "../../three.js/build/three.module";
 import {saveAs} from "../js/FileSaver";
 import {par} from "../par";
 import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
+import {CNodeKMLDataTrack} from "./CNodeKMLDataTrack";
+import {CNodeTrackFromTimed} from "./CNodeTrackFromTimed";
+import {FileManager} from "../CManager";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -381,5 +384,34 @@ export class CNodeInterpolateTwoFramesTrack extends CNodeTrack {
         return {position:value}
     }
 
+
+}
+
+
+// given a source file id:
+// first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
+// the create a track node from that
+// Note, the track node might be recalculated, as it depends on the global start time
+export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
+
+
+
+    // determine what type of track it is
+    const fileInfo = FileManager.getInfo(sourceFile);
+    const ext = getFileExtension(fileInfo.filename)
+
+    if (ext === "kml") {
+        new CNodeKMLDataTrack({
+            id: dataID,
+            KMLFile: sourceFile,
+        })
+    } else if (ext === "srt") {
+        console.log("SRT file found as data track - Extracting")
+    }
+
+    new CNodeTrackFromTimed({
+        id:trackID,
+        timedData: dataID,
+    })
 
 }
