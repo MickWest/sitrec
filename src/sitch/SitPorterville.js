@@ -4,14 +4,13 @@ import {SitKML} from "./SitKML";
 export const SitPorterville = {
     ...SitKML,
     name: "porterville",
-    menuName: "Porterville Black Sphere",
+    menuName: "Porterville Sphere",
 
+    tilt: 0,
 
-    targetSize: 200, // in feet
-    tilt: 2.6,
+    targetSize: 3, // in feet
 
-
-    planeCameraFOV: 23,
+    planeCameraFOV: 5,
 
     frames: 21191,     // ful vid is 21207,
     fps: 59.94,
@@ -38,8 +37,8 @@ export const SitPorterville = {
     cameraSphereSize: 20,
     targetSphereSize: 20,
 
-    targetSize:3,
-
+    // instead of a target KML file, we define a simple spline
+    // in this case just two points, linear interpolation (a line)
     targetSpline: {
         type: "linear",
         initialPoints: [

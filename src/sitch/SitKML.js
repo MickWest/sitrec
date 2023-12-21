@@ -62,7 +62,7 @@ export const SitKML = {
 
     lookFOV: 10,
 
-    tilt: -15,
+    tilt: -15,  //Not a good default!
 
     defaultCameraDist: 30000,  // for SitKML stuff we generalyl want a large camera distance for defaults
 
@@ -560,17 +560,13 @@ export const SitKML = {
                 },Sit.videoView)
             )
         }
-
         initKeyboard();
-
     },
 
     update: function(f) {
         const lookCamera = NodeMan.get("lookCamera")
         const lookPos = lookCamera.camera.position;
         const altMeters = pointAltitude(lookPos)
-
-
 
         par.cameraAlt = altMeters;
     }
