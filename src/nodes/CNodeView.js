@@ -392,6 +392,13 @@ export function mouseToView(view, x, y) {
     return [xv,yv]
 }
 
+export function mouseToViewNormalized(view, x, y) {
+    var xv = x - view.leftPx;
+    var yv = y - view.topPx;
+    return [(xv/view.widthPx)*2-1,-(yv/view.heightPx)*2+1]
+}
+
+
 // as does the canvas 0,0 in upper left
 export function mouseToCanvas(view, x, y) {
     x -= view.leftPx;

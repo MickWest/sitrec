@@ -1,9 +1,7 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {FileManager} from "../CManager";
-import {Sit} from "../Globals";
-import {getKMLTrackWhenCoord} from "../KMLUtils";
+import {getKMLTrackWhenCoord, SRT} from "../KMLUtils";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {assert} from "../utils";
 
 // a timed track has an arbitary set of LLA (and EUS?) points with timestamps
@@ -35,6 +33,44 @@ export class CNodeKMLDataTrack extends CNodeTimedTrack {
         this.info = {}
         getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
         console.log ("KML Track name = "+this.info.name)
+        var points = this.times.length
+        assert(this.times.length === this.coord.length, "KML times and points different number")
+        for (var f=0;f<points;f++) {
+            var pos = LLAToEUS(this.coord[f].lat, this.coord[f].lon, this.coord[f].alt)
+            this.array.push({position:pos})
+        }
+        this.frames = points;
+    }
+}
+
+
+// Same but from parse SRT data
+export class CNodeSRTDataTrack extends CNodeTimedTrack {
+    constructor(v) {
+        super(v);
+        this.srt = FileManager.get(v.dataFile)
+        this.recalculate()
+    }
+
+    recalculate() {
+        this.array = [];
+
+        this.times = []
+        this.coord = []
+        this.info = {name:"xxxxx"} // TODO get filename?
+     //   getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
+
+        for (let i = 0; i<this.srt.length; i++) {
+            this.times.push(Date.parse(this.srt[i][SRT.date]))
+            this.coord.push({
+                lat: Number(this.srt[i][SRT.latitude]),
+                lon: Number(this.srt[i][SRT.longitude]),
+                alt: Number(this.srt[i][SRT.abs_alt]),
+
+            })
+        }
+
+
         var points = this.times.length
         assert(this.times.length === this.coord.length, "KML times and points different number")
         for (var f=0;f<points;f++) {

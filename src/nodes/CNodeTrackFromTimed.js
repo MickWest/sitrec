@@ -1,17 +1,9 @@
 import {CNodeEmptyArray} from "./CNodeArray";
-import {FileManager} from "../CManager";
 import {f2m, interpolate, vdump} from "../utils";
 import {Sit} from "../Globals";
 import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {DebugArrowAB, V3} from "../threeExt";
-import {getKMLTrackWhenCoord} from "../KMLUtils";
-import {GlobalScene} from "../LocalFrame";
-import {CNodeConstant} from "./CNode";
-import * as LAYER from "../LayerMasks";
-import {CNodeScale} from "./CNodeScale";
-import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
-import {CNodeKMLDataTrack} from "./CNodeKMLDataTrack";
+import {V3} from "../threeExt";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 
 export class CNodeTrackFromTimed extends CNodeEmptyArray {

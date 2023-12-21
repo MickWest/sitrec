@@ -187,4 +187,77 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
 
 }
 
+// DJI SRT format is in six lines:
+// 3
+// 00:00:00,032 --> 00:00:00,049
+// <font size="28">FrameCnt: 3, DiffTime: 17ms
+// 2023-12-17 15:27:55.313
+// [iso: 100] [shutter: 1/640.0] [fnum: 3.4] [ev: 0] [color_md: default] [focal_len: 166.00] [latitude: 36.06571] [longitude: -119.01938] [rel_alt: 17.800 abs_alt: 134.835] [ct: 5896] </font>
+// <blank line>
+
+export const SRT = {
+    FrameCnt: 0,
+    DiffTime:1,
+    iso:2,
+    shutter:3,
+    fnum:4,
+    ev:5,
+    color_md:6,
+    focal_len:7,
+    latitude:8,
+    longitude:9,
+    rel_alt:10,
+    abs_alt:11,
+    ct:12,
+    date: 13,
+}
+
+const SRTFields = Object.keys(SRT).length;
+
+
+export function parseSRT(data) {
+    const lines = data.split('\n');
+    const numPoints = Math.floor(lines.length / 6);
+    let SRTArray = new Array(numPoints);
+
+    for (let i = 0; i < numPoints; i++) {
+        let dataIndex = i * 6;
+        let frameInfo = lines[dataIndex + 2].split(', ');
+        let detailInfo = lines[dataIndex + 4].match(/\[(.*?)\]/g);
+
+        SRTArray[i] = new Array(SRTFields).fill(null);
+
+        // Extract frame information
+        frameInfo.forEach(info => {
+            let [key, value] = info.split(': ');
+        //    console.log(key +": "+value)
+            if (SRT.hasOwnProperty(key)) {
+                SRTArray[i][SRT[key]] = value.replace('ms', '').trim();
+            }
+        });
+
+        // Extract detailed information
+        detailInfo.forEach(info => {
+            let details = info.replace(/[\[\]]/g, '');
+            let tokens = details.split(' ');
+            for (let j = 0; j < tokens.length; j += 2) {
+                let key = tokens[j].replace(':', '');
+                let value = tokens[j + 1];
+      //          console.log(key +": "+value)
+
+                if (SRT.hasOwnProperty(key)) {
+                    SRTArray[i][SRT[key]] = value.trim();
+                }
+            }
+        });
+
+        // Extract date
+        SRTArray[i][SRT['date']] = lines[dataIndex + 3].trim();
+    //    console.log(SRTArray[i][SRT['date']])
+    }
+
+    return SRTArray;
+}
+
+
 

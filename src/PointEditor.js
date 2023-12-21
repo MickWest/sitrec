@@ -11,6 +11,7 @@ import {
 import {assert, vdump} from "./utils"
 import {par} from "./par";
 import {V3} from "./threeExt";
+import {mouseInViewOnly, mouseToViewNormalized, ViewMan} from "./nodes/CNodeView";
 
 // base class for curve editors
 // has a list of positions that are the control points
@@ -248,22 +249,34 @@ export class PointEditor {
 
     onPointerMove(event) {
         if (!this.enable) return;
-        this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        this.raycaster.setFromCamera(this.pointer, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.splineHelperObjects, false);
-        if (intersects.length > 0) {
+
+        //this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+        //this.pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        var view = ViewMan.get("mainView")
+
+        if (mouseInViewOnly(view, event.clientX , event.clientY))
+        {
+            const [px, py] = mouseToViewNormalized(view, event.clientX, event.clientY)
+            this.pointer.x = px;
+            this.pointer.y = py;
+
+            this.raycaster.setFromCamera(this.pointer, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.splineHelperObjects, false);
+            if (intersects.length > 0) {
 
 
+                const object = intersects[0].object;
 
-            const object = intersects[0].object;
+                // find the index of the splineHelperObjects entry we are editing
+                this.editingIndex = this.splineHelperObjects.findIndex((ob) => {
+                    return ob === object
+                })
 
-            // find the index of the splineHelperObjects entry we are editing
-            this.editingIndex = this.splineHelperObjects.findIndex((ob)=>{return ob === object})
 
-
-            if (object !== this.transformControl.object) {
-                this.transformControl.attach(object);
+                if (object !== this.transformControl.object) {
+                    this.transformControl.attach(object);
+                }
             }
         }
     }

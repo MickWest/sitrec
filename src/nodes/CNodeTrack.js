@@ -6,7 +6,7 @@ import {CatmullRomCurve3} from "../../three.js/build/three.module";
 import {saveAs} from "../js/FileSaver";
 import {par} from "../par";
 import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
-import {CNodeKMLDataTrack} from "./CNodeKMLDataTrack";
+import {CNodeKMLDataTrack, CNodeSRTDataTrack} from "./CNodeKMLDataTrack";
 import {CNodeTrackFromTimed} from "./CNodeTrackFromTimed";
 import {FileManager} from "../CManager";
 
@@ -406,7 +406,10 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
             KMLFile: sourceFile,
         })
     } else if (ext === "srt") {
-        console.log("SRT file found as data track - Extracting")
+         new CNodeSRTDataTrack({
+             id: dataID,
+             dataFile: sourceFile,
+         })
     }
 
     new CNodeTrackFromTimed({

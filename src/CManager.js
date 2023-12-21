@@ -1,7 +1,7 @@
 import {assert, getFileExtension, isHttpOrHttps, versionString} from "./utils.js";
 
 import JSZip from "./js/jszip.js"
-import {parseXml} from "./KMLUtils";
+import {parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {Sit} from "./Globals";
@@ -234,7 +234,6 @@ class CFileManager extends CManager {
             switch (fileExt.toLowerCase()) {
                 case "txt":
                 case "dat": // for bsc5.dat, the bright star catalog
-                    //prom = this.loadText(filename);
                     parsed = decoder.decode(buffer);
                     break;
                 case "jpg":
@@ -258,25 +257,22 @@ class CFileManager extends CManager {
                     prom = createImageFromArrayBuffer(buffer, 'image/heic')
                     break
                 case "csv":
-                    //prom = this.loadCSV(filename,true);
                     var text = decoder.decode(buffer);
                     parsed = $.csv.toArrays(text);
                     parsed.shift(); // remove the header
                     break;
                 case "kml":
                 case "ksv":
-                    //prom = this.loadKML(filename);
-                    var text = decoder.decode(buffer);
-                    parsed = parseXml(text);
+                    parsed = parseXml(decoder.decode(buffer));
 
                     break;
                 case "glb":
                 case "bin":     // for binary files like BSC5 (the Yale Bright Star Catalog)
-                    //prom = this.loadArrayBuffer(filename);
                     parsed = buffer;
                     break;
                 case "srt": // SRT is a subtitle file, but is used by DJI drones to store per-frame coordinates.
-                    parsed = buffer;
+                    parsed = parseSRT(decoder.decode(buffer));
+
                     break;
 
                 default:

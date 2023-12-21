@@ -2,7 +2,7 @@ import {Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Vector3} fr
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
-import {setGlobalPTZ, Sit} from "../Globals";
+import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant} from "../nodes/CNode";
 import {LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
@@ -16,7 +16,7 @@ import {
     atan,
     degrees,
     floor,
-    getArrayValueFromFrame,
+    getArrayValueFromFrame, m2f,
     metersFromMiles,
     radians,
     scaleF2M,
@@ -46,6 +46,8 @@ import {PTZControls} from "../PTZControls";
 import {CNodeCamera, CNodeCameraTrackAzEl, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
 import {CNodeTrackFromTimed} from "../nodes/CNodeTrackFromTimed";
 import {CNodeKMLDataTrack} from "../nodes/CNodeKMLDataTrack";
+import {pointAltitude} from "../SphericalMath";
+import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 
 
 export const SitKML = {
@@ -74,6 +76,9 @@ export const SitKML = {
     mainView:{left:0.0, top:0, width:.50,height:1},
 
     skyColor: "rgb(0%,0%,10%)",
+
+    cameraSphereSize: 2000,
+    targetSphereSize: 2000,
 
 //
     setup: function() {
@@ -137,7 +142,26 @@ export const SitKML = {
         makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
 
 
-        makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
+        if (FileManager.exists("KMLTarget"))
+        {
+            makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
+        }
+
+        if (this.targetSpline) {
+            new CNodeSplineEditor({
+                id: "targetTrack",
+//            type:"linear",   // linear or catmull
+                type: this.targetSpline.type,   // chordal give smoother velocities
+                scene: GlobalScene,
+                camera: mainCamera,
+                renderer: view.renderer,
+                controls: view.controls,
+                frames: this.frames,
+                terrainClamp: "TerrainModel",
+
+                initialPoints: this.targetSpline.initialPoints,
+            })
+        }
 
         // new CNodeKMLDataTrack({
         //     id:"KMLTargetData",
@@ -258,16 +282,18 @@ export const SitKML = {
             layers:LAYER.MASK_HELPERS,
         })
 
-        new CNodeDisplayTrack({
-            id:"KMLDisplayTargetData",
-            track: "KMLTargetData",
-            color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
-            dropColor: new CNodeConstant({value: new THREE.Color(0.8, 0.6, 0)}),
-            width: 1,
-      //      toGround:1, // spacing for lines to ground
-            ignoreAB:true,
-            layers:LAYER.MASK_HELPERS,
-        }),
+        if (NodeMan.exists("KMLTargetData")) {
+            new CNodeDisplayTrack({
+                id: "KMLDisplayTargetData",
+                track: "KMLTargetData",
+                color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
+                dropColor: new CNodeConstant({value: new THREE.Color(0.8, 0.6, 0)}),
+                width: 1,
+                //      toGround:1, // spacing for lines to ground
+                ignoreAB: true,
+                layers: LAYER.MASK_HELPERS,
+            })
+        }
 
 
         // Data for all the lines of sight
@@ -345,20 +371,13 @@ export const SitKML = {
         // Spheres displayed in the main view (helpers)
         new CNodeDisplayTargetSphere({
             track: "targetTrackAverage",
-            size: 2000, color: "blue", layers:LAYER.MASK_HELPERS,
+            size: this.cameraSphereSize, color: "blue", layers:LAYER.MASK_HELPERS,
         })
         new CNodeDisplayTargetSphere({
             track: "cameraTrack",
-            size: 2000, color: "yellow", layers:LAYER.MASK_HELPERS,
+            size: this.cameraSphereSize, color: "yellow", layers:LAYER.MASK_HELPERS,
         })
 
-
-    //     var NARCamera = new THREE.PerspectiveCamera( this.planeCameraFOV, window.innerWidth / window.innerHeight, this.nearClipNAR, this.farClipNAR );
-    // //    NARCamera.layers.disable(LAYER.main)
-    //     NARCamera.layers.enable(LAYER.NAR)
-    //     NARCamera.lookAt(new THREE.Vector3(0,0,-1));
-    //     this.lookCamera = NARCamera
-    //
 
         if (this.lookFOV !== undefined) {
             //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipNAR);
@@ -508,6 +527,12 @@ export const SitKML = {
         labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
             this.text = "Az "+ (floor(0.499999+abs(value))) + "° " //+ (value > 0 ? "R" : "L");
         })
+
+        labelVideo.addText("alt", "---", 20, 7).listen(par, "cameraAlt", function (value) {
+            this.text = "Alt "+ (floor(0.499999+abs(value))) + "m";
+        })
+
+
         labelVideo.setVisible(true)
 
         gui.add(this, 'planeCameraFOV', 0.35, 80, 0.01).onChange(value => {
@@ -538,6 +563,17 @@ export const SitKML = {
 
         initKeyboard();
 
+    },
+
+    update: function(f) {
+        const lookCamera = NodeMan.get("lookCamera")
+        const lookPos = lookCamera.camera.position;
+        const altMeters = pointAltitude(lookPos)
+
+
+
+        par.cameraAlt = altMeters;
     }
+
 
 }

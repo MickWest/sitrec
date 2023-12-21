@@ -1,6 +1,7 @@
 import {Plane, Vector3} from '../three.js/build/three.module.js';
 import {atan2, cos, degrees, radians, sin} from "./utils.js";
 import {V3} from "./threeExt";
+import {wgs84} from "./LLA-ECEF-ENU";
 
 // Local coordinates are a local tangent plane similar to ENU, but with N = -Z
 // so XYZ = EUS (East, Up, South), not ENU (East, North, Up)
@@ -146,7 +147,7 @@ function drop(x,y,radius) {
 
 }
 
-export function pointAltitude(position, radius) {
+export function pointAltitude(position, radius=wgs84.RADIUS) {
     return V3(0,-radius,0).sub(position).length() - radius;
 }
 
