@@ -1,5 +1,4 @@
 import {SitKML} from "./SitKML";
-import {Vector3} from "../../three.js/build/three.module";
 
 export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
     name: "n14aq",
@@ -15,7 +14,7 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
     frames: 84,
     terrain: {lat: 32.226890, lon: -82.940488, zoom: 9, nTiles: 8},
     files: {
-        KMLFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
+        cameraFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
         KMLTarget: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml"
     },
     startTime: "2022-08-08T12:16:15.800Z",

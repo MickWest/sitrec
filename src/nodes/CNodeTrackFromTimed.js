@@ -14,12 +14,12 @@ import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
 import {CNodeKMLDataTrack} from "./CNodeKMLDataTrack";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 
-export class CNodeKMLTrack extends CNodeEmptyArray {
+export class CNodeTrackFromTimed extends CNodeEmptyArray {
     constructor(v) {
         super(v);
-    //    this.kml = FileManager.get(v.KMLFile)
+    //    this.kml = FileManager.get(v.cameraFile)
 
-        this.input("KMLData")
+        this.input("timedData")
 
         this.addInput("startTime",GlobalDateTimeNode)
         this.recalculate()
@@ -41,8 +41,8 @@ export class CNodeKMLTrack extends CNodeEmptyArray {
 
     //    getKMLTrackWhenCoord(this.kml, times, positions)
 
-        const times = this.in.KMLData.times;
-        const positions = this.in.KMLData.coord;
+        const times = this.in.timedData.times;
+        const positions = this.in.timedData.coord;
 
         // now find the first time pair that our start time falls in
 

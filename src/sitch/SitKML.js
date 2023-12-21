@@ -44,6 +44,8 @@ import {AddTimeDisplayToUI} from "../UIHelpers";
 import {setMainCamera} from "../Globals";
 import {PTZControls} from "../PTZControls";
 import {CNodeCamera, CNodeCameraTrackAzEl, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {CNodeTrackFromTimed} from "../nodes/CNodeTrackFromTimed";
+import {CNodeKMLDataTrack} from "../nodes/CNodeKMLDataTrack";
 
 
 export const SitKML = {
@@ -120,9 +122,9 @@ export const SitKML = {
 
             focusTracks:{
                 "Ground (No Track)": "default",
-                "Jet track": "KMLTrack",
-                "Target Track": "KMLTarget",
-                "Other Track": "KMLOther",
+                "Jet track": "cameraTrack",
+                "Target Track": "targetTrack",
+                "Other Track": "KMLOtherTarget",
             },
 
         }, Sit.mainView))
@@ -131,52 +133,65 @@ export const SitKML = {
 
         addDefaultLights(Sit.brightness)
 
-        /*
-        new CNodeKMLTrack({
-            id:"KMLTrack",
-            KMLFile: "KMLFile",
-        })
-         new CNodeKMLDataTrack({
-            id:"KMLMainData",
-            KMLFile: "KMLFile",
-        })
+        // what type of track is the
+
+        // given a source file id:
+        // first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
+        // the create a track node from that
+        // Note, the track node might be recalculated, as it depends on the global start time
+        function makeTrackFromDataFile(sourceFile, dataID, trackID) {
+
+            new CNodeKMLDataTrack({
+                id:dataID,
+                KMLFile: sourceFile,
+            })
+
+            new CNodeTrackFromTimed({
+                id:trackID,
+                timedData: dataID,
+            })
+
+        }
+
+        makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
+        makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
+
+        // new CNodeKMLDataTrack({
+        //     id:"KMLTargetData",
+        //     KMLFile: "KMLTarget",
+        // })
+        //
+        // new CNodeTrackFromTimed({
+        //     id:"targetTrack",
+        //     timedData: "KMLTargetData",
+        // })
 
 
-        new ({
-            id:"KMLTarget",
-            KMLFile: "KMLTarget",
-        })
 
 
-        new CNodeKMLDataTrack({
-            id:"KMLTargetData",
-            KMLFile: "KMLTarget",
-        })
-
-*/
 // this is equivalent to the above
 
         // can we do some additional parsing here?
         // like:
-        // {"KMLTrack","KMLTrack", {"KMLFile":"KMLFile"}},
-        NodeMan.createNodesJSON(`
-            [
-                {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"KMLFile"},
-                {"new":"KMLTrack",      "id":"KMLTrack",        "KMLData":"KMLMainData"}, 
-                {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
-                {"new":"KMLTrack",      "id":"KMLTarget",       "KMLData":"KMLTargetData"},
-            ]`);
+        // {"KMLTrack","cameraTrack", {"cameraFile":"cameraFile"}},
+        // NodeMan.createNodesJSON(`
+        //     [
+        //         {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"cameraFile"},
+        //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"KMLMainData"},
+        //         {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
+        //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
+        //     ]`);
 
 
         // The moving average smoothed target KML track
-        // new CNodeSmoothedPositionTrack({ id:"KMLTargetAverage",
-        //     source: "KMLTarget",
+        // new CNodeSmoothedPositionTrack({ id:"targetTrackAverage",
+        //     source: "targetTrack",
         //     smooth: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Target Smooth Window"},gui),
         //     iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations"},gui),
         // })
 
-        new CNodeSmoothedPositionTrack({ id:"KMLTargetAverage",
-            source: "KMLTarget",
+        new CNodeSmoothedPositionTrack({ id:"targetTrackAverage",
+            source: "targetTrack",
             // new spline based smoothing in 3D
             method:"catmull",
 //            method:"chordal",
@@ -190,7 +205,7 @@ export const SitKML = {
             NodeMan.createNodesJSON(`
             [
                 {"new":"KMLDataTrack",  "id":"KMLOtherData",   "KMLFile":"KMLOther"},
-                {"new":"KMLTrack",      "id":"KMLOther",       "KMLData":"KMLOtherData"},
+                {"new":"TrackFromTimed",      "id":"KMLOtherTarget",       "timedData":"KMLOtherData"},
             ]`);
 
             new CNodeDisplayTrack({
@@ -205,7 +220,7 @@ export const SitKML = {
 
             // Spheres displayed in the main view (helpers)
             new CNodeDisplayTargetSphere({
-                track: "KMLOther",
+                track: "KMLOtherTarget",
                 size: 2000, color: "blue", layers: LAYER.MASK_HELPERS,
             })
 
@@ -213,8 +228,8 @@ export const SitKML = {
             // plae-sized sphere displaye din look view
             new CNodeDisplayTargetSphere({
                 inputs: {
-                    track: "KMLOther",
-                    cameraTrack: "KMLTrack",
+                    track: "KMLOtherTarget",
+                    cameraTrack: "cameraTrack",
                     size: new CNodeScale("sizeScaledOther", scaleF2M,
                         new CNodeGUIValue({
                             value: Sit.targetSize,
@@ -229,19 +244,10 @@ export const SitKML = {
             })
         }
 
-        // maybe a simolified format like:
-        // {type, optional id, optional parameters in order, optional named parameters}
-        // first parameter is always the type
-        // id
-        // everyhting is comma separated? (what about vectors or strings?)
-        //
-        // {KMLTrack, KMlFile} => {"new":"KMLTrack", "id":"KMLTrack","KMLFile":"KMLFile"}
-        // {KMLTrack, KMlFile} => {"new":"KMLTrack", "id":"KMLTrack","KMLFile":"KMLFile"}
-
         //animated segement of camera track
         new CNodeDisplayTrack({
             id:"KMLDisplay",
-            track: "KMLTrack",
+            track: "cameraTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
             width: 2,
             layers:LAYER.MASK_HELPERS,
@@ -262,7 +268,7 @@ export const SitKML = {
         // here a thicker red track segment
         new CNodeDisplayTrack({
             id:"KMLDisplayTarget",
-            track: "KMLTargetAverage",
+            track: "targetTrackAverage",
             color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
             width: 4,
         //    toGround:5*30, // spacing for lines to ground
@@ -285,16 +291,16 @@ export const SitKML = {
         // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
         new CNodeLOSTrackTarget({
             id:"JetLOS",
-            cameraTrack: "KMLTrack",
-            targetTrack: "KMLTargetAverage",
+            cameraTrack: "cameraTrack",
+            targetTrack: "targetTrackAverage",
             layers:LAYER.MASK_HELPERS,
         })
 
         // DISPLAY The line from the camera track to the target track
         new CNodeDisplayTrackToTrack({
             id: "DisplayLOS",
-            cameraTrack: "KMLTrack",
-            targetTrack: "KMLTargetAverage",
+            cameraTrack: "cameraTrack",
+            targetTrack: "targetTrackAverage",
             color: new CNodeConstant({value:new THREE.Color(1,1,1)}),
             width: 1,
             layers:LAYER.MASK_HELPERS,
@@ -306,7 +312,7 @@ export const SitKML = {
             // optional target model
             if (Sit.targetObject) {
                 new CNodeDisplayTargetModel({
-                    track: "KMLTargetAverage",
+                    track: "targetTrackAverage",
                     TargetObjectFile: Sit.targetObject.file,
                     layers: LAYER.MASK_NAR,
                 })
@@ -314,8 +320,8 @@ export const SitKML = {
 
                 new CNodeDisplayTargetSphere({
                     inputs: {
-                        track: "KMLTargetAverage",
-                        cameraTrack: "KMLTrack",
+                        track: "targetTrackAverage",
+                        cameraTrack: "cameraTrack",
                         size: new CNodeScale("sizeScaled", scaleF2M,
                             new CNodeGUIValue({
                                 value: Sit.targetSize,
@@ -336,8 +342,8 @@ export const SitKML = {
             // (i.e. you get a brighter light if it's shining at the camera
             new CNodeDisplayLandingLights({
                 inputs: {
-                    track: "KMLTargetAverage",
-                    cameraTrack: "KMLTrack",
+                    track: "targetTrackAverage",
+                    cameraTrack: "cameraTrack",
                     size: new CNodeScale("sizeScaled", scaleF2M,
                         new CNodeGUIValue({
                             value: Sit.targetSize,
@@ -355,11 +361,11 @@ export const SitKML = {
 
         // Spheres displayed in the main view (helpers)
         new CNodeDisplayTargetSphere({
-            track: "KMLTargetAverage",
+            track: "targetTrackAverage",
             size: 2000, color: "blue", layers:LAYER.MASK_HELPERS,
         })
         new CNodeDisplayTargetSphere({
-            track: "KMLTrack",
+            track: "cameraTrack",
             size: 2000, color: "yellow", layers:LAYER.MASK_HELPERS,
         })
 
@@ -388,15 +394,15 @@ export const SitKML = {
                 new CNodeCameraTrackAzEl({
                     ...lookCameraDefaults,
 
-                    cameraTrack: "KMLTrack",
+                    cameraTrack: "cameraTrack",
 
                 })
             } else {
                 new CNodeCameraTrackToTrack({
                     ...lookCameraDefaults,
 
-                    cameraTrack: "KMLTrack",
-                    targetTrack: "KMLTargetAverage",
+                    cameraTrack: "cameraTrack",
+                    targetTrack: "targetTrackAverage",
                     tilt: makeCNodeGUIValue("tilt", Sit.tilt ?? 0, -30, 30, 0.01, "Tilt", gui),
 
                 })
@@ -422,7 +428,7 @@ export const SitKML = {
                 draggable: true, resizable: true,
                 left: 0.75, top: 0, width: -9 / 16, height: 1,
                 camera: this.lookCamera,
-                //cameraTrack: "KMLTrack",
+                //cameraTrack: "cameraTrack",
                 doubleClickFullScreen: false,
                 background: new Color('#132d44'),
             }, Sit.narView))

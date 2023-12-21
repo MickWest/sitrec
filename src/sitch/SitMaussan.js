@@ -34,7 +34,7 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     lon: -104.69,
 
     files: {
-        KMLFile: 'maussan/VB7083-32eca57a-1.kml',
+        cameraFile: 'maussan/VB7083-32eca57a-1.kml',
         starLink: 'maussan/Maussan-Starlink-TLEs.txt'
     },
     videoFile: "../sitrec-videos/private/Maussan-video.mp4",

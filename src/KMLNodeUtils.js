@@ -2,7 +2,7 @@
 // along with moving target spheres
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {CNodeKMLTrack} from "./nodes/CNodeKMLTrack";
+import {CNodeTrackFromTimed} from "./nodes/CNodeTrackFromTimed";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "../three.js/build/three.module";
@@ -54,9 +54,9 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
         })
 
         // the target segment is a per-frame track that is interpolated from part of the data track
-        const target = new CNodeKMLTrack({
+        const target = new CNodeTrackFromTimed({
             id: "KMLTarget"+track, // in all these we get a unique id by adding the track id
-            KMLData: targetData,
+            timedData: targetData,
         })
 
 

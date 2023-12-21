@@ -14,7 +14,7 @@ export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
     frames: 569,
     terrain: {lat: 38.890803, lon: -101.874630, zoom: 9, nTiles: 8},
     files: {
-        KMLFile:   'kansas/N615UX-track-EGM96.kml',
+        cameraFile:   'kansas/N615UX-track-EGM96.kml',
         KMLTarget: 'kansas/N121DZ-track-EGM96.kml'
     },
     startTime: "2022-09-01T20:07:32.3Z",

@@ -14,7 +14,7 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
 
     terrain: {lat: 37.897411, lon: -84.402051, zoom: 9, nTiles: 8},
     files: {
-        KMLFile: 'afr179/FlightAware_AFR179_MMMX_LFPG_20221108.kml',
+        cameraFile: 'afr179/FlightAware_AFR179_MMMX_LFPG_20221108.kml',
         KMLTarget: "afr179/FlightAware_FDX1273_KBOS_KMEM_20221108.kml",
         TargetObjectFile: './models/737_MAX_8_White.glb',
     },

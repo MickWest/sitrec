@@ -101,7 +101,7 @@ export const SitVideo = {
          //     ]`);
 
 
-//        {"new":"KMLTrack",      "id":"KMLTrack",        "KMLFile":"KMLFile"},
+//        {"new":"KMLTrack",      "id":"cameraTrack",        "cameraFile":"cameraFile"},
     }
 
 }

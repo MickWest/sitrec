@@ -53,7 +53,7 @@ export const SitPVS14 = {
 
     files: {
         starLink: "pvs14/StarlinkTLE18APr23.txt",
-        KMLFile: "pvs14/N77552-track-press_alt_uncorrected.kml",
+        cameraFile: "pvs14/N77552-track-press_alt_uncorrected.kml",
     },
 
     bigUnits: "Miles",
@@ -112,8 +112,8 @@ export const SitPVS14 = {
 
         NodeMan.createNodesJSON(`
             [
-                {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"KMLFile"},
-                {"new":"KMLTrack",      "id":"KMLTrack",        "KMLData":"KMLMainData"}, 
+                {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"cameraFile"},
+                {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"KMLMainData"}, 
             ]`);
 
         const view = new CNodeView3D({
@@ -137,7 +137,7 @@ export const SitPVS14 = {
             near: 1,
             far: Sit.farClipNAR,
 
-            cameraTrack: "KMLTrack",
+            cameraTrack: "cameraTrack",
             radiusMiles: "radiusMiles", // constant
 
         })
@@ -153,7 +153,7 @@ export const SitPVS14 = {
             draggable: true, resizable: true,
             fov: 50,
             camera: this.lookCamera,
-            cameraTrack: "KMLTrack",
+            cameraTrack: "cameraTrack",
             doubleClickFullScreen: false,
             background: new Color('#132d44'),
             ...this.narView,
@@ -162,7 +162,7 @@ export const SitPVS14 = {
         //animated segement of camera track
         new CNodeDisplayTrack({
             id:"KMLDisplay",
-            track: "KMLTrack",
+            track: "cameraTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
             width: 2,
         })

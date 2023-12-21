@@ -268,6 +268,10 @@ class CFileManager extends CManager {
                     //prom = this.loadArrayBuffer(filename);
                     parsed = buffer;
                     break;
+                case "srt": // SRT is a subtitle file, but is used by DJI drones to store per-frame coordinates.
+                    parsed = buffer;
+                    break;
+
                 default:
                     // theoretically we could inspect the file contents and then reload it...
                     // but let's trust the extensions

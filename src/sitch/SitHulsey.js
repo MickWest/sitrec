@@ -24,7 +24,7 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
 //    lat: 34.001856, lon: -118.806196,
 
     files: {
-        KMLFile: 'hulsey/N67WV-track-EGM96.kml',
+        cameraFile: 'hulsey/N67WV-track-EGM96.kml',
         KMLTarget: "hulsey/FlightAware_N702GH_KSJC_KLAX_20220818.kml",
         starLink: "hulsey/Starlink-2022-08-16 to 17 Hulsey.txt"
     },

@@ -13,7 +13,7 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     frames: 1200,
     terrain: {lat: 38.230849, lon: -76.558613, zoom: 9, nTiles: 8},
     files: {
-        KMLFile: 'dal2158/FlightAware_DAL2158_KCHS_KBOS_20230218.kml',
+        cameraFile: 'dal2158/FlightAware_DAL2158_KCHS_KBOS_20230218.kml',
         KMLTarget: "dal2158/FlightAware_EDV5291_KRIC_KJFK_20230218.kml"
     },
     startTime: "2023-02-18T22:34:56.8Z",

@@ -11,7 +11,7 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
     frames: 1200,
     terrain: {lat: 42.933424, lon: -86.129730, zoom: 9, nTiles: 8},
     files: {
-        KMLFile: 'lakemichigan/FlightAware_UAL267_KBOS_KDEN_20211017.kml',
+        cameraFile: 'lakemichigan/FlightAware_UAL267_KBOS_KDEN_20211017.kml',
         KMLTarget: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml"
     },
     startTime: "2021-10-17T15:50:27.766Z",

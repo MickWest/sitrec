@@ -31,7 +31,7 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     // that varies based on the extension
     // e.g. a .csv file will be loaded by FileMan.loadCSV in the
     files: {
-        KMLFile: 'chilean/Chile Chopper Track from video GPSTime.kml',
+        cameraFile: 'chilean/Chile Chopper Track from video GPSTime.kml',
         KMLTarget: "chilean/IB6830 - Incorporating Radar Positions.kml",
         TargetObjectFile: 'models/A340-600-F18Engine.glb',
         DataFile: 'chilean/Chilean Navy Extracted Data 720.csv',
@@ -71,8 +71,8 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
 
         AddTailAngleGraph(
             {
-                targetTrack: "KMLTargetAverage",
-                cameraTrack: "KMLTrack",
+                targetTrack: "targetTrackAverage",
+                cameraTrack: "cameraTrack",
                 wind: "targetWind",
             },
             {
@@ -83,8 +83,8 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
 
         AddTargetDistanceGraph(
             {
-                targetTrack: "KMLTargetAverage",
-                cameraTrack: "KMLTrack",
+                targetTrack: "targetTrackAverage",
+                cameraTrack: "cameraTrack",
             },
             {
                 left: 0.0, top: 0.25, width: .15, height: .33,
@@ -94,7 +94,7 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
 
         new CNodeDisplayTargetSphere({
             inputs: {
-                track: "KMLTargetAverage",
+                track: "targetTrackAverage",
                 size: new CNodeScale("sizeScaled", scaleF2M,
                     new CNodeGUIValue({value: Sit.targetSize, start: 1, end: 1000, step: 0.1, desc: "Target Sphere size ft"}, gui)
                 )
@@ -106,8 +106,8 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     },
 
     update: function(f) {
-        const cameraTrack = NodeMan.get("KMLTrack")
-        const targetTrack = NodeMan.get("KMLTargetAverage")
+        const cameraTrack = NodeMan.get("cameraTrack")
+        const targetTrack = NodeMan.get("targetTrackAverage")
 
 
         const posCamera = cameraTrack.p(f)
