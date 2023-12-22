@@ -492,7 +492,7 @@ export const SitKML = {
 
                         const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
 
-                        console.log(focal_len + " -> " + vFOV)
+//                        console.log(focal_len + " -> " + vFOV)
 
                         this.camera.fov = vFOV;
                         this.camera.updateProjectionMatrix()
