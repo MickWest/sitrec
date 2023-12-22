@@ -296,6 +296,7 @@ export class CNodeDisplayNightSky extends CNode3D {
 
         gui.add(Sit,"starScale",0,3,0.01).name("Star Brightness")
         gui.add(Sit,"satScale",0,3,0.01).name("Satellite Brightness")
+        gui.add(Sit,"satCutOff",0,0.5,0.001).name("Satellite Cut-Off")
 
 
         // Sun Direction will get recalculated based on data
@@ -440,7 +441,7 @@ export class CNodeDisplayNightSky extends CNode3D {
 //        console.log (`out of ${numSats}, ${valid} of them are valid`)
 
 
-        this.updateSatelliteScales(this.camera)
+//        this.updateSatelliteScales(this.camera)
 
     }
 
@@ -596,6 +597,10 @@ export class CNodeDisplayNightSky extends CNode3D {
 
                     }
                 }
+
+                if (scale < Sit.satCutOff)
+                    scale = 0;
+
                 magnitudes[i] = scale
             }
             this.satelliteGeometry.attributes.magnitude.needsUpdate = true;

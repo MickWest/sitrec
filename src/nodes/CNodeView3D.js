@@ -172,8 +172,8 @@ export class CNodeView3D extends CNodeViewCanvas {
             this.preRenderCameraUpdate()
 
             // // scale the sprites one for each viewport
-            // const nightSkyNode = NodeMan.get("NightSkyNode")
-            // nightSkyNode.updateSatelliteScales(this.camera)
+            const nightSkyNode = NodeMan.get("NightSkyNode")
+            nightSkyNode.updateSatelliteScales(this.camera)
 
 
             var tempPos = this.camera.position.clone();
