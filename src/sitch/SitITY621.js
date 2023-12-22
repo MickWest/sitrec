@@ -21,7 +21,6 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     startTime: "2022-10-15T08:03:39.000Z",
 
     videoFile: "../sitrec-videos/private/ITY621Video.mp4",
-    brightness: 100,
     skyColor: '#AFBDD1',  // grey from the video
 
     startCameraPosition:[61967.92,37073.99,-39378.75],

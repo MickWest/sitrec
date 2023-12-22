@@ -19,7 +19,6 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     startTime: "2023-02-18T22:34:56.8Z",
 
     videoFile: "../sitrec-videos/private/Blatant-enhanced.mp4",
-    brightness: 100,
     skyColor: 'skyblue',
     startCameraPosition:[-475.76,83065.85,-135001.17],
     startCameraTarget:[-585.88,82459.73,-134213.45],

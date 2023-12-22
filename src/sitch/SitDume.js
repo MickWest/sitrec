@@ -42,7 +42,6 @@ export const SitDume = {
     startCameraPosition: [-43094.29665986946,3824.242926331847,422.4154566350642],
     startCameraTarget: [-42114.354308866445,3638.0780342768676,351.31256163886894],
 
-    brightness: 100,
 
     setup2: function() {
         SetupGUIFrames()

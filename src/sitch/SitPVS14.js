@@ -81,7 +81,6 @@ export const SitPVS14 = {
     // then can set it to false once the settings are locked in
     ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},
 
-    brightness: 50,
 
     targetSpeedMax: 100,
 

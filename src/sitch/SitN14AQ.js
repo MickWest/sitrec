@@ -20,7 +20,6 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
     startTime: "2022-08-08T12:16:15.800Z",
 
     videoFile: "../sitrec-videos/private/n14aq-reddit.mp4",
-    brightness: 100,
     skyColor: 'skyblue',
 
     startCameraPosition: [-45363.5216949528,55163.527660652966,-178916.8365339594],

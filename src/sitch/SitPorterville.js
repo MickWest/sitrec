@@ -29,7 +29,6 @@ export const SitPorterville = {
     startTime: "2023-12-17 15:27:55.258",
 
     videoFile: "../sitrec-videos/private/DJI_20231217152755_0007_D-720p.mp4",
-    brightness: 100,
     skyColor: 'skyblue',
 
     // TODO -STOP USING EUS COORDINATES IN SIT - USE LLA, OTHERWISE WHEN MAP Resolution changes, it breaks

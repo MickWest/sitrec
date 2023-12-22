@@ -20,7 +20,6 @@ export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
     startTime: "2022-09-01T20:07:32.3Z",
 
     videoFile: "../sitrec-videos/private/124984_Kansas.mp4",
-    brightness: 100,
     skyColor: 'skyblue',
 
     videoView: { left: 0.5, top: 0.1, width: 0.25, height: -1280/720,},

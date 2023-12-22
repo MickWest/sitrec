@@ -57,7 +57,6 @@ export const SitHayle = {
     toLon: -5.468553,
     toAlt: 0,
 
-    brightness: 50,
 
     targetSpeedMax: 100,
 

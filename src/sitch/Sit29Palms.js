@@ -52,7 +52,6 @@ export const Sit29Palms = {
     // then can set it to false once the settings are locked in
     ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
-    brightness: 50,
 
     targetSpeedMax: 100,
 

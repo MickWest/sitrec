@@ -50,7 +50,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     toLon: -87.983577,
     toAlt: 3302.2,
 
-    brightness: 100,
     skyColor: '#AFBDD1',  // grey from the video
 
     targetObject:{file: "TargetObjectFile",},

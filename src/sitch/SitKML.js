@@ -72,7 +72,6 @@ export const SitKML = {
 
     planeCameraFOV:60,
 
-    brightness: 20,
 
     // this is an override for the mainview setup
     mainView:{left:0.0, top:0, width:.50,height:1},

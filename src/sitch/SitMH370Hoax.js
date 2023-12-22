@@ -73,7 +73,6 @@ export const SitMH370Hoax = {
     toLon: 95.8422752416429,
     toAlt: 20000,
 
-    brightness: 50,
 
     targetSpeedMax: 100,
 

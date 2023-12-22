@@ -60,7 +60,6 @@ export const SitArea6 = {
     // then can set it to false once the settings are locked in
     ptz: {az: -6.2, el: 9.8, fov: 11.8, showGUI: true},
 
-    brightness: 50,
 
     targetSpeedMax: 100,
 

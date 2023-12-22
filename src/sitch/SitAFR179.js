@@ -31,7 +31,6 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
     toLon: -87.983577,
     toAlt: 3302.2,
 
-    brightness: 100,
     skyColor: '#AFBDD1',  // grey from the video
 
     targetObject:{file: "TargetObjectFile",},

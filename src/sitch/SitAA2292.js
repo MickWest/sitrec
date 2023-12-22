@@ -21,7 +21,6 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     startTime: "2021-02-21T19:10:10.800Z",
 
 
-    brightness: 100,
     skyColor: 'skyblue',
 
     startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],

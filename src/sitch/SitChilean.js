@@ -43,7 +43,6 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     startCameraTarget:[-126503.73,61040.85,196093.13],
 
     videoFile: "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 720p.mp4",
-    brightness: 100,
     skyColor: 'skyblue',
 
     lookView: {             left: 0.5, top: 0.5, width: -1920/1080, height: 0.5,},
