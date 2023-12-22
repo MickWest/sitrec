@@ -99,7 +99,7 @@ export const SitPVS14 = {
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
-    narView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
+    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
     setup2: function () {
@@ -156,7 +156,7 @@ export const SitPVS14 = {
             cameraTrack: "cameraTrack",
             doubleClickFullScreen: false,
             background: new Color('#132d44'),
-            ...this.narView,
+            ...this.lookView,
         })
 
         //animated segement of camera track

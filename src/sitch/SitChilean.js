@@ -46,9 +46,9 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     brightness: 100,
     skyColor: 'skyblue',
 
-    narView: {             left: 0.5, top: 0.5, width: -1920/1080, height: 0.5,},
+    lookView: {             left: 0.5, top: 0.5, width: -1920/1080, height: 0.5,},
     videoView: {             left: 0.5, top: 0, width: -1920/1080, height: 0.5,},
-   // narView: {             left: 0.6250, top: 0.5, width: -1.8, height: 0.5,},
+   // lookView: {             left: 0.6250, top: 0.5, width: -1.8, height: 0.5,},
    // videoView: {             left: 0.6250, top: 0, width: -1.8, height: 0.5,},
     mainView:{left:0.0, top:0, width:0.625,height:1},
 

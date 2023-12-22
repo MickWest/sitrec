@@ -437,7 +437,7 @@ export const SitKML = {
                 //cameraTrack: "cameraTrack",
                 doubleClickFullScreen: false,
                 background: new Color('#132d44'),
-            }, Sit.narView))
+            }, Sit.lookView))
         } else {
             viewNar = new CNodeView3D(Object.assign({
                 id: "NARCam",
@@ -535,7 +535,7 @@ export const SitKML = {
 
                 },
 
-            }, Sit.narView))
+            }, Sit.lookView))
         }
 
 

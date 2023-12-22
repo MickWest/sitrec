@@ -27,7 +27,7 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     startCameraPosition:[61967.92,37073.99,-39378.75],
     startCameraTarget:[61140.05,36689.14,-38970.70],
 
-    narView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
+    lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 

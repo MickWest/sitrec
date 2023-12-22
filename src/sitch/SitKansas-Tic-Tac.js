@@ -24,7 +24,7 @@ export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
     skyColor: 'skyblue',
 
     videoView: { left: 0.5, top: 0.1, width: 0.25, height: -1280/720,},
-    narView: { left: 0.75, top: 0.1, width: 0.25, height: -1280/720,},
+    lookView: { left: 0.75, top: 0.1, width: 0.25, height: -1280/720,},
 
     startCameraPosition: [-85066.7462608161,39944.94770769397,89579.86841298439],
     startCameraTarget: [-84544.13436719228,39639.19461613414,88784.00921963136],

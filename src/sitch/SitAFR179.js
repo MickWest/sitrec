@@ -22,7 +22,7 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
     startTime: "2022-11-08T05:20:55.700Z",
     startCameraPosition:[51932.24,32612.20,98754.72],
     startCameraTarget:[51817.84,32302.32,97810.85],
-    narView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
+    lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 

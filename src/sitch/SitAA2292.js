@@ -27,7 +27,7 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
     startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
 
-    narView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
+    lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
  //   videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
 
 

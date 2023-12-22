@@ -19,7 +19,9 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
     videoFile: "../sitrec-videos/private/118963_submitter_file1__IMG2065_opt.mp4",
     brightness: 100,
     skyColor: 'skyblue',
-    startCameraPosition:[-34182.50,33412.62,14293.62],
-    startCameraTarget:[-33633.28,32831.80,13692.80],
+    // startCameraPosition:[-34182.50,33412.62,14293.62],
+    // startCameraTarget:[-33633.28,32831.80,13692.80],
+    startCameraPositionLLA:[42.647359,-86.678554,23575.039421],
+    startCameraTargetLLA:[42.653377,-86.670554,23235.005817],
 
 })

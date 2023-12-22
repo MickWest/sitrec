@@ -41,7 +41,7 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     startTime: "2023-11-22T02:51:34.000Z",
     startCameraPosition:[2718556.11,2470980.84,-26052.36],
     startCameraTarget:[2717804.95,2470341.84,-26217.95],
-    narView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},
+    lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 
