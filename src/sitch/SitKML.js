@@ -79,13 +79,6 @@ export const SitKML = {
 
     skyColor: "rgb(0%,0%,10%)",
 
-    cameraSphereSize: 2000,
-    targetSphereSize: 2000,
-
-    displayFrustum: false,
-    frustumRadius: 50000,
-    frustumColor: 0xffff00,
-    frustumLineWeight: 2,
 
 //
     setup: function() {

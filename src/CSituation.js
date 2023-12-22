@@ -117,6 +117,16 @@ const situationDefaults = {
 
     jetOrigin: V3(0,f2m(25000),0),  // default for Gimbal and GOfast, will be ovewritten...
 
+
+    cameraSphereSize: 2000,
+    targetSphereSize: 2000,
+
+    displayFrustum: false,
+    frustumRadius: 50000,
+    frustumColor: 0xffff00,
+    frustumLineWeight: 2,
+
+
 }
 
 export class CSituation {

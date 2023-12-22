@@ -32,6 +32,7 @@ export const SitNightSky = {
     useDayNightGlobe: true,
     globeScale: 1,  // was defaulting to 0.99
     displayFrustum: true,
+    frustumRadius: 500000,
     localLatLon: true,  // TODO - implement getting local - see code in CSituation.js, line 162
 
     showDateTime: true, // opens the DateTime folder in the UI
