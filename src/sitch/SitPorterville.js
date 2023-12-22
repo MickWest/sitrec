@@ -8,13 +8,19 @@ export const SitPorterville = {
 
     tilt: 0,
 
-    targetSize: 3, // in feet
+    targetSize: 1, // in feet
+    displayFrustum: true,
+    frustumRadius: 2000,
+    frustumColor: 0xff0000,
+    frustumLineWeight: 1.5,
+
 
     planeCameraFOV: 5,
 
     frames: 21191,     // ful vid is 21207,
     fps: 59.94,
-    terrain: {lat: 36.021573, lon: -119.022304, zoom: 14, nTiles: 6},
+
+    terrain: {lat: 36.021573, lon: -119.022304, zoom: 15, nTiles: 12},
     files: {
 //        cameraFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
         cameraFile: 'porterville/DJI_20231217152755_0007_D.SRT',
@@ -26,8 +32,11 @@ export const SitPorterville = {
     brightness: 100,
     skyColor: 'skyblue',
 
-    startCameraPosition:[-1341.61,848.22,-6109.46],
-    startCameraTarget:[-957.26,543.21,-5238.12],
+    // TODO -STOP USING EUS COORDINATES IN SIT - USE LLA, OTHERWISE WHEN MAP Resolution changes, it breaks
+  //  startCameraPosition:[-1341.61,848.22,-6109.46],
+  //  startCameraTarget:[-957.26,543.21,-5238.12],
+    startCameraPositionLLA:[36.077341,-119.029799,851.286742],
+    startCameraTargetLLA:[36.069518,-119.025527,545.430961],
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
@@ -41,11 +50,16 @@ export const SitPorterville = {
     // in this case just two points, linear interpolation (a line)
     targetSpline: {
         type: "linear",
-        initialPoints: [
-            [0, -245.83437878094787, 309.22659885812095, -3866.285249383911],
-            [21191, -344.31725947256325, 304.0173135915461, -4129.776316201121]
+        // initialPoints: [
+        //     [0, -245.83437878094787, 309.22659885812095, -3866.285249383911],
+        //     [21191, -344.31725947256325, 304.0173135915461, -4129.776316201121]
+        // ]
+        initialPointsLLA: [
+            [0, 36.05717639406794, -119.01762411981093, 310.40310754440725],
+            [21191, 36.05954325940758, -119.01871851160264, 305.36353635508567]
         ]
-    }
+    },
+    showAltitude: true,
 
 
 }

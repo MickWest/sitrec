@@ -68,7 +68,12 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
                 var pos = LLAToEUS(lat, lon, alt)
                 // end product, a per-frame array of positions
                 // that is a track.
-                this.array.push({position: pos.clone()})
+                if (positions[slot].focal_len === undefined) {
+                    this.array.push({position: pos.clone()})
+                } else {
+                    this.array.push({position: pos.clone(), focal_len: positions[slot].focal_len})
+                }
+
             } else {
                 this.array.push({position: V3()}) // no position
             }

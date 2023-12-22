@@ -181,12 +181,19 @@ export function ECEFToLLA_Sphere(X, Y, Z) {
     return [latitude, longitude, altitude];
 }
 
+
 // same functions, but passing and returning parameters as a Vector3
 // with LL as degrees
 export function ECEFToLLAVD_Sphere(V) {
     var a = ECEFToLLA_Sphere(V.x,V.y,V.z);
     return new Vector3(degrees(a[0]),degrees(a[1]),a[2])
 }
+
+export function EUSToLLA(eus) {
+    const ecef = EUSToECEF(eus);
+    return ECEFToLLAVD_Sphere(ecef);
+}
+
 
 
 

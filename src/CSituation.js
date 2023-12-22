@@ -5,7 +5,7 @@ import {infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
 import {CNodeUICameraLLA} from "./nodes/CNodeUICameraLLA";
 import {par} from "./par";
-import {LLAToEUS} from "./LLA-ECEF-ENU";
+import {LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 import {boxMark, MV3, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant} from "./nodes/CNode";
@@ -180,6 +180,11 @@ export class CSituation {
         if (this.startCameraPosition !== undefined) {
             this.mainCamera.position.copy(MV3(this.startCameraPosition));  //
             this.mainCamera.lookAt(MV3(this.startCameraTarget));
+        }
+
+        if (this.startCameraPositionLLA !== undefined) {
+            this.mainCamera.position.copy(LLAVToEUS(MV3(this.startCameraPositionLLA)))
+            this.mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
         }
 
         if (this.lookFOV !== undefined) {

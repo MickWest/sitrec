@@ -20,7 +20,7 @@ import {DebugArrow, DebugArrowAB, intersectSphere2, V3} from "../threeExt";
 import {mouseInViewOnly, mouseToCanvas, mouseToView} from "../nodes/CNodeView";
 import {par} from "../par";
 import {GlobalScene} from "../LocalFrame";
-import {wgs84} from "../LLA-ECEF-ENU";
+import {EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
 import {getLocalUpVector} from "../SphericalMath";
 import {GlobalPTZ, Sit} from "../Globals";
@@ -208,8 +208,14 @@ class CameraMapControls {
 		v.multiplyScalar(-1000)
 		v.add(p)
 		console.log( "startCameraPosition:"+ vdump(this.camera.position,2,'[',']')+","
-		+ "\nstartCameraTarget:"+vdump(v,2,'[',']')+","
-			+"\n"+vdump(this.camera.up))
+		+ "\nstartCameraTarget:"+vdump(v,2,'[',']'))
+
+		const posLLA = EUSToLLA(this.camera.position)
+		const atLLA = EUSToLLA(v)
+
+		console.log( "startCameraPositionLLA:"+ vdump(posLLA,6,'[',']')+","
+			+ "\nstartCameraTargetLLA:"+vdump(atLLA,6,'[',']')+",")
+
 		this.view.cursorSprite.visible = false;
 
 	}

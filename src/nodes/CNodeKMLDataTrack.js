@@ -66,8 +66,10 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
                 lat: Number(this.srt[i][SRT.latitude]),
                 lon: Number(this.srt[i][SRT.longitude]),
                 alt: Number(this.srt[i][SRT.abs_alt]),
+                focal_len: Number(this.srt[i][SRT.focal_len])
 
             })
+
         }
 
 

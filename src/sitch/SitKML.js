@@ -4,7 +4,7 @@ import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
 import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant} from "../nodes/CNode";
-import {LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
+import {LLAToEUS, LLAToEUSMAP, LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
@@ -62,6 +62,8 @@ export const SitKML = {
 
     lookFOV: 10,
 
+    showAltitude: true,
+
     tilt: -15,  //Not a good default!
 
     defaultCameraDist: 30000,  // for SitKML stuff we generalyl want a large camera distance for defaults
@@ -80,15 +82,20 @@ export const SitKML = {
     cameraSphereSize: 2000,
     targetSphereSize: 2000,
 
+    displayFrustum: false,
+    frustumRadius: 50000,
+    frustumColor: 0xffff00,
+    frustumLineWeight: 2,
+
 //
     setup: function() {
 
         SetupGUIFrames()
 
-        var mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip );
+        var mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip);
 //        var mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, 1, 5000000 );
-        mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
-        mainCamera.lookAt(MV3(Sit.startCameraTarget));
+
+
         mainCamera.layers.enable(LAYER.HELPERS)
         setMainCamera(mainCamera); // setting the global value, enabling keyboard controls, etc.
 
@@ -98,7 +105,7 @@ export const SitKML = {
         }).listen().name("Main FOV")
 
         // Duplicate from SetupCommon, but using gui not guiTweaks
-        new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles})
+        new CNodeConstant({id: "radiusMiles", value: wgs84.radiusMiles})
 
         if (this.terrain !== undefined) {
             new CNodeTerrain({
@@ -114,18 +121,18 @@ export const SitKML = {
         }
 
         const view = new CNodeView3D(Object.assign({
-            id:"mainView",
+            id: "mainView",
             //     draggable:true,resizable:true,
-            left:0.0, top:0, width:.5,height:1,
+            left: 0.0, top: 0, width: .5, height: 1,
             fov: 50,
             background: Sit.skyColor,
             camera: mainCamera,
 
-            renderFunction: function() {
+            renderFunction: function () {
                 this.renderer.render(GlobalScene, this.camera);
             },
 
-            focusTracks:{
+            focusTracks: {
                 "Ground (No Track)": "default",
                 "Jet track": "cameraTrack",
                 "Target Track": "targetTrack",
@@ -142,8 +149,7 @@ export const SitKML = {
         makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
 
 
-        if (FileManager.exists("KMLTarget"))
-        {
+        if (FileManager.exists("KMLTarget")) {
             makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
         }
 
@@ -160,6 +166,7 @@ export const SitKML = {
                 terrainClamp: "TerrainModel",
 
                 initialPoints: this.targetSpline.initialPoints,
+                initialPointsLLA: this.targetSpline.initialPointsLLA,
             })
         }
 
@@ -172,8 +179,6 @@ export const SitKML = {
         //     id:"targetTrack",
         //     timedData: "KMLTargetData",
         // })
-
-
 
 
 // this is equivalent to the above
@@ -197,14 +202,15 @@ export const SitKML = {
         //     iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations"},gui),
         // })
 
-        new CNodeSmoothedPositionTrack({ id:"targetTrackAverage",
+        new CNodeSmoothedPositionTrack({
+            id: "targetTrackAverage",
             source: "targetTrack",
             // new spline based smoothing in 3D
-            method:"catmull",
+            method: "catmull",
 //            method:"chordal",
 //            intervals: new CNodeGUIValue({value: 119, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-            intervals: new CNodeGUIValue({value: 20, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-            tension: new CNodeGUIValue({value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension"},gui),
+            intervals: new CNodeGUIValue({value: 20, start: 1, end: 200, step: 1, desc: "Catmull Intervals"}, gui),
+            tension: new CNodeGUIValue({value: 0.5, start: 0, end: 5, step: 0.001, desc: "Catmull Tension"}, gui),
         })
 
 
@@ -221,7 +227,7 @@ export const SitKML = {
                 color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
                 dropColor: new CNodeConstant({value: new THREE.Color(0.8, 0.6, 0)}),
                 width: 1,
-         //       toGround: 1, // spacing for lines to ground
+                //       toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
             })
 
@@ -253,33 +259,33 @@ export const SitKML = {
 
         //animated segement of camera track
         new CNodeDisplayTrack({
-            id:"KMLDisplay",
+            id: "KMLDisplay",
             track: "cameraTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
             width: 2,
-            layers:LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_HELPERS,
         })
 
         new CNodeDisplayTrack({
-            id:"KMLDisplayMainData",
+            id: "KMLDisplayMainData",
             track: "KMLMainData",
             color: new CNodeConstant({value: new THREE.Color(0.7, 0.7, 0)}),
             dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
             width: 1,
-        //    toGround:1, // spacing for lines to ground
-            ignoreAB:true,
-            layers:LAYER.MASK_HELPERS,
+            //    toGround:1, // spacing for lines to ground
+            ignoreAB: true,
+            layers: LAYER.MASK_HELPERS,
         })
 
         // Segment of target track that's covered by the animation
         // here a thicker red track segment
         new CNodeDisplayTrack({
-            id:"KMLDisplayTarget",
+            id: "KMLDisplayTarget",
             track: "targetTrackAverage",
             color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
             width: 4,
-        //    toGround:5*30, // spacing for lines to ground
-            layers:LAYER.MASK_HELPERS,
+            //    toGround:5*30, // spacing for lines to ground
+            layers: LAYER.MASK_HELPERS,
         })
 
         if (NodeMan.exists("KMLTargetData")) {
@@ -299,10 +305,10 @@ export const SitKML = {
         // Data for all the lines of sight
         // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
         new CNodeLOSTrackTarget({
-            id:"JetLOS",
+            id: "JetLOS",
             cameraTrack: "cameraTrack",
             targetTrack: "targetTrackAverage",
-            layers:LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_HELPERS,
         })
 
         // DISPLAY The line from the camera track to the target track
@@ -310,9 +316,9 @@ export const SitKML = {
             id: "DisplayLOS",
             cameraTrack: "cameraTrack",
             targetTrack: "targetTrackAverage",
-            color: new CNodeConstant({value:new THREE.Color(1,1,1)}),
+            color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
             width: 1,
-            layers:LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_HELPERS,
         })
 
 
@@ -346,7 +352,7 @@ export const SitKML = {
             }
 
 
-        }else {
+        } else {
             // landing lights are just a sphere scaled by the distance and the view angle
             // (i.e. you get a brighter light if it's shining at the camera
             new CNodeDisplayLandingLights({
@@ -371,11 +377,11 @@ export const SitKML = {
         // Spheres displayed in the main view (helpers)
         new CNodeDisplayTargetSphere({
             track: "targetTrackAverage",
-            size: this.cameraSphereSize, color: "blue", layers:LAYER.MASK_HELPERS,
+            size: this.cameraSphereSize, color: "blue", layers: LAYER.MASK_HELPERS,
         })
         new CNodeDisplayTargetSphere({
             track: "cameraTrack",
-            size: this.cameraSphereSize, color: "yellow", layers:LAYER.MASK_HELPERS,
+            size: this.cameraSphereSize, color: "yellow", layers: LAYER.MASK_HELPERS,
         })
 
 
@@ -414,9 +420,14 @@ export const SitKML = {
         }
 
 
-            if (this.ptz) {
+        if (this.ptz) {
             setGlobalPTZ(new PTZControls({
-                    az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, roll: this.ptz.roll, camera: this.lookCamera, showGUI: this.ptz.showGUI
+                    az: this.ptz.az,
+                    el: this.ptz.el,
+                    fov: this.ptz.fov,
+                    roll: this.ptz.roll,
+                    camera: this.lookCamera,
+                    showGUI: this.ptz.showGUI
                 },
                 gui
             ))
@@ -434,9 +445,8 @@ export const SitKML = {
                 doubleClickFullScreen: false,
                 background: new Color('#132d44'),
             }, Sit.narView))
-        }
-        else {
-                viewNar = new CNodeView3D(Object.assign({
+        } else {
+            viewNar = new CNodeView3D(Object.assign({
                 id: "NARCam",
                 visible: true,
                 draggable: true, resizable: true, freeAspect: true,
@@ -450,7 +460,7 @@ export const SitKML = {
                 // patch in the FLIR shader effect if flagged, for Chilean
                 // Note this has to be handled in the render function if you override it
                 // See Chilean for example
-                effects: this.useFLIRShader ? { FLIRShader: {},} : undefined,
+                effects: this.useFLIRShader ? {FLIRShader: {},} : undefined,
 
 
                 camera: NodeMan.get("lookCamera").camera,  // PATCH
@@ -460,19 +470,33 @@ export const SitKML = {
                     if (Sit.chileanData !== undefined) {
                         // frame, mode, Focal Leng
                         var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
-                        var mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame)
+                        const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
 
                         // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
                         var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
 
                         if (mode !== "IR") {
-//                        vFOV *= 584/884;
-                            // 2 actually seems exactly right....
                             vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
                         }
-//                        console.log(focalLength + " -> " + vFOV)
                         this.camera.fov = vFOV;
                         this.camera.updateProjectionMatrix()
+                    }
+
+                    const cameraTrack = NodeMan.get("cameraTrack")
+                    const focal_len = cameraTrack.v(frame).focal_len;
+                    if (focal_len != undefined) {
+                        const f = focal_len;
+                        const referenceFocalLength = 166;               // reference focal length
+                        const referenceFOV = radians(5)         // reference FOV angle
+                        const sensorSize = 2 * referenceFocalLength * tan(referenceFOV / 2)
+
+                        const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
+
+                        console.log(focal_len + " -> " + vFOV)
+
+                        this.camera.fov = vFOV;
+                        this.camera.updateProjectionMatrix()
+
                     }
 
                     // PATCH look at a point
@@ -522,15 +546,17 @@ export const SitKML = {
         }
 
 
-        var labelVideo = new CNodeViewUI({id:"labelVideo", overlayView:ViewMan.list.NARCam.data});
-        AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
+        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.NARCam.data});
+        AddTimeDisplayToUI(labelVideo, 50, 96, 2.5, "#f0f000")
         labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
-            this.text = "Az "+ (floor(0.499999+abs(value))) + "° " //+ (value > 0 ? "R" : "L");
+            this.text = "Az " + (floor(0.499999 + abs(value))) + "° " //+ (value > 0 ? "R" : "L");
         })
 
-        labelVideo.addText("alt", "---", 20, 7).listen(par, "cameraAlt", function (value) {
-            this.text = "Alt "+ (floor(0.499999+abs(value))) + "m";
-        })
+        if (this.showAltitude) {
+            labelVideo.addText("alt", "---", 20, 7).listen(par, "cameraAlt", function (value) {
+                this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
+            })
+        }
 
 
         labelVideo.setVisible(true)
@@ -560,6 +586,21 @@ export const SitKML = {
                 },Sit.videoView)
             )
         }
+
+
+        //mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
+        //mainCamera.lookAt(MV3(Sit.startCameraTarget));
+
+        if (this.startCameraPosition !== undefined) {
+            mainCamera.position.copy(MV3(this.startCameraPosition));  //
+            mainCamera.lookAt(MV3(this.startCameraTarget));
+        }
+
+        if (this.startCameraPositionLLA !== undefined) {
+            mainCamera.position.copy(LLAVToEUS(MV3(this.startCameraPositionLLA)))
+            mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
+        }
+
         initKeyboard();
     },
 

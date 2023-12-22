@@ -10,8 +10,9 @@ import {
 } from "../three.js/build/three.module";
 import {assert, vdump} from "./utils"
 import {par} from "./par";
-import {V3} from "./threeExt";
+import {MV3, V3} from "./threeExt";
 import {mouseInViewOnly, mouseToViewNormalized, ViewMan} from "./nodes/CNodeView";
+import {EUSToLLA, LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 
 // base class for curve editors
 // has a list of positions that are the control points
@@ -52,7 +53,7 @@ class CurvePoint {
 
 export class PointEditor {
 
-    constructor(_scene, _camera, _renderer, controls, onChange, initialPoints) {
+    constructor(_scene, _camera, _renderer, controls, onChange, initialPoints, isLLA=false) {
 
         this.splineHelperObjects = [];  // the objects that are the control points
         this.frameNumbers = []          // matching frame numbers
@@ -106,13 +107,25 @@ export class PointEditor {
 
 
 //        this.data = new PointEditorData(initialPoints);
-        this.load(initialPoints)
-
+        if (!isLLA) {
+            // legacy, allow EUS points (deprecated, as it bnreaks when map origin changes)
+            this.load(initialPoints)
+        } else {
+            // convert from LLA to EUS, accounting for any new map coordinate system
+            const LLAPoints = []
+            for (let i = 0; i < initialPoints.length; i++) {
+                const frame = initialPoints[i][0]
+                const lla = LLAToEUS(initialPoints[i][1],initialPoints[i][2],initialPoints[i][3])
+                LLAPoints.push ([frame,lla.x,lla.y,lla.z])
+            }
+            console.log(LLAPoints)
+            this.load(LLAPoints)
+        }
         this.setEnable(false)
     }
 
     // set up a set of points
-    load(new_positions) {
+    load(new_positions, LLA = false) {
 
         // This first two things just make the this.positions array the same length
         // as the new_positions array
@@ -317,13 +330,21 @@ export class PointEditor {
 
     exportSpline() {
 
-        const strplace = [];
+        let strplace = [];
 
         for (let i = 0; i < this.numPoints; i++) {
             const p = this.splineHelperObjects[i].position;
             strplace.push(`[${this.frameNumbers[i]}, ${p.x}, ${p.y}, ${p.z}]`);
         }
         console.log(strplace.join(',\n'));
+        console.log("LLA----------------------------------->");
+        strplace = [];
+        for (let i = 0; i < this.numPoints; i++) {
+            const p = EUSToLLA(this.splineHelperObjects[i].position);
+            strplace.push(`[${this.frameNumbers[i]}, ${p.x}, ${p.y}, ${p.z}]`);
+        }
+        console.log(strplace.join(',\n'));
+
     }
 
     makePointEditorObject(position) {

@@ -580,9 +580,9 @@ if (Sit.nightSky) {
 
 if (Sit.displayFrustum) {
      Sit.frustum = new CNodeDisplayCameraFrustum({
-         radius: 500000,
+         radius: Sit.frustumRadius,
          camera: Sit.lookCamera,
-         color: makeMatLine(0xffff00, 2.0),
+         color: makeMatLine(Sit.frustumColor, Sit.frustumLineWeight),
      })
 
 //    const helper = new CameraHelper(Sit.lookCamera)

@@ -4,9 +4,9 @@ import {CatmullRomCurve3} from "../three.js/build/three.module";
 
 export class   SplineEditor extends PointEditor{
 
-    constructor(_scene, _camera, _renderer, controls, onChange, initialPoints, curveType) {
+    constructor(_scene, _camera, _renderer, controls, onChange, initialPoints, isLLA, curveType) {
 
-        super(_scene, _camera, _renderer, controls, onChange, initialPoints)
+        super(_scene, _camera, _renderer, controls, onChange, initialPoints, isLLA)
 
 
         // segments per arc (between control points) for rendering

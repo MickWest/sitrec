@@ -17,13 +17,23 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
             case "catmull":
             case "centripetal":
             case "chordal":
-                this.splineEditor = new SplineEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
-                    v.initialPoints, v.type.toLowerCase())
+                if (v.initialPointsLLA === undefined) {
+                    this.splineEditor = new SplineEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                        v.initialPoints, false, v.type.toLowerCase())
+                } else {
+                    this.splineEditor = new SplineEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                        v.initialPointsLLA, true, v.type.toLowerCase())
+                }
                 break;
             case "linear":
             default:
-                this.splineEditor = new PointEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
-                v.initialPoints)
+                if (v.initialPointsLLA === undefined) {
+                    this.splineEditor = new PointEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                        v.initialPoints, false)
+                } else {
+                    this.splineEditor = new PointEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                        v.initialPointsLLA, true)
+                }
         }
 
         this.optionalInputs(["snapCamera","snapTarget"])
