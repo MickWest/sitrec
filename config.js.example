@@ -23,7 +23,7 @@ const SITREC_LOCAL_RE = '^https?:\/\/localhost'
 export const SITREC_DEV_DOMAIN = "www.metabunk.org"
 const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
 const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
-const SITREC_LOCAL_SERVER = "http://localhost/sitrec/sitRecServer/"
+const SITREC_LOCAL_SERVER = "http://localhost/sitrec/sitrecServer/"
 
 // local host might not have a capability to act as a php server,
 // so we can tell Sitrec to use the remote for the proxies

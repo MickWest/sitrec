@@ -38,12 +38,12 @@ if (isset($params['url'])) {
 
     // Check if the URL contains the string "sitRecServer"
     if (strpos($url, 'sitrecServer') !== false) {
-        echo "URL containing 'sitRecServer' is not allowed.";
+        echo "URL containing 'sitrecServer' is not allowed.";
         exit;
     }
 
     if (strpos($url, 'sitrecServer') !== false) {
-        echo "URL containing 'sitRecServer' is not allowed.";
+        echo "URL containing 'sitrecServer' is not allowed.";
         exit;
     }
 
