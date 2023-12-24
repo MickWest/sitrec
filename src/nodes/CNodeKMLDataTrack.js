@@ -61,7 +61,16 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
      //   getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
 
         for (let i = 0; i<this.srt.length; i++) {
-            this.times.push(Date.parse(this.srt[i][SRT.date]))
+
+            // if Date.parse is given a Date object, then it will round it to the nearest second
+            // (likely because it's reinterpreting the local-format time string, with no ms)
+            // so if it's a date object just use it the getTime() directly.
+            this.times.push(
+                (typeof this.srt[i][SRT.date] === 'string')
+                    ? Date.parse(this.srt[i][SRT.date])
+                    : this.srt[i][SRT.date].getTime()
+            );
+
             this.coord.push({
                 lat: Number(this.srt[i][SRT.latitude]),
                 lon: Number(this.srt[i][SRT.longitude]),

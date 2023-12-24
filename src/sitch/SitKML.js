@@ -261,7 +261,7 @@ export const SitKML = {
         new CNodeDisplayTrack({
             id: "KMLDisplayMainData",
             track: "KMLMainData",
-            color: new CNodeConstant({value: new THREE.Color(0.7, 0.7, 0)}),
+            color: new CNodeConstant({value: new THREE.Color(0.7, 0.3, 0)}),
             dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
             width: 1,
             //    toGround:1, // spacing for lines to ground
