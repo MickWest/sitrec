@@ -233,6 +233,7 @@ class CFileManager extends CManager {
 //            console.log(">>> Parsing Started: " + filename)
             switch (fileExt.toLowerCase()) {
                 case "txt":
+                case "tle":
                 case "dat": // for bsc5.dat, the bright star catalog
                     parsed = decoder.decode(buffer);
                     break;
