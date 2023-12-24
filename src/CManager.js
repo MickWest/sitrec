@@ -1,7 +1,7 @@
 import {assert, getFileExtension, isHttpOrHttps, versionString} from "./utils.js";
 
 import JSZip from "./js/jszip.js"
-import {parseSRT, parseXml} from "./KMLUtils";
+import {parseCSVAirdata, parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {Sit} from "./Globals";
@@ -259,7 +259,12 @@ class CFileManager extends CManager {
                 case "csv":
                     var text = decoder.decode(buffer);
                     parsed = $.csv.toArrays(text);
-                    parsed.shift(); // remove the header
+                    const type = detectCSVType(parsed)
+                    if (type === "Unknown") {
+                        parsed.shift(); // remove the header, legacy file type handled in specific code
+                    } else if (type === "Airdata") {
+                        parsed = parseCSVAirdata(parsed);
+                    }
                     break;
                 case "kml":
                 case "ksv":
@@ -375,6 +380,15 @@ function createImageFromArrayBuffer(arrayBuffer, type) {
     });
 }
 
+// given a 2d CSV file, attempt to detect what type of file it is
+export function detectCSVType(csv) {
+    var type = "Unknown";
+    if (csv[0][0] === "time(millisecond)" && csv[0][1] === "datetime(utc)") {
+        type = "Airdata"
+    }
+
+    return type;
+}
 
 
 var FileManager = new CFileManager(); // single instance

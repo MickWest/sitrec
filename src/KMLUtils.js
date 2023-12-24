@@ -1,5 +1,6 @@
 // parseXML from https://stackoverflow.com/questions/4200913/xml-to-javascript-object
-import {assert} from "./utils";
+import {assert,f2m} from "./utils";
+import {Sit} from "./Globals";
 
 export function parseXml(xml, arrayTags)
 {
@@ -217,6 +218,144 @@ const SRTFields = Object.keys(SRT).length;
 
 export function parseSRT(data) {
     const lines = data.split('\n');
+    if (lines[4] == "2" && lines [8] == "3") {
+        return parseSRT2(lines)
+    }
+
+
+
+    return parseSRT1(lines)
+}
+
+
+
+
+/* Type 2 is like:
+1
+00:00:00,000 --> 00:00:01,000
+F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 118.43m, H -1.50m, H.S 0.00m/s, V.S -0.00m/s
+
+2
+00:00:01,000 --> 00:00:02,000
+F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 118.46m, H -1.50m, H.S 0.22m/s, V.S -0.00m/s
+
+3
+00:00:02,000 --> 00:00:03,000
+F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 118.47m, H -1.60m, H.S 0.41m/s, V.S -0.00m/s
+
+ */
+
+// things that
+const SRTMap = {
+    "F/":SRT.fnum,
+    "SS ":SRT.shutter,
+    "ISO ": SRT.iso,
+    "EV " : SRT.ev,
+    "H ": SRT.rel_alt
+}
+
+export function parseSRT2(lines) {
+    const numPoints = Math.floor(lines.length / 4);
+    let SRTArray = new Array(numPoints);
+
+    const startTime = new Date(Sit.startTime);
+
+    for (let i = 0; i < numPoints; i++) {
+        let dataIndex = i * 4;
+        const frameTimeString = lines[dataIndex + 1].split(' --> ')[0];
+    //    console.log(frameTimeString)
+        const date = convertToRelativeTime(startTime,frameTimeString)
+        console.log(date)
+        SRTArray[i] = new Array(SRTFields).fill(null);
+        SRTArray[i][SRT.date] = date;
+//        const frameInfo = lines[dataIndex + 2].split(', ')
+        const frameInfo = splitOnCommas(lines[dataIndex + 2])
+        // Extract frame information
+        frameInfo.forEach(info => {
+            //console.log("# "+info)
+            var gotInfo = false;
+            for (let start in SRTMap) {
+                if (info.startsWith(start)) {
+                    let value = info.substring(start.length);
+             //       console.log(info+" - Set mapped field "+SRTMap[start] + " to "+value )
+
+                    SRTArray[i][SRTMap[start]] = value;
+                    gotInfo = true;
+                    break;
+                }
+            }
+            if (!gotInfo && info.startsWith("GPS ")) {
+                let value = info.substring(4); // 4 is len of "GPS "
+                const lla = extractLLA(value)
+                console.log (lla.latitude + ","+lla.longitude+","+lla.altitude)
+                SRTArray[i][SRT.latitude] = lla.latitude
+                SRTArray[i][SRT.longitude] = lla.longitude
+                SRTArray[i][SRT.abs_alt] = Sit.startAltitude + SRTArray[i][SRT.abs_alt];
+
+            }
+        });
+        SRTArray[i][SRT.focal_len] = 100
+ //       console.log(SRTArray[i])
+
+
+    }
+
+
+    return SRTArray;
+
+}
+
+function splitOnCommas(str) {
+    // Regular expression to match commas that are not inside parentheses
+    const regex = /,(?![^\(\)]*\))/g;
+//    return str.split(regex).map(s => s.trimStart());
+  // remove leading zeros and trailing "m" (for meters)
+    return str.split(regex).map(s => s.trimStart().replace(/m$/, ''));
+
+}
+
+// extract lla from something like "(-121.1689, 38.7225, 21)"
+function extractLLA(str) {
+    const regex = /(-?\d+\.\d+|\d+)/g;
+    const matches = str.match(regex);
+
+    if (matches && matches.length === 3) {
+        const longitude = parseFloat(matches[0]);
+        const latitude = parseFloat(matches[1]);
+        const altitude = parseFloat(matches[2]);
+
+        return { latitude, longitude, altitude };
+    } else {
+        return null; // or handle the error as needed
+    }
+}
+
+// startTime is a Date object, like new Date(Sit.startTime)
+function convertToRelativeTime(startTime, relativeTimeString) {
+
+    // Split the relative time string by comma to separate time and milliseconds
+    const parts = relativeTimeString.split(',');
+
+    // Further split the time part into hours, minutes, and seconds
+    const timeParts = parts[0].split(':');
+
+    // Extract hours, minutes, seconds, and milliseconds
+    const hours = parseInt(timeParts[0], 10);
+    const minutes = parseInt(timeParts[1], 10);
+    const seconds = parseInt(timeParts[2], 10);
+    const milliseconds = parseInt(parts[1], 10);
+
+    const relativeTime = new Date(startTime)
+
+    // Add hours, minutes, seconds, and milliseconds to the start time
+    relativeTime.setHours(startTime.getHours() + hours);
+    relativeTime.setMinutes(startTime.getMinutes() + minutes);
+    relativeTime.setSeconds(startTime.getSeconds() + seconds);
+    relativeTime.setMilliseconds(startTime.getMilliseconds() + milliseconds);
+
+    return relativeTime;
+}
+export function parseSRT1(lines) {
     const numPoints = Math.floor(lines.length / 6);
     let SRTArray = new Array(numPoints);
 
@@ -259,5 +398,148 @@ export function parseSRT(data) {
     return SRTArray;
 }
 
+/*
+time(millisecond)
+datetime(utc)
+latitude
+longitude
+height_above_takeoff(feet)
+height_above_ground_at_drone_location(feet)
+ground_elevation_at_drone_location(feet)
+altitude_above_seaLevel(feet)
+height_sonar(feet)
+speed(mph)
+distance(feet)
+mileage(feet)
+satellites
+gpslevel
+voltage(v)
+max_altitude(feet)
+max_ascent(feet)
+max_speed(mph)
+max_distance(feet)
+xSpeed(mph)
+ySpeed(mph)
+zSpeed(mph)
+compass_heading(degrees)
+pitch(degrees)
+roll(degrees)
+isPhoto
+isVideo
+rc_elevator
+rc_aileron
+rc_throttle
+rc_rudder
+rc_elevator(percent)
+rc_aileron(percent)
+rc_throttle(percent)
+rc_rudder(percent)
+gimbal_heading(degrees)
+gimbal_pitch(degrees)
+gimbal_roll(degrees)
+battery_percent
+voltageCell1
+voltageCell2
+voltageCell3
+voltageCell4
+voltageCell5
+voltageCell6
+current(A)
+battery_temperature(f)
+altitude(feet)
+ascent(feet)
+flycStateRaw
+flycState
+message
+*/
 
 
+function findColumn(csv, text) {
+    // Check if the csv is a non-empty array
+    if (!Array.isArray(csv) || csv.length === 0 || !Array.isArray(csv[0])) {
+        throw new Error("Invalid input: csv must be a non-empty 2D array.");
+    }
+
+    // Iterate through each column of the first row
+    for (let col = 0; col < csv[0].length; col++) {
+        // Check if the first element of the column starts with the text
+        if (csv[0][col].startsWith(text)) {
+            return col; // Return the column index
+        }
+    }
+
+    // Throw an error if no column starts with the given text
+    throw new Error("No column found starting with the specified string.");
+
+}
+
+function parseUTCDate(dateStr) {
+    // Split the date and time parts
+    const [datePart, timePart] = dateStr.split(' ');
+
+    // Split the date into month, day, and year
+    const [year, month, day] = datePart.split('-').map(num => parseInt(num, 10));
+
+    // Adjust month value for JavaScript Date (0-indexed)
+    const adjustedMonth = month - 1;
+
+    // Split the time into hours, minutes, seconds, and AM/PM
+    const [time, modifier] = timePart.split(' ');
+    let [hours, minutes, seconds] = time.split(':').map(num => parseInt(num, 10));
+
+    // // Convert 12-hour format to 24-hour format
+    // if (hours === 12) {
+    //     hours = modifier.toUpperCase() === 'AM' ? 0 : 12;
+    // } else if (modifier.toUpperCase() === 'PM') {
+    //     hours += 12;
+    // }
+
+    // Create a new Date object in UTC
+    return new Date(Date.UTC(year, adjustedMonth, day, hours, minutes, seconds));
+}
+
+// take a csv file, which is a 2d array [row][col]
+// the header row indicated wih
+export function parseCSVAirdata(csv) {
+    const rows = csv.length;
+    let SRTArray = new Array(rows-1);
+    try {
+        const timeCol = findColumn(csv,"time(milli")
+        const dateCol = findColumn(csv,"datetime")
+        const latCol = findColumn(csv,"latitude")
+        const lonCol = findColumn(csv,"longitude")
+        const altCol = findColumn(csv, "altitude_above_seaLevel(feet)")
+
+
+        const startTime = parseUTCDate(csv[1][dateCol])
+        console.log("Detected Airdata start time of "+startTime)
+
+        for (let i=1;i<rows;i++) {
+            SRTArray[i-1] = new Array(SRTFields).fill(null);
+
+            SRTArray[i-1][SRT.date] = addMillisecondsToDate(startTime, Number(csv[i][timeCol]));
+
+            SRTArray[i-1][SRT.latitude] = Number(csv[i][latCol])
+            SRTArray[i-1][SRT.longitude] = Number(csv[i][lonCol])
+            SRTArray[i-1][SRT.abs_alt] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
+            SRTArray[i-1][SRT.focal_len] = 100
+        }
+
+    } catch (error) {
+        console.error(error.message)
+    }
+
+    return SRTArray;
+
+}
+
+function addMillisecondsToDate(date, ms) {
+    // Get the current time in milliseconds
+    const currentTime = date.getTime();
+
+    // Add the specified number of milliseconds
+    const newTime = currentTime + ms;
+
+    // Create a new Date object with the new time
+    return new Date(newTime);
+}

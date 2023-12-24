@@ -405,7 +405,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
             id: dataID,
             KMLFile: sourceFile,
         })
-    } else if (ext === "srt") {
+    } else if (ext === "srt" || ext === "csv") {
          new CNodeSRTDataTrack({
              id: dataID,
              dataFile: sourceFile,
