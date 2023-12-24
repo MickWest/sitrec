@@ -45,17 +45,12 @@ export const SitFolsomLake = {
     targetSphereSize: 2,
 
     // instead of a target KML file, we define a simple spline
-    // in this case just two points, linear interpolation (a line)
+    // in this case just ONE point
     targetSpline: {
         type: "linear",
-        initialPoints: [
-            [0, -245.83437878094787, 309.22659885812095, -3866.285249383911],
-            [21191, -344.31725947256325, 304.0173135915461, -4129.776316201121]
-        ]
-        // initialPointsLLA: [
-        //     [0, 36.05717639406794, -119.01762411981093, 310.40310754440725],
-        //     [21191, 36.05954325940758, -119.01871851160264, 305.36353635508567]
-        // ]
+         initialPointsLLA: [
+            [0, 38.72275880556581, -121.16873415102312, 147.20740124210715]
+         ]
     },
     showAltitude: true,
 

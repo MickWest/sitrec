@@ -522,7 +522,7 @@ export function parseCSVAirdata(csv) {
             SRTArray[i-1][SRT.latitude] = Number(csv[i][latCol])
             SRTArray[i-1][SRT.longitude] = Number(csv[i][lonCol])
             SRTArray[i-1][SRT.abs_alt] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
-            SRTArray[i-1][SRT.focal_len] = 100
+            SRTArray[i-1][SRT.focal_len] = 30
         }
 
     } catch (error) {
