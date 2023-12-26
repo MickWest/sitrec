@@ -1,10 +1,10 @@
 import {Group, REVISION, Scene,} from "../three.js/build/three.module.js";
 import {makeMatLine} from "./MatLines";
 import "./js/uPlot/uPlot.css"
-import "./js/jquery-ui-1.13.1/jquery-ui.css"
+import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./extra.css"
 import "./js/jquery.csv.js?v=2"
-import "./js/jquery-ui-1.13.1/jquery-ui.js?v=1"
+import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {UpdateNodes} from "./nodes/CNode";
 import {
     gui,
@@ -58,9 +58,9 @@ import {FileManager} from "./CManager";
 
 ////////////////////////////////////////////////\\
 // / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, etc
+// aa2292, lakemichigan, chilean, folsomlake, etc
 // This is the sitch that is loaded when running on local
-const localSituation = "westjet";
+const localSituation = "folsomlake";
 //////////////////////////////////////////////
 
 class index {}   // sorry, this is just a dummy class so I can get here quick in PHPStorm

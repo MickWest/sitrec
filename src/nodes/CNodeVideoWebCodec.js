@@ -64,7 +64,7 @@ export class CVideoWebCodecData extends CVideoData {
         if (v.dropFile !== undefined) {
             let reader = new FileReader()
             reader.readAsArrayBuffer(v.dropFile)
-            // could maybe do partial loads, but thsi is local, so it's loading fast
+            // could maybe do partial loads, but this is local, so it's loading fast
             // however would be a faster start.
             reader.onloadend = () => {
                 // reader.result will be an ArrayBuffer

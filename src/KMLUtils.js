@@ -196,6 +196,12 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
 // [iso: 100] [shutter: 1/640.0] [fnum: 3.4] [ev: 0] [color_md: default] [focal_len: 166.00] [latitude: 36.06571] [longitude: -119.01938] [rel_alt: 17.800 abs_alt: 134.835] [ct: 5896] </font>
 // <blank line>
 
+
+// We are using the simple DJI-Mini SRT column names as generic names
+// maybe come up with a better mapping, with more consistent names
+// as the fuller DJI TXT (AirData) format has more, but is also missing some fields
+// Keep as index? Probably not needed for speed
+
 export const SRT = {
     FrameCnt: 0,
     DiffTime:1,

@@ -12,6 +12,7 @@ export const SitWestJet = {
 
     videoFile: "../sitrec-videos/private/UAP Sighting by WestJet Passengers 12-18-23 16-05 clip.mp4",
     startTime: "2023-12-19T03:56:12.560Z",
+    frames: 782,
 
     ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
 
