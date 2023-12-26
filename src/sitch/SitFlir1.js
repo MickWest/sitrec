@@ -77,7 +77,7 @@ export const SitFlir1 = {
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClip,
             far: this.farClip,
-            layers: LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_MAIN_HELPERS,
 
             startPos: this.startCameraPosition,
             lookAt: this.startCameraTarget,

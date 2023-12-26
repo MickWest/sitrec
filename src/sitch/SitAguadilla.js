@@ -53,6 +53,7 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
 import {CNodeCamera, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {MASK_MAIN_HELPERS} from "../LayerMasks.js";
 
 export const SitAguadilla = {
     name: "agua",
@@ -123,7 +124,7 @@ export const SitAguadilla = {
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClip,
             far: this.farClip,
-            layers: LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_MAIN_HELPERS,
 
             startPos: this.startCameraPosition,
             lookAt: this.startCameraTarget,

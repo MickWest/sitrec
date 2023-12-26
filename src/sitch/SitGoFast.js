@@ -113,7 +113,7 @@ export var SitGoFast = {
             aspect: window.innerWidth / window.innerHeight,
             near: Sit.nearClip,
             far: Sit.farClip,
-            layers: LAYER.MASK_HELPERS,
+            layers: LAYER.MASK_MAIN_HELPERS,
 
             startPos: Sit.startCameraPosition,
             lookAt: Sit.startCameraTarget,

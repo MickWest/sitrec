@@ -11,6 +11,6 @@ export const HELPERS = 4 // things like lines that we want in the main view, but
 export const MASK_MAIN = (1<<main)
 export const MASK_NAR = MASK_MAIN|(1<<NAR)
 export const MASK_NARONLY = (1<<NAR)
-//export const MASK_HELPERS = MASK_MAIN|(1<<HELPERS)
+export const MASK_MAIN_HELPERS = MASK_MAIN|(1<<HELPERS)
 export const MASK_HELPERS = (1<<HELPERS)
 
