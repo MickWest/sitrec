@@ -28,30 +28,25 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
 
         assert(this.frames === Math.floor(this.frames),`Frames must be an integer, it's ${this.frames}`)
 
-    //    const times = []
-    //    const positions = []
+//        const times = this.in.timedData.times;
+//        const positions = this.in.timedData.coord;
 
-    //    getKMLTrackWhenCoord(this.kml, times, positions)
-
-        const times = this.in.timedData.times;
-        const positions = this.in.timedData.coord;
+        const data = this.in.timedData.data;
 
         // now find the first time pair that our start time falls in
 
         console.log("Start time: "+ startTime+" = "+msStart+" ms")
-        var points = times.length
+        var points = data.length
         var slot = 0;
         var msNeeded = Sit.frames*Sit.fps*1000;
         var msEnd = msStart+msNeeded
         var frameTime = 0 // keep count for time for this frame in seconds
 
-//        console.log(`+++ Adding ${Sit.frames}`)
-
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
             // advance the slot if needed
             while (slot < points) {
-                if (times[slot+1] > msNow) {
+                if (data[slot+1].time > msNow) {
                     break
                 }
                 slot++;
@@ -60,19 +55,34 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
             if (slot < points) {
 
                // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
-                var fraction = (msNow - times[slot]) / (times[slot + 1] - times[slot])
-                var lat = interpolate(positions[slot].lat, positions[slot + 1].lat, fraction)
-                var lon = interpolate(positions[slot].lon, positions[slot + 1].lon, fraction)
-                var alt = interpolate(positions[slot].alt, positions[slot + 1].alt, fraction)
+                var fraction = (msNow - data[slot].time) / (data[slot + 1].time - data[slot].time)
+                var lat = interpolate(data[slot].lla.lat, data[slot + 1].lla.lat, fraction)
+                var lon = interpolate(data[slot].lla.lon, data[slot + 1].lla.lon, fraction)
+                var alt = interpolate(data[slot].lla.alt, data[slot + 1].lla.alt, fraction)
 
                 var pos = LLAToEUS(lat, lon, alt)
                 // end product, a per-frame array of positions
                 // that is a track.
-                if (positions[slot].focal_len === undefined) {
-                    this.array.push({position: pos.clone()})
-                } else {
-                    this.array.push({position: pos.clone(), focal_len: positions[slot].focal_len})
+
+                // minumum data that is needed
+                const product = {position: pos.clone()}
+
+                // uniterpolated extra fields
+                const extraFields = [
+                    "focal_len",
+                    "az",
+                    "el",
+                ]
+
+                // optional additional data
+                for (let field of extraFields) {
+                    if (data[slot][field] !== undefined) {
+                        product[field] = data[slot][field]
+                    }
                 }
+
+                this.array.push(product)
+
 
             } else {
                 this.array.push({position: V3()}) // no position

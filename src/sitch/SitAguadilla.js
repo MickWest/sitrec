@@ -75,6 +75,7 @@ export const SitAguadilla = {
 
     startCameraPosition: [-9851.407079455104,2847.1976940099407,-2584.264310831998],
     startCameraTarget: [-8986.013511122388,2586.5050262571704,-2156.3235382146754],
+//    startCameraTarget: [0,0,0],
 
 
     startDistance: 1.612,

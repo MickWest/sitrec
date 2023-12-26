@@ -58,9 +58,9 @@ import {FileManager} from "./CManager";
 
 ////////////////////////////////////////////////\\
 // / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, folsomlake, etc
+// aa2292, lakemichigan, chilean, porterville, folsomlake, etc
 // This is the sitch that is loaded when running on local
-const localSituation = "folsomlake";
+const localSituation = "agua";
 //////////////////////////////////////////////
 
 class index {}   // sorry, this is just a dummy class so I can get here quick in PHPStorm

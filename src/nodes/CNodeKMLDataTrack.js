@@ -15,6 +15,17 @@ class CNodeTimedTrack extends CNodeEmptyArray {
 
     }
 
+    makeArrayForTrackDisplay() {
+        var points = this.data.length
+        for (var f=0;f<points;f++) {
+//            var pos = LLAToEUS(this.coord[f].lat, this.coord[f].lon, this.coord[f].alt)
+            var pos = LLAToEUS(this.data[f].lla.lat, this.data[f].lla.lon, this.data[f].lla.alt)
+            this.array.push({position:pos})
+        }
+        this.frames = points;
+
+    }
+
 }
 
 // Stores the original KML data points
@@ -26,20 +37,24 @@ export class CNodeKMLDataTrack extends CNodeTimedTrack {
     }
 
     recalculate() {
-        this.array = [];
+        this.array = []; // EUS coordinates used for rendering the track
+        this.data = [] // replacing times and coords with data
 
-        this.times = []
-        this.coord = []
+        const _times = []
+        const _coord = []
         this.info = {}
-        getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
+
+        getKMLTrackWhenCoord(this.kml, _times, _coord, this.info)
         console.log ("KML Track name = "+this.info.name)
-        var points = this.times.length
-        assert(this.times.length === this.coord.length, "KML times and points different number")
-        for (var f=0;f<points;f++) {
-            var pos = LLAToEUS(this.coord[f].lat, this.coord[f].lon, this.coord[f].alt)
-            this.array.push({position:pos})
+
+        for (let i = 0; i<_times.length; i++) {
+            this.data.push({
+                time: _times[i],
+                lla: _coord[i],
+            })
         }
-        this.frames = points;
+
+        this.makeArrayForTrackDisplay()
     }
 }
 
@@ -54,9 +69,8 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
 
     recalculate() {
         this.array = [];
+        this.data = [];
 
-        this.times = []
-        this.coord = []
         this.info = {name:"xxxxx"} // TODO get filename?
      //   getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
 
@@ -65,29 +79,25 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
             // if Date.parse is given a Date object, then it will round it to the nearest second
             // (likely because it's reinterpreting the local-format time string, with no ms)
             // so if it's a date object just use it the getTime() directly.
-            this.times.push(
+            const time =
                 (typeof this.srt[i][SRT.date] === 'string')
                     ? Date.parse(this.srt[i][SRT.date])
                     : this.srt[i][SRT.date].getTime()
-            );
 
-            this.coord.push({
+            const lla = {
                 lat: Number(this.srt[i][SRT.latitude]),
                 lon: Number(this.srt[i][SRT.longitude]),
                 alt: Number(this.srt[i][SRT.abs_alt]),
-                focal_len: Number(this.srt[i][SRT.focal_len])
+            }
 
+            this.data.push({
+                time: time,
+                lla: lla,
+                focal_len: Number(this.srt[i][SRT.focal_len])
             })
 
         }
 
-
-        var points = this.times.length
-        assert(this.times.length === this.coord.length, "KML times and points different number")
-        for (var f=0;f<points;f++) {
-            var pos = LLAToEUS(this.coord[f].lat, this.coord[f].lon, this.coord[f].alt)
-            this.array.push({position:pos})
-        }
-        this.frames = points;
+        this.makeArrayForTrackDisplay()
     }
 }
