@@ -43,7 +43,9 @@ import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "../nodes/CNodeT
 import {AddTimeDisplayToUI} from "../UIHelpers";
 import {setMainCamera} from "../Globals";
 import {PTZControls} from "../PTZControls";
-import {CNodeCamera, CNodeCameraTrackAzEl, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {
+    CNodeCamera,
+} from "../nodes/CNodeCamera";
 import {CNodeTrackFromTimed} from "../nodes/CNodeTrackFromTimed";
 import {CNodeKMLDataTrack} from "../nodes/CNodeKMLDataTrack";
 import {pointAltitude} from "../SphericalMath";
@@ -391,20 +393,23 @@ export const SitKML = {
             }
 
             if (this.ptz) {
-                new CNodeCameraTrackAzEl({
-                    ...lookCameraDefaults,
 
+                new CNodeCamera({
+                    ...lookCameraDefaults,
+                }).addController("TrackAzEl",{
                     cameraTrack: "cameraTrack",
-
                 })
-            } else {
-                new CNodeCameraTrackToTrack({
-                    ...lookCameraDefaults,
 
+
+            } else {
+
+                new CNodeCamera({
+                    ...lookCameraDefaults,
+                }).addController("TrackToTrack", {
                     cameraTrack: "cameraTrack",
                     targetTrack: "targetTrackAverage",
+                }).addController("Tilt",{
                     tilt: makeCNodeGUIValue("tilt", Sit.tilt ?? 0, -30, 30, 0.01, "Tilt", gui),
-
                 })
             }
 
@@ -458,6 +463,11 @@ export const SitKML = {
                 camera: NodeMan.get("lookCamera").camera,  // PATCH
 
                 renderFunction: function (frame) {
+
+                    // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
+                    // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
+
+
                     // bit of a patch to get in the FOV
                     if (Sit.chileanData !== undefined) {
                         // frame, mode, Focal Leng

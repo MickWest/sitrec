@@ -29,7 +29,7 @@ import {
     CNodeArray,
     CNodeSmoothedArray
 } from "../nodes/CNodeArray";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
+import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDerivative, CNodeMunge, CNodeRegression, makeMunge} from "../nodes/CNodeMunge";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
@@ -52,7 +52,7 @@ import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSp
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
-import {CNodeCamera, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {CNodeCamera} from "../nodes/CNodeCamera";
 import {MASK_MAIN_HELPERS} from "../LayerMasks.js";
 
 export const SitAguadilla = {
@@ -905,18 +905,20 @@ export const SitAguadilla = {
         // })
 
 
-        new CNodeCameraTrackToTrack({
+        new CNodeCamera({
             id:"narCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipNAR,
             far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
+        }).addController("TrackToTrack", {
             cameraTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
-
-
         })
+
+
+
         setNARCamera(NodeMan.get("narCamera").camera)
 
         new CNodeView3D({

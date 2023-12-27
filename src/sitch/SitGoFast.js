@@ -55,7 +55,7 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
-import {CNodeCamera, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {CNodeCamera} from "../nodes/CNodeCamera";
 
 export var SitGoFast = {
     name: "gofast",
@@ -458,18 +458,20 @@ export var SitGoFast = {
 // NAR CAM view
 
 
-        new CNodeCameraTrackToTrack({
+
+
+        new CNodeCamera({
             id:"narCamera",
-            fov: Sit.NARFOV,
+            fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
-            near: Sit.nearClipNAR,
-            far: Sit.farClipNAR,
+            near: this.nearClipNAR,
+            far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
+        }).addController("TrackToTrack", {
             cameraTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
-            lookAt: [0,0,-1],
-
         })
+
         setNARCamera(NodeMan.get("narCamera").camera)
 
 

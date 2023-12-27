@@ -74,6 +74,16 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
         this.info = {name:"xxxxx"} // TODO get filename?
      //   getKMLTrackWhenCoord(this.kml, this.times, this.coord, this.info)
 
+        const optionalFields = [
+            "focal_len",
+            "heading",
+            "pitch",
+            "roll",
+            "gHeading",
+            "gPitch",
+            "gRoll",
+        ]
+
         for (let i = 0; i<this.srt.length; i++) {
 
             // if Date.parse is given a Date object, then it will round it to the nearest second
@@ -90,11 +100,21 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
                 alt: Number(this.srt[i][SRT.abs_alt]),
             }
 
-            this.data.push({
+            // minumum product is the time and the lla
+            const product = {
                 time: time,
                 lla: lla,
-                focal_len: Number(this.srt[i][SRT.focal_len])
-            })
+            }
+
+            // add any optional fields that exist
+            // these will vary by type of SRT
+            for (let field of optionalFields) {
+                if (this.srt[i][SRT[field]] !== undefined) {
+                    product[field] = Number(this.srt[i][SRT[field]])
+                }
+            }
+
+            this.data.push(product)
 
         }
 

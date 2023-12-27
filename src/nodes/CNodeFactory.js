@@ -44,7 +44,7 @@ export class CNodeFactory extends CManager{
         assert(this.nodeTypes[type] !== undefined, "Node type " + type + " undefined in node factory")
         const result =  new this.nodeTypes[type] (def)
         console.log("FACTORY Making a "+type)
-        /* // is this neeeed a good idea? will an id have automatically been created if there was none?
+        /* // is this needed a good idea? will an id have automatically been created if there was none?
         if (id !== undefined) {
             assert(result.id === undefined, "Creating a "+type+" node, with id = "+id+" but id already set to "+result.id)
             result.id = id

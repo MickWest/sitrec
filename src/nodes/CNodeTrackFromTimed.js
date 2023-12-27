@@ -70,14 +70,20 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
                 // uniterpolated extra fields
                 const extraFields = [
                     "focal_len",
-                    "az",
-                    "el",
+                    "heading",
+                    "pitch",
+                    "roll",
+                    "gHeading",
+                    "gPitch",
+                    "gRoll",
                 ]
 
                 // optional additional data
                 for (let field of extraFields) {
                     if (data[slot][field] !== undefined) {
                         product[field] = data[slot][field]
+
+//                        if (field == "heading") console.log(product[field])
                     }
                 }
 

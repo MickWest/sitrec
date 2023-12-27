@@ -217,6 +217,13 @@ export const SRT = {
     abs_alt:11,
     ct:12,
     date: 13,
+    heading: 14,
+    pitch: 15,
+    roll: 16,
+    gHeading: 17,
+    gPitch: 18,
+    gRoll: 19,
+
 }
 
 const SRTFields = Object.keys(SRT).length;
@@ -469,13 +476,13 @@ function findColumn(csv, text) {
     // Iterate through each column of the first row
     for (let col = 0; col < csv[0].length; col++) {
         // Check if the first element of the column starts with the text
-        if (csv[0][col].startsWith(text)) {
+        if (csv[0][col].trimStart().startsWith(text)) {
             return col; // Return the column index
         }
     }
 
     // Throw an error if no column starts with the given text
-    throw new Error("No column found starting with the specified string.");
+    throw new Error("No column found starting with " + text);
 
 }
 
@@ -517,6 +524,14 @@ export function parseCSVAirdata(csv) {
         const altCol = findColumn(csv, "altitude_above_seaLevel(feet)")
 
 
+        const headingCol = findColumn(csv,"compass_heading(degrees)");
+        const pitchCol = findColumn(csv,"pitch(degrees)");
+        const rollCol = findColumn(csv,"roll(degrees)");
+        const gHeadingCol = findColumn(csv,"gimbal_heading(degrees)");
+        const gPitchCol = findColumn(csv,"gimbal_pitch(degrees)");
+        const gRollCol = findColumn(csv,"gimbal_roll(degrees)");
+
+
         const startTime = parseUTCDate(csv[1][dateCol])
         console.log("Detected Airdata start time of "+startTime)
 
@@ -529,6 +544,15 @@ export function parseCSVAirdata(csv) {
             SRTArray[i-1][SRT.longitude] = Number(csv[i][lonCol])
             SRTArray[i-1][SRT.abs_alt] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
             SRTArray[i-1][SRT.focal_len] = 30
+
+            SRTArray[i-1][SRT.heading] = Number(csv[i][headingCol])
+            SRTArray[i-1][SRT.pitch] = Number(csv[i][pitchCol])
+            SRTArray[i-1][SRT.roll] = Number(csv[i][rollCol])
+            SRTArray[i-1][SRT.gHeading] = Number(csv[i][gHeadingCol])
+            SRTArray[i-1][SRT.gPitch] = Number(csv[i][gPitchCol])
+            SRTArray[i-1][SRT.gRoll] = Number(csv[i][gRollCol])
+
+
         }
 
     } catch (error) {

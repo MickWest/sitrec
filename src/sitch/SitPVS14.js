@@ -26,7 +26,7 @@ import { ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
 import * as THREE from "../../three.js/build/three.module";
-import {CNodeCamera, CNodeCameraTrackAzEl, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {CNodeCamera} from "../nodes/CNodeCamera";
 import * as LAYER from "../LayerMasks";
 import {NARCamera, setNARCamera} from "../JetCameras";
 
@@ -130,17 +130,17 @@ export const SitPVS14 = {
 
         NodeMan.remove("lookCamera")
 
-        new CNodeCameraTrackAzEl({
+        new CNodeCamera({
             id:"lookCamera",
             fov:this.lookFOV,
             aspect:window.innerWidth / window.innerHeight,
             near: 1,
             far: Sit.farClipNAR,
-
+        }).addController("TrackAzEl",{
             cameraTrack: "cameraTrack",
-            radiusMiles: "radiusMiles", // constant
-
         })
+
+
         setNARCamera(NodeMan.get("lookCamera").camera)
         GlobalPTZ.camera = NARCamera;
 

@@ -35,7 +35,7 @@ import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {DebugSphere, V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
-import {CNodeCamera, CNodeCameraTrackToTrack} from "../nodes/CNodeCamera";
+import {CNodeCamera} from "../nodes/CNodeCamera";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -334,18 +334,18 @@ export const SitFlir1 = {
         )
 
 
-        new CNodeCameraTrackToTrack({
+        new CNodeCamera({
             id:"narCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipNAR,
             far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
+        }).addController("TrackToTrack", {
             cameraTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
-            radiusMiles: "radiusMiles", // constant
-
         })
+
         setNARCamera(NodeMan.get("narCamera").camera)
 
 

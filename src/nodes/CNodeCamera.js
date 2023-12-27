@@ -22,12 +22,23 @@ export class CNodeCamera extends CNode {
         if (v.lookAt !== undefined) {
             this._camera.lookAt(MV3(v.lookAt));
         }
+
+        this.controllers = [];
+
+    }
+
+    addController(type, def, id) {
+
+        this.controllers.push(NodeMan.create("CameraController"+type, def, id))
+        return this;
     }
 
     get camera() { return this._camera}
 
-    update() {
-
+    update(f) {
+        for (const controller of this.controllers) {
+            controller.apply(f, this);
+        }
     }
 
     syncUIPosition() {
@@ -44,41 +55,61 @@ export class CNodeCamera extends CNode {
 
 }
 
-export class CNodeCameraTrackToTrack extends CNodeCamera {
+
+
+export class CNodeCameraController extends CNode {
+    constructor(v) {
+        super(v);
+        // this.cameraNode = NodeMan.get(v.cameraNode);
+        // assert (this.cameraNode !== undefined, "CNodeCameraController needs a camera node to control")
+        // assert (v.camera === undefined, "CNodeCameraController passed a camera as well as cameraNode")
+
+    }
+}
+
+export class CNodeCameraControllerTrackToTrack extends CNodeCameraController {
     constructor(v) {
         super(v);
         this.input("cameraTrack")
         this.input("targetTrack")
-        this.optionalInputs(["tilt"])
-
     }
 
-    update(f) {
+    apply(f, cameraNode) {
+        const camera = cameraNode.camera
         var camPos = this.in.cameraTrack.p(f)
         var targetPos = this.in.targetTrack.p(f)
-        this._camera.position.copy(camPos);
-        this._camera.lookAt(targetPos)
+        camera.position.copy(camPos);
+        camera.lookAt(targetPos)
 
-        if (this.in.tilt !== undefined) {
-            const tilt = this.in.tilt.v(f)
-            this._camera.rotateX(-radians(tilt))
-        }
-
-        this.syncUIPosition(); //
+        cameraNode.syncUIPosition(); //
     }
-
 }
 
-export class CNodeCameraTrackAzEl extends CNodeCamera {
+export class CNodeCameraControllerTilt extends CNodeCameraController {
+    constructor(v) {
+        super(v);
+        this.input("tilt")
+    }
+
+    apply(f,cameraNode) {
+        const camera = cameraNode.camera
+        const tilt = this.in.tilt.v(f)
+        camera.rotateX(-radians(tilt))
+    }
+}
+
+
+export class CNodeCameraControllerTrackAzEl extends CNodeCameraController {
     constructor(v) {
         super(v);
         this.input("cameraTrack")
     }
 
-    update(f) {
+    apply(f, cameraNode) {
+        const camera = cameraNode.camera
         var camPos = this.in.cameraTrack.p(f)
-        this._camera.position.copy(camPos);
-        this.syncUIPosition();
+        camera.position.copy(camPos);
+        cameraNode.syncUIPosition();
     }
 
 }
