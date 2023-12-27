@@ -408,12 +408,34 @@ export const SitKML = {
                 }).addController("TrackToTrack", {
                     cameraTrack: "cameraTrack",
                     targetTrack: "targetTrackAverage",
-                }).addController("Tilt",{
+                })
+            }
+
+            this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY?
+
+            // if there's a focal length field in the camera track, then use it
+            const cameraTrack = NodeMan.get("cameraTrack")
+            const focal_len = cameraTrack.v(0).focal_len;
+            if (focal_len != undefined) {
+                NodeMan.get("lookCamera").addController("FocalLength", {
+                    focalLength: "cameraTrack",
+                })
+            }
+
+            if (Sit.toLat !== undefined) {
+                NodeMan.get("lookCamera").addController("LookAtLLA", {
+                  lat: Sit.toLat,
+                  lon: Sit.toLon,
+                  alt: Sit.toAlt,
+                })
+            }
+
+            if (!this.ptz) {
+                NodeMan.get("lookCamera").addController("Tilt", {
                     tilt: makeCNodeGUIValue("tilt", Sit.tilt ?? 0, -30, 30, 0.01, "Tilt", gui),
                 })
             }
 
-            this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
         }
 
 
@@ -484,43 +506,21 @@ export const SitKML = {
                         this.camera.updateProjectionMatrix()
                     }
 
-                    const cameraTrack = NodeMan.get("cameraTrack")
-                    const focal_len = cameraTrack.v(frame).focal_len;
-                    if (focal_len != undefined) {
-                        const f = focal_len;
-                        const referenceFocalLength = 166;               // reference focal length
-                        const referenceFOV = radians(5)         // reference FOV angle
-                        const sensorSize = 2 * referenceFocalLength * tan(referenceFOV / 2)
-
-                        const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
-
-//                        console.log(focal_len + " -> " + vFOV)
-
-                        this.camera.fov = vFOV;
-                        this.camera.updateProjectionMatrix()
-
-                    }
-
-                    // PATCH look at a point
-                    if (Sit.toLat !== undefined) {
-                        // This is a PATCH, but handle cases with no radius
-                        // which is probably all of them
-                        // as we are using a terrain, hence WGS84
-                        var radius = wgs84.RADIUS
-                        if (this.in.radiusMiles != undefined) {
-                            metersFromMiles(this.in.radiusMiles.v0)
-                        }
-                        var to = LLAToEUSMAP(Sit.toLat,
-                            Sit.toLon,
-                            Sit.toAlt,
-                            radius
-                        )
-                        this.camera.lookAt(to)
-                        if (this.in.tilt !== undefined) {
-                            const tilt = this.in.tilt.v0
-                            this.camera.rotateX(-radians(tilt))
-                        }
-                    }
+                    // // PATCH look at a point
+                    // if (Sit.toLat !== undefined) {
+                    //     var radius = wgs84.RADIUS
+                    //
+                    //     var to = LLAToEUSMAP(Sit.toLat,
+                    //         Sit.toLon,
+                    //         Sit.toAlt,
+                    //         radius
+                    //     )
+                    //     this.camera.lookAt(to)
+                    //     if (this.in.tilt !== undefined) {
+                    //         const tilt = this.in.tilt.v0
+                    //         this.camera.rotateX(-radians(tilt))
+                    //     }
+                    // }
 
                     // extract camera angle
                     var _x = V3()

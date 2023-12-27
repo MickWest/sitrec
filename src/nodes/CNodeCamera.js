@@ -1,9 +1,9 @@
 import {CNode} from "./CNode";
 import {PerspectiveCamera} from "../../three.js/build/three.module";
 import {MV3} from "../threeExt";
-import {assert, m2f, radians} from "../utils";
-import {NodeMan} from "../Globals";
-import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
+import {assert, atan, degrees, m2f, radians, tan} from "../utils";
+import {NodeMan, Sit} from "../Globals";
+import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeCamera extends CNode {
     constructor(v) {
@@ -114,3 +114,52 @@ export class CNodeCameraControllerTrackAzEl extends CNodeCameraController {
 
 }
 
+
+export class CNodeCameraControllerFocalLength extends CNodeCameraController {
+    constructor(v) {
+        super(v);
+        this.input("focalLength")
+    }
+
+    apply(f, cameraNode) {
+        const camera = cameraNode.camera
+        const focal_len = this.in.focalLength.v(f).focal_len;
+        const referenceFocalLength = 166;               // reference focal length
+        const referenceFOV = radians(5)         // reference FOV angle
+        const sensorSize = 2 * referenceFocalLength * tan(referenceFOV / 2)
+
+        const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
+
+        camera.fov = vFOV;
+        camera.updateProjectionMatrix()
+
+        cameraNode.syncUIPosition();
+    }
+
+}
+
+// look at a specified LLA point
+export class CNodeCameraControllerLookAtLLA extends CNodeCameraController {
+    constructor(v) {
+        super(v);
+        this.input("lat")
+        this.input("lon")
+        this.input("alt")
+    }
+
+    apply(f, cameraNode) {
+        const camera = cameraNode.camera
+        var radius = wgs84.RADIUS
+
+        var to = LLAToEUSMAP(
+            this.in.lat.v(f),
+            this.in.lon.v(f),
+            this.in.alt.v(f),
+            radius
+        )
+        camera.lookAt(to)
+
+        cameraNode.syncUIPosition();
+    }
+
+}
