@@ -366,8 +366,9 @@ export class CNodePositionLLA extends CNode {
 
 }
 
-export function makePositionLLA(lat, lon, alt) {
+export function makePositionLLA(id, lat, lon, alt) {
     return new CNodePositionLLA({
+        id:id,
         lat: lat, lon: lon, alt: alt
     })
 }

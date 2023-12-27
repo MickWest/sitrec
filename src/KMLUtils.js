@@ -165,6 +165,11 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
 
     assert(info.name !== undefined && info.name !== "", "Unable to find name")
 
+    if (!Array.isArray(tracks)) {
+        // just one object, so put it in an array, so we can use the same following code
+        tracks = [tracks]
+    }
+
     tracks.forEach(track => {
         const gxTrack = track["gx:Track"];
         var whenArray;

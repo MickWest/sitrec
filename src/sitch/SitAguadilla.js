@@ -164,10 +164,10 @@ export const SitAguadilla = {
         }, mainCamera)
 
 // TODO: UNUSED, as is CNodeMovablePoint
-        new CNodeMovablePoint({
-            id:"startPoint",
-            position:makePositionLLA(0,0,0),
-        })
+//         new CNodeMovablePoint({
+//             id:"startPoint",
+//             position:makePositionLLA("movable", 0,0,0),
+//         })
 
         const view = new CNodeView3D({
             id:"mainView",

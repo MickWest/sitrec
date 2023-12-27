@@ -3,7 +3,7 @@ import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
 import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
-import {CNodeConstant} from "../nodes/CNode";
+import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
 import {LLAToEUS, LLAToEUSMAP, LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
@@ -140,8 +140,19 @@ export const SitKML = {
         addDefaultLights(Sit.brightness)
 
 
-        makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
-
+        if (FileManager.exists("cameraFile")) {
+            makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
+            //animated segement of camera track
+            new CNodeDisplayTrack({
+                id: "KMLDisplay",
+                track: "cameraTrack",
+                color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
+                width: 2,
+                layers: LAYER.MASK_HELPERS,
+            })
+        } else {
+            makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAlt);
+        }
 
         if (FileManager.exists("KMLTarget")) {
             makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
@@ -251,25 +262,19 @@ export const SitKML = {
             })
         }
 
-        //animated segement of camera track
-        new CNodeDisplayTrack({
-            id: "KMLDisplay",
-            track: "cameraTrack",
-            color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
-            width: 2,
-            layers: LAYER.MASK_HELPERS,
-        })
 
-        new CNodeDisplayTrack({
-            id: "KMLDisplayMainData",
-            track: "KMLMainData",
-            color: new CNodeConstant({value: new THREE.Color(0.7, 0.3, 0)}),
-            dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
-            width: 1,
-            //    toGround:1, // spacing for lines to ground
-            ignoreAB: true,
-            layers: LAYER.MASK_HELPERS,
-        })
+        if (NodeMan.exists("KMLMainData")) {
+            new CNodeDisplayTrack({
+                id: "KMLDisplayMainData",
+                track: "KMLMainData",
+                color: new CNodeConstant({value: new THREE.Color(0.7, 0.3, 0)}),
+                dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
+                width: 1,
+                //    toGround:1, // spacing for lines to ground
+                ignoreAB: true,
+                layers: LAYER.MASK_HELPERS,
+            })
+        }
 
         // Segment of target track that's covered by the animation
         // here a thicker red track segment
@@ -298,12 +303,7 @@ export const SitKML = {
 
         // Data for all the lines of sight
         // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
-        new CNodeLOSTrackTarget({
-            id: "JetLOS",
-            cameraTrack: "cameraTrack",
-            targetTrack: "targetTrackAverage",
-            layers: LAYER.MASK_HELPERS,
-        })
+
 
         // DISPLAY The line from the camera track to the target track
         new CNodeDisplayTrackToTrack({
