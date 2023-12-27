@@ -7,6 +7,9 @@ export const SitLAXUAP = {
     nightSky: true,
   //  useGlobe: true,
 
+    starScale: 0, // 0.09,
+
+    venusArrow: true,
 
     files: {
 //        starLink: "westjet/starlink-2023-12-18.tle",
@@ -46,12 +49,14 @@ export const SitLAXUAP = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
+    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 53, distance: 12725, size:1 },
+
     cameraSphereSize: 2,
     targetSphereSize: 2,
 
     targetSize: 150, // in feet
     planeCameraFOV: 1.61,
 
-    skyColor: 'skyblue',
+    skyColor: '#4264ab',
 
 }

@@ -2,6 +2,8 @@
 import {f2m, m2f} from "../utils";
 import {CNode3DTarget} from "./CNode3DTarget";
 import {LineSegments, SphereGeometry, WireframeGeometry, Color} from "../../three.js/build/three.module";
+import {NodeMan} from "../Globals";
+import {CNode} from "./CNode";
 
 export class CNodeDisplayTargetSphere extends CNode3DTarget {
     constructor(v) {
@@ -34,3 +36,28 @@ export class CNodeDisplayTargetSphere extends CNode3DTarget {
     }
 }
 
+
+
+// a fixed point track that returns a point on the LOS between a camera and
+// the track at at given frame.
+// can be used to put an object inbetween the camera and the track
+export class  CNodeLOSTargetAtDistance extends CNode {
+    constructor(v) {
+        super(v);
+        this.input("track");
+        this.input("camera");
+        this.input("distance");
+        this.frame = v.frame;
+
+    }
+
+    getValueFrame(f) {
+        const trackPos = this.in.track.p(this.frame);
+        const camPos = this.in.camera.camera.position.clone()
+        const toTrack = trackPos.clone().sub(camPos).normalize()
+        const distance = this.in.distance.v()
+        const marker = toTrack.multiplyScalar(distance).add(camPos)
+        return {position: marker}
+    }
+
+}

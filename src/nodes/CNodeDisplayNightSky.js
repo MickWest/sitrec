@@ -270,6 +270,16 @@ export class CNodeDisplayNightSky extends CNode3D {
             this.sunArrowGroup.visible = this.showSunArrows;
         }).name("Sun Angle Arrows")
 
+        this.showVenusArrow = true;
+        this.venusArrowGroup = new Group();
+        this.venusArrowGroup.visible = this.venusArrow;
+        GlobalScene.add(this.venusArrowGroup)
+        guiShowHide.add(this, "showVenusArrow").listen().onChange(()=>{
+            par.renderOne=true;
+            this.venusArrowGroup.visible = this.showVenusArrow;
+        }).name("Venus Arrow")
+
+
         this.showFlareRegion = false;
         this.flareRegionGroup = new Group();
         this.flareRegionGroup.visible = this.showFlareRegion;
@@ -1287,6 +1297,27 @@ void main() {
         if (scale > 1) scale= 1;
         if (planet === "Sun" || planet === "Moon") scale = 5;
         sprite.scale.set(scale, scale, 1);
+
+
+        if (planet === "Venus") {
+
+            // const ecef2 = equatorial.clone()
+            // ecef2.applyMatrix4(this.celestialSphere.matrix)
+
+            const gst = calculateGST(date);
+            const ecef = celestialToECEF(ra, dec, wgs84.RADIUS, gst)
+            // ecef for the sun will give us a vector from the cernter to the earth towards the Sun (which, for our purposes
+            // is considered to be infinitely far away
+            // We can use this to find the region where Starlink flares are expected
+
+            const eus = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
+            const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
+            const camera = Sit.lookCamera;
+
+            if (Sit.venusArrow) {
+                DebugArrow("Venusarrow", eusDir, camera.position, 20000, "#30FF30", true, this.venusArrowGroup)
+            }
+        }
 
 
         if (planet === "Sun") {

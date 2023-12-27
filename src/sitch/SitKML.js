@@ -9,7 +9,7 @@ import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
-import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
+import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {
     abs,
@@ -601,6 +601,28 @@ export const SitKML = {
         if (this.startCameraPositionLLA !== undefined) {
             mainCamera.position.copy(LLAVToEUS(MV3(this.startCameraPositionLLA)))
             mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
+        }
+
+        if (this.losTarget !== undefined) {
+            new CNodeLOSTargetAtDistance ({
+                id:"LOSTarget",
+                track:this.losTarget.track,
+                camera:this.losTarget.camera,
+//                distance:this.losTarget.distance,
+                distance: new CNodeScale("distanceLOS", scaleF2M,
+                    new CNodeGUIValue({value: this.losTarget.distance, start: 1, end: 100000, step: 0.1, desc: "LOS Sphere dist ft"}, gui)
+                ),
+                frame:this.losTarget.frame,
+            })
+
+            new CNodeDisplayTargetSphere({
+                track:"LOSTarget",
+                size: new CNodeScale("sizeScaledLOS", scaleF2M,
+                    new CNodeGUIValue({value: this.losTarget.size, start: 0, end: 500, step: 0.1, desc: "LOS Sphere size ft"}, gui)
+                ),
+                layers: LAYER.MASK_NAR,
+
+            })
         }
 
         initKeyboard();
