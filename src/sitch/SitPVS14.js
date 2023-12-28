@@ -165,6 +165,7 @@ export const SitPVS14 = {
             track: "cameraTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
             width: 2,
+            layers: LAYER.MASK_HELPERS,
         })
 
         new CNodeDisplayTrack({
@@ -174,6 +175,7 @@ export const SitPVS14 = {
             dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
             width: 1,
             ignoreAB:true,
+            layers: LAYER.MASK_HELPERS,
 
         })
 

@@ -4,6 +4,7 @@ import {CNode3DTarget} from "./CNode3DTarget";
 import {LineSegments, SphereGeometry, WireframeGeometry, Color} from "../../three.js/build/three.module";
 import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
+import {V3} from "../threeExt";
 
 export class CNodeDisplayTargetSphere extends CNode3DTarget {
     constructor(v) {
@@ -47,16 +48,22 @@ export class  CNodeLOSTargetAtDistance extends CNode {
         this.input("track");
         this.input("camera");
         this.input("distance");
+        this.input("offsetRadians");
         this.frame = v.frame;
 
     }
 
     getValueFrame(f) {
         const trackPos = this.in.track.p(this.frame);
+        const trackDir = this.in.track.p(this.frame+1).clone().sub(trackPos).normalize();
         const camPos = this.in.camera.camera.position.clone()
         const toTrack = trackPos.clone().sub(camPos).normalize()
+        const offsetDir = V3().crossVectors(toTrack,trackDir)
         const distance = this.in.distance.v()
-        const marker = toTrack.multiplyScalar(distance).add(camPos)
+
+        const offset = distance * Math.tan(this.in.offsetRadians.v())
+
+        const marker = toTrack.multiplyScalar(distance).add(camPos).sub(offsetDir.clone().multiplyScalar(offset))
         return {position: marker}
     }
 

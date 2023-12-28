@@ -14,7 +14,7 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {
     abs,
     atan,
-    degrees,
+    degrees, f2m,
     floor,
     getArrayValueFromFrame, m2f,
     metersFromMiles,
@@ -549,7 +549,7 @@ export const SitKML = {
 
 
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.NARCam.data});
-        AddTimeDisplayToUI(labelVideo, 50, 96, 2.5, "#f0f000")
+        AddTimeDisplayToUI(labelVideo, 50, 96, this.timeSize ?? 2.5, "#f0f000")
         labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
             this.text = "Az " + (floor(0.499999 + abs(value))) + "° " //+ (value > 0 ? "R" : "L");
         })
@@ -613,12 +613,13 @@ export const SitKML = {
                     new CNodeGUIValue({value: this.losTarget.distance, start: 1, end: 100000, step: 0.1, desc: "LOS Sphere dist ft"}, gui)
                 ),
                 frame:this.losTarget.frame,
+                offsetRadians:radians(this.losTarget.offset),
             })
 
             new CNodeDisplayTargetSphere({
                 track:"LOSTarget",
                 size: new CNodeScale("sizeScaledLOS", scaleF2M,
-                    new CNodeGUIValue({value: this.losTarget.size, start: 0, end: 500, step: 0.1, desc: "LOS Sphere size ft"}, gui)
+                    new CNodeGUIValue({value: this.losTarget.size, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
                 ),
                 layers: LAYER.MASK_NAR,
 

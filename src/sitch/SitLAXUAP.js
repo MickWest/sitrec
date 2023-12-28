@@ -14,7 +14,8 @@ export const SitLAXUAP = {
     files: {
 //        starLink: "westjet/starlink-2023-12-18.tle",
 //        cameraFile: "westjet/FlightAware_WJA1517_KPHX_CYYC_20231219.kml",
-        KMLTarget: "laxuap/82-0193-track-press_alt_uncorrected.kml",
+        KMLTarget: "laxuap/82-0193-track-press_alt_uncorrected.kml", // this is the one that goes overhead at 19:08
+       // KMLTarget: "laxuap/86-0033-track-press_alt_uncorrected.kml", // other one, not there at 19:08, may earlier
         TargetObjectFile: "./models/DC-10.glb",
     },
 
@@ -49,7 +50,7 @@ export const SitLAXUAP = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
-    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 53, distance: 12725, size:1 },
+    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, distance: 12725, size:1, offset: 0.26 },
 
     cameraSphereSize: 2,
     targetSphereSize: 2,
@@ -58,5 +59,7 @@ export const SitLAXUAP = {
     planeCameraFOV: 1.61,
 
     skyColor: '#4264ab',
+
+    timeSize: 5, // bit of a patch
 
 }
