@@ -19,6 +19,7 @@ import {isLocal, SITREC_SERVER} from "../../config";
 import {FileManager} from "../CManager";
 import {Rehoster} from "../CRehoster";
 import {CNodeCameraControllerManualPosition} from "../nodes/CNodeCamera";
+import {CNodeSwitch} from "../nodes/CNodeSwitch";
 
 
 export const SitNightSky = {
@@ -140,7 +141,28 @@ export const SitNightSky = {
         //     viewLook.camera = this.lookCamera;
       //  viewLook.addOrbitControls(this.renderer);
 
-        NodeMan.get("lookCamera").addController("ManualPosition",{id:"manualController"})
+//        NodeMan.get("lookCamera").addController("ManualPosition",{id:"manualController"})
+
+        const cameraSwitch = new CNodeSwitch({
+            id: "cameraSwitch",
+            desc: "Camera Motion",
+            inputs: {
+                "Manual Position": new CNodeCameraControllerManualPosition ({
+                    id: "manualController"
+                }),
+                "XXX Position": new CNodeCameraControllerManualPosition ({
+                    id: "manual2Controller"
+                }),
+
+            }
+        }, gui)
+
+        cameraSwitch.addOption("YYY Position", new CNodeCameraControllerManualPosition ({
+            id: "manual3Controller"
+        }))
+
+        NodeMan.get("lookCamera").addControllerNode(cameraSwitch)
+        cameraSwitch.removeOption("XXX Position")
 
         DragDropHandler.addDropArea(view.div);
         DragDropHandler.addDropArea(viewLook.div);

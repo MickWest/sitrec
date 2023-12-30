@@ -1,6 +1,7 @@
 import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeCloudData} from "./CNodeCloudData";
+import {addOption, removeOption} from "../lil-gui-extras";
 
 class CNodeSwitch extends CNode {
     constructor(v, gui) {
@@ -16,19 +17,21 @@ class CNodeSwitch extends CNode {
         // to take lil-giu (or dat-gui) style parapmeters for addina a drop down box
         //
         if (this.gui !== undefined) {
-            var guiOptions = {}
+            this.guiOptions = {}
 
             this.frames = this.inputs[this.choice].frames
             // build the list of "key","key" pairs for the gui drop-down menu
             Object.keys(this.inputs).forEach(key => {
-                guiOptions[key] = key
+                this.guiOptions[key] = key
                 //          assert(this.frames === this.choiceList[key].frames,"Frame number mismatch "+
                 //              this.frames + key + this.choiceList[key].frames)
             })
-            gui.add(this, "choice", guiOptions)
+            this.controller = gui.add(this, "choice", this.guiOptions)
                 .name(v.desc)
                 .onChange((newValue) => {   // using ()=> preserves this
                     console.log("Changed to "+newValue)
+                    console.log("(changing) this.choice = "+this.choice)
+
                     this.recalculateCascade()
                     if (this.onChange !== undefined) {
                         this.onChange()
@@ -37,6 +40,20 @@ class CNodeSwitch extends CNode {
                 })
         }
         this.recalculate()
+    }
+
+    addOption(option, value) {
+        console.log("(adding) this.choice = "+this.choice)
+        this.inputs[option] = value;
+        addOption(this.controller, option, option)
+        console.log("(adding) this.choice = "+this.choice)
+    }
+
+    removeOption(option) {
+        console.log("(reoving) this.choice = "+this.choice)
+        delete this.inputs[option]
+        removeOption(this.controller, option)
+        console.log("(removing) this.choice = "+this.choice)
     }
 
     onChange(f) {
@@ -65,8 +82,8 @@ class CNodeSwitch extends CNode {
     // apply is used for controllers (like CNodeCameraController)
     // we want to have a selection of camera controllers
     // so we need to pass though the apply() call to the selected one
-    apply(f) {
-        return this.inputs[this.choice].apply(f)
+    apply(f, cam) {
+        return this.inputs[this.choice].apply(f, cam)
     }
 
 }

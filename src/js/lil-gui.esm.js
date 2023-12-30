@@ -7,6 +7,9 @@
  * @license MIT
  */
 
+// MICK: Note modifications by me, labled "MICK"
+// If you upgrade version, then you will probably want to carry over the modifications
+
 /**
  * Base class for all controllers.
  */

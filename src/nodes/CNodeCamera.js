@@ -38,6 +38,12 @@ export class CNodeCamera extends CNode {
         return this;
     }
 
+    addControllerNode(node) {
+
+        this.controllers.push(node)
+        return this;
+    }
+
     get camera() { return this._camera}
 
     update(f) {
@@ -63,10 +69,7 @@ export class CNodeCamera extends CNode {
             NodeMan.get("cameraLat").recalculateCascade() // manual update
         }
     }
-
 }
-
-
 
 export class CNodeCameraController extends CNode {
     constructor(v) {
@@ -138,8 +141,6 @@ export class CNodeCameraControllerManualPosition extends CNodeCameraController {
             // convert to LLA
             const ecef = EUSToECEF(cursorPos)
             const LLA = ECEFToLLAVD_Sphere(ecef)
-
-            console.log("L to: "+LLA.x+","+LLA.y)
 
             // we set the values in the UI nodes, which creates an
             // automatic cascade recalculation for anything that uses them.
