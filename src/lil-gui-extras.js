@@ -1,6 +1,10 @@
+// Helper functions for lil-gui
 
 
-
+// add an option to a drop down menu
+// note for usage with CNodeSwitch, optionName and optionValue will be the same
+// as we use it as in index into the this.inputs object
+// so adding and deleting also has to modify this.inputs (where "this" is a CNodeSwitch
 export function addOption(controller, optionName, optionValue) {
     // Update internal arrays
     controller._values.push(optionValue);

@@ -139,7 +139,7 @@ export const SitNightSky = {
             ptzControls:true, // flag so dragging the view around will alter the ptz controls
         })
         //     viewLook.camera = this.lookCamera;
-      //  viewLook.addOrbitControls(this.renderer);
+        viewLook.addOrbitControls(this.renderer);
 
 //        NodeMan.get("lookCamera").addController("ManualPosition",{id:"manualController"})
 
@@ -150,19 +150,21 @@ export const SitNightSky = {
                 "Manual Position": new CNodeCameraControllerManualPosition ({
                     id: "manualController"
                 }),
-                "XXX Position": new CNodeCameraControllerManualPosition ({
-                    id: "manual2Controller"
-                }),
+                // "XXX Position": new CNodeCameraControllerManualPosition ({
+                //     id: "manual2Controller"
+                // }),
 
             }
         }, gui)
 
-        cameraSwitch.addOption("YYY Position", new CNodeCameraControllerManualPosition ({
-            id: "manual3Controller"
-        }))
+        // cameraSwitch.addOption("YYY Position", new CNodeCameraControllerManualPosition ({
+        //     id: "manual3Controller"
+        // }))
+
+        //cameraSwitch.removeOption("XXX Position")
+
 
         NodeMan.get("lookCamera").addControllerNode(cameraSwitch)
-        cameraSwitch.removeOption("XXX Position")
 
         DragDropHandler.addDropArea(view.div);
         DragDropHandler.addDropArea(viewLook.div);
@@ -384,7 +386,7 @@ export const SitNightSky = {
 
     // if we drag and drop a kml file, then set the camera to track that.
     onLoadFirstKML(kml) {
-
+        debugger;
 
 
     }

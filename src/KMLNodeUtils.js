@@ -12,6 +12,7 @@ import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
+import {CNodeCameraControllerTrackAzEl} from "./nodes/CNodeCamera";
 
 
 export const KMLTrackManager = new CManager();
@@ -47,17 +48,29 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
         }
 
 
+        const trackDataID = "KMLTargetData"+track;
+        const trackID = "KMLTarget"+track;
+
         // the data track stores the raw positions and timestamps from the KML file
         const targetData = new CNodeKMLDataTrack({
-            id: "KMLTargetData"+track,
+            id: trackDataID,
             KMLFile: track,
         })
 
+
         // the target segment is a per-frame track that is interpolated from part of the data track
         const target = new CNodeTrackFromTimed({
-            id: "KMLTarget"+track, // in all these we get a unique id by adding the track id
+            id: trackID, // in all these we get a unique id by adding the track id
             timedData: targetData,
         })
+
+        if (NodeMan.exists("cameraSwitch")) {
+            const switchNode = NodeMan.get("cameraSwitch");
+            switchNode.removeOption("KML Track")
+            switchNode.addOption("KML Track", new CNodeCameraControllerTrackAzEl({
+                cameraTrack: target,
+            }) )
+        }
 
 
         new CNodeDisplayTrack({
@@ -68,7 +81,7 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
             width: 0.5,
           //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_HELPERS,
 
         })
 
@@ -81,7 +94,7 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
             width: 3,
           //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_HELPERS,
 
         })
 
@@ -93,7 +106,7 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
                 size: "sizeTargetScaled",
             },
 
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_HELPERS,
         })
 
 

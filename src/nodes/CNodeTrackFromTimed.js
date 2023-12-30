@@ -45,14 +45,14 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
             // advance the slot if needed
-            while (slot < points) {
+            while (slot < points-1) {
                 if (data[slot+1].time > msNow) {
                     break
                 }
                 slot++;
             }
 
-            if (slot < points) {
+            if (slot < points-1) {
 
                // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
                 var fraction = (msNow - data[slot].time) / (data[slot + 1].time - data[slot].time)
