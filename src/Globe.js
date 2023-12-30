@@ -14,16 +14,17 @@ import {Sit} from "./Globals";
 import {showHider} from "./KeyBoardHandler";
 import {ShaderMaterial} from "three";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
+import {par, renderOne} from "./par";
 
 export function createSphere(radius, radius1, segments) {
     const sphere = new Mesh(
         new SphereGeometry(radius, segments, segments),
         new MeshPhongMaterial({
-            map: new TextureLoader().load('data/images/2_no_clouds_4k.jpg'),
+            map: new TextureLoader().load('data/images/2_no_clouds_4k.jpg',renderOne),
      //       map: new TextureLoader().load('data/images/Earthlights_2002.jpg'),
-            bumpMap: new TextureLoader().load('data/images/elev_bump_4k.jpg'),
+            bumpMap: new TextureLoader().load('data/images/elev_bump_4k.jpg',renderOne),
             bumpScale: 0.005,
-            specularMap: new TextureLoader().load('data/images/water_4k.png'),
+            specularMap: new TextureLoader().load('data/images/water_4k.png',renderOne),
             //           specular:    new Color('grey'),
             specular: new Color('#222222'),
             color: new Color('white'),
@@ -48,8 +49,8 @@ export var globeMaterial;
 export function createSphereDayNight(radius, radius1, segments) {
 
     const loader = new TextureLoader();
-    const dayTexture = loader.load('data/images/2_no_clouds_4k.jpg');
-    const nightTexture = loader.load('data/images/Earthlights_2002.jpg');
+    const dayTexture = loader.load('data/images/2_no_clouds_4k.jpg',renderOne);
+    const nightTexture = loader.load('data/images/Earthlights_2002.jpg',renderOne);
 
     globeMaterial = new ShaderMaterial({
         uniforms: {

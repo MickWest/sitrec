@@ -52,3 +52,7 @@ export var par = {
     jetHeading: 0,
     effects: true,
 }
+
+export function renderOne() {
+    par.renderOne = true;
+}
