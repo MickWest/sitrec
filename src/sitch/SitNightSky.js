@@ -18,6 +18,7 @@ import {MV3} from "../threeExt";
 import {isLocal, SITREC_SERVER} from "../../config";
 import {FileManager} from "../CManager";
 import {Rehoster} from "../CRehoster";
+import {CNodeCameraControllerManualPosition} from "../nodes/CNodeCamera";
 
 
 export const SitNightSky = {
@@ -137,7 +138,9 @@ export const SitNightSky = {
             ptzControls:true, // flag so dragging the view around will alter the ptz controls
         })
         //     viewLook.camera = this.lookCamera;
-        viewLook.addOrbitControls(this.renderer);
+      //  viewLook.addOrbitControls(this.renderer);
+
+        NodeMan.get("lookCamera").addController("ManualPosition",{id:"manualController"})
 
         DragDropHandler.addDropArea(view.div);
         DragDropHandler.addDropArea(viewLook.div);

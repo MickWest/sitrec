@@ -123,7 +123,6 @@ export class CNodeDateTime extends CNode {
 
     update(frame) {
 
-
         var speedscale = 1;
         if (isKeyHeld('shift'))
             speedscale *= 10
@@ -133,7 +132,6 @@ export class CNodeDateTime extends CNode {
             speedscale *= 1000
         if (isKeyHeld('meta'))
             speedscale *= 10000
-
 
         if (isKeyCodeHeld('Semicolon')) {
             this.AdjustStartTime(-1000*speedscale)
@@ -147,31 +145,6 @@ export class CNodeDateTime extends CNode {
         }
         if (isKeyCodeHeld('BracketRight')) {
             this.AdjustStartTime(10000*speedscale)
-        }
-
-        if (isKeyHeld('l')) {
-            const mainView = ViewMan.get("mainView")
-            const cursorPos = mainView.cursorSprite.position.clone();
-//            console.log(`cu1 = ${cursorPos.x},${cursorPos.y},${cursorPos.z}`)
-            // convert to LLA
-            const ecef = EUSToECEF(cursorPos)
-            const LLA = ECEFToLLAVD_Sphere(ecef)
-
-            // we set the values in the UI nodes, which creates an
-            // autmatic cascade recalculation onything that uses them.
-            NodeMan.get("cameraLat").value = LLA.x
-            NodeMan.get("cameraLon").value = LLA.y
-            NodeMan.get("cameraLat").recalculateCascade() // manual update
-
-            // patch refresh any ptz controls
-            if (GlobalPTZ !== undefined) {
-                GlobalPTZ.refresh();
-            }
-
-
-            // round trip conversion test
-//            const pos = LLAToEUS(LLA.x, LLA.y, LLA.z)
-//            console.log(`pos = ${pos.x},${pos.y},${pos.z}`)
         }
 
         this.frame = frame

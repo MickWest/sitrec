@@ -1,7 +1,7 @@
 import {GlobalPTZ, NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 import {LLAToEUS, LLAToEUSMAP, LLAToEUSMAPGlobe, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
-import {metersFromMiles, radians, assert} from "../utils";
+import {metersFromMiles, radians, assert, vdump, f2m} from "../utils";
 import {Sit} from "../Globals";
 import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
@@ -42,7 +42,7 @@ export class CNodeUICameraLLA extends CNode {
             from = LLAToEUSMAPGlobe(
                 this.in.fromLat.v(f),
                 this.in.fromLon.v(f),
-                this.in.fromAlt.v(f),
+                f2m(this.in.fromAlt.v(f)),
                 radius
             )
             camera.position.copy(from)
