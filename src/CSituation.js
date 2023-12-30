@@ -1,14 +1,14 @@
 import {PerspectiveCamera} from "../three.js/build/three.module.js";
 import {FileManager} from "./CManager";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
-import {infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
+import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
 import {CNodeUICameraLLA} from "./nodes/CNodeUICameraLLA";
 import {par} from "./par";
 import {LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 import {boxMark, MV3, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
-import {CNodeConstant} from "./nodes/CNode";
+import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeLOSMotionTrack} from "./nodes/CNodeLOSMotionTrack";
 import {GlobalScene} from "./LocalFrame";
@@ -18,6 +18,10 @@ import {NightSkyFiles} from "./ExtraFiles";
 import {f2m,assert} from "./utils";
 import {setupOpts} from "./JetChart";
 import {CNodeCamera} from "./nodes/CNodeCamera";
+import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
+import * as THREE from "../three.js/build/three.module";
+import {CNodeWind} from "./nodes/CNodeWind";
 
 
 
@@ -324,6 +328,18 @@ export class CSituation {
             new CNodeLOSMotionTrack(this.motionTrackLOS)
         }
 
+        new CNodeGUIValue({
+            id: "altAdjust",
+            value: 0,
+            start: -1000,
+            end: 1000,
+            step: 0.1,
+            desc: "Altitude adjustment"
+        }, guiTweaks)
+
+
+        // This seems excessive - sort out the above, remove duplicate code, make it all data driven.
+        // Sit.makeCameraTrack();
 
     }
 
@@ -368,5 +384,62 @@ export class CSituation {
             })
         }
     }
+
+    makeCameraTrack()
+    {
+        if (FileManager.exists("cameraFile")) {
+            makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
+            //animated segement of camera track
+            new CNodeDisplayTrack({
+                id: "KMLDisplay",
+                track: "cameraTrack",
+                color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
+                width: 2,
+                layers: LAYER.MASK_HELPERS,
+            })
+        } else {
+            makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAlt);
+        }
+    }
+
+    setupWind()
+    {
+
+        if (this.targetWind !== undefined) {
+            new CNodeWind({
+                id: "targetWind",
+                from: this.targetWind.from,
+                knots: this.targetWind.knots,
+                name: "Target",
+                arrowColor: "red"
+
+            }, gui)
+        }
+
+        if (this.objectWind !== undefined) {
+            new CNodeWind({
+                id: "objectWind",
+                from: this.objectWind.from,
+                knots: this.objectWind.knots,
+                name: "Object",
+                arrowColor: "cyan"
+
+            }, gui)
+        }
+
+
+        if (this.localWind !== undefined) {
+            new CNodeWind({
+                id: "localWind",
+                from: this.localWind.from,
+                knots: this.localWind.knots,
+                name: "Target",
+                arrowColor: "cyan"
+
+            }, gui)
+        }
+
+    }
+
 
 }

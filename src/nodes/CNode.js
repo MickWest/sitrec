@@ -81,12 +81,18 @@ class CNode {
 
     // add an input node, and add this to its list of outputs
     // this is so a node can add a globally defined node, like GlobalTime, as a default input
-    addInput(key, nodeID) {
+    addInput(key, nodeID, optional = false) {
         assert(this.in.key === undefined, `Adding input ${key} that is already defined`)
         var node;
         if (nodeID instanceof CNode) {
             node = nodeID
         } else {
+            if (optional) {
+                // if optional, then do nothing if the node does not exist.
+                if (!NodeMan.exists(nodeID))
+                    return;
+            }
+
             node = NodeMan.get(nodeID)
             assert(node instanceof CNode, "Non-Node with id=" + nodeID +"  found for input key=" + key)
         }
@@ -116,7 +122,7 @@ class CNode {
         // - A node ID for a node in NodeMan
         // - A constant value (this may need more checking, e.g. of type)
 
-        if (this.props[i] == undefined) {
+        if (this.props[i] === undefined) {
             if (optional) return;
             assert(0, "Node missing input " + i);
         }

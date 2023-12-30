@@ -50,6 +50,7 @@ import {CNodeTrackFromTimed} from "../nodes/CNodeTrackFromTimed";
 import {CNodeKMLDataTrack} from "../nodes/CNodeKMLDataTrack";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
+import {CNodeWind} from "../nodes/CNodeWind";
 
 
 export const SitKML = {
@@ -85,6 +86,8 @@ export const SitKML = {
     setup: function() {
 
         SetupGUIFrames()
+
+        Sit.setupWind()
 
         var mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip);
 //        var mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, 1, 5000000 );
@@ -139,26 +142,11 @@ export const SitKML = {
 
         addDefaultLights(Sit.brightness)
 
-
-        if (FileManager.exists("cameraFile")) {
-            makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
-            //animated segement of camera track
-            new CNodeDisplayTrack({
-                id: "KMLDisplay",
-                track: "cameraTrack",
-                color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
-                width: 2,
-                layers: LAYER.MASK_HELPERS,
-            })
-        } else {
-            makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAlt);
-        }
+        Sit.makeCameraTrack();
 
         if (FileManager.exists("KMLTarget")) {
             makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
-        }
-
-        if (this.targetSpline) {
+        } else if (this.targetSpline) {
             new CNodeSplineEditor({
                 id: "targetTrack",
 //            type:"linear",   // linear or catmull
@@ -318,12 +306,21 @@ export const SitKML = {
 
         if (!Sit.landingLights) {
 
+
+            let maybeWind = {};
+            if (NodeMan.exists("targetWind")) {
+                maybeWind = {
+                    wind: "targetWind",
+                }
+            }
+
             // optional target model
             if (Sit.targetObject) {
                 new CNodeDisplayTargetModel({
                     track: "targetTrackAverage",
                     TargetObjectFile: Sit.targetObject.file,
                     layers: LAYER.MASK_NAR,
+                    ...maybeWind,
                 })
             } else {
 
@@ -550,9 +547,12 @@ export const SitKML = {
 
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.NARCam.data});
         AddTimeDisplayToUI(labelVideo, 50, 96, this.timeSize ?? 2.5, "#f0f000")
-        labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
-            this.text = "Az " + (floor(0.499999 + abs(value))) + "° " //+ (value > 0 ? "R" : "L");
-        })
+
+        if (this.showAz) {
+            labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
+                this.text = "Az " + (floor(0.499999 + abs(value))) + "° " //+ (value > 0 ? "R" : "L");
+            })
+        }
 
         if (this.showAltitude) {
             labelVideo.addText("alt", "---", 20, 7).listen(par, "cameraAlt", function (value) {
@@ -603,27 +603,76 @@ export const SitKML = {
             mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
         }
 
+
+
         if (this.losTarget !== undefined) {
+
+            let control = {};
+            if (this.losTarget.distance) {
+                new CNodeScale("controlLOS", scaleF2M,
+                    new CNodeGUIValue({
+                        value: this.losTarget.distance,
+                        start: 1,
+                        end: 100000,
+                        step: 0.1,
+                        desc: "LOS Sphere dist ft"
+                    }, gui))
+                control = { distance: "controlLOS" }
+            } else if (this.losTarget.altitude) {
+                new CNodeScale("controlLOS", scaleF2M,
+                    new CNodeGUIValue({
+                        value: this.losTarget.altitude,
+                        start: 1,
+                        end: 40000,
+                        step: 0.1,
+                        desc: "LOS Sphere alt ft"
+                    }, gui))
+                control = {altitude: "controlLOS"}
+            }
+
+
             new CNodeLOSTargetAtDistance ({
-                id:"LOSTarget",
+                id:"LOSTargetTrack",
                 track:this.losTarget.track,
                 camera:this.losTarget.camera,
-//                distance:this.losTarget.distance,
-                distance: new CNodeScale("distanceLOS", scaleF2M,
-                    new CNodeGUIValue({value: this.losTarget.distance, start: 1, end: 100000, step: 0.1, desc: "LOS Sphere dist ft"}, gui)
-                ),
+                ...control,
                 frame:this.losTarget.frame,
                 offsetRadians:radians(this.losTarget.offset),
             })
 
+            new CNodeLOSTargetAtDistance ({
+                id:"LOSTargetWithWindTrack",
+                track:this.losTarget.track,
+                camera:this.losTarget.camera,
+//                distance:this.losTarget.distance,
+                ...control,
+                frame:this.losTarget.frame,
+                offsetRadians:radians(this.losTarget.offset),
+                wind:"objectWind",
+            })
+
+
+
             new CNodeDisplayTargetSphere({
-                track:"LOSTarget",
+                track:"LOSTargetTrack",
                 size: new CNodeScale("sizeScaledLOS", scaleF2M,
                     new CNodeGUIValue({value: this.losTarget.size, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
                 ),
                 layers: LAYER.MASK_NAR,
+                color: "#00c000"  // green fixed relative to ground
 
             })
+
+            new CNodeDisplayTargetSphere({
+                track:"LOSTargetWithWindTrack",
+                size: "sizeScaledLOS",
+                layers: LAYER.MASK_NAR,
+                color: "#00ffff"  // cyan = with wind
+
+            })
+
+
+
         }
 
         initKeyboard();

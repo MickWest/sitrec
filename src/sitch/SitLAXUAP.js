@@ -7,6 +7,9 @@ export const SitLAXUAP = {
     nightSky: true,
   //  useGlobe: true,
 
+    showAltitude:false,
+    showAz:false,
+
     starScale: 0, // 0.09,
 
     venusArrow: true,
@@ -23,7 +26,7 @@ export const SitLAXUAP = {
 
     videoFile: "../sitrec-videos/private/LAXUAP 11-08-37 - 720P.mp4",
     startTime: "2023-12-10T19:08:37.480Z",
-    frames: 782,
+    frames: 90,
 
 
     fromLat:  33.953748, //
@@ -50,7 +53,7 @@ export const SitLAXUAP = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
-    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, distance: 12725, size:1, offset: 0.26 },
+    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
 
     cameraSphereSize: 2,
     targetSphereSize: 2,
@@ -60,6 +63,11 @@ export const SitLAXUAP = {
 
     skyColor: '#4264ab',
 
-    timeSize: 5, // bit of a patch
+    timeSize: 5, // bit of a patch to display the time correctly in landscape
+
+    targetWind:{from:295, knots: 23},
+    //targetWind:{from:300, knots: 13},
+    objectWind:{from:60, knots: 7},
+
 
 }

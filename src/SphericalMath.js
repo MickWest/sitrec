@@ -151,6 +151,14 @@ export function pointAltitude(position, radius=wgs84.RADIUS) {
     return V3(0,-radius,0).sub(position).length() - radius;
 }
 
+
+export function raisePoint(position, raise, radius=wgs84.RADIUS) {
+    let up = getLocalUpVector(position, radius)
+    let result = position.clone().add(up.multiplyScalar(raise))
+    return result;
+}
+
+
 // get as a point, drop below surface
 function drop3(x,y,r) {
     return new Vector3(x,y,-drop(x,y,r))
@@ -162,7 +170,7 @@ export {drop, drop3, CueAz,PRJ2EA,EAJP2PR,XYZJ2PR,XYZ2EA,EA2XYZ,PRJ2XYZ}
 
 // position is in EUS (East, Up, South) coordinates relative to an arbitary origin
 // origin might be above the surface (in Gimbal it's the start of the jet track, so that is passed in
-export function getLocalUpVector(position, radius) {
+export function getLocalUpVector(position, radius=wgs84.RADIUS) {
     const center = V3(0, -(radius), 0)
     var centerToPosition = position.clone().sub(center)
     return centerToPosition.normalize();

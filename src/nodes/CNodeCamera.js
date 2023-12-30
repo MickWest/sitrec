@@ -1,13 +1,16 @@
 import {CNode} from "./CNode";
 import {PerspectiveCamera} from "../../three.js/build/three.module";
 import {MV3} from "../threeExt";
-import {assert, atan, degrees, m2f, radians, tan} from "../utils";
+import {assert, atan, degrees, f2m, m2f, radians, tan} from "../utils";
 import {NodeMan, Sit} from "../Globals";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
+import {raisePoint} from "../SphericalMath";
 
 export class CNodeCamera extends CNode {
     constructor(v) {
         super(v);
+
+        this.addInput("altAdjust", "altAdjust", true);
 
         this._camera = new PerspectiveCamera(v.fov, v.aspect, v.near, v.far);
 
@@ -39,6 +42,12 @@ export class CNodeCamera extends CNode {
         for (const controller of this.controllers) {
             controller.apply(f, this);
         }
+
+        if (this.in.altAdjust !== undefined) {
+            // raise or lower the position
+            this.camera.position.copy(raisePoint(this.camera.position,f2m(this.in.altAdjust.v())))
+        }
+
     }
 
     syncUIPosition() {
