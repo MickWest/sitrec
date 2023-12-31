@@ -17,10 +17,8 @@ function guiRemove(gui, obj, property) {
     }
 }
 
-// GUI basic Controls (sliders) for frame number
+// GUI basic Controls (sliders) for time, frame number, and pause on/off
 export function SetupGUIFrames() {
-
-
     updateGUIFrames();
 }
 

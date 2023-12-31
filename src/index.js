@@ -53,17 +53,8 @@ import {GlobalDateTimeNode, MakeDateTimeNode} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import {CNodeDisplayCameraFrustum} from "./nodes/CNodeDisplayCameraFrustum";
 import JSURL from "./js/jsurl";
-import {checkLocal, isLocal, SITREC_ROOT} from "../config";
+import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 import {FileManager} from "./CManager";
-
-////////////////////////////////////////////////\\
-// / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, porterville, folsomlake, etc
-// This is the sitch that is loaded when running on local
-const localSituation = "nightsky";
-//////////////////////////////////////////////
-
-class index {}   // sorry, this is just a dummy class so I can get here quick in PHPStorm
 
 checkLocal()
 

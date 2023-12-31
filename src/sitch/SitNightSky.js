@@ -383,14 +383,6 @@ export const SitNightSky = {
     update: function(frame) {
 
     },
-
-    // if we drag and drop a kml file, then set the camera to track that.
-    onLoadFirstKML(kml) {
-        debugger;
-
-
-    }
-
 }
 
 var oldURL = "";
