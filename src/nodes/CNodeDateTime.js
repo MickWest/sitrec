@@ -40,6 +40,7 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
         this.dateTimeFolder.add(this, "resetStartTimeToNow").name("Sync Start Time to Now");
 
+        this.addedSyncToTrack = false;
 
         if (Sit.showDateTime) {
             this.dateTimeFolder.open();
@@ -49,6 +50,25 @@ export class CNodeDateTime extends CNode {
 
         this.update();
 
+    }
+
+    addSyncToTrack(timedTrack) {
+        if (!this.addedSyncToTrack) {
+            this.dateTimeFolder.add(this, "syncStartTimeTrack").name("Sync Start Time to Track");
+        }
+        this.syncTrack = timedTrack;
+    }
+
+    syncStartTimeTrack() {
+        const timedTrackNode = NodeMan.get(this.syncTrack);
+        const startTime = timedTrackNode.getTrackStartTime();
+        console.log(">>>"+startTime)
+
+        this.date = new Date(startTime);
+        this.populate();
+
+        // rebuild anything the depends on that track
+        timedTrackNode.recalculateCascade(0);
     }
 
     resetStartTime() {

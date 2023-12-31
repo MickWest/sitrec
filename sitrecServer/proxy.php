@@ -1,5 +1,7 @@
 <?php
 
+    require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
+
 // https://metabunk.org/sitrec/sitrecServer/proxy.php?url=https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle
     $url = $_GET["url"];  // usage e.g.
 
@@ -7,11 +9,12 @@
     $url = rawurldecode($url);
 //    echo "Decoded: ".$url;
 
+
     $path_parts = pathinfo($url);
     $ext = strtolower($path_parts['extension']);
     $url_parts = parse_url($url);
 
-    $caching = false;
+    $caching = true;
 
     // for hosts that don't have an extension, add the right one here.
     if (strcmp($url_parts['host'],"celestrak.org") === 0) {
@@ -27,17 +30,27 @@
     if (strcmp($ext,"tle") !== 0    )
         exit("Illegal File Type ". $ext);
 
-
-
     $hash = md5($url) . "." . $ext;
 
     $cachePath = '../../sitrec-cache/' . $hash;
-    $fileLocation = "/srv/www/metabunk.org/public_html/sitrec-cache/";
+    //$fileLocation = "/srv/www/metabunk.org/public_html/sitrec-cache/";
+    $fileLocation = "../../sitrec-cache/";
 
     $cachedFile = $fileLocation . $hash;
     //check if file exists
-    if ($caching && file_exists($cachedFile)) {
+
+//    echo (time(). " - " . filemtime($cachedFile) . " = ". time()-filemtime($cachedFile));
+//    exit (0);
+
+    // if cached file exists, and is less than 1 hour old, then return that.
+    if ($caching && file_exists($cachedFile) && ((time() - filemtime($cachedFile)) < (60 * 60)) ) {
+        echo (time(). " - " . filemtime($cachedFile) . " = ". time()-filemtime($cachedFile));
         echo "cached file exists\n";
+
+        header("Location: " . $cachePath);
+        exit();
+
+
         //check if file age is within 24 hours
         //
         /*
@@ -55,12 +68,8 @@
 
         //cache doesn't exist or is older than 24 hours
         //download it
-   //     echo "<br>Fetching from host " . $url_parts['host'];
-
-
-
+//        echo "<br>Fetching from host " . $url_parts['host'];
         $extra = "";
-
         $options = array(
             'http'=>array(
                 'method'=>"GET",
@@ -78,16 +87,16 @@
             else echo "<br>$dataBlob zero size";
             exit();
         }
-//        echo "<br>Fetched";
-//        echo "<br>result size = ".strlen($dataBlob);
+        echo "<br>Fetched";
+        echo "<br>result size = ".strlen($dataBlob);
 
         if ($caching) {
             // Save content into cache
             $status = file_put_contents($cachedFile, $dataBlob);
-//        $status = file_put_contents("/srv/www/metabunk.org/public_html/sitrec-cache/xxx.jpg", "123456");
             if ($status === false) {
                 echo "<br>WRITE FAILED " . $cachedFile;
             }
+            echo("<br>Written to Location: " . $cachePath);
         } else {
             header('Content-Type: text/plain');
             echo $dataBlob;
@@ -97,9 +106,7 @@
 //    return dataBlob;
     }
 
-//header("Location: ../f/271341344.jpg");
 
-  //  $cachePath = "../f/271341344.jpg";
 
     header("Location: " . $cachePath);
     exit();

@@ -26,6 +26,10 @@ class CNodeTimedTrack extends CNodeEmptyArray {
 
     }
 
+    getTrackStartTime() {
+        return this.data[0].time;
+    }
+
 }
 
 // Stores the original KML data points
