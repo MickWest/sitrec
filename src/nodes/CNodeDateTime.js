@@ -6,6 +6,62 @@ import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
 
+const timeZoneOffsets = {
+    "IDLW UTC-12": -12,     // International Date Line West
+    "NT UTC-11": -11,       // Nome Time
+    "HST UTC-10": -10,      // Hawaii Standard Time
+    "HDT UTC-9": -9,        // Hawaii Daylight Time
+    "AKST UTC-9": -9,       // Alaska Standard Time
+    "AKDT UTC-8": -8,       // Alaska Daylight Time
+    "PST UTC-8": -8,        // Pacific Standard Time
+    "PDT UTC-7": -7,        // Pacific Daylight Time
+    "MST UTC-7": -7,        // Mountain Standard Time
+    "MDT UTC-6": -6,        // Mountain Daylight Time
+    "CST UTC-6": -6,        // Central Standard Time
+    "CDT UTC-5": -5,        // Central Daylight Time
+    "EST UTC-5": -5,        // Eastern Standard Time
+    "EDT UTC-4": -4,        // Eastern Daylight Time
+    "AST UTC-4": -4,        // Atlantic Standard Time
+    "ADT UTC-3": -3,        // Atlantic Daylight Time
+    "FKST UTC-3": -3,       // Falkland Islands Summer Time
+    "GST UTC-2": -2,        // South Georgia and the South Sandwich Islands
+    "AZOT UTC-1": -1,       // Azores Standard Time
+    "AZOST UTC+0": 0,       // Azores Summer Time
+    "GMT UTC+0": 0,         // Greenwich Mean Time
+    "BST UTC+1": 1,         // British Summer Time
+    "CET UTC+1": 1,         // Central European Time
+    "CEST UTC+2": 2,        // Central European Summer Time
+    "EET UTC+2": 2,         // Eastern European Time
+    "EEST UTC+3": 3,        // Eastern European Summer Time
+    "MSK UTC+3": 3,         // Moscow Standard Time
+    "SAMT UTC+4": 4,        // Samara Time
+    "YEKT UTC+5": 5,        // Yekaterinburg Time
+    "OMST UTC+6": 6,        // Omsk Standard Time
+    "KRAT UTC+7": 7,        // Krasnoyarsk Time
+    "IRKT UTC+8": 8,        // Irkutsk Time
+    "YAKT UTC+9": 9,        // Yakutsk Time
+    "VLAT UTC+10": 10,      // Vladivostok Time
+    "AEST UTC+10": 10,      // Australian Eastern Standard Time
+    "ACST UTC+9.5": 9.5,    // Australian Central Standard Time
+    "ACDT UTC+10.5": 10.5,  // Australian Central Daylight Time
+    "AWST UTC+8": 8,        // Australian Western Standard Time
+    "NZST UTC+12": 12,      // New Zealand Standard Time
+    "NZDT UTC+13": 13,      // New Zealand Daylight Time
+    "MAGT UTC+11": 11,      // Magadan Time
+    "PETT UTC+12": 12,      // Kamchatka Time
+    "LHST UTC+10.5": 10.5,  // Lord Howe Standard Time
+    "LHDT UTC+11": 11       // Lord Howe Daylight Time
+};
+
+// Create a new object where both keys and values are the keys from timeZoneOffsets
+const timeZoneKeys = [];
+
+for (const key in timeZoneOffsets) {
+    if (timeZoneOffsets.hasOwnProperty(key)) {
+      //  newTimeZoneObject[key] = key;
+        timeZoneKeys.push(key)
+    }
+}
 
 
 // A UI node for the Date and Time at the start of the video/sitch
@@ -27,6 +83,9 @@ export class CNodeDateTime extends CNode {
             millisecond: 0,
         }
 
+
+
+
         this.populateFromUTCString(Sit.startTime) // will create a this.date member
 
         this.dateTimeFolder.add(Sit, "startTime").listen().disable()
@@ -37,6 +96,25 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(this.dateTime, "minute", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "second", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v))
+
+
+        const options = { timeZoneName: 'short' };
+        const timeZone = new Date().toLocaleTimeString('en-us', options).split(' ')[2];
+        console.log(timeZone);
+
+        this.timeZoneName = "PDT UTC-7";
+        for (let tz of timeZoneKeys) {
+            if (tz.startsWith(timeZone)) {
+                this.timeZoneName = tz;
+            }
+        }
+
+        this.dateTimeFolder.add(this, "timeZoneName", timeZoneKeys).name("Display Time Zone").listen().onChange(
+            v => {
+                console.log("Timezone "+v)
+            }
+        )
+
         this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
         this.dateTimeFolder.add(this, "resetStartTimeToNow").name("Sync Start Time to Now");
 
@@ -50,6 +128,14 @@ export class CNodeDateTime extends CNode {
 
         this.update();
 
+    }
+
+    getTimeZoneName() {
+        return this.timeZoneName;
+    }
+
+    getTimeZoneOffset() {
+        return(timeZoneOffsets[this.timeZoneName])
     }
 
     addSyncToTrack(timedTrack) {
