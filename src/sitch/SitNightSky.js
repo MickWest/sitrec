@@ -74,7 +74,7 @@ export const SitNightSky = {
 
     fromAlt: 822,
     fromAltMin: 0,
-    fromAltMax: 40000,
+    fromAltMax: 55000,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in

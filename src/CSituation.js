@@ -286,7 +286,7 @@ export class CSituation {
                         start: this.fromAltMin,
                         end: this.fromAltMax,
                         step: 0.1,
-                        desc: "Camera Altitude"
+                        desc: "Camera Alt (ft)"
                     }, gui),
                     camera: "lookCamera",
                     radiusMiles: "radiusMiles",
@@ -307,7 +307,7 @@ export class CSituation {
                         start: this.fromAltMin,
                         end: this.fromAltMax,
                         step: 0.1,
-                        desc: "Camera Altitude"
+                        desc: "Camera Alt (ft)"
                     }, gui),
                     toLat: this.toLat,
                     toLon: this.toLon,
