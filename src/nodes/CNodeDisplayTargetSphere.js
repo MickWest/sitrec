@@ -70,9 +70,8 @@ export class  CNodeLOSTargetAtDistance extends CNode {
         } else {
             assert (this.in.altitude !== undefined, "need altitude or distance in CNodeLOSTargetAtDistance")
             const altitude = this.in.altitude.v0;
-            // we seperate toTrack unit vector into coomponent vectors parallel and perpendicular to the local up
-            // then scale then both so the up componten is 1
-            // then
+            // we separate toTrack unit vector into component vectors parallel and perpendicular to the local up
+            // then scale then both so the up component is 1
             const up = getLocalUpVector(camPos)
             const upDot = up.dot(toTrack)
             let upComponent = up.clone().multiplyScalar(upDot)
@@ -93,7 +92,7 @@ export class  CNodeLOSTargetAtDistance extends CNode {
         marker.add(camPos).sub(offsetDir.clone().multiplyScalar(offset))
 
         // if we have wind, then add it in based on the frame offset from the startFrame
-        // so wheh it's at the startFrame, the position will be on the track (+ .
+        // so when it's at the startFrame, the position will be on the track (+ .
         if (this.in.wind !== undefined) {
             const frameOffset = f-this.startFrame;
        //     console.log(f+" - "+frameOffset);

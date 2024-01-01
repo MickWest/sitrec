@@ -14,7 +14,6 @@ export function AddTimeDisplayToUI(viewUI, x, y, size, color) {
             +")"
     })
     viewUI.addInput("dateTimeStart", "dateTimeStart") // Adding dateTimeStart as in input force this to update when dateTimeStart is updated
-
 }
 
 
