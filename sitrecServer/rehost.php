@@ -26,7 +26,7 @@ if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localh
     //print ($user->user_id."<br>"); # = 1 (0 if nobody logged in
 
     // need to be logged in, and a memmber of group 9 (Verified users)
-    if ($user->user_id == 0 || !in_array(9,$user->secondary_group_ids)) {
+    if ($user->user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
         http_response_code(501);
         exit("Internal Server Error");
     }
