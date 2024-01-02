@@ -32,9 +32,9 @@ export const SitLAXUAP = {
     fromLat:  33.953748, //
     fromLon: -118.412243,
 
-    fromAlt: 36,
-    fromAltMin: 0,
-    fromAltMax: 1000,
+    fromAltFeet: 36,
+    fromAltFeetMin: 0,
+    fromAltFeetMax: 1000,
 
     tilt: 0,
 

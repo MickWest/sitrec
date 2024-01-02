@@ -26,12 +26,6 @@ export const SitRGordon = {
         cameraFile: "rgordon/FlightAware_N711WS_KSNA_CYYZ_20231223.kml",
     },
 
-    // fromLat: 43.378397994666656,
-    // fromLon: -83.17161173333334,
-    // fromAlt: 37001.312335958006,
-    // fromAltMin: 35000,
-    // fromAltMax: 38000,
-
     videoFile: "../sitrec-videos/private/RGordon UAP video  -  taken by me in Dec 23 at 3-53am .mp4",
     startTime: "2023-12-23T08:54:32.300Z",
     frames: 3050,

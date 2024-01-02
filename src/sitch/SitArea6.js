@@ -52,9 +52,9 @@ export const SitArea6 = {
     fromLat: 36.208582,
     fromLon: -115.984598,
 
-    fromAlt: 822,
-    fromAltMin: 400,
-    fromAltMax: 5000,
+    fromAltFeet: 2700,
+    fromAltFeetMin: 400,
+    fromAltFeetMax: 5000,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in

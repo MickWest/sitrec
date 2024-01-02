@@ -62,9 +62,9 @@ export const SitMH370Hoax = {
     fromLat: 7.750084115970515, // Indian ocean spculative MH370
     fromLon:95.8422752416429,
 
-    fromAlt: 707*5280,  // 707 miles is perigee (lowest point) of NROL-22's Molniya orbit
-    fromAltMin: 0,
-    fromAltMax: 2000*5280,
+    fromAltFeet: 707*5280,  // 707 miles is perigee (lowest point) of NROL-22's Molniya orbit
+    fromAltFeetMin: 0,
+    fromAltFeetMax: 2000*5280,
 
     lat:    7.750084115970515,
     lon:    95.8422752416429,
@@ -135,7 +135,7 @@ export const SitMH370Hoax = {
             id:"cameraTrack",
             frames:Sit.frames,
             munge: function(f) {
-                var pos = LLAToEUS(Sit.fromLat,Sit.fromLon, Sit.fromAlt)
+                var pos = LLAToEUS(Sit.fromLat,Sit.fromLon, f2m(Sit.fromAltFeet))
 
                 return {position: pos}
 

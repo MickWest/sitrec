@@ -13,6 +13,9 @@ export const SitDume = {
     jetStuff:false,
     animated:false,
 
+    displayFrustum: true,
+    frustumRadius: 200000,
+
     fps: 29.97,
     frames: 7027,
 
@@ -25,11 +28,11 @@ export const SitDume = {
     fromLat: 34.001241, // point dume
     fromLon:-118.806459,
 
-    fromAlt: 140,
-    fromAltMin: 0,
-    fromAltMax: 1000,
+    fromAltFeet: 140,
+    fromAltFeetMin: 0,
+    fromAltFeetMax: 1000,
 
-//    fromAlt: new CNodeGUIValue({id:"cameraAlt", value: 500, start:0, end:50000, step:1, desc:"Camera Altitude"},gui),
+//    fromAltFeet: new CNodeGUIValue({id:"cameraAlt", value: 500, start:0, end:50000, step:1, desc:"Camera Altitude"},gui),
     toLat: 33.814029,
     toLon: -116.679419,
     toAlt: 3302.2,

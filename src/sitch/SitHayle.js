@@ -49,9 +49,9 @@ export const SitHayle = {
     fromLat: 50.197944, // Hayle beach
     fromLon:-5.428180,
 
-    fromAlt: 19.4,
-    fromAltMin: 0,
-    fromAltMax: 50,
+    fromAltFeet: 64,
+    fromAltFeetMin: 0,
+    fromAltFeetMax: 100,
 
     toLat: 50.222085,
     toLon: -5.468553,

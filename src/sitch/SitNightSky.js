@@ -35,7 +35,7 @@ export const SitNightSky = {
     globeScale: 1,  // was defaulting to 0.99
     displayFrustum: true,
     frustumRadius: 500000,
-    localLatLon: true,  // TODO - implement getting local - see code in CSituation.js, line 162
+    localLatLon: true,
 
     showDateTime: true, // opens the DateTime folder in the UI
 
@@ -72,9 +72,9 @@ export const SitNightSky = {
     fromLat: 51.48,
     fromLon: -3.16,
 
-    fromAlt: 822,
-    fromAltMin: 0,
-    fromAltMax: 55000,
+    fromAltFeet: 822,
+    fromAltFeetMin: 0,
+    fromAltFeetMax: 55000,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in

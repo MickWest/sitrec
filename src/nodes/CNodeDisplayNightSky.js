@@ -1591,6 +1591,7 @@ export function addNightSky() {
 
 }
 
+// TODO: check differences between this and the above GST calculator function.
 
 // Function to calculate Greenwich Sidereal Time (GST)
 // This is a simplified example; for more accurate calculations, you may want to use a library
@@ -1612,7 +1613,6 @@ function celestialToECEF(ra, dec, dist, gst) {
     const z_geo = dist * Math.sin(dec);
 
     // Step 2: Convert to ECEF Coordinates
-
     const x_ecef =   x_geo * Math.cos(gst) + y_geo * Math.sin(gst);
     const y_ecef = - x_geo * Math.sin(gst) + y_geo * Math.cos(gst);
 
@@ -1632,6 +1632,5 @@ function eciKToEcefM(eci, date) {
     const yEcef = -x * Math.sin(gst) + y * Math.cos(gst);
     const zEcef = z;  // No change in the z-coordinate
 
- //   return { x: xEcef, y: yEcef, z: zEcef };
     return V3(x*1000,y*1000,z*1000)
 }

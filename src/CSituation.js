@@ -280,11 +280,11 @@ export class CSituation {
                         desc: "Camera Lon"
                     }, gui),
 
-                    fromAlt: new CNodeGUIValue({
+                    fromAltFeet: new CNodeGUIValue({
                         id: "cameraAlt",
-                        value: this.fromAlt,
-                        start: this.fromAltMin,
-                        end: this.fromAltMax,
+                        value: this.fromAltFeet,
+                        start: this.fromAltFeetMin,
+                        end: this.fromAltFeetMax,
                         step: 0.1,
                         desc: "Camera Alt (ft)"
                     }, gui),
@@ -301,11 +301,11 @@ export class CSituation {
                 new CNodeUICameraLLA({
                     fromLat: this.fromLat, // e.g. point dume
                     fromLon: this.fromLon,
-                    fromAlt: new CNodeGUIValue({
+                    fromAltFeet: new CNodeGUIValue({
                         id: "cameraAlt",
-                        value: this.fromAlt,
-                        start: this.fromAltMin,
-                        end: this.fromAltMax,
+                        value: this.fromAltFeet,
+                        start: this.fromAltFeetMin,
+                        end: this.fromAltFeetMax,
                         step: 0.1,
                         desc: "Camera Alt (ft)"
                     }, gui),
@@ -398,7 +398,7 @@ export class CSituation {
                 layers: LAYER.MASK_HELPERS,
             })
         } else {
-            makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAlt);
+            makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAltFeet);
         }
     }
 

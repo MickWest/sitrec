@@ -23,6 +23,8 @@ export const Sit29Palms = {
     jetStuff: false,
     animated: true,
     nightSky: true,
+    displayFrustum: true,
+    frustumRadius: 10000,
 
     files: {
         threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
@@ -44,9 +46,9 @@ export const Sit29Palms = {
     fromLat: 34.399060162,
     fromLon: -115.858257450,
 
-    fromAlt: 426,
-    fromAltMin: 400,
-    fromAltMax: 500,
+    fromAltFeet: 1402,   ///426,
+    fromAltFeetMin: 1300,
+    fromAltFeetMax: 1500,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in

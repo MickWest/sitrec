@@ -12,7 +12,7 @@ export class CNodeUICameraLLA extends CNode {
         this.input("camera")
         this.input("fromLat",true)
         this.input("fromLon",true)
-        this.input("fromAlt",true)
+        this.input("fromAltFeet",true)
         this.input("toLat",true)
         this.input("toLon",true)
         this.input("toAlt",true)
@@ -42,7 +42,7 @@ export class CNodeUICameraLLA extends CNode {
             from = LLAToEUSMAPGlobe(
                 this.in.fromLat.v(f),
                 this.in.fromLon.v(f),
-                f2m(this.in.fromAlt.v(f)),
+                f2m(this.in.fromAltFeet.v(f)),
                 radius
             )
             camera.position.copy(from)
