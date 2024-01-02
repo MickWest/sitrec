@@ -126,7 +126,7 @@ export class CNodeDateTime extends CNode {
             this.dateTimeFolder.close();
         }
 
-        this.update();
+        this.update(0);
 
     }
 
