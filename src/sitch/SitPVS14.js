@@ -72,6 +72,10 @@ export const SitPVS14 = {
     fromLat: 36.5437,
     fromLon: -100.352,
 
+    fromAltFeet: 11000,
+    fromAltMin: 5000,
+    fromAltMax: 15000,
+
     ignoreFromLat: true,
 
     // with a ptz setup, add showGUI:true to allow changing it
