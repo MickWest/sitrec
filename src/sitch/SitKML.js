@@ -394,7 +394,7 @@ export const SitKML = {
                 new CNodeCamera({
                     ...lookCameraDefaults,
                 }).addController("TrackAzEl",{
-                    cameraTrack: "cameraTrack",
+                    sourceTrack: "cameraTrack",
                 })
 
 
@@ -403,7 +403,7 @@ export const SitKML = {
                 new CNodeCamera({
                     ...lookCameraDefaults,
                 }).addController("TrackToTrack", {
-                    cameraTrack: "cameraTrack",
+                    sourceTrack: "cameraTrack",
                     targetTrack: "targetTrackAverage",
                 })
             }
@@ -457,7 +457,6 @@ export const SitKML = {
                 draggable: true, resizable: true,
                 left: 0.75, top: 0, width: -9 / 16, height: 1,
                 camera: this.lookCamera,
-                //cameraTrack: "cameraTrack",
                 doubleClickFullScreen: false,
                 background: new Color('#132d44'),
             }, Sit.lookView))

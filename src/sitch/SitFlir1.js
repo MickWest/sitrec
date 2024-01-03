@@ -342,7 +342,7 @@ export const SitFlir1 = {
             far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
         }).addController("TrackToTrack", {
-            cameraTrack: "JetLOS",
+            sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
 

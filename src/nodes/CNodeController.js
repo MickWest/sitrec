@@ -8,65 +8,64 @@ import {GlobalPTZ, NodeMan} from "../Globals";
 export class CNodeController extends CNode {
     constructor(v) {
         super(v);
-        // this.cameraNode = NodeMan.get(v.cameraNode);
-        // assert (this.cameraNode !== undefined, "CNodeController needs a camera node to control")
-        // assert (v.camera === undefined, "CNodeController passed a camera as well as cameraNode")
+        // this.objectNode = NodeMan.get(v.objectNode);
+        // assert (this.objectNode !== undefined, "CNodeController needs a camera node to control")
+        // assert (v.camera === undefined, "CNodeController passed a camera as well as objectNode")
 
     }
 }
 
-export class CNodeCameraControllerTrackToTrack extends CNodeController {
+export class CNodeControllerTrackToTrack extends CNodeController {
     constructor(v) {
         super(v);
-        this.input("cameraTrack")
+        this.input("sourceTrack")
         this.input("targetTrack")
     }
 
-    apply(f, cameraNode) {
-        const camera = cameraNode.camera
-        var camPos = this.in.cameraTrack.p(f)
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        var camPos = this.in.sourceTrack.p(f)
         var targetPos = this.in.targetTrack.p(f)
         camera.position.copy(camPos);
         camera.lookAt(targetPos)
 
-        cameraNode.syncUIPosition(); //
+        objectNode.syncUIPosition(); //
     }
 }
 
-export class CNodeCameraControllerTilt extends CNodeController {
+export class CNodeControllerTilt extends CNodeController {
     constructor(v) {
         super(v);
         this.input("tilt")
     }
 
-    apply(f, cameraNode) {
-        const camera = cameraNode.camera
+    apply(f, objectNode) {
+        const camera = objectNode.camera
         const tilt = this.in.tilt.v(f)
         camera.rotateX(-radians(tilt))
     }
 }
 
-export class CNodeCameraControllerTrackAzEl extends CNodeController {
+export class CNodeControllerTrackAzEl extends CNodeController {
     constructor(v) {
         super(v);
-        this.input("cameraTrack")
+        this.input("sourceTrack")
     }
 
-    apply(f, cameraNode) {
-        const camera = cameraNode.camera
-        var camPos = this.in.cameraTrack.p(f)
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        var camPos = this.in.sourceTrack.p(f)
         camera.position.copy(camPos);
-        cameraNode.syncUIPosition();
+        objectNode.syncUIPosition();
     }
-
 }
 
-export class CNodeCameraControllerManualPosition extends CNodeController {
+export class CNodeControllerManualPosition extends CNodeController {
     constructor(v) {
         super(v);
     }
 
-    apply(f, cameraNode) {
+    apply(f, objectNode) {
         if (isKeyHeld('l')) {
             const mainView = ViewMan.get("mainView")
             const cursorPos = mainView.cursorSprite.position.clone();
@@ -84,21 +83,21 @@ export class CNodeCameraControllerManualPosition extends CNodeController {
             if (GlobalPTZ !== undefined) {
                 GlobalPTZ.refresh();
             }
-            cameraNode.syncUIPosition();
+            objectNode.syncUIPosition();
         }
 
     }
 
 }
 
-export class CNodeCameraControllerFocalLength extends CNodeController {
+export class CNodeControllerFocalLength extends CNodeController {
     constructor(v) {
         super(v);
         this.input("focalLength")
     }
 
-    apply(f, cameraNode) {
-        const camera = cameraNode.camera
+    apply(f, objectNode) {
+        const camera = objectNode.camera
         const focal_len = this.in.focalLength.v(f).focal_len;
         const referenceFocalLength = 166;               // reference focal length
         const referenceFOV = radians(5)         // reference FOV angle
@@ -109,13 +108,13 @@ export class CNodeCameraControllerFocalLength extends CNodeController {
         camera.fov = vFOV;
         camera.updateProjectionMatrix()
 
-        cameraNode.syncUIPosition();
+        objectNode.syncUIPosition();
     }
 
 }
 
 // look at a specified LLA point
-export class CNodeCameraControllerLookAtLLA extends CNodeController {
+export class CNodeControllerLookAtLLA extends CNodeController {
     constructor(v) {
         super(v);
         this.input("lat")
@@ -123,8 +122,8 @@ export class CNodeCameraControllerLookAtLLA extends CNodeController {
         this.input("alt")
     }
 
-    apply(f, cameraNode) {
-        const camera = cameraNode.camera
+    apply(f, objectNode) {
+        const camera = objectNode.camera
         var radius = wgs84.RADIUS
 
         var to = LLAToEUSMAP(
@@ -135,7 +134,7 @@ export class CNodeCameraControllerLookAtLLA extends CNodeController {
         )
         camera.lookAt(to)
 
-        cameraNode.syncUIPosition();
+        objectNode.syncUIPosition();
     }
 
 }

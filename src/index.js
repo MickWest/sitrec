@@ -94,12 +94,9 @@ setGlobalURLParams(urlParams)
 
 
 
-// We default to gimbal on the public version
-// make sure this works before deployment.
-// this is a local variable that might have incorrect case
-// and allows for variants like FLIR1/Tictac
-// to test for a particular situation, use Sit.name
-var situation = "gimbal";
+// We default to nightsky on the public version
+// as it's now the most popular usage.
+var situation = "nightsky";
 
 ///////////////////////////////////////////////////////////////////////
 // LOCAL TEST  agua, linetest, rgb,  gimbal, gofast, flir1
@@ -137,7 +134,7 @@ if (toTest !== undefined) {
 
 }
 
-// Either "sit" or "sitch" can be used to specify a situation in the url params
+// Either "sit" (deprecated) or "sitch" can be used to specify a situation in the url params
 if (urlParams.get("sit")) {
     situation = urlParams.get("sit")
 }

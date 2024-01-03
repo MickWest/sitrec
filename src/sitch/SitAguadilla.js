@@ -913,7 +913,7 @@ export const SitAguadilla = {
             far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
         }).addController("TrackToTrack", {
-            cameraTrack: "jetTrackSmooth",
+            sourceTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
         })
 

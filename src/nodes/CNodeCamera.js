@@ -28,11 +28,8 @@ export class CNodeCamera extends CNode3D {
 
     }
 
+
     get camera() { return this._object}
-
-
-
-
 
     update(f) {
         super.update(f);

@@ -19,7 +19,7 @@ import {isLocal, SITREC_SERVER} from "../../config";
 import {FileManager} from "../CManager";
 import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
-import {CNodeCameraControllerManualPosition} from "../nodes/CNodeController";
+import {CNodeControllerManualPosition} from "../nodes/CNodeController";
 
 
 export const SitNightSky = {
@@ -147,17 +147,17 @@ export const SitNightSky = {
             id: "cameraSwitch",
             desc: "Camera Motion",
             inputs: {
-                "Manual Position": new CNodeCameraControllerManualPosition ({
+                "Manual Position": new CNodeControllerManualPosition ({
                     id: "manualController"
                 }),
-                // "XXX Position": new CNodeCameraControllerManualPosition ({
+                // "XXX Position": new CNodeControllerManualPosition ({
                 //     id: "manual2Controller"
                 // }),
 
             }
         }, gui)
 
-        // cameraSwitch.addOption("YYY Position", new CNodeCameraControllerManualPosition ({
+        // cameraSwitch.addOption("YYY Position", new CNodeControllerManualPosition ({
         //     id: "manual3Controller"
         // }))
 

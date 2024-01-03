@@ -137,7 +137,7 @@ export const SitPVS14 = {
             near: 1,
             far: Sit.farClipNAR,
         }).addController("TrackAzEl",{
-            cameraTrack: "cameraTrack",
+            sourceTrack: "cameraTrack",
         })
 
 

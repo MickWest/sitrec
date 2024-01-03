@@ -468,7 +468,7 @@ export var SitGoFast = {
             far: this.farClipNAR,
             layers: LAYER.MASK_NARONLY,
         }).addController("TrackToTrack", {
-            cameraTrack: "JetLOS",
+            sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
 
