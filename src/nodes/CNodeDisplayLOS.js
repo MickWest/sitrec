@@ -4,7 +4,7 @@ import {Sit} from "../Globals";
 import {DebugSphere, dispose} from "../threeExt";
 import {par} from "../par";
 import {metersFromMiles} from "../utils";
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 
 import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
 import {LineMaterial}               from "../../three.js/examples/jsm/lines/LineMaterial";
@@ -17,7 +17,7 @@ var matLineGreyThin = makeMatLine(0x404040, 0.50);
 //  .heading = Vector3, unit vector direction
 // clipSeaLevel = flag if to stop the LOS at sea level (e.g. with GoFast sitch)
 // highlightLines = object keyed on frame nubmers that need a different color
-export class CNodeDisplayLOS extends CNode3D {
+export class CNodeDisplayLOS extends CNode3DGroup {
     constructor(v) {
         super(v);
 

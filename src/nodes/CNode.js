@@ -58,6 +58,10 @@ class CNode {
     // "in" is just short for "inputs"
     get in() {return this.inputs}
 
+    update() {
+        // virtual function, derived nodes override to implement per-frame updates
+    }
+
     show() {
         this.visible = true;
     }

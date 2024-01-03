@@ -8,7 +8,7 @@ import { Wireframe }                from '../../three.js/examples/jsm/lines/Wire
 import { WireframeGeometry2 }       from '../../three.js/examples/jsm/lines/WireframeGeometry2.js';
 
 import {Line2}                      from "../../three.js/examples/jsm/lines/Line2";
-import {CNode3D}                    from "./CNode3D";
+import {CNode3DGroup}                    from "./CNode3DGroup";
 import {wgs84}                      from "../LLA-ECEF-ENU";
 import {drop}                       from "../SphericalMath";
 import {LessDepth, Color,  LineSegments} from "../../three.js/build/three.module";
@@ -16,7 +16,7 @@ import {CNodeDisplayTargetSphere}   from "./CNodeDisplayTargetSphere";
 import * as LAYER                   from "../LayerMasks";
 import {par} from "../par";
 
-export class CNodeDisplayTrack extends CNode3D {
+export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
         super(v);
 

@@ -1,11 +1,11 @@
 import {radians, tan} from "../utils";
 import {LineGeometry} from "../../three.js/examples/jsm/lines/LineGeometry";
 import {Line2} from "../../three.js/examples/jsm/lines/Line2";
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {dispose} from "../threeExt";
 
-export class CNodeDisplayCameraFrustumATFLIR extends CNode3D {
+export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
         super(v);
         this.radius = v.radius ?? 100
@@ -38,7 +38,7 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3D {
     }
 }
 
-export class CNodeDisplayCameraFrustum extends CNode3D {
+export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     constructor(v) {
        // v.container = v.camera;
         super(v);

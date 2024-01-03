@@ -3,7 +3,7 @@ import seedrandom from "seedrandom";
 import {assert, metersFromMiles} from "../utils";
 import {drop} from "../SphericalMath";
 import {dispose} from "../threeExt";
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 
 
 class SimpleOceanGeometry extends BufferGeometry {
@@ -71,7 +71,7 @@ class SimpleOceanGeometry extends BufferGeometry {
     }
 }
 
-export class CNodeDisplayOcean extends CNode3D {
+export class CNodeDisplayOcean extends CNode3DGroup {
     constructor(v) {
         super(v);
         this.checkInputs(["material"])

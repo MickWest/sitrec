@@ -1,7 +1,7 @@
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 import {NodeMan} from "../Globals";
 
-export class CNode3DTarget extends CNode3D {
+export class CNode3DTarget extends CNode3DGroup {
     constructor(v) {
         super(v);
         //this.checkInputs(["track", "size"])

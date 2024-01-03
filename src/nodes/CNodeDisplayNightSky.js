@@ -1,4 +1,4 @@
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 import {GlobalNightSkyScene, GlobalScene, setupNightSkyScene} from "../LocalFrame";
 import {AxesHelper, Group, Matrix3, Matrix4, Raycaster, Scene, Vector3} from "../../three.js/build/three.module";
 import * as THREE from "../../three.js/build/three.module";
@@ -225,7 +225,7 @@ class CTLEData {
 }
 
 
-export class CNodeDisplayNightSky extends CNode3D {
+export class CNodeDisplayNightSky extends CNode3DGroup {
 
     constructor(v) {
         if (v.id === undefined) v.id = "NightSkyNode"

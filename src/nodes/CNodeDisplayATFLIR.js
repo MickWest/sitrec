@@ -1,4 +1,4 @@
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 import {assert, radians} from "../utils";
 import {
     getGlareAngleFromFrame,
@@ -37,7 +37,7 @@ var matLineCyan = makeMatLine(0x00ffff,1.5);
 var matLineGreen = makeMatLine(0x00ff00);
 
 // Container for the various 3D movesl that make up the atflir
-export class CNodeDisplayATFLIR extends CNode3D {
+export class CNodeDisplayATFLIR extends CNode3DGroup {
     constructor(v) {
         super(v);
         PodFrame = new Group();

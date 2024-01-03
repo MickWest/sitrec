@@ -2,12 +2,11 @@ import {Group} from '../../three.js/build/three.module.js'
 import {CNode, NodeMan} from "./CNode";
 import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"
-import {makeMatLine} from "../MatLines";
 
-// a CNode3D encapsulates a THREE.Group one or more 3D objects
+// a CNode3DGroup encapsulates a THREE.Group one or more 3D objects
 // is a standard node with inputs, so it will respond to changes in the inputs
 // by calling the recalculate method.
-export class CNode3D extends CNode {
+export class CNode3DGroup extends CNode {
     constructor(v) {
         super(v);
 
@@ -25,6 +24,7 @@ export class CNode3D extends CNode {
     }
 
     update() {
+        super.update();
         if (this.visibleCheck !== undefined) {
             this.group.visible = this.visibleCheck();
         }
@@ -38,5 +38,4 @@ export class CNode3D extends CNode {
     }
 }
 
-var matLineWhiteThin = makeMatLine(0x808080, 0.75);
 

@@ -47,6 +47,7 @@ export class CNodeCamera extends CNode {
     get camera() { return this._camera}
 
     update(f) {
+        super.update(f);
         for (const controller of this.controllers) {
             controller.apply(f, this);
         }

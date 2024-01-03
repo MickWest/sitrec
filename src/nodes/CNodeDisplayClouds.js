@@ -3,7 +3,7 @@ import {dispose, V3} from "../threeExt";
 import {BufferGeometry, Float32BufferAttribute, Mesh} from "../../three.js/build/three.module";
 import seedrandom from "seedrandom";
 import {drop} from "../SphericalMath";
-import {CNode3D} from "./CNode3D";
+import {CNode3DGroup} from "./CNode3DGroup";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {par} from "../par";
@@ -79,7 +79,7 @@ class MultiCloudGeometry extends BufferGeometry {
 
 
 
-export class CNodeDisplayClouds extends CNode3D {
+export class CNodeDisplayClouds extends CNode3DGroup {
     constructor(v) {
         super(v);
         this.checkInputs(["cloudData", "material"])
