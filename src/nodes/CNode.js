@@ -58,8 +58,11 @@ class CNode {
     // "in" is just short for "inputs"
     get in() {return this.inputs}
 
-    update() {
+    update(f) {
         // virtual function, derived nodes override to implement per-frame updates
+        // here we just check f is defined to ensure derived update(f) functions
+        // are passing it down
+        assert(f !== undefined, "Something is not passing in f")
     }
 
     show() {

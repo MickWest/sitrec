@@ -79,7 +79,7 @@ class CNodeSwitch extends CNode {
         return this.inputs[this.choice].getValueFrame(f)
     }
 
-    // apply is used for controllers (like CNodeCameraController)
+    // apply is used for controllers (like CNodeController)
     // we want to have a selection of camera controllers
     // so we need to pass though the apply() call to the selected one
     apply(f, cam) {

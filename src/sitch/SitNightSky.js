@@ -18,8 +18,8 @@ import {MV3} from "../threeExt";
 import {isLocal, SITREC_SERVER} from "../../config";
 import {FileManager} from "../CManager";
 import {Rehoster} from "../CRehoster";
-import {CNodeCameraControllerManualPosition} from "../nodes/CNodeCamera";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
+import {CNodeCameraControllerManualPosition} from "../nodes/CNodeController";
 
 
 export const SitNightSky = {

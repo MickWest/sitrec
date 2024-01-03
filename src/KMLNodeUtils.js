@@ -12,8 +12,8 @@ import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
-import {CNodeCameraControllerTrackAzEl} from "./nodes/CNodeCamera";
 import {GlobalDateTimeNode} from "./nodes/CNodeDateTime";
+import {CNodeCameraControllerTrackAzEl} from "./nodes/CNodeController";
 
 
 export const KMLTrackManager = new CManager();
