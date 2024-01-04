@@ -163,6 +163,8 @@ export const SitKML = {
             })
         }
 
+
+
         // new CNodeKMLDataTrack({
         //     id:"KMLTargetData",
         //     KMLFile: "KMLTarget",
@@ -195,16 +197,20 @@ export const SitKML = {
         //     iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations"},gui),
         // })
 
-        new CNodeSmoothedPositionTrack({
-            id: "targetTrackAverage",
-            source: "targetTrack",
-            // new spline based smoothing in 3D
-            method: "catmull",
+        if (NodeMan.exists("targetTrack")) {
+            new CNodeSmoothedPositionTrack({
+                id: "targetTrackAverage",
+                source: "targetTrack",
+                // new spline based smoothing in 3D
+                method: "catmull",
 //            method:"chordal",
 //            intervals: new CNodeGUIValue({value: 119, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-            intervals: new CNodeGUIValue({value: 20, start: 1, end: 200, step: 1, desc: "Catmull Intervals"}, gui),
-            tension: new CNodeGUIValue({value: 0.5, start: 0, end: 5, step: 0.001, desc: "Catmull Tension"}, gui),
-        })
+                intervals: new CNodeGUIValue({value: 20, start: 1, end: 200, step: 1, desc: "Catmull Intervals"}, gui),
+                tension: new CNodeGUIValue({value: 0.5, start: 0, end: 5, step: 0.001, desc: "Catmull Tension"}, gui),
+            })
+        }
+
+
 
 
         if (FileManager.exists("KMLOther")) {
@@ -264,16 +270,18 @@ export const SitKML = {
             })
         }
 
-        // Segment of target track that's covered by the animation
-        // here a thicker red track segment
-        new CNodeDisplayTrack({
-            id: "KMLDisplayTarget",
-            track: "targetTrackAverage",
-            color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
-            width: 4,
-            //    toGround:5*30, // spacing for lines to ground
-            layers: LAYER.MASK_HELPERS,
-        })
+        if (NodeMan.exists("targetTrackAverage")) {
+            // Segment of target track that's covered by the animation
+            // here a thicker red track segment
+            new CNodeDisplayTrack({
+                id: "KMLDisplayTarget",
+                track: "targetTrackAverage",
+                color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
+                width: 4,
+                //    toGround:5*30, // spacing for lines to ground
+                layers: LAYER.MASK_HELPERS,
+            })
+        }
 
         if (NodeMan.exists("KMLTargetData")) {
             new CNodeDisplayTrack({
@@ -293,15 +301,17 @@ export const SitKML = {
         // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
 
 
-        // DISPLAY The line from the camera track to the target track
-        new CNodeDisplayTrackToTrack({
-            id: "DisplayLOS",
-            cameraTrack: "cameraTrack",
-            targetTrack: "targetTrackAverage",
-            color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
-            width: 1,
-            layers: LAYER.MASK_HELPERS,
-        })
+        if (NodeMan.exists("targetTrackAverage")) {
+            // DISPLAY The line from the camera track to the target track
+            new CNodeDisplayTrackToTrack({
+                id: "DisplayLOS",
+                cameraTrack: "cameraTrack",
+                targetTrack: "targetTrackAverage",
+                color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
+                width: 1,
+                layers: LAYER.MASK_HELPERS,
+            })
+        }
 
 
         if (!Sit.landingLights) {
@@ -314,62 +324,68 @@ export const SitKML = {
                 }
             }
 
-            // optional target model
-            if (Sit.targetObject) {
-                new CNodeDisplayTargetModel({
-                    track: "targetTrackAverage",
-                    TargetObjectFile: Sit.targetObject.file,
-                    layers: LAYER.MASK_NAR,
-                    ...maybeWind,
-                })
-            } else {
+            if (NodeMan.exists("targetTrackAverage")) {
+                // optional target model
+                if (Sit.targetObject) {
+                    new CNodeDisplayTargetModel({
+                        track: "targetTrackAverage",
+                        TargetObjectFile: Sit.targetObject.file,
+                        layers: LAYER.MASK_NAR,
+                        ...maybeWind,
+                    })
+                } else {
 
-                new CNodeDisplayTargetSphere({
+                    new CNodeDisplayTargetSphere({
+                        inputs: {
+                            track: "targetTrackAverage",
+                            cameraTrack: "cameraTrack",
+                            size: new CNodeScale("sizeScaled", scaleF2M,
+                                new CNodeGUIValue({
+                                    value: Sit.targetSize,
+                                    start: 1,
+                                    end: 1000,
+                                    step: 0.1,
+                                    desc: "Target size ft"
+                                }, gui)
+                            )
+                        },
+                        layers: LAYER.MASK_NARONLY,
+                    })
+                }
+            }
+
+        } else {
+            if (NodeMan.exists("targetTrackAverage")) {
+                // landing lights are just a sphere scaled by the distance and the view angle
+                // (i.e. you get a brighter light if it's shining at the camera
+                new CNodeDisplayLandingLights({
                     inputs: {
                         track: "targetTrackAverage",
                         cameraTrack: "cameraTrack",
                         size: new CNodeScale("sizeScaled", scaleF2M,
                             new CNodeGUIValue({
                                 value: Sit.targetSize,
-                                start: 1,
-                                end: 1000,
+                                start: 1000,
+                                end: 20000,
                                 step: 0.1,
-                                desc: "Target size ft"
+                                desc: "Landing Light Scale"
                             }, gui)
                         )
                     },
                     layers: LAYER.MASK_NARONLY,
                 })
             }
-
-
-        } else {
-            // landing lights are just a sphere scaled by the distance and the view angle
-            // (i.e. you get a brighter light if it's shining at the camera
-            new CNodeDisplayLandingLights({
-                inputs: {
-                    track: "targetTrackAverage",
-                    cameraTrack: "cameraTrack",
-                    size: new CNodeScale("sizeScaled", scaleF2M,
-                        new CNodeGUIValue({
-                            value: Sit.targetSize,
-                            start: 1000,
-                            end: 20000,
-                            step: 0.1,
-                            desc: "Landing Light Scale"
-                        }, gui)
-                    )
-                },
-                layers: LAYER.MASK_NARONLY,
-            })
         }
 
 
-        // Spheres displayed in the main view (helpers)
-        new CNodeDisplayTargetSphere({
-            track: "targetTrackAverage",
-            size: this.cameraSphereSize, color: "blue", layers: LAYER.MASK_HELPERS,
-        })
+        if (NodeMan.exists("targetTrackAverage")) {
+            // Spheres displayed in the main view (helpers)
+            new CNodeDisplayTargetSphere({
+                track: "targetTrackAverage",
+                size: this.cameraSphereSize, color: "blue", layers: LAYER.MASK_HELPERS,
+            })
+        }
+
         new CNodeDisplayTargetSphere({
             track: "cameraTrack",
             size: this.cameraSphereSize, color: "yellow", layers: LAYER.MASK_HELPERS,
@@ -400,12 +416,21 @@ export const SitKML = {
 
             } else {
 
-                new CNodeCamera({
+                const cam = new CNodeCamera({
                     ...lookCameraDefaults,
-                }).addController("TrackToTrack", {
-                    sourceTrack: "cameraTrack",
-                    targetTrack: "targetTrackAverage",
                 })
+
+                if (NodeMan.exists("targetTrackAverage")) {
+
+                    cam.addController("TrackToTrack", {
+                        sourceTrack: "cameraTrack",
+                        targetTrack: "targetTrackAverage",
+                    })
+                } else {
+                    cam.addController("TrackAzEl", {
+                        sourceTrack: "cameraTrack",
+                    })
+                }
             }
 
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY?

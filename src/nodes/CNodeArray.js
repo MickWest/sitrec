@@ -1,4 +1,4 @@
-import {assert, RollingAverage} from "../utils";
+import {assert, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";
 
 export class CNodeArray extends CNode {
@@ -30,10 +30,34 @@ export class CNodeSmoothedArray extends CNodeEmptyArray {
         super(v)
         this.input("source") // source arrau node
         this.input("smooth") // amount to smooth (rolling average window size)
-        v.array = RollingAverage(this.in.source.array, this.in.smooth.v0)
         v.frames = v.array.length;
+        this.recalculate();
+    }
+
+    recalculate() {
+        this.array = RollingAverage(this.in.source.array, this.in.smooth.v0)
     }
 }
+
+
+export function makeArrayNodeFromColumn(id, array, columnIndex, smooth=0, degrees=false) {
+    const extractedArray = array.map(x => x[columnIndex])
+    let smoothedArray;
+    if (smooth !== 0) {
+        if (degrees)
+            smoothedArray = RollingAverageDegrees(extractedArray, smooth);
+        else
+            smoothedArray = RollingAverage(extractedArray, smooth);
+    } else {
+        smoothedArray = extractedArray
+    }
+
+    return new CNodeArray({
+        id: id,
+        array: smoothedArray,
+    })
+}
+
 
 
 

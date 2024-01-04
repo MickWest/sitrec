@@ -14,14 +14,7 @@ export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
         super(v);
     }
-
-
-
-
 }
-
-
-
 
 function trackLength(node) {
     const frames= node.frames;
@@ -325,6 +318,28 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
 }
 
+// here I'm wanting to smooth at headings
+//     put into one array? or an object????
+//
+// // given
+// class CNodeSmoothElement extends CNode {
+//     constructor(v) {
+//         super(v);
+//         this.input("data");
+//         this.frames = this.in.data.frames;
+//         this.key = v.key;
+//         this.recalculate();
+//     }
+//
+//
+//     recalculate() {
+//         const data = this.in.data;
+//     }
+//
+//
+//
+// }
+
 
 export class CNodeTrackAir extends CNodeTrack {
     constructor(v) {
@@ -393,9 +408,6 @@ export class CNodeInterpolateTwoFramesTrack extends CNodeTrack {
 // the create a track node from that
 // Note, the track node might be recalculated, as it depends on the global start time
 export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
-
-
-
     // determine what type of track it is
     const fileInfo = FileManager.getInfo(sourceFile);
     const ext = getFileExtension(fileInfo.filename)

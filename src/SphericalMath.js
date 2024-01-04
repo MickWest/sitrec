@@ -1,7 +1,8 @@
 import {Plane, Vector3} from '../three.js/build/three.module.js';
 import {atan2, cos, degrees, radians, sin} from "./utils.js";
 import {V3} from "./threeExt";
-import {wgs84} from "./LLA-ECEF-ENU";
+import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";
+import {Sit} from "./Globals";
 
 // Local coordinates are a local tangent plane similar to ENU, but with N = -Z
 // so XYZ = EUS (East, Up, South), not ENU (East, North, Up)
@@ -172,9 +173,33 @@ export {drop, drop3, CueAz,PRJ2EA,EAJP2PR,XYZJ2PR,XYZ2EA,EA2XYZ,PRJ2XYZ}
 // origin might be above the surface (in Gimbal it's the start of the jet track, so that is passed in
 export function getLocalUpVector(position, radius=wgs84.RADIUS) {
     const center = V3(0, -(radius), 0)
-    var centerToPosition = position.clone().sub(center)
+    const centerToPosition = position.clone().sub(center)
     return centerToPosition.normalize();
 }
+
+export function getLocalNorthVector(position, radius=wgs84.RADIUS) {
+    // to get a northish direction we get the vector from here to the north pole.
+    // to get the north pole in EUS, we take the north pole's position in ECEF
+    const northPoleECEF = V3(0,0,radius)
+    const northPoleEUS = ECEF2EUS(northPoleECEF,radians(Sit.lat),radians(Sit.lon),radius)
+    const toNorth = northPoleEUS.clone().sub(position).normalize()
+    // take only the component perpendicular
+    const up = getLocalUpVector(position, radius);
+    const dot = toNorth.dot(up)
+    const north = toNorth.clone().sub(up.clone().multiplyScalar(dot)).normalize()
+    return north;
+}
+
+export function getLocalEastVector(position, radius=wgs84.RADIUS) {
+    const up = getLocalUpVector(position,radius);
+    const north = getLocalNorthVector(position, radius);
+    const south = north.clone().negate()
+    const east = V3().crossVectors(up, south)
+    return east;
+
+
+}
+
 
 // given a position (A) and a vector direction (fwd), and a radius (might be tops of clouds), then find the position of the horizion
 // in that direction

@@ -57,6 +57,9 @@ assert = function(condition,message=false) {
 export {metersFromMiles, assert,MD5,abs,floor,sin,cos,tan,asin,acos,atan,atan2,radians,degrees,pad}
 
 
+
+
+
 // given an array and a sample window size, then return a same sized array
 // that has been smoothed by the rolling average method
 // (somewhat ad-hoc method, by Mick)
@@ -135,6 +138,31 @@ export function RollingAverage(data, window, iterations=1) {
     }
     return output;
 }
+
+
+// same for degrees, handling wrap-around by independently smoothing the sine and cos of the angles
+export function RollingAverageDegrees(data, window, iterations=1) {
+    const length = data.length;
+
+    const sines = new Array(length)
+    const cosines = new Array(length)
+    for (let i=0;i<length;i++) {
+        const rad = radians(data[i])
+        sines[i] = Math.sin(rad)
+        cosines[i] = Math.cos(rad)
+    }
+
+    const smoothedSines   = RollingAverage(sines,   window, iterations)
+    const smoothedCosines = RollingAverage(cosines, window, iterations)
+
+    const output = new Array(length)
+    for (let i=0;i<length;i++) {
+        output[i] = degrees(Math.atan2(smoothedSines[i],smoothedCosines[i]))
+    }
+
+    return output;
+}
+
 
 // given a 1d array of values, calculate the local derivatives of those values
 // then smooth that

@@ -4,6 +4,8 @@ import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {GlobalPTZ, NodeMan} from "../Globals";
+import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
+import {DebugArrow} from "../threeExt";
 
 export class CNodeController extends CNode {
     constructor(v) {
@@ -137,4 +139,66 @@ export class CNodeControllerLookAtLLA extends CNodeController {
         objectNode.syncUIPosition();
     }
 
+}
+
+
+export class CNodeControllerAzElData extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("sourceTrack")
+    }
+
+    apply( f, objectNode) {
+        // here we'll have:
+        // focal_len
+        // heading, pitch, roll,
+        // gHeading, gPitch, gRoll
+
+        const data = this.in.sourceTrack.v(f)
+      //  console.log (data.heading+" - "+data.gHeading)
+        const pitch = data.pitch;
+        const heading = data.heading;
+        const object = objectNode._object;
+
+        applyPitchAndHeading(object, pitch, heading)
+    }
+}
+
+export class CNodeControllerAbsolutePitchHeading extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("pitch")
+        this.input("heading")
+    }
+
+    apply( f, objectNode) {
+        const pitch = this.in.pitch.v(f);
+        const heading = this.in.heading.v(f);
+        const object = objectNode._object;
+        applyPitchAndHeading(object, pitch, heading)
+    }
+}
+
+
+export function applyPitchAndHeading(object, pitch, heading)
+{
+
+    const upAxis = getLocalUpVector(object.position)
+    const eastAxis = getLocalEastVector(object.position);
+    const northAxis = getLocalNorthVector(object.position)
+    const fwd = northAxis.clone()
+
+    fwd.applyAxisAngle(eastAxis, radians(pitch))
+    fwd.applyAxisAngle(upAxis, -radians(heading))
+    fwd.add(object.position);
+    object.up = upAxis;
+    object.lookAt(fwd)
+    // if (this.roll !== undefined ) {
+    //     object.rotateZ(radians(this.roll))
+    // }
+
+    const arrowDir = northAxis.clone().applyAxisAngle(upAxis, -radians(heading))
+    DebugArrow("DroneHeading", arrowDir, object.position)
+    //    const arrowDir2 = northAxis.clone().applyAxisAngle(upAxis, -radians(data.gHeading))
+    //    DebugArrow("DroneGimbalHeading", arrowDir2, object.position, 100,"#FFFF00")
 }

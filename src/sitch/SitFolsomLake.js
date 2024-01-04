@@ -1,4 +1,9 @@
 import {SitKML} from "./SitKML";
+import {NodeMan} from "../Globals";
+import {CNodeControllerAzElData} from "../nodes/CNodeController";
+import {makeArrayNodeFromColumn} from "../nodes/CNodeArray";
+import {assert} from "../utils"
+import {SRT} from "../KMLUtils";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake = {
@@ -45,13 +50,43 @@ export const SitFolsomLake = {
 
     // instead of a target KML file, we define a simple spline
     // in this case just ONE point
-    targetSpline: {
-        type: "linear",
-         initialPointsLLA: [
-            [0, 38.72275880556581, -121.16873415102312, 147.20740124210715]
-         ]
-    },
+    // targetSpline: {
+    //     type: "linear",
+    //      initialPointsLLA: [
+    //         [0, 38.72275880556581, -121.16873415102312, 147.20740124210715]
+    //      ]
+    // },
     showAltitude: true,
 
+    setup2: function() {
 
+        // smooth some parts of cameraTrack
+        // TODO: make this general and data driven, assuming the data exits
+        assert (NodeMan.exists("cameraTrack"), "cameraTrack missing")
+
+
+        const cameraTrack = NodeMan.get("cameraTrack");
+        const array = cameraTrack.array
+        assert (array !== undefined, "cameraTrack missing array object")
+
+
+        // makeArrayNodeFromColumn("headingCol",data, SRT.heading)
+        // makeArrayNodeFromColumn("pitchCol",data, SRT.pitch)
+        makeArrayNodeFromColumn("headingCol", array, "heading",30, true)
+        makeArrayNodeFromColumn("pitchCol", array, "pitch",30, true)
+
+        // NodeMan.get("lookCamera").addControllerNode(
+        //     new CNodeControllerAzElData({
+        //         sourceTrack: "cameraTrack",
+        //     })
+        // )
+
+        NodeMan.get("lookCamera").addController(
+            "AbsolutePitchHeading",
+            {pitch: "pitchCol", heading: "headingCol"}
+        )
+
+  //      NodeMan.reinterpret("cameraTrack", "SmoothedPositionTrack", {smooth:100}, "source")
+
+    }
 }

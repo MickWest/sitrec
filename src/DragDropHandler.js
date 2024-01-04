@@ -100,11 +100,10 @@ class CDragDropHandler {
 
     // a raw arraybuffer (result) has been loaded
     // parse the asset
-    parseResult(filename, result, newStaticURL)
-    {
-        console.log("Parsing result of dropped file: "+filename)
-        FileManager.parseAsset(filename,filename,result)
-            .then( parsedResult => {
+    parseResult(filename, result, newStaticURL) {
+        console.log("Parsing result of dropped file: " + filename)
+        FileManager.parseAsset(filename, filename, result)
+            .then(parsedResult => {
 
 
                 // Rehosting would be complicated with multiple results. Ignored for now.
@@ -140,6 +139,7 @@ class CDragDropHandler {
                         addKMLTracks([x.filename], true)
                     }
                 }
+                consle.log("DONE Parse " + filename)
             })
     }
 }

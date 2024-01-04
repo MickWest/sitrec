@@ -26,8 +26,8 @@ export class CNode3D extends CNode {
         }
     }
 
-    addController(type, def, id) {
-        this.addControllerNode(NodeMan.create("Controller"+type, def, id))
+    addController(type, def) {
+        this.addControllerNode(NodeMan.create("Controller"+type, def))
         return this;
     }
 

@@ -40,20 +40,78 @@ export class CNodeFactory extends CManager{
     // allow id specific in the definition (i.e {id:"someID",...}
     // OR pass in the id here (which we will do with data driven node creation
     // ensure ids are not set in two ways
-    create(type, def, id) {
+    create(type, def) {
         assert(this.nodeTypes[type] !== undefined, "Node type " + type + " undefined in node factory")
         const result =  new this.nodeTypes[type] (def)
-        console.log("FACTORY Making a "+type)
-        /* // is this needed a good idea? will an id have automatically been created if there was none?
-        if (id !== undefined) {
-            assert(result.id === undefined, "Creating a "+type+" node, with id = "+id+" but id already set to "+result.id)
-            result.id = id
-            this.add(id, result)
-        }
-
-         */
+        console.log("FACTORY Making a "+type+" id= ")
         return result;
     }
+
+
+
+    // rename a node without relinking any of the outputs
+    // for use with reinterpret
+    renameNodeUnsafe(id, newID) {
+        assert (!this.exists(newID), "renaming a node " + id + " to something that exists "+newID)
+        const node = this.get(id)
+        delete this.list[id]
+        node.id = newID;
+        this.add(newID, node)
+
+        // // relink outputs of the inputs to point to this new node
+        // for (let key in node.inputs) {
+        //     const inputNode = node.inputs[key];
+        //     for (let i=0;i<inputNode.outputs.length; i++) {
+        //         if (inputNode.outputs[i] === id) {
+        //             inputNode.outputs[i] = newID;
+        //             break;
+        //         }
+        //         assert(false, "Failed to find node "+id+" in outputs for " +inputNode.id)
+        //     }
+        //
+        // }
+
+        return node;
+
+    }
+
+
+    // Give a node, we create a new node, optionally with this one as an input (as sourceKey in the def)
+    // the old node is renamed with "_old", the new node has the old nodes name
+    // old will maintain the inputs, with need renaming to reflect
+    // new with have old as an input.
+    // outputs from old are transferred to new
+    // example: reinterpretNode("cameraTrack", "SmoothedPositionTrack", {smooth:30}, "source" )
+    reinterpret(id, type, def, sourceKey) {
+        const oldID = id+"_old";
+        const oldNode = this.renameNodeUnsafe(id, oldID)
+        const oldOutputs = oldNode.outputs;
+        oldNode.outputs = [];
+        if (sourceKey !== undefined) {
+            def[sourceKey] = oldID;
+        }
+
+        def.id = id;
+        const newNode = this.create(type,def)
+
+        // just copy over the old output array from the old node to the new node
+        // (the old node will now just have one output, to the new node)
+        newNode.outputs = oldOutputs;
+
+        // and fix those old outputs to point to the new node
+        for (let out of oldOutputs) {
+            for (let key in out.inputs) {
+                if (out.inputs[key] === oldNode) {
+                    out.inputs[key] = newNode;
+                }
+            }
+        }
+
+        oldNode.recalculateCascade(0)
+
+        return newNode;
+    }
+
 
     createNodes(nodes) {
         console.log("++++++++ createNodes")
