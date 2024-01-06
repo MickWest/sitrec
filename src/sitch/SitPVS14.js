@@ -1,19 +1,12 @@
 import {
-    AmbientLight,
-    AxesHelper,
     Color,
-    DirectionalLight,
-    DirectionalLightHelper,
-    Group,
-    Vector3
 } from "../../three.js/build/three.module";
-import {f2m, metersFromFeet, radians, scaleF2M, utcDate} from "../utils";
 import {GlobalPTZ, gui, guiTweaks, NodeMan, setMainCamera, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
 import {SetupGUIFrames} from "../JetGUI";
-import {initKeyboard, isKeyHeld, showHider} from "../KeyBoardHandler";
+import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
@@ -22,13 +15,11 @@ import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {DragDropHandler} from "../DragDropHandler";
 
 import {ViewMan} from "../nodes/CNodeView";
-import { ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
+import { ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
-import * as THREE from "../../three.js/build/three.module";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import * as LAYER from "../LayerMasks";
-import {NARCamera, setNARCamera} from "../JetCameras";
 
 
 export const SitPVS14 = {
@@ -140,12 +131,10 @@ export const SitPVS14 = {
             sourceTrack: "cameraTrack",
         })
 
-
-        setNARCamera(NodeMan.get("lookCamera").camera)
-        GlobalPTZ.camera = NARCamera;
-
         // PATCH: Override the JetStuff camera
         this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
+        GlobalPTZ.camera = this.lookCamera; // TEMPORARY
+
 
 
         const viewLook = new CNodeView3D({
@@ -163,7 +152,7 @@ export const SitPVS14 = {
         new CNodeDisplayTrack({
             id:"KMLDisplay",
             track: "cameraTrack",
-            color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
+            color: new CNodeConstant({value: new Color(1, 1, 0)}),
             width: 2,
             layers: LAYER.MASK_HELPERS,
         })
@@ -171,8 +160,8 @@ export const SitPVS14 = {
         new CNodeDisplayTrack({
             id:"KMLDisplayMainData",
             track: "KMLMainData",
-            color: new CNodeConstant({value: new THREE.Color(0.7, 0.7, 0)}),
-            dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
+            color: new CNodeConstant({value: new Color(0.7, 0.7, 0)}),
+            dropColor: new CNodeConstant({value: new Color(0.6, 0.6, 0)}),
             width: 1,
             ignoreAB:true,
             layers: LAYER.MASK_HELPERS,
