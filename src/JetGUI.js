@@ -61,7 +61,7 @@ export function SetupJetGUI() {
 
     }).listen().name('Jet Pitch')
 
-    guiTweaks.add(Sit, 'NARFOV', 0.1, 10, 0.01).onChange(value => {
+    guiTweaks.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
         const lookCamera = NodeMan.get("lookCamera").camera;
         lookCamera.fov = value
         lookCamera.updateProjectionMatrix()

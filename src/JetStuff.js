@@ -1329,7 +1329,7 @@ export function initJetStuff() {
 
     new CNodeCamera({
         id:"lookCamera",
-        fov: Sit.NARFOV,
+        fov: Sit.lookFOV,
         aspect: window.innerWidth / window.innerHeight,
         near: Sit.nearClipLook,
         far: Sit.farClipLook,

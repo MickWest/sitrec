@@ -83,7 +83,7 @@ export const SitAguadilla = {
     farClip: 500000,
     nearClip: 1,
 
-    // Near and far clipping distances for the NAR view (the plane camera view)
+    // Near and far clipping distances for the Look view (the plane camera view)
     farClipLook: 800000,
     nearClipLook: 1,
 
@@ -177,10 +177,10 @@ export const SitAguadilla = {
             renderFunction: function() {
 
                 var csv = FileManager.get("aguaCSV")
-                var narFOV = parseFloat(csv[par.frame][15])
-                narFOV = 4 * 135/narFOV
+                var lookFOV = parseFloat(csv[par.frame][15])
+                lookFOV = 4 * 135/lookFOV
                 const lookCamera = NodeMan.get("lookCamera").camera;
-                lookCamera.fov = narFOV
+                lookCamera.fov = lookFOV
                 lookCamera.updateProjectionMatrix()
 
                 if (par.lockCameraToJet) {
@@ -895,7 +895,7 @@ export const SitAguadilla = {
 
         this.lookCamera = new CNodeCamera({
             id:"lookCamera",
-            fov: this.NARFOV,
+            fov: this.lookFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipLook,
             far: this.farClipLook,
@@ -971,7 +971,7 @@ export const SitAguadilla = {
         const lookCamera = NodeMan.get("lookCamera").camera;
         // FOV in Three.js is vertical, wjhich was not an issue with the square videos
         // but you need to be aware of it in things like thig
-        gui.add(Sit, 'NARFOV', 0.1, 10, 0.01).onChange(value => {
+        gui.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
             lookCamera.fov = value
             lookCamera.updateProjectionMatrix()
             par.renderOne = true;

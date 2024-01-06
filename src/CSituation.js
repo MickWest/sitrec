@@ -59,7 +59,7 @@ const situationDefaults = {
 
     //
     mainFOV: 30,
-    NARFOV: 0.35,
+    lookFOV: 0.35,
     farClip: 5000000,
     nearClip: 1,
     farClipLook: 800000,

@@ -47,7 +47,7 @@ export var par = {
     TAS: 351,
     integrate: 1,
     showLookCam: true,
-    //  NARFOV:0.35,
+    //  lookFOV:0.35,
     mainFOV: 30,
     jetHeading: 0,
     effects: true,

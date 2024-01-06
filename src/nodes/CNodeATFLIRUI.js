@@ -23,7 +23,7 @@ export class   CNodeATFLIRUI extends CNodeViewUI {
         this.addText("reticle", "RTCL", 61.9, 3.1)
         this.addText("diamond", "V", 93.9, 4.5, 4)
         this.addText("operational", "OPR", 3.5, 7)
-        this.addText("zoom", Sit.NARFOV === 0.35 ? "Z 2.0" : "Z 1.0", 14.8, 7)
+        this.addText("zoom", Sit.lookFOV === 0.35 ? "Z 2.0" : "Z 1.0", 14.8, 7)
 
         /////////////////////////////////////////////////////////////////////
         // these are all rather specific, and should be passed in as hooks

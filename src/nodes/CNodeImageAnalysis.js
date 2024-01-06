@@ -171,9 +171,9 @@ export class CNodeImageAnalysis extends CNodeImage {
 
         /*
         this.test = 0
-        const guiNAR = new GUI({container:this.div});
-        guiNAR.title("Metabunk Sitrec [U]I")
-        guiNAR.add (this, 'test',-54,8,0.2).onChange( ).listen().name("test")
+        const guiLook = new GUI({container:this.div});
+        guiLook.title("Metabunk Sitrec [U]I")
+        guiLook.add (this, 'test',-54,8,0.2).onChange( ).listen().name("test")
 */
         this.recalculate()
     }

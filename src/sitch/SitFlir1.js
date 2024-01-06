@@ -343,7 +343,7 @@ export const SitFlir1 = {
 
         new CNodeCamera({
             id:"lookCamera",
-            fov: this.NARFOV,
+            fov: this.lookFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipLook,
             far: this.farClipLook,

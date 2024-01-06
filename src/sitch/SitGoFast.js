@@ -69,7 +69,7 @@ export var SitGoFast = {
     startDistanceMin: 0,
     startDistanceMax: 15,
     targetSize: 3,
-    NARFOV: 0.7,
+    lookFOV: 0.7,
     startCameraPosition:[25034.03,13882.82,10206.08],
     startCameraTarget:[24090.07,13646.05,9976.13],
 
@@ -432,10 +432,10 @@ export var SitGoFast = {
         })
 
 /////////////////////////////////////////////////////////////////
-// look view (previously NAR view) - is the view from the ATFLIR
+// look view is the view from the ATFLIR
         new CNodeCamera({
             id:"lookCamera",
-            fov: this.NARFOV,
+            fov: this.lookFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipLook,
             far: this.farClipLook,
