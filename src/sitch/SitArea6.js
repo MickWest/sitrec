@@ -27,7 +27,7 @@ export const SitArea6 = {
     displayFrustum: true,
 
     farClip:    80000000,
-    farClipNAR: 80000000,
+    farClipLook: 80000000,
 
     files: {
         starLink: "area6/starlink-area6.txt",

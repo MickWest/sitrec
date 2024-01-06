@@ -375,7 +375,7 @@ export const SitGimbal = {
             wind:"targetWind",
 
             //  model: FA182,
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
         new CNodeDisplayTargetSphere({
@@ -384,7 +384,7 @@ export const SitGimbal = {
                 size: "sizeScaled",
             },
 
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -481,7 +481,7 @@ export const SitGimbalNear = {
             wind:"targetWind",
 
             //  model: FA182,
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -491,7 +491,7 @@ export const SitGimbalNear = {
                 size: "sizeScaled",
             },
 
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -501,7 +501,7 @@ export const SitGimbalNear = {
         //         size: "sizeScaled",
         //     },
         //
-        //     layers: LAYER.MASK_NAR,
+        //     layers: LAYER.MASK_LOOK,
         // })
 
 

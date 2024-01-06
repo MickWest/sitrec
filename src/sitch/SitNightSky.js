@@ -40,7 +40,7 @@ export const SitNightSky = {
     showDateTime: true, // opens the DateTime folder in the UI
 
     farClip:    80000000,
-    farClipNAR: 80000000,
+    farClipLook: 80000000,
 
 
 

@@ -84,8 +84,8 @@ export const SitAguadilla = {
     nearClip: 1,
 
     // Near and far clipping distances for the NAR view (the plane camera view)
-    farClipNAR: 800000,
-    nearClipNAR: 1,
+    farClipLook: 800000,
+    nearClipLook: 1,
 
 
     files: {
@@ -225,7 +225,7 @@ export const SitAguadilla = {
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,1300,100);
-        light.layers.enable(LAYER.NAR)
+        light.layers.enable(LAYER.LOOK)
         GlobalScene.add(light);
 
 
@@ -234,7 +234,7 @@ export const SitAguadilla = {
             'darkslategrey', // dim ground color
             0.3, // intensity
         );
-        hemiLight.layers.enable(LAYER.NAR)
+        hemiLight.layers.enable(LAYER.LOOK)
         GlobalScene.add(hemiLight);
 
 
@@ -476,7 +476,7 @@ export const SitAguadilla = {
                 size: "greenBallSize"
             },
             color:"green",
-            layers:LAYER.MASK_NAR,
+            layers:LAYER.MASK_LOOK,
         })
 */
 
@@ -866,7 +866,7 @@ export const SitAguadilla = {
         //         size: "sizeScaled",
         //     },
         //
-        //     layers:LAYER.MASK_NAR,
+        //     layers:LAYER.MASK_LOOK,
         // })
 
 
@@ -878,7 +878,7 @@ export const SitAguadilla = {
                 size: "sizeScaled",
             },
             color:"white",
-            layers:LAYER.MASK_NAR,
+            layers:LAYER.MASK_LOOK,
         })
 
 
@@ -889,7 +889,7 @@ export const SitAguadilla = {
         //         size: "sizeScaled",
         //     },
         //     color:"white",
-        //     layers:LAYER.MASK_NAR,
+        //     layers:LAYER.MASK_LOOK,
         // })
 
 
@@ -897,9 +897,9 @@ export const SitAguadilla = {
             id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipNAR,
-            far: this.farClipNAR,
-            layers: LAYER.MASK_NARONLY,
+            near: this.nearClipLook,
+            far: this.farClipLook,
+            layers: LAYER.MASK_LOOKONLY,
         }).addController("TrackToTrack", {
             sourceTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
@@ -966,7 +966,7 @@ export const SitAguadilla = {
 
         // shoudl stick this inside the View
         //var viewNar = ViewMan.list.lookView.data;
-        //var farClipNAR = metersFromMiles(500)
+        //var farClipLook = metersFromMiles(500)
 
         const lookCamera = NodeMan.get("lookCamera").camera;
         // FOV in Three.js is vertical, wjhich was not an issue with the square videos

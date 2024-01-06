@@ -415,7 +415,7 @@ export var SitGoFast = {
                 material: new CNodeConstant({value: waterMaterial})
             },
 
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -428,7 +428,7 @@ export var SitGoFast = {
                 width: "groundTrackWidth",
             },
             depthFunc:AlwaysDepth,
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
 /////////////////////////////////////////////////////////////////
@@ -437,9 +437,9 @@ export var SitGoFast = {
             id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipNAR,
-            far: this.farClipNAR,
-            layers: LAYER.MASK_NARONLY,
+            near: this.nearClipLook,
+            far: this.farClipLook,
+            layers: LAYER.MASK_LOOKONLY,
         }).addController("TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
@@ -455,7 +455,7 @@ export var SitGoFast = {
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
             },
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
         var ui = new CNodeATFLIRUI({
@@ -500,7 +500,7 @@ export var SitGoFast = {
                 )
             },
             
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
         // Note this is overwriting the A/B frames ???????????????????
@@ -597,7 +597,7 @@ export var SitGoFast = {
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,300,100);
-        light.layers.enable(LAYER.NAR)
+        light.layers.enable(LAYER.LOOK)
         GlobalScene.add(light);
 
         const hemiLight = new HemisphereLight(
@@ -605,14 +605,14 @@ export var SitGoFast = {
             'darkslategrey', // dim ground color
             0.3, // intensity
         );
-        hemiLight.layers.enable(LAYER.NAR)
+        hemiLight.layers.enable(LAYER.LOOK)
         GlobalScene.add(hemiLight);
 
 
         const gridSquaresGround = 200
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);
-        gridHelperGround.layers.enable(LAYER.NAR)
+        gridHelperGround.layers.enable(LAYER.LOOK)
 
 
         guiJetTweaks.hide();

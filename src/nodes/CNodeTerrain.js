@@ -119,7 +119,7 @@ export class CNodeTerrain extends CNode {
                     this.outputs.forEach( o => {
                         o.recalculateCascade()
                     })
-                    this.maps[id].group.layers.enable(LAYER.NAR)
+                    this.maps[id].group.layers.enable(LAYER.LOOK)
                     propagateLayerMaskObject(this.maps[id].group)
                 }
             })
@@ -140,7 +140,7 @@ export class CNodeTerrain extends CNode {
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,radius)
         this.maps[this.mapType].map.recalculateCurveMap(radius)
 
-        this.maps[this.mapType].group.layers.enable(LAYER.NAR)
+        this.maps[this.mapType].group.layers.enable(LAYER.LOOK)
         propagateLayerMaskObject(this.maps[this.mapType].group)
 
     }

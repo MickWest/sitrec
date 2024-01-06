@@ -24,8 +24,8 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
     farClip:    50000*1000,
     nearClip: 1,
-    farClipNAR: 6800*1000,
-    nearClipNAR: 1,
+    farClipLook: 6800*1000,
+    nearClipLook: 1,
 
     frames: 790, // currently needs manual setting
 

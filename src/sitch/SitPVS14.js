@@ -38,8 +38,8 @@ export const SitPVS14 = {
 
     farClip:    50000*1000,
     nearClip: 1,
-    farClipNAR: 6800*1000,
-    nearClipNAR: 1,
+    farClipLook: 6800*1000,
+    nearClipLook: 1,
     //videoSpeed: 4,
     simSpeed: 5,
 
@@ -126,7 +126,7 @@ export const SitPVS14 = {
             fov:this.lookFOV,
             aspect:window.innerWidth / window.innerHeight,
             near: 1,
-            far: Sit.farClipNAR,
+            far: Sit.farClipLook,
         }).addController("TrackAzEl",{
             sourceTrack: "cameraTrack",
         })

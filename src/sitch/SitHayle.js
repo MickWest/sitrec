@@ -1,5 +1,5 @@
-import {Color, Vector3} from "../../three.js/build/three.module";
-import {f2m, metersFromFeet, scaleF2M} from "../utils";
+import {Color} from "../../three.js/build/three.module";
+import {scaleF2M} from "../utils";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
@@ -22,7 +22,6 @@ import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
-import {CNodeImageAnalysis} from "../nodes/CNodeImageAnalysis";
 
 export const SitHayle = {
     name: "hayle",
@@ -217,7 +216,7 @@ setup2: function() {
             )
         },
         
-        layers: LAYER.MASK_NAR,
+        layers: LAYER.MASK_LOOK,
     })
 
 

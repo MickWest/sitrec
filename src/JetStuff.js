@@ -64,7 +64,7 @@ import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodec";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
-import {NARCamera, setNARCamera} from "./JetCameras";
+import {CNodeCamera} from "./nodes/CNodeCamera";
 
 var matLineWhite = makeMatLine(0xffffff);
 var matLineCyan = makeMatLine(0x00ffff,1.5);
@@ -106,7 +106,7 @@ export function initJetVariables() {
         glareSprite.scale.setScalar(0.04)
         glareSprite.layers.disable(LAYER.main)
         glareSprite.layers.enable(LAYER.podsEye)
-        glareSprite.layers.enable(LAYER.NAR)
+        glareSprite.layers.enable(LAYER.LOOK)
     }
 }
 
@@ -475,7 +475,7 @@ export function ChangedPR() {
     // we need to adjust the local frame so the up Vector is correct,
     // OR should we set it from the track?
     // really what we are interest in here are
-    // A) the view of the NARCam
+    // A) the view of the lookCam
     // B) the lines of sight
 
     var _x = V3()
@@ -917,7 +917,7 @@ export function initViews() {
         lableMainView.addText("videoLable2", "RESULTS MAY VARY", 20, 95, 3, "#f0f00040")
         lableMainView.setVisible(true)
     }
-    var farClipNAR = metersFromMiles(500)
+    var farClipLook = metersFromMiles(500)
 
 
     var gridHelperGround;
@@ -928,12 +928,12 @@ export function initViews() {
         const gridSquaresGround = 200
         gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
         GlobalScene.add(gridHelperGround);
-        gridHelperGround.layers.enable(LAYER.NAR)
+        gridHelperGround.layers.enable(LAYER.LOOK)
 
         setATFLIR(new CNodeDisplayATFLIR({
             inputs: {},
 
-            //  layers:LAYER.MASK_NAR,
+            //  layers:LAYER.MASK_LOOK,
         }))
     }
 
@@ -942,7 +942,7 @@ export function initViews() {
      // Lighting
      var light = new DirectionalLight(0xffffff, 0.8);
      light.position.set(100, 300, 100);
-     light.layers.enable(LAYER.NAR)
+     light.layers.enable(LAYER.LOOK)
      LocalFrame.add(light);
 
     const hemiLight = new HemisphereLight(
@@ -950,7 +950,7 @@ export function initViews() {
         'darkslategrey', // dim ground color
         0.5, // intensity
     );
-    hemiLight.layers.enable(LAYER.NAR)
+    hemiLight.layers.enable(LAYER.LOOK)
     GlobalScene.add(hemiLight);
 
 
@@ -959,7 +959,7 @@ export function initViews() {
     //
     //  const hemiLight = new HemisphereLight();
     //  hemiLight.name = 'hemi_light';
-    //  hemiLight.layers.enable(LAYER.NAR)
+    //  hemiLight.layers.enable(LAYER.LOOK)
     //
     // GlobalScene.add(hemiLight);
 
@@ -1193,10 +1193,10 @@ export function initJetStuff() {
     // ADD CONTROLS
     view.addOrbitControls(view.renderer);
 
-    var farClipNAR = metersFromMiles(500)
+    var farClipLook = metersFromMiles(500)
 
     // viw of the back of the pod with rotating glare on it.
-    var podCamera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, farClipNAR);
+    var podCamera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, farClipLook);
     podCamera.position.set(-20, LocalFrame.position.y + 20, -40)
     podCamera.lookAt(new Vector3(0, LocalFrame.position.y, 0));
 
@@ -1233,7 +1233,7 @@ export function initJetStuff() {
 //
 
     // Pod's eye - what the pod sees, physical angles, and then tweaked to look at target
-    var podsEyeCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipNAR);
+    var podsEyeCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipLook);
     podsEyeCamera.lookAt(new Vector3(0, 0, -1));
     podsEyeCamera.layers.disable(LAYER.main)
     podsEyeCamera.layers.enable(LAYER.podsEye)
@@ -1277,7 +1277,7 @@ export function initJetStuff() {
     ui.addText("info", "Pods-Eye View", 50, 90, 6, "#FFFF00")
 
     // Pod's eye, same, but derotated so horizon is correct.
-    var podsEyeDeroCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipNAR);
+    var podsEyeDeroCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipLook);
     podsEyeDeroCamera.layers.disable(LAYER.main)
     podsEyeDeroCamera.layers.enable(LAYER.podsEye)
     podsEyeDeroCamera.lookAt(new Vector3(0, 0, -1));
@@ -1327,15 +1327,17 @@ export function initJetStuff() {
 /////////////////////////////////////////////////////////////////
 // NAR CAM
 
-    // Dero view in NARROW mode (99 as visRadius is 100)
-    setNARCamera(new PerspectiveCamera(Sit.NARFOV, window.innerWidth / window.innerHeight, 1, farClipNAR));
-    NARCamera.layers.disable(LAYER.main)
-    NARCamera.layers.enable(LAYER.NAR)
-    NARCamera.lookAt(new Vector3(0, 0, -1));
-
-
+    new CNodeCamera({
+        id:"lookCamera",
+        fov: Sit.NARFOV,
+        aspect: window.innerWidth / window.innerHeight,
+        near: Sit.nearClipLook,
+        far: Sit.farClipLook,
+        layers: LAYER.MASK_LOOKONLY,
+    })
+    
     new CNodeView3D({
-        id: "NARCam",
+        id: "lookView",
         visible: true,
         left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,
 //    background: new Color().setRGB( 0.0, 0.0, 0.0 ),
@@ -1345,7 +1347,7 @@ export function initJetStuff() {
         draggable: true,
         resizable: true,
         syncVideoZoom: true,
-        camera: NARCamera,
+        camera: "lookCamera",
         renderFunction: function () {
             if (!Ball) return;
             if (this.camera.parent == null) {
@@ -1384,7 +1386,7 @@ export function initJetStuff() {
     })
 
 
-    ViewMan.get("NARCam").setVisible(par.showNARCam);
+    ViewMan.get("lookView").setVisible(par.showLookCam);
 
 
     console.table(ViewMan.list)
@@ -1405,11 +1407,11 @@ export function initJetStuffOverlays() {
         id: "ATFLIRUIOverlay",
         jetAltitude: "jetAltitude",
 
-        overlayView: ViewMan.list.NARCam.data,
+        overlayView: ViewMan.list.lookView.data,
         defaultFontSize: 3.5,
         defaultFontColor: '#E0E0E0',
         defaultFont: 'sans-serif',
     });
     ui.addText("info", "NAR Cam", 50, 90, 6, "#FFFF00")
-    ViewMan.get("ATFLIRUIOverlay").setVisible(par.showNARCam);
+    ViewMan.get("ATFLIRUIOverlay").setVisible(par.showLookCam);
 }

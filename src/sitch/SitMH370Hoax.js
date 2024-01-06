@@ -44,7 +44,7 @@ export const SitMH370Hoax = {
     },
 
     farClip:    80000000,
-    farClipNAR: 80000000,
+    farClipLook: 80000000,
 
     bigUnits:"Miles",
 
@@ -147,7 +147,7 @@ export const SitMH370Hoax = {
                 track: "targetTrack",
             },
             TargetObjectFile:"B777",
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
         const view = new CNodeView3D({
@@ -233,7 +233,7 @@ export const SitMH370Hoax = {
         //         )
         //     },
         //
-        //     layers: LAYER.MASK_NAR,
+        //     layers: LAYER.MASK_LOOK,
         // })
         //
         //

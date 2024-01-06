@@ -39,7 +39,7 @@ export function SetupCloudNodes() {
             heading: "initialHeading",
         },
 
-        layers: LAYER.MASK_NAR,
+        layers: LAYER.MASK_LOOK,
     })
 
     console.log("+++ LOSHorizon Node")
@@ -60,6 +60,6 @@ export function SetupCloudNodes() {
 
         width: 3,
 
-//        layers: LAYER.MASK_NAR,
+//        layers: LAYER.MASK_LOOK,
     })
 }

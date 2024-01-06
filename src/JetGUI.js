@@ -1,4 +1,4 @@
-import {mainCamera, gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, Sit} from "./Globals";
+import {mainCamera, gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, Sit, NodeMan} from "./Globals";
 import {par} from "./par";
 import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStuff";
 import {calculateGlareStartAngle} from "./JetHorizon";
@@ -62,8 +62,9 @@ export function SetupJetGUI() {
     }).listen().name('Jet Pitch')
 
     guiTweaks.add(Sit, 'NARFOV', 0.1, 10, 0.01).onChange(value => {
-        NARCamera.fov = value
-        NARCamera.updateProjectionMatrix()
+        const lookCamera = NodeMan.get("lookCamera").camera;
+        lookCamera.fov = value
+        lookCamera.updateProjectionMatrix()
     }).listen().name("Narrow FOV")
 
     guiTweaks.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
@@ -132,7 +133,7 @@ export function SetupJetGUI() {
         })
     );
 
-    toggler('n', guiShowHide.add(par, 'showNARCam').listen().name("[N]AR view w' dero")
+    toggler('n', guiShowHide.add(par, 'showLookCam').listen().name("[N]AR view w' dero")
         .onChange(value => {
             ViewMan.get("lookView").setVisible(value);
             ViewMan.get("ATFLIRUIOverlay").setVisible(value);

@@ -46,7 +46,7 @@ export var par = {
     showKeyboardShortcuts: false,
     TAS: 351,
     integrate: 1,
-    showNARCam: true,
+    showLookCam: true,
     //  NARFOV:0.35,
     mainFOV: 30,
     jetHeading: 0,

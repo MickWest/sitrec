@@ -247,7 +247,7 @@ export const SitKML = {
                         }, gui)
                     )
                 },
-                layers: LAYER.MASK_NARONLY,
+                layers: LAYER.MASK_LOOKONLY,
             })
         }
 
@@ -325,7 +325,7 @@ export const SitKML = {
                     new CNodeDisplayTargetModel({
                         track: "targetTrackAverage",
                         TargetObjectFile: Sit.targetObject.file,
-                        layers: LAYER.MASK_NAR,
+                        layers: LAYER.MASK_LOOK,
                         ...maybeWind,
                     })
                 } else {
@@ -344,7 +344,7 @@ export const SitKML = {
                                 }, gui)
                             )
                         },
-                        layers: LAYER.MASK_NARONLY,
+                        layers: LAYER.MASK_LOOKONLY,
                     })
                 }
             }
@@ -367,7 +367,7 @@ export const SitKML = {
                             }, gui)
                         )
                     },
-                    layers: LAYER.MASK_NARONLY,
+                    layers: LAYER.MASK_LOOKONLY,
                 })
             }
         }
@@ -388,15 +388,15 @@ export const SitKML = {
 
 
         if (this.lookFOV !== undefined) {
-            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipNAR);
+            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
 
             const lookCameraDefaults = {
                 id: "lookCamera",
                 fov: this.planeCameraFOV,
                 aspect: window.innerWidth / window.innerHeight,
-                near: this.nearClipNAR,
-                far: this.farClipNAR,
-                layers: LAYER.MASK_NARONLY,
+                near: this.nearClipLook,
+                far: this.farClipLook,
+                layers: LAYER.MASK_LOOKONLY,
 
             }
 
@@ -473,7 +473,7 @@ export const SitKML = {
 
         if (this.ptz) {
             viewNar = new CNodeView3D(Object.assign({
-                id: "NARCam",
+                id: "lookView",
                 draggable: true, resizable: true,
                 left: 0.75, top: 0, width: -9 / 16, height: 1,
                 camera: this.lookCamera,
@@ -482,7 +482,7 @@ export const SitKML = {
             }, Sit.lookView))
         } else {
             viewNar = new CNodeView3D(Object.assign({
-                id: "NARCam",
+                id: "lookView",
                 visible: true,
                 draggable: true, resizable: true, freeAspect: true,
 
@@ -548,7 +548,7 @@ export const SitKML = {
         }
 
 
-        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.NARCam.data});
+        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.lookView.data});
         AddTimeDisplayToUI(labelVideo, 50, 96, this.timeSize ?? 2.5, "#f0f000")
 
         if (this.showAz) {
@@ -661,7 +661,7 @@ export const SitKML = {
                 size: new CNodeScale("sizeScaledLOS", scaleF2M,
                     new CNodeGUIValue({value: this.losTarget.size, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
                 ),
-                layers: LAYER.MASK_NAR,
+                layers: LAYER.MASK_LOOK,
                 color: "#00c000"  // green fixed relative to ground
 
             })
@@ -669,7 +669,7 @@ export const SitKML = {
             new CNodeDisplayTargetSphere({
                 track:"LOSTargetWithWindTrack",
                 size: "sizeScaledLOS",
-                layers: LAYER.MASK_NAR,
+                layers: LAYER.MASK_LOOK,
                 color: "#00ffff"  // cyan = with wind
 
             })

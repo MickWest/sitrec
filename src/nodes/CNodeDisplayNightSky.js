@@ -41,7 +41,6 @@ import * as LAYER from "../LayerMasks";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {par} from "../par";
 import {Ray, Sphere} from "three";
-import {NARCamera} from "../JetCameras";
 import {MASK_HELPERS} from "../LayerMasks";
 
 import SpriteText from '../js/three-spritetext';
@@ -365,9 +364,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // this.celestialSphere.add(DebugSphere("celestialDebugSphere", V3(1000,2000,1000), 300, "#000000"))
 
 
-        // For the stars to show up in the NARCam views
+        // For the stars to show up in the lookView
         // we need to enable the layer for everything in the celestial sphere.
-        this.celestialSphere.layers.enable(LAYER.NAR);
+        this.celestialSphere.layers.enable(LAYER.LOOK);
         propagateLayerMaskObject(this.celestialSphere)
 
         this.recalculate()

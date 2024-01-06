@@ -5,12 +5,12 @@
 export const main = 0     // all normal 3D objects in the GlobalScene
 export const podsEye = 1
 export const podBack = 2
-export const NAR = 3
+export const LOOK = 3   // things that we want to see ONLY in the look camera
 export const HELPERS = 4 // things like lines that we want in the main view, but not in the recreation
 
 export const MASK_MAIN = (1<<main)
-export const MASK_NAR = MASK_MAIN|(1<<NAR)
-export const MASK_NARONLY = (1<<NAR)
+export const MASK_LOOK = MASK_MAIN|(1<<LOOK)
+export const MASK_LOOKONLY = (1<<LOOK)
 export const MASK_MAIN_HELPERS = MASK_MAIN|(1<<HELPERS)
 export const MASK_HELPERS = (1<<HELPERS)
 

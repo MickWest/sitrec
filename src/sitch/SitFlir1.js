@@ -345,9 +345,9 @@ export const SitFlir1 = {
             id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipNAR,
-            far: this.farClipNAR,
-            layers: LAYER.MASK_NARONLY,
+            near: this.nearClipLook,
+            far: this.farClipLook,
+            layers: LAYER.MASK_LOOKONLY,
         }).addController("TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
@@ -382,7 +382,7 @@ export const SitFlir1 = {
                 }
                 this.renderer.render(GlobalScene, this.camera);
             },
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
         var ui = new CNodeATFLIRUI({
@@ -403,7 +403,7 @@ export const SitFlir1 = {
             track: "LOSTraverseSelect",
             TargetObjectFile: "TargetObjectFile",
             wind:"targetWind",
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
           new CNodeDisplayTargetSphere({
@@ -420,7 +420,7 @@ export const SitFlir1 = {
                  )
              },
 
-             layers: LAYER.MASK_NAR,
+             layers: LAYER.MASK_LOOK,
          })
 
         AddTailAngleGraph(
@@ -470,7 +470,7 @@ export const SitFlir1 = {
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,300,100);
-        light.layers.enable(LAYER.NAR)
+        light.layers.enable(LAYER.LOOK)
         GlobalScene.add(light);
 
         const hemiLight = new HemisphereLight(
@@ -478,7 +478,7 @@ export const SitFlir1 = {
             'darkslategrey', // dim ground color
             0.3, // intensity
         );
-        hemiLight.layers.enable(LAYER.NAR)
+        hemiLight.layers.enable(LAYER.LOOK)
         GlobalScene.add(hemiLight);
 
         initJetVariables();

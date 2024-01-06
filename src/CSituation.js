@@ -62,8 +62,8 @@ const situationDefaults = {
     NARFOV: 0.35,
     farClip: 5000000,
     nearClip: 1,
-    farClipNAR: 800000,
-    nearClipNAR: 1,
+    farClipLook: 800000,
+    nearClipLook: 1,
 
     defaultCameraDist: 1300,
 
@@ -156,13 +156,13 @@ export class CSituation {
         }
 
         if (this.lookFOV !== undefined) {
-            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipNAR);
+            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
             new CNodeCamera({
                 id:"lookCamera",
                 fov:this.lookFOV,
                 aspect:window.innerWidth / window.innerHeight,
                 near: 1,
-                far: Sit.farClipNAR,
+                far: Sit.farClipLook,
             })
 
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY

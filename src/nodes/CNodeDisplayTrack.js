@@ -57,7 +57,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 },
                 size: v.autoSphere,
                 color: this.in.color.v0,
-//                layers:LAYER.MASK_NAR,
+//                layers:LAYER.MASK_LOOK,
             })
         }
 

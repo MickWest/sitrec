@@ -99,7 +99,7 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
                 )
             },
 
-            layers: LAYER.MASK_NAR,
+            layers: LAYER.MASK_LOOK,
         })
 
     },

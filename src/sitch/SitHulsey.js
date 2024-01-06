@@ -14,8 +14,8 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     // maybe have these in CSituation
     farClip:    50000*1000,
     nearClip: 1,
-    farClipNAR: 6800*1000,
-    nearClipNAR: 1,
+    farClipLook: 6800*1000,
+    nearClipLook: 1,
 
     starScale: 0.44,
 
