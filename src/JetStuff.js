@@ -1402,7 +1402,7 @@ export function initJetStuffOverlays() {
     ui.addText("info", "Derotated", 50, 90, 6, "#FFFF00")
 
     ui = new CNodeATFLIRUI({
-        id: "NARUI",
+        id: "ATFLIRUIOverlay",
         jetAltitude: "jetAltitude",
 
         overlayView: ViewMan.list.NARCam.data,
@@ -1411,5 +1411,5 @@ export function initJetStuffOverlays() {
         defaultFont: 'sans-serif',
     });
     ui.addText("info", "NAR Cam", 50, 90, 6, "#FFFF00")
-    ViewMan.get("NARUI").setVisible(par.showNARCam);
+    ViewMan.get("ATFLIRUIOverlay").setVisible(par.showNARCam);
 }

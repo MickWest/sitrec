@@ -53,6 +53,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             this.cameraNode = new CNodeCamera("cameraNode",v_camera)
         } else {
             this.cameraNode = NodeMan.get(v_camera)
+            assert(this.cameraNode instanceof CNodeCamera, "CNodeView3D ("+this.id+") needs a camera node")
         }
 
 //        this.input("camera")

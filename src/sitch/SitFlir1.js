@@ -31,7 +31,6 @@ import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {mainCamera} from "../Globals";
-import {NARCamera, setNARCamera} from "../JetCameras";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {ViewMan} from "../nodes/CNodeView";
@@ -343,7 +342,7 @@ export const SitFlir1 = {
 
 
         new CNodeCamera({
-            id:"narCamera",
+            id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipNAR,
@@ -354,18 +353,15 @@ export const SitFlir1 = {
             targetTrack: "LOSTraverseSelect",
         })
 
-        setNARCamera(NodeMan.get("narCamera").camera)
-
-
         new CNodeView3D({
-            id: "NARCam",
+            id: "lookView",
             visible: true,
             draggable: true, resizable: true,
             //   left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
 //            left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,
             left: 0.653, top: 1 - 0.333, width: -1., height: 0.333,
             background: new THREE.Color().setRGB(0.05, 0.05, 0.05),
-            camera:NARCamera,
+            camera:"lookCamera",
             syncVideoZoom: true,
             renderFunction: function(frame) {
 
@@ -390,10 +386,10 @@ export const SitFlir1 = {
         })
 
         var ui = new CNodeATFLIRUI({
-            id: "NARUI",
+            id: "ATFLIRUIOverlay",
             jetAltitude: "jetAltitude",
 
-            overlayView: ViewMan.list.NARCam.data,
+            overlayView: ViewMan.list.lookView.data,
             defaultFontSize: 3.5,
             defaultFontColor: '#E0E0E0',
             defaultFont: 'sans-serif',

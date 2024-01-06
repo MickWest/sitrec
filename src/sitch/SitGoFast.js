@@ -24,7 +24,7 @@ import {CNodeWatch} from "../nodes/CNodeWatch";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeArray} from "../nodes/CNodeArray";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeGForce, CNodeMunge} from "../nodes/CNodeMunge";
+import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeInterpolate} from "../nodes/CNodeInterpolate";
 import {CNodeGraphSeries} from "../nodes/CNodeGraphSeries";
 import {CNodeDisplayOcean} from "../nodes/CNodeDisplayOcean";
@@ -36,17 +36,14 @@ import {CNodeLOSTraverseConstantAltitude} from "../nodes/CNodeLOSTraverseConstan
 import {CNodeTurnRateBS} from "../nodes/CNodeTurnRateBS";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
-import {CNodeFramesVideoView} from "../nodes/CNodeVideoView";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
-import {keyHeld} from "../KeyBoardHandler";
 import {AddGenericNodeGraph, AddSpeedGraph} from "../JetGraphs";
 import {gui, guiTweaks, NodeMan, } from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
 import {GridHelperWorld, MV3, V3} from "../threeExt";
 import {mainCamera}  from "../Globals";
-import {makeDefaultCameras, NARCamera, setNARCamera} from "../JetCameras";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {SetupGUIFrames} from "../JetGUI";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
@@ -461,7 +458,7 @@ export var SitGoFast = {
 
 
         new CNodeCamera({
-            id:"narCamera",
+            id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipNAR,
@@ -472,29 +469,24 @@ export var SitGoFast = {
             targetTrack: "LOSTraverseSelect",
         })
 
-        setNARCamera(NodeMan.get("narCamera").camera)
-
-
-
         new CNodeView3D({
-            id: "NARCam",
+            id: "lookView",
             visible: true,
             draggable: true, resizable: true,
          //   left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
             left: 0.64, top: 1 - 0.3333, width: -1, height: 0.333,
             background: new THREE.Color().setRGB(0.2, 0.2, 0.2),
-            camera:NARCamera,
+            camera:"lookCamera",
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
             },
             layers: LAYER.MASK_NAR,
         })
 
-
         var ui = new CNodeATFLIRUI({
-            id: "NARUI",
+            id: "ATFLIRUIOverlay",
             jetAltitude: "jetAltitude",
-            overlayView: ViewMan.list.NARCam.data,
+            overlayView: ViewMan.list.lookView.data,
             defaultFontSize: 3.5,
             defaultFontColor: '#E0E0E0',
             defaultFont: 'sans-serif',

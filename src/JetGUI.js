@@ -134,8 +134,8 @@ export function SetupJetGUI() {
 
     toggler('n', guiShowHide.add(par, 'showNARCam').listen().name("[N]AR view w' dero")
         .onChange(value => {
-            ViewMan.get("NARCam").setVisible(value);
-            ViewMan.get("NARUI").setVisible(value);
+            ViewMan.get("lookView").setVisible(value);
+            ViewMan.get("ATFLIRUIOverlay").setVisible(value);
         })
     );
 
