@@ -4,19 +4,13 @@
 // canvas elements are in CNodeView3D
 // take their size from the div.
 //
-
-//import {OrbitControls, MapControls} from "./js/OrbitControls";
 import {CameraMapControls} from "../js/CameraControls";
-import {FlyControls} from "../js/FlyControls";
 import {assert} from '../utils.js'
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
-import {CNodeCloudData} from "./CNodeCloudData";
-import {Color} from "../../three.js/build/three.module";
-import {par} from "../par";
-import {OrbitControls} from "../js/OrbitControls";
-import {TrackballControls} from "../js/TrackballControls";
 import {NodeMan, Sit} from "../Globals";
+import {CNodeCamera} from "./CNodeCamera";
+import {Camera} from "../../three.js/build/three.module";
 
 const defaultCViewParams = {
     visible: true,
@@ -39,12 +33,11 @@ const defaultCViewParams = {
 class CNodeView extends CNode {
     constructor (v) {
         assert(v.id !== undefined,"View Node Requires ID")
-
         super(v)
 
         // merge defaults with the passed parameters
         // into this
-        Object.assign(this,defaultCViewParams,v)
+        Object.assign(this,defaultCViewParams,v) // TODO - Don't do this!!
 
         // container defaults to the window, but could be something else
         // (not yet tested with anything else)
@@ -105,6 +98,8 @@ class CNodeView extends CNode {
         assert(!ViewMan.exists(v.id),"Adding "+v.id+" to ViewMan twice")
         ViewMan.add(v.id,this)
     }
+
+
 
     containerWidth() {
         return this.container.innerWidth;

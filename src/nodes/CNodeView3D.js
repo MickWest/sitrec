@@ -13,7 +13,7 @@ import {
     TextureLoader,
     Plane,
     Vector3,
-    WebGLRenderer
+    WebGLRenderer, Camera
 } from "../../three.js/build/three.module";
 import {DebugArrowAB, V3} from "../threeExt";
 import {keyHeld} from "../KeyBoardHandler";
@@ -31,12 +31,29 @@ import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {Sphere} from "three";
 import {ECEFToLLAVD_Sphere, EUSToECEF, wgs84} from "../LLA-ECEF-ENU";
+import {CNodeCamera} from "./CNodeCamera";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
+
+        // strip out the camera, as we don't want it in the super
+        // as there's conflict with the getter
+        const v_camera = v.camera
+        delete v.camera;
+
         super(v);
+
         this.scene = GlobalScene;
-        this.camera = v.camera
+
+        // Cameras were passing in as a node, but now we just pass in the camera node
+        // which could be a node, or a node ID.
+
+        if (v_camera instanceof Camera) {
+            // It's a THREE.JS Camaera, so encapsulate it in a CNodeCamera
+            this.cameraNode = new CNodeCamera("cameraNode",v_camera)
+        } else {
+            this.cameraNode = NodeMan.get(v_camera)
+        }
 
 //        this.input("camera")
 //        assert(this.camera !== undefined, "CNodeView3D ("+this.id+") needs a camera in the constructor")
@@ -120,9 +137,9 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     }
 
-    // get camera() {
-    //     return this.in.camera.getCamera();
-    // }
+    get camera() {
+        return this.cameraNode.camera;
+    }
 
     render(frame) {
 

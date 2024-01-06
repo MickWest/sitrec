@@ -7,12 +7,16 @@ import {raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
 
 export class CNodeCamera extends CNode3D {
-    constructor(v) {
+    constructor(v, camera = null) {
         super(v);
 
         this.addInput("altAdjust", "altAdjust", true);
 
-        this._object = new PerspectiveCamera(v.fov, v.aspect, v.near, v.far);
+        if (camera) {
+            this._object = camera;
+        } else {
+            this._object = new PerspectiveCamera(v.fov, v.aspect, v.near, v.far);
+        }
 
         if (v.layers !== undefined) {
             this._object.layers.mask = v.layers;

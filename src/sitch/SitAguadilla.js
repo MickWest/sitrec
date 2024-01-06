@@ -5,11 +5,9 @@ import {
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
-import {gui, guiShowHide, NodeMan, setMainCamera, Sit} from "../Globals";
+import {gui, NodeMan, setMainCamera, Sit} from "../Globals";
 import {
-    PerspectiveCamera,
     Color,
-    Vector3,
     DirectionalLight,
     HemisphereLight,
     AlwaysDepth
@@ -26,19 +24,17 @@ import {CNodeConstant} from "../nodes/CNode";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {
     CNodeArray,
-    CNodeSmoothedArray
 } from "../nodes/CNodeArray";
-import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeDerivative, CNodeMunge, CNodeRegression, makeMunge} from "../nodes/CNodeMunge";
+import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
+import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
-import {CNodeLOSTraverseTerrain} from "../nodes/CNodeLOSTraverseTerrain";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
-import {AddGenericNodeGraph, AddSpeedGraph} from "../JetGraphs";
+import {AddSpeedGraph} from "../JetGraphs";
 import {guiTweaks} from "../Globals";
 import {GlobalScene, LocalFrame} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
@@ -46,13 +42,10 @@ import {initKeyboard, showHider, toggler} from "../KeyBoardHandler";
 import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
 import {DebugSphere, MV3, V3} from "../threeExt";
 import {mainCamera} from "../Globals";
-import {NARCamera, setNARCamera} from "../JetCameras";
-import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSpeed";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
 import {CNodeCamera} from "../nodes/CNodeCamera";
-import {MASK_MAIN_HELPERS} from "../LayerMasks.js";
 import {FileManager} from "../CFileManager";
 
 export const SitAguadilla = {
@@ -63,7 +56,6 @@ export const SitAguadilla = {
     jetStuff:false,
     animated:true,
 
-
     fps: 29.97,
     frames: 7028,  // note, old CSV was 7027, so duplicated the last line to match the video at 7028
     aFrame: 0,
@@ -73,11 +65,8 @@ export const SitAguadilla = {
 
     LOSSpacing:30*2,
 
-
     startCameraPosition: [-9851.407079455104,2847.1976940099407,-2584.264310831998],
     startCameraTarget: [-8986.013511122388,2586.5050262571704,-2156.3235382146754],
-//    startCameraTarget: [0,0,0],
-
 
     startDistance: 1.612,
     startDistanceMax: 3.5,
@@ -107,12 +96,10 @@ export const SitAguadilla = {
 
     videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
 
-
     // Aguadilla terrain location. 8x8 tiles at zooom level 15
     // there's no file for terrain, it all comes from the server
     // based purely on the lat/lon
     terrain: {lat:  18.499617, lon: -67.113636, zoom:15, nTiles:8},
-
 
     setup: function() {
 
@@ -192,8 +179,9 @@ export const SitAguadilla = {
                 var csv = FileManager.get("aguaCSV")
                 var narFOV = parseFloat(csv[par.frame][15])
                 narFOV = 4 * 135/narFOV
-                NARCamera.fov = narFOV
-                NARCamera.updateProjectionMatrix()
+                const lookCamera = NodeMan.get("lookCamera").camera;
+                lookCamera.fov = narFOV
+                lookCamera.updateProjectionMatrix()
 
                 if (par.lockCameraToJet) {
                     const f = par.frame
@@ -905,8 +893,8 @@ export const SitAguadilla = {
         // })
 
 
-        new CNodeCamera({
-            id:"narCamera",
+        this.lookCamera = new CNodeCamera({
+            id:"lookCamera",
             fov: this.NARFOV,
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipNAR,
@@ -917,12 +905,8 @@ export const SitAguadilla = {
             targetTrack: "LOSTraverseSelectSmoothed",
         })
 
-
-
-        setNARCamera(NodeMan.get("narCamera").camera)
-
         new CNodeView3D({
-            id: "NARCam",
+            id: "lookView",
             visible: true,
             draggable: true, resizable: true,
             showCursor: false,
@@ -935,7 +919,7 @@ export const SitAguadilla = {
            // targetTrack: "LOSTraverseSelectSmoothed",
             radiusMiles: "radiusMiles", // constant
 
-            camera:NARCamera,
+            camera:"lookCamera",
 
             effects: {
                 FLIRShader: {},
@@ -980,41 +964,18 @@ export const SitAguadilla = {
    //     AddSpeedGraph("groundSplineEditor", "Ground", 0, 300,0,0.30,0.6250,0.15)
 
 
-
-
-
-
-
-        // AddGenericNodeGraph("Debug", "",[
-        //     ["red", 1, "jetTrack","position","x"],
-        //     ["green", 1, "jetTrackSmooth","position","x"],
-        //
-        // ],{})
-
-
         // shoudl stick this inside the View
-        var viewNar = ViewMan.list.NARCam.data;
-        var farClipNAR = metersFromMiles(500)
+        //var viewNar = ViewMan.list.lookView.data;
+        //var farClipNAR = metersFromMiles(500)
 
-        // really not sure about teh FOV here. Remember it's vertical
-        // and we will eventually be making it variable (we have the data)
-
-        // need to use this one instead
-        //
-        // var NARCamera = new THREE.PerspectiveCamera( 675/135/10, window.innerWidth / window.innerHeight, 1, farClipNAR );
-        // NARCamera.layers.disable(LAYER.main)
-        // NARCamera.layers.enable(LAYER.NAR)
-        // NARCamera.lookAt(new THREE.Vector3(0,0,-1));
-        // viewNar.camera = NARCamera;
-
+        const lookCamera = NodeMan.get("lookCamera").camera;
+        // FOV in Three.js is vertical, wjhich was not an issue with the square videos
+        // but you need to be aware of it in things like thig
         gui.add(Sit, 'NARFOV', 0.1, 10, 0.01).onChange(value => {
-            NARCamera.fov = value
-            NARCamera.updateProjectionMatrix()
+            lookCamera.fov = value
+            lookCamera.updateProjectionMatrix()
             par.renderOne = true;
-        }).listen().name("Narrow FOV")
-
-
-    //    SetupTrackLOSNodes()
+        }).listen().name("Look Cam FOV")
 
         initKeyboard()
 
@@ -1029,7 +990,6 @@ export const SitAguadilla = {
             )
         ))
 
-
         toggler('g', gui.add(par, 'showGraphs').listen().name("[G]raphs").onChange(value =>
             ViewMan.iterateTest(
                 (x) => {return x.constructor.name === 'CNodeCurveEditorView'},
@@ -1037,12 +997,8 @@ export const SitAguadilla = {
             )
         ))
 
-
         showHider(JetLOSDisplayNode, "[L]OS", true, 'l')
         showHider(lanternSplineDisplay, "Lantern [S]pline", true, 's')
         showHider(uapSplineDisplay, "UA[P] Spline", true, 'p')
-
-
     }
-
 }

@@ -1,8 +1,8 @@
 import {CNode} from "./CNode";
 import {NodeMan} from "../Globals";
-import {CNodeController} from "./CNodeController";
-import {assert} from "../utils"
-import {CNodeSwitch} from "./CNodeSwitch";
+//import {CNodeController} from "./CNodeController";
+//import {assert} from "../utils"
+//import {CNodeSwitch} from "./CNodeSwitch";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
 // Mostly to allow hooking up of controllers, which previous were camera-only
@@ -32,8 +32,9 @@ export class CNode3D extends CNode {
     }
 
     addControllerNode(node) {
-        assert(node instanceof CNodeController || node instanceof CNodeSwitch,
-            "Calling addControllerNode with non Controller or Switch");
+// having this introduces circular dependency with CNodeView's including CNodeCamera
+//        assert(node instanceof CNodeController || node instanceof CNodeSwitch,
+//            "Calling addControllerNode with non Controller or Switch");
         node.isController = true;
         this.addInput(node.id, node)
         return this;
