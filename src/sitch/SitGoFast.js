@@ -83,9 +83,6 @@ export var SitGoFast = {
     },
     videoFile: "../sitrec-videos/public/3 - GOFAST CROP HQ - 01.mp4",
 
-
-
-
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")
         const jetNode = NodeMan.get("JetLOS")
@@ -101,7 +98,6 @@ export var SitGoFast = {
     setup: function () {
 
         SetupGUIFrames()
-
         SetupCommon()
 
         new CNodeCamera({
@@ -119,9 +115,8 @@ export var SitGoFast = {
         // eventually remove all setMainCamera stuff
         setMainCamera(NodeMan.get("mainCamera").camera)
 
-
         // NOTE: ADDED SMOOTHING GURERNTLY, MAYBE TOO MUCH?
-        // but linear interpolation introduces nastly discontinuities
+        // but linear interpolation introduces nasty discontinuities
 
         this.GoFastBank = RollingAverage(FileManager.get('GoFastBank').map(row => -parseFloat(row[12])),50)
         this.GoFastAz = ExpandKeyframes(FileManager.get('GoFastAz'), Sit.frames)
@@ -373,24 +368,14 @@ export var SitGoFast = {
         new CNodeLOSTraverseConstantAltitude({ id: "LOSGroundTrack",
             inputs: {
                 LOS: "JetLOS2",
-//                altitude: new CNodeConstant({value: 0}),
-//                altitude: NodeMan.create("Constant", {value: 0}),
                 altitude:"seaLevel",
                 radius: "radiusMiles",
             }
         })
 
-
-
-
-
  //       AddSizePercentageGraph()
 
-
-
-
-
-        // differenc comparison nodes in AZ graph
+        // different comparison nodes in AZ graph
 
         var azEditorNode = NodeMan.get("azEditor")
 
@@ -446,17 +431,8 @@ export var SitGoFast = {
             layers: LAYER.MASK_NAR,
         })
 
-
-
-
-
-
-        /////////////////////////////////////////////////////////////////
-// NAR CAM view
-
-
-
-
+/////////////////////////////////////////////////////////////////
+// look view (previously NAR view) - is the view from the ATFLIR
         new CNodeCamera({
             id:"lookCamera",
             fov: this.NARFOV,
@@ -473,7 +449,6 @@ export var SitGoFast = {
             id: "lookView",
             visible: true,
             draggable: true, resizable: true,
-         //   left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
             left: 0.64, top: 1 - 0.3333, width: -1, height: 0.333,
             background: new THREE.Color().setRGB(0.2, 0.2, 0.2),
             camera:"lookCamera",
@@ -501,7 +476,6 @@ export var SitGoFast = {
         new CNodeDisplayTrackToTrack({
             id: "DisplayLOStoGround",
             cameraTrack: "JetLOS",
-      //      targetTrack: "LOSTraverseSelect",
             targetTrack: "LOSGroundTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
             width: 0.5,
@@ -617,12 +591,8 @@ export var SitGoFast = {
             ]
         )
 
-
         AddSpeedGraph("LOSTraverseSelect","Target Speed",0,250,0.62,0,-1,0.3)
         //       AddAltitudeGraph(10000, 45000)
-
-
-
 
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
@@ -640,7 +610,6 @@ export var SitGoFast = {
 
 
         const gridSquaresGround = 200
-//        var gridHelperGround = new GridHelperWorld(f2m(10000),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);
         gridHelperGround.layers.enable(LAYER.NAR)
