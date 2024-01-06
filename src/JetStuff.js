@@ -89,16 +89,12 @@ export function jetPitchFromFrame(f = -1) {
 
 
 export function initJetVariables() {
-    // group for the frame of reference of the pod (and the jet)
-
-    // Pitch and roll are the physical orientation of the pod
     targetSphere = sphereMark(V3(0,0,0),2,0xffffff, LocalFrame)
 
     aSphere = sphereMark(V3(0,0,0),1.5,0xc08080,LocalFrame)
     bSphere = sphereMark(V3(0,0,0),1.5,0x80c080,LocalFrame)
     glareSphere = sphereMark(V3(0,0,0),1.8,0x00ff00,LocalFrame)
 
-    //  glareSphere.layers.enable(LAYER.podsEye)
     glareSphere.name = "glareSphere"
 
     if (Sit.showGlare) {
@@ -117,7 +113,6 @@ export function initJetVariables() {
 
 export function getHumanHorizonFromPitchRollAzEl(jetPitch, jetRoll, az, el) {
 
-//        return jetRoll;
 
 //     if (type == 1) {
 //         return jetRoll * cos(radians(az)) + jetPitch * sin(radians(az));
@@ -476,9 +471,6 @@ export function ChangedPR() {
         mainCamera.updateMatrixWorld()
     }
 
-//    mainCamera.lookAt(LocalFrame.position)
-
-
     // now the forward vector of the jet will be correct
     // we need to adjust the local frame so the up Vector is correct,
     // OR should we set it from the track?
@@ -515,21 +507,11 @@ export function ChangedPR() {
     LocalFrame.updateMatrix()
     LocalFrame.updateMatrixWorld()
 
-
     par.jetHeading = newHeading;
 
     var glarePos = PRJ2XYZ(par.podPitchPhysical, par.podRollPhysical + NodeMan.get("bank").v(par.frame), jetPitchFromFrame(), vizRadius)
 
     glareSphere.position.copy(glarePos);
-
-    /*
-    // test to ensure that the XYZ calculated via Pitch and Roll and jetPitch is the
-    // same as the one calculated via El and Az
-    var testPos = EA2XYZ(par.el, par.az, vizRadius)
-    glareSphere.position.x = testPos.x;
-    glareSphere.position.y = testPos.y;
-    glareSphere.position.z = testPos.z;
-    */
 
     var targetPos = PRJ2XYZ(par.podPitchIdeal, par.podRollIdeal + NodeMan.get("bank").v(par.frame), jetPitchFromFrame(), vizRadius)
     targetSphere.position.copy(targetPos)
