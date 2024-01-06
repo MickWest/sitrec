@@ -8,8 +8,8 @@ import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {degrees, scaleF2M} from "../utils";
 import * as LAYER from "../LayerMasks";
-import {FileManager} from "../CManager";
 import {trackHeading} from "../nodes/CNode";
+import {FileManager} from "../CFileManager";
 
 export const SitChilean = Object.assign(Object.assign({},SitKML),{
     name: "chilean",

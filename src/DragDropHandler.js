@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
 import {addKMLMarkers, addKMLTracks} from "./KMLNodeUtils";
-import {FileManager} from "./CManager";
 import {NodeMan, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
+import {FileManager} from "./CFileManager";
 
 // The DragDropHandler is more like the local client file handler, with rehosting.
 class CDragDropHandler {

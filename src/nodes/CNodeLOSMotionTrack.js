@@ -1,9 +1,9 @@
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {FileManager} from "../CManager";
 import {ExpandKeyframes, radians, RollingAverage, tan} from "../utils";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {V3} from "../threeExt";
+import {FileManager} from "../CFileManager";
 
 
 /*

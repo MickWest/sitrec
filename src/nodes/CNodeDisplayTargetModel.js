@@ -2,12 +2,12 @@
 import {GLTFLoader} from "../../three.js/examples/jsm/loaders/GLTFLoader";
 import {CNode3DTarget} from "./CNode3DTarget";
 import {gui} from "../Globals";
-import {FileManager} from "../CManager";
 import {V3} from "../threeExt";
 
 import {Matrix4} from "../../three.js/build/three.module";
 
 import {trackAcceleration, trackVelocity} from "./CNode";
+import {FileManager} from "../CFileManager";
 
 
 // By default it will create a model from the file tagged "TargetObjectFile"

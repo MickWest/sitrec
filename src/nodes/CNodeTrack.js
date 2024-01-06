@@ -8,7 +8,8 @@ import {par} from "../par";
 import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
 import {CNodeKMLDataTrack, CNodeSRTDataTrack} from "./CNodeKMLDataTrack";
 import {CNodeTrackFromTimed} from "./CNodeTrackFromTimed";
-import {FileManager} from "../CManager";
+
+import {FileManager} from "../CFileManager";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {

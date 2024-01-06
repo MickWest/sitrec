@@ -54,7 +54,8 @@ import {addAlignedGlobe} from "./Globe";
 import {CNodeDisplayCameraFrustum} from "./nodes/CNodeDisplayCameraFrustum";
 import JSURL from "./js/jsurl";
 import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
-import {FileManager} from "./CManager";
+
+import {FileManager} from "./CFileManager";
 
 checkLocal()
 

@@ -42,6 +42,7 @@ const DRAGLINE_PARALLEL         = 2
 
 const DRAGPOINT_FREE            = 10
 
+// Used by CRegionSelector which is used by the two image analysis tools (line detector and RGB Profile)
 class CDraggablePoint extends CDraggable{
     constructor(point, radius, color, callback, data, type = DRAGPOINT_FREE) {
         super();
@@ -122,7 +123,6 @@ export class CRegionSelector {
         const [x,y] = mouseToCanvas(view, mouseX, mouseY)
         const p = new Vector2(x,y)
 
-//        console.log("Set dragstart, and all four rectStart points to  to "+x+","+y)
         this.dragStart.set(x,y)
 
         for (var q = 0; q < 4; q++) {
@@ -153,10 +153,6 @@ export class CRegionSelector {
                 }
             }
         }
-
-//        console.log ("onMouseDown: "+this.dumpRect())
-
-
         this.lastMouse.set(x,y)
     }
 
@@ -180,7 +176,6 @@ export class CRegionSelector {
             }
         }
         document.body.style.cursor = cursor
-//        console.log ("onMouseMove: "+this.dumpRect())
     }
 
     onMouseDrag(view, e,mouseX,mouseY) {
@@ -191,20 +186,15 @@ export class CRegionSelector {
 
 
         const delta = p.clone().sub(this.lastMouse)
-        //const dx = x-this.lastMouse.x;
-        //const dy = y-this.lastMouse.y;
 
         switch (this.dragMode) {
             case DRAG_INITIAL:
-//                console.log ("Region drag "+x+","+y)
                 this.rect[2].set(x, y)
                 this.rect[1].x = x
                 this.rect[3].y = y
                 break;
             case DRAG_MOVE:
                 this.rect.forEach(r => {
-                  //  r.x += dx;
-                  //  r.y += dy;
                     r.add(delta)
                 })
                 break;
@@ -317,7 +307,6 @@ export class CRegionSelector {
         ctx.strokeStyle = '#FF00FF'
         ctx.lineWidth = 1
         ctx.beginPath();
-     //   ctx.strokeRect(this.region.left, this.region.top,this.region.width,this.region.height)
         ctx.moveTo(this.rect[0].x,this.rect[0].y)
         ctx.lineTo(this.rect[1].x,this.rect[1].y)
         ctx.lineTo(this.rect[2].x,this.rect[2].y)
@@ -348,8 +337,6 @@ export class CRegionSelector {
         ctx.lineTo(pPeak.x,pPeak.y)
         ctx.lineTo(pRight.x,pRight.y)
         ctx.stroke()
-
-
 
         if (this.dragMode === DRAG_ROTATE) {
             ctx.beginPath();

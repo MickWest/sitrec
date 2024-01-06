@@ -48,9 +48,7 @@ class CRehoster {
             return resultUrl
         } catch (error) {
             console.error('Error uploading file:', error);
-//            return null;
             throw new Error("Upload problem, maybe not logged in?");
-
         }
     }
 
@@ -69,7 +67,6 @@ class CRehoster {
             // Handle errors here
         });
     }
-
 }
 
 export const Rehoster = new CRehoster();

@@ -8,6 +8,7 @@ var matLineHorizon = makeMatLine(0x0000ff,2.5);
 var matLineBlue = makeMatLine(0x8080ff,1.0);
 var matLineRed = makeMatLine(0xff8080,1.0);
 
+// these are the hemispheres used by CNodeDisplayATFLIR, the appear in front of the pod
 class SphericalGridHelper extends Group {
     constructor(vizRadius) {
         super();

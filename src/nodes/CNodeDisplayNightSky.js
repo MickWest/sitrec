@@ -2,7 +2,6 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import {GlobalNightSkyScene, GlobalScene, setupNightSkyScene} from "../LocalFrame";
 import {AxesHelper, Group, Matrix3, Matrix4, Raycaster, Scene, Vector3} from "../../three.js/build/three.module";
 import * as THREE from "../../three.js/build/three.module";
-import {FileManager} from "../CManager";
 import {radians, assert, sin, cos, degrees} from "../utils";
 import {gui, guiShowHide, guiTweaks, mainCamera, Sit} from "../Globals";
 import {
@@ -47,6 +46,7 @@ import {MASK_HELPERS} from "../LayerMasks";
 
 import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
+import {FileManager} from "../CFileManager";
 
 
 // other source of stars, if we need more (for zoomed-in pics)

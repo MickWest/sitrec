@@ -35,7 +35,6 @@ import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {MV3, V3} from "../threeExt";
 import {addDefaultLights} from "../lighting";
-import {FileManager} from "../CManager";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "../nodes/CNodeTrack";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -46,6 +45,7 @@ import {
 } from "../nodes/CNodeCamera";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
+import {FileManager} from "../CFileManager";
 
 
 export const SitKML = {

@@ -1,4 +1,3 @@
-import {FileManager} from "../CManager";
 import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
@@ -8,6 +7,7 @@ import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
 import {CNodeGraphSeries} from "./CNodeGraphSeries";
 import {par} from "../par";
+import {FileManager} from "../CFileManager";
 
 
 function getPixelData(image) {

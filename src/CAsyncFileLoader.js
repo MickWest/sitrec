@@ -1,13 +1,12 @@
-// manage a queue of file laoding requests
+// manage a queue of file loading requests
 // The goal is to reduce load on the server and client that comes from requesting 100s of files
-// so we only have a handfull of request open at once
+// so we only have a handful of request open at once
 // each file has a callback and a fallback
 // fallback is a different URL if this one does not exist
 // for example, if the file typically (but not always) redirects to a known location (like a cache)
 // you can try that location first to avoid getting lots of redirects.
 
-// NOT CURRENTL USED
-
+// NOT CURRENTLY USED
 
 // npm install axios --save-dev
 //

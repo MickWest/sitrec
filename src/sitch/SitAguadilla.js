@@ -18,7 +18,6 @@ import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../
 import {ViewMan} from "../nodes/CNodeView";
 import {assert} from "../utils"
 import {LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
-import {FileManager} from "../CManager";
 import * as THREE from "../../three.js/build/three.module";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
@@ -54,6 +53,7 @@ import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from 
 import {makeMatLine} from "../MatLines";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {MASK_MAIN_HELPERS} from "../LayerMasks.js";
+import {FileManager} from "../CFileManager";
 
 export const SitAguadilla = {
     name: "agua",

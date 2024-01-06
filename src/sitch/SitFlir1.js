@@ -1,6 +1,5 @@
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
-import {FileManager} from "../CManager";
 import {Sit, guiJetTweaks, NodeMan, setMainCamera, guiTweaks} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {CNodeArray} from "../nodes/CNodeArray";
@@ -44,6 +43,7 @@ import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {calculateGlareStartAngle} from "../JetHorizon";
+import {FileManager} from "../CFileManager";
 
 export const SitFlir1 = {
     name:"flir1",

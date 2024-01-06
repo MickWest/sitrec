@@ -1,5 +1,4 @@
 import {PerspectiveCamera} from "../three.js/build/three.module.js";
-import {FileManager} from "./CManager";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
@@ -22,6 +21,7 @@ import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import * as THREE from "../three.js/build/three.module";
 import {CNodeWind} from "./nodes/CNodeWind";
+import {FileManager} from "./CFileManager";
 
 
 

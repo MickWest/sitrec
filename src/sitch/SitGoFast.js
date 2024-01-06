@@ -6,7 +6,6 @@ import {
 import {EarthRadiusMiles, guiJetTweaks, setMainCamera, Sit} from "../Globals";
 import * as THREE from "../../three.js/build/three.module";
 import * as LAYER from "../LayerMasks";
-import {FileManager} from "../CManager";
 import {
     ExpandKeyframes,
     f2m,
@@ -56,6 +55,7 @@ import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeCamera} from "../nodes/CNodeCamera";
+import {FileManager} from "../CFileManager";
 
 export var SitGoFast = {
     name: "gofast",

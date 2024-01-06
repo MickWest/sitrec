@@ -1,7 +1,6 @@
 
 import {AlwaysDepth, Color, Vector3} from "../../three.js/build/three.module";
 import {par} from "../par";
-import {FileManager} from "../CManager";
 import {arrayColumn, ExpandKeyframes, RollingAverage, scaleF2M} from "../utils";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {guiJetTweaks, NodeMan, Sit} from "../Globals";
@@ -38,6 +37,7 @@ import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
+import {FileManager} from "../CFileManager";
 
 const GimbalDefaults = {
     name:"gimbal",

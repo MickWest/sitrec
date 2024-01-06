@@ -16,10 +16,10 @@ import {DragDropHandler} from "../DragDropHandler";
 import JSURL from "../js/jsurl"
 import {MV3} from "../threeExt";
 import {isLocal, SITREC_SERVER} from "../../config";
-import {FileManager} from "../CManager";
 import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeController";
+import {FileManager} from "../CFileManager";
 
 
 export const SitNightSky = {

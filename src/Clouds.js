@@ -8,6 +8,7 @@ import {CNodeLOSHorizonTrack} from "./nodes/CNodeLOSHorizonTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {Color, MeshStandardMaterial, TextureLoader} from "../three.js/build/three.module";
 
+// Wrapper for the cloud node setup - used by Gimbal
 export function SetupCloudNodes() {
 
     console.log("+++ cloudData Node")
