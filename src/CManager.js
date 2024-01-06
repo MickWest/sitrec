@@ -317,9 +317,6 @@ class CFileManager extends CManager {
         return fileExt
     }
 
-    // TODO - this isnt really jsut dynamic links, also rehost dropped files
-    // not dropped links though, as they should already have the staticURL set
-
     rehostDynamicLinks() {
         const rehostPromises = [];
         const todayDateStr = new Date().toISOString().split('T')[0];

@@ -71,7 +71,6 @@ export const SitFlir1 = {
         Flir1El: 'flir1/FLIR1 EL.csv',
         DataFile: 'flir1/Flir1 FOV Data.csv',
         TargetObjectFile: './models/FA-18F.glb',
-
     },
     videoFile: "../sitrec-videos/public/f4-aspect-corrected-242x242-was-242x216.mp4",
 
@@ -105,6 +104,7 @@ export const SitFlir1 = {
             nTiles: this.terrain.nTiles,
             tileSegments: this.terrain.tileSegments ?? 100,
         }, mainCamera)
+
 
 
 // Optionally we set the Jet origin to a particular Lat/Lon
@@ -484,15 +484,6 @@ export const SitFlir1 = {
         );
         hemiLight.layers.enable(LAYER.NAR)
         GlobalScene.add(hemiLight);
-
-        // var enu = LLAToEUS( 30.964833, -116.324759)
-        // DebugSphere("mark", enu, 1000)
-        //
-        // var enu = LLAToEUS( this.fromLat, this.fromLon)
-        // DebugSphere("mark2", enu, 1000)
-        //
-        // DebugSphere("origin", V3(0,0,0), 1000, "#FF0000")
-
 
         initJetVariables();
 

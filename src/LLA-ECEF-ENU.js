@@ -344,11 +344,10 @@ export function LLAVToEUS(lla, radius = wgs84.RADIUS) {
 
 // here we calculate EUS assuming a wgs84 radius
 // then adjust the altitude
-// TODO - PROBABLLY EVERYTHING NEEDS TO USE THE Globe VERSION, next.
- export function LLAToEUSMAP(lat, lon, alt, radius) {
+ export function LLAToEUSMAP(lat, lon, alt, radius  = wgs84.RADIUS) {
      assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
-     const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),0,wgs84.RADIUS)
-     var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon),wgs84.RADIUS) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain
+     const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),0,radius)
+     var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon),radius) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain
 
      // set world y from alt and adjust for drop from map x and y
      var z = alt - drop(enu.x,enu.y,radius) // use z to avoiud confusion with enu.y
@@ -359,7 +358,7 @@ export function LLAVToEUS(lla, radius = wgs84.RADIUS) {
 
 // The above assumes local to the EUS origin
 // and used "drop" which isn't a good way of doing it
-export function LLAToEUSMAPGlobe(lat, lon, alt, radius) {
+export function LLAToEUSMAPGlobe(lat, lon, alt, radius  = wgs84.RADIUS) {
     assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
     const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),alt,wgs84.RADIUS)
     var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon),wgs84.RADIUS) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain

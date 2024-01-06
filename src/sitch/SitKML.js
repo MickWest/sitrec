@@ -1,14 +1,13 @@
-import {Color, DirectionalLight, HemisphereLight, PerspectiveCamera, Vector3} from "../../three.js/build/three.module";
+import {Color, PerspectiveCamera} from "../../three.js/build/three.module";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
-import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
+import {setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
-import {LLAToEUS, LLAToEUSMAP, LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
+import {LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
-import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {
@@ -29,13 +28,12 @@ import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
-import {GlobalScene, LocalFrame} from "../LocalFrame";
+import {GlobalScene} from "../LocalFrame";
 import {gui, guiTweaks, } from "../Globals";
 import {NodeMan} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {MV3, V3} from "../threeExt";
-import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
 import {FileManager} from "../CManager";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
@@ -46,11 +44,8 @@ import {PTZControls} from "../PTZControls";
 import {
     CNodeCamera,
 } from "../nodes/CNodeCamera";
-import {CNodeTrackFromTimed} from "../nodes/CNodeTrackFromTimed";
-import {CNodeKMLDataTrack} from "../nodes/CNodeKMLDataTrack";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
-import {CNodeWind} from "../nodes/CNodeWind";
 
 
 export const SitKML = {
@@ -526,22 +521,6 @@ export const SitKML = {
                         this.camera.fov = vFOV;
                         this.camera.updateProjectionMatrix()
                     }
-
-                    // // PATCH look at a point
-                    // if (Sit.toLat !== undefined) {
-                    //     var radius = wgs84.RADIUS
-                    //
-                    //     var to = LLAToEUSMAP(Sit.toLat,
-                    //         Sit.toLon,
-                    //         Sit.toAlt,
-                    //         radius
-                    //     )
-                    //     this.camera.lookAt(to)
-                    //     if (this.in.tilt !== undefined) {
-                    //         const tilt = this.in.tilt.v0
-                    //         this.camera.rotateX(-radians(tilt))
-                    //     }
-                    // }
 
                     // extract camera angle
                     var _x = V3()

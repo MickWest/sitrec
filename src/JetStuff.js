@@ -457,7 +457,7 @@ export function ChangedPR() {
     //
 
 
-    // TODO: This does not work with absolute heading, but not really uses
+    // Lock camera to jet by adding the same ffset and rotating by the heading change
     if (par.lockCameraToJet) {
         mainCamera.position.add(offset)
 
@@ -679,7 +679,6 @@ export function SetupTrackLOSNodes() {
         toGround:60,
     })
 
-
     console.log("+++ LOSTraverseDisplayNode")
     var LOSTraverseDisplayNode = new CNodeDisplayTrack({
         inputs: {
@@ -864,13 +863,6 @@ export function updateSize(force) {
         var windowHeight = window.innerHeight;
         lastWindowHeight = windowHeight;
         lastWindowWidth = windowWidth;
-
-//        console.table(ViewMan.list)
-
-        // QQQ resizing
-  //     this.renderer.setSize(windowWidth, windowHeight);
-
-        // TODO: Fix for viewport that's not the same size as the window
 
         updateMatLineResolution(windowWidth*2, windowHeight*2)
 
