@@ -1,4 +1,4 @@
-import {PerspectiveCamera} from "../three.js/build/three.module.js";
+import {Color, PerspectiveCamera} from "../three.js/build/three.module.js";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
@@ -19,7 +19,6 @@ import {setupOpts} from "./JetChart";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import * as THREE from "../three.js/build/three.module";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {FileManager} from "./CFileManager";
 
@@ -342,7 +341,7 @@ export class CSituation {
             new CNodeDisplayTrack({
                 id: "KMLDisplay",
                 track: "cameraTrack",
-                color: new CNodeConstant({value: new THREE.Color(1, 1, 0)}),
+                color: new CNodeConstant({value: new Color(1, 1, 0)}),
                 width: 2,
                 layers: LAYER.MASK_HELPERS,
             })

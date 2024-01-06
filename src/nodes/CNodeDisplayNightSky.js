@@ -1,7 +1,14 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import {GlobalNightSkyScene, GlobalScene, setupNightSkyScene} from "../LocalFrame";
-import {AxesHelper, Group, Matrix3, Matrix4, Raycaster, Scene, Vector3} from "../../three.js/build/three.module";
-import * as THREE from "../../three.js/build/three.module";
+import {
+    Color,
+    Group, MathUtils,
+    Matrix4, Points,
+    Raycaster,
+    Scene, Sprite, SpriteMaterial,
+    TextureLoader,
+    Vector3
+} from "../../three.js/build/three.module";
 import {radians, assert, sin, cos, degrees} from "../utils";
 import {gui, guiShowHide, guiTweaks, mainCamera, Sit} from "../Globals";
 import {
@@ -22,7 +29,6 @@ import {
     raDecToAzElRADIANS,
     wgs84
 } from "../LLA-ECEF-ENU";
-//import { satellite } from '../js/satellite.js';
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -40,7 +46,7 @@ import {ViewMan} from "./CNodeView";
 import * as LAYER from "../LayerMasks";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {par} from "../par";
-import {Ray, Sphere} from "three";
+import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMaterial, Sphere} from "three";
 import {MASK_HELPERS} from "../LayerMasks";
 
 import SpriteText from '../js/three-spritetext';
@@ -409,15 +415,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // we need to rotate around the WORLD Z then the WORLD X
 
 //         // Create a matrix for rotation around Y-axis by 180° to get north in the right place
-        const rotationMatrixY = new THREE.Matrix4();
+        const rotationMatrixY = new Matrix4();
         rotationMatrixY.makeRotationY(radians(180));
 //
 // // Create a matrix for rotation around Z-axis by the longitude (will alls include data/time here)
-        const rotationMatrixZ = new THREE.Matrix4();
+        const rotationMatrixZ = new Matrix4();
         rotationMatrixZ.makeRotationZ(radians(Sit.lon + fieldRotation));
 //
 // // Create a matrix for rotation around X-axis by the latitude (tilt)
-        const rotationMatrixX = new THREE.Matrix4();
+        const rotationMatrixX = new Matrix4();
         rotationMatrixX.makeRotationX(radians(Sit.lat));
 //
 //         //Combine them, so they are applied in the order Y, Z, X
@@ -722,41 +728,41 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     addCelestialSphereLines(scene, gap = 15, color = 0x808080) {
 
         const sphereRadius = 100; // Radius of the celestial sphere
-        const material = new THREE.LineBasicMaterial({color: color}); // Line color
-        const materialWhite = new THREE.LineBasicMaterial({color: "#FF00FF"}); // WHite Line color
+        const material = new LineBasicMaterial({color: color}); // Line color
+        const materialWhite = new LineBasicMaterial({color: "#FF00FF"}); // WHite Line color
         const segments = 100; // Number of segments per line
 
 // Function to create a single line
         function createLine(start, end) {
-            const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
-            return new THREE.Line(geometry, material);
+            const geometry = new BufferGeometry().setFromPoints([start, end]);
+            return new Line(geometry, material);
         }
 
 // Adding lines for RA (Right Ascension) these go from celestial N to S poles, like lines of longitude
         for (let ra = 0; ra < 360; ra += gap) {
-            const raRad = THREE.MathUtils.degToRad(ra);
+            const raRad = MathUtils.degToRad(ra);
             const points = [];
             for (let dec = -90; dec <= 90; dec += 1.8) {
-                const decRad = THREE.MathUtils.degToRad(dec);
+                const decRad = MathUtils.degToRad(dec);
                 const equatorial = raDec2Celestial(raRad, decRad, sphereRadius)
-                points.push(new THREE.Vector3(equatorial.x, equatorial.y, equatorial.z));
+                points.push(new Vector3(equatorial.x, equatorial.y, equatorial.z));
             }
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, ra === 0 ? materialWhite : material);
+            const geometry = new BufferGeometry().setFromPoints(points);
+            const line = new Line(geometry, ra === 0 ? materialWhite : material);
             scene.add(line);
         }
 
 // Adding lines for Dec (Declination), - these go all the way around, like lines of latitude
         for (let dec = -90; dec <= 90; dec += gap) {
-            const decRad = THREE.MathUtils.degToRad(dec);
+            const decRad = MathUtils.degToRad(dec);
             const points = [];
             for (let ra = 0; ra <= 360; ra += 1.5) {
-                const raRad = THREE.MathUtils.degToRad(ra);
+                const raRad = MathUtils.degToRad(ra);
                 const equatorial = raDec2Celestial(raRad, decRad, sphereRadius)
-                points.push(new THREE.Vector3(equatorial.x, equatorial.y, equatorial.z));
+                points.push(new Vector3(equatorial.x, equatorial.y, equatorial.z));
             }
-            const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, (dec === 90 - gap) ? materialWhite : material);
+            const geometry = new BufferGeometry().setFromPoints(points);
+            const line = new Line(geometry, (dec === 90 - gap) ? materialWhite : material);
             scene.add(line);
         }
     }
@@ -772,15 +778,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 //         //  loadStarDataWithNames();
 //
 //         // Setup the sprite material
-//         const spriteMap = new THREE.TextureLoader().load('MickStar.png'); // Load a star texture
-//         const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap, color: 0xffffff});
+//         const spriteMap = new TextureLoader().load('MickStar.png'); // Load a star texture
+//         const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0xffffff});
 //
 // // Create stars
 //         const numStars = this.BSC_NumStars;
 //         const sphereRadius = 100; // 100m radius
 //
 //         for (let i = 0; i < numStars; i++) {
-//             const sprite = new THREE.Sprite(spriteMaterial);
+//             const sprite = new Sprite(spriteMaterial);
 //
 //             // Assuming RA is in radians [0, 2π] and Dec is in radians [-π/2, π/2]
 //             const ra = this.BSC_RA[i];   // Right Ascension
@@ -809,14 +815,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         //  loadStarDataWithNames();
 
         // Setup the sprite material
-        const spriteMap = new THREE.TextureLoader().load("data/images/nightsky/MickStar.png"); // Load a star texture
-        const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap, color: 0xffffff});
+        const spriteMap = new TextureLoader().load("data/images/nightsky/MickStar.png"); // Load a star texture
+        const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0xffffff});
 
         const numStars = this.BSC_NumStars;
         const sphereRadius = 100; // 100m radius
 
 // Define geometry
-        let starGeometry = new THREE.BufferGeometry();
+        let starGeometry = new BufferGeometry();
 
 // Allocate arrays for positions and magnitudes
         let positions = new Float32Array(numStars * 3); // x, y, z for each star
@@ -840,8 +846,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }
 
 // Attach data to geometry
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        starGeometry.setAttribute('magnitude', new THREE.BufferAttribute(magnitudes, 1));
+        starGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+        starGeometry.setAttribute('magnitude', new BufferAttribute(magnitudes, 1));
 
 // Custom shaders
         const customVertexShader = `
@@ -891,14 +897,14 @@ void main() {
 }`; // Your fragment shader code
 
 // Material with shaders
-        this.starMaterial = new THREE.ShaderMaterial({
+        this.starMaterial = new ShaderMaterial({
             vertexShader: customVertexShader,
             fragmentShader: customFragmentShader,
             uniforms: {
                 maxMagnitude: { value: this.BSC_MaxMag },
                 minSize: { value: 1.0 },
                 maxSize: { value: 20.0 },
-                starTexture: { value: new THREE.TextureLoader().load('data/images/nightsky/MickStar.png') },
+                starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30},
                 starScale: { value: Sit.starScale}
             },
@@ -907,7 +913,7 @@ void main() {
         });
 
 // Create point cloud
-        let stars = new THREE.Points(starGeometry, this.starMaterial);
+        let stars = new Points(starGeometry, this.starMaterial);
 
 // Add to scene
         scene.add(stars);
@@ -923,10 +929,10 @@ void main() {
         assert(Sit.lon !== undefined, "addStars needs Sit.lon")
 
         // Setup the sprite material
-        const starMap = new THREE.TextureLoader().load('data/images/nightsky/MickStar.png'); // Load a star texture
-        const sunMap = new THREE.TextureLoader().load('data/images/nightsky/MickSun.png'); // Load a star texture
-        const moonMap = new THREE.TextureLoader().load('data/images/nightsky/MickMoon.png'); // Load a star texture
-//        const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap, color: 0x00ff00});
+        const starMap = new TextureLoader().load('data/images/nightsky/MickStar.png'); // Load a star texture
+        const sunMap = new TextureLoader().load('data/images/nightsky/MickSun.png'); // Load a star texture
+        const moonMap = new TextureLoader().load('data/images/nightsky/MickMoon.png'); // Load a star texture
+//        const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0x00ff00});
 
         const sphereRadius = 100; // 100m radius
 
@@ -944,8 +950,8 @@ void main() {
             if (planet === "Moon") spriteMap = moonMap
 
             const color = this.planetColors[n++];
-            const spriteMaterial = new THREE.SpriteMaterial({map: spriteMap, color: color});
-            const sprite = new THREE.Sprite(spriteMaterial);
+            const spriteMaterial = new SpriteMaterial({map: spriteMap, color: color});
+            const sprite = new Sprite(spriteMaterial);
 
             this.updatePlanetSprite(planet, sprite, date, observer,sphereRadius)
             this.planetSprites[planet].color = color
@@ -1017,9 +1023,9 @@ void main() {
 //         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon")
 //
 //         // Setup the sprite material
-//         const spriteMap = new THREE.TextureLoader().load('data/MickStar.png'); // Load a star texture
+//         const spriteMap = new TextureLoader().load('data/MickStar.png'); // Load a star texture
 //
-//         const spriteMaterial = new THREE.SpriteMaterial({
+//         const spriteMaterial = new SpriteMaterial({
 //             map: spriteMap,
 //             depthTest:true,
 //             color: 0x8080ff});
@@ -1033,7 +1039,7 @@ void main() {
 //         this.satelliteSprites = []
 //
 //         for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-//             const sprite = new THREE.Sprite(spriteMaterial);
+//             const sprite = new Sprite(spriteMaterial);
 //             sat.sprite = sprite
 //
 //             // Add sprite to scene. Position is set later by updateSatelliteSprite
@@ -1060,7 +1066,7 @@ void main() {
         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon");
 
         // Define geometry for satellites
-        this.satelliteGeometry = new THREE.BufferGeometry();
+        this.satelliteGeometry = new BufferGeometry();
 
         // Allocate arrays for positions
         let positions = new Float32Array(this.TLEData.satrecs.length * 3); // x, y, z for each satellite
@@ -1138,17 +1144,17 @@ void main() {
 }`; // Your fragment shader code
 
 // Material with shaders
-        this.satelliteMaterial = new THREE.ShaderMaterial({
+        this.satelliteMaterial = new ShaderMaterial({
             vertexShader: customVertexShader,
             fragmentShader: customFragmentShader,
             uniforms: {
                 maxMagnitude: { value: this.BSC_MaxMag },
                 minSize: { value: 1.0 },
                 maxSize: { value: 20.0 },
-                starTexture: { value: new THREE.TextureLoader().load('data/images/nightsky/MickStar.png') },
+                starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30},
                 satScale: { value: Sit.satScale},
-                baseColor: { value: new THREE.Color(0xffff00) },
+                baseColor: { value: new Color(0xffff00) },
                 ...sharedUniforms,
             },
              transparent: true,
@@ -1183,11 +1189,11 @@ void main() {
         }
 
         // Attach data to geometry
-        this.satelliteGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        this.satelliteGeometry.setAttribute('magnitude', new THREE.BufferAttribute(magnitudes, 1));
+        this.satelliteGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+        this.satelliteGeometry.setAttribute('magnitude', new BufferAttribute(magnitudes, 1));
 
         // Create point cloud for satellites
-        this.satellites = new THREE.Points(this.satelliteGeometry, this.satelliteMaterial);
+        this.satellites = new Points(this.satelliteGeometry, this.satelliteMaterial);
 
         // Add to scene
         scene.add(this.satellites);

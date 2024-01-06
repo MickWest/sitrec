@@ -11,10 +11,9 @@ import {GlobalScene} from "./LocalFrame";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {radians} from "./utils";
 import {Sit} from "./Globals";
-import {showHider} from "./KeyBoardHandler";
 import {ShaderMaterial} from "three";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
-import {par, renderOne} from "./par";
+import {renderOne} from "./par";
 
 export function createSphere(radius, radius1, segments) {
     const sphere = new Mesh(
