@@ -27,10 +27,6 @@ export function setInfoDiv(i) {infoDiv=i;}
 export var GlobalComposer;
 export function setComposer(i) {GlobalComposer=i;}
 
-
-// export var GlobalRenderer;
-// export function setRenderer(i) {GlobalRenderer=i;}
-
 export var GlobalURLParams;
 export function setGlobalURLParams(i) {GlobalURLParams=i;}
 

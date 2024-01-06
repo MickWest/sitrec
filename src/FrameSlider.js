@@ -3,6 +3,7 @@ import {Sit} from "./Globals";
 
 var sliderDiv;
 
+// this is the slider at the bottom of the screen
 export function SetupFrameSlider() {
     var sliderContainer = document.createElement('div');
 

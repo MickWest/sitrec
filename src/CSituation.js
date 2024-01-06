@@ -24,54 +24,7 @@ import {CNodeWind} from "./nodes/CNodeWind";
 import {FileManager} from "./CFileManager";
 
 
-
-
-/*
-
-Currently we have a simple heirachy of type of sitch,
-
-CSituation - the default
-  CSituation3D - intermedate for
-    CSituationLookAt
-
-
-defaultSit which is created here:
-
-    export var defaultSit = new CSituation({})
-
-and then in index.js se call SetSit, which sets the global Sit
-
-    setSit(defaultSit)
-
-
-The situation is determined in index.js by the situtation string, which defaults to:
-
-    var situation = "gimbal";
-
-(Or localSituation)
-
-Them, depending on that, we are doing one of:
-
-    Sit.change(SitLineTest)
-or
-    setSit(new CSituationLookAt(SitDume))
-or
-    setSit(new CSituation3D(SitHayle))
-
-This is rather redundent currently, as only SitDume uses CSituationLookAt and CSituation3D does not extend anything
-
-So maybe we need to move to a component model.
-
-CSituationLookAt does not even have any code for looking at things
-it just sets up two CNodeView3D, and a bit of othere stuff. The exact ype of things done
-in other setup or setup2 functions
-
-Stup amount of duplicated code copied between sitches.
-
-
-*/
-
-
+// These are some parameters used as defaults for a situation
 const situationDefaults = {
     name: "gimbal",
     fps: 30,
@@ -155,7 +108,6 @@ export class CSituation {
         if (this.bFrame === undefined) {
             this.bFrame = this.frames-1;
         }
-
 
         switch (this.bigUnits) {
             case "NM": // Nautical miles and feet
@@ -337,10 +289,7 @@ export class CSituation {
             desc: "Altitude adjustment"
         }, guiTweaks)
 
-
         // This seems excessive - sort out the above, remove duplicate code, make it all data driven.
-        // Sit.makeCameraTrack();
-
     }
 
     get duration() {

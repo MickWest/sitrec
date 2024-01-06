@@ -6,15 +6,12 @@ import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {FileManager} from "./CFileManager";
 
-// The DragDropHandler is more like the local client file handler, with rehosting.
+// The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
 
     constructor() {
         this.dropAreas = [];
-
-
     }
-
 
     addDropArea(dropArea) {
         dropArea.addEventListener('dragenter', this.handlerFunction, false)

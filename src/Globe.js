@@ -60,60 +60,54 @@ export function createSphereDayNight(radius, radius1, segments) {
             ...sharedUniforms,
         },
         vertexShader: `
-varying vec3 vNormal;
-varying vec2 vUv;
-varying vec4 vPosition;
-       void main() {
-           vUv = uv;
-    vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
-        vPosition = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
+        varying vec3 vNormal;
+        varying vec2 vUv;
+        varying vec4 vPosition;
+        void main() {
+            vUv = uv;
+            vNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+            vPosition = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+         }
     `,
         fragmentShader: `
         uniform sampler2D dayTexture;
-uniform sampler2D nightTexture;
-uniform vec3 sunDirection;
-uniform float nearPlane;
-uniform float farPlane;
-varying vec2 vUv;
+        uniform sampler2D nightTexture;
+        uniform vec3 sunDirection;
+        uniform float nearPlane;
+        uniform float farPlane;
+        varying vec2 vUv;
+        
+        varying vec3 vNormal;
+        varying vec4 vPosition;
+        
+        void main() {
+        
+            vec3 sunNormal = normalize(sunDirection);
+            float intensity = max(dot(vNormal, sunNormal), -0.1);
+            // Smooth transition in the penumbra area
+            float blendFactor = smoothstep(-0.1, 0.1, intensity);
+            
+            vec4 dayColor = texture2D(dayTexture, vUv);
+            vec4 nightColor = texture2D(nightTexture, vUv);
+            
+            gl_FragColor = mix(nightColor, dayColor, blendFactor);
+            
+            // Logarithmic depth calculation
+            float w = vPosition.w;
+            float z = (log2(max(nearPlane, 1.0 + w)) / log2(1.0 + farPlane)) * 2.0 - 1.0;
+        
+            // Write the depth value
+            gl_FragDepthEXT = z * 0.5 + 0.5;
+     
+            // Map the intensity to a grayscale color
+            // vec3 color = vec3(intensity); // This creates a vec3 with all components set to the intensity value
+            // gl_FragColor = vec4(color, 1.0); // Set alpha to 1.0 for full opacity
+            // gl_FragColor = dayColor;
+     
+        }
+    `
 
-varying vec3 vNormal;
-varying vec4 vPosition;
-
-void main() {
-
-    vec3 sunNormal = normalize(sunDirection);
-//    float intensity = max(dot(vNormal, sunNormal), 0.0);
-    float intensity = max(dot(vNormal, sunNormal), -0.1);
-    // Smooth transition in the penumbra area
-    float blendFactor = smoothstep(-0.1, 0.1, intensity);
-    
-    
-    vec4 dayColor = texture2D(dayTexture, vUv);
-    vec4 nightColor = texture2D(nightTexture, vUv);
-    
-    gl_FragColor = mix(nightColor, dayColor, blendFactor);
-    
-        // Logarithmic depth calculation
-  float w = vPosition.w;
-  float z = (log2(max(nearPlane, 1.0 + w)) / log2(1.0 + farPlane)) * 2.0 - 1.0;
-
-  // Write the depth value
-  gl_FragDepthEXT = z * 0.5 + 0.5;
-    
-    
- 
- 
-     // Map the intensity to a grayscale color
- //   vec3 color = vec3(intensity); // This creates a vec3 with all components set to the intensity value
-
-//    gl_FragColor = vec4(color, 1.0); // Set alpha to 1.0 for full opacity
- 
- //gl_FragColor = dayColor;
- 
-}
-`
     });
 
     const sphere = new Mesh(new SphereGeometry(radius, segments, segments), globeMaterial);
@@ -127,18 +121,12 @@ export function addAlignedGlobe(globeScale = 0.999) {
 
     const world = new Group();
     GlobalScene.add(world);
-
-// const axesHelper = new AxesHelper( 50000 );
-// GlobalScene.add( axesHelper );
-
-    var sphere
+    let sphere
 
     if (Sit.useDayNightGlobe)
         sphere = createSphereDayNight(wgs84.RADIUS * globeScale, wgs84.POLAR_RADIUS * globeScale, 80);
     else
         sphere = createSphere(wgs84.RADIUS * globeScale, wgs84.POLAR_RADIUS * globeScale, 80);
-
-
 
     sphere.position.set(0, -wgs84.RADIUS, 0)
     world.add(sphere)
