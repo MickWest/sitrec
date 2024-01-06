@@ -548,7 +548,9 @@ export function parseCSVAirdata(csv) {
             SRTArray[i-1][SRT.latitude] = Number(csv[i][latCol])
             SRTArray[i-1][SRT.longitude] = Number(csv[i][lonCol])
             SRTArray[i-1][SRT.abs_alt] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
-            SRTArray[i-1][SRT.focal_len] = 30
+
+            // NOT HANDLING focal_len
+            SRTArray[i-1][SRT.focal_len] = 0
 
             SRTArray[i-1][SRT.heading] = Number(csv[i][headingCol])
             SRTArray[i-1][SRT.pitch] = Number(csv[i][pitchCol])

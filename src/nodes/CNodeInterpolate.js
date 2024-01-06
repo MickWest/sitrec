@@ -22,7 +22,8 @@ class CNodeInterpolate extends CNode {
     getValueFrame(frame) {
         const f = frame - this.startFrame; // might be negative, or > frames, no problem.
         const n = this.endFrame - this.startFrame;
-        return this.in.start.v(f) + f / n * (this.in.end.getValue(f) - this.in.start.getValue(f))
+        const result = this.in.start.v(f) + f / n * (this.in.end.getValue(f) - this.in.start.getValue(f))
+        return result;
     }
 }
 

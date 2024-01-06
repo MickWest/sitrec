@@ -340,15 +340,18 @@ class CNodeView extends CNode {
 // position and size are specified as percentages
 // and stored as fractions (ie. /100)
 class CUIText {
-    constructor (text,x,y,size,color,font) {
+    constructor (text,x,y,size,color,align, font) {
         this.text = text;
         this.x = x/100;
         this.y = y/100;
         this.size = size/100;
         this.color = color
         this.font = font;
+        this.align = align;
         this.boxed = false;
         this.boxGap = 2;  // gap between text BBox and display BBox
+        this.alwaysUpdate = false;
+
     }
 
     getValue() {
@@ -365,6 +368,13 @@ class CUIText {
         this.property = property
         this.callback = callback;
         this.initialValue = this.getValue()
+        return this;
+    }
+
+    update (callback) {
+        this.callback = callback;
+        this.alwaysUpdate = true;
+        return this;
     }
 
     checkListener() {
@@ -378,6 +388,10 @@ class CUIText {
                 }
                 this.initialValue = v;
             }
+        }
+
+        if (this.alwaysUpdate) {
+            this.callback.call(this)
         }
     }
 }

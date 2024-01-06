@@ -2,8 +2,10 @@ import {SitKML} from "./SitKML";
 import {NodeMan} from "../Globals";
 import {CNodeControllerAzElData} from "../nodes/CNodeController";
 import {makeArrayNodeFromColumn} from "../nodes/CNodeArray";
-import {assert} from "../utils"
+import {abs, assert, floor} from "../utils"
 import {SRT} from "../KMLUtils";
+import {par} from "../par";
+import {makeComboNode} from "../nodes/CNodeMunge";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake = {
@@ -19,7 +21,7 @@ export const SitFolsomLake = {
     frustumColor: 0xff0000,
     frustumLineWeight: 1.5,
 
-    planeCameraFOV: 5,
+    planeCameraFOV: 42.15,
 
     frames: 1156,
     fps: 29.97,
@@ -56,7 +58,7 @@ export const SitFolsomLake = {
     //         [0, 38.72275880556581, -121.16873415102312, 147.20740124210715]
     //      ]
     // },
-    showAltitude: true,
+    showAltitude: false,
 
     setup2: function() {
 
@@ -73,7 +75,11 @@ export const SitFolsomLake = {
         // makeArrayNodeFromColumn("headingCol",data, SRT.heading)
         // makeArrayNodeFromColumn("pitchCol",data, SRT.pitch)
         makeArrayNodeFromColumn("headingCol", array, "heading",30, true)
-        makeArrayNodeFromColumn("pitchCol", array, "pitch",30, true)
+        makeArrayNodeFromColumn("pitchCol", array, "gPitch",30, true)
+         makeArrayNodeFromColumn("pitchCol1", array, "gPitch",30, true)
+         makeArrayNodeFromColumn("pitchCol2", array, "pitch",30, true)
+
+       // makeComboNode("pitchCol","pitchCol1","pitchCol2",(a,b) => {return a+b})
 
         // NodeMan.get("lookCamera").addControllerNode(
         //     new CNodeControllerAzElData({
@@ -85,6 +91,25 @@ export const SitFolsomLake = {
             "AbsolutePitchHeading",
             {pitch: "pitchCol", heading: "headingCol"}
         )
+
+        const labelVideo = NodeMan.get("labelVideo")
+        // custom drone specific UI
+        labelVideo.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
+            this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
+        })
+
+        labelVideo.addLine("---").listen(par, "az", function (value) {
+            this.text = "Az " + value.toFixed(2) + "°";
+        })
+
+
+        labelVideo.addLine("---").update(function (value) {
+            this.text = "Pitch " + NodeMan.get("pitchCol2").v(par.frame).toFixed(2) + "°";
+        })
+
+        labelVideo.addLine("---").update(function (value) {
+            this.text = "gPitch " + NodeMan.get("pitchCol1").v(par.frame).toFixed(2) + "°";
+        })
 
   //      NodeMan.reinterpret("cameraTrack", "SmoothedPositionTrack", {smooth:100}, "source")
 

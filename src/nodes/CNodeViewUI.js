@@ -18,6 +18,7 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         this.defaultFontSize = v.defaultFontSize ?? 5// font height as % of window height
         this.defaultFontColor = v.defaultFontColor ?? '#FFFFFF'
         this.defaultFont = v.defaultFont ?? 'sans-serif'
+        this.defaultAlign = v.defaultAlign ?? 'center'
         this.textElements = {} // text elements are named
         this.autoClear = true; // always need to autoclear
         // we don't need a div as we deriver from CNodeViewCanvas2D
@@ -95,10 +96,30 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     }
 
 
-    addText(key, text, x, y, size, color, font) {
+    // adds a line one line below the last one
+    // uses the Y value to create a unique ID (not intended to be referenced)
+    addLine(text) {
+        return this.addText(
+            this.lastKey+this.lastY,
+            text, this.lastX, this.lastY + this.lastSize, this.lastSize,
+            this.lastColor, this.lastAlign, this.lastFont
+        )
+    }
+
+    addText(key, text, x, y, size, color, align, font) {
         size ??= this.defaultFontSize
         color ??= this.defaultFontColor
         font ??= this.defaultFont
+        align ??= this.defaultAlign
+
+        this.lastKey = key;
+        this.lastSize = size;
+        this.lastColor = color;
+        this.lastFont = font;
+        this.lastAlign = align;
+        this.lastY = y;
+        this.lastX = x;
+
 
         // make sure we have the size right for centering text
         this.inheritSize()
@@ -106,17 +127,7 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         this.canvas.height = this.heightPx
         //this.canvas.style.zIndex = 10;
 
-
-        // a negative x value indicates we want to center justify the text here.
-        if (x < 0) {
-            //debugger;
-            // set up the font we are going to use and measure it
-            this.ctx.font = Math.floor(this.heightPx * size / 100) + 'px' + " " + font
-            const metrics = this.ctx.measureText(text)
-            x = -x - 100 * metrics.width / 2 / this.widthPx
-        }
-
-        this.textElements[key] = new CUIText(text, x, y, size, color, font)
+        this.textElements[key] = new CUIText(text, x, y, size, color, align, font)
         return this.textElements[key]
     }
 
@@ -149,16 +160,14 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         Object.keys(this.textElements).forEach(key => {
             const t = this.textElements[key]
 
-            if (t.object != undefined) {
-                t.checkListener()
-            }
+            t.checkListener()
 
             const x = t.x * this.widthPx
             const y = t.y * this.heightPx
             this.ctx.font = Math.floor(this.heightPx * t.size) + 'px' + " " + t.font
             this.ctx.fillStyle = t.color;
             this.ctx.strokeStyle = t.color;
-            this.ctx.textAlign = 'center';
+            this.ctx.textAlign = t.align;
             this.ctx.fillText(t.text, x, y)
             t.bbox = getTextBBox(this.ctx, t.text)
             const w = t.bbox.width

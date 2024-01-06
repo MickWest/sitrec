@@ -345,7 +345,6 @@ export class CNodeConstant extends CNode {
     }
 }
 
-
 // call the update on any node that has one, with the current frame number
 export function UpdateNodes(f) {
     nodeList.forEach(n => {if (n.update != undefined) n.update(f)})

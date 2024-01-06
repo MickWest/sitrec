@@ -94,8 +94,8 @@ export function initJetVariables() {
     // Pitch and roll are the physical orientation of the pod
     targetSphere = sphereMark(V3(0,0,0),2,0xffffff, LocalFrame)
 
-    aSphere = sphereMark(V3(0,0,0),1.5,0x808080,LocalFrame)
-    bSphere = sphereMark(V3(0,0,0),1.5,0x808080,LocalFrame)
+    aSphere = sphereMark(V3(0,0,0),1.5,0xc08080,LocalFrame)
+    bSphere = sphereMark(V3(0,0,0),1.5,0x80c080,LocalFrame)
     glareSphere = sphereMark(V3(0,0,0),1.8,0x00ff00,LocalFrame)
 
     //  glareSphere.layers.enable(LAYER.podsEye)
@@ -538,7 +538,7 @@ export function ChangedPR() {
 
     var aV = EA2XYZ(Frame2El(Sit.aFrame), Frame2Az(Sit.aFrame), vizRadius)
     aSphere.position.copy(aV)
-    var bV = EA2XYZ(Frame2El(Sit.aFrame), Frame2Az(Sit.bFrame), vizRadius)
+    var bV = EA2XYZ(Frame2El(Sit.bFrame), Frame2Az(Sit.bFrame), vizRadius)
     bSphere.position.copy(bV)
 
     var circleCenter = glareSphere.position;
@@ -1300,7 +1300,7 @@ export function initJetStuff() {
     })
 
     var ui = new CNodeViewUI({id: "podseye", overlayView: ViewMan.list.podsEyeView.data});
-    ui.addText("info", "Pods-Eye View", -50, 90, 6, "#FFFF00")
+    ui.addText("info", "Pods-Eye View", 50, 90, 6, "#FFFF00")
 
     // Pod's eye, same, but derotated so horizon is correct.
     var podsEyeDeroCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipNAR);
@@ -1425,7 +1425,7 @@ export function initJetStuffOverlays() {
         defaultFontColor: '#E0E0E0',
         defaultFont: 'sans-serif',
     });
-    ui.addText("info", "Derotated", -50, 90, 6, "#FFFF00")
+    ui.addText("info", "Derotated", 50, 90, 6, "#FFFF00")
 
     ui = new CNodeATFLIRUI({
         id: "NARUI",
@@ -1436,6 +1436,6 @@ export function initJetStuffOverlays() {
         defaultFontColor: '#E0E0E0',
         defaultFont: 'sans-serif',
     });
-    ui.addText("info", "NAR Cam", -50, 90, 6, "#FFFF00")
+    ui.addText("info", "NAR Cam", 50, 90, 6, "#FFFF00")
     ViewMan.get("NARUI").setVisible(par.showNARCam);
 }

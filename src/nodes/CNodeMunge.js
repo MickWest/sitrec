@@ -120,10 +120,6 @@ export class CNodeGForce extends CNode{
         return g
 
     }
-
-
-
-
 }
 
 
@@ -169,5 +165,20 @@ export function makeMunge(node, index1, index2, scale=1) {
                 return this.in.n.v(f)[index1][index2]*localScale
         },
         frames: node.frames,
+    })
+}
+
+export function makeComboNode(id, a,b, munge) {
+    return new CNodeMunge({
+        id:id,
+        inputs:{
+            a: a,
+            b: b,
+        },
+        munge: function (f) {
+            const a = this.in.a.v(f)
+            const b = this.in.a.v(f)
+            return munge(a,b)
+        },
     })
 }

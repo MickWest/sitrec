@@ -1,7 +1,7 @@
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
 import {FileManager} from "../CManager";
-import {Sit, guiJetTweaks, NodeMan, setMainCamera} from "../Globals";
+import {Sit, guiJetTweaks, NodeMan, setMainCamera, guiTweaks} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {CNodeArray} from "../nodes/CNodeArray";
 import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
@@ -20,7 +20,14 @@ import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {gui} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
-import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
+import {
+    curveChanged,
+    initJetVariables,
+    initViews,
+    SetupCommon,
+    SetupTrackLOSNodes,
+    SetupTraverseNodes
+} from "../JetStuff";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
@@ -36,6 +43,7 @@ import {DebugSphere, V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeCamera} from "../nodes/CNodeCamera";
+import {calculateGlareStartAngle} from "../JetHorizon";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -491,6 +499,15 @@ export const SitFlir1 = {
         // initViews relies on some other views setup in the init() fucntion
         // which needs "jetstuff"
         initViews()
+
+        guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
+
+
+        guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
+            curveChanged();
+           // calculateGlareStartAngle();
+            par.renderOne = true;
+        }).listen().name('Jet Pitch')
 
         guiJetTweaks.hide();
 
