@@ -43,6 +43,7 @@ import {CNodeCamera} from "../nodes/CNodeCamera";
 import {calculateGlareStartAngle} from "../JetHorizon";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
+import {CNodeMunge} from "../nodes/CNodeMunge";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -152,10 +153,16 @@ export const SitFlir1 = {
 
         var elStartNode = makeCNodeGUIValue("elStart", 5.7, 4.5,   6.5,   0.001,  "el Start", gui)
         var elEndNode = makeCNodeGUIValue("elEnd", 5, 4.5, 6.5,   0.001,  "el end", gui)
+        gui.add(par, 'negateEl').listen().name("Negate Elevation");
+        new CNodeInterpolate({id:"elNormal", start:elStartNode, end:elEndNode, frames:Sit.frames})
+        new CNodeMunge({id:"el", inputs:{elNormal:"elNormal"}, munge: function (f) {
+                if (par.negateEl) {
+                    return this.in.elNormal.v(f) * -1
+                } else {
+                    return this.in.elNormal.v(f)
+                }
+            }})
 
-
-//    new CNodeInterpolate({id:"el", start:5.7, end:5, frames:Sit.frames})
-        new CNodeInterpolate({id:"el", start:elStartNode, end:elEndNode, frames:Sit.frames})
 
         // FLIR1
         new CNodeSwitch({id:"azSources",

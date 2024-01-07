@@ -53,6 +53,7 @@ export var par = {
     mainFOV: 30,
     jetHeading: 0,
     effects: true,
+    negateEl: false,
 }
 
 export function renderOne() {
