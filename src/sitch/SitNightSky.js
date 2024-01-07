@@ -9,7 +9,6 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {ViewMan} from "../nodes/CNodeView";
 import {DragDropHandler} from "../DragDropHandler";
@@ -20,6 +19,7 @@ import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeController";
 import {FileManager} from "../CFileManager";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitNightSky = {

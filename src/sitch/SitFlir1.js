@@ -39,10 +39,10 @@ import {makeMatLine} from "../MatLines";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {DebugSphere, V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {calculateGlareStartAngle} from "../JetHorizon";
 import {FileManager} from "../CFileManager";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitFlir1 = {
     name:"flir1",

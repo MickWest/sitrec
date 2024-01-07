@@ -1,9 +1,9 @@
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {GlobalURLParams, gui, Sit} from "../Globals";
 import {initKeyboard} from "../KeyBoardHandler";
 import {SetupGUIFrames} from "../JetGUI";
 import {addFiltersToVideoNode} from "../nodes/CNodeVideoView";
 import {setURLParameters} from "../utils";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitVideo = {
     name: "video",

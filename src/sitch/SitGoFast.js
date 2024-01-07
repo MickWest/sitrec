@@ -50,9 +50,9 @@ import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export var SitGoFast = {
     name: "gofast",
@@ -616,6 +616,8 @@ export var SitGoFast = {
 
 
         guiJetTweaks.hide();
+        guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
+
 
         initJetVariables();
         // initViews relies on some other views setup in the init() fucntion

@@ -10,7 +10,7 @@ class CRehoster {
     }
 
     // Function to promise to rehostFile the file from the client to the server
-
+    //
     async rehostFilePromise(filename, data) {
         assert(filename !== undefined, "rehostFile needs a filename")
         try {

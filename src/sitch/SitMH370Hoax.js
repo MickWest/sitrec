@@ -1,6 +1,5 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
 import {f2m, metersFromFeet, scaleF2M} from "../utils";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as LAYER from "../LayerMasks";
@@ -26,6 +25,7 @@ import {CNodeImageAnalysis} from "../nodes/CNodeImageAnalysis";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeMunge} from "../nodes/CNodeMunge";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitMH370Hoax = {
     name: "mh370hoax",

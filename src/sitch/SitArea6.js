@@ -9,8 +9,8 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 

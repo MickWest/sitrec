@@ -1,5 +1,6 @@
 // Handles mouse events, and passes them to the view that is under the mouse
 // Also handled 3D raycasting calculation based on mouse position and view
+//
 
 import {mouseInView, mouseInViewOnly, ViewMan} from "./nodes/CNodeView";
 import {par} from "./par";
@@ -15,6 +16,7 @@ var mouseX = 0;
 var mouseY = 0;
 
 
+
 export function SetupMouseHandler() {
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -22,6 +24,7 @@ export function SetupMouseHandler() {
     document.addEventListener( 'dblclick', onDocumentDoubleClick, false );
 }
 
+//
 export function onDocumentMouseDown(event) {
 
     if (!mouseDown) {

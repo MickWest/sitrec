@@ -13,10 +13,16 @@ export class MP4Source {
 
   }
 
-  loadURI(uri, callback) {
+  loadURI(uri, callback, error) {
     fetch(uri).then(response => {
       const reader = response.body.getReader();
-      this.loadFromReader(reader, callback)
+      if (response.status === 200) {
+        this.loadFromReader(reader, callback)
+      } else {
+        if (error !== undefined) {
+          error(uri)
+        }
+      }
     })
   }
 

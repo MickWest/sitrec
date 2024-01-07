@@ -1,9 +1,9 @@
-import {CVideoData, CNodeVideoView} from "./CNodeVideoView";
+import {CVideoData} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
 import {infoDiv, Sit} from "../Globals";
 import {assert, loadImage, versionString} from "../utils";
 import {par} from "../par";
-import { updateGUIFrames} from "../JetGUI";
+import {updateGUIFrames} from "../JetGUI";
 import {updateFrameSlider} from "../FrameSlider";
 import {isLocal} from "../../config";
 
@@ -34,11 +34,13 @@ function updateSitFrames() {
 export class CVideoWebCodecData extends CVideoData {
 
 
-    constructor(v) {
-        super(v)
+    constructor(v, loadedCallback, errorCallback) {
+        super(v);
 
 
         this.format=""
+        this.error = false;
+        this.loaded = false;
 
         this.incompatible = true;
         try {
@@ -59,7 +61,14 @@ export class CVideoWebCodecData extends CVideoData {
 
         let source = new MP4Source()
         if (v.file !== undefined) {
-            source.loadURI(v.file, () => {updateSitFrames()})
+            source.loadURI(v.file,
+                () => {
+                    loadedCallback();
+                    updateSitFrames()
+                },
+                () => {
+                    errorCallback();
+                })
         }
         if (v.dropFile !== undefined) {
             let reader = new FileReader()
@@ -644,81 +653,4 @@ export class CVideoWebCodecData extends CVideoData {
 
 }
 
-
-export class CNodeVideoWebCodecView extends CNodeVideoView {
-  constructor(v) {
-      super(v);
-//      this.checkInputs(["zoom"])
-      v.id = v.id + "_data"
-      this.Video = new CVideoWebCodecData(v)
-
-      let dropArea = this.div
-
-      dropArea.addEventListener('dragenter', this.handlerFunction, false)
-      dropArea.addEventListener('dragleave', this.handlerFunction, false)
-      dropArea.addEventListener('dragover', this.handlerFunction, false)
-      dropArea.addEventListener('drop', e => this.onDrop(e), false)
-
-      this.Video = new CVideoWebCodecData(v)
-
-  }
-
-  // just a stub to prevent stuff happening on drag events
-    handlerFunction(event) {
-        event.preventDefault()
-    }
-
-
-
-    stopStreaming() {
-        par.frame = 0
-        par.paused = false;
-        this.Video.killWorkers()
-        this.Video.flushEntireCache()
-        Sit.frames = 0
-        this.positioned = false;
-    }
-
-    newVideo(file) {
-        Sit.frames = undefined; // need to recalculate this
-        this.Video = new CVideoWebCodecData({id: this.id + "_data", file: file})
-        this.positioned = false;
-        par.frame = 0;
-        par.paused = false; // unpause, otherwise we see nothing.
-    }
-
-    uploadFile(file) {
-
-        this.stopStreaming()
-        this.Video = new CVideoWebCodecData({id:this.id+"_data", dropFile:file})
-
-    }
-
-
-    requestAndLoadFile() {
-      par.paused = true;
-        var input = document.createElement('input');
-        input.type = 'file';
-
-        input.onchange = e => {
-            var file = e.target.files[0];
-            this.uploadFile(file)
-            input.remove();
-        }
-
-        input.click();
-    }
-
-    onDrop(e) {
-        e.preventDefault()
-        console.log(e)
-        let dt = e.dataTransfer
-        let files = dt.files
-        console.log("LOADING DROPPED FILE:" + files[0].name)
-        //   ([...files]).forEach(this.uploadFile)
-        this.uploadFile(files[0])
-    }
-
-
-}
 

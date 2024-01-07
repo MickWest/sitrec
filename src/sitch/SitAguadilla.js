@@ -19,7 +19,6 @@ import {LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import * as THREE from "../../three.js/build/three.module";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {CNodeConstant} from "../nodes/CNode";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {
@@ -47,6 +46,7 @@ import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from 
 import {makeMatLine} from "../MatLines";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitAguadilla = {
     name: "agua",

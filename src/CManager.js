@@ -19,6 +19,7 @@ class CManager {
         return this.list[id] !== undefined
     }
 
+
     remove(id) {
         if (this.exists(id)) {
             delete this.list[id];

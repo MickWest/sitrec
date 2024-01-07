@@ -11,7 +11,6 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {DragDropHandler} from "../DragDropHandler";
 
 import {ViewMan} from "../nodes/CNodeView";
@@ -20,6 +19,7 @@ import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import * as LAYER from "../LayerMasks";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitPVS14 = {

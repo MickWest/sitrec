@@ -27,7 +27,6 @@ import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodec";
 import {GlobalScene} from "../LocalFrame";
 import {gui, guiTweaks, } from "../Globals";
 import {NodeMan} from "../Globals";
@@ -46,6 +45,7 @@ import {
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {FileManager} from "../CFileManager";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitKML = {

@@ -63,11 +63,11 @@ import {
 } from "../three.js/build/three.module";
 import {CNodeDisplayLOS} from "./nodes/CNodeDisplayLOS";
 import {isLocal} from "../config";
-import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodec";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
 import {CNodeCamera} from "./nodes/CNodeCamera";
+import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 
 var matLineWhite = makeMatLine(0xffffff);
 var matLineCyan = makeMatLine(0x00ffff,1.5);

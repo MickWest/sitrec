@@ -1,4 +1,3 @@
-
 import {SitFolsomLake} from "./SitFolsomLake";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
@@ -19,8 +18,7 @@ export const SitFolsomLake2 = {
     files: {
         cameraFile:'folsomlake/Jan-4th-2024-02-19PM-Flight-Airdata.csv',
     },
-//    startTime: "2024-01-04 22:19:34.000Z",  // start time of video, the cameraFile might start before this.
-    startTime: "2024-01-04 22:19:36.704Z",  // adjusted. Videos seem 2 seocnd off???
+    startTime: "2024-01-04 22:19:36.704Z",  //
 
     videoFile: "../sitrec-videos/public/MICK DJI_0046 - half.mp4",
 
