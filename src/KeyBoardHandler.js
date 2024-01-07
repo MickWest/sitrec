@@ -188,7 +188,7 @@ var isFullScreen = false;
 export function initKeyboard() {
     document.onkeydown = function (e) {
 
-        if (e.repeat && e.code !== 'Comma' && e.code !=='Period') return; // ignore repeating keys, except for frame advance
+        if (e.repeat && e.code !== 'Comma' && e.code !== 'Period') return; // ignore repeating keys, except for frame advance
 
         // since there's a variety of things the keys might do, have them all render a frame
         // so that changes are reflected in the display (e.g. 'J' = toggle jet
@@ -200,7 +200,7 @@ export function initKeyboard() {
         var key = e.key.toLowerCase()
         keyHeld[key] = true
         keyCodeHeld[keyCode] = true
-        console.log("Key: "+key+ " keyCode: "+keyCode)
+        console.log("Key: " + key + " keyCode: " + keyCode)
         var c = mainCamera; // mostly to avoid search results.
         switch (keyCode) {
             case 'NumpadDecimal':
@@ -223,9 +223,9 @@ export function initKeyboard() {
                 c.position.y = Sit.defaultCameraDist;
                 c.position.z = 0;
                 c.up.set(0, 1, 0);
-          //      c.up.x = 0;
-          //      c.up.y = 0;
-          //      c.up.z = -1;
+                //      c.up.x = 0;
+                //      c.up.y = 0;
+                //      c.up.z = -1;
 
                 c.lookAt(new Vector3(0, 0, 0));
                 break;
@@ -290,7 +290,7 @@ export function initKeyboard() {
 
         // now see if keycode is in the gui togglers array
         var guiController = toggles[key]
-        console.log("toggles[key] = "+guiController)
+        console.log("toggles[key] = " + guiController)
         if (guiController !== undefined) {
             guiController.setValue(!guiController.getValue())
         }
@@ -318,4 +318,11 @@ export function initKeyboard() {
         keyHeld[key] = false
 
     }
+
+    window.onfocus = () => {
+        keyHeld = {}
+        keyCodeHeld = {}
+    }
+
+
 }
