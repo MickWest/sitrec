@@ -1,3 +1,4 @@
+// Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
 
 const sitchContext = require.context('./sitch', false, /^\.\/Sit.*\.js$/);

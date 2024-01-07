@@ -1,3 +1,5 @@
+// e.g. in SitAguadilla.js:
+
 import {PointEditor} from "./PointEditor";
 import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Vector3} from "three";
 import {CatmullRomCurve3} from "../three.js/build/three.module";

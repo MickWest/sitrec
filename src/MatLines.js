@@ -1,4 +1,4 @@
-
+// Factory for line materials, which need to be updated on resize.
 import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
 
 var matLines = {} // collection of line materials that need updating on resize

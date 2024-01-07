@@ -1,6 +1,6 @@
+// A variety of functions for converting between LLA (lat, lon, alt) and ECEF (earth centered earth fixed) and ENU (east, north, up)
+// as well as some other useful related functions
 
-// This is the distance in KM between two lat/long locations
-// assumes a sphere of average radius
 import {Matrix3, Vector3} from "../three.js/build/three.module";
 import {assert, cos, degrees, radians, sin} from "./utils";
 import {Sit} from "./Globals";
@@ -8,6 +8,8 @@ import {drop} from "./SphericalMath"
 import {V3} from "./threeExt";
 
 
+// This is the distance in KM between two lat/long locations
+// assumes a sphere of average radius
 export function haversineDistanceKM(lat1, lon1, lat2, lon2) {
     var dLat = radians(lat2 - lat1);
     var dLon = radians(lon2 - lon1);

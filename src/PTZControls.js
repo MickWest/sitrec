@@ -1,5 +1,5 @@
 import {radians} from "./utils";
-import {DebugArrow, V3} from "./threeExt";
+import {V3} from "./threeExt";
 import {getLocalUpVector} from "./SphericalMath";
 import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";
 import {Sit} from "./Globals";

@@ -1,3 +1,6 @@
+// Handles mouse events, and passes them to the view that is under the mouse
+// Also handled 3D raycasting calculation based on mouse position and view
+
 import {mouseInView, mouseInViewOnly, ViewMan} from "./nodes/CNodeView";
 import {par} from "./par";
 import {V2} from "./threeExt";

@@ -1,3 +1,5 @@
+// (Unused) Wrapper for Three.js Sky object
+
 import {Sky} from "../three.js/examples/jsm/objects/Sky";
 import {MathUtils, Vector3} from "../three.js/build/three.module";
 import GUI from "./js/lil-gui.esm";

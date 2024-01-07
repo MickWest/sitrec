@@ -22,6 +22,7 @@ export function addOption(controller, optionName, optionValue) {
     controller.updateDisplay();
 }
 
+// Same, but for removing an option
 export function removeOption(controller, optionName) {
     // Find the index of the option to be removed
     const index = controller._names.indexOf(optionName);

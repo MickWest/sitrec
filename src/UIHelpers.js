@@ -1,5 +1,5 @@
 import {par} from "./par";
-import {localDate, utcDate} from "./utils";
+import {utcDate} from "./utils";
 import {GlobalDateTimeNode} from "./nodes/CNodeDateTime";
 
 export function AddTimeDisplayToUI(viewUI, x, y, size, color) {

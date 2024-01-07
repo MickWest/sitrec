@@ -1,5 +1,4 @@
-
-
+// For a webworker based filter, see
 
 function filterNoise(p) {
     const len = p.length

@@ -1,4 +1,6 @@
 // The par structure holds global variables that need to be modified by the GUI
+// It's a bit of a mess, but it's a convenient way to get the GUI variables into the code
+// I consider it deprecated
 
 export var par = {
 

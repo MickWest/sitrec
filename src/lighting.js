@@ -1,4 +1,4 @@
-// Lighting
+// Lighting. Could be improved
 import {AmbientLight, DirectionalLight, DirectionalLightHelper, HemisphereLight} from "../three.js/build/three.module";
 import {Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";

@@ -1,9 +1,6 @@
 /////////////////////////////////////////////////////////////////////////
 // Bezier code editor and utilites by Mick West
-// Loosely based on: https://codepen.io/raftelti/pen/FHfhB
-//
-
-// https://github.com/Tom-Alexander/regression-js
+// regression module: https://github.com/Tom-Alexander/regression-js (MIT license)
 import regression from './js/regression'
 import {assert} from "./utils"
 

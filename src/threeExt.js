@@ -22,6 +22,7 @@ import {assert} from "./utils"
 // Wrapper for calling dispose function on object, allowing undefined
 export function dispose(a) { if (a!=undefined) a.dispose()}
 
+// A grid helper that is a segment of a sphere (i.e. on the surface of the earth)
 class GridHelperWorldComplex extends LineSegments {
     constructor (altitude, xStart, xEnd, xStep, yStart, yEnd, yStep, radius, color1=0x444444, color2 = 0x888888)
     {

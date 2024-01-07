@@ -1,5 +1,4 @@
-// give an array of file ID strings, create the KML tracks for them
-// along with moving target spheres
+// Creaitng timed data and then tracks from pre-parsed KML files
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTrackFromTimed} from "./nodes/CNodeTrackFromTimed";

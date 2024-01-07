@@ -1,3 +1,4 @@
+// Register all nodes in the nodes folder
 import { NodeMan } from "./Globals";
 
 const nodeContext = require.context('./nodes', false, /^\.\/.*\.js$/);
