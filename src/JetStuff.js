@@ -1,3 +1,6 @@
+// A variety of functions related to the jet and the atflir pod orientation, and glare
+// so mostly related to Gimbal, GoFast, and FLIR1
+
 import {EarthRadiusMiles, gui, guiTweaks, infoDiv, mainCamera, NodeMan, setMainCamera, Sit} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
@@ -1325,7 +1328,7 @@ export function initJetStuff() {
 
 
 /////////////////////////////////////////////////////////////////
-// NAR CAM
+// ATRLIR pod CAM
 
     new CNodeCamera({
         id:"lookCamera",

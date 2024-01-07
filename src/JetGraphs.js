@@ -6,9 +6,8 @@ import {acos, degrees, m2f, metersFromMiles, NMFromMeters} from "./utils";
 import {pointAltitude} from "./SphericalMath";
 import {assert} from "./utils"
 
-
-
-
+// add a graph of the subtended size of the target
+// as a percentage of its size at the start of the video
 export function AddSizePercentageGraph() {
     var sizePercentGraphNode = new CNodeCurveEditor({
         id: "sizePercentGraph",
@@ -70,7 +69,7 @@ minX: 0, minY: 0, maxY: 120,
     points: [],
 }
 
-
+// generic graph that's customizable with a munge function
 function addGenericJetGraph(id, yLabel, mungeInputs, windowParams, editorParams, mungeFunction, frames) {
 
     var frames = NodeMan.get(mungeInputs.cameraTrack).frames

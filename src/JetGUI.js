@@ -1,3 +1,5 @@
+// GUI controls for the Jet sitches like Gimbal and GoFast
+
 import {mainCamera, gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, Sit, NodeMan} from "./Globals";
 import {par} from "./par";
 import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStuff";

@@ -1,4 +1,4 @@
-// Calculating what the horizon should look like
+// Calculating what the horizon should look like in the ATFLIR
 import {degrees, radians} from "./utils";
 import {EAJP2PR, extractRollFromMatrix, PRJ2XYZ} from "./SphericalMath";
 import {
