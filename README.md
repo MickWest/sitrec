@@ -1,11 +1,52 @@
+# Sitrec
 
-# Code overview
-Sitrec is a web application that runs mostly client-side using JavaScript and some custom shaders but also has a handful of server-side scripts written in PHP. 
+Sitrec (Situation recreation) is a web application that allows for the real-time interactive 3D recreation of various situations. It was created initially to analyze the US Navy UAP/UFO video (Gimal, GoFast, and FLIR1/Nimitz), but has expanded to include several other situations (referred to as "sitches".) It's written mostly by Mick West, with a lot of input from the members of [Metabunk](https://www.metabunk.org).
+
+My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch. 
+
+[Sitrec on Metabunk](https://www.metabunk.org/sitrec).
+
+The most common use case is to display three views:
+- A video of a UAP situation 
+- A 3D recreation of that video 
+- A view of the 3D world from another perspective (with movable camera) 
+- Plus various graphs and stats. 
+
+Here's the [famous Aguadilla video](https://www.metabunk.org/sitrec/?sitch=agua)
+
+![screenshot of Sitrec showing the Aguadilla sitch](readmeImages/agua-example.jpg)
+
+Sitrec uses or ingests a variety of data sources
+
+- ADS-B files in KML format
+- TLE files (for satellites, mostly Starlink)
+- Star catalogs (BSC, etc)
+- Video (mp4, limited support)
+- DJI Drone tracks from Airdata as .csv
+- GLB (Binary GLTF 3D models)
+- Generic custom data in .csv
+- Image files (jpg, png, etc)
+ 
+Types of situations covered:
+
+- UAP Videos
+  - Taken from a plane where a target object's azimuth and elevation are known ("angles only")
+  - Taken from a plane of another plane
+  - Taken from a plane looking in a particular direction
+- Viewing the sky (with accurate planets and satellites) 
+
+
+## CAVEAT - This is complex and messy code
+Sitrec has evolved over a couple of years from a very simple single-html file simulator to the much more complex thing it is today. So the code is complicated, and, in some places, rather crufty. Configuring a new sitch takes a few steps.
+
+## Code overview
+Sitrec runs mostly client-side using JavaScript and some custom shaders but also has a handful of server-side scripts written in PHP. 
 
 The rendering code uses Three.js, and there are a variety of other open-source libraries. All this uses MIT licenses or similar. 
 
 The code cannot be run directly, as it is set up to be compiled using WebPack.
-Install local dev environment
+
+## Install local dev environment
 
 Assuming that you want to run the code on a local machine for development, testing, etc, you need the following installed
 A web server. I use Nginx, but Apache should work
@@ -17,7 +58,7 @@ https://nodejs.org/en/download
 Node.js is used both for build tools (i.e. webpack) and for packages used by the app
 
 ## Create Source file and folder structure
-Sitrec is built from the sitrec-source folder. You will get this as a zip archive, or via github (https://github.com/MickWest/sitrec-source). this will give you sitrec-source with four subfolders:
+Sitrec is built from the sitrec-source folder. You will get this as a zip archive, or via github (https://github.com/MickWest/sitrec-source). this will give you sitrec-source with four sub-folders:
 - data - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
 - sitrecServer - The server-side PHP files, like cachemaps.php
 - src - The JavaScript source, with the entry point of index.js
@@ -34,7 +75,7 @@ Then there are the project build files:
 (config.js and config-install.js are initial supplied as config.js.example and config-install.js.example - you will need to rename them.)
 
 ## Create the local (and production) server folder structure
-Sitrec can exist at the server root, or in any path. I use the root, but it's maybe neater to have in a folder. Here I'll assume it's in a folder called "s"
+Sitrec can exist at the server root, or in any path. I use the root, but it's maybe neater to have in a folder. Here I'll assume it's in a folder called "s". You do not have to use "s", you can put it in another folder, or in the web root (like I do)
 
 There are five folders in the server structure
 - sitrec - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
@@ -73,7 +114,6 @@ dev_path is the path to the local server. Here /Users/mick/Library/CloudStorage/
 dev_path: 'c:\\nginx\\html\\s\\sitrec',
 prod_path: 'c:\\Users\\Fred\\sitrec-deploy'
 ```
-
 	
 ## Create/Edit the server config files:
 It will run without this, but you won't get any terrain.
@@ -122,44 +162,38 @@ http://localhost/s/sitrec
 
 The following are URLS for tests of basic functions (these assume that the dev setup is in /s/). If they fail, first check the dev tools console to see if there's a helpful error message.
 
-http://localhost/s/sitrec/sitrecServer/info.php
-
+- [PHP Test](http://localhost/s/sitrec/sitrecServer/info.php)
 Must display a PHP info page showing version number
-http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fs3.amazonaws.com%2Felevation-tiles-prod%2Fterrarium%2F14%2F3188%2F6188.png
-
+- [Terrain elevation test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fs3.amazonaws.com%2Felevation-tiles-prod%2Fterrarium%2F14%2F3188%2F6188.png)
 Test of the tile server proxy for terrain elevation. Should give a square image
+
+- [Mapbox test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fapi.mapbox.com%2Fv4%2Fmapbox.satellite%2F16%2F20546%2F29347%402x.jpg80)
+Returns an aerial tile of some buildings and trees:
+
+- [OSM Test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fc.tile.openstreetmap.org%2F15%2F6382%2F12376.png)
+Returns a segment of a street map
+
+- [EOX Test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Ftiles.maps.eox.at%2Fwmts%3Flayer%3Ds2cloudless_3857%26style%3Ddefault%26tilematrixset%3Dg%26Service%3DWMTS%26Request%3DGetTile%26Version%3D1.0.0%26Format%3Dimage%252Fjpeg%26TileMatrix%3D15%26TileCol%3D6383%26TileRow%3D12373)
+Test of EOX landscape server - returns a brown aerial landscape tile
+
+- [Landscope Test](http://localhost/s/sitrec/dist/?sitch=swr)
+A simple landscape, shows that the landscape proxy server is working
+
+- [Default Sitch](http://localhost/s/sitrec/)
+Will load the default local sitch set in config.js
+
+- [Aquadilla Sitch](http://localhost/s/sitrec/?sitch=agua)
+A more complex sitch with a video, landscape, tracks, and complex computations
+
+- [Smoke Test](http://localhost/s/sitrec/?testAll=1)
+A smoke test that loads ALL the sitches one after another
 
 Failure could mean
 - PHP-fpm not running
 - php.ini missing extension=openssl
 - s/sitrec-config/cachemaps-config.php is missing or bad
+- s/sitrec-cache is missing or not writeable
 
-http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fapi.mapbox.com%2Fv4%2Fmapbox.satellite%2F16%2F20546%2F29347%402x.jpg80
-
-Test of Mapbox proxy loading. Should return an aerial tile of some buildings and trees:
-
-http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fc.tile.openstreetmap.org%2F15%2F6382%2F12376.png
-
-Test of OSM, returns a segment of a street map
-
-http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Ftiles.maps.eox.at%2Fwmts%3Flayer%3Ds2cloudless_3857%26style%3Ddefault%26tilematrixset%3Dg%26Service%3DWMTS%26Request%3DGetTile%26Version%3D1.0.0%26Format%3Dimage%252Fjpeg%26TileMatrix%3D15%26TileCol%3D6383%26TileRow%3D12373
-
-Test of EOX landscape server - returns a brown aerial landscape tile
-
-http://localhost/s/sitrec/dist/?sitch=swr
-
-A simple landscape, shows that the landscape proxy server is working
-http://localhost/s/sitrec/
-
-Will load the default local sitch set in index.js (curently SWR)
-Should give you the menu on the right to select other sitches.
-
-http://localhost/s/sitrec/?sitch=lakemichigan
-
-A basic sitch with a video, landscape, and KML/ADS-B tracking
-http://localhost/s/sitrec/?testAll=1
-
-A smoke test that loads ALL the sitches one after another
 
 ## Production Build and Deploy
 
