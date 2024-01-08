@@ -48,18 +48,19 @@ The code cannot be run directly, as it is set up to be compiled using WebPack.
 
 ## Install local dev environment
 
-Assuming that you want to run the code on a local machine for development, testing, etc, you need the following installed
-A web server. I use Nginx, but Apache should work
+Assuming that you want to run the code on a local machine for development, testing, etc, you need a web server. I use Nginx, but Apache should work
 The web server should be configured to run php files (i.e. php-fpm)
-It should also load an index.html file when there's on in the directory (this is usually default)
-node.js, from:
+It should also load an index.html file when there's one in the directory (this is usually default)
+
+You will also need to install node.js in you build environment, from:
 https://nodejs.org/en/download
 
-Node.js is used both for build tools (i.e. webpack) and for packages used by the app
+Node.js is used both for build tools (i.e. webpack) and for packages used by the app. It is not used server-side. 
 
 ## Create Source file and folder structure
-Sitrec is built from the sitrec-source folder. You will get this as a zip archive, or via github (https://github.com/MickWest/sitrec-source). this will give you sitrec-source with four sub-folders:
+Sitrec is built from the sitrec-source folder. Clone it from Github, or download a release archive. This will give you sitrec-source with these sub-folders:
 - data - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
+- readmeImages - Documenation images used by this .md file, and maybe others
 - sitrecServer - The server-side PHP files, like cachemaps.php
 - src - The JavaScript source, with the entry point of index.js
 - three.js - The 3D engine, the largest library used
