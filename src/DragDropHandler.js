@@ -136,7 +136,7 @@ class CDragDropHandler {
                         addKMLTracks([x.filename], true)
                     }
                 }
-                consle.log("DONE Parse " + filename)
+                console.log("DONE Parse " + filename)
             })
     }
 }
