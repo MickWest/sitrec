@@ -47,9 +47,6 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.color = v.color
 
         this.camera.visible = true;
-
-
-
         assert(this.color.isLineMaterial, "Color needs to be a matline, eg with makeMatLoine")
 
         this.rebuild()
@@ -60,22 +57,21 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.remove(this.line)
         dispose(this.FrustumGeometry)
 
-// PVS14 has
-        var s = this.radius * tan(radians(this.camera.fov/2))
-        var h = s * this.camera.aspect;
+        var w = this.radius * tan(radians(this.camera.fov/2))
+        var h = w * this.camera.aspect;
         var d = (this.radius - 2)
         const line_points = [
-            0, 0, 0, h, s, -d,
-            0, 0, 0, h, -s, -d,
-            0, 0, 0, -h, -s, -d,
-            0, 0, 0, -h, s, -d,
-            -h, -s, -d,
-            h, -s, -d,
-            h, s, -d,
-            -h, s, -d,
-            -h / 2, s, -d,
-            0, s * 1.3, -d,
-            h / 2, s, -d,
+            0, 0, 0, h, w, -d,
+            0, 0, 0, h, -w, -d,
+            0, 0, 0, -h, -w, -d,
+            0, 0, 0, -h, w, -d,
+            -h, -w, -d,
+            h, -w, -d,
+            h, w, -d,
+            -h, w, -d,
+            -h / 2, w, -d,
+            0, w * 1.3, -d,
+            h / 2, w, -d,
         ]
         this.FrustumGeometry = new LineGeometry();
         this.FrustumGeometry.setPositions(line_points);

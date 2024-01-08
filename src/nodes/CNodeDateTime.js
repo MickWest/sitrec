@@ -1,7 +1,7 @@
-import {GlobalPTZ, gui, NodeMan, Sit} from "../Globals";
+import {GlobalPTZ, gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {par} from "../par";
-import {calculateGST} from "./CNodeDisplayNightSky";
+import {addNightSky, calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
@@ -114,6 +114,8 @@ export class CNodeDateTime extends CNode {
                 console.log("Timezone "+v)
             }
         )
+
+        this.dateTimeFolder.add(Sit, 'simSpeed', 1, 60, 0.01).name("Simulation Speed").listen()
 
         this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
         this.dateTimeFolder.add(this, "resetStartTimeToNow").name("Sync Start Time to Now");

@@ -235,6 +235,10 @@ export const SitNightSky = {
                 ssn: nightSkyNode.showSatelliteNames,
             }
 
+            if (Sit.simSpeed !== 1) {
+                savePar.spd = Sit.simSpeed;
+            }
+
             // Wait just in case a file is still uploading
             // unlikely, but possible with a slow connection and.or large file
             Rehoster.waitForAllRehosts().then(() => {
@@ -363,6 +367,11 @@ export const SitNightSky = {
             nightSkyNode.sunArrowGroup.visible = nightSkyNode.showSunArrows;
             nightSkyNode.flareRegionGroup.visible = nightSkyNode.showFlareRegion;
             nightSkyNode.satelliteTextGroup.visible = nightSkyNode.showSatelliteNames;
+        }
+
+        // Sim Speed
+        if (p.spd !== undefined) {
+            Sit.simSpeed = p.spd;
         }
 
         if (p.rehostedFiles !== undefined) {

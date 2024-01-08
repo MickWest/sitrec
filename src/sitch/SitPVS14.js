@@ -95,9 +95,6 @@ export const SitPVS14 = {
 
     setup2: function () {
 
-        guiTweaks.add(Sit, 'simSpeed', 1, 20, 0.01)
-
-
         SetupGUIFrames()
         initKeyboard()
 

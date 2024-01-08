@@ -422,7 +422,15 @@ function updateFrame() {
         par.frame = Math.round(par.frame + 1);
         par.paused = true;
     } else if (!par.paused) {
-        par.frame = Math.round(par.frame + 1);
+        // Frame advance with no controls (i.e. just playing)
+        // time is advanced based on frames in the video
+        // Sit.simSpeed is how much the is speeded up from reality
+        // so 1.0 is real time, 0.5 is half speed, 2.0 is double speed
+        // par.frame is the frame number in the video
+        // (par.frame * Sit.simSpeed) is the time (based on frame number) in reality
+        par.frame = Math.round(par.frame + par.direction);
+
+        // A-B wrapping
         if (par.frame > B) {
             if (par.pingPong) {
                 par.frame = B;
