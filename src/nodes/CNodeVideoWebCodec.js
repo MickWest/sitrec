@@ -82,6 +82,7 @@ export class CVideoWebCodecData extends CVideoData {
                 reader.result.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
                 source.file.appendBuffer(reader.result)
                 source.file.flush();
+                loadedCallback();
                 updateSitFrames()
             }
 

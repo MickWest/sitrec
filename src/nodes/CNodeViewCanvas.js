@@ -21,6 +21,10 @@ export class CNodeViewCanvas extends CNodeView {
         this.div.appendChild(this.canvas)
     }
 
+    ignoreMouseEvents() {
+        this.canvas.style.pointerEvents = 'none';
+    }
+
     adjustSize() {
         // just keep the canvas the same size as its div
         if (this.canvas.width !== this.div.clientWidth || this.canvas.height !== this.div.clientHeight || this.autoClear) {

@@ -12,6 +12,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
         // Add an overlay view to show status (mostly errors)
         this.overlay = new CNodeViewUI({id: "videoOverlay", overlayView:this })
+        this.overlay.ignoreMouseEvents();
 
         v.id = v.id + "_data"
         this.Video = new CVideoWebCodecData(v,
@@ -34,6 +35,12 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
     }
 
+    removeText() {
+        this.overlay.removeText("videoLoading")
+        this.overlay.removeText("videoError")
+        this.overlay.removeText("videoErrorName")
+    }
+
     // just a stub to prevent stuff happening on drag events
     handlerFunction(event) {
         event.preventDefault()
@@ -41,6 +48,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
 
     stopStreaming() {
+        this.removeText()
         par.frame = 0
         par.paused = false;
         this.Video.killWorkers()
@@ -66,14 +74,14 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.fileName = "file"
 
         this.stopStreaming()
+        this.addLoadingMessage()
         this.Video = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
-        this.addLoadingMessage()
 
     }
 
     loadedCallback() {
-        this.overlay.removeText("videoLoading")
+        this.removeText();
     }
 
     errorCallback() {

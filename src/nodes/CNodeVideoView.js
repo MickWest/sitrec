@@ -265,7 +265,7 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
 
             wheel: (e) => {
 
-                console.log(e.deltaY)
+//                console.log(e.deltaY)
                 var scale = 0.90;
                 if (e.deltaY > 0) {
 //                    this.in.zoom.value *= 0.6666
