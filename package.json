@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "astronomy-engine": "^2.1.17",
-    "axios": "^1.5.0",
+    "axios": "^1.6.5",
     "babel-loader": "^8.2.3",
     "buffer": "^6.0.3",
     "copy-webpack-plugin": "^10.2.4",
