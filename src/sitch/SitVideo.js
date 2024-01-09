@@ -26,13 +26,15 @@ export const SitVideo = {
             "Gimbal": "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
             "GofFast": "../sitrec-videos/public/3 - GOFAST CROP HQ - 01.mp4",
             "Chilean": "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 1080p.mp4",
+            "Jellyfish": "../sitrec-videos/private/Jellyfish 720p High.mov",
         }
 
         // the first one to load
         this.file ="Aguadilla"
 
-        var maybeVideo =  GlobalURLParams.get("video")
+        let maybeVideo =  GlobalURLParams.get("video")
         if (maybeVideo) {
+            maybeVideo = maybeVideo.toLowerCase()
             for (const vid in this.selectableVideos) {
                 if (vid.toLowerCase() === maybeVideo) {
                     this.file = vid
