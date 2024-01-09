@@ -89,6 +89,11 @@ There are five folders in the server structure
 
 Note sitrec-cache and sitrec-upload must have write permission.
 
+## Download the videos
+
+The private video folder contains videos taken by individuals and posted on the internet. I use them in Sitrec under fair-use, non-commercial, educational. But they are not not included here. Ask me if you really need one. 
+The public folder videos contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
+
 ## Create/Edit the config files
  You will need to edit config.js and config-install.js to 
 
