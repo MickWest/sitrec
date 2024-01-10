@@ -28,6 +28,7 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         this.highlightLines = v.highlightLines ?? {}
         this.LOSLengthMiles = v.LOSLength ?? 200
 
+
         this.material = makeMatLine(v.color ?? 0x808080, v.width ?? 0.75)
 
         this.Jet_LOS3D = [] // see below

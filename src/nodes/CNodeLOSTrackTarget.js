@@ -17,7 +17,7 @@ export class CNodeLOSTrackTarget extends CNodeEmptyArray {
     recalculate() {
         this.array = []
         this.frames = this.in.cameraTrack.frames
-        assert(this.in.targetTrack.frames == this.frames, "Frame number mismatch, target = " + this.in.targetTrack.frames + " this.frames = " + this.frames)
+        assert(this.in.targetTrack.frames == this.frames, "Frame number mismatch, target = " + this.in.targetTrack.frames + " camera = " + this.frames)
         console.log("+++ Frame number match, target = " + this.in.targetTrack.frames + " this.frames = " + this.frames)
         for (var f = 0; f < this.in.cameraTrack.frames; f++) {
             var pos = this.in.cameraTrack.p(f)

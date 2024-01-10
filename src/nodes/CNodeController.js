@@ -96,6 +96,10 @@ export class CNodeControllerFocalLength extends CNodeController {
     constructor(v) {
         super(v);
         this.input("focalLength")
+
+        this.referenceFocalLength = v.referenceFocalLength ?? 166;
+        this.referenceFOV = v.referenceFOV ?? radians(5);
+
     }
 
     apply(f, objectNode) {
@@ -105,9 +109,9 @@ export class CNodeControllerFocalLength extends CNodeController {
         if (focal_len === 0) return;
 
         const camera = objectNode.camera
-        const referenceFocalLength = 166;               // reference focal length
-        const referenceFOV = radians(5)         // reference FOV angle
-        const sensorSize = 2 * referenceFocalLength * tan(referenceFOV / 2)
+        //const referenceFocalLength = 166;               // reference focal length
+        //const referenceFOV = radians(5)         // reference FOV angle
+        const sensorSize = 2 * this.referenceFocalLength * tan(radians(this.referenceFOV) / 2)
 
         const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
 

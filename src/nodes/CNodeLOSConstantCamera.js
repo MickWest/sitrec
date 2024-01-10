@@ -4,12 +4,14 @@
 import {CNode} from "./CNode";
 import {assert} from "../utils";
 import {Vector3} from "../../three.js/build/three.module";
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 
 export class CNodeLOSConstantCamera extends CNode {
     constructor(v) {
         super(v);
         this.cameraName = v.camera;
+
+        if (this.frames == 0) this.frames = Sit.frames;
     }
 
     getValueFrame(f) {

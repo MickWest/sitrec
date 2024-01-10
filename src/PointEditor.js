@@ -52,7 +52,6 @@ class CurvePoint {
 // }
 
 export class PointEditor {
-
     constructor(_scene, _camera, _renderer, controls, onChange, initialPoints, isLLA=false) {
 
         this.splineHelperObjects = [];  // the objects that are the control points
