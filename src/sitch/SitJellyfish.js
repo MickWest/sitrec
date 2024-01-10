@@ -26,6 +26,7 @@ import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {GlobalScene} from "../LocalFrame";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
+import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
 
 export const SitJellyfish    = {
     name: "jellyfish",
@@ -238,15 +239,17 @@ export const SitJellyfish    = {
         var nodeStartDistance = new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
             {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
 
+        //
+        // new CNodeLOSTraverse({
+        //     id: "LOSTraverseConstantDistance",
+        //     inputs: {
+        //         LOS: "motionTrackLOS",
+        //         startDist: nodeStartDistance,
+        //         //radius: "radiusMiles",
+        //     },
+        // })
 
-        new CNodeLOSTraverse({
-            id: "LOSTraverseConstantDistance",
-            inputs: {
-                LOS: "motionTrackLOS",
-                startDist: nodeStartDistance,
-                //radius: "radiusMiles",
-            },
-        })
+
 
         new CNodeWind({
             id: "targetWind",
@@ -265,14 +268,25 @@ export const SitJellyfish    = {
 
         new CNodeHeading({
             id: "initialHeading",
-            heading: 0,
+            heading: 81,
             name: "Initial",
             arrowColor: "green"
 
         }, gui)
 
-        AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.5, 0.25)
 
+
+        new CNodeLOSTraverseStraightLine({
+            id: "LOSTraverseConstantDistance",
+            inputs: {
+                LOS: "motionTrackLOS",
+                startDist: nodeStartDistance,
+                lineHeading: "initialHeading",
+            },
+        })
+
+
+        AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.5, 0.25)
 
         new CNodeDisplayTargetSphere({
             inputs: {

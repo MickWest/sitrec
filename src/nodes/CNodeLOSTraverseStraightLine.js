@@ -1,17 +1,16 @@
 // attempt to traverse the LOS in a stright line (in the horizontal plane)
 // given start distance and a heading track
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {metersFromMiles, radians} from "../utils";
+import {metersFromMiles, radians, assert} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {Color, Plane, Ray} from "../../three.js/build/three.module";
-import {CNodeCloudData} from "./CNodeCloudData";
 import {V3} from "../threeExt";
+import {wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeLOSTraverseStraightLine extends CNode {
     constructor(v) {
         super(v);
-        this.checkInputs(["LOS", "startDist", "lineHeading", "radius"])
+        this.checkInputs(["LOS", "startDist", "lineHeading"])
         this.array = []
         this.recalculate()
     }
@@ -22,7 +21,8 @@ export class CNodeLOSTraverseStraightLine extends CNode {
         let startDistance = this.in.startDist.v(0)
         var position, startPosition;
         var oldDistance;
-        const radius = metersFromMiles(this.in.radius.v0)
+//        const radius = metersFromMiles(this.in.radius.v0)
+        const radius = wgs84.RADIUS;
         for (var f = 0; f < this.frames; f++) {
 
             const los = this.in.LOS.v(f)
@@ -42,7 +42,13 @@ export class CNodeLOSTraverseStraightLine extends CNode {
                 // STRAIGHT LINE
                 // given our current position, calculate a frame
                 // which this heading, and local up
-                const lineHeading = radians(this.in.lineHeading.v(f))
+                const lineHeading = radians(this.in.lineHeading.heading)
+                //assert(!(isNaN(lineHeading)),"lineHeadingNAN");
+
+                if (isNaN(lineHeading) && f < 5) {
+                    console.warn ("lineHeading is NaN in CNodeLOSTraverseStraightLine - probably a bug")
+                }
+
                 var fwd = V3(0, 0, -1)
 
                 //           var upAxis = getLocalUpVector(position, radius)
