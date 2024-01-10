@@ -15,7 +15,7 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeLOSMotionTrack} from "../nodes/CNodeLOSMotionTrack";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
-import {AddSpeedGraph} from "../JetGraphs";
+import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
 import {gui, guiTweaks, } from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
@@ -65,7 +65,7 @@ export const SitJellyfish    = {
     fromAltFeetMin: 1000,
     fromAltFeetMax: 4000,
 
-    targetSpeedMax: 100,
+    targetSpeedMax: 30,   //for the graph
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
@@ -286,7 +286,10 @@ export const SitJellyfish    = {
         })
 
 
-        AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.5, 0.25)
+        AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
+        AddAltitudeGraph(0, 3000, "LOSTraverseConstantDistance", 0.25, 0, 0.20, 0.25,500)
+
+
 
         new CNodeDisplayTargetSphere({
             inputs: {

@@ -305,10 +305,12 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
     }
 }
 
-export function AddAltitudeGraph(min, max) {
+export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  = 0.73, top =0, width = -1, height =.25, yStep=5000) {
+
     var AltitudeGraphNode = new CNodeCurveEditor({
         id: "altitudeGraph",
-        left: 0.73, top: 0, width: -1, height: .25,
+        left: left, top: top, width: width, height: height,
+
 
         visible: true,
         draggable: true,
@@ -320,14 +322,14 @@ export function AddAltitudeGraph(min, max) {
             //     dynamicRange: 1000,
             xLabelDelta: true,
             minX: 0, maxX: Sit.frames - 1, minY: min, maxY: max,
-            xLabel: "Frame", xStep: 200, yLabel: "Target Altitude", yStep: 5000,
+            xLabel: "Frame", xStep: 200, yLabel: "Target Altitude", yStep: yStep,
             xLabel2: "Alititude",
         },
         inputs: {
             compare: new CNodeGraphSeries({
                 // Munge node to convert a traverse track to altitude
                 source: new CNodeMunge({
-                    inputs: {source: "LOSTraverseSelect", radius: "radiusMiles",},
+                    inputs: {source: source, radius: "radiusMiles",},
                     munge: function (f) {
                         const pos = this.in.source.p(f)
                         const alt = m2f(pointAltitude(pos, metersFromMiles(this.in.radius.v0)))
