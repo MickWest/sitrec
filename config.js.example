@@ -70,6 +70,6 @@ console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
 // / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
 // aa2292, lakemichigan, chilean, porterville, folsomlake, etc
 // This is the sitch that is loaded when running on local
-const localSituation = "nightsky";
+export const localSituation = "nightsky";
 //////////////////////////////////////////////
 
