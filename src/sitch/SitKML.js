@@ -2,7 +2,7 @@ import {Color, PerspectiveCamera} from "../../three.js/build/three.module";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
-import {setGlobalPTZ, Sit} from "../Globals";
+import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
 import {LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTerrain} from "../nodes/CNodeTerrain";
@@ -84,12 +84,19 @@ export const SitKML = {
 
         Sit.setupWind()
 
-        var mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip);
-//        var mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, 1, 5000000 );
 
+        setMainCamera(new CNodeCamera({id:"mainCamera",
+            fov: par.mainFOV,
+            aspect: window.innerWidth / window.innerHeight,
+            near: this.nearClip,
+            far: this.farClip,
+            layers: LAYER.MASK_MAIN|LAYER.MASK_HELPERS,
+        }).camera);
 
-        mainCamera.layers.enable(LAYER.HELPERS)
-        setMainCamera(mainCamera); // setting the global value, enabling keyboard controls, etc.
+//       var mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip);
+//        mainCamera.layers.enable(LAYER.HELPERS)
+
+//        setMainCamera(mainCamera); // setting the global value, enabling keyboard controls, etc.
 
         gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
             mainCamera.fov = value
@@ -118,7 +125,7 @@ export const SitKML = {
             left: 0.0, top: 0, width: .5, height: 1,
             fov: 50,
             background: Sit.skyColor,
-            camera: mainCamera,
+            camera: "mainCamera",
 
             renderFunction: function () {
                 this.renderer.render(GlobalScene, this.camera);

@@ -40,11 +40,14 @@ export const SitJellyfish    = {
     videoSpeed: 1,
 
     files: {
-        hayleCSV: "hayle/hayle-track.csv",
+  //      hayleCSV: "hayle/hayle-track.csv",
     },
     videoFile: "../sitrec-videos/private/FULL Jellyfish Stab crop LOW BR.mp4",
 
     bigUnits:"Miles",
+
+    syncVideoZoom: true,
+
 
     fps: 23.976,
     frames: 2982,
@@ -123,7 +126,7 @@ export const SitJellyfish    = {
                     zoom: new CNodeGUIValue({
                         value: 100, start: 100, end: 1000, step: 1,
                         desc: "Video Zoom x"
-                    }, guiTweaks)
+                    }, gui)
                 },
                 visible: true,
                 left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
@@ -143,6 +146,11 @@ export const SitJellyfish    = {
             doubleClickFullScreen: true,
             background: new Color("#989fa7"),
             camera: this.mainCamera,
+            focusTracks: {
+                "Ground (No Track)": "default",
+                "Camera Position": "cameraTrack",
+                "Traverse Track": "traverseTrack",
+            },
         })
         view.addOrbitControls(this.renderer);
 
@@ -190,8 +198,9 @@ export const SitJellyfish    = {
              targetTrack: "groundTrack",
          })
 
-        NodeMan.get("lookCamera").addController("TrackToTrack", {
-             sourceTrack: "motionTrackLOS",
+        NodeMan.get("lookCamera").addController("LookAtTrack", {
+            id:"lookAtGroundTrack",
+             //sourceTrack: "motionTrackLOS",
              targetTrack: "groundTrack",
         }).addController("FocalLength", {
             focalLength: new CNodeMunge({
@@ -241,7 +250,7 @@ export const SitJellyfish    = {
 
         //
         // new CNodeLOSTraverse({
-        //     id: "LOSTraverseConstantDistance",
+        //     id: "traverseTrack",
         //     inputs: {
         //         LOS: "motionTrackLOS",
         //         startDist: nodeStartDistance,
@@ -277,7 +286,7 @@ export const SitJellyfish    = {
 
 
         new CNodeLOSTraverseStraightLine({
-            id: "LOSTraverseConstantDistance",
+            id: "traverseTrack",
             inputs: {
                 LOS: "motionTrackLOS",
                 startDist: nodeStartDistance,
@@ -286,14 +295,15 @@ export const SitJellyfish    = {
         })
 
 
-        AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
-        AddAltitudeGraph(0, 3000, "LOSTraverseConstantDistance", 0.25, 0, 0.20, 0.25,500)
+        AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
+        AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
 
 
 
         new CNodeDisplayTargetSphere({
+            id: "sphereInMainView",
             inputs: {
-                track: "LOSTraverseConstantDistance",
+                track: "traverseTrack",
                 size: new CNodeScale("sizeScaled", scaleF2M,
                     new CNodeGUIValue({value: Sit.targetSize, start: 1, end: 50, step: 0.1, desc: "Target size ft"}, gui)
                 )
@@ -304,14 +314,15 @@ export const SitJellyfish    = {
 
 
         new CNodeDisplayTargetSphere({
-            track: "LOSTraverseConstantDistance",
+            id: "sphereInLookView",
+            track: "traverseTrack",
             size: 10,
 
             layers: LAYER.MASK_HELPERS,
         })
 
         new CNodeDisplayTrack({
-            track: "LOSTraverseConstantDistance",
+            track: "traverseTrack",
             color: new CNodeConstant({value: new THREE.Color(0, 1, 1)}),
             width: 1,
 
@@ -323,7 +334,7 @@ export const SitJellyfish    = {
         new CNodeDisplayTrackToTrack({
             id: "DisplayLOS",
             cameraTrack: "motionTrackLOS",
-            targetTrack: "LOSTraverseConstantDistance",
+            targetTrack: "traverseTrack",
             color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
             width: 2,
 

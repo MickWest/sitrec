@@ -46,6 +46,9 @@ class CNode {
             this.id = this.constructor.name + UniqueNodeNumber++;
         }
 
+        // Add call stack property
+ //       this.callStack = (new Error()).stack;
+
         NodeMan.add(this.id, this)
     }
 
@@ -117,6 +120,7 @@ class CNode {
         }
     }
 
+    // add an input node, and add this to its list of outputs
     input(i,optional=false) {
         // if declared in the input object, then check if it's a node or node name
         if (this.inputs[i] != undefined) {
@@ -170,10 +174,12 @@ class CNode {
 
 
 // overridable, as we might have a variable framerate??
+    // get the frame number from the time (in seconds)
     getFrameFromTime( time ) {
         return time * this.fps
     }
 
+    //
     getValueTime(time) {
         const frame = getFrameFromTime(time)
         return getValue(frame)
@@ -238,7 +244,8 @@ class CNode {
     }
 
     // v(f) is shorthand for getValue(f)
-    // note v() for a track will often return a structure with {position:Vector3, and maybe color and heading}
+    // the structure of the returned value varies depending on the node
+    // for example, v() for a track will often return a structure with {position:Vector3, and maybe color and heading}
     // use p() if you just want the position
     v(frameFloat) {
         return this.getValue(frameFloat)
@@ -253,14 +260,17 @@ class CNode {
         return pos.clone()
     }
 
+    // We implement this with an assert to ensure derived classes implement it
     getValueFrame() {
         assert(0,"Should not call getValueFrame base implementation. Node missing getValueFrame implementation?")
     }
+
 
     recalculate() {
 
     }
 
+    // return the frame number of the closest point on the track to the ray
     closestFrameToRay(ray) {
         var closestPoint = V3() // target.clone() // use the previosul found point, but should be overridden
         var closestDistance = 10000000000;
@@ -278,6 +288,7 @@ class CNode {
         return closestFrame
     }
 
+    // return the value of the closest point on the track to the ray
     closestPointToRay(ray) {
         return this.getValueFrame(this.closestFrameToRay(ray))
     }
@@ -301,7 +312,15 @@ class CNode {
     // TODO - possible out-of-order recalculation
     // need to cull child nodes that can be reached by other paths
     // so they don't get prematurely recalculated
-    recalculateCascade(f) {
+    recalculateCascade(f, depth = 0) {
+
+        if (par.paused) {
+            if (depth === 0) {
+                console.log("\nRecalculate Start With "+ this.id)
+            } else {
+                console.log("|---".repeat(depth) + " " + this.id)
+            }
+        }
 
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
@@ -309,6 +328,17 @@ class CNode {
 
         if (f === undefined) f = par.frame;
         this.recalculate(f);
+
+
+        // Controllers are a bit of a special case
+        // they adjust a CNode3D's object, and that might depend on the value of that object
+        // for example, lookAt depends on the position of the object to calculate the heading
+        // so we need to reapply the controller after the object has been recalculated
+        // but before the children are recalculated (as they might depend on the effect of the controller on this node)
+        if (this.applyControllers !== undefined) {
+            this.applyControllers(f, depth)
+        }
+
         this.outputs.forEach(output => {
             // Two additional things
             // If child is included multiple times in the graph (as a 1st generation child)
@@ -318,8 +348,10 @@ class CNode {
             // (and 3rd, but elsewhere, no loops)
 
             // but for now this will work.
-            output.recalculateCascade(f)
+            output.recalculateCascade(f, depth + 1)
+
         })
+
     }
 
     // given an array of values, print the resuts to the console

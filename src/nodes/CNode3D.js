@@ -1,5 +1,8 @@
 import {CNode} from "./CNode";
 import {NodeMan} from "../Globals";
+import {par} from "../par";
+
+import {stripParentheses} from "../utils";
 //import {CNodeController} from "./CNodeController";
 //import {assert} from "../utils"
 //import {CNodeSwitch} from "./CNodeSwitch";
@@ -14,16 +17,48 @@ export class CNode3D extends CNode {
 
     update(f) {
         super.update(f);
+        this.applyControllers(f);
+    }
+
+    applyControllers(f, depth = 0) {
+
+        // To prevent loops, we only apply controllers at most twice per frame
+        // remember the f value called with
+        // if it's new, then rest count to zero
+        // if not new, increment count
+        // if count > 2, then return
+        if (f !== this.lastF) {
+            this.lastF = f
+            this.applyControllersCount = 0
+        } else {
+            this.applyControllersCount++
+            if (this.applyControllersCount > 2) {
+                console.warn("Loop detected in controllers for " + this.id)
+               // console.warn("Constructor Call Stack: " + stripParentheses(this.callStack))
+                return
+            }
+        }
+
         // Note: JS will iterate object in the order they were added
         // assuming all the keys are non-numeric strings
-        // and your browder is reasonable (ES2015+)
+        // and your browser is reasonable (ES2015+)
         // see https://www.stefanjudis.com/today-i-learned/property-order-is-predictable-in-javascript-objects-since-es2015/
         for (const inputID in this.inputs) {
             const input = this.inputs[inputID]
             if (input.isController) {
+
+                if (par.paused) {
+                    if (depth === 0) {
+                        console.log("Apply: "+ this.id)
+                    } else {
+                        console.log("|---".repeat(depth) + " Apply:  " + input.id)
+                    }
+                }
+
                 input.apply(f,this)
             }
         }
+
     }
 
     addController(type, def) {

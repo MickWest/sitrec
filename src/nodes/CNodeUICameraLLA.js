@@ -5,11 +5,12 @@ import {metersFromMiles, radians, assert, vdump, f2m} from "../utils";
 import {Sit} from "../Globals";
 import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
+import {CNodeController} from "./CNodeController";
 
-export class CNodeUICameraLLA extends CNode {
+export class CNodeControllerUICameraLLA extends CNodeController {
     constructor(v) {
         super(v);
-        this.input("camera")
+   //     this.input("camera")
         this.input("fromLat",true)
         this.input("fromLon",true)
         this.input("fromAltFeet",true)
@@ -21,9 +22,9 @@ export class CNodeUICameraLLA extends CNode {
         this.update(0) // immediately move to first position
     }
 
-    update(f) {
+    apply(f, cameraNode) {
 
-        const camera = this.in.camera.camera;
+        const camera = cameraNode.camera;
 
         var radius = metersFromMiles(this.in.radiusMiles.v0)
         assert(!Number.isNaN(radius),"Radius NaN")
@@ -58,8 +59,6 @@ export class CNodeUICameraLLA extends CNode {
             camera.lookAt(to)
         }
 
-
-
     //    DebugArrowAB("Lookat", from,to, 0xff00ff,true,GlobalScene)
 
     }
@@ -71,6 +70,6 @@ export class CNodeUICameraLLA extends CNode {
             GlobalPTZ.refresh();
         }
 
-        this.update(f)
+      //  this.update(f)
     }
 }

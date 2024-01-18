@@ -17,6 +17,8 @@ export class CNodeController extends CNode {
     }
 }
 
+// Position the camera on the source track
+// Look at the target track
 export class CNodeControllerTrackToTrack extends CNodeController {
     constructor(v) {
         super(v);
@@ -30,10 +32,25 @@ export class CNodeControllerTrackToTrack extends CNodeController {
         var targetPos = this.in.targetTrack.p(f)
         camera.position.copy(camPos);
         camera.lookAt(targetPos)
-
         objectNode.syncUIPosition(); //
     }
 }
+
+// Just look at the target track
+export class CNodeControllerLookAtTrack extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("targetTrack")
+    }
+
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        var targetPos = this.in.targetTrack.p(f)
+        camera.lookAt(targetPos)
+        objectNode.syncUIPosition(); //
+    }
+}
+
 
 export class CNodeControllerTilt extends CNodeController {
     constructor(v) {

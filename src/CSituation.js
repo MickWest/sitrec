@@ -2,7 +2,6 @@ import {Color, PerspectiveCamera} from "../three.js/build/three.module.js";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
-import {CNodeUICameraLLA} from "./nodes/CNodeUICameraLLA";
 import {par} from "./par";
 import {LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 import {boxMark, MV3, V3} from "./threeExt";
@@ -211,7 +210,7 @@ export class CSituation {
                 ))
 
                 // THis is a UI controller for adjusting PTZ of a given camera
-                new CNodeUICameraLLA({
+                NodeMan.get("lookCamera").addController("UICameraLLA", {
                     id:"CameraLLA",
                     fromLat: new CNodeGUIValue({
                         id: "cameraLat",
@@ -239,17 +238,18 @@ export class CSituation {
                         step: 0.1,
                         desc: "Camera Alt (ft)"
                     }, gui),
-                    camera: "lookCamera",
                     radiusMiles: "radiusMiles",
                 })
 
             } else {
+
                 gui.add(this, 'lookFOV', 0.35, 120, 0.01).onChange(value => {
                     this.lookCamera.fov = value
                     this.lookCamera.updateProjectionMatrix()
                 }).listen().name("Look FOV")
                 // Lock the camera on a spot, no editing position by user
-                new CNodeUICameraLLA({
+                NodeMan.get("lookCamera").addController("UICameraLLA", {
+                    id:"CameraLLA",
                     fromLat: this.fromLat, // e.g. point dume
                     fromLon: this.fromLon,
                     fromAltFeet: new CNodeGUIValue({
@@ -257,13 +257,12 @@ export class CSituation {
                         value: this.fromAltFeet,
                         start: this.fromAltFeetMin,
                         end: this.fromAltFeetMax,
-                        step: 0.1,
+                        step: 1,
                         desc: "Camera Alt (ft)"
                     }, gui),
                     toLat: this.toLat,
                     toLon: this.toLon,
                     toAlt: this.toAlt, // elevation in meters
-                    camera: "lookCamera",
                     radiusMiles: "radiusMiles",
                 })
             }
