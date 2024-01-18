@@ -42,8 +42,8 @@ export class CNodeLOSTraverseStraightLine extends CNode {
                 // STRAIGHT LINE
                 // given our current position, calculate a frame
                 // which this heading, and local up
-                const lineHeading = radians(this.in.lineHeading.heading)
-                //assert(!(isNaN(lineHeading)),"lineHeadingNAN");
+                const lineHeading = radians(this.in.lineHeading.v(f))
+                assert(!(isNaN(lineHeading)),"lineHeadingNAN");
 
                 if (isNaN(lineHeading) && f < 5) {
                     console.warn ("lineHeading is NaN in CNodeLOSTraverseStraightLine - probably a bug")
