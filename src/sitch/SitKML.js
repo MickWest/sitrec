@@ -497,8 +497,7 @@ export const SitKML = {
                 // See Chilean for example
                 effects: this.useFLIRShader ? {FLIRShader: {},} : undefined,
 
-
-                camera: NodeMan.get("lookCamera").camera,  // PATCH
+                camera: "lookCamera",
 
                 renderFunction: function (frame) {
 
