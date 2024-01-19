@@ -107,8 +107,7 @@ export class CNodeControllerManualPosition extends CNodeController {
             // automatic cascade recalculation for anything that uses them.
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
-//            NodeMan.get("cameraLat").recalculateCascade(f, true) // manual update, no controller
-            NodeMan.get("cameraLat").recalculateCascade(f) // manual update, no controller
+            NodeMan.get("cameraLat").recalculateCascade(f)
 
             // patch refresh any ptz controls
             if (GlobalPTZ !== undefined) {

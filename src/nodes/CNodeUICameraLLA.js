@@ -59,6 +59,11 @@ export class CNodeControllerUICameraLLA extends CNodeController {
             camera.lookAt(to)
         }
 
+        // propogate any changes to the camera to output nodes
+        // but disabling controller applications
+        cameraNode.recalculateCascade(f, true);
+
+
     //    DebugArrowAB("Lookat", from,to, 0xff00ff,true,GlobalScene)
 
     }
