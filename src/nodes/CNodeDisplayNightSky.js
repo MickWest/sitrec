@@ -1284,7 +1284,7 @@ void main() {
 
 
     // Note, here we are claculating the ECEF position of planets on the celestial sphere
-    // these are NOT the
+    // these are NOT the actual positions in space
     updatePlanetSprite(planet, sprite, date, observer, sphereRadius) {
         //  const celestialInfo = Astronomy.Search(planet, date, observer, 1);
         const celestialInfo = Astronomy.Equator(planet, date, observer, false, true);
