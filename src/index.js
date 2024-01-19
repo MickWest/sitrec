@@ -72,9 +72,8 @@ SitchMan.iterate((key, sitch) =>{
     if (sitch.hidden !== true && sitch.menuName !== undefined )
         selectableSitchesUnsorted[sitch.menuName] = key;
 })
-// Extract keys and sort them
+// Extract sitch keys (the lower case version of the name) and sort them
 const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
-
 // Create a new sorted object
 const selectableSitches = {};
 sortedKeys.forEach(key => {
@@ -85,15 +84,12 @@ sortedKeys.forEach(key => {
 selectableSitches["* Test All *"] = "testall";
 
 console.log("SITREC START")
-
 console.log("Three.JS Revision = " + REVISION)
 
 const queryString = window.location.search;
 console.log(">"+queryString);
 const urlParams = new URLSearchParams(queryString);
 setGlobalURLParams(urlParams)
-
-
 
 // We default to nightsky on the public version
 // as it's now the most popular usage.
@@ -182,17 +178,13 @@ const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
 assert(startSitch !== null, "Can't find startup Sitch: "+lower)
 setSit(new CSituation(startSitch))
 
-
 ///////////////////////////////////////////////////////////////////////////////////////
 // At this point Sit is set up.
 
 MakeDateTimeNode();
 
-// Problem, Sit.name is lower case, but selectableSitches is not
-
 // check if Sit.name is all lower case
 assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
-
 
 //gui.title("Sitrec "+Sit.name+" - [U]I")
 gui.title("Sitrec build "+buildDate+" PT")
@@ -203,25 +195,7 @@ if (document.title != newTitle) {
     document.title = newTitle;
 }
 
-//$('meta[name="description"]').attr("content", newDescription);
-
-
-//const seedrandom = require('seedrandom'); // installed via package.json
-//const generator = seedrandom('[your seed here]');
-
-//
-// if (!feature.canvas || !feature.webGL || !feature.addEventListener || !feature.async) {
-//     document.body.innerHTML = "Unsupported Browser, please upgrade or try on another device"
-//     console.error("Unsupported browser")
-//     throw new Error("Unsupported browser");
-//     window.stop()
-//
-// }
-
-
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-
-//if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 // housekeeping
 var container, stats;
@@ -252,31 +226,6 @@ function init() {
     document.body.append(container)
 
     SetupFrameSlider();
-
-   // setRenderer(new WebGLRenderer({antialias: false}));
-   // setComposer(new EffectComposer(this.renderer));
-   // this.renderer.setPixelRatio(window.devicePixelRatio);
-   // console.log("Pixel Ratio = " + window.devicePixelRatio)
-   // this.renderer.setSize(window.innerWidth, window.innerHeight);
-   // container.appendChild(this.renderer.domElement); // this appends a canvas element
-
-    /*
-    // labelRenderer can overlay HTML/CSS text on a window
-    // not currently used
-    labelRenderer = new CSS2DRenderer();
-    labelRenderer.setSize(window.innerWidth, window.innerHeight);
-    labelRenderer.domElement.style.position = 'absolute';
-    labelRenderer.domElement.style.top = '0px';
-    labelRenderer.domElement.style.pointerEvents = 'none' // to pass throug mouse events
-    container.appendChild(labelRenderer.domElement);
-*/
-
-    // var input = document.createElement("input");
-    // input.type = "file";
-    // input.name = "file-input";
-    // input.id = "file-input";
-    // input.accept = "text/plain"
-    // document.body.append(input)
 
     console.log("Window inner size = " + window.innerWidth + "," + window.innerHeight)
 
@@ -358,11 +307,9 @@ function animate(newtime) {
     }
 }
 
-function windowChanged()
-{
+function windowChanged() {
     updateSize();
 }
-
 
 function renderMain() {
 
@@ -480,7 +427,6 @@ if (Sit.jetStuff) {
     initJetVariables();
 }
 
-
 // bit of a patch
 // if we are going to load a starlink file (i.e. id = starLink - noe capitalization)
 //  check the flag rhs, which is set to rhs: FileManager.rehostedStarlink,
@@ -504,7 +450,6 @@ if (urlParams.get("data")) {
         Sit.parseURLDataBeforeSetup(urlData)
     }
 }
-
 
 // data drive loading and setup
 // Start loading assets but don't await it yet
@@ -545,10 +490,9 @@ console.log("FINISHED Load Assets")
 
 console.log("Setup()")
 
-
 if (Sit.setup !== undefined) Sit.setup();
 console.log("Setup2()")
-if (Sit.setup2 != undefined) Sit.setup2();
+if (Sit.setup2 !== undefined) Sit.setup2();
 
 // minor patch, defer setting up the ATFLIR UI, as it references the altitude
 if (Sit.jetStuff) initJetStuffOverlays()
@@ -603,9 +547,6 @@ if (urlParams.get("data")) {
     }
 }
 
-
-
-
 disableScroll()
 SetupMouseHandler();
 window.addEventListener( 'resize', windowChanged, false );
@@ -613,16 +554,6 @@ window.addEventListener( 'resize', windowChanged, false );
 console.log("animate")
 animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
 windowChanged()
-
-// initSky(GlobalScene, this.renderer)
-
-
-        // const renderPass = new RenderPass( GlobalScene, ViewMan.get("mainView").camera );
-        // GlobalComposer.addPass( renderPass );
-        //
-        //  const aPass = new HalftonePass();
-        //  GlobalComposer.addPass( aPass );
-
 
 infoDiv.innerHTML = ""
 startAnimating(30);

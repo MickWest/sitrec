@@ -53,6 +53,11 @@ export const SitSWR = {
 
     },
 
+    mainCamera: {
+
+    },
+
+
     setup: function() {
 
         SetupGUIFrames()
