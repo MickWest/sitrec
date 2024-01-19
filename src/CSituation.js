@@ -134,7 +134,6 @@ export class CSituation {
     setup() {
         // more data-driven stuff that's indepent of type of situation
 
-        setupOpts();
 
         this.mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, 1, Sit.farClip);
         this.mainCamera.layers.enable(LAYER.HELPERS)

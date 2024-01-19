@@ -38,6 +38,7 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {FileManager} from "../CFileManager";
+import {setupOpts} from "../JetChart";
 
 const GimbalDefaults = {
     name:"gimbal",
@@ -61,6 +62,8 @@ const GimbalDefaults = {
     videoFile: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
 
     setup: function () {
+
+        setupOpts();
 
         par.deroFromGlare = true;
         par.showGlareGraph = true;

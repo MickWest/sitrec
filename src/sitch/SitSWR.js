@@ -64,7 +64,6 @@ export const SitSWR = {
 
         const farClip = 5000000;
 
-
         const mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, 1, farClip );
         mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
         mainCamera.lookAt(MV3(Sit.startCameraTarget));
