@@ -184,17 +184,25 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
 
     // recalculate() will be called if an input node to this CNodeViewUI is changed
     // we want to force an update of any textElement that has a callback
-    // so we simply make all the values undefined and flag a one-frame render
-    // the render (above) will call the callbacks on any dynamic element
-    // (TODO: a more elegant way....)
+    // so we simply make all the values undefined and then call checkListener()
+    // which will force a recalculation of the text, which will then be displayed later by render()
     recalculate() {
         Object.keys(this.textElements).forEach(key => {
             const t = this.textElements[key]
             if (t.object != undefined) {
-                t.initialValue = undefined;  // FORCE AN UPDATE NEXT RENDER
+                t.initialValue = undefined;
+                t.checkListener();
             }
         })
         par.renderOne = true;
       //  this.render(par.frame);
     }
+}
+
+export function forceUpdateUIText() {
+        NodeMan.iterate((k,n) => {
+        if (n instanceof CNodeViewUI) {
+            n.recalculate()
+        }
+    })
 }

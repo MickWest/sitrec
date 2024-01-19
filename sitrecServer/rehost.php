@@ -9,12 +9,14 @@
 $storageDir = '../../sitrec-upload/';
 
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
-// for local testing
-//    echo "Running on localhost";
+    // for local testing
     $user_id = 99999999;
     $storagePath = "http://localhost/sitrec-upload/";
 } else {
-//    echo "Not running on localhost";
+    // This code is specific to the metabunk.org implementation.
+    // if you want to use this code on your own site, you'll need to modify it.
+    // or use the local testing code above
+
     $fileDir = '../../';  # relative path from this script to the Xenforo root
     require($fileDir . '/src/XF.php');
     XF::start($fileDir);

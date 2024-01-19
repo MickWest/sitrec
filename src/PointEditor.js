@@ -168,7 +168,7 @@ export class PointEditor {
     }
 
     updateSnapping() {
-        console.log("updateSnapping")
+//        console.log("updateSnapping")
 
         for (let i = 0; i < this.numPoints; i++) {
             this.snapPointByIndex(i)

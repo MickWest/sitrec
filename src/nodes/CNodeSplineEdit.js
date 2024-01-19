@@ -68,7 +68,7 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
 
     // a spline is parametric and we step along it as a function of t
     recalculate() {
-        console.log("+++++Start Recalculate Spline")
+//        console.log("+++++Start Recalculate Spline")
  //       const spline = this.splineEditor.spline;
         this.array = []
         var pos = new Vector3()
@@ -164,7 +164,7 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
 
 
 //        console.log("Spine split into " + this.array.length)  // shoudl be 7027
-        console.log("-----End Recalculate Spline")
+//        console.log("-----End Recalculate Spline")
     }
 
     insertPoint(frame, point) {

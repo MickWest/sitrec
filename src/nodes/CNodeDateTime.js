@@ -5,6 +5,7 @@ import {addNightSky, calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
+import {forceUpdateUIText} from "./CNodeViewUI";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West
@@ -112,6 +113,8 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(this, "timeZoneName", timeZoneKeys).name("Display Time Zone").listen().onChange(
             v => {
                 console.log("Timezone "+v)
+                forceUpdateUIText();
+                par.renderOne = true;
             }
         )
 

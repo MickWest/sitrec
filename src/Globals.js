@@ -4,6 +4,12 @@ export function setMainCamera(_mainCamera) {
     mainCamera = _mainCamera
 }
 
+export let mainLoopCount = 0;
+export function incrementMainLoopCount() {
+    mainLoopCount++
+//    console.log("Incrementing mainLoopCount to " + mainLoopCount);
+};
+
 export var Sit;
 export function setSit(s) {Sit = s;}
 

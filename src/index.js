@@ -8,8 +8,8 @@ import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {UpdateNodes} from "./nodes/CNode";
 import {
     gui,
-    guiTweaks,
-    infoDiv,
+    guiTweaks, incrementMainLoopCount,
+    infoDiv, mainLoopCount,
     setGlobalURLParams,
     setInfoDiv,
     setNodeMan,
@@ -331,6 +331,9 @@ function animate(newtime) {
     now = newtime;
     elapsed = now - then;
 
+//    console.log("Frame now = " + now);
+
+
     // if enough time has elapsed, draw the next frame
     if (elapsed > fpsInterval) {
 
@@ -338,6 +341,7 @@ function animate(newtime) {
         // Also, adjust for fpsInterval not being multiple of 16.67
         then = now - (elapsed % fpsInterval);
         // draw stuff here
+//        console.log("Normal renderMain call")
         renderMain()
 
        // if (par.effects)
@@ -348,6 +352,7 @@ function animate(newtime) {
         // so just render - which will allow smooth 60 fps motion
         const oldPaused = par.paused
         par.paused = true;
+//        console.log("PAUSED renderMain call")
         renderMain();
         par.paused = oldPaused;
     }
@@ -358,7 +363,10 @@ function windowChanged()
     updateSize();
 }
 
+
 function renderMain() {
+
+    incrementMainLoopCount();
 
     if (Sit.animated) {
         var lastFrame = par.frame

@@ -47,7 +47,7 @@ class CNode {
         }
 
         // Add call stack property
- //       this.callStack = (new Error()).stack;
+        this.callStack = (new Error()).stack;
 
         NodeMan.add(this.id, this)
     }
@@ -312,15 +312,16 @@ class CNode {
     // TODO - possible out-of-order recalculation
     // need to cull child nodes that can be reached by other paths
     // so they don't get prematurely recalculated
-    recalculateCascade(f, depth = 0) {
+    // the "depth" patameter here is just used for indenting.
+    recalculateCascade(f, noControllers = false, depth = 0) {
 
-        if (par.paused) {
-            if (depth === 0) {
-                console.log("\nRecalculate Start With "+ this.id)
-            } else {
-                console.log("|---".repeat(depth) + " " + this.id)
-            }
-        }
+        // if (par.paused) {
+        //     if (depth === 0) {
+        //         console.log("\nRecalculate Start With "+ this.id)
+        //     } else {
+        //         console.log("|---".repeat(depth) + " " + this.id)
+        //     }
+        // }
 
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
@@ -330,12 +331,16 @@ class CNode {
         this.recalculate(f);
 
 
+
         // Controllers are a bit of a special case
         // they adjust a CNode3D's object, and that might depend on the value of that object
         // for example, lookAt depends on the position of the object to calculate the heading
         // so we need to reapply the controller after the object has been recalculated
         // but before the children are recalculated (as they might depend on the effect of the controller on this node)
-        if (this.applyControllers !== undefined) {
+        if (!noControllers && this.applyControllers !== undefined) {
+            // if (par.paused) {
+            //     console.log("|---".repeat(depth) + " Apply Controllers")
+            // }
             this.applyControllers(f, depth)
         }
 
@@ -348,7 +353,7 @@ class CNode {
             // (and 3rd, but elsewhere, no loops)
 
             // but for now this will work.
-            output.recalculateCascade(f, depth + 1)
+            output.recalculateCascade(f, noControllers, depth + 1)
 
         })
 

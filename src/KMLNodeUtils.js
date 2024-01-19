@@ -18,7 +18,7 @@ import {CNodeControllerTrackAzEl} from "./nodes/CNodeController";
 export const KMLTrackManager = new CManager();
 
 
-export function addKMLTracks(tracks, removeDuplicates = false) {
+export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYER.MASK_HELPERS) {
 
     if (!NodeMan.exists("sizeTargetScaled")) {
         new CNodeScale("sizeTargetScaled", scaleF2M,
@@ -112,7 +112,7 @@ export function addKMLTracks(tracks, removeDuplicates = false) {
                 size: "sizeTargetScaled",
             },
 
-            layers: LAYER.MASK_HELPERS,
+            layers: sphereMask,
         })
 
 

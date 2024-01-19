@@ -13,6 +13,7 @@ import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {addKMLTracks} from "../KMLNodeUtils";
 import {AddTimeDisplayToUI} from "../UIHelpers";
+import * as LAYER from "../LayerMasks";
 
 export const Sit29Palms = {
     name: "29palms",
@@ -71,7 +72,7 @@ export const Sit29Palms = {
         SetupGUIFrames()
         initKeyboard()
 
-        addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"])
+        addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_MAIN)
 
         const ia = new CNodeImage({
             id: "ImageEditorView",

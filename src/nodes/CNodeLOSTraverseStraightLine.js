@@ -42,20 +42,24 @@ export class CNodeLOSTraverseStraightLine extends CNode {
                 // STRAIGHT LINE
                 // given our current position, calculate a frame
                 // which this heading, and local up
-                const lineHeading = radians(this.in.lineHeading.v(f))
-                assert(!(isNaN(lineHeading)),"lineHeadingNAN");
+                const lineHeading = this.in.lineHeading.v(f);
+                let fwd = V3(0, 0, -1)
+                const upAxis = V3(0, 1, 0)
+                // test if lineHeading is a number
+                // if not, it's a vector
+                if (typeof lineHeading !== "number") {
+                    fwd = lineHeading;
+                } else {
+                    // if it's a number, it's a heading
+                    // and we need to rotate the fwd vector
 
-                if (isNaN(lineHeading) && f < 5) {
-                    console.warn ("lineHeading is NaN in CNodeLOSTraverseStraightLine - probably a bug")
+                    assert(!(isNaN(lineHeading)), "lineHeadingNAN");
+
+                    if (isNaN(lineHeading) && f < 5) {
+                        console.warn("lineHeading is NaN in CNodeLOSTraverseStraightLine - probably a bug")
+                    }
+                    fwd.applyAxisAngle(upAxis, -radians(lineHeading))
                 }
-
-                var fwd = V3(0, 0, -1)
-
-                //           var upAxis = getLocalUpVector(position, radius)
-                var upAxis = V3(0, 1, 0)
-
-                fwd.applyAxisAngle(upAxis, -lineHeading)
-
 
                 //
                 var rightAxis = V3()

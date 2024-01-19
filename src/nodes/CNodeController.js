@@ -82,10 +82,21 @@ export class CNodeControllerTrackAzEl extends CNodeController {
 export class CNodeControllerManualPosition extends CNodeController {
     constructor(v) {
         super(v);
+
+        // bit of a patch to only apply this once in an update cycle
+        // the problem being that recalculateCastcade() will make the camera node call apply() again
+        // this.applying = false;
     }
 
     apply(f, objectNode) {
+
+        if (this.applying) {
+            this.applying = false;
+            return;
+        }
+
         if (isKeyHeld('l')) {
+            this.applying = true;
             const mainView = ViewMan.get("mainView")
             const cursorPos = mainView.cursorSprite.position.clone();
             // convert to LLA
@@ -96,13 +107,14 @@ export class CNodeControllerManualPosition extends CNodeController {
             // automatic cascade recalculation for anything that uses them.
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
-            NodeMan.get("cameraLat").recalculateCascade() // manual update
+//            NodeMan.get("cameraLat").recalculateCascade(f, true) // manual update, no controller
+            NodeMan.get("cameraLat").recalculateCascade(f) // manual update, no controller
 
             // patch refresh any ptz controls
             if (GlobalPTZ !== undefined) {
                 GlobalPTZ.refresh();
             }
-            objectNode.syncUIPosition();
+          //  objectNode.syncUIPosition();
         }
 
     }

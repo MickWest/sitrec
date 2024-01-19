@@ -161,6 +161,7 @@ export class CSituation {
                 aspect:window.innerWidth / window.innerHeight,
                 near: 1,
                 far: Sit.farClipLook,
+            //    layers: LAYER.MASK_MAIN_HELPERS
             })
 
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY

@@ -3,9 +3,7 @@ import {NodeMan} from "../Globals";
 import {par} from "../par";
 
 import {stripParentheses} from "../utils";
-//import {CNodeController} from "./CNodeController";
-//import {assert} from "../utils"
-//import {CNodeSwitch} from "./CNodeSwitch";
+import {mainLoopCount} from "../Globals";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
 // Mostly to allow hooking up of controllers, which previous were camera-only
@@ -22,19 +20,34 @@ export class CNode3D extends CNode {
 
     applyControllers(f, depth = 0) {
 
+
+   //     if (f === 19) debugger;
+
         // To prevent loops, we only apply controllers at most twice per frame
         // remember the f value called with
         // if it's new, then rest count to zero
         // if not new, increment count
-        // if count > 2, then return
-        if (f !== this.lastF) {
-            this.lastF = f
+        // if count > 100, then it's an inifite loop
+        if (mainLoopCount !== this.lastF) {
+//            console.log("Resetting applyControllersCount for " + this.id + " at mainLoop " + mainLoopCount);
+            this.lastF = mainLoopCount;
             this.applyControllersCount = 0
         } else {
+//            console.log("Incrementing applyControllersCount for " + this.id + " at mainLoop " + mainLoopCount);
             this.applyControllersCount++
-            if (this.applyControllersCount > 2) {
-                console.warn("Loop detected in controllers for " + this.id)
-               // console.warn("Constructor Call Stack: " + stripParentheses(this.callStack))
+            if (this.applyControllersCount > 100) {
+                console.warn("Infinite loop detected in controllers for " + this.id + " at mainLoop " + mainLoopCount);
+                console.warn("Constructor Call Stack: " + stripParentheses(this.callStack))
+                for (const inputID in this.inputs) {
+                    const input = this.inputs[inputID]
+                    if (input.isController) {
+
+                        console.log("Controller:  " + input.id)
+
+                    }
+                }
+
+                debugger;
                 return
             }
         }
@@ -47,13 +60,13 @@ export class CNode3D extends CNode {
             const input = this.inputs[inputID]
             if (input.isController) {
 
-                if (par.paused) {
-                    if (depth === 0) {
-                        console.log("Apply: "+ this.id)
-                    } else {
-                        console.log("|---".repeat(depth) + " Apply:  " + input.id)
-                    }
-                }
+                // if (par.paused) {
+                //     if (depth === 0) {
+                //         console.log("Apply: "+ input.id +" to " + this.id + "frame " + f + " depth " + depth);
+                //     } else {
+                //         console.log("|---".repeat(depth) + " Apply:  " + input.id)
+                //     }
+                // }
 
                 input.apply(f,this)
             }
