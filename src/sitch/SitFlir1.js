@@ -3,7 +3,7 @@ import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils"
 import {Sit, guiJetTweaks, NodeMan, setMainCamera, guiTweaks} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {CNodeArray} from "../nodes/CNodeArray";
-import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
+import {CNodeGUIValue, makeCNodeGUIFlag, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeInterpolate} from "../nodes/CNodeInterpolate";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeGraphSeries} from "../nodes/CNodeGraphSeries";
@@ -151,12 +151,15 @@ export const SitFlir1 = {
 // FLIR1
         new CNodeGUIValue({id: "jetTAS", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"}, gui)
 
-        var elStartNode = makeCNodeGUIValue("elStart", 5.7, 4.5,   6.5,   0.001,  "el Start", gui)
-        var elEndNode = makeCNodeGUIValue("elEnd", 5, 4.5, 6.5,   0.001,  "el end", gui)
-        gui.add(par, 'negateEl').listen().name("Negate Elevation");
-        new CNodeInterpolate({id:"elNormal", start:elStartNode, end:elEndNode, frames:Sit.frames})
-        new CNodeMunge({id:"el", inputs:{elNormal:"elNormal"}, munge: function (f) {
-                if (par.negateEl) {
+        makeCNodeGUIValue("elStart", 5.7, 4.5,   6.5,   0.001,  "el Start", gui)
+        makeCNodeGUIValue("elEnd", 5, 4.5, 6.5,   0.001,  "el end", gui)
+
+//        gui.add(par, 'negateEl').listen().name("Negate Elevation");
+        makeCNodeGUIFlag("elNegate", false, "Negate Elevation", gui);
+
+        new CNodeInterpolate({id:"elNormal", start:"elStart", end:"elEnd", frames:Sit.frames})
+        new CNodeMunge({id:"el", inputs:{elNormal:"elNormal", elNegate:"elNegate"}, munge: function (f) {
+                if (this.in.elNegate.v(f)) {
                     return this.in.elNormal.v(f) * -1
                 } else {
                     return this.in.elNormal.v(f)
