@@ -57,7 +57,6 @@ const situationDefaults = {
     //
     mainFOV: 30,
     lookFOV: 0.35,
-    farClip: 5000000,
     nearClip: 1,
     farClipLook: 800000,
     nearClipLook: 1,
@@ -80,8 +79,8 @@ const situationDefaults = {
     frustumColor: 0xffff00,
     frustumLineWeight: 2,
 
-    startCameraPosition:[-7136.71,380520.26,747460.97],
-    startCameraTarget:[-7150.08,380080.93,746562.74]
+    // startCameraPosition:[-7136.71,380520.26,747460.97],
+    // startCameraTarget:[-7150.08,380080.93,746562.74]
 
 }
 
@@ -133,30 +132,6 @@ export class CSituation {
     setup() {
         // more data-driven stuff that's indepent of type of situation
 
-
-        this.mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, 1, Sit.farClip);
-        this.mainCamera.layers.enable(LAYER.HELPERS)
-        new CNodeCamera({
-            id:"mainCamera",
-            camera:this.mainCamera,
-        })
-
-        if (this.startCameraPosition !== undefined) {
-            this.mainCamera.position.copy(MV3(this.startCameraPosition));  //
-            this.mainCamera.lookAt(MV3(this.startCameraTarget));
-        }
-
-        if (this.startCameraPositionLLA !== undefined) {
-            this.mainCamera.position.copy(LLAVToEUS(MV3(this.startCameraPositionLLA)))
-            this.mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
-        }
-
-        // // Terrain is currently a patch of terrain (i.e. height mapped satellite images)
-        // // specified per-sitch (if used)
-        // if (this.terrain) {
-        //     console.log("Making terrain")
-        //     this.makeTerrain(this.terrain,)
-        // }
 
         // a lookFOV implies we have a look camera, which most sitches do
 

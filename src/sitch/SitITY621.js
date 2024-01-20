@@ -23,8 +23,10 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     videoFile: "../sitrec-videos/private/ITY621Video.mp4",
     skyColor: '#AFBDD1',  // grey from the video
 
-    startCameraPosition:[61967.92,37073.99,-39378.75],
-    startCameraTarget:[61140.05,36689.14,-38970.70],
+    mainCamera: {
+        startCameraPosition: [61967.92, 37073.99, -39378.75],
+        startCameraTarget: [61140.05, 36689.14, -38970.70],
+    },
 
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},

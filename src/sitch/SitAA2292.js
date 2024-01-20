@@ -9,7 +9,6 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     targetSize: 85, // in feet
     tilt: 13,
 
-    planeCameraFOV: 32,
 
     frames:2000,
     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
@@ -23,8 +22,13 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
 
     skyColor: 'skyblue',
 
-    startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
-    startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
+
+    mainCamera: {
+        fov:  32,
+        startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
+        startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
+    },
+
 
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
  //   videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},

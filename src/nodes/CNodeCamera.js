@@ -1,8 +1,8 @@
-import {PerspectiveCamera} from "../../three.js/build/three.module";
+import {Camera, PerspectiveCamera} from "../../three.js/build/three.module";
 import {MV3} from "../threeExt";
-import {f2m, m2f} from "../utils";
+import {assert, f2m, m2f} from "../utils";
 import {NodeMan} from "../Globals";
-import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, LLAVToEUS} from "../LLA-ECEF-ENU";
 import {raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
 
@@ -28,6 +28,14 @@ export class CNodeCamera extends CNode3D {
 
         if (v.lookAt !== undefined) {
             this._object.lookAt(MV3(v.lookAt));
+        }
+
+        if (v.startPosLLA !== undefined) {
+            this._object.position.copy(LLAVToEUS(MV3(v.startPosLLA)));  // MV3 converts from array to a Vector3
+        }
+
+        if (v.lookAtLLA !== undefined) {
+            this._object.lookAt(LLAVToEUS(MV3(v.lookAtLLA)));
         }
 
     }
@@ -57,6 +65,23 @@ export class CNodeCamera extends CNode3D {
             NodeMan.get("cameraLat").recalculateCascade() // manual update
         }
     }
+}
+
+// given a camera object that's either:
+//  - a Three.js Camera
+//  - a CNodeCamera object
+//  - the name of a CNodeCamera object
+// then return a CNodeCamera object, creating one if needed ot wrap the Camera
+export function getCameraNode(cam) {
+    var cameraNode;
+    if (cam instanceof Camera) {
+        // It's a THREE.JS Camaera, so encapsulate it in a CNodeCamera
+        cameraNode = new CNodeCamera("cameraNode",cam)
+    } else {
+        cameraNode = NodeMan.get(cam) // this handles disambiguating Nodes and Node Names.
+        //assert(cameraNode instanceof CNodeCamera, "CNodeView3D ("+this.id+") needs a camera node")
+    }
+    return cameraNode;
 }
 
 

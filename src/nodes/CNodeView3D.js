@@ -30,11 +30,13 @@ import { NVGShader } from '../shaders/NVGShader'
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {Sphere} from "three";
-import {ECEFToLLAVD_Sphere, EUSToECEF, wgs84} from "../LLA-ECEF-ENU";
-import {CNodeCamera} from "./CNodeCamera";
+import {wgs84} from "../LLA-ECEF-ENU";
+import {getCameraNode} from "./CNodeCamera";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
+
+        assert(v.camera !== undefined, "Missing Camera creating CNodeView 3D, id="+v.id)
 
         // strip out the camera, as we don't want it in the super
         // as there's conflict with the getter
@@ -48,13 +50,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         // Cameras were passing in as a node, but now we just pass in the camera node
         // which could be a node, or a node ID.
 
-        if (v_camera instanceof Camera) {
-            // It's a THREE.JS Camaera, so encapsulate it in a CNodeCamera
-            this.cameraNode = new CNodeCamera("cameraNode",v_camera)
-        } else {
-            this.cameraNode = NodeMan.get(v_camera)
-            assert(this.cameraNode instanceof CNodeCamera, "CNodeView3D ("+this.id+") needs a camera node")
-        }
+        this.cameraNode = getCameraNode(v_camera)
 
 //        this.input("camera")
 //        assert(this.camera !== undefined, "CNodeView3D ("+this.id+") needs a camera in the constructor")
@@ -130,8 +126,11 @@ export class CNodeView3D extends CNodeViewCanvas {
                 if (this.visible) {
                     if (this.effectsEnabled)
                         this.composer.render();
-                    else
+                    else {
+                        assert(this.camera !== undefined, "undefined camera in CNodeView3D id = "+this.id);
+                        assert(this.camera instanceof Camera, "bad camera in CNodeView3D id = "+this.id);
                         this.renderer.render(GlobalScene, this.camera);
+                    }
                 }
             }
         }

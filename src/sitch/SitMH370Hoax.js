@@ -43,7 +43,6 @@ export const SitMH370Hoax = {
      //   hayleCSV: "./hayle-track.csv",
     },
 
-    farClip:    80000000,
     farClipLook: 80000000,
 
     bigUnits:"Miles",
@@ -101,9 +100,11 @@ export const SitMH370Hoax = {
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
     ],
 
-    startCameraPosition: [278.4748110392168,64.40911042728831,-205.77524399028982],
-    startCameraTarget: [374.9433739111792,-41.17793070506451,-1195.4949988311907],
-
+    mainCamera: {
+        far:    80000000,
+        startCameraPosition: [278.4748110392168, 64.40911042728831, -205.77524399028982],
+        startCameraTarget: [374.9433739111792, -41.17793070506451, -1195.4949988311907],
+    },
     // A-10 Bird
     //terrain: {  lat:  31.556097, lon: -109.275521, zoom: 15, nTiles:6 },
 
@@ -157,7 +158,7 @@ export const SitMH370Hoax = {
             fov: 50,
             doubleClickFullScreen: true,
             background: new Color("#989fa7"),
-            camera: this.mainCamera,
+            camera: "mainCamera",
         })
         view.addOrbitControls(this.renderer);
 

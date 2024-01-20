@@ -45,8 +45,10 @@ export const SitLAXUAP = {
 
    // ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
 
-    startCameraPositionLLA:[35.017412,-118.249314,36660.825660],
-    startCameraTargetLLA:[35.008685,-118.250429,36474.428565],
+    mainCamera: {
+        startCameraPositionLLA: [35.017412, -118.249314, 36660.825660],
+        startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
+    },
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

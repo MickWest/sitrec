@@ -31,8 +31,9 @@ export const SitRGordon = {
 
     ptz: {az: 83.2, el: 0.9, fov: 7.3, showGUI: true},
 
-    startCameraPositionLLA:[42.957372,-84.432317,49840.021007],
-    startCameraTargetLLA:[42.959455,-84.420653,49671.778230],
-
+    mainCamera: {
+        startCameraPositionLLA: [42.957372, -84.432317, 49840.021007],
+        startCameraTargetLLA: [42.959455, -84.420653, 49671.778230],
+    },
 
 }

@@ -1,7 +1,7 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
 // so mostly related to Gimbal, GoFast, and FLIR1
 
-import {EarthRadiusMiles, gui, guiTweaks, infoDiv, mainCamera, NodeMan, setMainCamera, Sit} from "./Globals";
+import {EarthRadiusMiles, gui, guiTweaks, infoDiv, mainCamera, NodeMan,  Sit} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
@@ -1124,16 +1124,7 @@ export function initJetStuff() {
     // note that since we have a very large distance to the far clipping plane
     // we need a near clipping plane larger than the default 1, so I'm using 100
 
-    var _mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight,
-        100, farClip);
-    _mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
-    _mainCamera.lookAt(MV3(Sit.startCameraTarget));
-
-    setMainCamera(_mainCamera)
-
     mainCamera.layers.enable(LAYER.podBack)
-    // view.camera = mainCamera;
-
 
     var view = new CNodeView3D({
         id: "mainView",
@@ -1143,7 +1134,7 @@ export function initJetStuff() {
         doubleClickResizes: false,
         draggable: false, resizable: false, shiftDrag: false, freeAspect: true,
 
-        camera: _mainCamera,
+        camera: "mainCamera",
 
         renderFunction: function () {
 

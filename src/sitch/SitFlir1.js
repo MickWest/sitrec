@@ -53,8 +53,11 @@ export const SitFlir1 = {
     aFrame: 0,
     bFrame: 2288,
     startDistance:15,
-    startCameraPosition:[-126342.63,56439.02,101932.66],
-    startCameraTarget:[-126346.69,56137.48,100979.21],
+
+    mainCamera: {
+        startCameraPosition: [-126342.63, 56439.02, 101932.66],
+        startCameraTarget: [-126346.69, 56137.48, 100979.21],
+    },
     LOSSpacing:120,
 
 
@@ -75,20 +78,20 @@ export const SitFlir1 = {
 
         SetupCommon(20000)
 
-        new CNodeCamera({
-            id:"mainCamera",
-            fov: this.mainFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClip,
-            far: this.farClip,
-            layers: LAYER.MASK_MAIN_HELPERS,
-
-            startPos: this.startCameraPosition,
-            lookAt: this.startCameraTarget,
-
-        })
-        // eventually remove all setMainCamera stuff
-        setMainCamera(NodeMan.get("mainCamera").camera)
+        // new CNodeCamera({
+        //     id:"mainCamera",
+        //     fov: this.mainFOV,
+        //     aspect: window.innerWidth / window.innerHeight,
+        //     near: this.nearClip,
+        //     far: this.farClip,
+        //     layers: LAYER.MASK_MAIN_HELPERS,
+        //
+        //     startPos: this.startCameraPosition,
+        //     lookAt: this.startCameraTarget,
+        //
+        // })
+        // // eventually remove all setMainCamera stuff
+        // setMainCamera(NodeMan.get("mainCamera").camera)
 
 // Optionally we set the Jet origin to a particular Lat/Lon
 // this only makes sense if we have a terrain loaded
@@ -297,7 +300,7 @@ export const SitFlir1 = {
             fov: 10,
             doubleClickResizes: false,
             draggable: false, resizable: false, shiftDrag: true, freeAspect: true,
-            camera:mainCamera,
+            camera: "mainCamera",
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
                 //     labelRenderer.render( GlobalScene, this.camera );

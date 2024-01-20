@@ -84,6 +84,7 @@ sortedKeys.forEach(key => {
 
 // Add the "Test All" option
 selectableSitches["* Test All *"] = "testall";
+selectableSitches["* Test Here+ *"] = "testhere";
 
 console.log("SITREC START")
 console.log("Three.JS Revision = " + REVISION)
@@ -116,11 +117,14 @@ if (urlParams.get("test")) {
 if (urlParams.get("testAll")) {
     toTest = ""
     for (var key in selectableSitches) {
-        if (selectableSitches[key] !== "testall")
+        if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
             toTest += selectableSitches[key]+",";
     }
     toTest+="gimbal"  // just so we end up with something more interesting for more of a soak test
 }
+
+
+
 
 // toTest is a comma separated list of situations to test
 // if it is set, we will test the first one, then the rest
@@ -166,6 +170,26 @@ par.name = lower;
 _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
     console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
     var url = SITREC_ROOT+"?sitch=" + sitch
+
+// smoke test of everything after the current sitch
+    if (sitch === "testhere") {
+        toTest = ""
+        let skip = true;
+        for (var key in selectableSitches) {
+            if (skip) {
+                if (selectableSitches[key] === situation)
+                    skip = false;
+            } else {
+                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                    toTest += selectableSitches[key] + ",";
+            }
+        }
+        toTest+=situation  // end up back where we started
+        url = SITREC_ROOT + "?test="+toTest;
+
+    }
+
+
     window.location.assign(url) //
 })
 
@@ -250,7 +274,6 @@ function init() {
 
  //   GlobalScene.matrixWorldAutoUpdate = false
 
-    if (Sit.jetStuff) initJetStuff()
 
 }
 
@@ -424,10 +447,6 @@ function updateFrame() {
 
 init();
 
-// this is some spheres and the glare
-if (Sit.jetStuff) {
-    initJetVariables();
-}
 
 // bit of a patch
 // if we are going to load a starlink file (i.e. id = starLink - noe capitalization)
@@ -493,6 +512,12 @@ console.log("FINISHED Load Assets")
 console.log("Setup()")
 
 SituationSetup();
+
+if (Sit.jetStuff) {
+    initJetVariables();
+    initJetStuff()
+}
+
 
 if (Sit.setup !== undefined) Sit.setup();
 console.log("Setup2()")

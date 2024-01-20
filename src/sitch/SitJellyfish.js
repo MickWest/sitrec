@@ -78,8 +78,10 @@ export const SitJellyfish    = {
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
     ],
 
-    startCameraPositionLLA:[33.273278,43.647572,4926.633989],
-    startCameraTargetLLA:[33.280159,43.642938,4451.060802],
+    mainCamera: {
+        startCameraPositionLLA: [33.273278, 43.647572, 4926.633989],
+        startCameraTargetLLA: [33.280159, 43.642938, 4451.060802],
+    },
 
     targetSize:2,
 
@@ -145,7 +147,7 @@ export const SitJellyfish    = {
             fov: 50,
             doubleClickFullScreen: true,
             background: new Color("#989fa7"),
-            camera: this.mainCamera,
+            camera: "mainCamera",
             focusTracks: {
                 "Ground (No Track)": "default",
                 "Camera Position": "cameraTrack",
@@ -172,7 +174,7 @@ export const SitJellyfish    = {
 //            type:"linear",   // linear or catmull
             type: this.targetSpline.type,   // chordal give smoother velocities
             scene: GlobalScene,
-            camera: this.mainCamera,
+            camera: "mainCamera",
             renderer: view.renderer,
             controls: view.controls,
             frames: this.frames,

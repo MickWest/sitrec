@@ -67,7 +67,7 @@ export const SitKML = {
 
     targetSize: 10000,
 
-    planeCameraFOV:60,
+//    planeCameraFOV:60,
 
 
     // this is an override for the mainview setup
@@ -76,32 +76,14 @@ export const SitKML = {
     skyColor: "rgb(0%,0%,10%)",
 
 
+
+
 //
     setup: function() {
 
         SetupGUIFrames()
 
         Sit.setupWind()
-
-
-        setMainCamera(new CNodeCamera({id:"mainCamera",
-            fov: par.mainFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClip,
-            far: this.farClip,
-            layers: LAYER.MASK_MAIN|LAYER.MASK_HELPERS,
-        }).camera);
-
-//       var mainCamera = new PerspectiveCamera(par.mainFOV, window.innerWidth / window.innerHeight, this.nearClip, this.farClip);
-//        mainCamera.layers.enable(LAYER.HELPERS)
-
-//        setMainCamera(mainCamera); // setting the global value, enabling keyboard controls, etc.
-
-        gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
-            mainCamera.fov = value
-            mainCamera.updateProjectionMatrix()
-        }).listen().name("Main FOV")
-
 
         const view = new CNodeView3D(Object.assign({
             id: "mainView",
@@ -556,10 +538,10 @@ export const SitKML = {
 
         labelVideo.setVisible(true)
 
-        gui.add(this, 'planeCameraFOV', 0.35, 80, 0.01).onChange(value => {
-            this.lookCamera.fov = value
-            this.lookCamera.updateProjectionMatrix()
-        }).listen().name("Plane Camera FOV")
+        // gui.add(this, 'planeCameraFOV', 0.35, 80, 0.01).onChange(value => {
+        //     this.lookCamera.fov = value
+        //     this.lookCamera.updateProjectionMatrix()
+        // }).listen().name("Plane Camera FOV")
 
         if (Sit.videoFile !== undefined) {
             new CNodeVideoWebCodecView(Object.assign({
@@ -581,22 +563,6 @@ export const SitKML = {
                 },Sit.videoView)
             )
         }
-
-
-        //mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
-        //mainCamera.lookAt(MV3(Sit.startCameraTarget));
-
-        if (this.startCameraPosition !== undefined) {
-            mainCamera.position.copy(MV3(this.startCameraPosition));  //
-            mainCamera.lookAt(MV3(this.startCameraTarget));
-        }
-
-        if (this.startCameraPositionLLA !== undefined) {
-            mainCamera.position.copy(LLAVToEUS(MV3(this.startCameraPositionLLA)))
-            mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
-        }
-
-
 
         if (this.losTarget !== undefined) {
 

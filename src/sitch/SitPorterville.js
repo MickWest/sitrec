@@ -34,8 +34,10 @@ export const SitPorterville = {
     // TODO -STOP USING EUS COORDINATES IN SIT - USE LLA, OTHERWISE WHEN MAP Resolution changes, it breaks
   //  startCameraPosition:[-1341.61,848.22,-6109.46],
   //  startCameraTarget:[-957.26,543.21,-5238.12],
-    startCameraPositionLLA:[36.077341,-119.029799,851.286742],
-    startCameraTargetLLA:[36.069518,-119.025527,545.430961],
+    mainCamera: {
+        startCameraPositionLLA: [36.077341, -119.029799, 851.286742],
+        startCameraTargetLLA: [36.069518, -119.025527, 545.430961],
+    },
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

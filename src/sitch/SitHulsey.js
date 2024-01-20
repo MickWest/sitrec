@@ -12,7 +12,6 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
 
 
     // maybe have these in CSituation
-    farClip:    50000*1000,
     nearClip: 1,
     farClipLook: 6800*1000,
     nearClipLook: 1,
@@ -31,8 +30,11 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     videoFile: "../sitrec-videos/private/19min clip showing land - 01.mp4",
     startTime: "2022-08-18T07:20:52.000Z",
 
-    startCameraPosition: [-29111.506164711383,68091.7505344188,149221.43786749756],
-    startCameraTarget: [-29082.08960581131,67711.97280864988,148296.8279253748],
+    mainCamera: {
+        far:    50000000,
+        startCameraPosition: [-29111.506164711383, 68091.7505344188, 149221.43786749756],
+        startCameraTarget: [-29082.08960581131, 67711.97280864988, 148296.8279253748],
+    },
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in

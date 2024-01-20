@@ -15,9 +15,7 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     name: "chilean",
     menuName: "Chilean Navy IB 6830",
 
-//    planeCameraFOV: 0.75    ,
-    planeCameraFOV: 0.915    ,
-
+    planeCameraFOV: 0.75    ,
     targetSize: 1, // in feet
 
     tilt: 0,
@@ -39,8 +37,11 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     },
     startTime: "2014-11-11T16:51:55Z",
 
-    startCameraPosition:[-126967.77,61278.38,196946.50],
-    startCameraTarget:[-126503.73,61040.85,196093.13],
+    mainCamera: {
+        fov:30,
+        startCameraPosition: [-126967.77, 61278.38, 196946.50],
+        startCameraTarget: [-126503.73, 61040.85, 196093.13],
+    },
 
     videoFile: "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 720p.mp4",
     skyColor: 'skyblue',

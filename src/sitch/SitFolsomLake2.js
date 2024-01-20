@@ -22,9 +22,10 @@ export const SitFolsomLake2 = {
 
     videoFile: "../sitrec-videos/public/MICK DJI_0046 - half.mp4",
 
-    startCameraPositionLLA:[38.715310,-121.164961,513.954877],
-    startCameraTargetLLA:[38.722250,-121.169801,38.152651],
-
+    mainCamera: {
+        startCameraPositionLLA: [38.715310, -121.164961, 513.954877],
+        startCameraTargetLLA: [38.722250, -121.169801, 38.152651],
+    },
 
 
 }

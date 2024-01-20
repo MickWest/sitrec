@@ -70,8 +70,11 @@ export var SitGoFast = {
     startDistanceMax: 15,
     targetSize: 3,
     lookFOV: 0.7,
-    startCameraPosition:[25034.03,13882.82,10206.08],
-    startCameraTarget:[24090.07,13646.05,9976.13],
+
+    mainCamera: {
+        startCameraPosition: [25034.03, 13882.82, 10206.08],
+        startCameraTarget: [24090.07, 13646.05, 9976.13],
+    },
 
     heading: 262,   // initial heading of the jet - was 314
 
@@ -100,20 +103,20 @@ export var SitGoFast = {
         SetupGUIFrames()
         SetupCommon()
 
-        new CNodeCamera({
-            id:"mainCamera",
-            fov: Sit.mainFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: Sit.nearClip,
-            far: Sit.farClip,
-            layers: LAYER.MASK_MAIN_HELPERS,
-
-            startPos: Sit.startCameraPosition,
-            lookAt: Sit.startCameraTarget,
-
-        })
-        // eventually remove all setMainCamera stuff
-        setMainCamera(NodeMan.get("mainCamera").camera)
+        // new CNodeCamera({
+        //     id:"mainCamera",
+        //     fov: Sit.mainFOV,
+        //     aspect: window.innerWidth / window.innerHeight,
+        //     near: Sit.nearClip,
+        //     far: Sit.farClip,
+        //     layers: LAYER.MASK_MAIN_HELPERS,
+        //
+        //     startPos: Sit.startCameraPosition,
+        //     lookAt: Sit.startCameraTarget,
+        //
+        // })
+        // // eventually remove all setMainCamera stuff
+        // setMainCamera(NodeMan.get("mainCamera").camera)
 
         // NOTE: ADDED SMOOTHING GURERNTLY, MAYBE TOO MUCH?
         // but linear interpolation introduces nasty discontinuities
@@ -130,7 +133,7 @@ export var SitGoFast = {
             fov: 10,
             doubleClickResizes: false,
             draggable: false, resizable: false, shiftDrag: true, freeAspect: true,
-            camera:mainCamera,
+            camera: "mainCamera",
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
                 //     labelRenderer.render( GlobalScene, this.camera );

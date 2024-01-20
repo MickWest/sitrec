@@ -38,9 +38,10 @@ export const SitDume = {
     toLon: -116.679419,
     toAlt: 3302.2,
 
-    startCameraPosition: [-43094.29665986946,3824.242926331847,422.4154566350642],
-    startCameraTarget: [-42114.354308866445,3638.0780342768676,351.31256163886894],
-
+    mainCamera: {
+        startCameraPosition: [-43094.29665986946, 3824.242926331847, 422.4154566350642],
+        startCameraTarget: [-42114.354308866445, 3638.0780342768676, 351.31256163886894],
+    },
 
     setup2: function() {
         SetupGUIFrames()
@@ -53,7 +54,7 @@ export const SitDume = {
             fov: 50,
             doubleClickFullScreen: true,
             background: new Color().setRGB(0.53, 0.81, 0.92),
-            camera: this.mainCamera,
+            camera: "mainCamera",
 
         })
         view.addOrbitControls(this.renderer);

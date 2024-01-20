@@ -69,11 +69,6 @@ export function SetupJetGUI() {
         lookCamera.updateProjectionMatrix()
     }).listen().name("Narrow FOV")
 
-    guiTweaks.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
-        mainCamera.fov = value
-        mainCamera.updateProjectionMatrix()
-    }).listen().name("Main FOV")
-
     guiTweaks.add(par, 'el', -8, 8, 0.01).onChange(curveChanged).name('elevation')
 
     guiTweaks.add(par, 'glareStartAngle', 40, 80, 0.1).listen().name("Glare Start Angle").onChange(curveChanged);

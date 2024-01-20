@@ -39,7 +39,6 @@ export const SitNightSky = {
 
     showDateTime: true, // opens the DateTime folder in the UI
 
-    farClip:    80000000,
     farClipLook: 80000000,
 
 
@@ -88,8 +87,11 @@ export const SitNightSky = {
     ],
 
 
-    startCameraPosition:[2032347.51,19437577.30,23271391.24],
-    startCameraTarget:[2032292.18,19436849.64,23270707.53],
+    mainCamera: {
+        far: 80000000,
+        startCameraPosition: [2032347.51, 19437577.30, 23271391.24],
+        startCameraTarget: [2032292.18, 19436849.64, 23270707.53],
+    },
 
     targetSize: 500,
 
@@ -122,7 +124,7 @@ export const SitNightSky = {
             fov: 50,
             doubleClickFullScreen: false,
             background: new Color('#132d44'),
-            camera: this.mainCamera,
+            camera: "mainCamera",
         })
         view.addOrbitControls(this.renderer);
 
@@ -172,10 +174,7 @@ export const SitNightSky = {
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
-        gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
-            this.mainCamera.fov = value
-            this.mainCamera.updateProjectionMatrix()
-        }).listen().name("Main FOV")
+
 
         addDefaultLights(Sit.brightness)
 

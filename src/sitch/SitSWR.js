@@ -1,7 +1,7 @@
 
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
-import {Sit} from "../Globals";
+import {mainCamera, Sit} from "../Globals";
 import {PerspectiveCamera, Color, Vector3, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import * as THREE from "../../three.js/build/three.module";
 import {gui, } from "../Globals";
@@ -27,8 +27,7 @@ export const SitSWR = {
 
     LOSSpacing:30*4,
 
-    startCameraPosition: [776.1465987669817,1624.3604539633113,29.198848012258352],
-    startCameraTarget: [-202.3563163042595,1418.7966350010847,12.598801905451808],
+
 
     startDistance: 1,
     startDistanceMax: 6,
@@ -51,7 +50,8 @@ export const SitSWR = {
     },
 
     mainCamera: {
-
+        startCameraPosition: [776.1465987669817,1624.3604539633113,29.198848012258352],
+        startCameraTarget: [-202.3563163042595,1418.7966350010847,12.598801905451808],
     },
 
 
@@ -61,15 +61,6 @@ export const SitSWR = {
 
         const farClip = 5000000;
 
-        const mainCamera = new PerspectiveCamera( par.mainFOV, window.innerWidth / window.innerHeight, 1, farClip );
-        mainCamera.position.copy(MV3(Sit.startCameraPosition));  //
-        mainCamera.lookAt(MV3(Sit.startCameraTarget));
-
-        gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
-            mainCamera.fov = value
-            mainCamera.updateProjectionMatrix()
-        }).listen().name("Main FOV")
-
         // Duplicate from SetupCommon, but suing gui not guiTweaks
         console.log("+++ radiusMiles Node")
         const view = new CNodeView3D({
@@ -78,7 +69,7 @@ export const SitSWR = {
             left:0.0, top:0, width:1,height:1,
             fov: 50,
             background: new THREE.Color().setRGB(0.53, 0.81, 0.92),
-            camera:mainCamera,
+            camera: "mainCamera",
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
             },

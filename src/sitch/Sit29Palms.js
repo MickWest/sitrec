@@ -62,8 +62,11 @@ export const Sit29Palms = {
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
     ],
 
-    startCameraPosition: [-7888.59, 6602.16, -30715.32],
-    startCameraTarget: [-7324.29, 6493.84, -29896.89],
+    mainCamera: {
+        fov: 30,
+        startCameraPosition: [-7888.59, 6602.16, -30715.32],
+        startCameraTarget: [-7324.29, 6493.84, -29896.89],
+    },
 
     targetSize: 500,
 
@@ -90,7 +93,7 @@ export const Sit29Palms = {
             fov: 50,
             doubleClickFullScreen: true,
             background: new Color('#132d44'),
-            camera: this.mainCamera,
+            camera: "mainCamera",
         })
         view.addOrbitControls(this.renderer);
 
@@ -108,11 +111,6 @@ export const Sit29Palms = {
 
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
-
-        gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
-            this.mainCamera.fov = value
-            this.mainCamera.updateProjectionMatrix()
-        }).listen().name("Main FOV")
 
         addDefaultLights(Sit.brightness)
 

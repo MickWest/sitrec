@@ -1,5 +1,5 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
-import {gui, setMainCamera, Sit} from "../Globals";
+import {gui, setMainCamera, Sit, mainCamera} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
@@ -26,7 +26,7 @@ export const SitArea6 = {
     useGlobe: true,
     displayFrustum: true,
 
-    farClip:    80000000,
+
     farClipLook: 80000000,
 
     files: {
@@ -66,10 +66,11 @@ export const SitArea6 = {
     marks: [
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
     ],
-
-    startCameraPosition:[41177.15,35874.31,182331.95],
-    startCameraTarget:[40980.64,35831.97,181352.36],
-
+    mainCamera: {
+        far:    80000000,
+        startCameraPosition: [41177.15, 35874.31, 182331.95],
+        startCameraTarget: [40980.64, 35831.97, 181352.36],
+    },
     targetSize: 500,
 
 //    syncVideoZoom: true,
@@ -100,7 +101,7 @@ export const SitArea6 = {
             fov: 50,
             doubleClickFullScreen: true,
             background: new Color('#132d44'),
-            camera: this.mainCamera,
+            camera: "mainCamera",
         })
         view.addOrbitControls(this.renderer);
 

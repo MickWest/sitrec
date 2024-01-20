@@ -64,8 +64,10 @@ export const SitAguadilla = {
 
     LOSSpacing:30*2,
 
-    startCameraPosition: [-9851.407079455104,2847.1976940099407,-2584.264310831998],
-    startCameraTarget: [-8986.013511122388,2586.5050262571704,-2156.3235382146754],
+    mainCamera: {
+        startCameraPosition: [-9851.407079455104, 2847.1976940099407, -2584.264310831998],
+        startCameraTarget: [-8986.013511122388, 2586.5050262571704, -2156.3235382146754],
+    },
 
     startDistance: 1.612,
     startDistanceMax: 3.5,
@@ -79,7 +81,7 @@ export const SitAguadilla = {
     targetSpeedStep: 0.001,
 
     // Near and far clipping distances for the main 3D view
-    farClip: 500000,
+
     nearClip: 1,
 
     // Near and far clipping distances for the Look view (the plane camera view)
@@ -103,24 +105,6 @@ export const SitAguadilla = {
     setup: function() {
 
         assert(GlobalScene !== undefined,"Missing GlobalScene")
-
-        new CNodeCamera({
-            id:"mainCamera",
-            fov: this.mainFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClip,
-            far: this.farClip,
-            layers: LAYER.MASK_MAIN_HELPERS,
-
-            startPos: this.startCameraPosition,
-            lookAt: this.startCameraTarget,
-
-        })
-        // eventually remove all setMainCamera stuff
-        setMainCamera(NodeMan.get("mainCamera").camera)
-
-
-
 
         // gui controls for frame number/time
         SetupGUIFrames()
@@ -148,7 +132,7 @@ export const SitAguadilla = {
             fov: 50,
             background: new Color().setRGB(0.0, 0.3, 0.0),
             showCursor: true,
-            camera:mainCamera,
+            camera: "mainCamera",
 
             focusTracks:{
                 "Ground (No Track)": "default",

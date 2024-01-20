@@ -16,7 +16,8 @@ export const SitWestJet = {
 
     ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
 
-    startCameraPositionLLA:[38.602145,-86.506588,4159762.165337],
-    startCameraTargetLLA:[38.603456,-86.509621,4158895.037381],
-
+    mainCamera: {
+        startCameraPositionLLA: [38.602145, -86.506588, 4159762.165337],
+        startCameraTargetLLA: [38.603456, -86.509621, 4158895.037381],
+    },
 }

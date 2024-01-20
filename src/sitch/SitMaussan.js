@@ -22,7 +22,7 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
     starScale: 0.65,
 
-    farClip:    50000*1000,
+
     nearClip: 1,
     farClipLook: 6800*1000,
     nearClipLook: 1,
@@ -39,8 +39,11 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     },
     videoFile: "../sitrec-videos/private/Maussan-video.mp4",
     startTime: "2023-11-22T02:51:34.000Z",
-    startCameraPosition:[2718556.11,2470980.84,-26052.36],
-    startCameraTarget:[2717804.95,2470341.84,-26217.95],
+    mainCamera: {
+        far:    50000000,
+        startCameraPosition: [2718556.11, 2470980.84, -26052.36],
+        startCameraTarget: [2717804.95, 2470341.84, -26217.95],
+    },
     lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},

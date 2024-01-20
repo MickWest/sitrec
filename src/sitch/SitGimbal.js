@@ -334,8 +334,11 @@ export const SitGimbal = {
 
     targetSpeed: 340,
     defaultTraverse: "Const Air Spd",
-    startCameraPosition:[45827.79,51645.36,17968.72],
-    startCameraTarget:[44976.22,51163.57,17762.06],
+
+    mainCamera: {
+        startCameraPosition: [45827.79, 51645.36, 17968.72],
+        startCameraTarget: [44976.22, 51163.57, 17762.06],
+    },
 
     cloudWindFrom: 240,
     cloudWindKnots: 17,
@@ -429,8 +432,10 @@ export const SitGimbalNear = {
 
     defaultTraverse:"Straight Line",
 
-    startCameraPosition:[22361.77,19855.62,1055.93],
-    startCameraTarget:[21400.39,19583.24,1095.64],
+    mainCamera: {
+        startCameraPosition: [22361.77, 19855.62, 1055.93],
+        startCameraTarget: [21400.39, 19583.24, 1095.64],
+    },
 
     cloudWindFrom: 240,
     cloudWindKnots: 17,

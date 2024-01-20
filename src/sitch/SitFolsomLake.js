@@ -39,8 +39,10 @@ export const SitFolsomLake = {
     videoFile: "../sitrec-videos/public/MICK folsomlake DJI_0031 - 01.mp4",
     skyColor: 'skyblue',
 
-    startCameraPositionLLA:[38.719864,-121.172311,265.103926],
-    startCameraTargetLLA:[38.725176,-121.163979,-90.574624],
+    mainCamera: {
+        startCameraPositionLLA: [38.719864, -121.172311, 265.103926],
+        startCameraTargetLLA: [38.725176, -121.163979, -90.574624],
+    },
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

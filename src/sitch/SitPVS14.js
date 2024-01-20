@@ -36,7 +36,6 @@ export const SitPVS14 = {
 
     starScale: 0.65,
 
-    farClip:    50000*1000,
     nearClip: 1,
     farClipLook: 6800*1000,
     nearClipLook: 1,
@@ -80,8 +79,11 @@ export const SitPVS14 = {
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
     ],
 
-    startCameraPosition:[-829629.50,1259822.75,2121960.81],
-    startCameraTarget:[-829308.42,1259357.65,2121135.83],
+    mainCamera: {
+        far:    50000000,
+        startCameraPosition: [-829629.50, 1259822.75, 2121960.81],
+        startCameraTarget: [-829308.42, 1259357.65, 2121135.83],
+    },
 
     targetSize: 500,
 
@@ -111,7 +113,7 @@ export const SitPVS14 = {
             fov: 50,
             doubleClickFullScreen: false,
             background: new Color('#132d44'),
-            camera: this.mainCamera,
+            camera: "mainCamera",
             ...this.mainView,
         })
         view.addOrbitControls(this.renderer);

@@ -2,9 +2,9 @@ import {SplineEditor} from "../SplineEditor";
 import {gui, Sit} from "../Globals";
 import {Vector3} from "../../three.js/build/three.module";
 import {assert} from "../utils";
-import * as THREE from "../../three.js/build/three.module";
 import {PointEditor} from "../PointEditor";
-import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
+import {CNodeEmptyArray} from "./CNodeArray";
+import {getCameraNode} from "./CNodeCamera";
 
 // a node wrapper for varioius spline editors
 export class CNodeSplineEditor extends CNodeEmptyArray {
@@ -13,25 +13,28 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
         this.frames = v.frames ?? Sit.frames
         assert(this.frames >0, "CNodeSplineEditor has frames=0")
 
+
+        const camera = getCameraNode(v.camera).camera;
+
         switch (v.type.toLowerCase()) {
             case "catmull":
             case "centripetal":
             case "chordal":
                 if (v.initialPointsLLA === undefined) {
-                    this.splineEditor = new SplineEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                    this.splineEditor = new SplineEditor(v.scene, camera, v.renderer, v.controls, () => this.recalculateCascade(),
                         v.initialPoints, false, v.type.toLowerCase())
                 } else {
-                    this.splineEditor = new SplineEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                    this.splineEditor = new SplineEditor(v.scene, camera, v.renderer, v.controls, () => this.recalculateCascade(),
                         v.initialPointsLLA, true, v.type.toLowerCase())
                 }
                 break;
             case "linear":
             default:
                 if (v.initialPointsLLA === undefined) {
-                    this.splineEditor = new PointEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                    this.splineEditor = new PointEditor(v.scene, camera, v.renderer, v.controls, () => this.recalculateCascade(),
                         v.initialPoints, false)
                 } else {
-                    this.splineEditor = new PointEditor(v.scene, v.camera, v.renderer, v.controls, () => this.recalculateCascade(),
+                    this.splineEditor = new PointEditor(v.scene, camera, v.renderer, v.controls, () => this.recalculateCascade(),
                         v.initialPointsLLA, true)
                 }
         }
