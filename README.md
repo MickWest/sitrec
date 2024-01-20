@@ -36,8 +36,12 @@ Some types of situations covered:
   - From a fixed position
 - Viewing the sky (with accurate planets and satellites)
 
-## CAVEAT - This is complex and messy code
+## CAVEAT 1 - This is complex and messy code
 Sitrec has evolved over a couple of years from a very simple single-html file simulator to the much more complex thing it is today. So the code is complicated, and, in some places, rather crufty. Configuring a new sitch takes a few steps.
+
+## CAVEAT 2 - This code is changing
+Since it's so messy, I'm doing a lot of refactoring to remove duplicate code and make things data driven. These changes can be significant and across multiple files, so if you want to fork it, I recommend you keep in sync with my changes if you intend to submit pull requests. 
+
 
 ## Code overview
 Sitrec runs mostly client-side using JavaScript and some custom shaders but also has a handful of server-side scripts written in PHP. 
