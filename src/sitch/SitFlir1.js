@@ -35,12 +35,9 @@ import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGra
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
-import {makeMatLine} from "../MatLines";
-import {CNodeTerrain} from "../nodes/CNodeTerrain";
-import {DebugSphere, V3} from "../threeExt";
+import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeCamera} from "../nodes/CNodeCamera";
-import {calculateGlareStartAngle} from "../JetHorizon";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {CNodeMunge} from "../nodes/CNodeMunge";
@@ -92,20 +89,6 @@ export const SitFlir1 = {
         })
         // eventually remove all setMainCamera stuff
         setMainCamera(NodeMan.get("mainCamera").camera)
-
-
-        new CNodeTerrain({
-            id: "TerrainModel",
-            radiusMiles: "radiusMiles", // constant
-            //terrain:this.terrain,
-            lat: this.terrain.lat,
-            lon: this.terrain.lon,
-            zoom: this.terrain.zoom,
-            nTiles: this.terrain.nTiles,
-            tileSegments: this.terrain.tileSegments ?? 100,
-        }, mainCamera)
-
-
 
 // Optionally we set the Jet origin to a particular Lat/Lon
 // this only makes sense if we have a terrain loaded

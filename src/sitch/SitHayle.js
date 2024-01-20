@@ -178,7 +178,6 @@ setup2: function() {
         inputs: {
             LOS: "motionTrackLOS",
             startDist: nodeStartDistance,
-            //radius: "radiusMiles",
         },
     })
 

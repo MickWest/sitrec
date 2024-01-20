@@ -7,7 +7,6 @@ import {SitKML} from "./SitKML";
 
 export const SitRGordon = {
     ...SitPVS14,
-//    ...SitKML,
     name: "rgordon",
     menuName: "RGordon Starlink",
     simSpeed: 1,

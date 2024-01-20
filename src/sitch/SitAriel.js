@@ -1,5 +1,4 @@
 
-import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
 import {gui, Sit, } from "../Globals";
@@ -59,25 +58,6 @@ export const SitAriel = {
             mainCamera.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
-        // Duplicate from SetupCommon, but suing gui not guiTweaks
-        console.log("+++ radiusMiles Node")
-//        new CNodeGUIValue({id:"radiusMiles", value: EarthRadiusMiles, start:4, end:5000, step:1, desc:"Earth Radius"},gui)
-
-        // need to use WGS84 to match terrain, NOT the 7/6 version
-        //    new CNodeGUIValue({id:"radiusMiles", value: 3963.190592, start:3963.190592, end:40000, step:1, desc:"Earth Radius"},gui)
-
-        new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles})
-
-        new CNodeTerrain({
-            id: "TerrainModel",
-            radiusMiles: "radiusMiles", // constant
-            //terrain:this.terrain,
-            lat: this.terrain.lat,
-            lon: this.terrain.lon,
-            zoom: this.terrain.zoom,
-            nTiles: this.terrain.nTiles,
-            tileSegments: this.terrain.tileSegments ?? 100,
-        }, mainCamera)
 
         const view = new CNodeView3D({
             id:"mainView",

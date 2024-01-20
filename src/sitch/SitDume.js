@@ -23,6 +23,7 @@ export const SitDume = {
     // Pt Dume view
 
     // TODO - need better way of specifying tiles, maybe LOD
+    flattening: true,
     terrain: {lat:  34.001856, lon:-118.806196, zoom:9, nTiles:8},
 
     fromLat: 34.001241, // point dume
@@ -36,11 +37,6 @@ export const SitDume = {
     toLat: 33.814029,
     toLon: -116.679419,
     toAlt: 3302.2,
-
-    flattening: true,
-
-    // A-10 Bird
-    //terrain: {  lat:  31.556097, lon: -109.275521, zoom: 15, nTiles:6 },
 
     startCameraPosition: [-43094.29665986946,3824.242926331847,422.4154566350642],
     startCameraTarget: [-42114.354308866445,3638.0780342768676,351.31256163886894],

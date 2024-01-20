@@ -1,5 +1,4 @@
 import {Color, PerspectiveCamera} from "../three.js/build/three.module.js";
-import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
 import {PTZControls} from "./PTZControls";
 import {par} from "./par";
@@ -152,7 +151,17 @@ export class CSituation {
             this.mainCamera.lookAt(LLAVToEUS(MV3(this.startCameraTargetLLA)));
         }
 
-        if (this.lookFOV !== undefined) {
+        // // Terrain is currently a patch of terrain (i.e. height mapped satellite images)
+        // // specified per-sitch (if used)
+        // if (this.terrain) {
+        //     console.log("Making terrain")
+        //     this.makeTerrain(this.terrain,)
+        // }
+
+        // a lookFOV implies we have a look camera, which most sitches do
+
+        if (this.lookFOV) {
+
             //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
             new CNodeCamera({
                 id:"lookCamera",
@@ -160,48 +169,12 @@ export class CSituation {
                 aspect:window.innerWidth / window.innerHeight,
                 near: 1,
                 far: Sit.farClipLook,
-            //    layers: LAYER.MASK_MAIN_HELPERS
+                //    layers: LAYER.MASK_MAIN_HELPERS
             })
 
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
-
             console.log("Added lookCamera")
 
-        }
-
-        if (this.flattening) {
-            new CNodeConstant({id: "radiusMiles", value: 3963.190592})
-            new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
-
-        } else {
-            // Previously we had an adjustable node for the Earth's radius to allow
-            // the suer to simulate refraction by setting it to 7/6R, or similar
-            // It's not been much of a factor, and is better if we just use
-            // the WGS84 standard radius
-            /*
-            new CNodeGUIValue({
-                id: "radiusMiles",
-                value: 3963.190592,
-                start: 3963.190592,
-                end: 40000,
-                step: 1,
-                desc: "Earth Radius"
-            }, gui)
-             */
-            if (!NodeMan.exists("radiusMiles"))
-                new CNodeConstant({id: "radiusMiles", value: 3963.190592})
-        }
-
-        // Terrain is currently a patch of terrain (i.e. height mapped satellite images)
-        // specified per-sitch (if used)
-        if (this.terrain) {
-            console.log("Making terrain")
-            this.makeTerrain(this.terrain,)
-        }
-
-        // a lookFOV implies we have a look camera, which most sitches do
-
-        if (this.lookFOV) {
             if (this.ptz) {
                 setGlobalPTZ(new PTZControls({
                         az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: this.lookCamera, showGUI:this.ptz.showGUI
@@ -307,29 +280,6 @@ export class CSituation {
             await FileManager.loadAsset(assets[key], key)
         }
         infoDiv.innerHTML = "done loading"
-    }
-
-    makeTerrain(terrain) {
-        if (this.flattening) {
-            new CNodeTerrain({
-                id: "TerrainModel",
-                radiusMiles: "radiusMiles",
-                flattening: "flattening",
-                lat: terrain.lat,
-                lon: terrain.lon,
-                zoom: terrain.zoom,
-                nTiles: terrain.nTiles
-            })
-        } else {
-            new CNodeTerrain({
-                id: "TerrainModel",
-                radiusMiles: "radiusMiles",
-                lat: terrain.lat,
-                lon: terrain.lon,
-                zoom: terrain.zoom,
-                nTiles: terrain.nTiles
-            })
-        }
     }
 
     makeCameraTrack()

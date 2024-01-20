@@ -2,7 +2,6 @@ import {
     CNodeMovablePoint, CNodePositionLLA, makePositionLLA, trackHeading
 } from "../nodes/CNode";
 
-import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
 import {gui, NodeMan, setMainCamera, Sit} from "../Globals";
@@ -136,19 +135,6 @@ export const SitAguadilla = {
             mainCamera.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
-
-        // need to use constant WGS84 to match terrain, NOT the 7/6 version
-        new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles})
-
-        new CNodeTerrain({
-            id: "TerrainModel",
-            radiusMiles: "radiusMiles", // constant
-            //terrain:this.terrain,
-            lat: this.terrain.lat,
-            lon: this.terrain.lon,
-            zoom: this.terrain.zoom,
-            nTiles: this.terrain.nTiles
-        }, mainCamera)
 
 // TODO: UNUSED, as is CNodeMovablePoint
 //         new CNodeMovablePoint({

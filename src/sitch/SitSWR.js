@@ -1,12 +1,9 @@
 
-import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
 import {Sit} from "../Globals";
 import {PerspectiveCamera, Color, Vector3, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
-import {wgs84} from "../LLA-ECEF-ENU";
 import * as THREE from "../../three.js/build/three.module";
-import {CNodeConstant} from "../nodes/CNode";
 import {gui, } from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
@@ -75,37 +72,11 @@ export const SitSWR = {
 
         // Duplicate from SetupCommon, but suing gui not guiTweaks
         console.log("+++ radiusMiles Node")
-//        new CNodeGUIValue({id:"radiusMiles", value: EarthRadiusMiles, start:4, end:5000, step:1, desc:"Earth Radius"},gui)
-
-        // need to use WGS84 to match terrain, NOT the 7/6 version
-        //    new CNodeGUIValue({id:"radiusMiles", value: 3963.190592, start:3963.190592, end:40000, step:1, desc:"Earth Radius"},gui)
-
-        new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles})
-
-        new CNodeTerrain({
-            id: "TerrainModel",
-            radiusMiles: "radiusMiles", // constant
-            //terrain:this.terrain,
-            lat: this.terrain.lat,
-            lon: this.terrain.lon,
-            zoom: this.terrain.zoom,
-            nTiles: this.terrain.nTiles,
-            tileSegments: this.terrain.tileSegments ?? 100,
-        }, mainCamera)
-
-
-
         const view = new CNodeView3D({
             id:"mainView",
             //     draggable:true,resizable:true,
             left:0.0, top:0, width:1,height:1,
             fov: 50,
-//            background: new Color().setRGB(0.0, 0.3, 0.0),
-//            draggable: false, resizable: true, //shiftDrag: true, freeAspect: true,
-
-        //    draggable: false,
-
-        //    shiftDrag: true,
             background: new THREE.Color().setRGB(0.53, 0.81, 0.92),
             camera:mainCamera,
             renderFunction: function() {

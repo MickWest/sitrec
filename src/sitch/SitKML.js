@@ -5,7 +5,6 @@ import {par} from "../par";
 import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
 import {LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
-import {CNodeTerrain} from "../nodes/CNodeTerrain";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
@@ -103,21 +102,6 @@ export const SitKML = {
             mainCamera.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
-        // Duplicate from SetupCommon, but using gui not guiTweaks
-        new CNodeConstant({id: "radiusMiles", value: wgs84.radiusMiles})
-
-        if (this.terrain !== undefined) {
-            new CNodeTerrain({
-                id: "TerrainModel",
-                radiusMiles: "radiusMiles", // constant
-                //terrain:this.terrain,
-                lat: this.terrain.lat,
-                lon: this.terrain.lon,
-                zoom: this.terrain.zoom,
-                nTiles: this.terrain.nTiles,
-                tileSegments: this.terrain.tileSegments ?? 100,
-            }, mainCamera)
-        }
 
         const view = new CNodeView3D(Object.assign({
             id: "mainView",

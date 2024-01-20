@@ -1067,14 +1067,14 @@ this.defaultCamera.add( light2 );
 
 export function SetupCommon(altitude=25000) {
     console.log("+++ radiusMiles Node")
-    new CNodeGUIValue({
-        id: "radiusMiles",
-        value: EarthRadiusMiles,
-        start: 500,
-        end: 10000,
-        step: 1,
-        desc: "Earth Radius"
-    }, guiTweaks)
+    // new CNodeGUIValue({
+    //     id: "radiusMiles",
+    //     value: EarthRadiusMiles,
+    //     start: 500,
+    //     end: 10000,
+    //     step: 1,
+    //     desc: "Earth Radius"
+    // }, guiTweaks)
 
     console.log(">>>+++ jetAltitude Node")
     scaleNodeF2M("jetAltitude", new CNodeGUIValue({

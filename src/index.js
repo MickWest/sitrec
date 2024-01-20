@@ -56,6 +56,7 @@ import JSURL from "./js/jsurl";
 import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 
 import {FileManager} from "./CFileManager";
+import {SituationSetup} from "./SituationSetup";
 
 checkLocal()
 
@@ -77,6 +78,7 @@ const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
 // Create a new sorted object
 const selectableSitches = {};
 sortedKeys.forEach(key => {
+    console.log(selectableSitchesUnsorted[key]);
     selectableSitches[key] = selectableSitchesUnsorted[key];
 });
 
@@ -489,6 +491,8 @@ await assetsLoading;
 console.log("FINISHED Load Assets")
 
 console.log("Setup()")
+
+SituationSetup();
 
 if (Sit.setup !== undefined) Sit.setup();
 console.log("Setup2()")
