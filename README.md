@@ -254,7 +254,7 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 - Adjust the lat/lon of the terrain descriptor, along with:
   - zoom: power of two zoom level, maximum 15
   - nTiles: the terrain will be a square with this many tiles on each side
-- (Optional) adjust the sky color
+- (Optional) `skyColor`: adjust the sky color
 
 If you don't have a video, you can just remove references to one, but you'll still need to specify a number of frames (you can leave fps at 30)
 
