@@ -1,6 +1,6 @@
 # Sitrec
 
-Sitrec (Situation recreation) is a web application that allows for the real-time interactive 3D recreation of various situations. It was created initially to analyze the US Navy UAP/UFO video (Gimal, GoFast, and FLIR1/Nimitz), but has expanded to include several other situations (referred to as "sitches".) It's written mostly by Mick West, with a lot of input from the members of [Metabunk](https://www.metabunk.org).
+Sitrec (Situation recreation) is a web application that allows for the real-time interactive 3D recreation of various situations. It was created initially to analyze the US Navy UAP/UFO video (Gimbal, GoFast, and FLIR1/Nimitz), but has expanded to include several other situations (referred to as "sitches"). It's written mostly by Mick West, with a lot of input from the members of [Metabunk](https://www.metabunk.org).
 
 My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch.  
 
@@ -63,49 +63,49 @@ Node.js is used both for build tools (i.e. webpack) and for packages used by the
 
 ## Create Source file and folder structure
 Sitrec is built from the sitrec folder. Clone it from Github, or download a release archive. This will give you sitrec with these sub-folders:
-- data - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
-- readmeImages - Documenation images used by this .md file, and maybe others
-- sitrecServer - The server-side PHP files, like cachemaps.php
-- src - The JavaScript source, with the entry point of index.js
-- three.js - The 3D engine, the largest library used
+- `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
+- `readmeImages` - Documenation images used by this .md file, and maybe others
+- `sitrecServer` - The server-side PHP files, like cachemaps.php
+- `src` - The JavaScript source, with the entry point of index.js
+- `three.js` - The 3D engine, the largest library used
 
 Then there are the project build files:
-- package.json - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
-- webpack.common.js - the main configuration file for Webpack. The next two files both include this. 
-- webpack.dev.js - used for development
-- webpack.prod.js - used for production/deployment
-- config.js - Contains install-specific constants for server paths used by the app
-- config-install.js - development and production file paths, used by the build system
+- `package.json` - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
+- `webpack.common.js` - the main configuration file for Webpack. The next two files both include this. 
+- `webpack.dev.js` - used for development
+- `webpack.prod.js` - used for production/deployment
+- `config.js` - Contains install-specific constants for server paths used by the app
+- `config-install.js` - development and production file paths, used by the build system
 
-(config.js and config-install.js are initial supplied as config.js.example and config-install.js.example - you will need to rename them.)
+(config.js and config-install.js are initial supplied as config.js.example and config-install.js.example - you will need to rename them).
 
 ## Create the local (and production) server folder structure
 Sitrec can exist at the server root, or in any path. I use the root, but it's maybe neater to have in a folder. Here I'll assume it's in a folder called "s". You do not have to use "s", you can put it in another folder, or in the web root (like I do)
 
 There are five folders in the server structure
-- sitrec - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
-- sitrec-config - contains server-side PHP configuration files - you need to edit this. 
-- sitrec-cache - a server-side cache for terrain tiles, initially empty
-- sitrec-upload - for rehosting user files (like ADS-B or TLE). Initially empty
-- sitrec-videos - The videos for the sitches. Handled separately as it can get quite large. The videos are subdivided into public (government or other unrestricted files) and private (where the licensing rights are unclear, but are used here under fair-use). So there's two sub-folders that you need to keep
-  - sitrec-videos/public
-  - sitrec-videos/private
+- `sitrec` - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
+- `sitrec-config` - contains server-side PHP configuration files - you need to edit this. 
+- `sitrec-cache` - a server-side cache for terrain tiles, initially empty
+- `sitrec-upload` - for rehosting user files (like ADS-B or TLE). Initially empty
+- `sitrec-videos` - The videos for the sitches. Handled separately as it can get quite large. The videos are subdivided into public (government or other unrestricted files) and private (where the licensing rights are unclear, but are used here under fair-use). So there's two sub-folders that you need to keep
+  - `sitrec-videos/public`
+  - `sitrec-videos/private`
 
 Note sitrec-cache and sitrec-upload must have write permission.
 
 ## Download the videos
 
-The private video folder contains videos taken by individuals and posted on the internet. I use them in Sitrec under fair-use, non-commercial, educational. But they are not not included here. Ask me if you really need one. 
-The public folder videos contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
+The private video folder contains videos taken by individuals and posted on the internet. I use them in Sitrec under fair-use, non-commercial, educational. But they are not included here. Ask me if you really need one. 
+The public folder contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
 
 ## Create/Edit the config files
- You will need to edit config.js and config-install.js to 
+You will need to edit config.js and config-install.js to 
 
 ### sitrec/config.js
-This has the basic paths for both the local dev environment, and (optionally)the server environment 
+This has the basic paths for both the local dev environment, and (optionally) the server environment 
 For the dev environment, we need edits in two places:
 
-```
+```javascript
 const SITREC_LOCAL = "http://localhost/s/sitrec/"
 const SITREC_LOCAL_SERVER = "http://localhost/s/sitrec/sitRecServer/"
 ```
@@ -117,15 +117,20 @@ config.js also has the localSituation variable which determines which sitch you 
 ### sitrec/config-install.js
 
 This tells Webpack where to put the built application. My setup is:
-```
+
+```javascript
 dev_path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/sitrec',
 prod_path: '/Users/mick/sitrec-deploy'
-dev_path is the path to the local server. Here /Users/mick/Library/CloudStorage/Dropbox/Metabunk/ is the root of my local web server. A simple windows configuration might be:
+```
+
+`dev_path` is the path to the local server. Here `/Users/mick/Library/CloudStorage/Dropbox/Metabunk/` is the root of my local web server. A simple windows configuration might be:
+
+```javascript
 dev_path: 'c:\\nginx\\html\\s\\sitrec',
 prod_path: 'c:\\Users\\Fred\\sitrec-deploy'
 ```
-	
-## Create/Edit the server config files:
+
+## Create/Edit the server config files
 It will run without this, but you won't get any terrain.
 
 sitrec-config/cachemaps-config.php - is a short file that has the mapbox access token (public, starts with pk). You will need your own token
@@ -136,11 +141,11 @@ Sample file:
 <?php
 $token = "?access_token=pk.eyJ1IjoibWlja3diLCJhIjoiY2wzeWdsdfdnA1MsGJsbDNicDA3bW9vdThnYn3QccWDtBHBdCd1aivcJtdIQA";
 ```
-## Install the node modules. 
+## Install the node modules
 
 In sitrec there will also be a folder, node-modules. This is autogenerated by node.js from the package.json file. To create or update it, in the sitrec folder run 
 
-```
+```bash
 npm install
 ```
 
@@ -148,7 +153,7 @@ This will create the folder node_modules, which will (currently) have 218 folder
 
 ## Build the dev app with node.js and Webpack
 
-```
+```bash
 npm run build
 ```
 
@@ -174,6 +179,7 @@ The following are URLS for tests of basic functions (these assume that the dev s
 
 - [PHP Test](http://localhost/s/sitrec/sitrecServer/info.php)
 Must display a PHP info page showing version number
+
 - [Terrain elevation test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Fs3.amazonaws.com%2Felevation-tiles-prod%2Fterrarium%2F14%2F3188%2F6188.png)
 Test of the tile server proxy for terrain elevation. Should give a square image
 
@@ -207,7 +213,7 @@ Failure could mean
 
 ## Production Build and Deploy
 
-```
+```bash
 npm run deploy
 ```
 
@@ -217,7 +223,7 @@ This is essentially the same as the dev version, except it's minified and has no
 
 The folder specified by prod_path here is arbitrarily named, it's just a temporary container for the production app and data before you transfer it to the production server. You can do that with FTP, ssh/rsync, or the deployment tool of your choice. I use rsync:
 
-```
+```bash
 rsync -avz --delete -e "ssh " "$LOCAL_DIR/" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR
 ```
 Before testing this, ensure you've got the five folders on the deploy servers, the same as on the local dev server. 
@@ -230,32 +236,32 @@ To create a new sitch, the simplest way is to copy and rename an existing one th
 
 Let's call the new stitch "Springfield" (just an example name), and assume you have KML files for the two planes, along with a location and time. 
 
-- Copy sitch/SitLake-Michigan-Tic-Tac.js to sitch/SitSpringfield.js (Sitch files must start with "Sit"
+- Copy sitch/SitLake-Michigan-Tic-Tac.js to sitch/SitSpringfield.js (Sitch files must start with "Sit")
 - Edit three names at the start of the Sitch definition:
-- SitLakeMichiganTicTac -> SitSpringfield
-- "lakemichigan" -> "springfield" (lower case)
-- "Lake Michigan Tic-Tac" - > "Springfield window UAP"
+  - SitLakeMichiganTicTac -> SitSpringfield
+  - "lakemichigan" -> "springfield" (lower case)
+  - "Lake Michigan Tic-Tac" - > "Springfield window UAP"
 - Add the two KML files to data/springfield
-- Edit the files structure with the new files:
-- cameraFile = KML or SRT of where the video was filmed from
-- KMLTarget = KML file of the target plane (i.e. the suspected UAP)
+- Edit the `files` structure with the new files:
+  - cameraFile = KML or SRT of where the video was filmed from
+  - KMLTarget = KML file of the target plane (i.e. the suspected UAP)
 - Add the video to /sitrec-videos/private/
 - update the "videoFile" to point to this.
 - Adjust the "startTime" to be the start time of the video. Note this is in Zulu time (UTC/GMT)
 - Adjust "frames" to be the number of frames in the video
-- Adjust or add "fps" to be the frames per second of the video (default is 30, typical values might be 24,25,29.97,60, or 59.95
+- Adjust or add "fps" to be the frames per second of the video (default is 30, typical values might be 24, 25, 29.97, 60, or 59.95)
 - Adjust planeCameraFOV to match the vertical FOV of the camera (and lens/zoom) being used
-- Adjust the lat/lon of the terrain descriptor, along with:
-- zoom: power of two zoom level, maximum 15
-- nTiles: the terrain will be a square with this many tiles on each side
-- (Optional) adjust the sky color
+- Adjust the lat/lon of the `terrain` descriptor, along with:
+  - zoom: power of two zoom level, maximum 15
+  - nTiles: the terrain will be a square with this many tiles on each side
+- (Optional) `skyColor`: adjust the sky color
 
 If you don't have a video, you can just remove references to one, but you'll still need to specify a number of frames (you can leave fps at 30)
 
 For testing, you can either use a url denoting the sitch, like: 
 https://www.metabunk.org/sitrec/?sitch=springfield
 Or you can change the "localSituation" line in config.js
-const localSituation = "springfield";
+`const localSituation = "springfield";`
 
 A sitch will generally have multiple views, each view has an id, specifically:
 - **mainView** - The free camera 3D view of the world, so you can see what's going on
@@ -267,7 +273,6 @@ This is the preferred naming convention, but some older bits of code might refer
 
 The camera position is specified by two lines:
 ```javascript
-
 startCameraPositionLLA:[42.647359,-86.678554,23575.039421],
 startCameraTargetLLA:[42.653377,-86.670554,23235.005817],
 ```
@@ -280,7 +285,7 @@ To adjust the views, you can add a view rectangle specifier for each one. For ex
 ```javascript
 lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
 videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
-mainView:{left:0.0, top:0, width:1,height:1},
+mainView: { left: 0.0, top: 0, width: 1, height: 1},
 ```
 
 Positions and size are specified as a fraction of the screen's width and height
@@ -331,6 +336,3 @@ files:
 - startCamera... - the absolute position of the camera for the mainView (i.e. the world view on the left)
 
 Note the views are not changed from PVS14, as it's a fairly standard landscape mode. 
-
-
-
