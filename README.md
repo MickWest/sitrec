@@ -238,13 +238,13 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 
 - Copy sitch/SitLake-Michigan-Tic-Tac.js to sitch/SitSpringfield.js (Sitch files must start with "Sit")
 - Edit three names at the start of the Sitch definition:
-- SitLakeMichiganTicTac -> SitSpringfield
-- "lakemichigan" -> "springfield" (lower case)
-- "Lake Michigan Tic-Tac" - > "Springfield window UAP"
+  - SitLakeMichiganTicTac -> SitSpringfield
+  - "lakemichigan" -> "springfield" (lower case)
+  - "Lake Michigan Tic-Tac" - > "Springfield window UAP"
 - Add the two KML files to data/springfield
 - Edit the files structure with the new files:
-- cameraFile = KML or SRT of where the video was filmed from
-- KMLTarget = KML file of the target plane (i.e. the suspected UAP)
+  - cameraFile = KML or SRT of where the video was filmed from
+  - KMLTarget = KML file of the target plane (i.e. the suspected UAP)
 - Add the video to /sitrec-videos/private/
 - update the "videoFile" to point to this.
 - Adjust the "startTime" to be the start time of the video. Note this is in Zulu time (UTC/GMT)
@@ -252,8 +252,8 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 - Adjust or add "fps" to be the frames per second of the video (default is 30, typical values might be 24, 25, 29.97, 60, or 59.95)
 - Adjust planeCameraFOV to match the vertical FOV of the camera (and lens/zoom) being used
 - Adjust the lat/lon of the terrain descriptor, along with:
-- zoom: power of two zoom level, maximum 15
-- nTiles: the terrain will be a square with this many tiles on each side
+  - zoom: power of two zoom level, maximum 15
+  - nTiles: the terrain will be a square with this many tiles on each side
 - (Optional) adjust the sky color
 
 If you don't have a video, you can just remove references to one, but you'll still need to specify a number of frames (you can leave fps at 30)
