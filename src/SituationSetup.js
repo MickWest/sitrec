@@ -52,7 +52,7 @@ export function SituationSetup() {
                     fov: data.fov     ?? 30,
                     aspect: window.innerWidth / window.innerHeight,
                     near: data.near   ?? 1,
-                    far:  data.far    ?? 5000000,
+                    far:  data.far    ?? 8000000,
                     layers: data.mask ?? LAYER.MASK_MAINRENDER,
 
                     // one of these will be undefined. CNodeCamera uses the other
@@ -77,7 +77,7 @@ export function SituationSetup() {
                     fov: data.fov     ?? 10,
                     aspect: window.innerWidth / window.innerHeight,
                     near: data.near   ?? 1,
-                    far:  data.far    ?? 5000000,
+                    far:  data.far    ?? 8000000,
                     layers: data.mask ?? LAYER.MASK_LOOKRENDER,
  //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
                 })

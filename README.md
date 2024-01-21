@@ -317,9 +317,11 @@ export const SitWestJet = {
     ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
 
     mainCamera: {
+        fov: 30, near:1,  far:60000000,
         startCameraPositionLLA: [38.602145, -86.506588, 4159762.165337],
         startCameraTargetLLA: [38.603456, -86.509621, 4158895.037381],
     },
+    lookCamera:{ fov: 10, far: 8000000 },
 }
 ```
 WestJet is a case of Starlink satellites observed from a plane. This new case was similar to the PVS14 sitch, so we use that as a base with the ...SitPVS14 line.
@@ -327,12 +329,18 @@ WestJet is a case of Starlink satellites observed from a plane. This new case wa
 the remaining lines show everything that needs to change
 
 files: 
-- starLink - a TLE file of allstarlink satellites for the day in question
+- starLink - a TLE file of all starlink satellites for the day in question
 - cameraFile - a KML file showing the timestamped path of the plane. 
 - videoFile - the segment of the video we are interested in - reduced to 720p for speed
 - startTime - the start time of the video. 
 - frames - the number of frames in the video (which is the default 30 fps)
 - ptz - The Pan/Tilt/Zoom orientation of the camera
-- startCamera... - the absolute position of the camera for the mainView (i.e. the world view on the left)
+- mainCamera - definition of the main camera
+  - startCamera... etc - the absolute position of the camera for the mainView (i.e. the world view on the left)
+  - fov - the _vertical_ field of view of the mainView
+  - near - near plane distance in meters (defaults to 1)
+  - far - far plane distance in meters (defaults to 8000000. i.e. 8000km)
+- lookCamera - definition of the look camera
+  - fov, far, etc, same as mainCamera
 
 Note the views are not changed from PVS14, as it's a fairly standard landscape mode. 
