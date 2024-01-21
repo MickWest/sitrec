@@ -250,7 +250,7 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 - Adjust the "startTime" to be the start time of the video. Note this is in Zulu time (UTC/GMT)
 - Adjust "frames" to be the number of frames in the video
 - Adjust or add "fps" to be the frames per second of the video (default is 30, typical values might be 24, 25, 29.97, 60, or 59.95)
-- Adjust planeCameraFOV to match the vertical FOV of the camera (and lens/zoom) being used
+- Adjust fov in lookCamera to match the vertical FOV of the camera (and lens/zoom) being used
 - Adjust the lat/lon of the `terrain` descriptor, along with:
   - zoom: power of two zoom level, maximum 15
   - nTiles: the terrain will be a square with this many tiles on each side
