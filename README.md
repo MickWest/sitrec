@@ -63,19 +63,19 @@ Node.js is used both for build tools (i.e. webpack) and for packages used by the
 
 ## Create Source file and folder structure
 Sitrec is built from the sitrec folder. Clone it from Github, or download a release archive. This will give you sitrec with these sub-folders:
-- data - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
-- readmeImages - Documenation images used by this .md file, and maybe others
-- sitrecServer - The server-side PHP files, like cachemaps.php
-- src - The JavaScript source, with the entry point of index.js
-- three.js - The 3D engine, the largest library used
+- `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
+- `readmeImages` - Documenation images used by this .md file, and maybe others
+- `sitrecServer` - The server-side PHP files, like cachemaps.php
+- `src` - The JavaScript source, with the entry point of index.js
+- `three.js` - The 3D engine, the largest library used
 
 Then there are the project build files:
-- package.json - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
-- webpack.common.js - the main configuration file for Webpack. The next two files both include this. 
-- webpack.dev.js - used for development
-- webpack.prod.js - used for production/deployment
-- config.js - Contains install-specific constants for server paths used by the app
-- config-install.js - development and production file paths, used by the build system
+- `package.json` - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
+- `webpack.common.js` - the main configuration file for Webpack. The next two files both include this. 
+- `webpack.dev.js` - used for development
+- `webpack.prod.js` - used for production/deployment
+- `config.js` - Contains install-specific constants for server paths used by the app
+- `config-install.js` - development and production file paths, used by the build system
 
 (config.js and config-install.js are initial supplied as config.js.example and config-install.js.example - you will need to rename them).
 
@@ -83,13 +83,13 @@ Then there are the project build files:
 Sitrec can exist at the server root, or in any path. I use the root, but it's maybe neater to have in a folder. Here I'll assume it's in a folder called "s". You do not have to use "s", you can put it in another folder, or in the web root (like I do)
 
 There are five folders in the server structure
-- sitrec - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
-- sitrec-config - contains server-side PHP configuration files - you need to edit this. 
-- sitrec-cache - a server-side cache for terrain tiles, initially empty
-- sitrec-upload - for rehosting user files (like ADS-B or TLE). Initially empty
-- sitrec-videos - The videos for the sitches. Handled separately as it can get quite large. The videos are subdivided into public (government or other unrestricted files) and private (where the licensing rights are unclear, but are used here under fair-use). So there's two sub-folders that you need to keep
-  - sitrec-videos/public
-  - sitrec-videos/private
+- `sitrec` - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
+- `sitrec-config` - contains server-side PHP configuration files - you need to edit this. 
+- `sitrec-cache` - a server-side cache for terrain tiles, initially empty
+- `sitrec-upload` - for rehosting user files (like ADS-B or TLE). Initially empty
+- `sitrec-videos` - The videos for the sitches. Handled separately as it can get quite large. The videos are subdivided into public (government or other unrestricted files) and private (where the licensing rights are unclear, but are used here under fair-use). So there's two sub-folders that you need to keep
+  - `sitrec-videos/public`
+  - `sitrec-videos/private`
 
 Note sitrec-cache and sitrec-upload must have write permission.
 
@@ -256,7 +256,7 @@ If you don't have a video, you can just remove references to one, but you'll sti
 For testing, you can either use a url denoting the sitch, like: 
 https://www.metabunk.org/sitrec/?sitch=springfield
 Or you can change the "localSituation" line in config.js
-const localSituation = "springfield";
+`const localSituation = "springfield";`
 
 A sitch will generally have multiple views, each view has an id, specifically:
 - **mainView** - The free camera 3D view of the world, so you can see what's going on
