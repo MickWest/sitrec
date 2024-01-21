@@ -242,7 +242,7 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
   - "lakemichigan" -> "springfield" (lower case)
   - "Lake Michigan Tic-Tac" - > "Springfield window UAP"
 - Add the two KML files to data/springfield
-- Edit the files structure with the new files:
+- Edit the `files` structure with the new files:
   - cameraFile = KML or SRT of where the video was filmed from
   - KMLTarget = KML file of the target plane (i.e. the suspected UAP)
 - Add the video to /sitrec-videos/private/
@@ -251,7 +251,7 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 - Adjust "frames" to be the number of frames in the video
 - Adjust or add "fps" to be the frames per second of the video (default is 30, typical values might be 24, 25, 29.97, 60, or 59.95)
 - Adjust planeCameraFOV to match the vertical FOV of the camera (and lens/zoom) being used
-- Adjust the lat/lon of the terrain descriptor, along with:
+- Adjust the lat/lon of the `terrain` descriptor, along with:
   - zoom: power of two zoom level, maximum 15
   - nTiles: the terrain will be a square with this many tiles on each side
 - (Optional) `skyColor`: adjust the sky color
