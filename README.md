@@ -117,10 +117,15 @@ config.js also has the localSituation variable which determines which sitch you 
 ### sitrec/config-install.js
 
 This tells Webpack where to put the built application. My setup is:
-```
+
+```javascript
 dev_path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/sitrec',
 prod_path: '/Users/mick/sitrec-deploy'
-dev_path is the path to the local server. Here /Users/mick/Library/CloudStorage/Dropbox/Metabunk/ is the root of my local web server. A simple windows configuration might be:
+```
+
+`dev_path` is the path to the local server. Here `/Users/mick/Library/CloudStorage/Dropbox/Metabunk/` is the root of my local web server. A simple windows configuration might be:
+
+```javascript
 dev_path: 'c:\\nginx\\html\\s\\sitrec',
 prod_path: 'c:\\Users\\Fred\\sitrec-deploy'
 ```
