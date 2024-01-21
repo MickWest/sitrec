@@ -238,3 +238,8 @@ export function applyPitchAndHeading(object, pitch, heading)
     //    const arrowDir2 = northAxis.clone().applyAxisAngle(upAxis, -radians(data.gHeading))
     //    DebugArrow("DroneGimbalHeading", arrowDir2, object.position, 100,"#FFFF00")
 }
+
+// Utility function to add a controller to a named node
+export function addControllerTo(target, controller, def) {
+    return NodeMan.get(target).addController(controller,def);
+}

@@ -335,7 +335,6 @@ class Tile {
     if (this.mapUrl(0,0,0) != null) {
       this.buildMaterial().then((material) => {
         this.mesh.material = material
-        this.mesh.layers.enable(LAYER.LOOK)
 
       })
     }

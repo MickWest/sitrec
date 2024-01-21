@@ -39,7 +39,9 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
      ptz: {az: -6.5, el: 14.1, fov: 68.2, roll:6.2, showGUI: true},
-     lookFOV: 20,
+     lookCamera: {
+        fov: 20,
+    },
 
 
 })

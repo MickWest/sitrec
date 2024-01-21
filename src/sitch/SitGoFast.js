@@ -53,6 +53,7 @@ import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
+import {addControllerTo} from "../nodes/CNodeController";
 
 export var SitGoFast = {
     name: "gofast",
@@ -69,7 +70,9 @@ export var SitGoFast = {
     startDistanceMin: 0,
     startDistanceMax: 15,
     targetSize: 3,
-    lookFOV: 0.7,
+    lookCamera: {
+        fov: 0.7,
+    },
 
     mainCamera: {
         startCameraPosition: [25034.03, 13882.82, 10206.08],
@@ -102,21 +105,6 @@ export var SitGoFast = {
 
         SetupGUIFrames()
         SetupCommon()
-
-        // new CNodeCamera({
-        //     id:"mainCamera",
-        //     fov: Sit.mainFOV,
-        //     aspect: window.innerWidth / window.innerHeight,
-        //     near: Sit.nearClip,
-        //     far: Sit.farClip,
-        //     layers: LAYER.MASK_MAIN_HELPERS,
-        //
-        //     startPos: Sit.startCameraPosition,
-        //     lookAt: Sit.startCameraTarget,
-        //
-        // })
-        // // eventually remove all setMainCamera stuff
-        // setMainCamera(NodeMan.get("mainCamera").camera)
 
         // NOTE: ADDED SMOOTHING GURERNTLY, MAYBE TOO MUCH?
         // but linear interpolation introduces nasty discontinuities
@@ -418,7 +406,6 @@ export var SitGoFast = {
                 material: new CNodeConstant({value: waterMaterial})
             },
 
-            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -431,19 +418,20 @@ export var SitGoFast = {
                 width: "groundTrackWidth",
             },
             depthFunc:AlwaysDepth,
-            layers: LAYER.MASK_LOOK,
         })
 
 /////////////////////////////////////////////////////////////////
 // look view is the view from the ATFLIR
-        new CNodeCamera({
-            id:"lookCamera",
-            fov: this.lookFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipLook,
-            far: this.farClipLook,
-            layers: LAYER.MASK_LOOKONLY,
-        }).addController("TrackToTrack", {
+//         new CNodeCamera({
+//             id:"lookCamera",
+//             fov: this.lookFOV,
+//             aspect: window.innerWidth / window.innerHeight,
+//             near: this.nearClipLook,
+//             far: this.farClipLook,
+//             layers: LAYER.MASK_LOOKRENDER,
+//        })
+
+        addControllerTo("lookCamera", "TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
@@ -458,7 +446,7 @@ export var SitGoFast = {
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
             },
-            layers: LAYER.MASK_LOOK,
+            layers: LAYER.MASK_LOOKRENDER,
         })
 
         var ui = new CNodeATFLIRUI({
@@ -503,7 +491,6 @@ export var SitGoFast = {
                 )
             },
             
-            layers: LAYER.MASK_LOOK,
         })
 
         // Note this is overwriting the A/B frames ???????????????????
@@ -601,6 +588,7 @@ export var SitGoFast = {
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,300,100);
         light.layers.enable(LAYER.LOOK)
+        light.layers.enable(LAYER.MAIN)
         GlobalScene.add(light);
 
         const hemiLight = new HemisphereLight(
@@ -609,13 +597,13 @@ export var SitGoFast = {
             0.3, // intensity
         );
         hemiLight.layers.enable(LAYER.LOOK)
+        hemiLight.layers.enable(LAYER.MAIN)
         GlobalScene.add(hemiLight);
 
 
         const gridSquaresGround = 200
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);
-        gridHelperGround.layers.enable(LAYER.LOOK)
 
 
         guiJetTweaks.hide();

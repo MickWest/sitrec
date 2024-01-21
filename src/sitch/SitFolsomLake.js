@@ -21,7 +21,6 @@ export const SitFolsomLake = {
     frustumColor: 0xff0000,
     frustumLineWeight: 1.5,
 
-    planeCameraFOV: 42.15,
 
     frames: 1156,
     fps: 29.97,
@@ -43,6 +42,7 @@ export const SitFolsomLake = {
         startCameraPositionLLA: [38.719864, -121.172311, 265.103926],
         startCameraTargetLLA: [38.725176, -121.163979, -90.574624],
     },
+    lookCamera:{ fov: 42.15},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

@@ -40,7 +40,9 @@ export const Sit29Palms = {
     frames: 30 * 6,
     startTime: "2021-04-21T03:23:53.000Z", // see https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
 
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
 
@@ -75,7 +77,7 @@ export const Sit29Palms = {
         SetupGUIFrames()
         initKeyboard()
 
-        addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_MAIN)
+        addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_WORLD)
 
         const ia = new CNodeImage({
             id: "ImageEditorView",

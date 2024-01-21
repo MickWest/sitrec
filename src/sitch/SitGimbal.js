@@ -340,6 +340,8 @@ export const SitGimbal = {
         startCameraTarget: [44976.22, 51163.57, 17762.06],
     },
 
+    lookCamera: { fov:0.35 },
+
     cloudWindFrom: 240,
     cloudWindKnots: 17,
     targetWindFrom: 274,
@@ -381,7 +383,6 @@ export const SitGimbal = {
             wind:"targetWind",
 
             //  model: FA182,
-            layers: LAYER.MASK_LOOK,
         })
 
         new CNodeDisplayTargetSphere({
@@ -390,7 +391,6 @@ export const SitGimbal = {
                 size: "sizeScaled",
             },
 
-            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -436,6 +436,8 @@ export const SitGimbalNear = {
         startCameraPosition: [22361.77, 19855.62, 1055.93],
         startCameraTarget: [21400.39, 19583.24, 1095.64],
     },
+
+    lookCamera: { fov:0.35 },
 
     cloudWindFrom: 240,
     cloudWindKnots: 17,
@@ -489,7 +491,6 @@ export const SitGimbalNear = {
             wind:"targetWind",
 
             //  model: FA182,
-            layers: LAYER.MASK_LOOK,
         })
 
 
@@ -499,7 +500,6 @@ export const SitGimbalNear = {
                 size: "sizeScaled",
             },
 
-            layers: LAYER.MASK_LOOK,
         })
 
 

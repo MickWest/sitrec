@@ -52,7 +52,9 @@ export const SitJellyfish    = {
     fps: 23.976,
     frames: 2982,
 
-    lookFOV: 0.6,
+    lookCamera: {
+        fov: 0.6,
+    },
     // Pt Dume view
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
 
@@ -69,10 +71,6 @@ export const SitJellyfish    = {
     fromAltFeetMax: 4000,
 
     targetSpeedMax: 30,   //for the graph
-
-    // with a ptz setup, add showGUI:true to allow changing it
-    // then can set it to false once the settings are locked in
-   // ptz: {az: -2.1, el: -13.4, fov: 0.6, showGUI:true},
 
     marks: [
         //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
@@ -311,7 +309,6 @@ export const SitJellyfish    = {
                 )
             },
 
-            layers: LAYER.MASK_LOOK,
         })
 
 

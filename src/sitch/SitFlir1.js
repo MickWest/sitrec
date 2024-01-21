@@ -78,20 +78,6 @@ export const SitFlir1 = {
 
         SetupCommon(20000)
 
-        // new CNodeCamera({
-        //     id:"mainCamera",
-        //     fov: this.mainFOV,
-        //     aspect: window.innerWidth / window.innerHeight,
-        //     near: this.nearClip,
-        //     far: this.farClip,
-        //     layers: LAYER.MASK_MAIN_HELPERS,
-        //
-        //     startPos: this.startCameraPosition,
-        //     lookAt: this.startCameraTarget,
-        //
-        // })
-        // // eventually remove all setMainCamera stuff
-        // setMainCamera(NodeMan.get("mainCamera").camera)
 
 // Optionally we set the Jet origin to a particular Lat/Lon
 // this only makes sense if we have a terrain loaded
@@ -343,7 +329,7 @@ export const SitFlir1 = {
             aspect: window.innerWidth / window.innerHeight,
             near: this.nearClipLook,
             far: this.farClipLook,
-            layers: LAYER.MASK_LOOKONLY,
+            layers: LAYER.MASK_LOOKRENDER,
         }).addController("TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
@@ -378,7 +364,7 @@ export const SitFlir1 = {
                 }
                 this.renderer.render(GlobalScene, this.camera);
             },
-            layers: LAYER.MASK_LOOK,
+            layers: LAYER.MASK_LOOKRENDER,
         })
 
         var ui = new CNodeATFLIRUI({
@@ -399,7 +385,6 @@ export const SitFlir1 = {
             track: "LOSTraverseSelect",
             TargetObjectFile: "TargetObjectFile",
             wind:"targetWind",
-            layers: LAYER.MASK_LOOK,
         })
 
           new CNodeDisplayTargetSphere({
@@ -467,6 +452,7 @@ export const SitFlir1 = {
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,300,100);
         light.layers.enable(LAYER.LOOK)
+        light.layers.enable(LAYER.MAIN)
         GlobalScene.add(light);
 
         const hemiLight = new HemisphereLight(
@@ -475,6 +461,7 @@ export const SitFlir1 = {
             0.3, // intensity
         );
         hemiLight.layers.enable(LAYER.LOOK)
+        hemiLight.layers.enable(LAYER.MAIN)
         GlobalScene.add(hemiLight);
 
         initJetVariables();

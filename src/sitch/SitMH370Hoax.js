@@ -54,7 +54,9 @@ export const SitMH370Hoax = {
     startTime: "2014-03-08T00:19:37.000Z",  // Partial handshake, final comms from MH370
   //  nightSky: true,
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
     // Pt Dume view
    // terrain: {lat:  50.197944, lon: -5.428180, zoom:15, nTiles:8},
 
@@ -148,7 +150,6 @@ export const SitMH370Hoax = {
                 track: "targetTrack",
             },
             TargetObjectFile:"B777",
-            layers: LAYER.MASK_LOOK,
         })
 
         const view = new CNodeView3D({
@@ -234,7 +235,6 @@ export const SitMH370Hoax = {
         //         )
         //     },
         //
-        //     layers: LAYER.MASK_LOOK,
         // })
         //
         //

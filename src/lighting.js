@@ -22,6 +22,7 @@ export function addDefaultLights(brightness = 100) {
         var light = new DirectionalLight(0xffffff, 0.8 * brightness / 100);  /// was 0.8
         light.position.set(100, 300, 100);
         light.layers.enable(LAYER.LOOK);
+        light.layers.enable(LAYER.MAIN);
         light.castShadow = false
         GlobalScene.add(light);
 
@@ -32,6 +33,8 @@ export function addDefaultLights(brightness = 100) {
         );
         hemiLight.castShadow = false
         hemiLight.layers.enable(LAYER.LOOK)
+        hemiLight.layers.enable(LAYER.MAIN);
+
 
         GlobalScene.add(hemiLight);
     }

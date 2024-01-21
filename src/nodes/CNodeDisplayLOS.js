@@ -9,6 +9,7 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
 import {LineMaterial}               from "../../three.js/examples/jsm/lines/LineMaterial";
 import {Line2}                      from "../../three.js/examples/jsm/lines/Line2";
+import * as LAYER from "../LayerMasks";
 
 var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // CNodeDisplayLOS display the Lines Of Sight
@@ -19,6 +20,7 @@ var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // highlightLines = object keyed on frame nubmers that need a different color
 export class CNodeDisplayLOS extends CNode3DGroup {
     constructor(v) {
+        v.layers ??= LAYER.MASK_HELPERS;
         super(v);
 
         this.input("LOS")

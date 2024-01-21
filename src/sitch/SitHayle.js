@@ -41,7 +41,9 @@ export const SitHayle = {
     fps: 29.97,
     frames: 2780,
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
     // Pt Dume view
     terrain: {lat:  50.197944, lon: -5.428180, zoom:15, nTiles:8},
 
@@ -217,7 +219,6 @@ setup2: function() {
             )
         },
         
-        layers: LAYER.MASK_LOOK,
     })
 
 

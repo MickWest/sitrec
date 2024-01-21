@@ -47,7 +47,6 @@ import * as LAYER from "../LayerMasks";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {par} from "../par";
 import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMaterial, Sphere} from "three";
-import {MASK_HELPERS} from "../LayerMasks";
 
 import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
@@ -372,7 +371,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // For the stars to show up in the lookView
         // we need to enable the layer for everything in the celestial sphere.
-        this.celestialSphere.layers.enable(LAYER.LOOK);
+        this.celestialSphere.layers.enable(LAYER.LOOK);  // probably not needed
         propagateLayerMaskObject(this.celestialSphere)
 
         this.recalculate()
@@ -584,11 +583,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             scale *= glintScale
 
                             // dark grey arrow if below horizon
-                            var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 0.025, MASK_HELPERS)
+                            var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             var arrowHelper2 = DebugArrowAB(sat.name + "sun", satPosition,
-                                satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 0.025, MASK_HELPERS)
+                                satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             var arrowHelper3 = DebugArrowAB(sat.name + "reflected", satPosition,
-                                satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, MASK_HELPERS)
+                                satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             sat.hasArrow = true;
                         } else {
                             if (sat.hasArrow) {
@@ -1441,8 +1440,8 @@ void main() {
 
          //   DebugArrowAB(sat.name, this.camera.position, sat.sprite.position, "#FF0000", true, this.sunArrowGroup,0.025)
 
-            DebugArrowAB("ToGlint",P,bestX,"#FF0000", true, this.flareRegionGroup, 0.1, MASK_HELPERS)
-            DebugArrow("ToSunFromGlint",this.toSun,bestX,5000000,"#FF0000", true, this.flareRegionGroup, 0.1, MASK_HELPERS)
+            DebugArrowAB("ToGlint",P,bestX,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
+            DebugArrow("ToSunFromGlint",this.toSun,bestX,5000000,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
             DebugWireframeSphere("ToGlint",bestX,500000,"#FF0000",4, this.flareRegionGroup)
 
 

@@ -26,6 +26,11 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
         startCameraTarget: [51817.84, 32302.32, 97810.85],
     },
 
+    lookCamera: {
+        fov: 62,
+        addFOVController: true,
+    },
+
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},

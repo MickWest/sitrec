@@ -19,7 +19,9 @@ export const SitDume = {
     fps: 29.97,
     frames: 7027,
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
     // Pt Dume view
 
     // TODO - need better way of specifying tiles, maybe LOD

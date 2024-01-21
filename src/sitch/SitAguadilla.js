@@ -46,6 +46,7 @@ import {makeMatLine} from "../MatLines";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
+import {addControllerTo} from "../nodes/CNodeController";
 
 export const SitAguadilla = {
     name: "agua",
@@ -60,7 +61,10 @@ export const SitAguadilla = {
     aFrame: 0,
     bFrame: 6000,
 
-    lookFOV: 1,
+    lookCamera: {
+        fov: 1,
+        far: 800000,
+    },
 
     LOSSpacing:30*2,
 
@@ -84,9 +88,7 @@ export const SitAguadilla = {
 
     nearClip: 1,
 
-    // Near and far clipping distances for the Look view (the plane camera view)
-    farClipLook: 800000,
-    nearClipLook: 1,
+
 
 
     files: {
@@ -118,13 +120,6 @@ export const SitAguadilla = {
             mainCamera.fov = value
             mainCamera.updateProjectionMatrix()
         }).listen().name("Main FOV")
-
-
-// TODO: UNUSED, as is CNodeMovablePoint
-//         new CNodeMovablePoint({
-//             id:"startPoint",
-//             position:makePositionLLA("movable", 0,0,0),
-//         })
 
         const view = new CNodeView3D({
             id:"mainView",
@@ -196,6 +191,7 @@ export const SitAguadilla = {
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,1300,100);
         light.layers.enable(LAYER.LOOK)
+        light.layers.enable(LAYER.MAIN)
         GlobalScene.add(light);
 
 
@@ -205,6 +201,7 @@ export const SitAguadilla = {
             0.3, // intensity
         );
         hemiLight.layers.enable(LAYER.LOOK)
+        hemiLight.layers.enable(LAYER.MAIN)
         GlobalScene.add(hemiLight);
 
 
@@ -848,7 +845,6 @@ export const SitAguadilla = {
                 size: "sizeScaled",
             },
             color:"white",
-            layers:LAYER.MASK_LOOK,
         })
 
 
@@ -863,14 +859,16 @@ export const SitAguadilla = {
         // })
 
 
-        this.lookCamera = new CNodeCamera({
-            id:"lookCamera",
-            fov: this.lookFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipLook,
-            far: this.farClipLook,
-            layers: LAYER.MASK_LOOKONLY,
-        }).addController("TrackToTrack", {
+        // this.lookCamera = new CNodeCamera({
+        //     id:"lookCamera",
+        //     fov: this.lookFOV,
+        //     aspect: window.innerWidth / window.innerHeight,
+        //     near: this.nearClipLook,
+        //     far: this.farClipLook,
+        //     layers: LAYER.MASK_LOOK,
+        // })
+
+            addControllerTo("lookCamera", "TrackToTrack", {
             sourceTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
         })

@@ -57,7 +57,9 @@ export const SitKML = {
     animated: true,
     fps: 30,
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10, // this is the default, but we can override it with a new lookCamera object
+    },
 
     showAltitude: true,
 
@@ -220,7 +222,7 @@ export const SitKML = {
                         }, gui)
                     )
                 },
-                layers: LAYER.MASK_LOOKONLY,
+                layers: LAYER.MASK_LOOK,
             })
         }
 
@@ -298,7 +300,6 @@ export const SitKML = {
                     new CNodeDisplayTargetModel({
                         track: "targetTrackAverage",
                         TargetObjectFile: Sit.targetObject.file,
-                        layers: LAYER.MASK_LOOK,
                         ...maybeWind,
                     })
                 } else {
@@ -317,7 +318,7 @@ export const SitKML = {
                                 }, gui)
                             )
                         },
-                        layers: LAYER.MASK_LOOKONLY,
+                        layers: LAYER.MASK_LOOK,
                     })
                 }
             }
@@ -340,7 +341,7 @@ export const SitKML = {
                             }, gui)
                         )
                     },
-                    layers: LAYER.MASK_LOOKONLY,
+                    layers: LAYER.MASK_LOOK,
                 })
             }
         }
@@ -360,33 +361,38 @@ export const SitKML = {
         })
 
 
-        if (this.lookFOV !== undefined) {
+        if (this.lookCamera !== undefined) {
             //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
 
-            const lookCameraDefaults = {
-                id: "lookCamera",
-                fov: this.planeCameraFOV,
-                aspect: window.innerWidth / window.innerHeight,
-                near: this.nearClipLook,
-                far: this.farClipLook,
-                layers: LAYER.MASK_LOOKONLY,
+            // const lookCameraDefaults = {
+            //     id: "lookCamera",
+            //     fov: this.planeCameraFOV,
+            //     aspect: window.innerWidth / window.innerHeight,
+            //     near: this.nearClipLook,
+            //     far: this.farClipLook,
+            //     layers: LAYER.MASK_LOOK,
+            //
+            // }
 
-            }
+            const cam = NodeMan.get("lookCamera")
 
             if (this.ptz) {
 
-                new CNodeCamera({
-                    ...lookCameraDefaults,
-                }).addController("TrackAzEl",{
-                    sourceTrack: "cameraTrack",
-                })
+                // new CNodeCamera({
+                //     ...lookCameraDefaults,
+                // }).addController("TrackAzEl",{
+                //     sourceTrack: "cameraTrack",
+                // })
+                cam.addController("TrackAzEl",{
+                        sourceTrack: "cameraTrack",
+                    })
 
 
             } else {
 
-                const cam = new CNodeCamera({
-                    ...lookCameraDefaults,
-                })
+                // const cam = new CNodeCamera({
+                //     ...lookCameraDefaults,
+                // })
 
                 if (NodeMan.exists("targetTrackAverage")) {
 
@@ -406,7 +412,7 @@ export const SitKML = {
             // if there's a focal length field in the camera track, then use it
             const cameraTrack = NodeMan.get("cameraTrack")
             const focal_len = cameraTrack.v(0).focal_len;
-            if (focal_len != undefined) {
+            if (focal_len !== undefined) {
                 NodeMan.get("lookCamera").addController("FocalLength", {
                     focalLength: "cameraTrack",
                 })

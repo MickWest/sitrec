@@ -7,7 +7,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
     targetSize: 200, // in feet
     tilt: -7.61,
-    planeCameraFOV: 62,
 
 
     azSlider: false,
@@ -44,6 +43,9 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
         startCameraPosition: [2718556.11, 2470980.84, -26052.36],
         startCameraTarget: [2717804.95, 2470341.84, -26217.95],
     },
+    lookCamera:{ fov: 62},
+
+
     lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},

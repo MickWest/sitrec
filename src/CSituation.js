@@ -137,16 +137,6 @@ export class CSituation {
 
         if (this.lookFOV) {
 
-            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
-            new CNodeCamera({
-                id:"lookCamera",
-                fov:this.lookFOV,
-                aspect:window.innerWidth / window.innerHeight,
-                near: 1,
-                far: Sit.farClipLook,
-                //    layers: LAYER.MASK_MAIN_HELPERS
-            })
-
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
             console.log("Added lookCamera")
 

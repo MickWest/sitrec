@@ -59,7 +59,9 @@ export const SitNightSky = {
     fps: 30,
     frames: (10*60+50)*30,
     startTime: new Date().toISOString(),  // "2023-10-13T07:39:13.000Z",
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
 
 
 //    terrain: {lat: 36.208582, lon: -115.984598, zoom: 12, nTiles: 8},

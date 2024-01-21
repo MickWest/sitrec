@@ -43,12 +43,12 @@ export const SitLAXUAP = {
 
     terrain: {lat:  33.948, lon:-118.43, zoom:11, nTiles:8},
 
-   // ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
-
     mainCamera: {
         startCameraPositionLLA: [35.017412, -118.249314, 36660.825660],
         startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
     },
+    lookCamera:{ fov: 1.61},
+
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
@@ -61,7 +61,6 @@ export const SitLAXUAP = {
     targetSphereSize: 2,
 
     targetSize: 150, // in feet
-    planeCameraFOV: 1.61,
 
     skyColor: '#4264ab',
 

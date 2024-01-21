@@ -3,6 +3,7 @@
 import {PointEditor} from "./PointEditor";
 import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Vector3} from "three";
 import {CatmullRomCurve3} from "../three.js/build/three.module";
+import * as LAYER from "./LayerMasks";
 
 export class   SplineEditor extends PointEditor{
 
@@ -32,6 +33,8 @@ export class   SplineEditor extends PointEditor{
             opacity: 0.35
         }));
         this.spline.mesh.castShadow = true;
+
+        this.spline.mesh.layers.mask = LAYER.MASK_HELPERS;
 
         this.scene.add(this.spline.mesh);
 

@@ -4,7 +4,6 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
     name: "lakemichigan",
     menuName: "Lake Michigan Tic-Tac",
 
-    planeCameraFOV: 5,
     targetSize: 200, // in feet
     tilt: 0,
 
@@ -24,4 +23,6 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
         startCameraPositionLLA: [42.647359, -86.678554, 23575.039421],
         startCameraTargetLLA: [42.653377, -86.670554, 23235.005817],
     },
+    lookCamera:{ fov: 5},
+
 })

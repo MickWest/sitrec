@@ -23,7 +23,9 @@ export const SitAriel = {
     aFrame: 0,
     bFrame: 6000,
 
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
 
     LOSSpacing:30*4,
 

@@ -13,7 +13,7 @@ import {Sit} from "../Globals";
 import {CNodeDisplayCameraFrustum, CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
-import {dispose, V3} from "../threeExt";
+import {dispose, propagateLayerMaskObject, V3} from "../threeExt";
 import {} from "../Globals";
 
 import {GLTFLoader} from '../../three.js/examples/jsm/loaders/GLTFLoader.js';
@@ -22,6 +22,7 @@ import {LineGeometry} from '../../three.js/examples/jsm/lines/LineGeometry.js';
 import {LocalFrame, GlobalScene} from "../LocalFrame";
 import {makeMatLine} from "../MatLines";
 import {GridHelper, Group, PMREMGenerator, TextureLoader} from "../../three.js/build/three.module";
+import * as LAYER from "../LayerMasks";
 
 
 export var Pod;
@@ -39,8 +40,12 @@ var matLineGreen = makeMatLine(0x00ff00);
 // Container for the various 3D movesl that make up the atflir
 export class CNodeDisplayATFLIR extends CNode3DGroup {
     constructor(v) {
+
         super(v);
+
         PodFrame = new Group();
+        PodFrame.layers.mask = LAYER.MASK_HELPERS
+
         assert(PodFrame != undefined, "Missing PodFrame")
         LocalFrame.add(PodFrame)
 
@@ -70,6 +75,9 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
                     child.material = child.material.clone()
                 }
             })
+
+            propagateLayerMaskObject(PodFrame)
+
 
             /*
             // TODO: Maybe get this working again.
@@ -102,6 +110,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
                 PodFrame.add(gltf.scene)
                 FA18.visible = false
                 showHider(FA18, "[J]et", false, 'j')
+                propagateLayerMaskObject(PodFrame)
 
             })
         })
@@ -140,6 +149,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
             showHider(this.cameraFrustum.group, "F[R]ustum of camera", true, 'r')
         }
 
+        this.propagateLayerMask();
         this.recalculate();
 
     }

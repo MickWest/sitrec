@@ -15,7 +15,6 @@ export const SitPorterville = {
     frustumLineWeight: 1.5,
 
 
-    planeCameraFOV: 5,
 
     frames: 21191,     // ful vid is 21207,
     fps: 59.94,
@@ -38,6 +37,7 @@ export const SitPorterville = {
         startCameraPositionLLA: [36.077341, -119.029799, 851.286742],
         startCameraTargetLLA: [36.069518, -119.025527, 545.430961],
     },
+    lookCamera:{ fov: 50},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

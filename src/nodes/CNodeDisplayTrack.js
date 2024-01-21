@@ -18,6 +18,7 @@ import {par} from "../par";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
+        v.layers ??= LAYER.MASK_HELPERS;
         super(v);
 
         // newer method - allow input nodes to be declared outside the inputs object
@@ -57,7 +58,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 },
                 size: v.autoSphere,
                 color: this.in.color.v0,
-//                layers:LAYER.MASK_LOOK,
+                layers: LAYER.MASK_HELPERS,
             })
         }
 

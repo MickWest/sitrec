@@ -4,8 +4,6 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     name: "dal2158",
     menuName: "Blatant's DAL2158",
 
-    planeCameraFOV: 30,
-
     targetSize: 200, // in feet
 
     tilt: 0,
@@ -23,5 +21,6 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     mainCamera: {
         startCameraPosition: [-475.76, 83065.85, -135001.17],
         startCameraTarget: [-585.88, 82459.73, -134213.45],
-    }
+    },
+    lookCamera:{ fov: 30}
 })

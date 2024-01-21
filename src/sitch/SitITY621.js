@@ -8,8 +8,6 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     targetSize: 200, // in feet
     tilt: 1.24,
 
-    planeCameraFOV: 12.5,
-
     frames: 708, // currently needs manual setting
     terrain: {lat: 47.812613, lon: -4.260180, zoom: 9, nTiles: 8},
     files: {
@@ -27,6 +25,7 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
         startCameraPosition: [61967.92, 37073.99, -39378.75],
         startCameraTarget: [61140.05, 36689.14, -38970.70],
     },
+    lookCamera:{ fov: 12.5},
 
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},

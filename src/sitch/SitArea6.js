@@ -27,7 +27,6 @@ export const SitArea6 = {
     displayFrustum: true,
 
 
-    farClipLook: 80000000,
 
     files: {
         starLink: "area6/starlink-area6.txt",
@@ -39,7 +38,10 @@ export const SitArea6 = {
     fps: 29.97,
     frames: (10*60+50)*29.97,
     startTime: "2023-08-05T07:39:13.000Z",
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+        far: 80000000,
+    },
 
     starScale: 0.3,
 
@@ -71,6 +73,7 @@ export const SitArea6 = {
         startCameraPosition: [41177.15, 35874.31, 182331.95],
         startCameraTarget: [40980.64, 35831.97, 181352.36],
     },
+
     targetSize: 500,
 
 //    syncVideoZoom: true,

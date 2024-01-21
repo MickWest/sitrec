@@ -17,6 +17,7 @@ import {
 import {drop3} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
+import * as LAYER from "./LayerMasks";
 
 
 // Wrapper for calling dispose function on object, allowing undefined
@@ -268,6 +269,8 @@ function sphereAt(x, y, z, radius = 5, color = 0xffffff, parent) {
     sphere.position.y = y;
     sphere.position.z = z;
     if (parent != undefined) parent.add(sphere);
+//    sphere.layers.mask = LAYER.MASK_MAIN;
+    sphere.layers.mask = LAYER.MASK_HELPERS;
     return sphere;
 }
 
@@ -282,6 +285,7 @@ function boxAt(x, y, z, xs = 1, ys=1, zs=1, color = 0xffffff, parent) {
     sphere.position.x = x;
     sphere.position.y = y;
     sphere.position.z = z;
+    sphere.layers.mask = LAYER.MASK_MAIN;
     if (parent != undefined) parent.add(sphere);
     return sphere;
 }
@@ -303,6 +307,7 @@ export function DebugSphere(name, origin, radius = 100, color = 0xffffff) {
         const material = new MeshBasicMaterial({color: color});
         var sphere = new Mesh(geometry, material);
         DebugSpheres[name] = sphere
+        sphere.layers.mask = LAYER.MASK_HELPERS;
         GlobalScene.add(sphere);
     }
     DebugSpheres[name].position.copy(origin)
@@ -330,6 +335,7 @@ export function DebugWireframeSphere(name, origin, radius = 100, color = 0xfffff
         sphere.material.depthTest = true;
         sphere.material.opacity = 0.75;
         sphere.material.transparent = true;
+        sphere.layers.mask = LAYER.MASK_HELPERS;
 
         DebugSpheres[name] = sphere
         parent.add(sphere);
@@ -344,7 +350,7 @@ export function DebugWireframeSphere(name, origin, radius = 100, color = 0xfffff
 var DebugArrows = {}
 // creat a debug arrow if it does not exist, otherwise update the existing one
 // uses an array to record all the debug arrows.
-export function DebugArrow(name, direction, origin, length = 100, color="#FFFFFF", visible=true, parent, headLength=0.1, layerMask) {
+export function DebugArrow(name, direction, origin, length = 100, color="#FFFFFF", visible=true, parent, headLength=0.1, layerMask=LAYER.MASK_HELPERS) {
     const dir = direction.clone()
     dir.normalize();
 

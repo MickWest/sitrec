@@ -99,8 +99,6 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
                     new CNodeGUIValue({value: Sit.targetSize, start: 1, end: 1000, step: 0.1, desc: "Target Sphere size ft"}, gui)
                 )
             },
-
-            layers: LAYER.MASK_LOOK,
         })
 
     },

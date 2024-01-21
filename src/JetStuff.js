@@ -5,7 +5,7 @@ import {EarthRadiusMiles, gui, guiTweaks, infoDiv, mainCamera, NodeMan,  Sit} fr
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
-import {DebugArrowAB, dispose, GridHelperWorld, MV3, sphereMark, V3} from "./threeExt";
+import {DebugArrowAB, dispose, GridHelperWorld, MV3, propagateLayerMaskObject, sphereMark, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {Line2} from '../three.js/examples/jsm/lines/Line2.js';
 import {LineGeometry} from '../three.js/examples/jsm/lines/LineGeometry.js';
@@ -107,7 +107,7 @@ export function initJetVariables() {
         glareSprite = new Sprite(spriteMaterial);
         glareSprite.position.set(0, 0, -50)
         glareSprite.scale.setScalar(0.04)
-        glareSprite.layers.disable(LAYER.main)
+        glareSprite.layers.disable(LAYER.MAIN)
         glareSprite.layers.enable(LAYER.podsEye)
         glareSprite.layers.enable(LAYER.LOOK)
     }
@@ -269,6 +269,8 @@ var LOSX_points;
 var LOSX_geometry;
 
 export function updateLOS(scene, targetPos) {
+
+
     LOS_points = [0, 0, 0, 0, 0, 0]
     if (par.deroFromGlare) {
         LOS_points[3] = glareSphere.position.x;
@@ -284,6 +286,7 @@ export function updateLOS(scene, targetPos) {
     LOS_geometry = new LineGeometry();
     LOS_geometry.setPositions(LOS_points);
     LOS_line = new Line2(LOS_geometry, matLineGreen);
+    LOS_line.layers.mask = LAYER.MASK_HELPERS;
     LocalFrame.add(LOS_line)
 
     var LOSXlen = 10000
@@ -309,6 +312,7 @@ export function updateLOS(scene, targetPos) {
     LOSX_geometry = new LineGeometry();
     LOSX_geometry.setPositions(LOSX_points);
     LOSX_line = new Line2(LOSX_geometry, matLineWhite);
+    LOSX_line.layers.mask = LAYER.MASK_HELPERS;
     scene.add(LOSX_line)
 }
 
@@ -514,7 +518,7 @@ export function ChangedPR() {
 
     var glarePos = PRJ2XYZ(par.podPitchPhysical, par.podRollPhysical + NodeMan.get("bank").v(par.frame), jetPitchFromFrame(), vizRadius)
 
-    glareSphere.position.copy(glarePos);
+   glareSphere.position.copy(glarePos);
 
     var targetPos = PRJ2XYZ(par.podPitchIdeal, par.podRollIdeal + NodeMan.get("bank").v(par.frame), jetPitchFromFrame(), vizRadius)
     targetSphere.position.copy(targetPos)
@@ -931,13 +935,16 @@ export function initViews() {
         const gridSquaresGround = 200
         gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
         GlobalScene.add(gridHelperGround);
-        gridHelperGround.layers.enable(LAYER.LOOK)
 
         setATFLIR(new CNodeDisplayATFLIR({
             inputs: {},
-
-            //  layers:LAYER.MASK_LOOK,
+            layers: LAYER.MASK_MAIN, // ATFLIR pod would obscure the camera in look view
         }))
+
+        // everything in the local frame should show up in MAIN, but not in LOOK
+        LocalFrame.layers.mask = LAYER.MASK_MAIN;
+        propagateLayerMaskObject(LocalFrame);
+
     }
 
     const loader = new GLTFLoader()
@@ -945,7 +952,6 @@ export function initViews() {
      // Lighting
      var light = new DirectionalLight(0xffffff, 0.8);
      light.position.set(100, 300, 100);
-     light.layers.enable(LAYER.LOOK)
      LocalFrame.add(light);
 
     const hemiLight = new HemisphereLight(
@@ -953,7 +959,6 @@ export function initViews() {
         'darkslategrey', // dim ground color
         0.5, // intensity
     );
-    hemiLight.layers.enable(LAYER.LOOK)
     GlobalScene.add(hemiLight);
 
 
@@ -962,7 +967,6 @@ export function initViews() {
     //
     //  const hemiLight = new HemisphereLight();
     //  hemiLight.name = 'hemi_light';
-    //  hemiLight.layers.enable(LAYER.LOOK)
     //
     // GlobalScene.add(hemiLight);
 
@@ -1229,7 +1233,8 @@ export function initJetStuff() {
     // Pod's eye - what the pod sees, physical angles, and then tweaked to look at target
     var podsEyeCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipLook);
     podsEyeCamera.lookAt(new Vector3(0, 0, -1));
-    podsEyeCamera.layers.disable(LAYER.main)
+    podsEyeCamera.layers.disable(LAYER.MAIN)
+    podsEyeCamera.layers.disable(LAYER.HELPERS)
     podsEyeCamera.layers.enable(LAYER.podsEye)
 
     new CNodeView3D({
@@ -1267,12 +1272,14 @@ export function initJetStuff() {
         }
     })
 
-    var ui = new CNodeViewUI({id: "podseye", overlayView: ViewMan.list.podsEyeView.data});
+    const ui = new CNodeViewUI({id: "podseye", overlayView: ViewMan.list.podsEyeView.data});
     ui.addText("info", "Pods-Eye View", 50, 90, 6, "#FFFF00")
 
     // Pod's eye, same, but derotated so horizon is correct.
-    var podsEyeDeroCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipLook);
-    podsEyeDeroCamera.layers.disable(LAYER.main)
+    const podsEyeDeroCamera = new PerspectiveCamera(20, window.innerWidth / window.innerHeight, 99, farClipLook);
+    podsEyeDeroCamera.layers.disable(LAYER.MAIN)
+    podsEyeDeroCamera.layers.disable(LAYER.HELPERS)
+
     podsEyeDeroCamera.layers.enable(LAYER.podsEye)
     podsEyeDeroCamera.lookAt(new Vector3(0, 0, -1));
 
@@ -1321,14 +1328,14 @@ export function initJetStuff() {
 /////////////////////////////////////////////////////////////////
 // ATRLIR pod CAM
 
-    new CNodeCamera({
-        id:"lookCamera",
-        fov: Sit.lookFOV,
-        aspect: window.innerWidth / window.innerHeight,
-        near: Sit.nearClipLook,
-        far: Sit.farClipLook,
-        layers: LAYER.MASK_LOOKONLY,
-    })
+    // new CNodeCamera({
+    //     id:"lookCamera",
+    //     fov: Sit.lookFOV,
+    //     aspect: window.innerWidth / window.innerHeight,
+    //     near: Sit.nearClipLook,
+    //     far: Sit.farClipLook,
+    //     layers: LAYER.MASK_LOOKRENDER,
+    // })
     
     new CNodeView3D({
         id: "lookView",
@@ -1343,6 +1350,12 @@ export function initJetStuff() {
         syncVideoZoom: true,
         camera: "lookCamera",
         renderFunction: function () {
+
+            // PATCH for the jet sitches,
+            // camera is a child of the ball, and will get the layer mask reset when the model loads
+            // so we force it here.
+            this.camera.layers.mask = LAYER.MASK_LOOKRENDER;
+
             if (!Ball) return;
             if (this.camera.parent == null) {
                 // PROBLEM, MAYBE - the ball has scale.

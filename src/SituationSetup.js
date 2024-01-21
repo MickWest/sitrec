@@ -1,4 +1,4 @@
-import {gui, mainCamera, setMainCamera, Sit} from "./Globals";
+import {gui, mainCamera, NodeMan, setMainCamera, Sit} from "./Globals";
 import {CNodeConstant} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -53,7 +53,7 @@ export function SituationSetup() {
                     aspect: window.innerWidth / window.innerHeight,
                     near: data.near   ?? 1,
                     far:  data.far    ?? 5000000,
-                    layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
+                    layers: data.mask ?? LAYER.MASK_MAINRENDER,
 
                     // one of these will be undefined. CNodeCamera uses the other
                     startPos: data.startCameraPosition,
@@ -71,6 +71,25 @@ export function SituationSetup() {
                 }).listen().name("Main FOV")
                 break;
 
+            case "lookCamera":
+                new CNodeCamera({
+                    id:"lookCamera",
+                    fov: data.fov     ?? 10,
+                    aspect: window.innerWidth / window.innerHeight,
+                    near: data.near   ?? 1,
+                    far:  data.far    ?? 5000000,
+                    layers: data.mask ?? LAYER.MASK_LOOKRENDER,
+ //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
+                })
+
+                const lookCameraNode = NodeMan.get("lookCamera");
+                if (data.addFOVController) {
+                    gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                        lookCameraNode.camera.updateProjectionMatrix()
+                    }).listen().name("Look Camera FOV")
+                }
+
+                break;
         }
 
 

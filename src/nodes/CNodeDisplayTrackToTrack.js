@@ -4,13 +4,14 @@ import {LineGeometry} from "../../three.js/examples/jsm/lines/LineGeometry";
 import {LineMaterial} from "../../three.js/examples/jsm/lines/LineMaterial";
 import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
+import * as LAYER from "../LayerMasks";
+
 
 // displays a SINGLE LINE from comeraTrack to targetTrack, optionally extending to ground level
 
 export class CNodeDisplayTrackToTrack extends CNode3DGroup {
     constructor(v) {
+        v.layers ??= LAYER.MASK_HELPERS;
         super(v);
 
         // newer method - allow input nodes to be declared outside the inputs object

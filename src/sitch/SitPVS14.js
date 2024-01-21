@@ -48,7 +48,9 @@ export const SitPVS14 = {
     },
 
     bigUnits: "Miles",
-    lookFOV: 10,
+    lookCamera: {
+        fov: 10,
+    },
 
 
     fps: 29.97,
