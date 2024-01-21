@@ -285,7 +285,7 @@ To adjust the views, you can add a view rectangle specifier for each one. For ex
 ```javascript
 lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
 videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
-mainView:{left:0.0, top:0, width:1,height:1},
+mainView: { left: 0.0, top: 0, width: 1, height: 1},
 ```
 
 Positions and size are specified as a fraction of the screen's width and height
