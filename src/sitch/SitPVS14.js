@@ -103,11 +103,11 @@ export const SitPVS14 = {
         SetupGUIFrames()
         initKeyboard()
 
-        NodeMan.createNodesJSON(`
-            [
-           //     {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
-                {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"cameraTrackData"}, 
-            ]`);
+        // NodeMan.createNodesJSON(`
+        //     [
+        //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
+        //         {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"cameraTrackData"},
+        //     ]`);
 
         const view = new CNodeView3D({
             id: "mainView",

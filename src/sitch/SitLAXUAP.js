@@ -29,12 +29,12 @@ export const SitLAXUAP = {
     frames: 90,
 
 
-    fromLat:  33.953748, //
-    fromLon: -118.412243,
-
-    fromAltFeet: 36,
-    fromAltFeetMin: 0,
-    fromAltFeetMax: 1000,
+    // fromLat:  33.953748, //
+    // fromLon: -118.412243,
+    //
+    // fromAltFeet: 36,
+    // fromAltFeetMin: 0,
+    // fromAltFeetMax: 1000,
 
     tilt: 0,
 
@@ -48,7 +48,7 @@ export const SitLAXUAP = {
         startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
     },
     lookCamera:{ fov: 1.61},
-    cameraTrack: {},
+    cameraTrack: {LLA: [33.953748, -118.412243, 36]},
 
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},

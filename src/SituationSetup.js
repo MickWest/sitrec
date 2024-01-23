@@ -1,5 +1,5 @@
 import {gui, mainCamera, NodeMan, setMainCamera, Sit} from "./Globals";
-import {CNodeConstant} from "./nodes/CNode";
+import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
@@ -116,16 +116,20 @@ export function SituationSetup() {
                 assert(Sit.lat !== undefined && Sit.lon !== undefined, "SituationSetup: cameraTrack needs Sit.lat and Sit.lon defined. i.e. after terrain");
 
                 const id = data.id ?? "cameraTrack";
-                const file = data.file ?? "cameraFile";
+                if (data.LLA !== undefined) {
+                    makePositionLLA(id, data.LLA[0], data.LLA[1], data.LLA[2]);
+                } else {
+                    const file = data.file ?? "cameraFile";
 
-                makeTrackFromDataFile(file, id+"data", id);
-                new CNodeDisplayTrack({
-                    id: id+"Display",
-                    track: id,
-                    color: new CNodeConstant({value: new Color(1, 1, 0)}),
-                    width: 2,
-                    layers: LAYER.MASK_HELPERS,
-                })
+                    makeTrackFromDataFile(file, id + "Data", id);
+                    new CNodeDisplayTrack({
+                        id: id + "Display",
+                        track: id,
+                        color: new CNodeConstant({value: new Color(1, 1, 0)}),
+                        width: 2,
+                        layers: LAYER.MASK_HELPERS,
+                    })
+                }
                 break;
 
             // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
