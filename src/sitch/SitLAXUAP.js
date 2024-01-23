@@ -48,6 +48,7 @@ export const SitLAXUAP = {
         startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
     },
     lookCamera:{ fov: 1.61},
+    cameraTrack: {},
 
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},

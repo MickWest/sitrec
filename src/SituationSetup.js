@@ -3,11 +3,16 @@ import {CNodeConstant} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
-import {PerspectiveCamera} from "../three.js/build/three.module";
+import {Color, PerspectiveCamera} from "../three.js/build/three.module";
 import {par} from "./par";
 import {MV3} from "./threeExt";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
+import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
+import {assert} from "./utils";
+
+
 
 export function SituationSetup() {
     console.log("++++++ SituationSetup")
@@ -15,19 +20,28 @@ export function SituationSetup() {
     new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
 
 
+
+
     for (let key in Sit) {
-        console.log(key)
+//        console.log(key)
 
         const data = Sit[key];
+
+        function SSLog() {
+            console.log("SituationSetup: " + key + " " + JSON.stringify(data))
+        }
 
         switch (key) {
 
 
+
             case "flattening":
+                SSLog();
                 new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
                 break
 
             case "terrain":
+                SSLog();
                 //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
                 new CNodeTerrain({
                     id: "TerrainModel",
@@ -42,6 +56,7 @@ export function SituationSetup() {
                 break;
 
             case "mainCamera":
+                SSLog();
                 // mainCamera: {
                 //     fov:  32,
                 //         startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
@@ -72,6 +87,7 @@ export function SituationSetup() {
                 break;
 
             case "lookCamera":
+                SSLog();
                 new CNodeCamera({
                     id:"lookCamera",
                     fov: data.fov     ?? 10,
@@ -88,6 +104,38 @@ export function SituationSetup() {
                         lookCameraNode.camera.updateProjectionMatrix()
                     }).listen().name("Look Camera FOV")
                 }
+
+                break;
+
+                // cameraTrack: {
+                //     id: "cameraTrack",
+                //         file: "cameraFile",
+                // },
+            case "cameraTrack":
+                SSLog();
+                assert(Sit.lat !== undefined && Sit.lon !== undefined, "SituationSetup: cameraTrack needs Sit.lat and Sit.lon defined. i.e. after terrain");
+
+                const id = data.id ?? "cameraTrack";
+                const file = data.file ?? "cameraFile";
+
+                makeTrackFromDataFile(file, id+"data", id);
+                new CNodeDisplayTrack({
+                    id: id+"Display",
+                    track: id,
+                    color: new CNodeConstant({value: new Color(1, 1, 0)}),
+                    width: 2,
+                    layers: LAYER.MASK_HELPERS,
+                })
+                break;
+
+            // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+            case "focalLenController":
+                SSLog();
+                NodeMan.get(data.object).addController("FocalLength", {
+                    focalLength: data.source,
+                    referenceFocalLength: data.len,
+                    referenceFOV: data.fov,
+                })
 
                 break;
         }

@@ -213,7 +213,7 @@ MakeDateTimeNode();
 assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
 
 //gui.title("Sitrec "+Sit.name+" - [U]I")
-gui.title("Sitrec build "+buildDate+" PT")
+gui.title(process.env.BUILD_VERSION_STRING);
 
 var newTitle = "Sitrec "+Sit.name
 

@@ -26,6 +26,7 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
         startCameraTarget: [-45322.06031147982, 54883.94200386166, -177957.61142263407],
     },
     lookCamera:{ fov: 23},
+    cameraTrack: {},
 
 
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},

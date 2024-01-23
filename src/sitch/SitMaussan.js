@@ -44,6 +44,7 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
         startCameraTarget: [2717804.95, 2470341.84, -26217.95],
     },
     lookCamera:{ fov: 62},
+    cameraTrack: {},
 
 
     lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},

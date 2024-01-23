@@ -51,6 +51,7 @@ export const SitPVS14 = {
     lookCamera: {
         fov: 10,
     },
+    cameraTrack: {},
 
 
     fps: 29.97,
@@ -104,8 +105,8 @@ export const SitPVS14 = {
 
         NodeMan.createNodesJSON(`
             [
-                {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"cameraFile"},
-                {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"KMLMainData"}, 
+           //     {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
+                {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"cameraTrackData"}, 
             ]`);
 
         const view = new CNodeView3D({
@@ -160,7 +161,7 @@ export const SitPVS14 = {
 
         new CNodeDisplayTrack({
             id:"KMLDisplayMainData",
-            track: "KMLMainData",
+            track: "cameraTrackData",
             color: new CNodeConstant({value: new Color(0.7, 0.7, 0)}),
             dropColor: new CNodeConstant({value: new Color(0.6, 0.6, 0)}),
             width: 1,

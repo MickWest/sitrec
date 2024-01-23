@@ -250,7 +250,7 @@ export class CSituation {
     makeCameraTrack()
     {
         if (FileManager.exists("cameraFile")) {
-            makeTrackFromDataFile("cameraFile", "KMLMainData", "cameraTrack")
+            makeTrackFromDataFile("cameraFile", "cameraTrackData", "cameraTrack")
             //animated segement of camera track
             new CNodeDisplayTrack({
                 id: "KMLDisplay",

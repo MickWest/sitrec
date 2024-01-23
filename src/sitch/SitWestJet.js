@@ -22,4 +22,6 @@ export const SitWestJet = {
         startCameraTargetLLA: [38.603456, -86.509621, 4158895.037381],
     },
     lookCamera:{ fov: 10, far: 8000000 },
+    cameraTrack: {},
+
 }

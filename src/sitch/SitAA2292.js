@@ -33,6 +33,7 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
         fov: 32,
         addFOVController: true,
     },
+    cameraTrack: {},
 
 
 

@@ -43,6 +43,9 @@ export const SitFolsomLake = {
         startCameraTargetLLA: [38.725176, -121.163979, -90.574624],
     },
     lookCamera:{ fov: 42.15},
+    cameraTrack: { id: "cameraTrack", file: "cameraFile"},
+    focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

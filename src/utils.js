@@ -403,26 +403,7 @@ export function closeFullscreen() {
     }
 }
 
-
-function reformatDateString(dateStr) {
-    // Split the date string into date and time parts
-    const [datePart, timePart] = dateStr.split('T');
-
-    // Split the date part to manipulate the year
-    let [year, month, day] = datePart.split('-');
-
-    // Remove the first two characters from the year
-    year = year.substring(2);
-
-    // Split the time part and discard seconds and milliseconds
-    let [hour, minute] = timePart.split(':');
-
-    // Return the reformatted date string
-    return `${year}-${month}-${day} ${hour}:${minute}`;
-}
-
 export const versionString = MD5(document.lastModified) // if we want to make version-unique names
-export const buildDate = reformatDateString(process.env.BUILD_TIME);
 
 // difference between two angles, accounting for wrap around and angles <0 and >=360
 export function angleDifferenceDeg(a,b) {

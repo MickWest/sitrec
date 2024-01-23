@@ -7,16 +7,23 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 const InstallPaths = require('./config-install')
 
+const child_process = require('child_process');
+
 function getFormattedLocalDateTime() {
     const now = new Date();
 
-    const year = now.getFullYear();
+    // get last two digits of year
+    const year = String(now.getFullYear()).substring(2)
+
     const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    // Get the most recent tag from git
+    const gitTag = child_process.execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
+
+    return `Sitrec ${gitTag}: ${year}-${month}-${day} ${hours}:${minutes} PT`;
 }
 
 console.log(getFormattedLocalDateTime());
@@ -98,7 +105,7 @@ module.exports = {
             ],
         }),
         new webpack.DefinePlugin({
-            'process.env.BUILD_TIME': JSON.stringify(getFormattedLocalDateTime())
+            'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime())
         }),
 ],
 

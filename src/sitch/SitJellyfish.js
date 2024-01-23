@@ -9,14 +9,12 @@ import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {CNodeLOSTraverse} from "../nodes/CNodeLOSTraverse";
 import {CNodeLOSConstantCamera} from "../nodes/CNodeLOSConstantCamera";
 import {CNodeScale} from "../nodes/CNodeScale";
-import {CNodeLOSMotionTrack} from "../nodes/CNodeLOSMotionTrack";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
-import {gui, guiTweaks, } from "../Globals";
+import {gui} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
@@ -27,7 +25,6 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
-
 export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
@@ -53,7 +50,7 @@ export const SitJellyfish    = {
     frames: 2982,
 
     lookCamera: {
-        fov: 0.6,
+        fov: 10.6,
     },
     // Pt Dume view
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
@@ -205,6 +202,7 @@ export const SitJellyfish    = {
         }).addController("FocalLength", {
             focalLength: new CNodeMunge({
                 munge:function(f) {
+                    // TOTO - abstract this out to a function that takes an array of frames/focal lengths
                     if (f> 745) return {focal_len: 1000}
                     else return {focal_len: 3000};
                 },

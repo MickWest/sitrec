@@ -1,10 +1,9 @@
-import {Color, PerspectiveCamera} from "../../three.js/build/three.module";
+import {Color} from "../../three.js/build/three.module";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
 import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
-import {LLAVToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
@@ -12,14 +11,12 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {
     abs,
     atan,
-    degrees, f2m,
+    degrees,
     floor,
-    getArrayValueFromFrame, m2f,
-    metersFromMiles,
+    getArrayValueFromFrame,
     radians,
     scaleF2M,
     tan,
-    utcDate
 } from "../utils";
 import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
@@ -27,20 +24,16 @@ import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
 import {GlobalScene} from "../LocalFrame";
-import {gui, guiTweaks, } from "../Globals";
+import {gui} from "../Globals";
 import {NodeMan} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
-import {MV3, V3} from "../threeExt";
+import {V3} from "../threeExt";
 import {addDefaultLights} from "../lighting";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "../nodes/CNodeTrack";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {setMainCamera} from "../Globals";
 import {PTZControls} from "../PTZControls";
-import {
-    CNodeCamera,
-} from "../nodes/CNodeCamera";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {FileManager} from "../CFileManager";
@@ -69,18 +62,11 @@ export const SitKML = {
 
     targetSize: 10000,
 
-//    planeCameraFOV:60,
-
-
     // this is an override for the mainview setup
     mainView:{left:0.0, top:0, width:.50,height:1},
 
     skyColor: "rgb(0%,0%,10%)",
 
-
-
-
-//
     setup: function() {
 
         SetupGUIFrames()
@@ -112,7 +98,7 @@ export const SitKML = {
 
         addDefaultLights(Sit.brightness)
 
-        Sit.makeCameraTrack();
+        // Sit.makeCameraTrack();
 
         if (FileManager.exists("KMLTarget")) {
             makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
@@ -153,8 +139,8 @@ export const SitKML = {
         // {"KMLTrack","cameraTrack", {"cameraFile":"cameraFile"}},
         // NodeMan.createNodesJSON(`
         //     [
-        //         {"new":"KMLDataTrack",  "id":"KMLMainData",     "KMLFile":"cameraFile"},
-        //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"KMLMainData"},
+        //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
+        //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"cameraTrackData"},
         //         {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
         //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
         //     ]`);
@@ -227,10 +213,10 @@ export const SitKML = {
         }
 
 
-        if (NodeMan.exists("KMLMainData")) {
+        if (NodeMan.exists("cameraTrackData")) {
             new CNodeDisplayTrack({
                 id: "KMLDisplayMainData",
-                track: "KMLMainData",
+                track: "cameraTrackData",
                 color: new CNodeConstant({value: new THREE.Color(0.7, 0.3, 0)}),
                 dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
                 width: 1,
@@ -413,9 +399,10 @@ export const SitKML = {
             const cameraTrack = NodeMan.get("cameraTrack")
             const focal_len = cameraTrack.v(0).focal_len;
             if (focal_len !== undefined) {
-                NodeMan.get("lookCamera").addController("FocalLength", {
-                    focalLength: "cameraTrack",
-                })
+                console.warn("Skipping legacy focal length controller generation")
+                // NodeMan.get("lookCamera").addController("FocalLength", {
+                //     focalLength: "cameraTrack",
+                // })
             }
 
             if (Sit.toLat !== undefined) {
@@ -482,7 +469,6 @@ export const SitKML = {
 
                     // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
                     // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
-
 
                     // bit of a patch to get in the FOV
                     if (Sit.chileanData !== undefined) {

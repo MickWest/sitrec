@@ -12515,7 +12515,7 @@ class PerspectiveCamera extends Camera {
 
 		this.type = 'PerspectiveCamera';
 
-		this.fov = fov;
+		this._fov = fov;
 		this.zoom = 1;
 
 		this.near = near;
@@ -12531,6 +12531,14 @@ class PerspectiveCamera extends Camera {
 		this.updateProjectionMatrix();
 
 	}
+
+    set fov(f) {
+        this._fov = f;
+    }
+
+    get fov() {
+        return this._fov;
+    }
 
 	copy( source, recursive ) {
 

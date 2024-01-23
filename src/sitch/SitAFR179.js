@@ -30,6 +30,7 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
         fov: 62,
         addFOVController: true,
     },
+    cameraTrack: {},
 
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},

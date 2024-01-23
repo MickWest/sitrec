@@ -239,9 +239,6 @@ export function parseSRT(data) {
     if (lines[4] == "2" && lines [8] == "3") {
         return parseSRT2(lines)
     }
-
-
-
     return parseSRT1(lines)
 }
 
@@ -373,9 +370,23 @@ function convertToRelativeTime(startTime, relativeTimeString) {
 
     return relativeTime;
 }
+
+// SRT1 (e.g. SitPorterville) format is sets of six lines:
+// 0: 1
+// 1: 00:00:00,000 --> 00:00:00,016
+// 2: <font size="28">FrameCnt: 1, DiffTime: 16ms
+// 3: 2023-12-17 15:27:55.258
+// 4:     [iso: 100] [shutter: 1/640.0] [fnum: 3.4] [ev: 0] [color_md: default] [focal_len: 166.00] [latitude: 36.06571] [longitude: -119.01938] [rel_alt: 17.800 abs_alt: 134.835] [ct: 5896] </font>
+// 5: ...blank line...
 export function parseSRT1(lines) {
     const numPoints = Math.floor(lines.length / 6);
     let SRTArray = new Array(numPoints);
+
+    // iterate over all lines and remove any html formatting
+    for (let i = 0; i < lines.length; i++) {
+        // Remove all html tags
+        lines[i] = lines[i].replace(/<[^>]*>/g, '');
+    }
 
     for (let i = 0; i < numPoints; i++) {
         let dataIndex = i * 6;
@@ -384,7 +395,7 @@ export function parseSRT1(lines) {
 
         SRTArray[i] = new Array(SRTFields).fill(null);
 
-        // Extract frame information
+        // Extract frame information (FrameCnt and DiffTime in Porterville)
         frameInfo.forEach(info => {
             let [key, value] = info.split(': ');
         //    console.log(key +": "+value)
@@ -393,7 +404,7 @@ export function parseSRT1(lines) {
             }
         });
 
-        // Extract detailed information
+        // Extract detailed information (LLA, and camera settings)
         detailInfo.forEach(info => {
             let details = info.replace(/[\[\]]/g, '');
             let tokens = details.split(' ');

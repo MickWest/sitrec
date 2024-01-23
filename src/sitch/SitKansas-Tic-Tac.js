@@ -27,6 +27,7 @@ export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
         startCameraTarget: [-84544.13436719228, 39639.19461613414, 88784.00921963136],
     },
     lookCamera:{ fov: 22.25},
+    cameraTrack: {},
 
 
 

@@ -1,4 +1,5 @@
 import {SitKML} from "./SitKML";
+import {NodeMan} from "../Globals";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitPorterville = {
@@ -30,14 +31,15 @@ export const SitPorterville = {
     videoFile: "../sitrec-videos/private/DJI_20231217152755_0007_D-720p.mp4",
     skyColor: 'skyblue',
 
-    // TODO -STOP USING EUS COORDINATES IN SIT - USE LLA, OTHERWISE WHEN MAP Resolution changes, it breaks
-  //  startCameraPosition:[-1341.61,848.22,-6109.46],
-  //  startCameraTarget:[-957.26,543.21,-5238.12],
+    // NOTE: AVOID USING EUS COORDINATES IN SIT - USE LLA, OTHERWISE WHEN MAP Resolution changes, it breaks
     mainCamera: {
         startCameraPositionLLA: [36.077341, -119.029799, 851.286742],
         startCameraTargetLLA: [36.069518, -119.025527, 545.430961],
     },
     lookCamera:{ fov: 50},
+
+    cameraTrack: {},
+    focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

@@ -1,10 +1,9 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
 import {GlobalPTZ, gui, mainCamera, NodeMan, setMainCamera, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
 import {SetupGUIFrames} from "../JetGUI";
-import {initKeyboard, isKeyHeld} from "../KeyBoardHandler";
+import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
@@ -19,7 +18,6 @@ import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeController";
 import {FileManager} from "../CFileManager";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitNightSky = {

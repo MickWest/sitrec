@@ -126,7 +126,7 @@ export class CNodeControllerFocalLength extends CNodeController {
         this.input("focalLength")
 
         this.referenceFocalLength = v.referenceFocalLength ?? 166;
-        this.referenceFOV = v.referenceFOV ?? radians(5);
+        this.referenceFOV = v.referenceFOV ?? 5;
 
     }
 
