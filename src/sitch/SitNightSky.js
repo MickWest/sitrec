@@ -178,7 +178,7 @@ export const SitNightSky = {
 
         addDefaultLights(Sit.brightness)
 
-        setMainCamera(this.mainCamera)
+        //setMainCamera(this.mainCamera)
 
         const lableMainViewPVS = new CNodeViewUI({id: "lableMainViewPVS", overlayView: ViewMan.list.mainView.data});
         lableMainViewPVS.addText("videoLablep1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")
