@@ -1,5 +1,4 @@
 import {SitKML} from "./SitKML";
-import {Vector3} from "../../three.js/build/three.module";
 
 export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     extends: "SitKML", // ????????????????

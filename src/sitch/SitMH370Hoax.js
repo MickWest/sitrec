@@ -1,5 +1,5 @@
 import {Color} from "../../three.js/build/three.module";
-import {f2m, metersFromFeet, scaleF2M} from "../utils";
+import {f2m} from "../utils";
 import {Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 

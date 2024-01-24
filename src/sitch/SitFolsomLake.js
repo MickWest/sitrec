@@ -1,11 +1,8 @@
 import {SitKML} from "./SitKML";
 import {NodeMan} from "../Globals";
-import {CNodeControllerAzElData} from "../nodes/CNodeController";
 import {makeArrayNodeFromColumn} from "../nodes/CNodeArray";
 import {abs, assert, floor} from "../utils"
-import {SRT} from "../KMLUtils";
 import {par} from "../par";
-import {makeComboNode} from "../nodes/CNodeMunge";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake = {

@@ -34,16 +34,14 @@ import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddSpeedGraph} from "../JetGraphs";
 import {guiTweaks} from "../Globals";
-import {GlobalScene, LocalFrame} from "../LocalFrame";
+import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard, showHider, toggler} from "../KeyBoardHandler";
 import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
 import {DebugSphere, MV3, V3} from "../threeExt";
-import {mainCamera} from "../Globals";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
-import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {addControllerTo} from "../nodes/CNodeController";
@@ -189,14 +187,12 @@ export const SitAguadilla = {
         })
         view.addOrbitControls(this.renderer);
 
-
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
         light.position.set(100,1300,100);
         light.layers.enable(LAYER.LOOK)
         light.layers.enable(LAYER.MAIN)
         GlobalScene.add(light);
-
 
         const hemiLight = new HemisphereLight(
             'white', // bright sky color
@@ -206,7 +202,6 @@ export const SitAguadilla = {
         hemiLight.layers.enable(LAYER.LOOK)
         hemiLight.layers.enable(LAYER.MAIN)
         GlobalScene.add(hemiLight);
-
 
        function trackFromLatLonCSV(id, csvID, latIndex, lonIndex, altIndex, viaMidpoints){
            var points = []

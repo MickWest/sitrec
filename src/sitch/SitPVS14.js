@@ -103,23 +103,6 @@ export const SitPVS14 = {
         SetupGUIFrames()
         initKeyboard()
 
-        // NodeMan.createNodesJSON(`
-        //     [
-        //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
-        //         {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"cameraTrackData"},
-        //     ]`);
-
-        // const view = new CNodeView3D({
-        //     id: "mainView",
-        //     left: 0.0, top: 0, width: 0.5, height: 1,
-        //     draggable: false, resizable: false,
-        //     fov: 50,
-        //     doubleClickFullScreen: false,
-        //     background: new Color('#132d44'),
-        //     camera: "mainCamera",
-        //     ...this.mainView,
-        // })
-
         const view = NodeMan.get("mainView");
         view.addOrbitControls(this.renderer);
 

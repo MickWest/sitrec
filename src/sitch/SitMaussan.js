@@ -1,4 +1,3 @@
-import {SitKML} from "./SitKML";
 import {SitPVS14} from "./SitPVS14";
 
 export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{

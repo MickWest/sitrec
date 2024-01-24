@@ -122,6 +122,16 @@ export class CNodeFactory extends CManager{
         }
     }
 
+
+// createNodesJSON example:
+    // NodeMan.createNodesJSON(`
+    //     [
+    //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
+    //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"cameraTrackData"},
+    //         {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
+    //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
+    //     ]`);
+
     createNodesJSON(nodeJSON) {
         console.log(nodeJSON)
         // if last character is a } or a ] and the previous non-whitespace one is a ,

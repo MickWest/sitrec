@@ -1,13 +1,8 @@
 
 import {CNodeView3D} from "../nodes/CNodeView3D";
-import {par} from "../par";
-import {gui, Sit, } from "../Globals";
-import {PerspectiveCamera, Color, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
-import {wgs84} from "../LLA-ECEF-ENU";
-import {CNodeConstant} from "../nodes/CNode";
+import { Color, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
-import {MV3} from "../threeExt";
 
 export const SitAriel = {
     name: "ariel",

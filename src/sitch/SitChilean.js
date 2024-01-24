@@ -2,12 +2,10 @@ import {SitKML} from "./SitKML";
 import {AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
-import {CNodeSmoothedPositionTrack} from "../nodes/CNodeTrack";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {degrees, scaleF2M} from "../utils";
-import * as LAYER from "../LayerMasks";
 import {trackHeading} from "../nodes/CNode";
 import {FileManager} from "../CFileManager";
 

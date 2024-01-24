@@ -1,5 +1,4 @@
 import {SitPVS14} from "./SitPVS14";
-import {SitKML} from "./SitKML";
 
 // This needs to be derived from something better than SitPVS14 (looking out a plane window)
 // or SitKML (looking at a target track)

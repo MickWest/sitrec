@@ -1,6 +1,5 @@
 import {SitFolsomLake} from "./SitFolsomLake";
 
-//export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake2 = {
     ...SitFolsomLake,
     name: "folsomlake2",

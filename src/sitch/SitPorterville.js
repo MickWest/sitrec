@@ -1,5 +1,4 @@
 import {SitKML} from "./SitKML";
-import {NodeMan} from "../Globals";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitPorterville = {

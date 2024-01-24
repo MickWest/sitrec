@@ -1,5 +1,4 @@
-import {Color, Vector3} from "../../three.js/build/three.module";
-import {f2m, metersFromFeet, scaleF2M, utcDate} from "../utils";
+import {Color} from "../../three.js/build/three.module";
 import {gui, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
@@ -7,9 +6,7 @@ import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
-import {CNodeImage, CNodeImageAnalysis} from "../nodes/CNodeImageAnalysis";
-import {CNodeDisplayNightSky, CNodeDisplaySkyOverlay} from "../nodes/CNodeDisplayNightSky";
-import {par} from "../par";
+import {CNodeImage} from "../nodes/CNodeImageAnalysis";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {addKMLTracks} from "../KMLNodeUtils";
 import {AddTimeDisplayToUI} from "../UIHelpers";

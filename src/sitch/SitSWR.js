@@ -1,13 +1,8 @@
-
 import {CNodeView3D} from "../nodes/CNodeView3D";
-import {par} from "../par";
-import {mainCamera, Sit} from "../Globals";
-import {PerspectiveCamera, Color, Vector3, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
+import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import * as THREE from "../../three.js/build/three.module";
-import {gui, } from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
-import {MV3} from "../threeExt";
 
 export const SitSWR = {
     name: "swr",

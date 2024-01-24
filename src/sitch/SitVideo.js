@@ -95,15 +95,6 @@ export const SitVideo = {
 
         initKeyboard();
         SetupGUIFrames();
-
-
-         // NodeMan.createNodesJSON(`
-         //     [
-         //     {"new":"Constant", "id":"testConstant", "value":"132"},
-         //     ]`);
-
-
-//        {"new":"KMLTrack",      "id":"cameraTrack",        "cameraFile":"cameraFile"},
     }
 
 }

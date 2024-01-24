@@ -6,7 +6,6 @@ import {opts} from "./JetChart";
 import {DumpPreset} from "./Presets";
 import {Vector3} from "../three.js/build/three.module";
 import {MV3} from "./threeExt";
-import {mainCamera} from "./Globals";
 import {isLocal} from "../config";
 
 export var keyHeld = {}

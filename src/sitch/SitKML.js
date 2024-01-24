@@ -88,27 +88,6 @@ export const SitKML = {
 
         Sit.setupWind()
 
-        // const view = new CNodeView3D(Object.assign({
-        //     id: "mainView",
-        //     //     draggable:true,resizable:true,
-        //     left: 0.0, top: 0, width: .5, height: 1,
-        //     fov: 50,
-        //     background: Sit.skyColor,
-        //     camera: "mainCamera",
-        //
-        //     renderFunction: function () {
-        //         this.renderer.render(GlobalScene, this.camera);
-        //     },
-        //
-        //     focusTracks: {
-        //         "Ground (No Track)": "default",
-        //         "Jet track": "cameraTrack",
-        //         "Target Track": "targetTrack",
-        //         "Other Track": "KMLOtherTarget",
-        //     },
-        //
-        // }, Sit.mainView))
-
         const view = NodeMan.get("mainView");
 
         view.addOrbitControls(this.renderer);
@@ -136,33 +115,6 @@ export const SitKML = {
             })
         }
 
-
-
-        // new CNodeKMLDataTrack({
-        //     id:"KMLTargetData",
-        //     KMLFile: "KMLTarget",
-        // })
-        //
-        // new CNodeTrackFromTimed({
-        //     id:"targetTrack",
-        //     timedData: "KMLTargetData",
-        // })
-
-
-// this is equivalent to the above
-
-        // can we do some additional parsing here?
-        // like:
-        // {"KMLTrack","cameraTrack", {"cameraFile":"cameraFile"}},
-        // NodeMan.createNodesJSON(`
-        //     [
-        //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
-        //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"cameraTrackData"},
-        //         {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
-        //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
-        //     ]`);
-
-
         // The moving average smoothed target KML track
         // new CNodeSmoothedPositionTrack({ id:"targetTrackAverage",
         //     source: "targetTrack",
@@ -177,7 +129,6 @@ export const SitKML = {
                 // new spline based smoothing in 3D
                 method: "catmull",
 //            method:"chordal",
-//            intervals: new CNodeGUIValue({value: 119, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
                 intervals: new CNodeGUIValue({value: 20, start: 1, end: 200, step: 1, desc: "Catmull Intervals"}, gui),
                 tension: new CNodeGUIValue({value: 0.5, start: 0, end: 5, step: 0.001, desc: "Catmull Tension"}, gui),
             })
@@ -289,7 +240,6 @@ export const SitKML = {
 
         if (!Sit.landingLights) {
 
-
             let maybeWind = {};
             if (NodeMan.exists("targetWind")) {
                 maybeWind = {
@@ -389,7 +339,6 @@ export const SitKML = {
                 cam.addController("TrackAzEl",{
                         sourceTrack: "cameraTrack",
                     })
-
 
             } else {
 
@@ -619,8 +568,6 @@ export const SitKML = {
                 wind:"objectWind",
             })
 
-
-
             new CNodeDisplayTargetSphere({
                 track:"LOSTargetTrack",
                 size: new CNodeScale("sizeScaledLOS", scaleF2M,
@@ -628,7 +575,6 @@ export const SitKML = {
                 ),
                 layers: LAYER.MASK_LOOK,
                 color: "#00c000"  // green fixed relative to ground
-
             })
 
             new CNodeDisplayTargetSphere({
@@ -636,7 +582,6 @@ export const SitKML = {
                 size: "sizeScaledLOS",
                 layers: LAYER.MASK_LOOK,
                 color: "#00ffff"  // cyan = with wind
-
             })
 
 

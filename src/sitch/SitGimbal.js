@@ -35,7 +35,6 @@ import {CNodeTrackAir} from "../nodes/CNodeTrack";
 import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSpeed";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
-import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {FileManager} from "../CFileManager";
 import {setupOpts} from "../JetChart";
