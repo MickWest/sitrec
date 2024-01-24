@@ -2,6 +2,10 @@
 
     require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
 
+    if(!isset($cache_base_path)) {
+        $cache_base_path = "../../sitrec-cache/";
+    }
+
 // https://metabunk.org/sitrec/sitrecServer/proxy.php?url=https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle
     $url = $_GET["url"];  // usage e.g.
 
@@ -32,15 +36,17 @@
 
     $hash = md5($url) . "." . $ext;
 
-    $cachePath = '../../sitrec-cache/' . $hash;
+    $cachePath = $cache_base_path . $hash;
     //$fileLocation = "/srv/www/metabunk.org/public_html/sitrec-cache/";
-    $fileLocation = "../../sitrec-cache/";
+    $fileLocation = $cache_base_path;
 
     $cachedFile = $fileLocation . $hash;
     //check if file exists
 
 //    echo (time(). " - " . filemtime($cachedFile) . " = ". time()-filemtime($cachedFile));
 //    exit (0);
+
+    ob_start();
 
     // if cached file exists, and is less than 1 hour old, then return that.
     if ($caching && file_exists($cachedFile) && ((time() - filemtime($cachedFile)) < (60 * 60)) ) {

@@ -228,6 +228,16 @@ rsync -avz --delete -e "ssh " "$LOCAL_DIR/" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_D
 ```
 Before testing this, ensure you've got the five folders on the deploy servers, the same as on the local dev server. 
 
+## Docker
+
+`docker compose up -d` will start a container running the sitrec frontend and sitrecServer. By default, this will expose the service on `http://localhost:6425/`, without a basepath. To run on a different port, change the `ports` section of the `docker-compose.yml` file.
+
+A default bind mount is set up for the `sitrec-videos` folder in the root of the project directory, allowing videos to be added. The `sitrec-cache` folder uses a volume by default, but can be changed to a bind mount by uncommenting a line in the `docker-compose.yml` file.
+
+A Mapbox token can be provided by setting the `MAPBOX_TOKEN` environment variable in the `.env` file, see `.env.example`.
+
+The rehosting & shortening functionality is not available in the docker container, as this depends on the Metabunk server.
+
 ## Adding A Sitch
 
 A "sitch" is a situation - i.e. a scenario that is being recreated. Each sitch is defined by one Javascript file, and (optionally) some data files. 
