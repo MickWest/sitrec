@@ -3,7 +3,7 @@ import {
     DirectionalLight,
     HemisphereLight,
 } from "../../three.js/build/three.module";
-import {EarthRadiusMiles, guiJetTweaks, setMainCamera, Sit} from "../Globals";
+import {EarthRadiusMiles, guiJetTweaks, Sit} from "../Globals";
 import * as THREE from "../../three.js/build/three.module";
 import * as LAYER from "../LayerMasks";
 import {

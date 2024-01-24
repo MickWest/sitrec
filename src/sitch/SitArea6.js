@@ -129,15 +129,12 @@ export const SitArea6 = {
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
         gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
-            this.mainCamera.fov = value
-            this.mainCamera.updateProjectionMatrix()
+            const mainCam = NodeMan.get("mainCamera").camera;
+            mainCam.fov = value
+            mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
         addDefaultLights(Sit.brightness)
-
-        setMainCamera(this.mainCamera)
-
-
 
         if (Sit.videoFile !== undefined) {
             new CNodeVideoWebCodecView(Object.assign({

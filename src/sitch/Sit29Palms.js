@@ -1,6 +1,6 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
 import {f2m, metersFromFeet, scaleF2M, utcDate} from "../utils";
-import {gui, setMainCamera, Sit} from "../Globals";
+import {gui, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
@@ -115,9 +115,6 @@ export const Sit29Palms = {
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
         addDefaultLights(Sit.brightness)
-
-        setMainCamera(this.mainCamera)
-
     }
 
 }

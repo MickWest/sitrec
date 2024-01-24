@@ -4,7 +4,7 @@ import {
 
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
-import {gui, NodeMan, setMainCamera, Sit} from "../Globals";
+import {gui, NodeMan, Sit} from "../Globals";
 import {
     Color,
     DirectionalLight,

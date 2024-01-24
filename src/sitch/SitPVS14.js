@@ -1,7 +1,7 @@
 import {
     Color,
 } from "../../three.js/build/three.module";
-import {GlobalPTZ, gui, guiTweaks, NodeMan, setMainCamera, Sit} from "../Globals";
+import {GlobalPTZ, gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
@@ -179,12 +179,11 @@ export const SitPVS14 = {
         AddTimeDisplayToUI(labelVideo, 50,96, 3.5, "#f0f000")
 
         gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
-            this.mainCamera.fov = value
-            this.mainCamera.updateProjectionMatrix()
+            const mainCam = NodeMan.get("mainCamera").camera;
+            mainCam.fov = value
+            mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
         addDefaultLights(Sit.brightness)
-
-        setMainCamera(this.mainCamera)
 
         // REALLY NEED TO REFACTOR THIS COMMON CODE
         if (Sit.videoFile !== undefined) {
