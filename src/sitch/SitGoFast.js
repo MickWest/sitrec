@@ -43,7 +43,6 @@ import {gui, guiTweaks, NodeMan, } from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
 import {GridHelperWorld, MV3, V3} from "../threeExt";
-import {mainCamera}  from "../Globals";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {SetupGUIFrames} from "../JetGUI";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";

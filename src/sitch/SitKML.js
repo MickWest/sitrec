@@ -2,7 +2,7 @@ import {Color} from "../../three.js/build/three.module";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
-import {mainCamera, setGlobalPTZ, Sit} from "../Globals";
+import {setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import * as LAYER from "../LayerMasks";
@@ -125,7 +125,7 @@ export const SitKML = {
 //            type:"linear",   // linear or catmull
                 type: this.targetSpline.type,   // chordal give smoother velocities
                 scene: GlobalScene,
-                camera: mainCamera,
+                camera: "mainCamera",
                 renderer: view.renderer,
                 controls: view.controls,
                 frames: this.frames,

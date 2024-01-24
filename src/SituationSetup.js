@@ -74,11 +74,10 @@ export function SituationSetup() {
 
                 })
 
-                setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
+               // setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
 
-                gui.add(mainCamera, 'fov', 0.35, 80, 0.01).onChange(value => {
-                    //mainCamera.fov = value
-                    mainCamera.updateProjectionMatrix()
+                gui.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                    cameraNode.camera.updateProjectionMatrix()
                 }).listen().name("Main FOV")
                 break;
 
@@ -165,7 +164,7 @@ export function SituationSetup() {
                 //     id: "targetTrack",
                 //     type: data.type,   // chordal give smoother velocities
                 //     scene: GlobalScene,
-                //     camera: mainCamera,
+                //     camera: "mainCamera",
                 //     renderer: view.renderer,
                 //     controls: view.controls,
                 //     frames: this.frames,

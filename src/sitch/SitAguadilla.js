@@ -117,8 +117,9 @@ export const SitAguadilla = {
 
         // adjusing the main FOV, not really used now it's set well.
         gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
-            mainCamera.fov = value
-            mainCamera.updateProjectionMatrix()
+            const mainCam = NodeMan.get("mainCamera").camera;
+            mainCam.fov = value
+            mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
         const view = new CNodeView3D({
@@ -166,17 +167,19 @@ export const SitAguadilla = {
                     var offset = pos.clone().sub(this.lastPlanePos)
                     this.lastPlanePos = pos;
                     this.lastHeading = heading;
-                    mainCamera.position.add(offset)
+                    const mainCam = NodeMan.get("mainCamera").camera;
+
+                    mainCam.position.add(offset)
 
                     // rotate camera about the jet position
-                    mainCamera.position.sub(pos)
-                    mainCamera.position.applyAxisAngle(V3(0,1,0), -radians(headingChange))
-                    mainCamera.position.add(pos)
+                    mainCam.position.sub(pos)
+                    mainCam.position.applyAxisAngle(V3(0,1,0), -radians(headingChange))
+                    mainCam.position.add(pos)
 
-                    mainCamera.rotateOnAxis(V3(0,1,0), -radians(headingChange))
+                    mainCam.rotateOnAxis(V3(0,1,0), -radians(headingChange))
 
-                    mainCamera.updateMatrix()
-                    mainCamera.updateMatrixWorld()
+                    mainCam.updateMatrix()
+                    mainCam.updateMatrixWorld()
                 }
 
                 // composer is used for effects.
@@ -457,7 +460,7 @@ export const SitAguadilla = {
             type:"chordal",   // chordal give smoother velocities
 //            type:"catmull",   // linear or catmull
             scene: GlobalScene,
-            camera: mainCamera,
+            camera: "mainCamera",
             renderer: view.renderer,
             controls: view.controls,
             frames:this.frames,
@@ -521,7 +524,7 @@ export const SitAguadilla = {
             type:"chordal",   // chordal give smoother velocities
 //            type:"catmull",   // linear or catmull
             scene: GlobalScene,
-            camera: mainCamera,
+            camera: "mainCamera",
             renderer: view.renderer,
             controls: view.controls,
             frames:this.frames,
@@ -599,7 +602,7 @@ export const SitAguadilla = {
 //            type:"linear",   // linear or catmull
             type:"chordal",   // linear or catmull
             scene: GlobalScene,
-            camera: mainCamera,
+            camera: "mainCamera",
             renderer: view.renderer,
             controls: view.controls,
             frames:this.frames,

@@ -1,5 +1,5 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
-import {gui, setMainCamera, Sit, mainCamera, NodeMan} from "../Globals";
+import {gui, Sit, mainCamera, NodeMan} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 

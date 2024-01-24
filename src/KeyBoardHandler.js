@@ -201,7 +201,8 @@ export function initKeyboard() {
         keyHeld[key] = true
         keyCodeHeld[keyCode] = true
         console.log("Key: " + key + " keyCode: " + keyCode)
-        var c = mainCamera; // mostly to avoid search results.
+        const  c = NodeMan.get("mainCamera").camera;
+
         switch (keyCode) {
             case 'NumpadDecimal':
                 c.position.copy(MV3(Sit.startCameraPosition));  //

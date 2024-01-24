@@ -1,5 +1,5 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
-import {GlobalPTZ, gui, mainCamera, NodeMan, Sit} from "../Globals";
+import {GlobalPTZ, gui, NodeMan, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 
 import {SetupGUIFrames} from "../JetGUI";
@@ -198,13 +198,15 @@ export const SitNightSky = {
             var url = window.location.href.split('?')[0];
             console.log(url)
 
-            var p = mainCamera.position.clone()
+            const mainCam = NodeMan.get("mainCamera").camera;
+
+            var p = mainCam.position.clone()
             const v = new Vector3();
-            v.setFromMatrixColumn(mainCamera.matrixWorld, 2);
+            v.setFromMatrixColumn(mainCam.matrixWorld, 2);
             v.multiplyScalar(-1000)
             v.add(p)
 
-            var _q = mainCamera.quaternion.clone();
+            var _q = mainCam.quaternion.clone();
             var q = {x: _q.x, y: _q.y, z: _q.z, w: _q.w}
 
 
@@ -223,7 +225,7 @@ export const SitNightSky = {
                 roll: GlobalPTZ.roll,
                 p: p,
                 //       v:v,
-                u: mainCamera.up,
+                u: mainCam.up,
                 q: q,
                 f: par.frame,
                 pd: par.paused,
@@ -342,13 +344,14 @@ export const SitNightSky = {
         NodeMan.get("cameraAlt").value = p.alt;
         NodeMan.get("cameraLat").recalculateCascade() // manual update
 
-        mainCamera.up.copy(MV3(p.u));
-        mainCamera.position.copy(MV3(p.p));
+        const mainCam = NodeMan.get("mainCamera").camera;
+        mainCam.up.copy(MV3(p.u));
+        mainCam.position.copy(MV3(p.p));
         // We (had) to use _x, _y, etc, as q is not a quaternion, it's just an object from the serialization
         // so it lacks the accessor methods to get x,y,z,w, but has members _x, _y, _z, _w
-        mainCamera.quaternion.set(p.q.x, p.q.y, p.q.z, p.q.w)
-        mainCamera.updateMatrixWorld();
-        //mainCamera.lookAt(MV3(p.v));
+        mainCam.quaternion.set(p.q.x, p.q.y, p.q.z, p.q.w)
+        mainCam.updateMatrixWorld();
+        //mainCam.lookAt(MV3(p.v));
 
         par.frame = p.f;
         par.paused = p.pd;

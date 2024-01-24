@@ -1,6 +1,6 @@
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
-import {Sit, guiJetTweaks, NodeMan, setMainCamera, guiTweaks} from "../Globals";
+import {Sit, guiJetTweaks, NodeMan, guiTweaks} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {CNodeArray} from "../nodes/CNodeArray";
 import {CNodeGUIValue, makeCNodeGUIFlag, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
@@ -30,7 +30,6 @@ import {
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {mainCamera} from "../Globals";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {ViewMan} from "../nodes/CNodeView";

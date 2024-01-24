@@ -1,9 +1,3 @@
-export var mainCamera;  // the main view camera
-
-export function setMainCamera(_mainCamera) {
-    mainCamera = _mainCamera
-}
-
 export let mainLoopCount = 0;
 export function incrementMainLoopCount() {
     mainLoopCount++

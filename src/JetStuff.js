@@ -1,7 +1,7 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
 // so mostly related to Gimbal, GoFast, and FLIR1
 
-import {EarthRadiusMiles, gui, guiTweaks, infoDiv, mainCamera, NodeMan,  Sit} from "./Globals";
+import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
@@ -466,16 +466,18 @@ export function ChangedPR() {
 
     // Lock camera to jet by adding the same ffset and rotating by the heading change
     if (par.lockCameraToJet) {
-        mainCamera.position.add(offset)
+        const mainCam = NodeMan.get("mainCamera").camera;
 
-        mainCamera.position.sub(LocalFrame.position)
-        mainCamera.position.applyAxisAngle(upAxis, -radians(headingChange))
-        mainCamera.position.add(LocalFrame.position)
+        mainCam.position.add(offset)
 
-        mainCamera.rotateOnAxis(upAxis, -radians(headingChange))
+        mainCam.position.sub(LocalFrame.position)
+        mainCam.position.applyAxisAngle(upAxis, -radians(headingChange))
+        mainCam.position.add(LocalFrame.position)
 
-        mainCamera.updateMatrix()
-        mainCamera.updateMatrixWorld()
+        mainCam.rotateOnAxis(upAxis, -radians(headingChange))
+
+        mainCam.updateMatrix()
+        mainCam.updateMatrixWorld()
     }
 
     // now the forward vector of the jet will be correct
@@ -1128,7 +1130,8 @@ export function initJetStuff() {
     // note that since we have a very large distance to the far clipping plane
     // we need a near clipping plane larger than the default 1, so I'm using 100
 
-    mainCamera.layers.enable(LAYER.podBack)
+    const mainCam = NodeMan.get("mainCamera").camera;
+    mainCam.layers.enable(LAYER.podBack)
 
     var view = new CNodeView3D({
         id: "mainView",
