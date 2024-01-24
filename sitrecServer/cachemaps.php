@@ -13,6 +13,10 @@
 
 require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
 
+if(!isset($cache_base_path)) {
+    $cache_base_path = "../../sitrec-cache/";
+}
+
 $url = $_GET["url"];  // usage e.g.
 
 ob_start();			// output buffering, so the echo commands don't get sent (some servers will not send the header() if there's already output
@@ -98,9 +102,9 @@ if (strcmp($ext,"png") !== 0
 
 $hash = md5($url) . "." . $ext;
 
-$cachePath = '../../sitrec-cache/' . $hash;
+$cachePath = $cache_base_path . $hash;
 
-$fileLocation = "../../sitrec-cache/";
+$fileLocation = $cache_base_path;
 $cachedFile = $fileLocation . $hash;
 
 //check if file exists

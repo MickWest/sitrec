@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  sitrec:
+    build: .
+    ports: 
+      - '6425:80'
+    environment:
+      - MAPBOX_TOKEN=${MAPBOX_TOKEN}
+    volumes:
+      - ./sitrec-videos:/var/www/html/sitrec-videos
+#      - ./sitrec-cache:/var/www/html/cache
