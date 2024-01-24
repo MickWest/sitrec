@@ -96,7 +96,7 @@ export const SitPVS14 = {
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
-    mainView:{left:0.0, top:0, width:0.5,height:1},
+    mainView:{left:0.0, top:0, width:0.5,height:1,background:'#132d44'},
 
     setup2: function () {
 
@@ -109,16 +109,18 @@ export const SitPVS14 = {
         //         {"new":"TrackFromTimed", "id":"cameraTrack",     "timedData":"cameraTrackData"},
         //     ]`);
 
-        const view = new CNodeView3D({
-            id: "mainView",
-            left: 0.0, top: 0, width: 0.5, height: 1,
-            draggable: false, resizable: false,
-            fov: 50,
-            doubleClickFullScreen: false,
-            background: new Color('#132d44'),
-            camera: "mainCamera",
-            ...this.mainView,
-        })
+        // const view = new CNodeView3D({
+        //     id: "mainView",
+        //     left: 0.0, top: 0, width: 0.5, height: 1,
+        //     draggable: false, resizable: false,
+        //     fov: 50,
+        //     doubleClickFullScreen: false,
+        //     background: new Color('#132d44'),
+        //     camera: "mainCamera",
+        //     ...this.mainView,
+        // })
+
+        const view = NodeMan.get("mainView");
         view.addOrbitControls(this.renderer);
 
         NodeMan.remove("lookCamera")

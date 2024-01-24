@@ -43,6 +43,7 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
         fov: 20,
     },
     cameraTrack: {},
+    mainView:{left:0.0, top:0, width:.50,height:1},
 
 
 })

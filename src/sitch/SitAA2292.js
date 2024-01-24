@@ -34,12 +34,8 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
         addFOVController: true,
     },
     cameraTrack: {},
-
-
-
-
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
- //   videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
-
+    mainView:{left:0.0, top:0, width:.50,height:1},
+    focusTracks: {},
 
 })

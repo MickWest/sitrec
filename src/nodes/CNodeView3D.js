@@ -116,9 +116,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.focusTrackName = "default"
         if (v.focusTracks) {
-                gui.add(this, "focusTrackName", v.focusTracks).onChange(focusTrackName => {
-                   //
-                }).name("Focus Track")
+            this.addFocusTracks(v.focusTracks);
         }
 
         if (v.renderFunction === undefined) {
@@ -135,6 +133,12 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
         }
 
+    }
+
+    addFocusTracks(focusTracks) {
+        gui.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
+            //
+        }).name("Focus Track")
     }
 
     get camera() {

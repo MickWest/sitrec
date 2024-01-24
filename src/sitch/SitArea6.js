@@ -1,5 +1,5 @@
 import {Color, Vector3} from "../../three.js/build/three.module";
-import {gui, setMainCamera, Sit, mainCamera} from "../Globals";
+import {gui, setMainCamera, Sit, mainCamera, NodeMan} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
@@ -76,6 +76,9 @@ export const SitArea6 = {
 
     targetSize: 500,
 
+    mainView:{left:0.0, top:0, width:.50,height:1,background:'#132d44',},
+
+
 //    syncVideoZoom: true,
 
     // overrides for video viewport
@@ -97,15 +100,17 @@ export const SitArea6 = {
         // })
 
 
-        const view = new CNodeView3D({
-            id: "mainView",
-            left: 0.0, top: 0, width: 0.5, height: 1,
-            draggable: false, resizable: false,
-            fov: 50,
-            doubleClickFullScreen: true,
-            background: new Color('#132d44'),
-            camera: "mainCamera",
-        })
+        // const view = new CNodeView3D({
+        //     id: "mainView",
+        //     left: 0.0, top: 0, width: 0.5, height: 1,
+        //     draggable: false, resizable: false,
+        //     fov: 50,
+        //     doubleClickFullScreen: true,
+        //     background: new Color('#132d44'),
+        //     camera: "mainCamera",
+        // })
+
+        const view = NodeMan.get("mainView");
         view.addOrbitControls(this.renderer);
 
         const viewLook = new CNodeView3D({

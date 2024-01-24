@@ -78,7 +78,7 @@ const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
 // Create a new sorted object
 const selectableSitches = {};
 sortedKeys.forEach(key => {
-    console.log(selectableSitchesUnsorted[key]);
+//    console.log(selectableSitchesUnsorted[key]);
     selectableSitches[key] = selectableSitchesUnsorted[key];
 });
 

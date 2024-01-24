@@ -50,8 +50,23 @@ export const SitKML = {
     animated: true,
     fps: 30,
 
+    terrain: {},
+
     lookCamera: {
         fov: 10, // this is the default, but we can override it with a new lookCamera object
+    },
+
+    // we add empty defintions to define the order of in which things are created
+    // other sitches that uses this as a base class must override these
+    // we need mainView specifically as some things use it when created
+    mainCamera: {},
+    mainView: {},
+
+    focusTracks: {
+        "Ground (No Track)": "default",
+        "Jet track": "cameraTrack",
+        "Target Track": "targetTrack",
+        "Other Track": "KMLOtherTarget",
     },
 
     showAltitude: true,
@@ -63,7 +78,7 @@ export const SitKML = {
     targetSize: 10000,
 
     // this is an override for the mainview setup
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    // mainView:{left:0.0, top:0, width:.50,height:1},
 
     skyColor: "rgb(0%,0%,10%)",
 
@@ -73,26 +88,28 @@ export const SitKML = {
 
         Sit.setupWind()
 
-        const view = new CNodeView3D(Object.assign({
-            id: "mainView",
-            //     draggable:true,resizable:true,
-            left: 0.0, top: 0, width: .5, height: 1,
-            fov: 50,
-            background: Sit.skyColor,
-            camera: "mainCamera",
+        // const view = new CNodeView3D(Object.assign({
+        //     id: "mainView",
+        //     //     draggable:true,resizable:true,
+        //     left: 0.0, top: 0, width: .5, height: 1,
+        //     fov: 50,
+        //     background: Sit.skyColor,
+        //     camera: "mainCamera",
+        //
+        //     renderFunction: function () {
+        //         this.renderer.render(GlobalScene, this.camera);
+        //     },
+        //
+        //     focusTracks: {
+        //         "Ground (No Track)": "default",
+        //         "Jet track": "cameraTrack",
+        //         "Target Track": "targetTrack",
+        //         "Other Track": "KMLOtherTarget",
+        //     },
+        //
+        // }, Sit.mainView))
 
-            renderFunction: function () {
-                this.renderer.render(GlobalScene, this.camera);
-            },
-
-            focusTracks: {
-                "Ground (No Track)": "default",
-                "Jet track": "cameraTrack",
-                "Target Track": "targetTrack",
-                "Other Track": "KMLOtherTarget",
-            },
-
-        }, Sit.mainView))
+        const view = NodeMan.get("mainView");
 
         view.addOrbitControls(this.renderer);
 

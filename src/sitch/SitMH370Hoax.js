@@ -1,31 +1,17 @@
-import {Color, Vector3} from "../../three.js/build/three.module";
+import {Color} from "../../three.js/build/three.module";
 import {f2m, metersFromFeet, scaleF2M} from "../utils";
 import {Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
-import * as LAYER from "../LayerMasks";
-import * as THREE from "../../three.js/build/three.module";
-import {CNodeConstant} from "../nodes/CNode";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
-import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
-import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {CNodeLOSTraverse} from "../nodes/CNodeLOSTraverse";
-import {CNodeLOSConstantCamera} from "../nodes/CNodeLOSConstantCamera";
-import {CNodeScale} from "../nodes/CNodeScale";
-import {CNodeLOSMotionTrack} from "../nodes/CNodeLOSMotionTrack";
+
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
-import {AddSpeedGraph} from "../JetGraphs";
 import {gui, guiTweaks, } from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
-import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
-import {CNodeImageAnalysis} from "../nodes/CNodeImageAnalysis";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeMunge} from "../nodes/CNodeMunge";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitMH370Hoax = {
     name: "mh370hoax",

@@ -31,5 +31,6 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
 
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
+    mainView:{left:0.0, top:0, width:.50,height:1},
 
 })

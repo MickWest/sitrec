@@ -3,14 +3,13 @@ import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
-import {Color, PerspectiveCamera} from "../three.js/build/three.module";
-import {par} from "./par";
-import {MV3} from "./threeExt";
+import {Color} from "../three.js/build/three.module";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {assert} from "./utils";
+import {CNodeView3D} from "./nodes/CNodeView3D";
 
 
 
@@ -18,9 +17,6 @@ export function SituationSetup() {
     console.log("++++++ SituationSetup")
 
     new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
-
-
-
 
     for (let key in Sit) {
 //        console.log(key)
@@ -140,8 +136,47 @@ export function SituationSetup() {
                     referenceFocalLength: data.len,
                     referenceFOV: data.fov,
                 })
+                break;
+
+            case "mainView":
+                SSLog();
+                const mainViewDef = {
+                    id: "mainView",
+                    //     draggable:true,resizable:true,
+                    left: 0.0, top: 0, width: .5, height: 1,
+                    fov: 50,
+                    background: Sit.skyColor,
+                    camera: "mainCamera",
+                    ...data,
+                }
+                new CNodeView3D(mainViewDef);
+                break;
+
+            case "focusTracks":
+                SSLog();
+                NodeMan.get("mainView").addFocusTracks(data);
 
                 break;
+
+                // need to implement views first, as the spline editor needs a renderer and controls
+            case "targetSpline":
+                // SSlog();
+                // new CNodeSplineEditor({
+                //     id: "targetTrack",
+                //     type: data.type,   // chordal give smoother velocities
+                //     scene: GlobalScene,
+                //     camera: mainCamera,
+                //     renderer: view.renderer,
+                //     controls: view.controls,
+                //     frames: this.frames,
+                //     terrainClamp: "TerrainModel",
+                //
+                //     initialPoints: data.initialPoints,
+                //     initialPointsLLA: data.initialPointsLLA,
+                // })
+                break;
+
+
         }
 
 
