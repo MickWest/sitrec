@@ -18,7 +18,6 @@ import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {CNodeJetTrack} from "../nodes/CNodeJetTrack";
-import {CNodeView3D} from "../nodes/CNodeView3D";
 import {closingSpeed, CNodeConstant} from "../nodes/CNode";
 import {CNodeWatch} from "../nodes/CNodeWatch";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
@@ -49,9 +48,7 @@ import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
-import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {addControllerTo} from "../nodes/CNodeController";
 
 export var SitGoFast = {
@@ -69,14 +66,7 @@ export var SitGoFast = {
     startDistanceMin: 0,
     startDistanceMax: 15,
     targetSize: 3,
-    lookCamera: {
-        fov: 0.7,
-    },
 
-    mainCamera: {
-        startCameraPosition: [25034.03, 13882.82, 10206.08],
-        startCameraTarget: [24090.07, 13646.05, 9976.13],
-    },
 
     heading: 262,   // initial heading of the jet - was 314
 
@@ -87,6 +77,22 @@ export var SitGoFast = {
         GoFastRNG: 'gofast/Go Fast RNG.csv',
     },
     videoFile: "../sitrec-videos/public/3 - GOFAST CROP HQ - 01.mp4",
+
+    lookCamera: { fov: 0.7,},
+    mainCamera: {
+        startCameraPosition: [25034.03, 13882.82, 10206.08],
+        startCameraTarget: [24090.07, 13646.05, 9976.13],
+    },
+
+    mainView: {left: 0, top: 0, width: 1, height: 1,background:[0.05,0.05,0.05]},
+    lookView: {left: 0.64, top: 1 - 0.3333, width: -1, height: 0.333,},
+    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+
+    focusTracks:{
+        "Ground (no track)": "default",
+        "Jet track": "jetTrack",
+        "Traverse Path (UFO)": "LOSTraverseSelect"
+    },
 
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")
@@ -114,30 +120,30 @@ export var SitGoFast = {
         this.GoFastRNG = RollingAverage(ExpandKeyframes(FileManager.get('GoFastRNG'), Sit.frames),50)
 
 
-        var view = new CNodeView3D({id:"mainView",
-            visible:true,
-            left: 0, top: 0, width: 1, height: 1,
-            fov: 10,
-            doubleClickResizes: false,
-            draggable: false, resizable: false, shiftDrag: true, freeAspect: true,
-            camera: "mainCamera",
-            renderFunction: function() {
-                this.renderer.render(GlobalScene, this.camera);
-                //     labelRenderer.render( GlobalScene, this.camera );
-
-    //            this.div.style.pointerEvents = keyHeld['q']?'auto':'none';
-            },
-            defaultTargetHeight: 25000,
-            background: new THREE.Color().setRGB(0.0, 0.0, 0.0),
-
-            focusTracks:{
-                "Ground (no track)": "default",
-                "Jet track": "jetTrack",
-                "Traverse Path (UFO)": "LOSTraverseSelect"
-            },
-
-        })
-        view.addOrbitControls(this.renderer);
+    //     var view = new CNodeView3D({id:"mainView",
+    //         visible:true,
+    //         left: 0, top: 0, width: 1, height: 1,
+    //         fov: 10,
+    //         doubleClickResizes: false,
+    //         draggable: false, resizable: false, shiftDrag: true, freeAspect: true,
+    //         camera: "mainCamera",
+    //         renderFunction: function() {
+    //             this.renderer.render(GlobalScene, this.camera);
+    //             //     labelRenderer.render( GlobalScene, this.camera );
+    //
+    // //            this.div.style.pointerEvents = keyHeld['q']?'auto':'none';
+    //         },
+    //         defaultTargetHeight: 25000,
+    //         background: new THREE.Color().setRGB(0.0, 0.0, 0.0),
+    //
+    //         focusTracks:{
+    //             "Ground (no track)": "default",
+    //             "Jet track": "jetTrack",
+    //             "Traverse Path (UFO)": "LOSTraverseSelect"
+    //         },
+    //
+    //     })
+    //     view.addOrbitControls(this.renderer);
 
 
 
@@ -336,9 +342,6 @@ export var SitGoFast = {
                 1030:makeMatLine(0x00ff00,2), // green end
             },
             color: 0x606060,
-
-
-
         })
 
 
@@ -363,10 +366,7 @@ export var SitGoFast = {
             }
         })
 
- //       AddSizePercentageGraph()
-
         // different comparison nodes in AZ graph
-
         var azEditorNode = NodeMan.get("azEditor")
 
         azEditorNode.editorView.addInput("compare",
@@ -404,9 +404,7 @@ export var SitGoFast = {
                 radius: "radiusMiles",
                 material: new CNodeConstant({value: waterMaterial})
             },
-
         })
-
 
         console.log("+++ LOSGroundTrackDisplayNode")
         var LOSGroundTrackDisplayNode = new CNodeDisplayTrack({
@@ -421,31 +419,10 @@ export var SitGoFast = {
 
 /////////////////////////////////////////////////////////////////
 // look view is the view from the ATFLIR
-//         new CNodeCamera({
-//             id:"lookCamera",
-//             fov: this.lookFOV,
-//             aspect: window.innerWidth / window.innerHeight,
-//             near: this.nearClipLook,
-//             far: this.farClipLook,
-//             layers: LAYER.MASK_LOOKRENDER,
-//        })
 
         addControllerTo("lookCamera", "TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
-        })
-
-        new CNodeView3D({
-            id: "lookView",
-            visible: true,
-            draggable: true, resizable: true,
-            left: 0.64, top: 1 - 0.3333, width: -1, height: 0.333,
-            background: new THREE.Color().setRGB(0.2, 0.2, 0.2),
-            camera:"lookCamera",
-            renderFunction: function() {
-                this.renderer.render(GlobalScene, this.camera);
-            },
-            layers: LAYER.MASK_LOOKRENDER,
         })
 
         var ui = new CNodeATFLIRUI({
@@ -491,24 +468,6 @@ export var SitGoFast = {
             },
             
         })
-
-        // Note this is overwriting the A/B frames ???????????????????
-        new CNodeVideoWebCodecView({
-                id: "video",
-                inputs: {
-                    zoom: new CNodeGUIValue({
-                        value: 100, start: 100, end: 1000, step: 1,
-                        desc: "Video Zoom x"
-                    }, guiTweaks)
-                },
-                visible: par.showVideo,
-                left: 0.8250, top: 0.6666, width: -1, height: 0.3333,
-                draggable: true, resizable: true,
-                frames: Sit.frames,
-                file: Sit.videoFile,
-
-            }
-        )
 
 // GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS GRAPHS
         AddGenericNodeGraph("","Turn Rate °/s", [
