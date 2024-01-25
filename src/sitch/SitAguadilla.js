@@ -6,7 +6,6 @@ import {CNodeView3D} from "../nodes/CNodeView3D";
 import {par} from "../par";
 import {gui, NodeMan, Sit} from "../Globals";
 import {
-    Color,
     DirectionalLight,
     HemisphereLight,
     AlwaysDepth
@@ -66,7 +65,6 @@ export const SitAguadilla = {
 
     LOSSpacing:30*2,
 
-
     startDistance: 1.612,
     startDistanceMax: 3.5,
     startDistanceMin: 0.1,
@@ -79,11 +77,7 @@ export const SitAguadilla = {
     targetSpeedStep: 0.001,
 
     // Near and far clipping distances for the main 3D view
-
     nearClip: 1,
-
-
-
 
     files: {
         // one big file with all the data in it.
@@ -97,6 +91,11 @@ export const SitAguadilla = {
         startCameraTarget: [-8986.013511122388, 2586.5050262571704, -2156.3235382146754],
     },
     mainView: {left: 0.0, top: 0, width: 1, height: 1, fov:50, background: '#005000'},
+
+    lookView: {
+        left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
+        effects: {FLIRShader: {},},
+    },
 
 
     videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
@@ -203,19 +202,6 @@ export const SitAguadilla = {
            var points = []
            var csv = FileManager.get(csvID)
 
-           /*
-
-           for (var row=0;row<csv.length;row++) {
-               var lat = parseFloat(csv[row][latIndex])
-               var lon = parseFloat(csv[row][lonIndex])
-               var alt = altIndex >= 0 ? f2m(parseFloat(csv[row][altIndex])) : -altIndex;
-//               console.log("LLA = "+lat+","+lon+","+alt)
-               var pos = LLAToEUS(lat, lon, alt)
-//               console.log("EUS = "+pos.x+","+pos.y+","+pos.z)
-               points.push({position:pos})
-           }
-            */
-
            // try just recording when Lat or Lon changes
            var Keys = []
 
@@ -248,7 +234,6 @@ export const SitAguadilla = {
                            rowC = row;
                            const thisAngle = Math.atan2(C.z - B.z, C.x - B.x)
                            if (Math.abs(thisAngle - lastAngle) > 0.0001) {
-//                               console.log("Turn at: " + thisAngle, " delta = "+ Math.abs(thisAngle - lastAngle))
                                DebugSphere("turnpoint"+row,B, 1)
                                // A->C is at a different angle to A->B
                                // so push the midpoint of the last segment A->B
@@ -263,7 +248,6 @@ export const SitAguadilla = {
                                // otherwise extend B to C
                                B = C
                                rowB = rowC
-//                               console.log("Straight at: " + thisAngle)
                            }
                        }
                    }
@@ -294,10 +278,6 @@ export const SitAguadilla = {
 
            for (row=0;row<csv.length;row++) {
                points.push({position: V3(xExp[row], yExp[row], zExp[row])});
-
-//               DebugSphere(id+"detail"+row, V3(xExp[row], yExp[row], zExp[row]),1)
-
-
            }
 
 
@@ -599,17 +579,6 @@ export const SitAguadilla = {
             snapTarget:"groundSplineEditor",
 
             initialPoints:[
-                // [0, -1540.4440997050026, 294.8168987977034, -887.0099242402622],
-                // [758, -1728.390495663607, 289.6166496106155, -778.52307591189],
-                // [1395, -1896.9833460064995, 273.68242706075586, -694.6407760695475],
-                // [2026, -2054.3518487782785, 260.00251739099616, -613.6558076928167],
-                // [2641, -2174.8998468605564, 241.00675333319202, -553.8784683365909],
-                // [3217, -2288.070059858875, 231.02698803395714, -511.58150864840803],
-                // [4125, -2466.1305989553534, 210.03763988002945, -457.7013191877041],
-                // [4585, -2550.3748662995113, 199.39607547614946, -429.97454286552744],
-                // [5047, -2634.67388768681, 189.40388088154356, -398.1184455525155],
-                // [5385, -2686.0343328974327, 181.97780658325368, -383.98651098437887],
-                // [7027, -2854.3745381807425, 172.58941221630107, -279.8009248303654]
 
                 // after started snapping
                 [0, -1540.104112722002, 289.1284154088012, -878.4760598469685],
@@ -658,7 +627,6 @@ export const SitAguadilla = {
         new CNodeSwitch({id:"LOSTargetTrack",
             inputs: {
                 'Ground Path Editor': "groundSplineEditor",
-        //       'Path Editor (Balloon)': "lanternSplineEditor",
                 'Camera Ground Track': "targetTrackSmooth",
             },
             desc: "LOS Target Track"
@@ -668,19 +636,9 @@ export const SitAguadilla = {
 
         new CNodeLOSTrackTarget({id:"JetLOS",
             cameraTrack: "jetTrackSmooth",
-//            targetTrack: "targetTrackSmooth"
-//            targetTrack: "splineEditor"
             targetTrack: "LOSTargetTrack"
         })
 
-        /*
-        // a track where the LOS intersect the terrain
-        new CNodeLOSTraverseTerrain({
-            id: "terrainTrack",
-            LOS: "JetLOS",
-            terrain: "TerrainModel"
-        })
-*/
 
 /*
         SO, (New) we are either editing a ground track to get a traversable set up LOS to get the air track
@@ -731,49 +689,16 @@ export const SitAguadilla = {
 
         CreateTraverseNodes();
 
-        // new CNodeLOSTraverseConstantSpeed({
-        //     id: "LOSTraverseConstantSpeedPreferredDirection",
-        //     inputs: {
-        //         LOS: "JetLOS",
-        //         startDist: "startDistance",
-        //         speed: "speedScaled",
-        //
-        //         wind: "localWind", // might want to use a different wind, but it's a small space, so maybe not
-        //         preferredDirection:"preferredHeading" // pick solutions closest to this
-        //     },
-        // })
-
 
         MakeTraverseNodesMenu(  {
-      //      "Const Spd (pref dir)": "LOSTraverseConstantSpeedPreferredDirection",
             "Lantern Spline Editor":"lanternSplineEditor",
             "UAP Spline Editor":"uapSplineEditor",
             "Ground Spline Editor":"groundSplineEditor",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
-        //    "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
         })
 
-
-
-
-// //        new CNodeFramesVideoView({id:"video",
-//         new CNodeVideoWebCodecView({id:"video",
-//                 inputs: {
-//                     zoom: new CNodeGUIValue({
-//                         value: 100, start: 100, end: 1000, step: 1,
-//                         desc: "Video Zoom x"
-//                     }, guiTweaks)
-//                 },
-//                 visible: true,
-//                 left: 0.6250, top: 0, width: -1.5, height: 0.5,
-//                 draggable: true, resizable: true,
-//                 frames: Sit.frames,
-//                 file: Sit.videoFile,
-//
-//             }
-//         )
 
 
 // THE FINAL TRAVERSAL, SMOOTHED
@@ -817,17 +742,6 @@ export const SitAguadilla = {
             new CNodeGUIValue({value:Sit.targetSize,start:1,end:2000, step:0.1, desc:"Target size ft"},gui)
         )
 
-        // // traverse sphere in white, currently coincidenct with ufo spline
-        // new CNodeDisplayTargetSphere({
-        //     inputs: {
-        //         track: "LOSTraverseSelectSmoothed",
-        //         size: "sizeScaled",
-        //     },
-        //
-        //     layers:LAYER.MASK_LOOK,
-        // })
-
-
 
         new CNodeDisplayTargetSphere({
             inputs: {
@@ -838,55 +752,10 @@ export const SitAguadilla = {
             color:"white",
         })
 
-
-        // // debug show the ground track sphere
-        // new CNodeDisplayTargetSphere({
-        //     inputs: {
-        //         track: "groundSplineEditor",
-        //         size: "sizeScaled",
-        //     },
-        //     color:"white",
-        //     layers:LAYER.MASK_LOOK,
-        // })
-
-
-        // this.lookCamera = new CNodeCamera({
-        //     id:"lookCamera",
-        //     fov: this.lookFOV,
-        //     aspect: window.innerWidth / window.innerHeight,
-        //     near: this.nearClipLook,
-        //     far: this.farClipLook,
-        //     layers: LAYER.MASK_LOOK,
-        // })
-
             addControllerTo("lookCamera", "TrackToTrack", {
             sourceTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
         })
-
-        new CNodeView3D({
-            id: "lookView",
-            visible: true,
-            draggable: true, resizable: true,
-            showCursor: false,
-            showLOSArrow: true,
-
-            left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
-//    background: new THREE.Color().setRGB( 0.0, 0.0, 0.0 ),
-            background: new THREE.Color().setRGB(0.2, 0.2, 0.2),
-           // cameraTrack: "jetTrackSmooth",
-           // targetTrack: "LOSTraverseSelectSmoothed",
-            radiusMiles: "radiusMiles", // constant
-
-            camera:"lookCamera",
-
-            effects: {
-                FLIRShader: {},
-            }
-
-        })
-
-
 
 
         // The lines of sight with smoothed traversal points

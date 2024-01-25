@@ -36,6 +36,8 @@ export const SitJellyfish    = {
     simSpeed: 1,
     videoSpeed: 1,
 
+    useFLIRShader: true,
+
     files: {
   //      hayleCSV: "hayle/hayle-track.csv",
     },
@@ -78,7 +80,9 @@ export const SitJellyfish    = {
         startCameraTargetLLA: [33.280159, 43.642938, 4451.060802],
     },
     mainView:{ left:0.0, top:0, width:.50,height:1,background:'#000000'},
-    lookView:{ left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,},
+    lookView:{ left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
+        effects: {FLIRShader: {},},
+    },
 
     focusTracks: {
              "Ground (No Track)": "default",
