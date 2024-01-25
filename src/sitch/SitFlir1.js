@@ -75,8 +75,9 @@ export const SitFlir1 = {
 
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
-    lookView: {left: 0.653, top: 1 - 0.333, width: -1., height: 0.333,},
+    lookView: {left: 0.653, top: 1 - 0.3333, width: -1., height: 0.3333,},
 
+    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
 
     focusTracks:{
         "Ground (no track)": "default",
@@ -283,24 +284,6 @@ export const SitFlir1 = {
                            })
 
         SetupTrackLOSNodes()
-
-        new CNodeVideoWebCodecView({
-                id: "video",
-                inputs: {
-                    zoom: new CNodeGUIValue({
-                        id: "videoZoom",
-                        value: 100, start: 100, end: 2000, step: 1,
-                        desc: "Video Zoom %"
-                    }, gui)
-                },
-
-                visible: par.showVideo,
-                left: 0.8250, top: 0.6666, width: -1, height: 0.3333,
-                draggable: true, resizable: true,
-                frames: Sit.frames,
-                file: Sit.videoFile,
-            }
-        )
 
         NodeMan.get("lookCamera").addController("TrackToTrack", {
             sourceTrack: "JetLOS",
