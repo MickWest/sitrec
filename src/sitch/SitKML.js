@@ -317,36 +317,15 @@ export const SitKML = {
 
 
         if (this.lookCamera !== undefined) {
-            //this.lookCamera = new PerspectiveCamera(this.lookFOV, window.innerWidth / window.innerHeight, 1, Sit.farClipLook);
-
-            // const lookCameraDefaults = {
-            //     id: "lookCamera",
-            //     fov: this.planeCameraFOV,
-            //     aspect: window.innerWidth / window.innerHeight,
-            //     near: this.nearClipLook,
-            //     far: this.farClipLook,
-            //     layers: LAYER.MASK_LOOK,
-            //
-            // }
 
             const cam = NodeMan.get("lookCamera")
 
             if (this.ptz) {
-
-                // new CNodeCamera({
-                //     ...lookCameraDefaults,
-                // }).addController("TrackAzEl",{
-                //     sourceTrack: "cameraTrack",
-                // })
                 cam.addController("TrackAzEl",{
                         sourceTrack: "cameraTrack",
                     })
 
             } else {
-
-                // const cam = new CNodeCamera({
-                //     ...lookCameraDefaults,
-                // })
 
                 if (NodeMan.exists("targetTrackAverage")) {
 
