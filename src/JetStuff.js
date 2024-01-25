@@ -10,7 +10,7 @@ import * as LAYER from "./LayerMasks";
 import {Line2} from '../three.js/examples/jsm/lines/Line2.js';
 import {LineGeometry} from '../three.js/examples/jsm/lines/LineGeometry.js';
 import {initKeyboard, showHider, toggles} from "./KeyBoardHandler";
-import {ViewMan} from "./nodes/CNodeView";
+import {VG, ViewMan} from "./nodes/CNodeView";
 import {
     chartDiv,
     setupGimbalChart,
@@ -1291,72 +1291,50 @@ export function initJetStuff() {
 /////////////////////////////////////////////////////////////////
 // ATRLIR pod CAM
 
-    // new CNodeCamera({
-    //     id:"lookCamera",
-    //     fov: Sit.lookFOV,
-    //     aspect: window.innerWidth / window.innerHeight,
-    //     near: Sit.nearClipLook,
-    //     far: Sit.farClipLook,
-    //     layers: LAYER.MASK_LOOKRENDER,
-    // })
-    
-    new CNodeView3D({
-        id: "lookView",
-        visible: true,
-        left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,
-//    background: new Color().setRGB( 0.0, 0.0, 0.0 ),
-        background: new Color().setRGB(0.05, 0.05, 0.05),
-        up: [0, 1, 0],
-        fov: 10,
-        draggable: true,
-        resizable: true,
-        syncVideoZoom: true,
-        camera: "lookCamera",
-        renderFunction: function () {
+    VG("lookView").renderFunction = function () {
 
-            // PATCH for the jet sitches,
-            // camera is a child of the ball, and will get the layer mask reset when the model loads
-            // so we force it here.
-            this.camera.layers.mask = LAYER.MASK_LOOKRENDER;
+        // PATCH for the jet sitches,
+        // camera is a child of the ball, and will get the layer mask reset when the model loads
+        // so we force it here.
+        this.camera.layers.mask = LAYER.MASK_LOOKRENDER;
 
-            if (!Ball) return;
-            if (this.camera.parent == null) {
-                // PROBLEM, MAYBE - the ball has scale.
+        if (!Ball) return;
+        if (this.camera.parent == null) {
+            // PROBLEM, MAYBE - the ball has scale.
 
-                Ball.add(this.camera)
-            }
+            Ball.add(this.camera)
+        }
 
 
-            this.camera.up = V3(Ball.matrixWorld.elements[4],
-                Ball.matrixWorld.elements[5],
-                Ball.matrixWorld.elements[6])
+        this.camera.up = V3(Ball.matrixWorld.elements[4],
+            Ball.matrixWorld.elements[5],
+            Ball.matrixWorld.elements[6])
 
-            var worldTarget = V3(0, 0, 0)
-            targetSphere.getWorldPosition(worldTarget)
-            this.camera.lookAt(worldTarget)
+        var worldTarget = V3(0, 0, 0)
+        targetSphere.getWorldPosition(worldTarget)
+        this.camera.lookAt(worldTarget)
 
-            var deroNeeded = getDeroFromFrame(par.frame)
+        var deroNeeded = getDeroFromFrame(par.frame)
 
 //                console.log(deroNeeded + " -> " + par.podRollPhysical)
 
-            this.camera.rotateZ(radians(deroNeeded))
-            if (Sit.showGlare) {
-                glareSprite.scale.setScalar(0.0005)
-                glareSprite.material.rotation = radians(-deroNeeded + par.glareStartAngle)
-            }
-
-            //this.renderer.render(GlobalScene, this.camera);
-            this.renderer.render(GlobalScene, this.camera);
-
-
-            if (Sit.showGlare) {
-                glareSprite.material.rotation = 0
-            }
+        this.camera.rotateZ(radians(deroNeeded))
+        if (Sit.showGlare) {
+            glareSprite.scale.setScalar(0.0005)
+            glareSprite.material.rotation = radians(-deroNeeded + par.glareStartAngle)
         }
-    })
+
+        //this.renderer.render(GlobalScene, this.camera);
+        this.renderer.render(GlobalScene, this.camera);
 
 
-    ViewMan.get("lookView").setVisible(par.showLookCam);
+        if (Sit.showGlare) {
+            glareSprite.material.rotation = 0
+        }
+    }
+
+
+    VG("lookView").setVisible(par.showLookCam);
 
 
     console.table(ViewMan.list)

@@ -394,6 +394,10 @@ class CUIText {
 export {CNodeView, CUIText}
 export var ViewMan = new CManager()
 
+export function VG(id){
+    return ViewMan.get(id)
+}
+
 // mouse and views both have 0,0 in the upper left.
 export function mouseToView(view, x, y) {
     var xv = x - view.leftPx;

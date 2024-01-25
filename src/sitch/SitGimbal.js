@@ -66,6 +66,8 @@ const GimbalDefaults = {
     videoFile: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
 
+    lookCamera: { fov:0.35 },
+    lookView: {left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,background:[0.02,0.02,0.02]},
 
     focusTracks: {
         "Default": "default",
@@ -75,9 +77,6 @@ const GimbalDefaults = {
     },
 
     setup: function () {
-
-
-
         setupOpts();
 
         par.deroFromGlare = true;
