@@ -12,9 +12,7 @@ import {CNodeWatch} from "../nodes/CNodeWatch";
 import {par} from "../par";
 import {CNodeJetTrack} from "../nodes/CNodeJetTrack";
 import {CNodeLOSTrackAzEl} from "../nodes/CNodeLOSTrackAzEl";
-import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as LAYER from "../LayerMasks";
-import * as THREE from "../../three.js/build/three.module";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {gui} from "../Globals";
@@ -36,7 +34,6 @@ import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {CNodeCamera} from "../nodes/CNodeCamera";
 import {FileManager} from "../CFileManager";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {CNodeMunge} from "../nodes/CNodeMunge";
@@ -72,6 +69,20 @@ export const SitFlir1 = {
         TargetObjectFile: './models/FA-18F.glb',
     },
     videoFile: "../sitrec-videos/public/f4-aspect-corrected-242x242-was-242x216.mp4",
+
+
+    lookCamera: {},
+
+
+    mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
+    lookView: {left: 0.653, top: 1 - 0.333, width: -1., height: 0.333,},
+
+
+    focusTracks:{
+        "Ground (no track)": "default",
+        "Jet track": "jetTrack",
+        "Traverse Path (UFO)": "LOSTraverseSelect"
+    },
 
     setup: function () {
 
@@ -273,38 +284,8 @@ export const SitFlir1 = {
 
         SetupTrackLOSNodes()
 
-
-
-
-
-
-
-        var view = new CNodeView3D({id:"mainView",
-            visible:true,
-            left: 0, top: 0, width: 1, height: 1,
-            fov: 10,
-            doubleClickResizes: false,
-            draggable: false, resizable: false, shiftDrag: true, freeAspect: true,
-            camera: "mainCamera",
-            renderFunction: function() {
-                this.renderer.render(GlobalScene, this.camera);
-                //     labelRenderer.render( GlobalScene, this.camera );
-
-            },
-            defaultTargetHeight: 20000,
-            background: new THREE.Color().setRGB(0.0, 0.0, 0.0),
-            focusTracks:{
-                "Ground (no track)": "default",
-                "Jet track": "jetTrack",
-                "Traverse Path (UFO)": "LOSTraverseSelect"
-            },
-
-
-        })
-
-        view.addOrbitControls(this.renderer);
-
-                new CNodeVideoWebCodecView({id:"video",
+        new CNodeVideoWebCodecView({
+                id: "video",
                 inputs: {
                     zoom: new CNodeGUIValue({
                         id: "videoZoom",
@@ -321,50 +302,30 @@ export const SitFlir1 = {
             }
         )
 
-
-        new CNodeCamera({
-            id:"lookCamera",
-            fov: this.lookFOV,
-            aspect: window.innerWidth / window.innerHeight,
-            near: this.nearClipLook,
-            far: this.farClipLook,
-            layers: LAYER.MASK_LOOKRENDER,
-        }).addController("TrackToTrack", {
+        NodeMan.get("lookCamera").addController("TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
 
-        new CNodeView3D({
-            id: "lookView",
-            visible: true,
-            draggable: true, resizable: true,
-            //   left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
-//            left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,
-            left: 0.653, top: 1 - 0.333, width: -1., height: 0.333,
-            background: new THREE.Color().setRGB(0.05, 0.05, 0.05),
-            camera:"lookCamera",
-            syncVideoZoom: true,
-            renderFunction: function(frame) {
+        NodeMan.get("lookView").renderFunction = function(frame) {
 
-                // bit of a patch to get in the FOV
-                if (Sit.flir1Data !== undefined) {
-                    // frame, mode, Focal Leng
-                    var focalMode = getArrayValueFromFrame(Sit.flir1Data,0,2,frame)
-                    var mode = getArrayValueFromFrame(Sit.flir1Data,0,1,frame)
-                    var zoom = getArrayValueFromFrame(Sit.flir1Data,0,3,frame)
+            // bit of a patch to get in the FOV
+            if (Sit.flir1Data !== undefined) {
+                // frame, mode, Focal Leng
+                var focalMode = getArrayValueFromFrame(Sit.flir1Data,0,2,frame)
+                var mode = getArrayValueFromFrame(Sit.flir1Data,0,1,frame)
+                var zoom = getArrayValueFromFrame(Sit.flir1Data,0,3,frame)
 
-                    var vFOV = 0.7;
-                    if (focalMode === "MFOV") vFOV = 3;
-                    if (focalMode === "WFOV") vFOV = 6
-                    if (zoom === "2") vFOV /= 2
+                var vFOV = 0.7;
+                if (focalMode === "MFOV") vFOV = 3;
+                if (focalMode === "WFOV") vFOV = 6
+                if (zoom === "2") vFOV /= 2
 
-                    this.camera.fov = vFOV;
-                    this.camera.updateProjectionMatrix()
-                }
-                this.renderer.render(GlobalScene, this.camera);
-            },
-            layers: LAYER.MASK_LOOKRENDER,
-        })
+                this.camera.fov = vFOV;
+                this.camera.updateProjectionMatrix()
+            }
+            this.renderer.render(GlobalScene, this.camera);
+        }
 
         var ui = new CNodeATFLIRUI({
             id: "ATFLIRUIOverlay",
@@ -378,7 +339,6 @@ export const SitFlir1 = {
             timeStartSec: 35,
             altitude: 20000,
         });
-
 
         new CNodeDisplayTargetModel({
             track: "LOSTraverseSelect",

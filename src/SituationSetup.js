@@ -174,6 +174,7 @@ export function SituationSetup() {
                     fov: 50,
                     background: color,
                     camera: "lookCamera",
+                    syncVideoZoom: true,
                     ...data,
                 }
                 new CNodeView3D(lookViewDef);
