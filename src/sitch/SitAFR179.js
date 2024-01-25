@@ -32,9 +32,9 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
     },
     cameraTrack: {},
 
+    mainView:{left:0.0, top:0, width:0.9,height:1},
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
-    mainView:{left:0.0, top:0, width:1,height:1},
 
 // point we look at, this is up near Chigago
     toLat:  41.878633,

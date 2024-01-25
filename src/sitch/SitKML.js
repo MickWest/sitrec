@@ -58,9 +58,9 @@ export const SitKML = {
     // we add empty defintions to define the order of in which things are created
     // other sitches that uses this as a base class must override these
     // we need mainView specifically as some things use it when created
-    lookView: {},
     mainCamera: {},
-    mainView: {},
+    mainView: {},  // Mainview is first, as it's often full-screen
+    lookView: {},
 
     videoView: {left: 0.5, top: 0, width: -9 / 16, height: 1,},
 
