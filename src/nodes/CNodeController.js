@@ -73,11 +73,20 @@ export class CNodeControllerTrackAzEl extends CNodeController {
 
     apply(f, objectNode) {
         const camera = objectNode.camera
+
         var camPos = this.in.sourceTrack.p(f)
-        camera.position.copy(camPos);
-        objectNode.syncUIPosition();
+
+        updateCameraAndUI(camPos, camera, objectNode);
     }
 }
+
+function updateCameraAndUI(camPos, camera, objectNode) {
+    if (camPos.equals(camera.position)) return;
+
+    camera.position.copy(camPos);
+    objectNode.syncUIPosition();
+}
+
 
 export class CNodeControllerManualPosition extends CNodeController {
     constructor(v) {
@@ -107,7 +116,6 @@ export class CNodeControllerManualPosition extends CNodeController {
             // automatic cascade recalculation for anything that uses them.
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
-            NodeMan.get("cameraLat").recalculateCascade(f)
 
             // patch refresh any ptz controls
             if (GlobalPTZ !== undefined) {

@@ -1,5 +1,5 @@
 import {Color} from "../../three.js/build/three.module";
-import {gui, Sit} from "../Globals";
+import {gui, NodeMan, Sit} from "../Globals";
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
@@ -37,10 +37,6 @@ export const Sit29Palms = {
     frames: 30 * 6,
     startTime: "2021-04-21T03:23:53.000Z", // see https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744
 
-    lookCamera: {
-        fov: 10,
-    },
-
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
 
     fromLat: 34.399060162,
@@ -54,18 +50,16 @@ export const Sit29Palms = {
     // then can set it to false once the settings are locked in
     ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
-
-    targetSpeedMax: 100,
-
-    marks: [
-        //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
-    ],
-
     mainCamera: {
         fov: 30,
         startCameraPosition: [-7888.59, 6602.16, -30715.32],
         startCameraTarget: [-7324.29, 6493.84, -29896.89],
     },
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, fov: 50, background: '#132d44',},
+
+    lookCamera: {fov: 10,},
+    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5, background: '#132d44',},
+
 
     targetSize: 500,
 
@@ -84,31 +78,7 @@ export const Sit29Palms = {
             left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
         })
 
-
-        const view = new CNodeView3D({
-            id: "mainView",
-            left: 0.0, top: 0, width: 0.5, height: 1,
-            draggable: false, resizable: false,
-            fov: 50,
-            doubleClickFullScreen: true,
-            background: new Color('#132d44'),
-            camera: "mainCamera",
-        })
-        view.addOrbitControls(this.renderer);
-
-        const viewLook = new CNodeView3D({
-            id: "lookView",
-            draggable: false, resizable: false,
-            left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
-            fov: 50,
-            camera: this.lookCamera,
-            doubleClickFullScreen: true,
-            background: new Color('#132d44'),
-        })
-        //     viewLook.camera = this.lookCamera;
-        viewLook.addOrbitControls(this.renderer);
-
-        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
+        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
         addDefaultLights(Sit.brightness)

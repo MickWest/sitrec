@@ -38,19 +38,11 @@ export const SitArea6 = {
     fps: 29.97,
     frames: (10*60+50)*29.97,
     startTime: "2023-08-05T07:39:13.000Z",
-    lookCamera: {
-        fov: 10,
-        far: 80000000,
-    },
 
     starScale: 0.3,
 
 
     terrain: {lat: 36.208582, lon: -115.984598, zoom: 12, nTiles: 8},
-//  terrain: {lat: 0, lon: 0, zoom: 12, nTiles: 8},
-
-
-
     fromLat: 36.208582,
     fromLon: -115.984598,
 
@@ -78,8 +70,11 @@ export const SitArea6 = {
 
     mainView:{left:0.0, top:0, width:.50,height:1,background:'#132d44',},
 
-
-//    syncVideoZoom: true,
+    lookCamera: {
+        fov: 10,
+        far: 80000000,
+    },
+    lookView: {left:0.5, top:0.5, width:-1280/714,height:0.5,background:'#132d44',},
 
     // overrides for video viewport
     videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
@@ -89,43 +84,7 @@ export const SitArea6 = {
         SetupGUIFrames()
         initKeyboard()
 
-   //     addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"])
-
-        // const ia = new CNodeImage({
-        //     id: "ImageEditorView",
-        //     filename: 'threePlanes',
-        //     smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
-        //     draggable: true, resizable: true,
-        //     left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
-        // })
-
-
-        // const view = new CNodeView3D({
-        //     id: "mainView",
-        //     left: 0.0, top: 0, width: 0.5, height: 1,
-        //     draggable: false, resizable: false,
-        //     fov: 50,
-        //     doubleClickFullScreen: true,
-        //     background: new Color('#132d44'),
-        //     camera: "mainCamera",
-        // })
-
-        const view = NodeMan.get("mainView");
-        view.addOrbitControls(this.renderer);
-
-        const viewLook = new CNodeView3D({
-            id: "lookView",
-            draggable: true, resizable: true,
-            left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
-            fov: 50,
-            camera: this.lookCamera,
-            doubleClickFullScreen: true,
-            background: new Color('#132d44'),
-        })
-        //     viewLook.camera = this.lookCamera;
-        viewLook.addOrbitControls(this.renderer);
-
-        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
+        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
         gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
@@ -135,27 +94,6 @@ export const SitArea6 = {
         }).listen().name("Main FOV")
 
         addDefaultLights(Sit.brightness)
-
-        if (Sit.videoFile !== undefined) {
-            new CNodeVideoWebCodecView(Object.assign({
-                    id: "video",
-                    inputs: {
-                        zoom: new CNodeGUIValue({
-                            id: "videoZoom",
-                            value: 100, start: 100, end: 2000, step: 1,
-                            desc: "Video Zoom %"
-                        }, gui)
-                    },
-                    visible: true,
-                    left: 0.5, top: 0, width: -9 / 16, height: 1,
-                    draggable: true, resizable: true,
-                    frames: Sit.frames,
-                    videoSpeed: Sit.videoSpeed,
-                    file: Sit.videoFile,
-
-                },Sit.videoView)
-            )
-        }
 
     },
 

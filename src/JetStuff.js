@@ -896,22 +896,7 @@ export function initViews() {
 
     if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
 
-        new CNodeVideoWebCodecView({
-                id: "video",
-                inputs: {
-                    zoom: new CNodeGUIValue({
-                        id: "videoZoom",
-                        value: 100, start: 100, end: 2000, step: 1,
-                        desc: "Video Zoom %"
-                    }, gui)
-                },
-                visible: par.showVideo,
-                left: 0.8250, top: 0.6666, width: -1, height: 0.3333,
-                draggable: true, resizable: true,
-                frames: Sit.frames,
-                file: Sit.videoFile,
-            }
-        )
+
 
     }
 
@@ -1133,66 +1118,41 @@ export function initJetStuff() {
     const mainCam = NodeMan.get("mainCamera").camera;
     mainCam.layers.enable(LAYER.podBack)
 
-    var view = new CNodeView3D({
-        id: "mainView",
-        visible: true,
-        left: 0.00, top: 0, width: 1, height: 1,
-        fov: 10,
-        doubleClickResizes: false,
-        draggable: false, resizable: false, shiftDrag: false, freeAspect: true,
+    const view = NodeMan.get("mainView");
+    view.renderFunction = function () {
 
-        camera: "mainCamera",
+        const displayWindArrows = ViewMan.get("SAPage").buttonBoxed(16);  // wind button
 
-        renderFunction: function () {
-
-            const displayWindArrows = ViewMan.get("SAPage").buttonBoxed(16);  // wind button
-
-            var windTrackLocal = NodeMan.get("localWind")
-            var windTrackTarget = NodeMan.get("targetWind")
-            var ufoTrack = NodeMan.get("LOSTraverseSelect")
-            var jetTrack = NodeMan.get("jetTrack")
+        var windTrackLocal = NodeMan.get("localWind")
+        var windTrackTarget = NodeMan.get("targetWind")
+        var ufoTrack = NodeMan.get("LOSTraverseSelect")
+        var jetTrack = NodeMan.get("jetTrack")
 
 
-            const vScale = Sit.frames
-            const windVelocityScaledLocal = windTrackLocal.v(par.frame).multiplyScalar(vScale)
-            const windVelocityScaledTarget = windTrackTarget.v(par.frame).multiplyScalar(vScale)
+        const vScale = Sit.frames
+        const windVelocityScaledLocal = windTrackLocal.v(par.frame).multiplyScalar(vScale)
+        const windVelocityScaledTarget = windTrackTarget.v(par.frame).multiplyScalar(vScale)
 
 
-            let jetPosition = ufoTrack.p(par.frame);
-            let jetVelocityScaled = trackVelocity(ufoTrack, par.frame).multiplyScalar(vScale)
-            let groundVelocityEnd = jetPosition.clone().add(jetVelocityScaled);
-            let airVelocityEnd = groundVelocityEnd.clone().sub(windVelocityScaledTarget);
-            DebugArrowAB("UFO Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
-            DebugArrowAB("UFO Wind", airVelocityEnd, groundVelocityEnd, "#00ffff", displayWindArrows, GlobalScene) // cyan = wind speed
-            DebugArrowAB("UFO Air V", jetPosition, airVelocityEnd, "#0000ff", displayWindArrows, GlobalScene) // blue = air speed
+        let jetPosition = ufoTrack.p(par.frame);
+        let jetVelocityScaled = trackVelocity(ufoTrack, par.frame).multiplyScalar(vScale)
+        let groundVelocityEnd = jetPosition.clone().add(jetVelocityScaled);
+        let airVelocityEnd = groundVelocityEnd.clone().sub(windVelocityScaledTarget);
+        DebugArrowAB("UFO Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
+        DebugArrowAB("UFO Wind", airVelocityEnd, groundVelocityEnd, "#00ffff", displayWindArrows, GlobalScene) // cyan = wind speed
+        DebugArrowAB("UFO Air V", jetPosition, airVelocityEnd, "#0000ff", displayWindArrows, GlobalScene) // blue = air speed
 
-            jetPosition = jetTrack.p(par.frame);
-            jetVelocityScaled = trackVelocity(jetTrack, par.frame).multiplyScalar(vScale)
-            groundVelocityEnd = jetPosition.clone().add(jetVelocityScaled);
-            airVelocityEnd = groundVelocityEnd.clone().sub(windVelocityScaledLocal);
-            DebugArrowAB("JET Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
-            DebugArrowAB("JET Wind", airVelocityEnd, groundVelocityEnd, "#00ffff", displayWindArrows, GlobalScene) // cyan = wind speed
-            DebugArrowAB("JET Air V", jetPosition, airVelocityEnd, "#0000ff", displayWindArrows, GlobalScene) // blue = air speed
+        jetPosition = jetTrack.p(par.frame);
+        jetVelocityScaled = trackVelocity(jetTrack, par.frame).multiplyScalar(vScale)
+        groundVelocityEnd = jetPosition.clone().add(jetVelocityScaled);
+        airVelocityEnd = groundVelocityEnd.clone().sub(windVelocityScaledLocal);
+        DebugArrowAB("JET Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
+        DebugArrowAB("JET Wind", airVelocityEnd, groundVelocityEnd, "#00ffff", displayWindArrows, GlobalScene) // cyan = wind speed
+        DebugArrowAB("JET Air V", jetPosition, airVelocityEnd, "#0000ff", displayWindArrows, GlobalScene) // blue = air speed
 
-            this.renderer.render(GlobalScene, this.camera);
+        this.renderer.render(GlobalScene, this.camera);
 
-        },
-
-        defaultTargetHeight: 25000,
-        background: new Color().setRGB(0.0, 0.0, 0.0),
-
-        focusTracks: {
-            "Default": "default",
-            "Jet track": "jetTrack",
-            //"Target Track": "targetTrack",
-            "Traverse Path (UFO)": "LOSTraverseSelect"
-        },
-
-
-    })
-
-    // ADD CONTROLS
-    view.addOrbitControls(view.renderer);
+    }
 
     var farClipLook = metersFromMiles(500)
 
@@ -1202,7 +1162,7 @@ export function initJetStuff() {
     podCamera.lookAt(new Vector3(0, LocalFrame.position.y, 0));
 
 // 0 - podhead
-    view = new CNodeView3D({
+    const viewPod = new CNodeView3D({
         id: "podBackView",
         visible: false,
         top: 0.010319917440660475, left: 0.6583333333333333, width: 0.2, height: 0.3993808049535604,
@@ -1226,9 +1186,9 @@ export function initJetStuff() {
         }
     })
 
-    view.addOrbitControls(view.renderer);
-    view.controls.position = new Vector3(10, LocalFrame.position.y, 0);
-    view.controls.target = new Vector3(0, LocalFrame.position.y, 0);
+    viewPod.addOrbitControls(view.renderer);
+    viewPod.controls.position = new Vector3(10, LocalFrame.position.y, 0);
+    viewPod.controls.target = new Vector3(0, LocalFrame.position.y, 0);
 
 
 //

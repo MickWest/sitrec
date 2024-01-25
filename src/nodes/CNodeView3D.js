@@ -29,7 +29,7 @@ import { CopyShader } from '../shaders/CopyShader'
 import { NVGShader } from '../shaders/NVGShader'
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {Sphere} from "three";
+import {Color, Sphere} from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 
@@ -44,6 +44,12 @@ export class CNodeView3D extends CNodeViewCanvas {
         delete v.camera;
 
         super(v);
+
+        // check if this.background is an array, and if so, convert to a color
+        if (this.background instanceof Array) {
+            this.background = new Color(this.background[0], this.background[1], this.background[2])
+        }
+
 
         this.scene = GlobalScene;
 
@@ -169,18 +175,12 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
 
 
-        const view = this
-        // this.renderer.setViewport(view.leftPx, windowHeight - (view.topPx + view.heightPx), view.widthPx, view.heightPx);
-        // this.renderer.setScissor(view.leftPx, windowHeight - (view.topPx + view.heightPx), view.widthPx, view.heightPx);
-        //
-        // this.renderer.setScissorTest(true);
-
-        this.renderer.setClearColor(view.background);
+        this.renderer.setClearColor(this.background);
         // Clear manually, otherwise the second render will clear the background.
         // note: old code used pixelratio to handle retina displays, no longer needed.
          this.renderer.autoClear = false;
 
-         if (view.background) this.renderer.clear();
+         if (this.background) this.renderer.clear();
 
         // test hook up render the world twice, but from a different position
 

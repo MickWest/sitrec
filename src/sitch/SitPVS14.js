@@ -54,6 +54,7 @@ export const SitPVS14 = {
     cameraTrack: {},
 
 
+
     fps: 29.97,
     frames: Math.floor((7*60+14)*29.97),
     startTime: "2023-04-15T08:06:16.500Z",
@@ -91,49 +92,27 @@ export const SitPVS14 = {
     targetSize: 500,
 
     videoFile: "../sitrec-videos/private/pvs14-2023-pilot-video.mp4",
-//    syncVideoZoom: true,
 
+    mainView:{left:0.0, top:0, width:0.5,height:1,background:'#000000'},
+    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,background:'#000000'},
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
-    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
-    mainView:{left:0.0, top:0, width:0.5,height:1,background:'#132d44'},
+
+    dragDropHandler: {},
 
     setup2: function () {
 
         SetupGUIFrames()
         initKeyboard()
 
-        const view = NodeMan.get("mainView");
-        view.addOrbitControls(this.renderer);
 
-        NodeMan.remove("lookCamera")
 
-        new CNodeCamera({
-            id:"lookCamera",
-            fov:this.lookFOV,
-            aspect:window.innerWidth / window.innerHeight,
-            near: 1,
-            far: Sit.farClipLook,
-        }).addController("TrackAzEl",{
-            sourceTrack: "cameraTrack",
+        NodeMan.get("lookCamera").addController("TrackAzEl",{
+             sourceTrack: "cameraTrack",
         })
 
-        // PATCH: Override the JetStuff camera
-        this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
+
         GlobalPTZ.camera = this.lookCamera; // TEMPORARY
-
-
-
-        const viewLook = new CNodeView3D({
-            id: "lookView",
-            draggable: true, resizable: true,
-            fov: 50,
-            camera: this.lookCamera,
-            cameraTrack: "cameraTrack",
-            doubleClickFullScreen: false,
-            background: new Color('#132d44'),
-            ...this.lookView,
-        })
 
         //animated segement of camera track
         new CNodeDisplayTrack({
@@ -155,10 +134,8 @@ export const SitPVS14 = {
 
         })
 
-        DragDropHandler.addDropArea(view.div);
-        DragDropHandler.addDropArea(viewLook.div);
 
-        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
+        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
         AddTimeDisplayToUI(labelVideo, 50,96, 3.5, "#f0f000")
 
         gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
@@ -167,27 +144,6 @@ export const SitPVS14 = {
             mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
         addDefaultLights(Sit.brightness)
-
-        // REALLY NEED TO REFACTOR THIS COMMON CODE
-        if (Sit.videoFile !== undefined) {
-            new CNodeVideoWebCodecView({
-                    id: "video",
-                    inputs: {
-                        zoom: new CNodeGUIValue({
-                            id: "videoZoom",
-                            value: 100, start: 100, end: 2000, step: 1,
-                            desc: "Video Zoom %"
-                        }, gui)
-                    },
-                    visible: true,
-                    draggable: true, resizable: true,
-                    frames: Sit.frames,
-                    videoSpeed: Sit.videoSpeed,
-                    file: Sit.videoFile,
-                    ...this.videoView,
-                }
-            )
-        }
 
         var lableMainViewPVS = new CNodeViewUI({id: "lableMainViewPVS", overlayView: ViewMan.list.mainView.data});
         lableMainViewPVS.addText("videoLablep2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")

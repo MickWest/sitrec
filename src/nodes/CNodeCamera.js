@@ -41,7 +41,9 @@ export class CNodeCamera extends CNode3D {
     }
 
 
-    get camera() { return this._object}
+    get camera() {
+        return this._object
+    }
 
     update(f) {
         super.update(f);
@@ -49,20 +51,33 @@ export class CNodeCamera extends CNode3D {
 
         if (this.in.altAdjust !== undefined) {
             // raise or lower the position
-            this.camera.position.copy(raisePoint(this.camera.position,f2m(this.in.altAdjust.v())))
+            this.camera.position.copy(raisePoint(this.camera.position, f2m(this.in.altAdjust.v())))
         }
 
     }
 
-    syncUIPosition() {
-        // propogate the camera position values value to the camera position UI (if there is one)
+
+    updateUIPosition() {
+        // propagate the camera position values value to the camera position UI (if there is one)
         if (NodeMan.exists("cameraLat")) {
             const ecef = EUSToECEF(this.camera.position)
             const LLA = ECEFToLLAVD_Sphere(ecef)
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
             NodeMan.get("cameraAlt").value = m2f(LLA.z)
-            NodeMan.get("cameraLat").recalculateCascade() // manual update
+        }
+    }
+
+
+    syncUIPosition() {
+        // propogate the camera position values value to the camera position UI (if there is one)
+        // and then recalculate dependent nodes
+        if (NodeMan.exists("cameraLat")) {
+            this.updateUIPosition();
+
+            // we should not even need this, UI changes will trigger a recalculation cascade
+            // if they change
+            //    NodeMan.get("cameraLat").recalculateCascade() // manual update
         }
     }
 }

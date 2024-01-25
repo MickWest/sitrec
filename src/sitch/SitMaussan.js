@@ -46,9 +46,9 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     cameraTrack: {},
 
 
-    lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,},
-    videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65,},
-    mainView:{left:0.0, top:0, width:1,height:1},
+    lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,background:'#000000'},
+    videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65},
+    mainView:{left:0.0, top:0, width:1,height:1,background:'#000000'},
 
 // point we look at, this is up near Chigago
     toLat:  41.878633,

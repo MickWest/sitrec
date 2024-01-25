@@ -37,7 +37,6 @@ import {PTZControls} from "../PTZControls";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {FileManager} from "../CFileManager";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitKML = {
@@ -59,8 +58,11 @@ export const SitKML = {
     // we add empty defintions to define the order of in which things are created
     // other sitches that uses this as a base class must override these
     // we need mainView specifically as some things use it when created
+    lookView: {},
     mainCamera: {},
     mainView: {},
+
+    videoView: {left: 0.5, top: 0, width: -9 / 16, height: 1,},
 
     focusTracks: {
         "Ground (No Track)": "default",
@@ -401,80 +403,58 @@ export const SitKML = {
             ))
         }
 
-        var viewNar;
+        var viewNar = NodeMan.get("lookView");
 
         if (this.ptz) {
-            viewNar = new CNodeView3D(Object.assign({
-                id: "lookView",
-                draggable: true, resizable: true,
-                left: 0.75, top: 0, width: -9 / 16, height: 1,
-                camera: this.lookCamera,
-                doubleClickFullScreen: false,
-                background: new Color('#132d44'),
-            }, Sit.lookView))
+
         } else {
-            viewNar = new CNodeView3D(Object.assign({
-                id: "lookView",
-                visible: true,
-                draggable: true, resizable: true, freeAspect: true,
 
-                left: 0.75, top: 0, width: -9 / 16, height: 1,
-                background: Sit.skyColor,
-                up: [0, 1, 0],
-                radiusMiles: "radiusMiles", // constant
-                syncVideoZoom: true,
+            // patch in the FLIR shader effect if flagged, for Chilean
+            // Note this has to be handled in the render function if you override it
+            // See Chilean for example
+            viewNar.effects = this.useFLIRShader ? {FLIRShader: {},} : undefined,
 
-                // patch in the FLIR shader effect if flagged, for Chilean
-                // Note this has to be handled in the render function if you override it
-                // See Chilean for example
-                effects: this.useFLIRShader ? {FLIRShader: {},} : undefined,
 
-                camera: "lookCamera",
+            viewNar.renderFunction = function (frame) {
 
-                renderFunction: function (frame) {
+                // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
+                // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
 
-                    // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
-                    // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
+                // bit of a patch to get in the FOV
+                if (Sit.chileanData !== undefined) {
+                    // frame, mode, Focal Leng
+                    var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
+                    const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
 
-                    // bit of a patch to get in the FOV
-                    if (Sit.chileanData !== undefined) {
-                        // frame, mode, Focal Leng
-                        var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
-                        const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
+                    // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
+                    var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
 
-                        // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
-                        var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
-
-                        if (mode !== "IR") {
-                            vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
-                        }
-                        this.camera.fov = vFOV;
-                        this.camera.updateProjectionMatrix()
+                    if (mode !== "IR") {
+                        vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
                     }
+                    this.camera.fov = vFOV;
+                    this.camera.updateProjectionMatrix()
+                }
 
-                    // extract camera angle
-                    var _x = V3()
-                    var _y = V3()
-                    var _z = V3()
-                    this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
+                // extract camera angle
+                var _x = V3()
+                var _y = V3()
+                var _z = V3()
+                this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
 
-                    var heading = -degrees(Math.atan2(_z.x, _z.z))
-                    if (heading < 0) heading += 180;
-                    par.az = heading;
+                var heading = -degrees(Math.atan2(_z.x, _z.z))
+                if (heading < 0) heading += 180;
+                par.az = heading;
 
-                    if (this.visible) {
-                        if (this.effectsEnabled)
-                            this.composer.render();
-                        else
-                            this.renderer.render(GlobalScene, this.camera);
-                    }
+                if (this.visible) {
+                    if (this.effectsEnabled)
+                        this.composer.render();
+                    else
+                        this.renderer.render(GlobalScene, this.camera);
+                }
+                //this.renderer.render(GlobalScene, this.camera);
+            }
 
-                    //this.renderer.render(GlobalScene, this.camera);
-
-
-                },
-
-            }, Sit.lookView))
         }
 
 
@@ -495,32 +475,6 @@ export const SitKML = {
 
 
         labelVideo.setVisible(true)
-
-        // gui.add(this, 'planeCameraFOV', 0.35, 80, 0.01).onChange(value => {
-        //     this.lookCamera.fov = value
-        //     this.lookCamera.updateProjectionMatrix()
-        // }).listen().name("Plane Camera FOV")
-
-        if (Sit.videoFile !== undefined) {
-            new CNodeVideoWebCodecView(Object.assign({
-                    id: "video",
-                    inputs: {
-                        zoom: new CNodeGUIValue({
-                            id: "videoZoom",
-                            value: 100, start: 100, end: 2000, step: 1,
-                            desc: "Video Zoom %"
-                        }, gui)
-                    },
-                    visible: true,
-                    left: 0.5, top: 0, width: -9 / 16, height: 1,
-                    draggable: true, resizable: true,
-                    frames: Sit.frames,
-                    videoSpeed: Sit.videoSpeed,
-                    file: Sit.videoFile,
-
-                },Sit.videoView)
-            )
-        }
 
         if (this.losTarget !== undefined) {
 

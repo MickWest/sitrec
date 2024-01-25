@@ -264,9 +264,9 @@ export function initKeyboard() {
                     closeFullscreen()
                 }
                 break;
-            case 'KeyL':
-                opts.legend.live = !opts.legend.live;
-                break;
+            // case 'KeyL':
+            //     opts.legend.live = !opts.legend.live;
+            //     break;
             case 'Backquote':
                 if (isLocal) {
                     DumpPreset()

@@ -27,5 +27,4 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
 
     mainView:{left:0.0, top:0, width:.50,height:1},
 
-
 })

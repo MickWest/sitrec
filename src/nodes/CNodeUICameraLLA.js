@@ -10,27 +10,23 @@ import {CNodeController} from "./CNodeController";
 export class CNodeControllerUICameraLLA extends CNodeController {
     constructor(v) {
         super(v);
-   //     this.input("camera")
         this.input("fromLat",true)
         this.input("fromLon",true)
         this.input("fromAltFeet",true)
         this.input("toLat",true)
         this.input("toLon",true)
         this.input("toAlt",true)
-//        this.input("camera")
         this.input("radiusMiles")
         this.update(0) // immediately move to first position
     }
 
     apply(f, cameraNode) {
 
+
         const camera = cameraNode.camera;
 
         var radius = metersFromMiles(this.in.radiusMiles.v0)
         assert(!Number.isNaN(radius),"Radius NaN")
-
-        // The world isn't actually getting bigger.
-        // it's just flattening, so we need to use map x,z coordinates, then adjust for drop
 
         // so originECEF needs to be wgs84
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,wgs84.RADIUS)
@@ -77,4 +73,5 @@ export class CNodeControllerUICameraLLA extends CNodeController {
 
       //  this.update(f)
     }
+
 }

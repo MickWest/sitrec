@@ -46,8 +46,9 @@ class CNodeView extends CNode {
 
         this.updateWH(); //need to get the pixel dimension to set the div
 
-        if (this.overlayView) {
-            this.div = v.overlayView.div
+        if (v.overlayView) {
+            this.overlayView = NodeMan.get(v.overlayView); // might be an id, so get the object
+            this.div = this.overlayView.div
             assert(this.div, "Overlay view does not have a div")
         } else {
 
@@ -115,8 +116,7 @@ class CNodeView extends CNode {
             ",height:"+this.height.toPrecision(5)+",")
     }
 
-    addOrbitControls(renderer) {
-        // TODO - use the right renderer
+    addOrbitControls() {
         this.controls = new CameraMapControls( this.camera, this.div, this) ; // Mick's custom controls
         this.controls.zoomSpeed = 5.0 // default 1.0 is a bit slow
         this.controls.useGlobe = Sit.useGlobe

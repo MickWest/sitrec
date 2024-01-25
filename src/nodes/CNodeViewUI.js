@@ -8,8 +8,7 @@ import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {par} from "../par";
 
 export class CNodeViewUI extends CNodeViewCanvas2D {
-    // constructor is passed a CView object, if null then this is stand-alone
-//    constructor (id, view, defaultFontSize=5, defaultFontColor = '#FFFFFF', defaultFont = 'sans-serif') {
+    // constructor is passed a CView object or id, if null then this is stand-alone
     constructor(v) {
         super(v)
         if (this.overlayView) {

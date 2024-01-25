@@ -38,6 +38,7 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {FileManager} from "../CFileManager";
 import {setupOpts} from "../JetChart";
+import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 const GimbalDefaults = {
     name:"gimbal",
@@ -58,9 +59,24 @@ const GimbalDefaults = {
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
         TargetObjectFile: 'models/saucer01a.glb',
     },
+
+    mainCamera: {},
+    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#000000' },
+
     videoFile: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
+    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+
+
+    focusTracks: {
+        "Default": "default",
+        "Jet track": "jetTrack",
+        //"Target Track": "targetTrack",
+        "Traverse Path (UFO)": "LOSTraverseSelect"
+    },
 
     setup: function () {
+
+
 
         setupOpts();
 

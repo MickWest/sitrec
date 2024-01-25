@@ -134,16 +134,16 @@ export class CSituation {
         if (this.lookFOV) {
 
             this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
-            console.log("Added lookCamera")
 
             if (this.ptz) {
+                // THis is a UI controller for adjusting PTZ of a given camera
                 setGlobalPTZ(new PTZControls({
                         az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: this.lookCamera, showGUI:this.ptz.showGUI
                     },
                     gui
                 ))
 
-                // THis is a UI controller for adjusting PTZ of a given camera
+                // and this allows editing of the camera position
                 NodeMan.get("lookCamera").addController("UICameraLLA", {
                     id:"CameraLLA",
                     fromLat: new CNodeGUIValue({

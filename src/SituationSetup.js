@@ -10,7 +10,8 @@ import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {assert} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
-
+import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
+import {DragDropHandler} from "./DragDropHandler";
 
 
 export function SituationSetup() {
@@ -22,6 +23,10 @@ export function SituationSetup() {
 //        console.log(key)
 
         const data = Sit[key];
+
+        // we can have undefined values in Sit, so skip them
+        // this normall occurs when we have a base situation, and then override some values
+        if (data === undefined) continue;
 
         function SSLog() {
             console.log("SituationSetup: " + key + " " + JSON.stringify(data))
@@ -148,8 +153,47 @@ export function SituationSetup() {
                     camera: "mainCamera",
                     ...data,
                 }
-                new CNodeView3D(mainViewDef);
+                const view = new CNodeView3D(mainViewDef);
+                view.addOrbitControls(Sit.renderer);
                 break;
+
+            case "lookView":
+                SSLog();
+                const lookViewDef = {
+                    id: "lookView",
+                    //     draggable:true,resizable:true,
+                    left: 0.5, top: 0, width: .5, height: 1,
+                    fov: 50,
+                    background: Sit.skyColor,
+                    camera: "lookCamera",
+                    ...data,
+                }
+                new CNodeView3D(lookViewDef);
+                break;
+
+             case "videoView":
+                 SSLog();
+                // REALLY NEED TO REFACTOR THIS COMMON CODE
+                assert (Sit.videoFile !== undefined, "videoView needs a video file")
+                new CNodeVideoWebCodecView({
+                        id: "video",
+                        inputs: {
+                            zoom: new CNodeGUIValue({
+                                id: "videoZoom",
+                                value: 100, start: 100, end: 2000, step: 1,
+                                desc: "Video Zoom %"
+                            }, gui)
+                        },
+                        visible: true,
+                        draggable: true, resizable: true,
+                        frames: Sit.frames,
+                        videoSpeed: Sit.videoSpeed,
+                        file: Sit.videoFile,
+                        ...data,
+                    }
+                )
+
+                 break;
 
             case "focusTracks":
                 SSLog();
@@ -175,6 +219,12 @@ export function SituationSetup() {
                 // })
                 break;
 
+            case "dragDropHandler":
+                if (NodeMan.exists("mainView"))
+                    DragDropHandler.addDropArea(NodeMan.get("mainView").div);
+                if (NodeMan.exists("lookView"))
+                    DragDropHandler.addDropArea(NodeMan.get("lookView").div);
+                break;
 
         }
 

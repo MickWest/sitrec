@@ -1,7 +1,6 @@
 import {SitKML} from "./SitKML";
 
 export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
-    extends: "SitKML", // ????????????????
     name: "aa2292",
     menuName: "AA2292 Cruise Missile",
 
@@ -16,11 +15,11 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
         KMLTarget: "aa2292/FlightAware_N738RJ_KSLC_KBCT_20210221.kml"
     },
     videoFile: undefined,
+    videoView: undefined,
     startTime: "2021-02-21T19:10:10.800Z",
 
 
     skyColor: 'skyblue',
-
 
     mainCamera: {
         fov:  32,

@@ -66,10 +66,6 @@ export const SitAguadilla = {
 
     LOSSpacing:30*2,
 
-    mainCamera: {
-        startCameraPosition: [-9851.407079455104, 2847.1976940099407, -2584.264310831998],
-        startCameraTarget: [-8986.013511122388, 2586.5050262571704, -2156.3235382146754],
-    },
 
     startDistance: 1.612,
     startDistanceMax: 3.5,
@@ -95,12 +91,31 @@ export const SitAguadilla = {
         aguaCSV: "agua/agua-frames-data.csv"
     },
 
+
+    mainCamera: {
+        startCameraPosition: [-9851.407079455104, 2847.1976940099407, -2584.264310831998],
+        startCameraTarget: [-8986.013511122388, 2586.5050262571704, -2156.3235382146754],
+    },
+    mainView: {left: 0.0, top: 0, width: 1, height: 1, fov:50, background: '#005000'},
+
+
     videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
+    videoView: {left: 0.6250, top: 0, width: -1.5, height: 0.5,},
 
     // Aguadilla terrain location. 8x8 tiles at zooom level 15
     // there's no file for terrain, it all comes from the server
     // based purely on the lat/lon
     terrain: {lat:  18.499617, lon: -67.113636, zoom:15, nTiles:8},
+
+    focusTracks:{
+        "Ground (No Track)": "default",
+        "Jet track": "jetTrack",
+        "Jet Track Smooth": "jetTrackSmooth",
+        //"Target Track": "targetTrack",
+        "Target Track Smooth": "targetTrackSmoothRaised",
+        "Ground Splint Editor": "groundSplineEditor",
+        "Traverse Path (UFO)": "LOSTraverseSelectSmoothed"
+    },
 
     setup: function() {
 
@@ -120,72 +135,53 @@ export const SitAguadilla = {
             mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
 
-        const view = new CNodeView3D({
-            id:"mainView",
-            left:0.0, top:0, width:1,height:1,
-            fov: 50,
-            background: new Color().setRGB(0.0, 0.3, 0.0),
-            showCursor: true,
-            camera: "mainCamera",
 
-            focusTracks:{
-                "Ground (No Track)": "default",
-                "Jet track": "jetTrack",
-                "Jet Track Smooth": "jetTrackSmooth",
-                //"Target Track": "targetTrack",
-                "Target Track Smooth": "targetTrackSmoothRaised",
-                "Ground Splint Editor": "groundSplineEditor",
-                "Traverse Path (UFO)": "LOSTraverseSelectSmoothed"
-            },
+        const view = NodeMan.get("mainView");
+        view.renderFunction = function() {
 
-            renderFunction: function() {
+            var csv = FileManager.get("aguaCSV")
+            var lookFOV = parseFloat(csv[par.frame][15])
+            lookFOV = 4 * 135 / lookFOV
+            const lookCam = NodeMan.get("lookCamera").camera;
+            lookCam.fov = lookFOV
+            lookCam.updateProjectionMatrix()
 
-                var csv = FileManager.get("aguaCSV")
-                var lookFOV = parseFloat(csv[par.frame][15])
-                lookFOV = 4 * 135/lookFOV
-                const lookCamera = NodeMan.get("lookCamera").camera;
-                lookCamera.fov = lookFOV
-                lookCamera.updateProjectionMatrix()
+            if (par.lockCameraToJet) {
+                const f = par.frame
+                const track = NodeMan.get("jetTrackSmooth")
 
-                if (par.lockCameraToJet) {
-                    const f = par.frame
-                    const track = NodeMan.get("jetTrackSmooth")
+                var pos = track.p(f)
+                const heading = trackHeading(track, f)
 
-                    var pos = track.p(f)
-                    const heading = trackHeading(track,f)
-
-                    if (this.lastPlanePos === undefined) {
-                        this.lastPlanePos = pos
-                        this.lastHeading = heading
-                    }
-
-                    var headingChange = heading - this.lastHeading;
-                    if (headingChange < -180) headingChange += 360;
-
-                    var offset = pos.clone().sub(this.lastPlanePos)
-                    this.lastPlanePos = pos;
-                    this.lastHeading = heading;
-                    const mainCam = NodeMan.get("mainCamera").camera;
-
-                    mainCam.position.add(offset)
-
-                    // rotate camera about the jet position
-                    mainCam.position.sub(pos)
-                    mainCam.position.applyAxisAngle(V3(0,1,0), -radians(headingChange))
-                    mainCam.position.add(pos)
-
-                    mainCam.rotateOnAxis(V3(0,1,0), -radians(headingChange))
-
-                    mainCam.updateMatrix()
-                    mainCam.updateMatrixWorld()
+                if (this.lastPlanePos === undefined) {
+                    this.lastPlanePos = pos
+                    this.lastHeading = heading
                 }
 
-                // composer is used for effects.
-                this.composer.render();
-            },
+                var headingChange = heading - this.lastHeading;
+                if (headingChange < -180) headingChange += 360;
 
-        })
-        view.addOrbitControls(this.renderer);
+                var offset = pos.clone().sub(this.lastPlanePos)
+                this.lastPlanePos = pos;
+                this.lastHeading = heading;
+                const mainCam = NodeMan.get("mainCamera").camera;
+
+                mainCam.position.add(offset)
+
+                // rotate camera about the jet position
+                mainCam.position.sub(pos)
+                mainCam.position.applyAxisAngle(V3(0, 1, 0), -radians(headingChange))
+                mainCam.position.add(pos)
+
+                mainCam.rotateOnAxis(V3(0, 1, 0), -radians(headingChange))
+
+                mainCam.updateMatrix()
+                mainCam.updateMatrixWorld()
+            }
+            // composer is used for effects.
+            this.composer.render();
+        }
+
 
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);
@@ -765,22 +761,22 @@ export const SitAguadilla = {
 
 
 
-//        new CNodeFramesVideoView({id:"video",
-        new CNodeVideoWebCodecView({id:"video",
-                inputs: {
-                    zoom: new CNodeGUIValue({
-                        value: 100, start: 100, end: 1000, step: 1,
-                        desc: "Video Zoom x"
-                    }, guiTweaks)
-                },
-                visible: true,
-                left: 0.6250, top: 0, width: -1.5, height: 0.5,
-                draggable: true, resizable: true,
-                frames: Sit.frames,
-                file: Sit.videoFile,
-
-            }
-        )
+// //        new CNodeFramesVideoView({id:"video",
+//         new CNodeVideoWebCodecView({id:"video",
+//                 inputs: {
+//                     zoom: new CNodeGUIValue({
+//                         value: 100, start: 100, end: 1000, step: 1,
+//                         desc: "Video Zoom x"
+//                     }, guiTweaks)
+//                 },
+//                 visible: true,
+//                 left: 0.6250, top: 0, width: -1.5, height: 0.5,
+//                 draggable: true, resizable: true,
+//                 frames: Sit.frames,
+//                 file: Sit.videoFile,
+//
+//             }
+//         )
 
 
 // THE FINAL TRAVERSAL, SMOOTHED
@@ -929,10 +925,6 @@ export const SitAguadilla = {
    //     AddSpeedGraph("jetTrackSmooth","Plane", 150, 240, 0,0.15,0.6250,0.15)
    //     AddSpeedGraph("groundSplineEditor", "Ground", 0, 300,0,0.30,0.6250,0.15)
 
-
-        // shoudl stick this inside the View
-        //var viewNar = ViewMan.list.lookView.data;
-        //var farClipLook = metersFromMiles(500)
 
         const lookCamera = NodeMan.get("lookCamera").camera;
         // FOV in Three.js is vertical, wjhich was not an issue with the square videos

@@ -139,21 +139,6 @@ export const SitJellyfish    = {
             }
         )
 
-
-        // const view = new CNodeView3D({
-        //     id: "mainView",
-        //     left: 0.0, top: 0, width: 0.5, height: 1,
-        //     draggable:false,resizable:false,
-        //     fov: 50,
-        //     doubleClickFullScreen: true,
-        //     background: new Color("#989fa7"),
-        //     camera: "mainCamera",
-        //     focusTracks: {
-        //         "Ground (No Track)": "default",
-        //         "Camera Position": "cameraTrack",
-        //         "Traverse Track": "traverseTrack",
-        //     },
-        // })
         const view = NodeMan.get("mainView");
         view.addOrbitControls(this.renderer);
 
