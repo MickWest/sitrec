@@ -159,12 +159,20 @@ export function SituationSetup() {
 
             case "lookView":
                 SSLog();
+
+                var color = Sit.skyColor
+
+                // if we have a mainView, then use its background color
+                if (NodeMan.exists("mainView")) {
+                    color = NodeMan.get("mainView").background;
+                }
+
                 const lookViewDef = {
                     id: "lookView",
                     //     draggable:true,resizable:true,
                     left: 0.5, top: 0, width: .5, height: 1,
                     fov: 50,
-                    background: Sit.skyColor,
+                    background: color,
                     camera: "lookCamera",
                     ...data,
                 }
