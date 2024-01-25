@@ -98,52 +98,15 @@ export const SitNightSky = {
     videoFile: "../sitrec-videos/private/Area6-1x-speed-08-05-2023 0644UTC.mp4",
 //    syncVideoZoom: true,
 
-    // overrides for video viewport
-    videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#132d44'},
+    lookView: {left: 0.5, top: 0, width: 0.5, height: 1,},
+  //  videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
+
 
     setup2: function () {
 
         SetupGUIFrames()
         initKeyboard()
-
-   //     addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"])
-
-        // const ia = new CNodeImage({
-        //     id: "ImageEditorView",
-        //     filename: 'threePlanes',
-        //     smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
-        //     draggable: true, resizable: true,
-        //     left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
-        // })
-
-
-        const view = new CNodeView3D({
-            id: "mainView",
-            left: 0.0, top: 0, width: 0.5, height: 1,
-            draggable: false, resizable: false,
-            fov: 50,
-            doubleClickFullScreen: false,
-            background: new Color('#132d44'),
-            camera: "mainCamera",
-        })
-        view.addOrbitControls(this.renderer);
-
-        const viewLook = new CNodeView3D({
-            id: "lookView",
-            draggable: true, resizable: true,
-            left: 0.5, top: 0, width: 0.5, height: 1,
-            fov: 50,
-            camera: this.lookCamera,
-            doubleClickFullScreen: false,
-            shiftDrag:true,
-            freeAspect:true,
-            background: new Color('#132d44'),
-            ptzControls:true, // flag so dragging the view around will alter the ptz controls
-        })
-        //     viewLook.camera = this.lookCamera;
-        viewLook.addOrbitControls(this.renderer);
-
-//        NodeMan.get("lookCamera").addController("ManualPosition",{id:"manualController"})
 
         const cameraSwitch = new CNodeSwitch({
             id: "cameraSwitch",
@@ -165,16 +128,16 @@ export const SitNightSky = {
 
         //cameraSwitch.removeOption("XXX Position")
 
-
         NodeMan.get("lookCamera").addControllerNode(cameraSwitch)
+
+        const view = NodeMan.get("mainView");
+        const viewLook = NodeMan.get("lookView");
 
         DragDropHandler.addDropArea(view.div);
         DragDropHandler.addDropArea(viewLook.div);
 
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
-
-
 
         addDefaultLights(Sit.brightness)
 
@@ -193,7 +156,6 @@ export const SitNightSky = {
         // first rehost the dynamic links, such as
         FileManager.rehostDynamicLinks().then(() => {
 
-
             // get the base of the URL (e.g. https://www.metabunk.org/sitrec/
             var url = window.location.href.split('?')[0];
             console.log(url)
@@ -208,7 +170,6 @@ export const SitNightSky = {
 
             var _q = mainCam.quaternion.clone();
             var q = {x: _q.x, y: _q.y, z: _q.z, w: _q.w}
-
 
             const nightSkyNode = NodeMan.get("NightSkyNode");
 
