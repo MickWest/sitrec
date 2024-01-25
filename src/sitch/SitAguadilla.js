@@ -452,8 +452,7 @@ export const SitAguadilla = {
 //            type:"catmull",   // linear or catmull
             scene: GlobalScene,
             camera: "mainCamera",
-            renderer: view.renderer,
-            controls: view.controls,
+            view:view,
             frames:this.frames,
             terrainClamp: "TerrainModel",
 
@@ -516,8 +515,7 @@ export const SitAguadilla = {
 //            type:"catmull",   // linear or catmull
             scene: GlobalScene,
             camera: "mainCamera",
-            renderer: view.renderer,
-            controls: view.controls,
+            view:view,
             frames:this.frames,
             terrainClamp: "TerrainModel",
 
@@ -594,8 +592,7 @@ export const SitAguadilla = {
             type:"chordal",   // linear or catmull
             scene: GlobalScene,
             camera: "mainCamera",
-            renderer: view.renderer,
-            controls: view.controls,
+            view:view,
             frames:this.frames,
             terrainClamp: "TerrainModel",
             snapCamera:"jetTrackSmooth",

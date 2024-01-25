@@ -107,8 +107,7 @@ export const SitKML = {
                 type: this.targetSpline.type,   // chordal give smoother velocities
                 scene: GlobalScene,
                 camera: "mainCamera",
-                renderer: view.renderer,
-                controls: view.controls,
+                view:view,
                 frames: this.frames,
                 terrainClamp: "TerrainModel",
 

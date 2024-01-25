@@ -77,7 +77,9 @@ export const SitJellyfish    = {
         startCameraPositionLLA: [33.273278, 43.647572, 4926.633989],
         startCameraTargetLLA: [33.280159, 43.642938, 4451.060802],
     },
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{ left:0.0, top:0, width:.50,height:1,background:'#000000'},
+    lookView:{ left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,},
+
     focusTracks: {
              "Ground (No Track)": "default",
              "Camera Position": "cameraTrack",
@@ -139,20 +141,17 @@ export const SitJellyfish    = {
             }
         )
 
-        const view = NodeMan.get("mainView");
-        view.addOrbitControls(this.renderer);
-
-        const viewLook = new CNodeView3D({
-            id: "lookView",
-            draggable:false,resizable:false,
-            left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
-            fov: 50,
-            camera: this.lookCamera,
-            doubleClickFullScreen: true,
-            background: new Color("#989fa7"),
-        })
-        //     viewLook.camera = this.lookCamera;
-        viewLook.addOrbitControls(this.renderer);
+        // const viewLook = new CNodeView3D({
+        //     id: "lookView",
+        //     draggable:false,resizable:false,
+        //     left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
+        //     fov: 50,
+        //     camera: this.lookCamera,
+        //     doubleClickFullScreen: true,
+        //     background: new Color("#989fa7"),
+        // })
+        // //     viewLook.camera = this.lookCamera;
+        // viewLook.addOrbitControls(this.renderer);
 
 
         new CNodeSplineEditor({
@@ -161,8 +160,7 @@ export const SitJellyfish    = {
             type: this.targetSpline.type,   // chordal give smoother velocities
             scene: GlobalScene,
             camera: "mainCamera",
-            renderer: view.renderer,
-            controls: view.controls,
+            view: "mainView",
             frames: this.frames,
             terrainClamp: "TerrainModel",
 
