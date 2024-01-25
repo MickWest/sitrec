@@ -21,7 +21,6 @@ import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 export const SitHayle = {
     name: "hayle",

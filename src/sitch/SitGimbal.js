@@ -38,7 +38,6 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {FileManager} from "../CFileManager";
 import {setupOpts} from "../JetChart";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 const GimbalDefaults = {
     name:"gimbal",

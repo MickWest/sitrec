@@ -35,7 +35,6 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager} from "../CFileManager";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 
 export const SitFlir1 = {

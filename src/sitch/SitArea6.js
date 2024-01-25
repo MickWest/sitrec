@@ -10,7 +10,6 @@ import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
 import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 

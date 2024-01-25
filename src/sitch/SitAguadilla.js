@@ -11,7 +11,7 @@ import {
     AlwaysDepth
 } from "../../three.js/build/three.module";
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
-import {ViewMan} from "../nodes/CNodeView";
+import {VG, ViewMan} from "../nodes/CNodeView";
 import {assert} from "../utils"
 import {LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import * as THREE from "../../three.js/build/three.module";
@@ -42,7 +42,6 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
 import {FileManager} from "../CFileManager";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {addControllerTo} from "../nodes/CNodeController";
 
 export const SitAguadilla = {
@@ -802,17 +801,6 @@ export const SitAguadilla = {
         }).listen().name("Look Cam FOV")
 
         initKeyboard()
-
-        toggler('v', gui.add(par, 'showVideo').listen().name("[V]ideo").onChange(value =>
-            ViewMan.iterateTest(
-                (x) => {
-                    console.log(x.constructor.name+" "+x.id)
-                    return x.constructor.name === 'CNodeVideoWebCodecView'
-                },
-                (k,x) => {
-                    x.setVisible(value)}
-            )
-        ))
 
         toggler('g', gui.add(par, 'showGraphs').listen().name("[G]raphs").onChange(value =>
             ViewMan.iterateTest(

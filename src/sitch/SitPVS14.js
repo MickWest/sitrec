@@ -19,7 +19,6 @@ import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
 import {CNodeCamera} from "../nodes/CNodeCamera";
 import * as LAYER from "../LayerMasks";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
 
 export const SitPVS14 = {

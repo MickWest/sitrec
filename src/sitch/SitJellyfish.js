@@ -19,7 +19,6 @@ import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
-import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {GlobalScene} from "../LocalFrame";
 import {CNodeMunge} from "../nodes/CNodeMunge";
@@ -82,6 +81,7 @@ export const SitJellyfish    = {
     lookView:{ left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
         effects: {FLIRShader: {},},
     },
+    videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5,},
 
     focusTracks: {
              "Ground (No Track)": "default",
@@ -90,7 +90,6 @@ export const SitJellyfish    = {
     },
 
     targetSize:2,
-
 
     // instead of a target KML file, we define a simple spline
     // in this case just two points, linear interpolation (a line)
@@ -112,37 +111,6 @@ export const SitJellyfish    = {
         initKeyboard()
 
         new CNodeLOSConstantCamera({id:"cameraTrack", camera:"lookCamera"})
-
-        // // These want to be replace with the ground track
-        // new CNodeLOSMotionTrack({
-        //     id:"motionTrackLOS",
-        //     cameraTrack:"cameraTrack",
-        //     csv:"hayleCSV",
-        //     width:1280,
-        //     height:714,
-        //     fov:45,
-        //     frameCol:0,
-        //     xCol:1,
-        //     yCol:2,
-        //     frames:2780,  //DUPLICATED???
-        //     smooth:30,
-        // })
-
-        new CNodeVideoWebCodecView({
-                id: "video",
-                inputs: {
-                    zoom: new CNodeGUIValue({
-                        value: 100, start: 100, end: 1000, step: 1,
-                        desc: "Video Zoom x"
-                    }, gui)
-                },
-                visible: true,
-                left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
-                draggable: true, resizable: true, shiftDrag: false,
-                frames: Sit.frames,
-                file: Sit.videoFile,
-            }
-        )
 
 
         new CNodeSplineEditor({
