@@ -39,7 +39,6 @@ export const SitJellyfish    = {
     useFLIRShader: true,
 
     files: {
-  //      hayleCSV: "hayle/hayle-track.csv",
     },
     videoFile: "../sitrec-videos/private/FULL Jellyfish Stab crop LOW BR.mp4",
 
@@ -144,18 +143,6 @@ export const SitJellyfish    = {
                 file: Sit.videoFile,
             }
         )
-
-        // const viewLook = new CNodeView3D({
-        //     id: "lookView",
-        //     draggable:false,resizable:false,
-        //     left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
-        //     fov: 50,
-        //     camera: this.lookCamera,
-        //     doubleClickFullScreen: true,
-        //     background: new Color("#989fa7"),
-        // })
-        // //     viewLook.camera = this.lookCamera;
-        // viewLook.addOrbitControls(this.renderer);
 
 
         new CNodeSplineEditor({
