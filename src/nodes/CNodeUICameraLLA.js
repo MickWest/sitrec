@@ -34,6 +34,8 @@ export class CNodeControllerUICameraLLA extends CNodeController {
 
         var from,to;
 
+        var changed = false;
+
   //      console.log(Sit.lat+","+Sit.lon+" r= " + r)
         if (this.in.fromLat && !Sit.ignoreFromLat) {  // TODO - TEMP FLAG PATCH for PVS14
             from = LLAToEUSMAPGlobe(
@@ -42,7 +44,10 @@ export class CNodeControllerUICameraLLA extends CNodeController {
                 f2m(this.in.fromAltFeet.v(f)),
                 radius
             )
-            camera.position.copy(from)
+            if (!camera.position.equals(from)) {
+                camera.position.copy(from)
+                changed = true;
+            }
             assert(!Number.isNaN(camera.position.x),"camera.position.x NaN")
 
         }
@@ -52,13 +57,19 @@ export class CNodeControllerUICameraLLA extends CNodeController {
                 this.in.toAlt.v(f),
                 radius
             )
+            const oldQuaternion = camera.quaternion.clone();
             camera.lookAt(to)
+            if (!oldQuaternion.equals(camera.quaternion)) {
+                changed = true;
+            }
         }
 
         // propogate any changes to the camera to output nodes
         // but disabling controller applications
-        cameraNode.recalculateCascade(f, true);
 
+        if (changed) {
+            cameraNode.recalculateCascade(f, true);
+        }
 
     //    DebugArrowAB("Lookat", from,to, 0xff00ff,true,GlobalScene)
 

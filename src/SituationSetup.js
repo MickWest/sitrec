@@ -175,6 +175,7 @@ export function SituationSetup() {
                  SSLog();
                 // REALLY NEED TO REFACTOR THIS COMMON CODE
                 assert (Sit.videoFile !== undefined, "videoView needs a video file")
+                 console.log("FRAMMMMMMMMMMMMEEEE "+ Sit.frames)
                 new CNodeVideoWebCodecView({
                         id: "video",
                         inputs: {

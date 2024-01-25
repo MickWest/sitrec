@@ -84,7 +84,6 @@ export class CNodeLOSMotionTrack extends CNodeEmptyArray {
 
         }
 
-        console.log("")
 
     }
 

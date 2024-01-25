@@ -44,7 +44,7 @@ export const SitHayle = {
     lookCamera: {
         fov: 10,
     },
-    // Pt Dume view
+
     terrain: {lat:  50.197944, lon: -5.428180, zoom:15, nTiles:8},
 
     fromLat: 50.197944, // Hayle beach
@@ -58,44 +58,20 @@ export const SitHayle = {
     toLon: -5.468553,
     toAlt: 0,
 
-
     targetSpeedMax: 100,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
     ptz: {az: -37.4, el: -4.3, fov: 45, showGUI:false},
 
-    /*
-    motionTrackLOS: {
-        id:"motionTrackLOS",
-// TODO - This should not run at startup, as it's not registered yet
-//  cameraTrack:new CNodeLOSConstantCamera({id:"cameraTrack", camera:"lookCamera"}),
-        csv:"hayleCSV",
-        width:1280,
-        height:714,
-        fov:50,
-        frameCol:0,
-        xCol:1,
-        yCol:2,
-        frames:2780,  //DUPLICATED???
-        smooth:50,
-    },
-*/
-
-    marks: [
- //       {LL: {lat:50.197944,lon:-5.428180}, width: 1, color:0xffff00},
-    ],
-
     mainCamera: {
         startCameraPosition: [278.4748110392168, 64.40911042728831, -205.77524399028982],
         startCameraTarget: [374.9433739111792, -41.17793070506451, -1195.4949988311907],
     },
 
-    // A-10 Bird
-    //terrain: {  lat:  31.556097, lon: -109.275521, zoom: 15, nTiles:6 },
+    mainView: { left: 0.0, top: 0, width: 0.5, height: 1, background: "#989fa7"},
 
-    // SWR
-    // terrain: {lat: 40.2572028, lon: -109.893759, zoom: 15, nTiles: 3},
+//    videoView: { left: 0.5, top: 0, width: -1280 / 714, height: 0.5,},
 
     targetSize:3,
 
@@ -133,20 +109,20 @@ setup2: function() {
             frames: Sit.frames,
             file: Sit.videoFile,
         }
-    )
+     )
 
 
 
-    const view = new CNodeView3D({
-        id: "mainView",
-        left: 0.0, top: 0, width: 0.5, height: 1,
-        draggable:false,resizable:false,
-        fov: 50,
-        doubleClickFullScreen: true,
-        background: new Color("#989fa7"),
-        camera: "mainCamera",
-    })
-    view.addOrbitControls(this.renderer);
+    // const view = new CNodeView3D({
+    //     id: "mainView",
+    //     left: 0.0, top: 0, width: 0.5, height: 1,
+    //     draggable:false,resizable:false,
+    //     fov: 50,
+    //     doubleClickFullScreen: true,
+    //     background: new Color("#989fa7"),
+    //     camera: "mainCamera",
+    // })
+    // view.addOrbitControls(this.renderer);
 
     const viewLook = new CNodeView3D({
         id: "lookView",
