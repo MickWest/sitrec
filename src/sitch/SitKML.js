@@ -1,6 +1,3 @@
-import {Color} from "../../three.js/build/three.module";
-import {CNodeView3D} from "../nodes/CNodeView3D";
-import * as THREE from "../../three.js/build/three.module";
 import {par} from "../par";
 import {setGlobalPTZ, Sit} from "../Globals";
 import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
@@ -37,6 +34,7 @@ import {PTZControls} from "../PTZControls";
 import {pointAltitude} from "../SphericalMath";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import {FileManager} from "../CFileManager";
+import {Color} from "three";
 
 
 export const SitKML = {
@@ -148,8 +146,8 @@ export const SitKML = {
             new CNodeDisplayTrack({
                 id: "KMLDisplayOtherData",
                 track: "KMLOtherData",
-                color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
-                dropColor: new CNodeConstant({value: new THREE.Color(0.8, 0.6, 0)}),
+                color: new CNodeConstant({value: new Color(1, 0, 0)}),
+                dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
                 width: 1,
                 //       toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
@@ -186,8 +184,8 @@ export const SitKML = {
             new CNodeDisplayTrack({
                 id: "KMLDisplayMainData",
                 track: "cameraTrackData",
-                color: new CNodeConstant({value: new THREE.Color(0.7, 0.3, 0)}),
-                dropColor: new CNodeConstant({value: new THREE.Color(0.6, 0.6, 0)}),
+                color: new CNodeConstant({value: new Color(0.7, 0.3, 0)}),
+                dropColor: new CNodeConstant({value: new Color(0.6, 0.6, 0)}),
                 width: 1,
                 //    toGround:1, // spacing for lines to ground
                 ignoreAB: true,
@@ -201,7 +199,7 @@ export const SitKML = {
             new CNodeDisplayTrack({
                 id: "KMLDisplayTarget",
                 track: "targetTrackAverage",
-                color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
+                color: new CNodeConstant({value: new Color(1, 0, 0)}),
                 width: 4,
                 //    toGround:5*30, // spacing for lines to ground
                 layers: LAYER.MASK_HELPERS,
@@ -212,8 +210,8 @@ export const SitKML = {
             new CNodeDisplayTrack({
                 id: "KMLDisplayTargetData",
                 track: "KMLTargetData",
-                color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
-                dropColor: new CNodeConstant({value: new THREE.Color(0.8, 0.6, 0)}),
+                color: new CNodeConstant({value: new Color(1, 0, 0)}),
+                dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
                 width: 1,
                 //      toGround:1, // spacing for lines to ground
                 ignoreAB: true,
@@ -232,7 +230,7 @@ export const SitKML = {
                 id: "DisplayLOS",
                 cameraTrack: "cameraTrack",
                 targetTrack: "targetTrackAverage",
-                color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
+                color: new CNodeConstant({value: new Color(1, 1, 1)}),
                 width: 1,
                 layers: LAYER.MASK_HELPERS,
             })

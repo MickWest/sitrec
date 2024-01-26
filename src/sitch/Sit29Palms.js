@@ -1,6 +1,4 @@
-import {Color} from "../../three.js/build/three.module";
-import {gui, NodeMan, Sit} from "../Globals";
-import {CNodeView3D} from "../nodes/CNodeView3D";
+import {gui, Sit} from "../Globals";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
 import {SetupGUIFrames} from "../JetGUI";

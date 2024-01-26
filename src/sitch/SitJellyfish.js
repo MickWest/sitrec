@@ -1,9 +1,6 @@
-import {Color} from "../../three.js/build/three.module";
 import {scaleF2M} from "../utils";
 import {NodeMan, Sit} from "../Globals";
-import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as LAYER from "../LayerMasks";
-import * as THREE from "../../three.js/build/three.module";
 import {CNodeConstant} from "../nodes/CNode";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
@@ -24,6 +21,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
+import {Color} from "three";
 export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
@@ -129,7 +127,7 @@ export const SitJellyfish    = {
 
         new CNodeDisplayTrack({
             track: "groundTrack",
-            color: new CNodeConstant({value: new THREE.Color(0, 1, 0)}),
+            color: new CNodeConstant({value: new Color(0, 1, 0)}),
             width: 2,
         //    autoSphere: 5,
 
@@ -268,7 +266,7 @@ export const SitJellyfish    = {
 
         new CNodeDisplayTrack({
             track: "traverseTrack",
-            color: new CNodeConstant({value: new THREE.Color(0, 1, 1)}),
+            color: new CNodeConstant({value: new Color(0, 1, 1)}),
             width: 1,
 
             layers: LAYER.MASK_HELPERS,
@@ -280,7 +278,7 @@ export const SitJellyfish    = {
             id: "DisplayLOS",
             cameraTrack: "motionTrackLOS",
             targetTrack: "traverseTrack",
-            color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
+            color: new CNodeConstant({value: new Color(1, 0, 0)}),
             width: 2,
 
         })

@@ -177,7 +177,8 @@ export function SituationSetup() {
                     syncVideoZoom: true,
                     ...data,
                 }
-                new CNodeView3D(lookViewDef);
+                const lookView = new CNodeView3D(lookViewDef);
+                lookView.addOrbitControls(Sit.renderer);
                 break;
 
              case "videoView":

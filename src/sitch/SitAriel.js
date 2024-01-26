@@ -1,6 +1,5 @@
 
-import {CNodeView3D} from "../nodes/CNodeView3D";
-import { Color, DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
+import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
 

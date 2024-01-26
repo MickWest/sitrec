@@ -4,7 +4,6 @@ import {
     HemisphereLight,
 } from "../../three.js/build/three.module";
 import {EarthRadiusMiles, guiJetTweaks, Sit} from "../Globals";
-import * as THREE from "../../three.js/build/three.module";
 import * as LAYER from "../LayerMasks";
 import {
     ExpandKeyframes,
@@ -50,6 +49,7 @@ import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {FileManager} from "../CFileManager";
 import {addControllerTo} from "../nodes/CNodeController";
+import {Color, MeshStandardMaterial, TextureLoader} from "three";
 
 export var SitGoFast = {
     name: "gofast",
@@ -134,7 +134,7 @@ export var SitGoFast = {
     // //            this.div.style.pointerEvents = keyHeld['q']?'auto':'none';
     //         },
     //         defaultTargetHeight: 25000,
-    //         background: new THREE.Color().setRGB(0.0, 0.0, 0.0),
+    //         background: new Color().setRGB(0.0, 0.0, 0.0),
     //
     //         focusTracks:{
     //             "Ground (no track)": "default",
@@ -390,8 +390,8 @@ export var SitGoFast = {
         azEditorNode.editorView.recalculate()
 
         // ocean
-        const waterTexture = new THREE.TextureLoader().load('data/images/28_sea water texture-seamless-dark.jpg?v=1');
-        const waterMaterial = new THREE.MeshStandardMaterial({
+        const waterTexture = new TextureLoader().load('data/images/28_sea water texture-seamless-dark.jpg?v=1');
+        const waterMaterial = new MeshStandardMaterial({
             map: waterTexture,
             transparent: true,
         });
@@ -410,7 +410,7 @@ export var SitGoFast = {
         var LOSGroundTrackDisplayNode = new CNodeDisplayTrack({
             inputs: {
                 track: "LOSGroundTrack",
-                color: new CNodeConstant({value: new THREE.Color(1, 0, 1)}),
+                color: new CNodeConstant({value: new Color(1, 0, 1)}),
                 //   width: new CNodeConstant({value: 3}),
                 width: "groundTrackWidth",
             },
@@ -444,7 +444,7 @@ export var SitGoFast = {
             id: "DisplayLOStoGround",
             cameraTrack: "JetLOS",
             targetTrack: "LOSGroundTrack",
-            color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
+            color: new CNodeConstant({value: new Color(1, 1, 1)}),
             width: 0.5,
 
         })
@@ -454,7 +454,7 @@ export var SitGoFast = {
             id: "DisplayLOS",
             cameraTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
-            color: new CNodeConstant({value: new THREE.Color(1, 1, 1)}),
+            color: new CNodeConstant({value: new Color(1, 1, 1)}),
             width: 2,
 
         })

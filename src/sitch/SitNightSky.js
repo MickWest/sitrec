@@ -1,6 +1,5 @@
-import {Color, Vector3} from "../../three.js/build/three.module";
+import { Vector3} from "../../three.js/build/three.module";
 import {GlobalPTZ, gui, NodeMan, Sit} from "../Globals";
-import {CNodeView3D} from "../nodes/CNodeView3D";
 
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
@@ -99,7 +98,9 @@ export const SitNightSky = {
 //    syncVideoZoom: true,
 
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#132d44'},
-    lookView: {left: 0.5, top: 0, width: 0.5, height: 1,},
+    lookView: {left: 0.5, top: 0, width: 0.5, height: 1,
+        ptzControls:true, // flag so dragging the view around will alter the ptz controls
+    },
   //  videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
 
 

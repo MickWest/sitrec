@@ -332,15 +332,17 @@ export const SitWestJet = {
         startCameraTargetLLA: [38.603456, -86.509621, 4158895.037381],
     },
     lookCamera:{ fov: 10, far: 8000000 },
+    cameraTrack: {},
+
 }
 ```
 WestJet is a case of Starlink satellites observed from a plane. This new case was similar to the PVS14 sitch, so we use that as a base with the ...SitPVS14 line.
 
 the remaining lines show everything that needs to change
 
-files: 
-- starLink - a TLE file of all starlink satellites for the day in question
-- cameraFile - a KML file showing the timestamped path of the plane. 
+- files: 
+  - starLink - a TLE file of all starlink satellites for the day in question
+  - cameraFile - a KML file showing the timestamped path of the plane. 
 - videoFile - the segment of the video we are interested in - reduced to 720p for speed
 - startTime - the start time of the video. 
 - frames - the number of frames in the video (which is the default 30 fps)

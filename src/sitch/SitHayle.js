@@ -1,9 +1,7 @@
 import {Color} from "../../three.js/build/three.module";
 import {scaleF2M} from "../utils";
 import {Sit} from "../Globals";
-import {CNodeView3D} from "../nodes/CNodeView3D";
 import * as LAYER from "../LayerMasks";
-import * as THREE from "../../three.js/build/three.module";
 import {CNodeConstant} from "../nodes/CNode";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
@@ -163,7 +161,7 @@ export const SitHayle = {
 
         new CNodeDisplayTrack({
             track: "LOSTraverseConstantDistance",
-            color: new CNodeConstant({value: new THREE.Color(0, 1, 1)}),
+            color: new CNodeConstant({value: new Color(0, 1, 1)}),
             width: 1,
 
             layers: LAYER.MASK_HELPERS,
@@ -175,7 +173,7 @@ export const SitHayle = {
             id: "DisplayLOS",
             cameraTrack: "motionTrackLOS",
             targetTrack: "LOSTraverseConstantDistance",
-            color: new CNodeConstant({value: new THREE.Color(1, 0, 0)}),
+            color: new CNodeConstant({value: new Color(1, 0, 0)}),
             width: 2,
 
         })

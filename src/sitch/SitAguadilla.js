@@ -1,8 +1,4 @@
-import {
-    CNodeMovablePoint, CNodePositionLLA, makePositionLLA, trackHeading
-} from "../nodes/CNode";
-
-import {CNodeView3D} from "../nodes/CNodeView3D";
+import {trackHeading} from "../nodes/CNode";
 import {par} from "../par";
 import {gui, NodeMan, Sit} from "../Globals";
 import {
@@ -13,8 +9,7 @@ import {
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
 import {VG, ViewMan} from "../nodes/CNodeView";
 import {assert} from "../utils"
-import {LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
-import * as THREE from "../../three.js/build/three.module";
+import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
 import {CNodeConstant} from "../nodes/CNode";
@@ -43,6 +38,7 @@ import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from 
 import {makeMatLine} from "../MatLines";
 import {FileManager} from "../CFileManager";
 import {addControllerTo} from "../nodes/CNodeController";
+import {Color} from "three";
 
 export const SitAguadilla = {
     name: "agua",
@@ -323,7 +319,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplay",
             track: "jetTrack",
-            color: new CNodeConstant({value:new THREE.Color(0.5,0.5,0.5)}),
+            color: new CNodeConstant({value:new Color(0.5,0.5,0.5)}),
             width: 0.5,
             autoSphere: 10,
         })
@@ -332,7 +328,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplayOLD",
             track: "jetTrackOLD",
-            color: new CNodeConstant({value:new THREE.Color(1,0.5,0.5)}),
+            color: new CNodeConstant({value:new Color(1,0.5,0.5)}),
             width: 0.5,
             autoSphere: 10,
         })
@@ -341,7 +337,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplaySpline",
             track: "jetTrackSpline",
-            color: new CNodeConstant({value:new THREE.Color(0.8,0,0.8)}),
+            color: new CNodeConstant({value:new Color(0.8,0,0.8)}),
             width: 0.5,
             autoSphere: 10,
         })
@@ -352,7 +348,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplayAverage",
             track: "jetTrackAverage",
-            color: new CNodeConstant({value:new THREE.Color(1,1,0)}),
+            color: new CNodeConstant({value:new Color(1,1,0)}),
             width: 0.5,
             autoSphere: 10,
         })
@@ -362,7 +358,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackSmoothDisplay",
             track: "jetTrackSmooth",
-            color: new CNodeConstant({value:new THREE.Color(0,1,1)}),
+            color: new CNodeConstant({value:new Color(0,1,1)}),
             width: 1,
             autoSphere: 10,
 
@@ -372,7 +368,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrackToTrack({
             cameraTrack: "jetTrackSmooth",
             targetTrack: "jetTrackAverage",
-            color: new CNodeConstant({value:new THREE.Color(1,1,0)}),
+            color: new CNodeConstant({value:new Color(1,1,0)}),
             width: 2,
 
         })
@@ -401,7 +397,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "targetTrackSmoothRaisedDisplay",
             track: "targetTrackSmoothRaised",
-            color: new CNodeConstant({value:new THREE.Color(0,1,0)}),
+            color: new CNodeConstant({value:new Color(0,1,0)}),
             width: 3,
             
         })
@@ -478,7 +474,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "groundSplineEditorDisplay",
             track: "groundSplineEditor",
-            color: new CNodeConstant({value:new THREE.Color(0,1,1)}),
+            color: new CNodeConstant({value:new Color(0,1,1)}),
             width: 3,
         })
 
@@ -557,7 +553,7 @@ export const SitAguadilla = {
         const uapSplineDisplay = new CNodeDisplayTrack({
             id: "uapSplineEditorDisplay",
             track: "uapSplineEditor",
-            color: new CNodeConstant({value:new THREE.Color(1,0,0)}),
+            color: new CNodeConstant({value:new Color(1,0,0)}),
             width: 3,
         })
 
@@ -603,7 +599,7 @@ export const SitAguadilla = {
         const lanternSplineDisplay = new CNodeDisplayTrack({
             id: "lanternSplineEditorDisplay",
             track: "lanternSplineEditor",
-            color: new CNodeConstant({value:new THREE.Color(1,1,0)}),
+            color: new CNodeConstant({value:new Color(1,1,0)}),
             width: 3,
         })
 
@@ -617,7 +613,7 @@ export const SitAguadilla = {
         // new CNodeDisplayTrackToTrack({
         //     cameraTrack: "jetTrackSmooth",
         //     targetTrack: "groundSplineEditor",
-        //     color: new CNodeConstant({value:new THREE.Color(1,0,1)}),
+        //     color: new CNodeConstant({value:new Color(1,0,1)}),
         //     width: 2,
         //
         // })
@@ -717,9 +713,9 @@ export const SitAguadilla = {
             id: "DisplayLOS1",
             cameraTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
-            color: new CNodeConstant({value:new THREE.Color(1,1,1)}),
+            color: new CNodeConstant({value:new Color(1,1,1)}),
             width: 2,
-            extensionColor: new CNodeConstant({value:new THREE.Color(0,1,0)}),
+            extensionColor: new CNodeConstant({value:new Color(0,1,0)}),
 
         })
 
@@ -731,7 +727,7 @@ export const SitAguadilla = {
             id: "DisplayLOS2",
             cameraTrack: "LOSTraverseSelectSmoothed",
             targetTrack: "LOSTargetTrack",  // this was terrain track, should be a camera ground track
-            color: new CNodeConstant({value:new THREE.Color(0,1,0)}),
+            color: new CNodeConstant({value:new Color(0,1,0)}),
             width: 2,
 
         })
@@ -780,7 +776,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "TraversePathDisplay",
             track: "LOSTraverseSelectSmoothed",
-            color: new CNodeConstant({value:new THREE.Color(0.3,1,0.3)}),
+            color: new CNodeConstant({value:new Color(0.3,1,0.3)}),
             width: 4,
             depthFunc:AlwaysDepth,
 

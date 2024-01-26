@@ -1,8 +1,3 @@
-import {SetupGUIFrames} from "../JetGUI";
-import {CNodeView3D} from "../nodes/CNodeView3D";
-import {Color} from "../../three.js/build/three.module";
-import {addDefaultLights} from "../lighting";
-import {NodeMan, Sit} from "../Globals";
 
 export const SitDume = {
     name: "dume",
@@ -45,9 +40,5 @@ export const SitDume = {
 
     lookCamera: {fov: 10,},
     lookView: {left: 0.5, top: 0, width: 0.5, height: 1,fov: 50, background: [0.53, 0.81, 0.92]},
-
-    setup2: function() {
-        addDefaultLights(Sit.brightness)
-    },
 
 }

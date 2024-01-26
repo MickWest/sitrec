@@ -1,8 +1,8 @@
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
-import * as THREE from "../../three.js/build/three.module";
 import {GlobalScene} from "../LocalFrame";
 import {SetupGUIFrames} from "../JetGUI";
+import {Color} from "three";
 
 export const SitSWR = {
     name: "swr",
@@ -65,7 +65,7 @@ export const SitSWR = {
             //     draggable:true,resizable:true,
             left:0.0, top:0, width:1,height:1,
             fov: 50,
-            background: new THREE.Color().setRGB(0.53, 0.81, 0.92),
+            background: new Color().setRGB(0.53, 0.81, 0.92),
             camera: "mainCamera",
             renderFunction: function() {
                 this.renderer.render(GlobalScene, this.camera);
