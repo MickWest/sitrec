@@ -12,12 +12,16 @@ import {assert} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
+import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
+import {GlobalScene} from "./LocalFrame";
 
 
 export function SituationSetup() {
     console.log("++++++ SituationSetup")
 
     new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
+
+    let mainView, mainCameraNode, mainCamera;
 
     for (let key in Sit) {
 //        console.log(key)
@@ -31,6 +35,7 @@ export function SituationSetup() {
         function SSLog() {
             console.log("SituationSetup: " + key + " " + JSON.stringify(data))
         }
+
 
         switch (key) {
 
@@ -78,6 +83,9 @@ export function SituationSetup() {
                     lookAtLLA: data.startCameraTargetLLA,
 
                 })
+
+                mainCameraNode = cameraNode;
+                mainCamera = mainCameraNode.camera;
 
                // setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
 
@@ -155,6 +163,7 @@ export function SituationSetup() {
                 }
                 const view = new CNodeView3D(mainViewDef);
                 view.addOrbitControls(Sit.renderer);
+                mainView = view;
                 break;
 
             case "lookView":
@@ -183,7 +192,6 @@ export function SituationSetup() {
 
              case "videoView":
                  SSLog();
-                // REALLY NEED TO REFACTOR THIS COMMON CODE
                 assert (Sit.videoFile !== undefined, "videoView needs a video file")
                 new CNodeVideoWebCodecView({
                         id: "video",
@@ -202,8 +210,7 @@ export function SituationSetup() {
                         ...data,
                     }
                 )
-
-                 break;
+                break;
 
             case "focusTracks":
                 SSLog();
@@ -213,20 +220,23 @@ export function SituationSetup() {
 
                 // need to implement views first, as the spline editor needs a renderer and controls
             case "targetSpline":
-                // SSlog();
-                // new CNodeSplineEditor({
-                //     id: "targetTrack",
-                //     type: data.type,   // chordal give smoother velocities
-                //     scene: GlobalScene,
-                //     camera: "mainCamera",
-                //     renderer: view.renderer,
-                //     controls: view.controls,
-                //     frames: this.frames,
-                //     terrainClamp: "TerrainModel",
-                //
-                //     initialPoints: data.initialPoints,
-                //     initialPointsLLA: data.initialPointsLLA,
-                // })
+                SSLog();
+                assert(mainView !== undefined, "SituationSetup: targetSpline needs a mainView defined");
+                assert(mainCamera !== undefined, "SituationSetup: targetSpline needs a mainCamera defined");
+                new CNodeSplineEditor({
+                    id: data.id ?? "targetTrack",
+                    type: data.type,   // chordal give smoother velocities
+                    scene: GlobalScene,
+                    camera: "mainCamera",
+                    view: mainView,
+                    renderer: mainView.renderer,
+                    controls: mainView.controls,
+                    frames: Sit.frames,
+                    terrainClamp: data.terrainClamp ?? "TerrainModel",
+
+                    initialPoints: data.initialPoints,
+                    initialPointsLLA: data.initialPointsLLA,
+                })
                 break;
 
             case "dragDropHandler":

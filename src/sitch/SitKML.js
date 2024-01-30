@@ -98,20 +98,6 @@ export const SitKML = {
 
         if (FileManager.exists("KMLTarget")) {
             makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
-        } else if (this.targetSpline) {
-            new CNodeSplineEditor({
-                id: "targetTrack",
-//            type:"linear",   // linear or catmull
-                type: this.targetSpline.type,   // chordal give smoother velocities
-                scene: GlobalScene,
-                camera: "mainCamera",
-                view:view,
-                frames: this.frames,
-                terrainClamp: "TerrainModel",
-
-                initialPoints: this.targetSpline.initialPoints,
-                initialPointsLLA: this.targetSpline.initialPointsLLA,
-            })
         }
 
         // The moving average smoothed target KML track

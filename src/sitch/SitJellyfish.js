@@ -16,8 +16,6 @@ import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
-import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
-import {GlobalScene} from "../LocalFrame";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
@@ -92,6 +90,7 @@ export const SitJellyfish    = {
     // instead of a target KML file, we define a simple spline
     // in this case just two points, linear interpolation (a line)
     targetSpline: {
+        id: "groundTrack",
         type: "linear",
         initialPointsLLA: [
             // NOTE: YOU NEED THE FRAME NUMBERS to match the video
@@ -109,21 +108,6 @@ export const SitJellyfish    = {
         initKeyboard()
 
         new CNodeLOSConstantCamera({id:"cameraTrack", camera:"lookCamera"})
-
-
-        new CNodeSplineEditor({
-            id: "groundTrack",
-//            type:"linear",   // linear or catmull
-            type: this.targetSpline.type,   // chordal give smoother velocities
-            scene: GlobalScene,
-            camera: "mainCamera",
-            view: "mainView",
-            frames: this.frames,
-            terrainClamp: "TerrainModel",
-
-            initialPoints: this.targetSpline.initialPoints,
-            initialPointsLLA: this.targetSpline.initialPointsLLA,
-        })
 
         new CNodeDisplayTrack({
             track: "groundTrack",

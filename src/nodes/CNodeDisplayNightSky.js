@@ -571,7 +571,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                         const altitudeKM = (satPosition.clone().sub(this.globe.center).length() - wgs84.RADIUS) / 1000
 
                         if (altitudeKM < 450) {
-                            scale *= 3
+                            scale *= 3 // a bit of a dodgy patch to make low atltitde trains stand out.
                         }
 
                         const spread = this.glareAngle

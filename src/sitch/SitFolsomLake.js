@@ -52,14 +52,6 @@ export const SitFolsomLake = {
     cameraSphereSize: 2,
     targetSphereSize: 2,
 
-    // instead of a target KML file, we define a simple spline
-    // in this case just ONE point
-    // targetSpline: {
-    //     type: "linear",
-    //      initialPointsLLA: [
-    //         [0, 38.72275880556581, -121.16873415102312, 147.20740124210715]
-    //      ]
-    // },
     showAltitude: false,
 
     setup2: function() {
