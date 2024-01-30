@@ -4,6 +4,7 @@ import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {dispose} from "../threeExt";
+import {NodeMan} from "../Globals";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -43,11 +44,11 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
        // v.container = v.camera;
         super(v);
         this.radius = v.radius ?? 100
-        this.camera = v.camera
+        this.camera = NodeMan.get(v.camera).camera;
         this.color = v.color
 
         this.camera.visible = true;
-        assert(this.color.isLineMaterial, "Color needs to be a matline, eg with makeMatLoine")
+        assert(this.color.isLineMaterial, "Color needs to be a matline, eg with makeMatLine")
 
         this.rebuild()
     }

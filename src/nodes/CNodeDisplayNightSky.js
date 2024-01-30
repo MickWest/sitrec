@@ -10,7 +10,7 @@ import {
     Vector3
 } from "../../three.js/build/three.module";
 import {radians, assert, sin, cos, degrees} from "../utils";
-import {gui, guiShowHide, guiTweaks, mainCamera, Sit} from "../Globals";
+import {gui, guiShowHide, guiTweaks, mainCamera, NodeMan, Sit} from "../Globals";
 import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
@@ -262,7 +262,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // and specifying the center of the Earth
         this.globe = new Sphere(new Vector3(0,-wgs84.RADIUS,0), wgs84.POLAR_RADIUS)
 
-        this.camera = Sit.lookCamera
+        this.camera = NodeMan.get("lookCamera").camera;
         assert(this.camera, "CNodeDisplayNightSky needs a look camera")
 
         this.showSunArrows = false;
@@ -1316,7 +1316,7 @@ void main() {
 
             const eus = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
             const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
-            const camera = Sit.lookCamera;
+            const camera = NodeMan.get("lookCamera").camera;
 
             if (Sit.venusArrow) {
                 DebugArrow("Venusarrow", eusDir, camera.position, 20000, "#30FF30", true, this.venusArrowGroup)
@@ -1347,7 +1347,7 @@ void main() {
             this.toSun.copy(eusDir.clone().normalize())
             this.fromSun.copy(this.toSun.clone().negate())
 
-            const camera = Sit.lookCamera;
+            const camera = NodeMan.get("lookCamera").camera;
 
             const cameraPos = camera.position;
             const cameraEcef = EUSToECEF(cameraPos)

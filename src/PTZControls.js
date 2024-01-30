@@ -2,7 +2,7 @@ import {radians} from "./utils";
 import {V3} from "./threeExt";
 import {getLocalUpVector} from "./SphericalMath";
 import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";
-import {Sit} from "./Globals";
+import {NodeMan, Sit} from "./Globals";
 
 export class PTZControls {
     constructor(v,gui) {
@@ -10,7 +10,7 @@ export class PTZControls {
         this.el = v.el
         this.fov = v.fov
         this.roll = v.roll
-        this.camera = v.camera;
+        this.camera = NodeMan.get(v.camera).camera;
 
         if (v.showGUI) {
             gui.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v))

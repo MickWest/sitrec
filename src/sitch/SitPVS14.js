@@ -111,7 +111,7 @@ export const SitPVS14 = {
         })
 
 
-        GlobalPTZ.camera = this.lookCamera; // TEMPORARY
+        GlobalPTZ.camera = NodeMan.get("lookCamera").camera;
 
         //animated segement of camera track
         new CNodeDisplayTrack({
@@ -153,7 +153,8 @@ export const SitPVS14 = {
     update: function(frame) {
         // with camera locked to a plane, propogate the plane's position
         // via the UI
-        const cursorPos = this.lookCamera.position;
+        const lookCamera = NodeMan.get("lookCamera").camera
+        const cursorPos = lookCamera.position;
         const ecef = EUSToECEF(cursorPos)
         const LLA = ECEFToLLAVD_Sphere(ecef)
     },

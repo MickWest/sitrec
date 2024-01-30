@@ -6,7 +6,7 @@ import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {
-    abs,
+    abs, assert,
     atan,
     degrees,
     floor,
@@ -135,7 +135,7 @@ export const SitKML = {
 
 
 
-
+        // KMLOther is currently only used in ITY621
         if (FileManager.exists("KMLOther")) {
             NodeMan.createNodesJSON(`
             [
@@ -180,6 +180,8 @@ export const SitKML = {
         }
 
 
+        // The camera track data would be the extended track data from the KML
+        // The actual track used is a smoothed subset of this
         if (NodeMan.exists("cameraTrackData")) {
             new CNodeDisplayTrack({
                 id: "KMLDisplayMainData",
@@ -193,6 +195,7 @@ export const SitKML = {
             })
         }
 
+        // The smoothed target track
         if (NodeMan.exists("targetTrackAverage")) {
             // Segment of target track that's covered by the animation
             // here a thicker red track segment
@@ -206,6 +209,7 @@ export const SitKML = {
             })
         }
 
+        // Target data from the KML - i.e. the entire track, sparse points, as downloaded for an ADS-B provider
         if (NodeMan.exists("KMLTargetData")) {
             new CNodeDisplayTrack({
                 id: "KMLDisplayTargetData",
@@ -220,10 +224,7 @@ export const SitKML = {
         }
 
 
-        // Data for all the lines of sight
-        // NOT CURRENTLY USED in the KML sitches where we track one KML from another.
-
-
+        // display white line from camera track to target track
         if (NodeMan.exists("targetTrackAverage")) {
             // DISPLAY The line from the camera track to the target track
             new CNodeDisplayTrackToTrack({
@@ -237,6 +238,8 @@ export const SitKML = {
         }
 
 
+        // displaying the target model or sphere
+        // model will be rotated by the wind vector
         if (!Sit.landingLights) {
 
             let maybeWind = {};
@@ -247,7 +250,7 @@ export const SitKML = {
             }
 
             if (NodeMan.exists("targetTrackAverage")) {
-                // optional target model
+                // optional target model, like a plane
                 if (Sit.targetObject) {
                     new CNodeDisplayTargetModel({
                         track: "targetTrackAverage",
@@ -255,7 +258,7 @@ export const SitKML = {
                         ...maybeWind,
                     })
                 } else {
-
+                // no target model, just a sphere, of adjustable size
                     new CNodeDisplayTargetSphere({
                         inputs: {
                             track: "targetTrackAverage",
@@ -276,9 +279,10 @@ export const SitKML = {
             }
 
         } else {
+            // Has landingLights
+            // landing lights are just a sphere scaled by the distance and the view angle
+            // (i.e. you get a brighter light if it's shining at the camera
             if (NodeMan.exists("targetTrackAverage")) {
-                // landing lights are just a sphere scaled by the distance and the view angle
-                // (i.e. you get a brighter light if it's shining at the camera
                 new CNodeDisplayLandingLights({
                     inputs: {
                         track: "targetTrackAverage",
@@ -298,7 +302,7 @@ export const SitKML = {
             }
         }
 
-
+        // Much larger HELPER spheres in the main view for target track and camera track
         if (NodeMan.exists("targetTrackAverage")) {
             // Spheres displayed in the main view (helpers)
             new CNodeDisplayTargetSphere({
@@ -313,12 +317,14 @@ export const SitKML = {
         })
 
 
-        if (this.lookCamera !== undefined) {
+        if (NodeMan.exists("lookCamera")) {
 
-            const cam = NodeMan.get("lookCamera")
+            // right now everything has a look camera
+
+            const cameraNode = NodeMan.get("lookCamera")
 
             if (this.ptz) {
-                cam.addController("TrackAzEl",{
+                cameraNode.addController("TrackAzEl",{
                         sourceTrack: "cameraTrack",
                     })
 
@@ -326,18 +332,16 @@ export const SitKML = {
 
                 if (NodeMan.exists("targetTrackAverage")) {
 
-                    cam.addController("TrackToTrack", {
+                    cameraNode.addController("TrackToTrack", {
                         sourceTrack: "cameraTrack",
                         targetTrack: "targetTrackAverage",
                     })
                 } else {
-                    cam.addController("TrackAzEl", {
+                    cameraNode.addController("TrackAzEl", {
                         sourceTrack: "cameraTrack",
                     })
                 }
             }
-
-            this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY?
 
             // if there's a focal length field in the camera track, then use it
             const cameraTrack = NodeMan.get("cameraTrack")
@@ -363,7 +367,7 @@ export const SitKML = {
                 })
             }
 
-        }
+       }
 
 
         if (this.ptz) {
@@ -372,7 +376,7 @@ export const SitKML = {
                     el: this.ptz.el,
                     fov: this.ptz.fov,
                     roll: this.ptz.roll,
-                    camera: this.lookCamera,
+                    camera: "lookCamera",
                     showGUI: this.ptz.showGUI
                 },
                 gui

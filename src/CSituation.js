@@ -133,12 +133,11 @@ export class CSituation {
 
         if (this.lookFOV) {
 
-            this.lookCamera = NodeMan.get("lookCamera").camera // TEMPORARY
 
             if (this.ptz) {
                 // THis is a UI controller for adjusting PTZ of a given camera
                 setGlobalPTZ(new PTZControls({
-                        az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: this.lookCamera, showGUI:this.ptz.showGUI
+                        az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: "lookCamera", showGUI:this.ptz.showGUI
                     },
                     gui
                 ))
@@ -178,8 +177,9 @@ export class CSituation {
             } else {
 
                 gui.add(this, 'lookFOV', 0.35, 120, 0.01).onChange(value => {
-                    this.lookCamera.fov = value
-                    this.lookCamera.updateProjectionMatrix()
+                    const lookCamera = NodeMan.get("lookCamera").camera
+                    lookCamera.fov = value
+                    lookCamera.updateProjectionMatrix()
                 }).listen().name("Look FOV")
                 // Lock the camera on a spot, no editing position by user
                 NodeMan.get("lookCamera").addController("UICameraLLA", {

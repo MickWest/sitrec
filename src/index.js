@@ -559,13 +559,9 @@ if (Sit.nightSky) {
 if (Sit.displayFrustum) {
      Sit.frustum = new CNodeDisplayCameraFrustum({
          radius: Sit.frustumRadius,
-         camera: Sit.lookCamera,
+         camera: "lookCamera",
          color: makeMatLine(Sit.frustumColor, Sit.frustumLineWeight),
      })
-
-//    const helper = new CameraHelper(Sit.lookCamera)
-//    GlobalScene.add(helper)
-
 }
 
 // Finally move the camera and reset the start time, if defined in the URL parameters
