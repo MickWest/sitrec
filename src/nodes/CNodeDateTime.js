@@ -252,10 +252,10 @@ export class CNodeDateTime extends CNode {
         }
 
         if (isKeyCodeHeld('BracketLeft')) {
-            this.AdjustStartTime(-10000*speedscale)
+            this.AdjustStartTime(-3000*speedscale)
         }
         if (isKeyCodeHeld('BracketRight')) {
-            this.AdjustStartTime(10000*speedscale)
+            this.AdjustStartTime(3000*speedscale)
         }
 
         this.frame = frame
