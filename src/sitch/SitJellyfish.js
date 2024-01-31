@@ -6,18 +6,14 @@ import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {CNodeLOSConstantCamera} from "../nodes/CNodeLOSConstantCamera";
 import {CNodeScale} from "../nodes/CNodeScale";
-import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
 import {gui} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
-import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
 import {CNodeMunge} from "../nodes/CNodeMunge";
-import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
 import {Color} from "three";
 export const SitJellyfish    = {
@@ -33,35 +29,27 @@ export const SitJellyfish    = {
 
     useFLIRShader: true,
 
-    files: {
-    },
     videoFile: "../sitrec-videos/private/FULL Jellyfish Stab crop LOW BR.mp4",
-
-    bigUnits:"Miles",
-
-    syncVideoZoom: true,
-
-
     fps: 23.976,
     frames: 2982,
 
-    lookCamera: {
-        fov: 10.6,
-    },
-    // Pt Dume view
+    bigUnits:"Miles", // this woudl defauly to NM, but we want to use miles for this situation
+
+    syncVideoZoom: true,
+
+    lookCamera: { fov: 10.6, },
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
 
     // fixed viewpoint
     fromLat: 33.323126,
-    fromLon:43.608689,
+    fromLon: 43.608689,
+    fromAltFeet: 2978,
+    fromAltFeetMin: 1000,
+    fromAltFeetMax: 4000,
 
     // the origin
     lat: 33.323126,
     lon: 43.608689,
-
-    fromAltFeet: 2978,
-    fromAltFeetMin: 1000,
-    fromAltFeetMax: 4000,
 
     targetSpeedMax: 30,   //for the graph
 
@@ -74,11 +62,13 @@ export const SitJellyfish    = {
         startCameraTargetLLA: [33.280159, 43.642938, 4451.060802],
     },
     mainView:{ left:0.0, top:0, width:.50,height:1,background:'#000000'},
+
     lookView:{ left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,
         effects: {FLIRShader: {},},
     },
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5,},
 
+    // tracks that we can focus on - i.e. the zoom in and out will be relative to the selected track
     focusTracks: {
              "Ground (No Track)": "default",
              "Camera Position": "cameraTrack",
@@ -88,9 +78,8 @@ export const SitJellyfish    = {
     targetSize:2,
 
     // instead of a target KML file, we define a simple spline
-    // in this case just two points, linear interpolation (a line)
-    // targetSpline: {
-    //     id: "groundTrack",
+    // in this case just two points, with linear interpolation
+    // (a straight line, at constant speed)
     groundTrack: {
         kind: "targetSpline", // note new way of specifying setup
         type: "linear",
@@ -101,15 +90,18 @@ export const SitJellyfish    = {
         ],
     },
 
+    // A "track" that takes its position from a camera node
+    // generally the lookCamera
     cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
 
+    // the green ground track
     groundTrackDisplay: { kind:"DisplayTrack",
         track: "groundTrack",
         color: [0,1,0],
         width: 2,
-        layers: LAYER.MASK_HELPERS,
     },
 
+    // the red line that joins the camera track to the target - i.e. the current LOS.
     motionTrackLOS: { kind: "LOSTrackTarget",
         cameraTrack: "cameraTrack",
         targetTrack: "groundTrack",
@@ -121,11 +113,15 @@ export const SitJellyfish    = {
         spacing: 200,
     },
 
+    // only needed as the speed graph needs it. Fix that in the graph and delete this
+    targetWind: {kind: "Wind", from: 270, knots: 0,name: "Target", arrowColor: "cyan", gui: "Tweaks"},
+
+    initialHeading: {kind: "Heading", heading: 81, name: "Target", arrowColor: "green"},
+
     setup2: function() {
 
         SetupGUIFrames()
         initKeyboard()
-
 
         NodeMan.get("lookCamera").addController("LookAtTrack", {
             id:"lookAtGroundTrack",
@@ -146,47 +142,8 @@ export const SitJellyfish    = {
 
         });
 
-
-//    var nodeStartDistance =  new CNodeScale("startDistance", Sit.big2M,new CNodeGUIValue({value: 0.001, start:0, end:1, step: 0.0001,desc: "Tgt Start Dist "+Sit.bigUnits}, gui))
-//    var nodeStartDistance =  new CNodeGUIValue({id:"startDistance", value: 100, start:0, end:1000, step: 0.0001,desc: "Tgt Start Dist "+Sit.bigUnits}, gui)
-
         var nodeStartDistance = new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
             {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
-
-        //
-        // new CNodeLOSTraverse({
-        //     id: "traverseTrack",
-        //     inputs: {
-        //         LOS: "motionTrackLOS",
-        //         startDist: nodeStartDistance,
-        //         //radius: "radiusMiles",
-        //     },
-        // })
-
-
-
-        new CNodeWind({
-            id: "targetWind",
-            from: 270,
-            knots: 0,
-            name: "Target",
-            arrowColor: "cyan"
-
-        }, gui)
-
-        // zero wind for traversing
-        // NOTE, this is not used, and needs setting up so that there's
-        // a zero velocity for the balloon, and this wind variable
-        // is used to solve the path based on LOS.
-        new CNodeWind({id: "localWind", from: 70, knots: 0, name: "Local", arrowColor: "cyan"}, gui)
-
-        new CNodeHeading({
-            id: "initialHeading",
-            heading: 81,
-            name: "Initial",
-            arrowColor: "green"
-
-        }, gui)
 
 
 
@@ -199,11 +156,8 @@ export const SitJellyfish    = {
             },
         })
 
-
         AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
         AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
-
-
 
         new CNodeDisplayTargetSphere({
             id: "sphereInMainView",

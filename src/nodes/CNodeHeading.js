@@ -1,18 +1,25 @@
 import {CNode} from "./CNode";
 import {f2m, metersPerSecondFromKnots, radians} from "../utils";
-import {NodeMan, Sit} from "../Globals";
+import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {DebugArrowAB, V3} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
 
 export class CNodeHeading extends CNode {
-    constructor(v, gui) {
+    constructor(v, guiMenu) {
         super(v);
+
+        if (guiMenu === undefined) {
+            if (v.gui === "Tweaks")
+                guiMenu = guiTweaks;
+            else
+                guiMenu = gui;
+        }
 
         this.heading = v.heading;  // true heading
         this.name = v.name ?? ""
         this.arrowColor = v.arrowColor ?? "white"
 
-        gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
+        guiMenu.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
 
         this.recalculate()
     }

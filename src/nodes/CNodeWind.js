@@ -1,14 +1,21 @@
 import {CNode} from "./CNode";
 import {f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
-import {NodeMan, Sit} from "../Globals";
+import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {DebugArrowAB, V3} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
 import {getLocalUpVector} from "../SphericalMath";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeWind extends CNode {
-    constructor(v, gui) {
+    constructor(v, guiMenu) {
         super(v);
+
+        if (guiMenu === undefined) {
+            if (v.gui === "Tweaks")
+                guiMenu = guiTweaks;
+            else
+                guiMenu = gui;
+        }
 
         this.from = v.from;  // true heading of the wind soruce. North = 0
         this.knots = v.knots
@@ -18,8 +25,8 @@ export class CNodeWind extends CNode {
         // this.input("pos")
         // this.input("radius")
 
-        gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
-        gui.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+        guiMenu.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
+        guiMenu.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
 
 
         this.recalculate()
