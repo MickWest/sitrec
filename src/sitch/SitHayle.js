@@ -92,8 +92,6 @@ export const SitHayle = {
         var JetLOSDisplayNode = new CNodeDisplayLOS({
             LOS: "motionTrackLOS",
 
-            clipSeaLevel: true,
-            layers: LAYER.MASK_HELPERS,
 
             width: 3,
         })

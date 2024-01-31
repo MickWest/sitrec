@@ -657,7 +657,6 @@ export function SetupTrackLOSNodes() {
             inputs: {
                 LOS: "JetLOS",
             },
-            clipSeaLevel: true,
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
             color: 0x606060,

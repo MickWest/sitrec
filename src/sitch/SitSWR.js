@@ -22,10 +22,6 @@ export const SitSWR = {
         fov: 10,
     },
 
-    LOSSpacing:30*4,
-
-
-
     startDistance: 1,
     startDistanceMax: 6,
     startDistanceMin: 0.1,

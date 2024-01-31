@@ -101,8 +101,6 @@ export const SitJellyfish    = {
         ],
     },
 
-    LOSSpacing: 200,
-
     cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
 
     groundTrackDisplay: { kind:"DisplayTrack",
@@ -112,21 +110,22 @@ export const SitJellyfish    = {
         layers: LAYER.MASK_HELPERS,
     },
 
-    // motionTrackLOS: { kind: "LOSTrackTarget",
-    //     cameraTrack: "cameraTrack",
-    //     targetTrack: "groundTrack",
-    // },
+    motionTrackLOS: { kind: "LOSTrackTarget",
+        cameraTrack: "cameraTrack",
+        targetTrack: "groundTrack",
+    },
+
+    // Lines of sight display
+    JetLOSDisplayNode: {kind: "DisplayLOS",
+        LOS: "motionTrackLOS",
+        spacing: 200,
+    },
 
     setup2: function() {
 
         SetupGUIFrames()
         initKeyboard()
 
-         new CNodeLOSTrackTarget({
-             id: "motionTrackLOS",
-             cameraTrack: "cameraTrack",
-             targetTrack: "groundTrack",
-         })
 
         NodeMan.get("lookCamera").addController("LookAtTrack", {
             id:"lookAtGroundTrack",
@@ -147,15 +146,6 @@ export const SitJellyfish    = {
 
         });
 
-
-         var JetLOSDisplayNode = new CNodeDisplayLOS({
-             LOS: "motionTrackLOS",
-
-            clipSeaLevel: true,
-            layers: LAYER.MASK_HELPERS,
-
-            width: 3,
-        })
 
 //    var nodeStartDistance =  new CNodeScale("startDistance", Sit.big2M,new CNodeGUIValue({value: 0.001, start:0, end:1, step: 0.0001,desc: "Tgt Start Dist "+Sit.bigUnits}, gui))
 //    var nodeStartDistance =  new CNodeGUIValue({id:"startDistance", value: 100, start:0, end:1000, step: 0.0001,desc: "Tgt Start Dist "+Sit.bigUnits}, gui)

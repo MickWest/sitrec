@@ -41,7 +41,6 @@ const situationDefaults = {
     satCutOff: 0.101,
 
     targetSize:1,   // the diameter of the default target sphere F/A-18E/F wingspan = 45 feet
-    LOSSpacing:30,
 
     // Display Units
     bigUnits: "NM",
@@ -207,11 +206,6 @@ export class CSituation {
             GlobalScene.add(boxMark(enu, mark.width, 10000, mark.width, mark.color))
         })
 
-        if (this.motionTrackLOS) {
-            debugger;
-            console.log("motion track")
-            new CNodeLOSMotionTrack(this.motionTrackLOS)
-        }
 
         new CNodeGUIValue({
             id: "altAdjust",

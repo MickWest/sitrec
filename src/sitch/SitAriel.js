@@ -21,7 +21,6 @@ export const SitAriel = {
         fov: 10,
     },
 
-    LOSSpacing:30*4,
 
     mainCamera: {
         startCameraPosition: [-350.3905323693817, 1759.7688109547591, 1046.7086472689589],

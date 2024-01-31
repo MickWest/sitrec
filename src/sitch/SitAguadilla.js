@@ -58,8 +58,6 @@ export const SitAguadilla = {
         far: 800000,
     },
 
-    LOSSpacing:30*2,
-
     startDistance: 1.612,
     startDistanceMax: 3.5,
     startDistanceMin: 0.1,
@@ -758,9 +756,9 @@ export const SitAguadilla = {
             LOS:"JetLOS",
             traverse:"LOSTraverseSelectSmoothed",
             container:GlobalScene,
-            clipSeaLevel: true,
             color: 0x0000ff,
             width: 1,
+            spacing: 60,
 
 
             // SCU lines

@@ -53,7 +53,6 @@ export const SitFlir1 = {
         startCameraPosition: [-126342.63, 56439.02, 101932.66],
         startCameraTarget: [-126346.69, 56137.48, 100979.21],
     },
-    LOSSpacing:120,
 
 
     terrain: {lat:   31.605, lon:-117.870, zoom:7, nTiles:6},
@@ -382,7 +381,7 @@ export const SitFlir1 = {
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
             color: 0x606060,
-
+            spacing: 120,
 
         })
 

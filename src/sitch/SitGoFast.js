@@ -336,7 +336,6 @@ export var SitGoFast = {
             inputs: {
                 LOS: "JetLOS2",
             },
-            clipSeaLevel: true,
             highlightLines:{
                 375:makeMatLine(0xff0000,2), // red start
                 1030:makeMatLine(0x00ff00,2), // green end

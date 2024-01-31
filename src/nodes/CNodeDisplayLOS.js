@@ -3,7 +3,7 @@ import {makeMatLine} from "../MatLines";
 import {Sit} from "../Globals";
 import {DebugSphere, dispose} from "../threeExt";
 import {par} from "../par";
-import {metersFromMiles} from "../utils";
+import {assert, metersFromMiles} from "../utils";
 import {CNode3DGroup} from "./CNode3DGroup";
 
 import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
@@ -16,8 +16,9 @@ var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // inputs.LOS is a per-frame node that returns values of:
 //  .position = Vector3 start of the LOS
 //  .heading = Vector3, unit vector direction
-// clipSeaLevel = flag if to stop the LOS at sea level (e.g. with GoFast sitch)
+// clipSeaLevel = flag if to stop the LOS at sea level. Default = true, currently only FLIR1 sets it to false
 // highlightLines = object keyed on frame nubmers that need a different color
+// spacing = how many frames between each LOS to display
 export class CNodeDisplayLOS extends CNode3DGroup {
     constructor(v) {
         v.layers ??= LAYER.MASK_HELPERS;
@@ -26,10 +27,10 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         this.input("LOS")
         this.optionalInputs(["traverse"])
 
-        this.clipSeaLevel = v.clipSeaLevel ?? false
-        this.highlightLines = v.highlightLines ?? {}
-        this.LOSLengthMiles = v.LOSLength ?? 200
-
+        this.clipSeaLevel = v.clipSeaLevel ?? true;
+        this.highlightLines = v.highlightLines ?? {};
+        this.LOSLengthMiles = v.LOSLength ?? 200;
+        this.spacing = v.spacing ?? 30;
 
         this.material = makeMatLine(v.color ?? 0x808080, v.width ?? 0.75)
 
@@ -52,7 +53,7 @@ export class CNodeDisplayLOS extends CNode3DGroup {
             for (var f = 0; f < this.in.LOS.frames; f++) {
 
                 // one per second (assume 30 fps), plus arbitary lines to highlight
-                if (this.isFineDetail(f) || f % Sit.LOSSpacing === 0 || this.highlightLines[f] !== undefined) {
+                if (this.isFineDetail(f) || f % this.spacing === 0 || this.highlightLines[f] !== undefined) {
 
                     var traverse = this.in.traverse.v(f)
                     if (traverse.position) {
@@ -88,7 +89,7 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         for (var f = 0; f < this.in.LOS.frames; f++) {
 
             // one per second (assume 30 fps), plus arbitary lines to highlight
-            if (this.isFineDetail(f) || f % Sit.LOSSpacing === 0 || this.highlightLines[f] !== undefined) {
+            if (this.isFineDetail(f) || f % this.spacing === 0 || this.highlightLines[f] !== undefined) {
 
                 var los = this.in.LOS.v(f)
                 var A = los.position.clone();
