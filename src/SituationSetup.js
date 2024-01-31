@@ -8,12 +8,13 @@ import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {assert} from "./utils";
+import {assert, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
 import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
+import {CNodeScale} from "./nodes/CNodeScale";
 
 
 export function SituationSetup() {
@@ -252,6 +253,12 @@ export function SituationSetup() {
                     DragDropHandler.addDropArea(NodeMan.get("mainView").div);
                 if (NodeMan.exists("lookView"))
                     DragDropHandler.addDropArea(NodeMan.get("lookView").div);
+                break;
+
+            case "startDistanceFeet":
+                SSLog();
+                new CNodeScale(data.id ?? "startDistance", scaleF2M, new CNodeGUIValue(
+                     {id: "startDistanceFeet", ...data}, gui))
                 break;
 
             default:

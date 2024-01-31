@@ -49,18 +49,11 @@ class CameraMapControls {
 		this.rotateSpeed = 0.5;
 		this.target = new Vector3()
 
-//		this.canvas.onMouseDown(this.handleMouseDown)
-//		this.canvas.onMouseUp(this.handleMouseUp)
-//		this.canvas.onMouseMove(this.handleMouseMove)
-
 		this.canvas.addEventListener( 'contextmenu', e => this.onContextMenu(e) );
-
-
 		this.canvas.addEventListener( 'pointerdown', e => this.handleMouseDown(e) );
 		this.canvas.addEventListener( 'pointerup', e => this.handleMouseUp(e) );
 		this.canvas.addEventListener( 'pointermove', e => this.handleMouseMove(e) );
 		this.canvas.addEventListener( 'wheel', e => this.handleMouseWheel(e) );
-
 
 		this.mouseStart = new Vector2();
 		this.mouseEnd = new Vector2();

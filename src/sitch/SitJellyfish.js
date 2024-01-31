@@ -113,7 +113,13 @@ export const SitJellyfish    = {
     // only needed as the speed graph needs it. Fix that in the graph and delete this
     targetWind: {kind: "Wind", from: 270, knots: 0,name: "Target", arrowColor: "cyan", gui: "Tweaks"},
 
+    // the direction of the straight line traversal of the LOS
     initialHeading: {kind: "Heading", heading: 81, name: "Target", arrowColor: "green"},
+
+    // new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
+    //     {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
+
+    startDistanceFeet: {value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"},
 
     setup2: function() {
 
@@ -138,10 +144,6 @@ export const SitJellyfish    = {
             referenceFocalLength: 1000,
 
         });
-
-        new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
-            {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
-
 
 
         new CNodeLOSTraverseStraightLine({
