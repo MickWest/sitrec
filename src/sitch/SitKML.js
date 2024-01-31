@@ -89,9 +89,6 @@ export const SitKML = {
         Sit.setupWind()
 
         const view = NodeMan.get("mainView");
-
-        view.addOrbitControls(this.renderer);
-
         addDefaultLights(Sit.brightness)
 
         // Sit.makeCameraTrack();
