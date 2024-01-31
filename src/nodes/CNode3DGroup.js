@@ -1,8 +1,9 @@
 import {Group} from '../../three.js/build/three.module.js'
-import {CNode, NodeMan} from "./CNode";
+import {CNode, CNodeConstant, NodeMan} from "./CNode";
 import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"
 import {CNode3D} from "./CNode3D";
+import {Color} from "three";
 
 // a CNode3DGroup encapsulates a THREE.Group one or more 3D objects
 // is a standard node with inputs, so it will respond to changes in the inputs
@@ -14,6 +15,27 @@ export class CNode3DGroup extends CNode3D {
         this.container = v.container // container frame of reference = a THREE.js GlobalScene or group
         if (this.container === undefined) {
             this.container = GlobalScene;
+        }
+
+        // if we have a color input and it's not a Constant Node then
+        // we need to convert it to one from a variety of formata:
+        // "#RRGGBB"
+        // a Color object
+        // [r,g,b]
+        // (this is a bit of a hack, but it's a common case)
+        if (v.color !== undefined && !(v.color instanceof CNodeConstant)) {
+            var colorObject = v.color;
+            if (! (colorObject instanceof Color)) {
+                if (typeof colorObject === "string") {
+                    colorObject = new Color(colorObject)
+                } else if (Array.isArray(colorObject)) {
+                    colorObject = new Color(colorObject[0], colorObject[1], colorObject[2])
+                } else {
+                    console.log("CNode3DGroup color input not understood")
+                }
+            }
+
+            v.color = new CNodeConstant({value: colorObject})
         }
 
         this._object = new Group()

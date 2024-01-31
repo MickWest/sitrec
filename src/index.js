@@ -560,7 +560,8 @@ if (Sit.displayFrustum) {
      Sit.frustum = new CNodeDisplayCameraFrustum({
          radius: Sit.frustumRadius,
          camera: "lookCamera",
-         color: makeMatLine(Sit.frustumColor, Sit.frustumLineWeight),
+         color: Sit.frustumColor,
+         lineWeight: Sit.frustumLineWeight
      })
 }
 

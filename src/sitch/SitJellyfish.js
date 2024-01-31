@@ -89,8 +89,10 @@ export const SitJellyfish    = {
 
     // instead of a target KML file, we define a simple spline
     // in this case just two points, linear interpolation (a line)
-    targetSpline: {
-        id: "groundTrack",
+    // targetSpline: {
+    //     id: "groundTrack",
+    groundTrack: {
+        kind: "targetSpline", // note new way of specifying setup
         type: "linear",
         initialPointsLLA: [
             // NOTE: YOU NEED THE FRAME NUMBERS to match the video
@@ -101,23 +103,24 @@ export const SitJellyfish    = {
 
     LOSSpacing: 200,
 
+    cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
+
+    groundTrackDisplay: { kind:"DisplayTrack",
+        track: "groundTrack",
+        color: [0,1,0],
+        width: 2,
+        layers: LAYER.MASK_HELPERS,
+    },
+
+    // motionTrackLOS: { kind: "LOSTrackTarget",
+    //     cameraTrack: "cameraTrack",
+    //     targetTrack: "groundTrack",
+    // },
 
     setup2: function() {
 
         SetupGUIFrames()
         initKeyboard()
-
-        new CNodeLOSConstantCamera({id:"cameraTrack", camera:"lookCamera"})
-
-        new CNodeDisplayTrack({
-            track: "groundTrack",
-            color: new CNodeConstant({value: new Color(0, 1, 0)}),
-            width: 2,
-        //    autoSphere: 5,
-
-            layers: LAYER.MASK_HELPERS,
-        })
-
 
          new CNodeLOSTrackTarget({
              id: "motionTrackLOS",
@@ -143,22 +146,6 @@ export const SitJellyfish    = {
             referenceFocalLength: 1000,
 
         });
-
-
-// // need a constant position track, and then a CNodeLOSTrackTarget to the ground track
-//         // bit of a patch, jsut returing the lookCamera position, when really the lookCamera should come from this!!
-//         new CNodeConstant({
-//             id: "cameraTrack",
-//             value: new CNodeMunge({
-//                 inputs: {
-//                     camera: "CameraLLA",
-//                 },
-//                 munge: function (f) {
-//                     return {position: this.in.camera.camera.position.clone()}
-//                 }
-//             })
-//         })
-
 
 
          var JetLOSDisplayNode = new CNodeDisplayLOS({

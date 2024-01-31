@@ -56,10 +56,6 @@ assert = function(condition,message=false) {
 
 export {metersFromMiles, assert,MD5,abs,floor,sin,cos,tan,asin,acos,atan,atan2,radians,degrees,pad}
 
-
-
-
-
 // given an array and a sample window size, then return a same sized array
 // that has been smoothed by the rolling average method
 // (somewhat ad-hoc method, by Mick)

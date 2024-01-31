@@ -4,16 +4,19 @@ import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {dispose} from "../threeExt";
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
+import {makeMatLine} from "../MatLines";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
         super(v);
         this.radius = v.radius ?? 100
         this.fov = v.fov
-        this.color = v.color
 
-    //    assert(this.color.width !== undefined, "Color needs to be a matline, eg with makeMatLoine")
+        this.color = v.color
+        this.lineWeigh = v.lineWeight ?? 1;
+        this.matLine = makeMatLine(this.color, this.lineWeigh)
+
 
         var s = this.radius * tan(radians(this.fov))
         var d = -(this.radius - 2)
@@ -32,7 +35,7 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
         ]
         this.FrustumGeometry = new LineGeometry();
         this.FrustumGeometry.setPositions(line_points);
-        var line = new Line2(this.FrustumGeometry, this.color);
+        var line = new Line2(this.FrustumGeometry, this.matLine);
         line.computeLineDistances();
         line.scale.setScalar(1);
         this.group.add(line)
@@ -45,10 +48,12 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         super(v);
         this.radius = v.radius ?? 100
         this.camera = NodeMan.get(v.camera).camera;
+
         this.color = v.color
+        this.lineWeigh = v.lineWeight ?? 1;
+        this.matLine = makeMatLine(this.color, this.lineWeigh);
 
         this.camera.visible = true;
-        assert(this.color.isLineMaterial, "Color needs to be a matline, eg with makeMatLine")
 
         this.rebuild()
     }
@@ -76,7 +81,7 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         ]
         this.FrustumGeometry = new LineGeometry();
         this.FrustumGeometry.setPositions(line_points);
-        this.line = new Line2(this.FrustumGeometry, this.color);
+        this.line = new Line2(this.FrustumGeometry, this.matLine);
         this.line.computeLineDistances();
         this.line.scale.setScalar(1);
         this.group.add(this.line)

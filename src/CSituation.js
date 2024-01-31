@@ -208,6 +208,7 @@ export class CSituation {
         })
 
         if (this.motionTrackLOS) {
+            debugger;
             console.log("motion track")
             new CNodeLOSMotionTrack(this.motionTrackLOS)
         }

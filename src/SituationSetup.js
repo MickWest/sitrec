@@ -36,6 +36,14 @@ export function SituationSetup() {
             console.log("SituationSetup: " + key + " " + JSON.stringify(data))
         }
 
+        if (data.kind !== undefined) {
+            // to allown
+            // new way of doing it, the "kind" is the kind of thing we want to setup
+            // which means the key is the id of the node
+            assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
+            data.id = key;
+            key = data.kind;
+        }
 
         switch (key) {
 
@@ -157,7 +165,7 @@ export function SituationSetup() {
                     //     draggable:true,resizable:true,
                     left: 0.0, top: 0, width: .5, height: 1,
                     fov: 50,
-                    background: Sit.skyColor,
+                    background: data.background ?? Sit.skyColor,
                     camera: "mainCamera",
                     ...data,
                 }
@@ -245,6 +253,16 @@ export function SituationSetup() {
                 if (NodeMan.exists("lookView"))
                     DragDropHandler.addDropArea(NodeMan.get("lookView").div);
                 break;
+
+            default:
+                // check to see if the "kind" is a node type
+                // if so, then create a node of that type
+                // passing in the data as the constructor
+                if (NodeMan.validType(key)) {
+                    SSLog();
+                    NodeMan.create(key, data);
+                };
+
 
         }
 
