@@ -10,7 +10,7 @@ import {wgs84} from "../LLA-ECEF-ENU";
 export class CNodeLOSTraverseStraightLine extends CNode {
     constructor(v) {
         super(v);
-        this.checkInputs(["LOS", "startDist", "lineHeading"])
+        this.requireInputs(["LOS", "startDist", "lineHeading"])
         this.array = []
         this.recalculate()
     }
@@ -128,7 +128,7 @@ export class CNodeLOSTraverseStraightLine extends CNode {
 export class CNodeLOSTraverseStraightLineFixed extends CNode {
     constructor(v) {
         super(v);
-        this.checkInputs(["speed", "startDist", "lineHeading", "radius"])
+        this.requireInputs(["LOS", "speed", "startDist", "lineHeading", "radius"])
         this.array = []
         this.recalculate()
     }

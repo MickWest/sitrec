@@ -805,23 +805,19 @@ export function CreateTraverseNodes(traverseInputs) {
     // currently very simplistic and does not work with noisy data.
     new CNodeLOSTraverseStraightLine({
         id: "LOSTraverseStraightLine",
-        inputs: {
-            LOS: "JetLOS",
-            startDist: nodeStartDistance,
-            radius: "radiusMiles",
-            lineHeading: "targetActualHeading",
-        },
+        LOS: "JetLOS",
+        startDist: nodeStartDistance,
+        radius: "radiusMiles",
+        lineHeading: "targetActualHeading",
     })
 
     new CNodeLOSTraverseStraightLineFixed({
         id: "LOSTraverseStraightLineFixed",
-        inputs: {
-            LOS: "JetLOS",  // we just need the first LOS
-            startDist: nodeStartDistance,
-            radius: "radiusMiles",
-            lineHeading: "targetActualHeading",
-            speed: "speedScaled",
-        },
+        LOS: "JetLOS",  // we just need the first LOS
+        startDist: nodeStartDistance,
+        radius: "radiusMiles",
+        lineHeading: "targetActualHeading",
+        speed: "speedScaled",
     })
 
 

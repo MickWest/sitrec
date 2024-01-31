@@ -40,7 +40,7 @@ export function SituationSetup() {
         if (data.kind !== undefined) {
             // to allown
             // new way of doing it, the "kind" is the kind of thing we want to setup
-            // which means the key is the id of the node
+            // which means the key is the id of the node OR the id of some setup code in the switch statement below
             assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
             data.id = key;
             key = data.kind;
@@ -261,6 +261,12 @@ export function SituationSetup() {
                      {id: "startDistanceFeet", ...data}, gui))
                 break;
 
+            case "sizeFeet":
+                SSLog();
+                new CNodeScale(data.id ?? "targetSize", scaleF2M, new CNodeGUIValue(
+                    {...data, ...{id: "targetSizeFeetGUI"}}, gui))
+                break;
+
             default:
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
@@ -276,3 +282,12 @@ export function SituationSetup() {
 
     }
 }
+
+/*
+ Nodes can be converted by using this regular expression / replacement
+
+new\s+CNode(\w+)\(\s*\{\s*id:\s*"(\w+)",\s*((.|\s)+?)\}\s*\)
+
+$2: { kind: "$1",\n$3},
+
+ */

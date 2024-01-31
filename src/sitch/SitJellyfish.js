@@ -1,17 +1,9 @@
-import {scaleF2M} from "../utils";
 import {NodeMan, Sit} from "../Globals";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
-import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
-import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {CNodeScale} from "../nodes/CNodeScale";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
-import {gui} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {CNodeMunge} from "../nodes/CNodeMunge";
-import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
 
 export const SitJellyfish    = {
     name: "jellyfish",
@@ -116,10 +108,44 @@ export const SitJellyfish    = {
     // the direction of the straight line traversal of the LOS
     initialHeading: {kind: "Heading", heading: 81, name: "Target", arrowColor: "green"},
 
-    // new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
-    //     {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
-
     startDistanceFeet: {value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"},
+
+    traverseTrack: {
+        kind: "LOSTraverseStraightLine",
+        LOS: "motionTrackLOS",
+        startDist: "startDistance",
+        lineHeading: "initialHeading",
+    },
+
+    sphereSize:{ kind:"sizeFeet", value: 2, start: 0.1, end: 6, step: 0.1, desc: "Target size ft"},
+
+//    angularSize: {kind: "GUIValue", value: 0.001, start: 0, end: 0.010, step: 0.0001, desc: "Angular Size"},
+
+    sphereInMainView: {
+        kind: "DisplayTargetSphere",
+        track: "traverseTrack",
+        size: 100,
+        layers: "HELPERS",
+    },
+
+    sphereInLookView: { kind: "DisplayTargetSphere",
+        track: "traverseTrack",
+        size: "sphereSize",
+    },
+
+    traverseTrackDisplay: { kind: "DisplayTrack",
+        track: "traverseTrack",
+        color: [0, 1, 1],
+        width: 1,
+    },
+
+    // the red line that joins the camera track to the target - i.e. the current LOS.
+    DisplayLOS: { kind: "DisplayTrackToTrack",
+        cameraTrack: "motionTrackLOS",
+        targetTrack: "traverseTrack",
+        color: [1, 0, 0],
+        width: 2,
+    },
 
     setup2: function() {
 
@@ -146,52 +172,9 @@ export const SitJellyfish    = {
         });
 
 
-        new CNodeLOSTraverseStraightLine({
-            id: "traverseTrack",
-            inputs: {
-                LOS: "motionTrackLOS",
-                startDist: "startDistance",
-                lineHeading: "initialHeading",
-            },
-        })
-
         AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
         AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
 
-        new CNodeDisplayTargetSphere({
-            id: "sphereInMainView",
-            inputs: {
-                track: "traverseTrack",
-                size: new CNodeScale("sizeScaled", scaleF2M,
-                    new CNodeGUIValue({value: Sit.targetSize, start: 1, end: 50, step: 0.1, desc: "Target size ft"}, gui)
-                )
-            },
-
-        })
-
-
-        new CNodeDisplayTargetSphere({
-            id: "sphereInLookView",
-            track: "traverseTrack",
-            size: 10,
-            layers: "HELPERS",
-        })
-
-        new CNodeDisplayTrack({
-            track: "traverseTrack",
-            color: [0, 1, 1],
-            width: 1,
-        })
-
-
-        // the red line that joins the camera track to the target - i.e. the current LOS.
-        new CNodeDisplayTrackToTrack({
-            id: "DisplayLOS",
-            cameraTrack: "motionTrackLOS",
-            targetTrack: "traverseTrack",
-            color: [1, 0, 0],
-            width: 2,
-        })
 
         addDefaultLights(Sit.brightness)
 
