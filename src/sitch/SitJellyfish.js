@@ -1,13 +1,10 @@
 import {scaleF2M} from "../utils";
 import {NodeMan, Sit} from "../Globals";
-import * as LAYER from "../LayerMasks";
-import {CNodeConstant} from "../nodes/CNode";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
-import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
 import {gui} from "../Globals";
 import {SetupGUIFrames} from "../JetGUI";
@@ -15,7 +12,7 @@ import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {CNodeLOSTraverseStraightLine} from "../nodes/CNodeLOSTraverseStraightLine";
-import {Color} from "three";
+
 export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
@@ -142,7 +139,7 @@ export const SitJellyfish    = {
 
         });
 
-        var nodeStartDistance = new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
+        new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
             {id: "startDistanceFeet", value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
 
 
@@ -151,7 +148,7 @@ export const SitJellyfish    = {
             id: "traverseTrack",
             inputs: {
                 LOS: "motionTrackLOS",
-                startDist: nodeStartDistance,
+                startDist: "startDistance",
                 lineHeading: "initialHeading",
             },
         })
@@ -175,16 +172,13 @@ export const SitJellyfish    = {
             id: "sphereInLookView",
             track: "traverseTrack",
             size: 10,
-
-            layers: LAYER.MASK_HELPERS,
+            layers: "HELPERS",
         })
 
         new CNodeDisplayTrack({
             track: "traverseTrack",
-            color: new CNodeConstant({value: new Color(0, 1, 1)}),
+            color: [0, 1, 1],
             width: 1,
-
-            layers: LAYER.MASK_HELPERS,
         })
 
 
@@ -193,9 +187,8 @@ export const SitJellyfish    = {
             id: "DisplayLOS",
             cameraTrack: "motionTrackLOS",
             targetTrack: "traverseTrack",
-            color: new CNodeConstant({value: new Color(1, 0, 0)}),
+            color: [1, 0, 0],
             width: 2,
-
         })
 
         addDefaultLights(Sit.brightness)
