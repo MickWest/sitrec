@@ -171,7 +171,7 @@ export const SitJellyfish    = {
 
         });
 
-
+// maybe have "call" setup to make these data drive - see copilot chat
         AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
         AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
 

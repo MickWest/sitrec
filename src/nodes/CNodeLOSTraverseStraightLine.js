@@ -2,7 +2,6 @@
 // given start distance and a heading track
 import {CNode} from "./CNode";
 import {metersFromMiles, radians, assert} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
 import {Color, Plane, Ray} from "../../three.js/build/three.module";
 import {V3} from "../threeExt";
 import {wgs84} from "../LLA-ECEF-ENU";
@@ -122,7 +121,6 @@ export class CNodeLOSTraverseStraightLine extends CNode {
     }
 
 }
-
 
 
 export class CNodeLOSTraverseStraightLineFixed extends CNode {
