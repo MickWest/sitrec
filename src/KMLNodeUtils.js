@@ -6,12 +6,11 @@ import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "../three.js/build/three.module";
 import {scaleF2M} from "./utils";
-import {Sit, gui, NodeMan} from "./Globals";
+import {Sit, gui, NodeMan, GlobalDateTimeNode} from "./Globals";
 import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
-import {GlobalDateTimeNode} from "./nodes/CNodeDateTime";
 import {CNodeControllerTrackAzEl} from "./nodes/CNodeController";
 
 

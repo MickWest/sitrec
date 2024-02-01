@@ -1,11 +1,10 @@
-import {GlobalPTZ, gui, guiTweaks, NodeMan, Sit} from "../Globals";
+import {gui, NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {par} from "../par";
-import {addNightSky, calculateGST} from "./CNodeDisplayNightSky";
+import {calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
-import {ViewMan} from "./CNodeView";
-import {ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
 import {forceUpdateUIText} from "./CNodeViewUI";
+import {assert} from "../utils";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West
@@ -57,13 +56,41 @@ const timeZoneOffsets = {
 // Create a new object where both keys and values are the keys from timeZoneOffsets
 const timeZoneKeys = [];
 
+
+
 for (const key in timeZoneOffsets) {
     if (timeZoneOffsets.hasOwnProperty(key)) {
-      //  newTimeZoneObject[key] = key;
         timeZoneKeys.push(key)
     }
 }
 
+// given a start time in ms, calculate the current "now" time based on the frame and the simSpeed and fps
+function startToNowMS(startMS) {
+    const nowMS = (Math.round(startMS + par.frame * 1000 * (Sit.simSpeed??1)/ Sit.fps))
+    return nowMS;
+}
+
+// reverse of the above, given a "now" time, calculate the start time
+function nowToStartMS(nowMS) {
+    const startMS = (Math.round(nowMS - par.frame * 1000 * (Sit.simSpeed??1)/ Sit.fps))
+    return startMS;
+}
+
+function startToNowDateTime(startDateTime) {
+    // given a dateTime Object, convert to ms, then convert to now time
+    // and then back to a dateTime object
+    const start = startDateTime.valueOf();
+    const now = startToNowMS(start);
+    return new Date(now);
+}
+
+function nowToStartDateTime(nowDateTime) {
+    // given a dateTime Object, convert to ms, then convert to start time
+    // and then back to a dateTime object
+    const now = nowDateTime.valueOf();
+    const start = nowToStartMS(now);
+    return new Date(start);
+}
 
 // A UI node for the Date and Time at the start of the video/sitch
 // also updates the current time (nowDate) based on Sit settings.
@@ -71,25 +98,41 @@ for (const key in timeZoneOffsets) {
 export class CNodeDateTime extends CNode {
     constructor(v) {
 
+        console.log("CNodeDateTime - par.frame = "+par.frame+" Sit.fps = "+Sit.fps+" Sit.simSpeed = "+Sit.simSpeed+" Sit.startTime = "+Sit.startTime)
+
+        
         super (v)
 
-        this.dateTimeFolder = gui.addFolder("Start Date/Time");
+        this.refreshingUI = false;
+
+        this.dateTimeFolder = gui.addFolder("Date/Time");
+
         this.dateTime = {
-            year: 2022,
-            month: 1,
-            day: 15,
-            hour: 12,
-            minute: 30,
-            second: 0,
-            millisecond: 0,
+            // year: 2022,
+            // month: 1,
+            // day: 15,
+            // hour: 12,
+            // minute: 30,
+            // second: 0,
+            // millisecond: 0,
+        }
+
+        this.populateStartTimeFromUTCString(Sit.startTime);
+        this.dateNow = startToNowDateTime(this.dateStart);
+
+        // test the start2now and now2start functions, ensure the go back and forth with no changes
+        for (var i = 0; i < 100000; i++) {
+            const start = this.dateNow.valueOf() + i;
+            const now = startToNowMS(start);
+            const start2 = nowToStartMS(now);
+            assert(start === start2, "start2now now2start error at i = "+i+" start = "+start+" now = "+now+" start2 = "+start2);
         }
 
 
-
-
-        this.populateFromUTCString(Sit.startTime) // will create a this.date member
-
         this.dateTimeFolder.add(Sit, "startTime").listen().disable()
+        this.dateTimeFolder.add(Sit, "nowTime").listen().disable()
+
+      // The UI will update the dateNow member, and then we will update the dateStart member
         this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "month", 1, 12, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "day", 1, 31, 1).listen().onChange(v => this.updateDateTime(v))
@@ -97,7 +140,6 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(this.dateTime, "minute", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "second", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
         this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v))
-
 
         const options = { timeZoneName: 'short' };
         const timeZone = new Date().toLocaleTimeString('en-us', options).split(' ')[2];
@@ -118,10 +160,20 @@ export class CNodeDateTime extends CNode {
             }
         )
 
-        this.dateTimeFolder.add(Sit, 'simSpeed', 1, 60, 0.01).name("Simulation Speed").listen()
+        this.oldSimSpeed = Sit.simSpeed;
+
+        this.dateTimeFolder.add(Sit, 'simSpeed', 1, 60, 0.01).name("Simulation Speed").listen().onChange(
+            v => {
+                // if the simSpeed changes, we need to update the start time
+                // but we want the nowTime to remain the same, so we need to calculate
+                // the new start time relative to that with the new simSpeed
+                this.setNowDateTime(this.dateNow); // this will update the dateStart member
+                this.recalculateCascade();
+            }
+        )
 
         this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
-        this.dateTimeFolder.add(this, "resetStartTimeToNow").name("Sync Start Time to Now");
+        this.dateTimeFolder.add(this, "resetNowTimeToCurrent").name("Sync to Current Time");
 
         this.addedSyncToTrack = false;
 
@@ -133,6 +185,10 @@ export class CNodeDateTime extends CNode {
 
         this.update(0);
 
+    }
+
+    get date() {
+        assert(0, "CNodeDateTime - date is deprecated")
     }
 
     getTimeZoneName() {
@@ -151,88 +207,111 @@ export class CNodeDateTime extends CNode {
     }
 
     syncStartTimeTrack() {
+        par.frame = 0;
         const timedTrackNode = NodeMan.get(this.syncTrack);
         const startTime = timedTrackNode.getTrackStartTime();
         console.log(">>>"+startTime)
 
-        this.date = new Date(startTime);
-        this.populate();
+        this.setStartTime(new Date(startTime));
 
         // rebuild anything the depends on that track
         timedTrackNode.recalculateCascade(0);
     }
 
-    resetStartTime() {
-        this.date = new Date(this.originalPopulated);
+    setStartDateTime(dateTime) {
+        this.dateStart = new Date(dateTime);
+        this.dateNow = startToNowDateTime(this.dateStart);
         this.populate();
     }
 
-    resetStartTimeToNow() {
-        this.date = new Date();
+    setNowDateTime(dateTime) {
+        this.dateNow = new Date(dateTime);
+        this.dateStart = nowToStartDateTime(this.dateNow);
         this.populate();
+    }
+
+    resetStartTime() {
+        this.setStartDateTime( this.originalPopulatedStartTime);
+    }
+
+    resetNowTimeToCurrent() {
+        this.setNowDateTime(new Date());
     }
 
     populate() {
-        this.dateTime.year = this.date.getUTCFullYear();
-        this.dateTime.month = this.date.getUTCMonth() + 1; // Months are 0-indexed in JavaScript
-        this.dateTime.day = this.date.getUTCDate();
-        this.dateTime.hour = this.date.getUTCHours();
-        this.dateTime.minute = this.date.getUTCMinutes();
-        this.dateTime.second = this.date.getUTCSeconds();
-        this.dateTime.millisecond = this.date.getUTCMilliseconds();
+        this.dateTime.year   = this.dateNow.getUTCFullYear();
+        this.dateTime.month  = this.dateNow.getUTCMonth() + 1; // Months are 0-indexed in JavaScript
+        this.dateTime.day    = this.dateNow.getUTCDate();
+        this.dateTime.hour   = this.dateNow.getUTCHours();
+        this.dateTime.minute = this.dateNow.getUTCMinutes();
+        this.dateTime.second = this.dateNow.getUTCSeconds();
+        this.dateTime.millisecond = this.dateNow.getUTCMilliseconds();
+
+        Sit.startTime = this.dateStart.toISOString();
+        Sit.nowTime   = this.dateNow.toISOString();
+
     }
 
-    populateFromUTCString(utcString) {
-        this.date = new Date(utcString);
-        this.originalPopulated = utcString;
-        this.populate()
-    }
-
-    populateFromMS(ms) {
-        this.date = new Date(ms);
-        this.populate()
-    }
-
-    toUTCString() {
-        // Return the UTC string representation
-        return this.date.toISOString();
-    }
-
-    toLocalString() {
-        return this.date.toLocalString();
+    populateStartTimeFromUTCString(utcString) {
+        // make a copy of the the original start time, so we can reset to it later with a UI button
+        this.originalPopulatedStartTime = new Date(utcString);
+        this.setStartDateTime(new Date(utcString));
     }
 
 
+    // toUTCString() {
+    //      // Return the UTC string representation
+    //      return this.dateNow.toISOString();
+    //  }
+    //
+    // toLocalString() {
+    //     return this.dateNow.toLocalString();
+    // }
+
+    // update the start and now date members from the dateTime member
+    // i.e. takes all the UI entires, and sets the now time, which will set the start time
     updateDateTime(v) {
-
-        this.date = new Date(Date.UTC(
-            this.dateTime.year,
-            this.dateTime.month - 1, // Months are 0-indexed in JavaScript
-            this.dateTime.day,
-            this.dateTime.hour,
-            this.dateTime.minute,
-            this.dateTime.second,
-            this.dateTime.millisecond,
-        ));
-
-        Sit.startTime = this.toUTCString()
-        this.recalculateCascade()
-        par.renderOne = true;
+        if (!this.refreshingUI) {
+            this.setNowDateTime(new Date(Date.UTC(
+                this.dateTime.year,
+                this.dateTime.month - 1, // Months are 0-indexed in JavaScript
+                this.dateTime.day,
+                this.dateTime.hour,
+                this.dateTime.minute,
+                this.dateTime.second,
+                this.dateTime.millisecond,
+            )))
+            this.recalculateCascade()
+            par.renderOne = true;
+        }
     }
 
     // ms since the start of the epoch
     getStartTimeValue() {
-        return this.date.valueOf()
+        return this.dateStart.valueOf()
     }
 
+    getStartTimeString() {
+        return this.dateStart.toISOString()
+    }
+
+    // adjust start time by t seconds, for example when the user presses a key, like [ or ]
     AdjustStartTime(t) {
         var time = this.getStartTimeValue()
         time += t
-        this.populateFromMS(time)
+        this.setStartDateTime(new Date(time))
+        this.populate()
+        // some done twice here, look into tidying up
         this.updateDateTime()
     }
 
     update(frame) {
+        this.frame = frame
+        this.dateNow = startToNowDateTime(this.dateStart);
+
+        this.refreshingUI = true;
+        this.populate();
+        this.refreshingUI = false;
 
         var speedscale = 1;
         if (isKeyHeld('shift'))
@@ -258,24 +337,23 @@ export class CNodeDateTime extends CNode {
             this.AdjustStartTime(3000*speedscale)
         }
 
-        this.frame = frame
-        this.nowDate = new Date(Math.floor(this.date.valueOf() + frame * 1000 * (Sit.simSpeed??1)/ Sit.fps))
+
         this.nowGST = calculateGST(this.nowDate)
     }
 
-    getNowDate(frame) {
-        return this.nowDate;
-    }
+    // getDateNow(frame) {
+    //     return this.dateNow;
+    //     }
 
 }
 
-export var GlobalDateTimeNode;
-
-export function MakeDateTimeNode() {
-    GlobalDateTimeNode = new CNodeDateTime({
-        id:"dateTimeStart",
-    })
-}
+// export var GlobalDateTimeNode;
+//
+// export function MakeDateTimeNode() {
+//     GlobalDateTimeNode = new CNodeDateTime({
+//         id:"dat",
+//     })
+// }
 
 
 

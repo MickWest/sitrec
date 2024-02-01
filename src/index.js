@@ -16,8 +16,10 @@ import {
     setSit,
     setSitchMan,
     setupGUIGlobals,
+    setGlobalDateTimeNode,
     Sit,
-    SitchMan
+    SitchMan,
+    GlobalDateTimeNode
 } from "./Globals";
 import {buildDate, disableScroll} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
@@ -49,7 +51,7 @@ import GUI from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {assert} from "./utils"
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
-import {GlobalDateTimeNode, MakeDateTimeNode} from "./nodes/CNodeDateTime";
+import {CNodeDateTime, MakeDateTimeNode} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import {CNodeDisplayCameraFrustum} from "./nodes/CNodeDisplayCameraFrustum";
 import JSURL from "./js/jsurl";
@@ -207,7 +209,9 @@ setSit(new CSituation(startSitch))
 ///////////////////////////////////////////////////////////////////////////////////////
 // At this point Sit is set up.
 
-MakeDateTimeNode();
+setGlobalDateTimeNode(new CNodeDateTime({
+    id:"dateTimeStart",
+}))
 
 // check if Sit.name is all lower case
 assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
@@ -528,7 +532,7 @@ if (Sit.jetStuff) initJetStuffOverlays()
 
 console.log("Finalizing....")
 
-GlobalDateTimeNode.populateFromUTCString(Sit.startTime)
+GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
 
 if (Sit.azSlider) {
 // I use 0.2 as a step instead of 0.1 as it ensures we can stop on whole number (0.0 not 0.1)
@@ -543,20 +547,24 @@ if (Sit.azSlider) {
 }
 
 if (Sit.jetStuff) {
+    console.log("CommonJetStuff()")
     CommonJetStuff();
 }
 
 
 if (Sit.useGlobe) {
+    console.log("addAlignedGlobe()")
     Sit.globe = addAlignedGlobe(Sit.globeScale ?? 0.999);
     showHider(Sit.globe,"[G]lobe", true, "g")
 }
 
 if (Sit.nightSky) {
+    console.log("addNightSky()")
     addNightSky()
 }
 
 if (Sit.displayFrustum) {
+    console.log("addFrustum()")
      Sit.frustum = new CNodeDisplayCameraFrustum({
          radius: Sit.frustumRadius,
          camera: "lookCamera",

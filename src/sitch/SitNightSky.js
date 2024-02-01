@@ -1,5 +1,5 @@
 import { Vector3} from "../../three.js/build/three.module";
-import {GlobalPTZ, gui, NodeMan, Sit} from "../Globals";
+import {GlobalPTZ, gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
 
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
@@ -7,7 +7,6 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {ViewMan} from "../nodes/CNodeView";
 import {DragDropHandler} from "../DragDropHandler";
 import JSURL from "../js/jsurl"
@@ -319,7 +318,7 @@ export const SitNightSky = {
         par.paused = p.pd;
 
         Sit.startTime = p.startTime;
-        GlobalDateTimeNode.populateFromUTCString(Sit.startTime)
+        GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
 
         const nightSkyNode = NodeMan.get("NightSkyNode");
         if (p.ssa !== undefined) {

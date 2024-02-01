@@ -6,7 +6,6 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 
 
 
@@ -94,20 +93,7 @@ export const SitArea6 = {
     },
 
     update: function(frame) {
-      if (isKeyHeld(';') ) {
 
-            var time = GlobalDateTimeNode.getStartTimeValue()
-            time -= 1000
-            GlobalDateTimeNode.populateFromMS(time)
-            GlobalDateTimeNode.updateDateTime()
-      }
-        if (isKeyHeld("'") ) {
-
-            var time = GlobalDateTimeNode.getStartTimeValue()
-            time += 1000
-            GlobalDateTimeNode.populateFromMS(time)
-            GlobalDateTimeNode.updateDateTime()
-        }
     },
 
 

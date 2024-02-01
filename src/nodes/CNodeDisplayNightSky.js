@@ -10,7 +10,7 @@ import {
     Vector3
 } from "../../three.js/build/three.module";
 import {radians, assert, sin, cos, degrees} from "../utils";
-import {gui, guiShowHide, guiTweaks, mainCamera, NodeMan, Sit} from "../Globals";
+import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
 import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
@@ -44,7 +44,6 @@ var Astronomy = require("astronomy-engine")
 import {CNodeViewUI} from "./CNodeViewUI";
 import {ViewMan} from "./CNodeView";
 import * as LAYER from "../LayerMasks";
-import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 import {par} from "../par";
 import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMaterial, Sphere} from "three";
 
@@ -141,7 +140,7 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
           }
 
          if (this.showSatelliteNames && this.nightSky.TLEData) {
-             const date = this.nightSky.in.startTime.getNowDate(frame)
+             const date = this.nightSky.in.startTime.dateNow;
 
              this.ctx.strokeStyle = "#8080FF";
              this.ctx.fillStyle = "#8080FF";
@@ -337,13 +336,18 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.satelliteTextGroup.matrixWorldAutoUpdate = false
 
 
+        console.log("Loading stars")
         this.addStars(this.celestialSphere)
+
+        console.log("Loading planets")
         this.addPlanets(this.celestialSphere)
 
         if (FileManager.exists("starLink")) {
+            console.log("parsing starlink")
             this.replaceTLE(FileManager.get("starLink"))
         }
 
+        console.log("Adding celestial grid")
         this.equatorialSphereGroup = new Group();
         this.celestialSphere.add(this.equatorialSphereGroup);
         this.addCelestialSphereLines(this.equatorialSphereGroup, 10);
@@ -378,6 +382,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.rot = 0
 
+        console.log("Done with CNodeDisplayNightSky constructor")
     }
 
     update(frame) {
@@ -402,7 +407,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // Polaris has dec of about 89°, and should always be north, tilted down by the latitude
 
 
-        var nowDate = this.in.startTime.getNowDate(frame)
+        var nowDate = this.in.startTime.dateNow;
         const fieldRotation = getSiderealTime(nowDate, 0) - 90
 
         // we just use the origin of the local ESU coordinate systems
@@ -436,7 +441,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.celestialSphere.applyMatrix4(rotationMatrixX)
 
 
-        var nowDate = this.in.startTime.getNowDate(frame)
+        var nowDate = this.in.startTime.dateNow
 
         let observer = new Astronomy.Observer(Sit.lat, Sit.lon, 0);
         // update the planets position for the current time
@@ -928,14 +933,17 @@ void main() {
         assert(Sit.lon !== undefined, "addStars needs Sit.lon")
 
         // Setup the sprite material
+
         const starMap = new TextureLoader().load('data/images/nightsky/MickStar.png'); // Load a star texture
+
         const sunMap = new TextureLoader().load('data/images/nightsky/MickSun.png'); // Load a star texture
+
         const moonMap = new TextureLoader().load('data/images/nightsky/MickMoon.png'); // Load a star texture
 //        const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0x00ff00});
 
         const sphereRadius = 100; // 100m radius
 
-        let date = this.in.startTime.date;
+        let date = this.in.startTime.dateNow;
 
         let observer = new Astronomy.Observer(Sit.lat, Sit.lon, 0);
 
@@ -1034,7 +1042,7 @@ void main() {
 //
 // // Create Satellites. At this point duplicate TLE entries will have been removed
 //         // ALTHOUGH - we might want to keep them all, and refine which one is used based on time?
-//         let date = this.in.startTime.date;
+//         let date = this.in.startTime.dateNow;
 //         this.satelliteSprites = []
 //
 //         for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
@@ -1576,11 +1584,13 @@ function earthRotationAngle(jd){
 
 
 export function addNightSky() {
+    console.log("Adding CNodeDisplayNightSky")
     var nightSky = new CNodeDisplayNightSky({})
 
     // iterate over any 3D views
     // and add an overlay to each for the star names (and any other night sky UI)
 
+    console.log("Adding night Sky Overlays")
     ViewMan.iterate((key, view) => {
         if (view.canDisplayNightSky) {
             new CNodeDisplaySkyOverlay({

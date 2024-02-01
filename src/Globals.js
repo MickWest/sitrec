@@ -30,6 +30,9 @@ export function setComposer(i) {GlobalComposer=i;}
 export var GlobalURLParams;
 export function setGlobalURLParams(i) {GlobalURLParams=i;}
 
+export var GlobalDateTimeNode;
+export function setGlobalDateTimeNode(i) {GlobalDateTimeNode=i;}
+
 
 export function setupGUIGlobals(_gui, _show, _tweaks, _jetTweaks) {
     gui = _gui

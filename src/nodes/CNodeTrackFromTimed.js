@@ -1,10 +1,9 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {f2m, interpolate, vdump} from "../utils";
-import {Sit} from "../Globals";
+import {Sit, GlobalDateTimeNode} from "../Globals";
 import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {V3} from "../threeExt";
-import {GlobalDateTimeNode} from "../nodes/CNodeDateTime";
 
 export class CNodeTrackFromTimed extends CNodeEmptyArray {
     constructor(v) {
@@ -20,7 +19,7 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
     recalculate() {
 
 
-        var startTime = this.in.startTime.toUTCString()
+        var startTime = this.in.startTime.getStartTimeString()
         var msStart = this.in.startTime.getStartTimeValue()
 
         this.array = [];
