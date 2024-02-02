@@ -200,14 +200,22 @@ export function initKeyboard() {
         keyHeld[key] = true
         keyCodeHeld[keyCode] = true
         console.log("Key: " + key + " keyCode: " + keyCode)
-        const  c = NodeMan.get("mainCamera").camera;
+
+        const cameraNode = NodeMan.get("mainCamera")
+        const  c = cameraNode.camera;
 
         switch (keyCode) {
             case 'NumpadDecimal':
-                c.position.copy(MV3(Sit.startCameraPosition));  //
-                c.lookAt(MV3(Sit.startCameraTarget));
                 c.up.set(0, 1, 0);
+                cameraNode.resetCamera();
                 break
+
+            // these numpad keys (intened to reset camera postiona) are largely useless right now
+                // especially on Globes
+
+            // case 'NumPad0':
+            //     c.up.set(0, 1, 0);
+            //     break;
 
             case 'Numpad1':
                 c.position.x = 0;
@@ -267,10 +275,10 @@ export function initKeyboard() {
             // case 'KeyL':
             //     opts.legend.live = !opts.legend.live;
             //     break;
-            case 'Backquote':
-                if (isLocal) {
-                    DumpPreset()
-                }
+            // case 'Backquote':            // gimbal legacy preset editing, not used in this version
+            //     if (isLocal) {
+            //         DumpPreset()
+            //     }
 
             // single step
             case 'Comma':

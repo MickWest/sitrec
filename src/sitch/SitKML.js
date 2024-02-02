@@ -73,7 +73,7 @@ export const SitKML = {
 
     tilt: -15,  //Not a good default!
 
-    defaultCameraDist: 30000,  // for SitKML stuff we generalyl want a large camera distance for defaults
+    defaultCameraDist: 3000000,  // for SitKML stuff we generalyl want a large camera distance for defaults
 
     targetSize: 10000,
 

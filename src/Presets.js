@@ -8,6 +8,7 @@ function DumpVar(view, id) {
     return `${id}:${view[id]}, `
 }
 
+// Legacy code for Gimbal presets, not used in the current version of the project
 export function DumpPreset() {
     var out = ""
 

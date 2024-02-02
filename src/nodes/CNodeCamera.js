@@ -12,6 +12,11 @@ export class CNodeCamera extends CNode3D {
 
         this.addInput("altAdjust", "altAdjust", true);
 
+        this.startPos = v.startPos;
+        this.lookAt = v.lookAt;
+        this.startPosLLA = v.startPosLLA;
+        this.lookAtLLA = v.lookAtLLA;
+
         if (camera) {
             this._object = camera;
         } else {
@@ -22,23 +27,29 @@ export class CNodeCamera extends CNode3D {
             this._object.layers.mask = v.layers;
         }
 
-        if (v.startPos !== undefined) {
-            this._object.position.copy(MV3(v.startPos));  // MV3 converts from array to a Vector3
-        }
+        this.resetCamera()
 
-        if (v.lookAt !== undefined) {
-            this._object.lookAt(MV3(v.lookAt));
-        }
-
-        if (v.startPosLLA !== undefined) {
-            this._object.position.copy(LLAVToEUS(MV3(v.startPosLLA)));  // MV3 converts from array to a Vector3
-        }
-
-        if (v.lookAtLLA !== undefined) {
-            this._object.lookAt(LLAVToEUS(MV3(v.lookAtLLA)));
-        }
 
     }
+
+    resetCamera() {
+        if (this.startPos !== undefined) {
+            this._object.position.copy(MV3(this.startPos));  // MV3 converts from array to a Vector3
+        }
+
+        if (this.lookAt !== undefined) {
+            this._object.lookAt(MV3(this.lookAt));
+        }
+
+        if (this.startPosLLA !== undefined) {
+            this._object.position.copy(LLAVToEUS(MV3(this.startPosLLA)));  // MV3 converts from array to a Vector3
+        }
+
+        if (this.lookAtLLA !== undefined) {
+            this._object.lookAt(LLAVToEUS(MV3(this.lookAtLLA)));
+        }
+    }
+
 
 
     get camera() {
