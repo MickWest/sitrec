@@ -1352,7 +1352,7 @@ const stylesheet = `.lil-gui {
   --spacing: 4px;
   --widget-height: 20px;
   --title-height: calc(var(--widget-height) + var(--spacing) * 1.25);
-  --name-width: 45%;
+  --name-width: 36%;
   --slider-knob-width: 2px;
   --slider-input-width: 27%;
   --color-input-width: 27%;

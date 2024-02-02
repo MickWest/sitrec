@@ -308,8 +308,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         gui.add(Sit,"starScale",0,3,0.01).name("Star Brightness")
-        gui.add(Sit,"satScale",0,3,0.01).name("Satellite Brightness")
-        gui.add(Sit,"satCutOff",0,0.5,0.001).name("Satellite Cut-Off")
+        gui.add(Sit,"satScale",0,3,0.01).name("Sat Brightness")
+        gui.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off")
 
 
         // Sun Direction will get recalculated based on data

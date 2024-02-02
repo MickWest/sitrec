@@ -129,8 +129,8 @@ export class CNodeDateTime extends CNode {
         }
 
 
-        this.dateTimeFolder.add(Sit, "startTime").listen().disable()
-        this.dateTimeFolder.add(Sit, "nowTime").listen().disable()
+        this.dateTimeFolder.add(Sit, "startTime").listen()
+        this.dateTimeFolder.add(Sit, "nowTime").listen()
 
       // The UI will update the dateNow member, and then we will update the dateStart member
         this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))

@@ -47,7 +47,7 @@ import {
 } from "./JetStuff";
 import {GlobalScene, LocalFrame, setupLocalFrame, setupScene} from "./LocalFrame";
 import {CNodeFactory} from "./nodes/CNodeFactory";
-import GUI from "./js/lil-gui.esm";
+import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {assert} from "./utils"
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
@@ -156,6 +156,10 @@ if (urlParams.get("sitch")) {
 // slice
 var lower = situation.slice().toLowerCase();
 
+// note in lil-gui.esm.js I changed
+//   --name-width: 45%;
+// to
+//  --name-width: 36%;
 var _gui = new GUI()
 
 if (lower == "testall") {
