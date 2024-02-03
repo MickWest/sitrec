@@ -63,21 +63,23 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.remove(this.line)
         dispose(this.FrustumGeometry)
 
-        var w = this.radius * tan(radians(this.camera.fov/2))
-        var h = w * this.camera.aspect;
+        var h = this.radius * tan(radians(this.camera.fov/2))
+        // aspect is w/h so w = h * aspect
+        var w = h * this.camera.aspect;
         var d = (this.radius - 2)
+        console.log("REBUILDING FRUSTUM h="+h+" w="+w+" d="+d);
         const line_points = [
-            0, 0, 0, h, w, -d,
-            0, 0, 0, h, -w, -d,
-            0, 0, 0, -h, -w, -d,
-            0, 0, 0, -h, w, -d,
-            -h, -w, -d,
-            h, -w, -d,
-            h, w, -d,
-            -h, w, -d,
-            -h / 2, w, -d,
-            0, w * 1.3, -d,
-            h / 2, w, -d,
+            0, 0, 0, w, h, -d,
+            0, 0, 0, w, -h, -d,
+            0, 0, 0, -w, -h, -d,
+            0, 0, 0, -w, h, -d,
+            -w, -h, -d,
+            w, -h, -d,
+            w, h, -d,
+            -w, h, -d,
+            -w / 2, h, -d,
+            0, h * 1.3, -d,
+            w / 2, h, -d,
         ]
         this.FrustumGeometry = new LineGeometry();
         this.FrustumGeometry.setPositions(line_points);
@@ -93,7 +95,9 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.position.copy(this.camera.position)
         this.group.quaternion.copy(this.camera.quaternion)
         this.group.updateMatrix();
-        if (this.lastFOV !== this.camera.fov) {
+        if (this.lastFOV !== this.camera.fov || this.lastAspect !== this.camera.aspect) {
+            this.lastAspect = this.camera.aspect;
+            this.lastFOV = this.camera.fov;
             this.rebuild();
         }
     }

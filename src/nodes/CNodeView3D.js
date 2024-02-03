@@ -174,6 +174,8 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
 
+        this.camera.aspect = this.canvas.width/this.canvas.height;
+        this.camera.updateProjectionMatrix();
 
         this.renderer.setClearColor(this.background);
         // Clear manually, otherwise the second render will clear the background.
