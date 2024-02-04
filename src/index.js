@@ -72,8 +72,13 @@ registerSitches();
 
 const selectableSitchesUnsorted = {}
 SitchMan.iterate((key, sitch) =>{
-    if (sitch.hidden !== true && sitch.menuName !== undefined )
+    if (sitch.hidden !== true && sitch.menuName !== undefined ) {
+
+        if (isLocal && sitch.isSitKML)
+            sitch.menuName = sitch.menuName + " (KML)"
+
         selectableSitchesUnsorted[sitch.menuName] = key;
+    }
 })
 // Extract sitch keys (the lower case version of the name) and sort them
 const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();

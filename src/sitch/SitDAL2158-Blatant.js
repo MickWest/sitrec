@@ -1,10 +1,9 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     name: "dal2158",
     menuName: "Blatant's DAL2158",
-
-    targetSize: 200, // in feet
 
     tilt: 0,
 
@@ -14,7 +13,7 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
         cameraFile: 'dal2158/FlightAware_DAL2158_KCHS_KBOS_20230218.kml',
         KMLTarget: "dal2158/FlightAware_EDV5291_KRIC_KJFK_20230218.kml"
     },
-    startTime: "2023-02-18T22:34:56.8Z",
+    startTime: "2023-02-18T22:34:58.800Z",
 
     videoFile: "../sitrec-videos/private/Blatant-enhanced.mp4",
     skyColor: 'skyblue',
@@ -25,6 +24,11 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
     lookCamera:{ fov: 30},
     cameraTrack: {},
 
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{ left:0.0, top:0, width:.50,height:1},
+    lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},
+    displayFrustum:true,
+    ...commonKMLTrackToTrack,
+    targetSizedSphere: { size:200 },
+
 
 })

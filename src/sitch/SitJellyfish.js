@@ -29,7 +29,8 @@ export const SitJellyfish    = {
     lookCamera: { fov: 10.6, },
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
 
-    // fixed viewpoint
+//    fixed viewpoint
+    // This creates a camera controller.
     fromLat: 33.323126,
     fromLon: 43.608689,
     fromAltFeet: 2978,
@@ -171,7 +172,7 @@ export const SitJellyfish    = {
 
         });
 
-// maybe have "call" setup to make these data drive - see copilot chat
+// maybe have "call" setup to make these data drive - ask copilot chat
         AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
         AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
 

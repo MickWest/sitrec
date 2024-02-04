@@ -54,7 +54,9 @@ export const SitFolsomLake = {
 
     showAltitude: false,
 
-    setup2: function() {
+    arrayDataPTZ: { arrayNode: "cameraTrack", pitch: "gPitch", heading: "heading", labelView: "labelVideo" },
+
+    OLDsetup2: function() {
 
         // smooth some parts of cameraTrack
         // TODO: make this general and data driven, assuming the data exits
@@ -66,12 +68,10 @@ export const SitFolsomLake = {
         assert (array !== undefined, "cameraTrack missing array object")
 
 
-        // makeArrayNodeFromColumn("headingCol",data, SRT.heading)
-        // makeArrayNodeFromColumn("pitchCol",data, SRT.pitch)
-        makeArrayNodeFromColumn("headingCol", array, "heading",30, true)
-        makeArrayNodeFromColumn("pitchCol", array, "gPitch",30, true)
-         makeArrayNodeFromColumn("pitchCol1", array, "gPitch",30, true)
-         makeArrayNodeFromColumn("pitchCol2", array, "pitch",30, true)
+//        makeArrayNodeFromColumn("headingCol", array, "heading",30, true)
+  //      makeArrayNodeFromColumn("pitchCol", array, "gPitch",30, true)
+         // makeArrayNodeFromColumn("pitchCol1", array, "gPitch",30, true)
+         // makeArrayNodeFromColumn("pitchCol2", array, "pitch",30, true)
 
        // makeComboNode("pitchCol","pitchCol1","pitchCol2",(a,b) => {return a+b})
 
@@ -81,29 +81,29 @@ export const SitFolsomLake = {
         //     })
         // )
 
-        NodeMan.get("lookCamera").addController(
-            "AbsolutePitchHeading",
-            {pitch: "pitchCol", heading: "headingCol"}
-        )
+        // NodeMan.get("lookCamera").addController(
+        //     "AbsolutePitchHeading",
+        //     {pitch: "pitchCol", heading: "headingCol"}
+        // )
 
-        const labelVideo = NodeMan.get("labelVideo")
-        // custom drone specific UI
-        labelVideo.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
-            this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
-        })
-
-        labelVideo.addLine("---").listen(par, "az", function (value) {
-            this.text = "Az " + value.toFixed(2) + "°";
-        })
-
-
-        labelVideo.addLine("---").update(function (value) {
-            this.text = "Pitch " + NodeMan.get("pitchCol2").v(par.frame).toFixed(2) + "°";
-        })
-
-        labelVideo.addLine("---").update(function (value) {
-            this.text = "gPitch " + NodeMan.get("pitchCol1").v(par.frame).toFixed(2) + "°";
-        })
+        // const labelVideo = NodeMan.get("labelVideo")
+        // // custom drone specific UI
+        // labelVideo.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
+        //     this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
+        // })
+        //
+        // labelVideo.addLine("---").listen(par, "az", function (value) {
+        //     this.text = "Az " + value.toFixed(2) + "°";
+        // })
+        //
+        //
+        // labelVideo.addLine("---").update(function (value) {
+        //     this.text = "Pitch " + NodeMan.get("pitchCol2").v(par.frame).toFixed(2) + "°";
+        // })
+        //
+        // labelVideo.addLine("---").update(function (value) {
+        //     this.text = "gPitch " + NodeMan.get("pitchCol1").v(par.frame).toFixed(2) + "°";
+        // })
 
   //      NodeMan.reinterpret("cameraTrack", "SmoothedPositionTrack", {smooth:100}, "source")
 

@@ -3,7 +3,7 @@ import {CNode} from "./CNode";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
-import {GlobalPTZ, NodeMan} from "../Globals";
+import {GlobalPTZ, gui, NodeMan} from "../Globals";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {DebugArrow} from "../threeExt";
 
@@ -88,6 +88,29 @@ function updateCameraAndUI(camPos, camera, objectNode) {
 }
 
 
+// Potential usage
+//     NodeMan.get("lookCamera").addController("GUIFOV", {
+//         id:"lookFOV",
+//         fov: this.lookFOV,
+//     })
+export class CNodeControllerGUIFOV extends CNodeController {
+    constructor(v) {
+        super(v);
+
+        this.fov = v.fov ?? 60;
+
+        gui.add(this, 'fov', 0.35, 120, 0.01).onChange(value => {
+            this.fov = value
+        }).listen().name("Look FOV")
+    }
+
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        camera.fov = this.fov;
+        camera.updateProjectionMatrix()
+    }
+}
+
 export class CNodeControllerManualPosition extends CNodeController {
     constructor(v) {
         super(v);
@@ -127,6 +150,7 @@ export class CNodeControllerManualPosition extends CNodeController {
     }
 
 }
+
 
 export class CNodeControllerFocalLength extends CNodeController {
     constructor(v) {

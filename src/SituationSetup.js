@@ -1,4 +1,4 @@
-import {gui, mainCamera, NodeMan, setMainCamera, Sit} from "./Globals";
+import {gui, mainCamera, NodeMan, setGlobalPTZ, setMainCamera, Sit} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -8,13 +8,21 @@ import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {assert, scaleF2M} from "./utils";
+import {abs, assert, floor, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
 import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
+import {PTZControls} from "./PTZControls";
+import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
+import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
+import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
+import {par} from "./par";
+import {CNodeViewUI} from "./nodes/CNodeViewUI";
+import {ViewMan} from "./nodes/CNodeView";
+import {AddTimeDisplayToUI} from "./UIHelpers";
 
 
 export function SituationSetup() {
@@ -49,7 +57,6 @@ export function SituationSetup() {
         switch (key) {
 
 
-
             case "flattening":
                 SSLog();
                 new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
@@ -65,7 +72,7 @@ export function SituationSetup() {
                     lon: data.lon,
                     zoom: data.zoom,
                     nTiles: data.nTiles,
-                    flattening: Sit.flattening?"flattening":undefined,
+                    flattening: Sit.flattening ? "flattening" : undefined,
                     tileSegments: Sit.terrain.tileSegments ?? 100,
                 })
                 break;
@@ -78,11 +85,11 @@ export function SituationSetup() {
                 //         startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
                 // },
                 const cameraNode = new CNodeCamera({
-                    id:"mainCamera",
-                    fov: data.fov     ?? 30,
+                    id: "mainCamera",
+                    fov: data.fov ?? 30,
                     aspect: window.innerWidth / window.innerHeight,
-                    near: data.near   ?? 1,
-                    far:  data.far    ?? 8000000,
+                    near: data.near ?? 1,
+                    far: data.far ?? 8000000,
                     layers: data.mask ?? LAYER.MASK_MAINRENDER,
 
                     // one of these will be undefined. CNodeCamera uses the other
@@ -96,7 +103,7 @@ export function SituationSetup() {
                 mainCameraNode = cameraNode;
                 mainCamera = mainCameraNode.camera;
 
-               // setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
+                // setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
 
                 gui.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
                     cameraNode.camera.updateProjectionMatrix()
@@ -106,13 +113,13 @@ export function SituationSetup() {
             case "lookCamera":
                 SSLog();
                 new CNodeCamera({
-                    id:"lookCamera",
-                    fov: data.fov     ?? 10,
-                    aspect: window.innerWidth / window.innerHeight,
-                    near: data.near   ?? 1,
-                    far:  data.far    ?? 8000000,
+                    id: "lookCamera",
+                    fov: data.fov ?? 10,
+        //            aspect: window.innerWidth / window.innerHeight,
+                    near: data.near ?? 1,
+                    far: data.far ?? 8000000,
                     layers: data.mask ?? LAYER.MASK_LOOKRENDER,
- //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
+                    //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
                 })
 
                 const lookCameraNode = NodeMan.get("lookCamera");
@@ -124,10 +131,10 @@ export function SituationSetup() {
 
                 break;
 
-                // cameraTrack: {
-                //     id: "cameraTrack",
-                //         file: "cameraFile",
-                // },
+            // cameraTrack: {
+            //     id: "cameraTrack",
+            //         file: "cameraFile",
+            // },
             case "cameraTrack":
                 SSLog();
                 assert(Sit.lat !== undefined && Sit.lon !== undefined, "SituationSetup: cameraTrack needs Sit.lat and Sit.lon defined. i.e. after terrain");
@@ -142,10 +149,20 @@ export function SituationSetup() {
                     new CNodeDisplayTrack({
                         id: id + "Display",
                         track: id,
-                        color: new CNodeConstant({value: new Color(1, 1, 0)}),
+                        color: [1, 1, 0],
                         width: 2,
-                        layers: LAYER.MASK_HELPERS,
                     })
+
+                    new CNodeDisplayTrack({
+                        id: id + "DisplayData",
+                        track: id+"Data",
+                        color: [0.7, 0.3, 0],
+                        width: 1,
+                        ignoreAB: true,
+                    })
+
+
+
                 }
                 break;
 
@@ -188,7 +205,7 @@ export function SituationSetup() {
                 const lookViewDef = {
                     id: "lookView",
                     //     draggable:true,resizable:true,
-                    left: 0.5, top: 0, width: .5, height: 1,
+                    left: 0.75, top: 0, width: .25, height: 1,
                     fov: 50,
                     background: color,
                     camera: "lookCamera",
@@ -199,9 +216,9 @@ export function SituationSetup() {
                 lookView.addOrbitControls(Sit.renderer);
                 break;
 
-             case "videoView":
-                 SSLog();
-                assert (Sit.videoFile !== undefined, "videoView needs a video file")
+            case "videoView":
+                SSLog();
+                assert(Sit.videoFile !== undefined, "videoView needs a video file")
                 new CNodeVideoWebCodecView({
                         id: "video",
                         inputs: {
@@ -227,7 +244,7 @@ export function SituationSetup() {
 
                 break;
 
-                // need to implement views first, as the spline editor needs a renderer and controls
+            // need to implement views first, as the spline editor needs a renderer and controls
             case "targetSpline":
                 SSLog();
                 assert(mainView !== undefined, "SituationSetup: targetSpline needs a mainView defined");
@@ -258,7 +275,7 @@ export function SituationSetup() {
             case "startDistanceFeet":
                 SSLog();
                 new CNodeScale(data.id ?? "startDistance", scaleF2M, new CNodeGUIValue(
-                     {id: "startDistanceFeet", ...data}, gui))
+                    {id: "startDistanceFeet", ...data}, gui))
                 break;
 
             case "sizeFeet":
@@ -267,7 +284,135 @@ export function SituationSetup() {
                     {...data, ...{id: "targetSizeFeetGUI"}}, gui))
                 break;
 
-            default:
+            case "ptz":
+                SSLog();
+                setGlobalPTZ(new PTZControls({
+                        az: data.az, el: data.el, fov: data.fov, camera: "lookCamera", showGUI: data.showGUI
+                    },
+                    gui
+                ))
+                break;
+
+            case "lookPosition":
+                SSLog();
+                NodeMan.get("lookCamera").addController("UIPositionLLA", {
+                    id:"CameraLLA",
+                    fromLat: new CNodeGUIValue({
+                        id: "cameraLat",
+                        value: data.fromLat,
+                        start: -90,
+                        end: 90,
+                        step: 0.001,
+                        desc: "Camera Lat"
+                    }, gui),
+
+                    fromLon: new CNodeGUIValue({
+                        id: "cameraLon",
+                        value: data.fromLon,
+                        start: -180,
+                        end: 180,
+                        step: 0.001,
+                        desc: "Camera Lon"
+                    }, gui),
+
+                    fromAltFeet: new CNodeGUIValue({
+                        id: "cameraAlt",
+                        value: data.fromAltFeet,
+                        start: data.fromAltFeetMin ?? 0,
+                        end: data.fromAltFeetMax ?? 50000,
+                        step: 0.1,
+                        desc: "Camera Alt (ft)"
+                    }, gui),
+                    radiusMiles: "radiusMiles",
+                })
+                break;
+
+            case "lookAt":
+                SSLog();
+                NodeMan.get("lookCamera").addController("LookAtLLA", {
+                    toLat:data.toLat,
+                    toLon:data.toLon,
+                    toAlt:data.toAlt,
+                })
+                break;
+
+            case "lookAtTrack":
+                SSLog();
+                NodeMan.get("lookCamera").addController("LookAtTrack", {
+                    targetTrack: data.track ?? "targetTrack",
+                })
+                break;
+
+            case "trackFromDataFile":
+                SSLog();
+
+                makeTrackFromDataFile(data.file, data.dataID, data.id);
+                break;
+
+            case "targetObject":
+                SSLog();
+                new CNodeDisplayTargetModel({
+                    track: data.track ?? "targetTrack",
+                    TargetObjectFile: data.file,
+                  //  ...maybeWind,
+                })
+                break;
+
+            case "targetSizedSphere":
+                SSLog();
+                new CNodeDisplayTargetSphere({
+                    track:data.targetTrack ?? "targetTrack",
+                    size: new CNodeScale("sizeScaledLOS"+data.id, scaleF2M,
+                        new CNodeGUIValue({value: data.size??3, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
+                    ),
+                    layers: LAYER.MASK_LOOK,
+                    color: "#FFFFFF"
+                })
+                break;
+
+                // Take pan and tilt data from a file and use it to control the camera
+            case "arrayDataPTZ":
+                SSLog();
+                const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
+                const array = cameraTrack.array
+                assert (array !== undefined, "arrayDataPTZ missing array object")
+                makeArrayNodeFromColumn("headingCol", array, data.heading,30, true)
+                makeArrayNodeFromColumn("pitchCol", array, data.pitch, 30, true)
+                NodeMan.get(data.camera ?? "lookCamera").addController(
+                    "AbsolutePitchHeading",
+                    {pitch: "pitchCol", heading: "headingCol"}
+                )
+                if (data.labelView !== undefined) {
+                    const labelView = NodeMan.get(data.labelView)
+                    labelView.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
+                        this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
+                    })
+
+                    labelView.addLine("---").listen(par, "az", function (value) {
+                        this.text = "Az " + value.toFixed(2) + "°";
+                    })
+
+                    labelView.addLine("---").update(function (value) {
+                        this.text = "Pitch " + NodeMan.get("pitchCol").v(par.frame).toFixed(2) + "°";
+                    })
+                }
+                break;
+
+            case "labelView":
+                SSLog();
+                const overlayNode = data.overlay ?? "lookView";
+                const overlayView = NodeMan.get(overlayNode);
+                var labelVideo = new CNodeViewUI({id: data.id ?? "labelVideo", overlayView: overlayView});
+                let textSize = 2.5;
+                if (labelVideo.widthPx > labelVideo.heightPx) {
+                    textSize = 5
+                }
+                AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
+                labelVideo.setVisible(true)
+                break
+
+
+    default:
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
                 // passing in the data as the constructor

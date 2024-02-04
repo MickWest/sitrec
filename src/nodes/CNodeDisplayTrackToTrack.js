@@ -11,7 +11,12 @@ import * as LAYER from "../LayerMasks";
 
 export class CNodeDisplayTrackToTrack extends CNode3DGroup {
     constructor(v) {
-        v.layers ??= LAYER.MASK_HELPERS;
+
+        v.layers      ??= LAYER.MASK_HELPERS;
+        v.cameraTrack ??= "cameraTrack";
+        v.targetTrack ??= "targetTrack";
+        v.color       ??= [1, 1, 1];
+        v.width       ??= 1;
         super(v);
 
         // newer method - allow input nodes to be declared outside the inputs object

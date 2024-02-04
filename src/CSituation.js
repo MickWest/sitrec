@@ -15,6 +15,7 @@ import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {FileManager} from "./CFileManager";
+import {CNodeControllerGUIFOV} from "./nodes/CNodeController";
 
 
 // These are some parameters used as defaults for a situation
@@ -126,79 +127,65 @@ export class CSituation {
     // So don't rely on anything in here for things like Gimbal, Agua, etc....
     setup() {
         // more data-driven stuff that's indepent of type of situation
+        if (this.ptz) {
+            // THis is a UI controller for adjusting PTZ of a given camera
+            // setGlobalPTZ(new PTZControls({
+            //         az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: "lookCamera", showGUI:this.ptz.showGUI
+            //     },
+            //     gui
+            // ))
 
+            // and this allows editing of the camera position
+            // NodeMan.get("lookCamera").addController("UILLA", {
+            //     id:"CameraLLA",
+            //     fromLat: new CNodeGUIValue({
+            //         id: "cameraLat",
+            //         value: this.fromLat,
+            //         start: -90,
+            //         end: 90,
+            //         step: 0.001,
+            //         desc: "Camera Lat"
+            //     }, gui),
+            //
+            //     fromLon: new CNodeGUIValue({
+            //         id: "cameraLon",
+            //         value: this.fromLon,
+            //         start: -180,
+            //         end: 180,
+            //         step: 0.001,
+            //         desc: "Camera Lon"
+            //     }, gui),
+            //
+            //     fromAltFeet: new CNodeGUIValue({
+            //         id: "cameraAlt",
+            //         value: this.fromAltFeet,
+            //         start: this.fromAltFeetMin,
+            //         end: this.fromAltFeetMax,
+            //         step: 0.1,
+            //         desc: "Camera Alt (ft)"
+            //     }, gui),
+            //     radiusMiles: "radiusMiles",
+            // })
 
-        // a lookFOV implies we have a look camera, which most sitches do
-
-        if (this.lookFOV) {
-
-
-            if (this.ptz) {
-                // THis is a UI controller for adjusting PTZ of a given camera
-                setGlobalPTZ(new PTZControls({
-                        az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: "lookCamera", showGUI:this.ptz.showGUI
-                    },
-                    gui
-                ))
-
-                // and this allows editing of the camera position
-                NodeMan.get("lookCamera").addController("UICameraLLA", {
-                    id:"CameraLLA",
-                    fromLat: new CNodeGUIValue({
-                        id: "cameraLat",
-                        value: this.fromLat,
-                        start: -90,
-                        end: 90,
-                        step: 0.001,
-                        desc: "Camera Lat"
-                    }, gui),
-
-                    fromLon: new CNodeGUIValue({
-                        id: "cameraLon",
-                        value: this.fromLon,
-                        start: -180,
-                        end: 180,
-                        step: 0.001,
-                        desc: "Camera Lon"
-                    }, gui),
-
-                    fromAltFeet: new CNodeGUIValue({
-                        id: "cameraAlt",
-                        value: this.fromAltFeet,
-                        start: this.fromAltFeetMin,
-                        end: this.fromAltFeetMax,
-                        step: 0.1,
-                        desc: "Camera Alt (ft)"
-                    }, gui),
-                    radiusMiles: "radiusMiles",
-                })
-
-            } else {
-
-                gui.add(this, 'lookFOV', 0.35, 120, 0.01).onChange(value => {
-                    const lookCamera = NodeMan.get("lookCamera").camera
-                    lookCamera.fov = value
-                    lookCamera.updateProjectionMatrix()
-                }).listen().name("Look FOV")
-                // Lock the camera on a spot, no editing position by user
-                NodeMan.get("lookCamera").addController("UICameraLLA", {
-                    id:"CameraLLA",
-                    fromLat: this.fromLat, // e.g. point dume
-                    fromLon: this.fromLon,
-                    fromAltFeet: new CNodeGUIValue({
-                        id: "cameraAlt",
-                        value: this.fromAltFeet,
-                        start: this.fromAltFeetMin,
-                        end: this.fromAltFeetMax,
-                        step: 1,
-                        desc: "Camera Alt (ft)"
-                    }, gui),
-                    toLat: this.toLat,
-                    toLon: this.toLon,
-                    toAlt: this.toAlt, // elevation in meters
-                    radiusMiles: "radiusMiles",
-                })
-            }
+        } else {
+            // Lock the camera on a spot, no editing position by user
+            NodeMan.get("lookCamera").addController("UILLA", {
+                id: "CameraLLA",
+                fromLat: this.fromLat, // e.g. point dume
+                fromLon: this.fromLon,
+                fromAltFeet: new CNodeGUIValue({
+                    id: "cameraAlt",
+                    value: this.fromAltFeet,
+                    start: this.fromAltFeetMin,
+                    end: this.fromAltFeetMax,
+                    step: 1,
+                    desc: "Camera Alt (ft)"
+                }, gui),
+                toLat: this.toLat,
+                toLon: this.toLon,
+                toAlt: this.toAlt, // elevation in meters
+                radiusMiles: "radiusMiles",
+            })
         }
 
         if (this.marks) this.marks.forEach(mark => {

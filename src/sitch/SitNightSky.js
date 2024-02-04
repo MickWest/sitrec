@@ -141,11 +141,11 @@ export const SitNightSky = {
 
         addDefaultLights(Sit.brightness)
 
-        const lableMainViewPVS = new CNodeViewUI({id: "lableMainViewPVS", overlayView: ViewMan.list.mainView.data});
-        lableMainViewPVS.addText("videoLablep1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")
-        lableMainViewPVS.addText("videoLablep2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
-        lableMainViewPVS.addText("videoLablep3", "Drag and drop .txt or .tle files", 12, 6, 1.5, "#f0f00080")
-        lableMainViewPVS.setVisible(true)
+        const labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
+        labelMainViewPVS.addText("videoLabelp1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")
+        labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
+        labelMainViewPVS.addText("videoLabelp3", "Drag and drop .txt or .tle files", 12, 6, 1.5, "#f0f00080")
+        labelMainViewPVS.setVisible(true)
 
         gui.add(this, "makeNightSkyURL").name("Permalink")
 

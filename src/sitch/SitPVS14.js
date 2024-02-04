@@ -144,9 +144,9 @@ export const SitPVS14 = {
         }).listen().name("Main FOV")
         addDefaultLights(Sit.brightness)
 
-        var lableMainViewPVS = new CNodeViewUI({id: "lableMainViewPVS", overlayView: ViewMan.list.mainView.data});
+        var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
         lableMainViewPVS.addText("videoLablep2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
-        lableMainViewPVS.setVisible(true)
+        labelMainViewPVS.setVisible(true)
 
     },
 

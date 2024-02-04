@@ -185,7 +185,7 @@ class CTLEData {
 
         this.satrecs=[]
 
-        // determine if it's a two line element (no names, lines are labled 1 and 2) or three (line 0 = name)
+        // determine if it's a two line element (no names, lines are labeled 1 and 2) or three (line 0 = name)
         if (lines.length < 3 || !lines[1].startsWith("1") || !lines[2].startsWith("2")) {
             for (let i = 0; i < lines.length; i += 2) {
                 const tleLine1 = lines[i + 0];

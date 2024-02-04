@@ -67,7 +67,7 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         // aspect is w/h so w = h * aspect
         var w = h * this.camera.aspect;
         var d = (this.radius - 2)
-        console.log("REBUILDING FRUSTUM h="+h+" w="+w+" d="+d);
+//        console.log("REBUILDING FRUSTUM h="+h+" w="+w+" d="+d);
         const line_points = [
             0, 0, 0, w, h, -d,
             0, 0, 0, w, -h, -d,

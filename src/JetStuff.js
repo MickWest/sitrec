@@ -895,14 +895,14 @@ export function initViews() {
 
 
     var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.video.data});
-    labelVideo.addText("videoLable", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
+    labelVideo.addText("videolabel", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
     labelVideo.setVisible(true)
 
     if (1 || !isLocal) {
-        var lableMainView = new CNodeViewUI({id: "lableMainView", overlayView: ViewMan.list.mainView.data});
-        lableMainView.addText("videoLable1", "WORK IN PROGRESS", 20, 90, 3, "#f0f00040")
-        lableMainView.addText("videoLable2", "RESULTS MAY VARY", 20, 95, 3, "#f0f00040")
-        lableMainView.setVisible(true)
+        var labelMainView = new CNodeViewUI({id: "labelMainView", overlayView: ViewMan.list.mainView.data});
+        labelMainView.addText("videolabel1", "WORK IN PROGRESS", 20, 90, 3, "#f0f00040")
+        labelMainView.addText("videolabel2", "RESULTS MAY VARY", 20, 95, 3, "#f0f00040")
+        labelMainView.setVisible(true)
     }
     var farClipLook = metersFromMiles(500)
 

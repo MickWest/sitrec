@@ -40,16 +40,6 @@ export const SitHayle = {
 
     terrain: {lat: 50.197944, lon: -5.428180, zoom: 15, nTiles: 8},
 
-    fromLat: 50.197944, // Hayle beach
-    fromLon: -5.428180,
-
-    fromAltFeet: 64,
-    fromAltFeetMin: 0,
-    fromAltFeetMax: 100,
-
-    toLat: 50.222085,
-    toLon: -5.468553,
-    toAlt: 0,
 
     targetSpeedMax: 100,
 
@@ -70,6 +60,10 @@ export const SitHayle = {
 
     targetSize: 3,
 
+    lookPosition: { fromLat: 50.197944, fromLon: -5.428180, fromAltFeet: 64, fromAltFeetMin: 0, fromAltFeetMax: 100,},
+//    lookTarget: { toLat: 50.222085, toLon: -5.468553, toAlt: 0, }, // not needed with ptz
+
+
     setup2: function () {
 
         SetupGUIFrames()
@@ -89,21 +83,19 @@ export const SitHayle = {
             smooth: 30,
         })
 
-        var JetLOSDisplayNode = new CNodeDisplayLOS({
+        new CNodeDisplayLOS({
             LOS: "motionTrackLOS",
-
-
             width: 3,
         })
 
-        var nodeStartDistance = new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
+        new CNodeScale("startDistance", scaleF2M, new CNodeGUIValue(
             {id: "startDistanceFeet", value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Ft)"}, gui))
 
         new CNodeLOSTraverse({
             id: "LOSTraverseConstantDistance",
             inputs: {
                 LOS: "motionTrackLOS",
-                startDist: nodeStartDistance,
+                startDist: "startDistance",
             },
         })
 
@@ -113,7 +105,6 @@ export const SitHayle = {
             knots: 0,
             name: "Target",
             arrowColor: "cyan"
-
         }, gui)
 
         // zero wind for traversing
@@ -127,7 +118,6 @@ export const SitHayle = {
             heading: 0,
             name: "Initial",
             arrowColor: "green"
-
         }, gui)
 
         AddSpeedGraph("LOSTraverseConstantDistance", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.5, 0.25)
@@ -153,7 +143,6 @@ export const SitHayle = {
         new CNodeDisplayTargetSphere({
             track: "LOSTraverseConstantDistance",
             size: 10,
-
             layers: LAYER.MASK_HELPERS,
         })
 
@@ -161,8 +150,6 @@ export const SitHayle = {
             track: "LOSTraverseConstantDistance",
             color: new CNodeConstant({value: new Color(0, 1, 1)}),
             width: 1,
-
-            layers: LAYER.MASK_HELPERS,
         })
 
 
@@ -173,7 +160,6 @@ export const SitHayle = {
             targetTrack: "LOSTraverseConstantDistance",
             color: new CNodeConstant({value: new Color(1, 0, 0)}),
             width: 2,
-
         })
 
         addDefaultLights(Sit.brightness)

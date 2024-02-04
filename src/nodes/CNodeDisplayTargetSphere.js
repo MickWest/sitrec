@@ -4,19 +4,29 @@ import {CNode} from "./CNode";
 import {V3} from "../threeExt";
 import {getLocalUpVector} from "../SphericalMath";
 import {assert} from "../utils"
+import * as LAYER from "../LayerMasks";
 
 export class CNodeDisplayTargetSphere extends CNode3DTarget {
     constructor(v) {
+        v.layers      ??= LAYER.MASK_HELPERS;
+        v.color ??= "white"
+
         super(v);
 
-        this.color = v.color ?? "white"
+
+        this.color = v.color;
 
         // we make a sphere of radius 0.5 so it has a 1 METER diameter
         // so scale passed in must be in meters.
         const geometry = new SphereGeometry(0.5, 20, 20);
         const wireframe = new WireframeGeometry(geometry);
         const sphere = new LineSegments(wireframe);
-        sphere.material.color = new Color(this.color)
+
+        const matColor = new Color(this.color.v())
+        console.log("COLOR = "+matColor.toString());
+        sphere.material.color = matColor;
+        console.log("COLOR = "+sphere.material.color.toString());
+
         sphere.material.depthTest = true;
         sphere.material.opacity = 0.75;
         sphere.material.transparent = true;
