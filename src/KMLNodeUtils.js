@@ -11,7 +11,7 @@ import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
-import {CNodeControllerTrackPosition} from "./nodes/CNodeController";
+import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 
 
 export const KMLTrackManager = new CManager();

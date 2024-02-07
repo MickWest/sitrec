@@ -1,17 +1,10 @@
 // CameraControls
 
 import {
-	EventDispatcher,
-	MOUSE,
-	Quaternion,
-	Spherical,
-	TOUCH,
 	Vector2,
 	Vector3,
 	Matrix4,
-	Object3D,
 	Plane,
-	Ray,
 	Raycaster
 
 } from '../../three.js/build/three.module.js';
@@ -19,11 +12,11 @@ import {degrees, f2m, radians, vdump} from "../utils";
 import {DebugArrow, DebugArrowAB, intersectSphere2, V3} from "../threeExt";
 import {mouseInViewOnly, mouseToCanvas, mouseToView} from "../nodes/CNodeView";
 import {par} from "../par";
-import {GlobalScene} from "../LocalFrame";
 import {EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
 import {getLocalUpVector} from "../SphericalMath";
-import {GlobalPTZ, Sit} from "../Globals";
+import {Sit} from "../Globals";
+import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 
 const STATE = {
 	NONE: - 1,
@@ -81,6 +74,24 @@ class CameraMapControls {
 
 	}
 
+	getPTZController() {
+		const cameraNode = this.view.cameraNode	;
+
+		// given the camera node, find the PTZ controller in the inputs
+		// by inspecting the type of the input
+		// then return the controller
+		// if not found, return undefined
+		//
+		for (const key in cameraNode.inputs) {
+			const input = cameraNode.inputs[key];
+			// is it a CNodeControllerPTZ
+			if (input instanceof CNodeControllerPTZUI) {
+				return input;
+			}
+		}
+		return undefined;
+
+	}
 
 	handleMouseWheel( event ) {
 
@@ -88,12 +99,12 @@ class CameraMapControls {
 
 		event.preventDefault();
 
-		if (this.view.ptzControls) {
-			GlobalPTZ.fov += event.deltaY/10
-			if (GlobalPTZ.fov<0.1) GlobalPTZ.fov = 0.1;
-			if (GlobalPTZ.fov>120) GlobalPTZ.fov = 120;
+		const ptzControls= this.getPTZController();
 
-			GlobalPTZ.refresh();
+		if (ptzControls !== undefined) {
+			ptzControls.fov += event.deltaY/10
+			if (ptzControls.fov<0.1) ptzControls.fov = 0.1;
+			if (ptzControls.fov>120) ptzControls.fov = 120;
 		} else {
 
 			var target2Camera = this.camera.position.clone().sub(this.target)
@@ -159,8 +170,8 @@ class CameraMapControls {
 
 		if (event.metaKey || event.ctrlKey) this.state = STATE.PAN;
 
-		// if in ptz, then all buttons just pab
-		if (this.view.ptzControls) this.state = STATE.PAN;
+		// if we have a PTZ UI controller, then all buttons just pan
+		if (this.getPTZController() !== undefined ) this.state = STATE.PAN;
 
 
 	}
@@ -231,6 +242,9 @@ class CameraMapControls {
 
 //		console.log(x+","+y+","+vdump(this.mouseDelta))
 
+		const ptzControls= this.getPTZController();
+
+		
 		switch (this.state) {
 
 			case STATE.PAN:
@@ -239,23 +253,21 @@ class CameraMapControls {
 				const yRotate = 2 * Math.PI * this.mouseDelta.y / this.view.heightPx / 4
 
 //				console.log("PAN: "+xRotate+","+yRotate)
-
+				
 
 				// if we have ptzControls in this view, then update them
 				// not this is notdirectly equzalent to the 	this.camera.rotateY(xRotate), etc
 				// likely due to the up vector.
-				if (this.view.ptzControls) {
+				if (ptzControls !== undefined) {
 
 
-					GlobalPTZ.az -= degrees(xRotate) * GlobalPTZ.fov / 45
-					GlobalPTZ.el += degrees(yRotate) * GlobalPTZ.fov / 45
+					ptzControls.az -= degrees(xRotate) * ptzControls.fov / 45
+					ptzControls.el += degrees(yRotate) * ptzControls.fov / 45
 
-					if (GlobalPTZ.az < -180) GlobalPTZ.az+=360
-					if (GlobalPTZ.az >= 180) GlobalPTZ.az-=360
-					if (GlobalPTZ.el <= -89) GlobalPTZ.el = -89
-					if (GlobalPTZ.el >= 89) GlobalPTZ.el = 89
-
-					GlobalPTZ.refresh()
+					if (ptzControls.az < -180) ptzControls.az+=360
+					if (ptzControls.az >= 180) ptzControls.az-=360
+					if (ptzControls.el <= -89) ptzControls.el = -89
+					if (ptzControls.el >= 89) ptzControls.el = 89
 
 				} else {
 

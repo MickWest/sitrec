@@ -1,10 +1,7 @@
-import {GlobalPTZ, NodeMan} from "../Globals";
-import {CNode} from "./CNode";
-import {LLAToEUS, LLAToEUSMAP, LLAToEUSMAPGlobe, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
-import {metersFromMiles, radians, assert, vdump, f2m} from "../utils";
+import {LLAToEUSMAP, LLAToEUSMAPGlobe, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
+import {radians, assert, vdump, f2m} from "../utils";
 import {Sit} from "../Globals";
-import {DebugArrowAB} from "../threeExt";
-import {GlobalScene} from "../LocalFrame";
+
 import {CNodeController} from "./CNodeController";
 
 

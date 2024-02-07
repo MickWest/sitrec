@@ -2,11 +2,7 @@ import {gui, guiShowHide, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
 import {UIChangedFrame} from "./JetStuff";
 import {closeFullscreen, openFullscreen} from "./utils";
-import {opts} from "./JetChart";
-import {DumpPreset} from "./Presets";
 import {Vector3} from "../three.js/build/three.module";
-import {MV3} from "./threeExt";
-import {isLocal} from "../config";
 
 export var keyHeld = {}
 export var keyCodeHeld = {}

@@ -1,4 +1,4 @@
-import {gui,  NodeMan, setGlobalPTZ, setMainCamera, Sit} from "./Globals";
+import {gui,  NodeMan, Sit} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -14,7 +14,7 @@ import {DragDropHandler} from "./DragDropHandler";
 import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
-import {PTZControls} from "./PTZControls";
+import {CNodeControllerPTZUI} from "./nodes/CNodeControllerPTZUI";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
@@ -301,12 +301,10 @@ export function SituationSetup(runDeferred = false) {
 
                 console.log("MAKE PTZ lookCamera, quaternion = "+NodeMan.get("lookCamera").camera.quaternion.x)
 
-                setGlobalPTZ(new PTZControls({
-                        az: data.az, el: data.el, fov: data.fov, camera: "lookCamera", showGUI: data.showGUI
-                    },
-                    gui
-                ))
-                console.log("made PTZ lookCamera, quaternion = "+NodeMan.get("lookCamera").camera.quaternion.x)
+                const camera = data.camera ?? "lookCamera";
+                data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
+                const showGUI = data.showGUI ?? true;
+                NodeMan.get(camera).addController("PTZUI", {gui:gui, ...data})
 
                 break;
 

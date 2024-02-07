@@ -48,8 +48,8 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {FileManager} from "../CFileManager";
-import {addControllerTo} from "../nodes/CNodeController";
 import {Color, MeshStandardMaterial, TextureLoader} from "three";
+import {addControllerTo} from "../nodes/CNodeController";
 
 export var SitGoFast = {
     name: "gofast",

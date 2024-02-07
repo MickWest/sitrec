@@ -1,7 +1,7 @@
 import {
     Color,
 } from "../../three.js/build/three.module";
-import {GlobalPTZ, gui, guiTweaks, NodeMan, Sit} from "../Globals";
+import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";

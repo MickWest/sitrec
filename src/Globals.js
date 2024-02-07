@@ -13,9 +13,6 @@ export function setNodeMan(n) {NodeMan = n;}
 export var SitchMan;
 export function setSitchMan(n) {SitchMan = n;}
 
-export var GlobalPTZ;
-export function setGlobalPTZ(n) {GlobalPTZ = n;}
-
 export var gui;
 export var guiTweaks;
 export var guiShowHide;

@@ -1,5 +1,5 @@
 import { Vector3} from "../../three.js/build/three.module";
-import {GlobalPTZ, gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
+import { gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
 
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
@@ -14,8 +14,9 @@ import {MV3} from "../threeExt";
 import {isLocal, SITREC_SERVER} from "../../config";
 import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
-import {CNodeControllerManualPosition} from "../nodes/CNodeController";
+import {CNodeControllerManualPosition} from "../nodes/CNodeControllerVarious";
 import {FileManager} from "../CFileManager";
+import {assert} from "../utils";
 
 
 export const SitNightSky = {
@@ -66,16 +67,19 @@ export const SitNightSky = {
     lat: 51.48,
     lon: -3.16,
 
-    fromLat: 51.48,
-    fromLon: -3.16,
-
-    fromAltFeet: 822,
-    fromAltFeetMin: 0,
-    fromAltFeetMax: 55000,
+    // fromLat: 51.48,
+    // fromLon: -3.16,
+    //
+    // fromAltFeet: 822,
+    // fromAltFeetMin: 0,
+    // fromAltFeetMax: 55000,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
     ptz: {az: 6.2, el: 9.8, fov: 32, showGUI: true},
+
+    lookPosition: { fromLat: 51.48, fromLon: -3.16, fromAltFeet: 822, fromAltFeetMin: 0, fromAltFeetMax: 55000,},
+
 
 
     targetSpeedMax: 100,
@@ -173,6 +177,9 @@ export const SitNightSky = {
 
             const nightSkyNode = NodeMan.get("NightSkyNode");
 
+            const lookPTZ = NodeMan.get("lookCameraPTZ");
+            assert(lookPTZ !== undefined, "lookCameraPTZ not found");
+
             const savePar = {
                 olat: Sit.lat,
                 olon: Sit.lon,
@@ -180,10 +187,10 @@ export const SitNightSky = {
                 lon: NodeMan.get("cameraLon").value,
                 alt: NodeMan.get("cameraAlt").value,
                 startTime: Sit.startTime,
-                az: GlobalPTZ.az,
-                el: GlobalPTZ.el,
-                fov: GlobalPTZ.fov,
-                roll: GlobalPTZ.roll,
+                az: lookPTZ.az,
+                el: lookPTZ.el,
+                fov: lookPTZ.fov,
+                roll: lookPTZ.roll,
                 p: p,
                 //       v:v,
                 u: mainCam.up,
@@ -295,11 +302,14 @@ export const SitNightSky = {
         console.log("PARSING (AFTER): "+data)
         const p = JSURL.parse(data)
 
-        GlobalPTZ.az = p.az;
-        GlobalPTZ.el = p.el;
-        GlobalPTZ.fov = p.fov;
-        GlobalPTZ.roll = p.roll;
-        GlobalPTZ.refresh();
+        const lookPTZ = NodeMan.get("lookCameraPTZ");
+        assert(lookPTZ !== undefined, "lookCameraPTZ not found");
+
+        lookPTZ.az = p.az;
+        lookPTZ.el = p.el;
+        lookPTZ.fov = p.fov;
+        lookPTZ.roll = p.roll;
+        lookPTZ.refresh();
         NodeMan.get("cameraLat").value = p.lat;
         NodeMan.get("cameraLon").value = p.lon;
         NodeMan.get("cameraAlt").value = p.alt;
@@ -343,9 +353,8 @@ export const SitNightSky = {
             }
         }
 
-        // ANY NEW parameters should be checked to see if they exist, for backwards compatibility.
+        // ANY NEW  should be checked to see if they exist, for backwards compatibility.
 
-        GlobalPTZ.refresh();
         // we do a par.renderOne to ensure the initial display looks good if we are paused.
         par.renderOne = true;
     },
