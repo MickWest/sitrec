@@ -14,8 +14,6 @@ export const SitWestJet = {
     startTime: "2023-12-19T03:56:12.560Z",
     frames: 782,
 
-    ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
-
     mainCamera: {
         fov: 30, near:1,  far:60000000,
         startCameraPositionLLA: [38.602145, -86.506588, 4159762.165337],
@@ -23,5 +21,7 @@ export const SitWestJet = {
     },
     lookCamera:{ fov: 10, far: 8000000 },
     cameraTrack: {},
+    ptz: {az: -79.6, el: 0.6, fov: 25.7, showGUI: true},
+
 
 }

@@ -1,4 +1,5 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
     name: "lakemichigan",
@@ -11,7 +12,8 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
     terrain: {lat: 42.933424, lon: -86.129730, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'lakemichigan/FlightAware_UAL267_KBOS_KDEN_20211017.kml',
-        KMLTarget: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml"
+        KMLTarget: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml",
+        TargetObjectFile: './models/737_MAX_8_White.glb',
     },
     startTime: "2021-10-17T15:50:27.766Z",
 
@@ -28,5 +30,9 @@ export const SitLakeMichiganTicTac = Object.assign(Object.assign({},SitKML),{
 
     mainView:{left:0.0, top:0, width:.50,height:1},
 
+    ...commonKMLTrackToTrack,
+    displayFrustum: true,
+    //targetSizedSphere: { size:200 },
+    targetObject: {file: "TargetObjectFile"},
 
 })

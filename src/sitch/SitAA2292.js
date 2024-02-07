@@ -1,12 +1,12 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTarget} from "./CommonSitch";
 
 export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     name: "aa2292",
     menuName: "AA2292 Cruise Missile",
 
     targetSize: 85, // in feet
-    tilt: 13,
-
+    displayFrustum: true,
 
     frames:2000,
     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
@@ -35,5 +35,11 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
     mainView:{left:0.0, top:0, width:.50,height:1},
     focusTracks: {},
+//    tilt:13,
+    ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
+
+    ...commonKMLTarget,
+    targetSizedSphere: { size:100 },
+
 
 })

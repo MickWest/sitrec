@@ -1,4 +1,5 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitLAXUAP = {
     ...SitKML,
@@ -15,14 +16,10 @@ export const SitLAXUAP = {
     venusArrow: true,
 
     files: {
-//        starLink: "westjet/starlink-2023-12-18.tle",
-//        cameraFile: "westjet/FlightAware_WJA1517_KPHX_CYYC_20231219.kml",
         KMLTarget: "laxuap/82-0193-track-press_alt_uncorrected.kml", // this is the one that goes overhead at 19:08
-       // KMLTarget: "laxuap/86-0033-track-press_alt_uncorrected.kml", // other one, not there at 19:08, may earlier
         TargetObjectFile: "./models/DC-10.glb",
     },
 
-    targetObject: {file: "TargetObjectFile"},
 
     videoFile: "../sitrec-videos/private/LAXUAP 11-08-37 - 720P.mp4",
     startTime: "2023-12-10T19:08:37.480Z",
@@ -65,11 +62,14 @@ export const SitLAXUAP = {
 
     skyColor: '#4264ab',
 
-    timeSize: 5, // bit of a patch to display the time correctly in landscape
-
     targetWind:{from:295, knots: 23},
     //targetWind:{from:300, knots: 13},
     objectWind:{from:60, knots: 7},
+
+    ...commonKMLTrackToTrack,
+
+    targetObject: {file: "TargetObjectFile"},
+    displayFrustum: true,
 
 
 }

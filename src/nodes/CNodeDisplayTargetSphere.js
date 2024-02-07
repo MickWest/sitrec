@@ -23,9 +23,7 @@ export class CNodeDisplayTargetSphere extends CNode3DTarget {
         const sphere = new LineSegments(wireframe);
 
         const matColor = new Color(this.color.v())
-        console.log("COLOR = "+matColor.toString());
         sphere.material.color = matColor;
-        console.log("COLOR = "+sphere.material.color.toString());
 
         sphere.material.depthTest = true;
         sphere.material.opacity = 0.75;

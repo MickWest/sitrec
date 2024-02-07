@@ -45,11 +45,6 @@ export const SitArea6 = {
     fromAltFeetMin: 400,
     fromAltFeetMax: 5000,
 
-    // with a ptz setup, add showGUI:true to allow changing it
-    // then can set it to false once the settings are locked in
-    ptz: {az: -6.2, el: 9.8, fov: 11.8, showGUI: true},
-
-
     targetSpeedMax: 100,
 
     marks: [
@@ -70,6 +65,7 @@ export const SitArea6 = {
         far: 80000000,
     },
     lookView: {left:0.5, top:0.5, width:-1280/714,height:0.5,background:'#132d44',},
+    ptz: {az: -6.2, el: 9.8, fov: 11.8, showGUI: true},
 
     // overrides for video viewport
     videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },

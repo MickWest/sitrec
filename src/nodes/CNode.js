@@ -145,8 +145,8 @@ class CNode {
                 sourceNode = NodeMan.get(this.props[i])
             else {
                 // auto constants must be numbers
-                assert(typeof this.props[i] === 'number', "Undefined node with id "+i)
-                // it's not a node, so wrap it in a CNodeConstant
+                assert(typeof this.props[i] === 'number', "Node with id "+i+" : "+this.props[i]+" not a node or number, probably name of noded that's not created")
+                // it's not a node, and it is a number so wrap it in a CNodeConstant
                 sourceNode = new CNodeConstant({value: this.props[i]})
             }
         }

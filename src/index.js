@@ -524,7 +524,7 @@ console.log("FINISHED Load Assets")
 
 console.log("Setup()")
 
-SituationSetup();
+SituationSetup(false);
 
 if (Sit.jetStuff) {
     initJetVariables();
@@ -535,6 +535,10 @@ if (Sit.jetStuff) {
 if (Sit.setup !== undefined) Sit.setup();
 console.log("Setup2()")
 if (Sit.setup2 !== undefined) Sit.setup2();
+
+// any deferred setup - i.e data members that have defer: true
+SituationSetup(true);
+
 
 // minor patch, defer setting up the ATFLIR UI, as it references the altitude
 if (Sit.jetStuff) initJetStuffOverlays()

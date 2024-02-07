@@ -89,12 +89,6 @@ class CameraMapControls {
 		event.preventDefault();
 
 		if (this.view.ptzControls) {
-			// if (event.deltaY < 0) {
-			// 	GlobalPTZ.fov--;
-			//
-			// } else if (event.deltaY > 0) {
-			// 	GlobalPTZ.fov++;
-			// }
 			GlobalPTZ.fov += event.deltaY/10
 			if (GlobalPTZ.fov<0.1) GlobalPTZ.fov = 0.1;
 			if (GlobalPTZ.fov>120) GlobalPTZ.fov = 120;

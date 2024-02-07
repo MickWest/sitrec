@@ -94,6 +94,8 @@ export var SitGoFast = {
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
 
+    targetSizedSphere: { defer: true, size:3, targetTrack: "LOSTraverseSelect" },
+
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")
         const jetNode = NodeMan.get("JetLOS")

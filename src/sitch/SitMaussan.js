@@ -5,7 +5,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     menuName: "Maussan Starlink",
 
     targetSize: 200, // in feet
-    tilt: -7.61,
 
 
     azSlider: false,
@@ -57,12 +56,8 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
     skyColor: '#AFBDD1',  // grey from the video
 
-    targetObject:{file: "TargetObjectFile",},
+//    targetObject:{file: "TargetObjectFile",},
 
-    ignoreFromLat: true,
-
-    // with a ptz setup, add showGUI:true to allow changing it
-    // then can set it to false once the settings are locked in
     ptz: {az: -89.2, el: -6.6, fov: 53.2, showGUI: true},
 
 

@@ -47,6 +47,7 @@ export class CNodeCamera extends CNode3D {
 
         if (this.lookAtLLA !== undefined) {
             this._object.lookAt(LLAVToEUS(MV3(this.lookAtLLA)));
+
         }
     }
 

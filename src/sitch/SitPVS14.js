@@ -2,8 +2,6 @@ import {
     Color,
 } from "../../three.js/build/three.module";
 import {GlobalPTZ, gui, guiTweaks, NodeMan, Sit} from "../Globals";
-import {CNodeView3D} from "../nodes/CNodeView3D";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
 import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
@@ -11,13 +9,10 @@ import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {DragDropHandler} from "../DragDropHandler";
 
 import {ViewMan} from "../nodes/CNodeView";
-import { ECEFToLLAVD_Sphere, EUSToECEF} from "../LLA-ECEF-ENU";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
-import {CNodeCamera} from "../nodes/CNodeCamera";
 import * as LAYER from "../LayerMasks";
 
 
@@ -69,13 +64,6 @@ export const SitPVS14 = {
     fromAltMin: 5000,
     fromAltMax: 15000,
 
-    ignoreFromLat: true,
-
-    // with a ptz setup, add showGUI:true to allow changing it
-    // then can set it to false once the settings are locked in
-    ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},
-
-
     targetSpeedMax: 100,
 
     marks: [
@@ -96,6 +84,7 @@ export const SitPVS14 = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,background:'#000000'},
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
+    ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},
 
     dragDropHandler: {},
 
@@ -106,12 +95,9 @@ export const SitPVS14 = {
 
 
 
-        NodeMan.get("lookCamera").addController("TrackAzEl",{
+        NodeMan.get("lookCamera").addController("TrackPosition",{
              sourceTrack: "cameraTrack",
         })
-
-
-        GlobalPTZ.camera = NodeMan.get("lookCamera").camera;
 
         //animated segement of camera track
         new CNodeDisplayTrack({
@@ -145,18 +131,18 @@ export const SitPVS14 = {
         addDefaultLights(Sit.brightness)
 
         var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
-        lableMainViewPVS.addText("videoLablep2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
+        labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
         labelMainViewPVS.setVisible(true)
 
     },
 
     update: function(frame) {
-        // with camera locked to a plane, propogate the plane's position
-        // via the UI
-        const lookCamera = NodeMan.get("lookCamera").camera
-        const cursorPos = lookCamera.position;
-        const ecef = EUSToECEF(cursorPos)
-        const LLA = ECEFToLLAVD_Sphere(ecef)
+        // // with camera locked to a plane, propogate the plane's position
+        // // via the UI
+        // const lookCamera = NodeMan.get("lookCamera").camera
+        // const cursorPos = lookCamera.position;
+        // const ecef = EUSToECEF(cursorPos)
+        // const LLA = ECEFToLLAVD_Sphere(ecef)
     },
 
 

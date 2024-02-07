@@ -65,7 +65,9 @@ export class CNodeControllerTilt extends CNodeController {
     }
 }
 
-export class CNodeControllerTrackAzEl extends CNodeController {
+
+//
+export class CNodeControllerTrackPosition extends CNodeController {
     constructor(v) {
         super(v);
         this.input("sourceTrack")
@@ -73,7 +75,6 @@ export class CNodeControllerTrackAzEl extends CNodeController {
 
     apply(f, objectNode) {
         const camera = objectNode.camera
-
         var camPos = this.in.sourceTrack.p(f)
 
         updateCameraAndUI(camPos, camera, objectNode);
@@ -275,3 +276,9 @@ export function applyPitchAndHeading(object, pitch, heading)
 export function addControllerTo(target, controller, def) {
     return NodeMan.get(target).addController(controller,def);
 }
+
+
+
+
+
+

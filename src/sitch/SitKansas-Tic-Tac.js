@@ -1,11 +1,12 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
     name: "kansas",
     menuName: "Kansas Tic-Tac",
 
     targetSize: 200, // in feet
-    tilt: 4.63,
+
 
 
     frames: 569,
@@ -30,6 +31,10 @@ export const SitKansasTicTac = Object.assign(Object.assign({},SitKML),{
     cameraTrack: {},
 
     mainView:{left:0.0, top:0, width:.50,height:1},
+    tilt: 4.63,
+
+    ...commonKMLTrackToTrack,
+    targetSizedSphere: { size:200 },
 
 
 })

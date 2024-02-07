@@ -1,4 +1,5 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTrackToTrack} from "./CommonSitch";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitPorterville = {
@@ -37,7 +38,7 @@ export const SitPorterville = {
     },
     lookCamera:{ fov: 50},
 
-    cameraTrack: {},
+    cameraTrack: {}, // by default, will create it from the cameraFile
     focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
@@ -52,16 +53,16 @@ export const SitPorterville = {
     // in this case just two points, linear interpolation (a line)
     targetSpline: {
         type: "linear",
-        // initialPoints: [
-        //     [0, -245.83437878094787, 309.22659885812095, -3866.285249383911],
-        //     [21191, -344.31725947256325, 304.0173135915461, -4129.776316201121]
-        // ]
         initialPointsLLA: [
             [0, 36.05717639406794, -119.01762411981093, 310.40310754440725],
             [21191, 36.05954325940758, -119.01871851160264, 305.36353635508567]
         ]
     },
     showAltitude: true,
-
+    displayTargetTrack: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 2,},
+    // targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
+    displayLOS: {kind: "DisplayTrackToTrack"},
+    lookAtTrack: {},
+    targetSizedSphere: { size:1, color: "black"},
 
 }

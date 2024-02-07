@@ -4,6 +4,8 @@ import {getLocalUpVector} from "./SphericalMath";
 import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";
 import {NodeMan, Sit} from "./Globals";
 
+// TODO - This sould be a controller.
+
 export class PTZControls {
     constructor(v,gui) {
         this.az = v.az;
@@ -24,6 +26,7 @@ export class PTZControls {
     }
 
     refresh() {
+        console.log("PTZ refresh START lookCamera, quaternion = "+this.camera.quaternion.x)
 
         // Since we are in EUS, and the origin is at some arbritary point
         // we need to get the LOCAL up
@@ -34,6 +37,8 @@ export class PTZControls {
 
 
         up = getLocalUpVector(this.camera.position, wgs84.RADIUS)
+
+        console.log("Up = "+up.x+","+up.y+","+up.z);
 
         // to get a northish direction we get the vector from here to the north pole.
         // to get the north pole in EUS, we take the north pole's position in ECEF
@@ -63,6 +68,8 @@ export class PTZControls {
         if (this.roll !== undefined ) {
             this.camera.rotateZ(radians(this.roll))
         }
+        console.log("PTZ refresh lookCamera, quaternion = "+this.camera.quaternion.x)
+
     }
 
 }

@@ -159,6 +159,11 @@ export class CNodeFactory extends CManager{
     // so we can resolve either a string or the actual node to a node
     // which simplifies the interface
     get(n) {
+        if (n === "lookCamera") {
+            console.log("get lookCamera, quaternion = "+this.list[n].data.camera.quaternion.x)
+        }
+
+
         if (n instanceof CNode)
             return n
         else

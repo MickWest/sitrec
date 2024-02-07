@@ -1,12 +1,10 @@
 import {Color} from "../three.js/build/three.module.js";
-import {guiTweaks, infoDiv, NodeMan, setGlobalPTZ, Sit} from "./Globals";
-import {PTZControls} from "./PTZControls";
+import {guiTweaks, infoDiv, Sit} from "./Globals";
 import {LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 import {boxMark, MV3, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {CNodeLOSMotionTrack} from "./nodes/CNodeLOSMotionTrack";
 import {GlobalScene} from "./LocalFrame";
 import {gui} from "./Globals";
 import {NightSkyFiles} from "./ExtraFiles";
@@ -15,7 +13,6 @@ import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {FileManager} from "./CFileManager";
-import {CNodeControllerGUIFOV} from "./nodes/CNodeController";
 
 
 // These are some parameters used as defaults for a situation
@@ -127,72 +124,12 @@ export class CSituation {
     // So don't rely on anything in here for things like Gimbal, Agua, etc....
     setup() {
         // more data-driven stuff that's indepent of type of situation
-        if (this.ptz) {
-            // THis is a UI controller for adjusting PTZ of a given camera
-            // setGlobalPTZ(new PTZControls({
-            //         az: this.ptz.az, el: this.ptz.el, fov: this.ptz.fov, camera: "lookCamera", showGUI:this.ptz.showGUI
-            //     },
-            //     gui
-            // ))
 
-            // and this allows editing of the camera position
-            // NodeMan.get("lookCamera").addController("UILLA", {
-            //     id:"CameraLLA",
-            //     fromLat: new CNodeGUIValue({
-            //         id: "cameraLat",
-            //         value: this.fromLat,
-            //         start: -90,
-            //         end: 90,
-            //         step: 0.001,
-            //         desc: "Camera Lat"
-            //     }, gui),
-            //
-            //     fromLon: new CNodeGUIValue({
-            //         id: "cameraLon",
-            //         value: this.fromLon,
-            //         start: -180,
-            //         end: 180,
-            //         step: 0.001,
-            //         desc: "Camera Lon"
-            //     }, gui),
-            //
-            //     fromAltFeet: new CNodeGUIValue({
-            //         id: "cameraAlt",
-            //         value: this.fromAltFeet,
-            //         start: this.fromAltFeetMin,
-            //         end: this.fromAltFeetMax,
-            //         step: 0.1,
-            //         desc: "Camera Alt (ft)"
-            //     }, gui),
-            //     radiusMiles: "radiusMiles",
-            // })
-
-        } else {
-            // Lock the camera on a spot, no editing position by user
-            NodeMan.get("lookCamera").addController("UILLA", {
-                id: "CameraLLA",
-                fromLat: this.fromLat, // e.g. point dume
-                fromLon: this.fromLon,
-                fromAltFeet: new CNodeGUIValue({
-                    id: "cameraAlt",
-                    value: this.fromAltFeet,
-                    start: this.fromAltFeetMin,
-                    end: this.fromAltFeetMax,
-                    step: 1,
-                    desc: "Camera Alt (ft)"
-                }, gui),
-                toLat: this.toLat,
-                toLon: this.toLon,
-                toAlt: this.toAlt, // elevation in meters
-                radiusMiles: "radiusMiles",
-            })
-        }
 
         if (this.marks) this.marks.forEach(mark => {
             var enu = LLAToEUS(mark.LL.lat, mark.LL.lon)
             GlobalScene.add(boxMark(enu, mark.width, 10000, mark.width, mark.color))
         })
-
 
         new CNodeGUIValue({
             id: "altAdjust",

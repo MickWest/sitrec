@@ -1,24 +1,17 @@
 import {par} from "../par";
-import {setGlobalPTZ, Sit} from "../Globals";
-import {CNodeConstant, makePositionLLA} from "../nodes/CNode";
-import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
+import {Sit} from "../Globals";
 import * as LAYER from "../LayerMasks";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {
-    abs, assert,
     atan,
     degrees,
-    floor,
     getArrayValueFromFrame,
     radians,
     scaleF2M,
     tan,
 } from "../utils";
 import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeDisplayTrackToTrack} from "../nodes/CNodeDisplayTrackToTrack";
-import {CNodeViewUI} from "../nodes/CNodeViewUI";
-import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
 import {GlobalScene} from "../LocalFrame";
 import {gui} from "../Globals";
@@ -28,13 +21,7 @@ import {initKeyboard} from "../KeyBoardHandler";
 import {V3} from "../threeExt";
 import {addDefaultLights} from "../lighting";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
-import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "../nodes/CNodeTrack";
-import {AddTimeDisplayToUI} from "../UIHelpers";
-import {PTZControls} from "../PTZControls";
 import {pointAltitude} from "../SphericalMath";
-import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
-import {FileManager} from "../CFileManager";
-import {Color} from "three";
 
 
 export const SitKML = {
@@ -72,7 +59,7 @@ export const SitKML = {
 
     showAltitude: true,
 
-    tilt: -15,  //Not a good default!
+ //   tilt: -15,  //Not a good default!
 
     defaultCameraDist: 3000000,  // for SitKML stuff we generalyl want a large camera distance for defaults
 
@@ -309,7 +296,7 @@ export const SitKML = {
             const cameraNode = NodeMan.get("lookCamera")
 
             if (this.ptz) {
-                cameraNode.addController("TrackAzEl",{
+                cameraNode.addController("TrackPosition",{
                         sourceTrack: "cameraTrack",
                     })
 
@@ -322,7 +309,7 @@ export const SitKML = {
                         targetTrack: "targetTrackAverage",
                     })
                 } else {
-                    cameraNode.addController("TrackAzEl", {
+                    cameraNode.addController("TrackPosition", {
                         sourceTrack: "cameraTrack",
                     })
                 }
@@ -346,27 +333,9 @@ export const SitKML = {
                 })
             }
 
-            if (!this.ptz) {
-                NodeMan.get("lookCamera").addController("Tilt", {
-                    tilt: makeCNodeGUIValue("tilt", Sit.tilt ?? 0, -30, 30, 0.01, "Tilt", gui),
-                })
-            }
-
        }
 
 
-        if (this.ptz) {
-            setGlobalPTZ(new PTZControls({
-                    az: this.ptz.az,
-                    el: this.ptz.el,
-                    fov: this.ptz.fov,
-                    roll: this.ptz.roll,
-                    camera: "lookCamera",
-                    showGUI: this.ptz.showGUI
-                },
-                gui
-            ))
-        }
 
         var viewNar = NodeMan.get("lookView");
 
@@ -421,23 +390,6 @@ export const SitKML = {
             }
 
         }
-
-
-        // var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.lookView.data});
-        // AddTimeDisplayToUI(labelVideo, 50, 96, this.timeSize ?? 2.5, "#f0f000")
-
-        // if (this.showAz) {
-        //     labelVideo.addText("az", "35° L", 47, 7).listen(par, "az", function (value) {
-        //         this.text = "Az " + (floor(0.499999 + abs(value))) + "° " //+ (value > 0 ? "R" : "L");
-        //     })
-        // }
-        //
-        // if (this.showAltitude) {
-        //     labelVideo.addText("alt", "---", 20, 7).listen(par, "cameraAlt", function (value) {
-        //         this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
-        //     })
-        // }
-
 
 
         if (this.losTarget !== undefined) {

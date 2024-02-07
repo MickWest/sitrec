@@ -53,14 +53,6 @@ export class CNodeControllerUIPositionLLA extends CNodeController {
     //    DebugArrowAB("Lookat", from,to, 0xff00ff,true,GlobalScene)
 
     }
-
-    // recalculate(f) {
-    //     // patch refresh any ptz controls, as lat/lon have changed
-    //     if (GlobalPTZ !== undefined) {
-    //         GlobalPTZ.refresh();
-    //     }
-    // }
-
 }
 
 // controller to look at a specified LLA point
@@ -103,16 +95,6 @@ export class CNodeControllerLookAtLLA extends CNodeController {
         //    DebugArrowAB("Lookat", from,to, 0xff00ff,true,GlobalScene)
 
     }
-
-    // recalculate(f) {
-    //
-    //     // patch refresh any ptz controls, as lat/lon have changed
-    //     if (GlobalPTZ !== undefined) {
-    //         GlobalPTZ.refresh();
-    //     }
-    //
-    //     //  this.update(f)
-    // }
 
 }
 

@@ -29,13 +29,7 @@ export const SitJellyfish    = {
     lookCamera: { fov: 10.6, },
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
 
-//    fixed viewpoint
-    // This creates a camera controller.
-    fromLat: 33.323126,
-    fromLon: 43.608689,
-    fromAltFeet: 2978,
-    fromAltFeetMin: 1000,
-    fromAltFeetMax: 4000,
+
 
     // the origin
     lat: 33.323126,
@@ -82,7 +76,17 @@ export const SitJellyfish    = {
 
     // A "track" that takes its position from a camera node
     // generally the lookCamera
-    cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
+//   cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
+
+    //    fixed viewpoint
+    // This creates a camera controller.
+    // fromLat: 33.323126,
+    // fromLon: 43.608689,
+    // fromAltFeet: 2978,
+    // fromAltFeetMin: 1000,
+    // fromAltFeetMax: 4000,
+
+    cameraTrack: {LLA: [ 33.323126, 43.608689, 2978]},
 
     // the green ground track
     groundTrackDisplay: { kind:"DisplayTrack",
@@ -132,6 +136,7 @@ export const SitJellyfish    = {
     sphereInLookView: { kind: "DisplayTargetSphere",
         track: "traverseTrack",
         size: "sphereSize",
+        layers: "LOOK"
     },
 
     traverseTrackDisplay: { kind: "DisplayTrack",
@@ -148,14 +153,19 @@ export const SitJellyfish    = {
         width: 2,
     },
 
+  //  targetSizedSphere: { defer:true, size:1.5, color: "grey"},
+
+    displayFrustum: true,
+
+
     setup2: function() {
 
         SetupGUIFrames()
         initKeyboard()
 
-        NodeMan.get("lookCamera").addController("LookAtTrack", {
+        NodeMan.get("lookCamera").addController("TrackToTrack", {
             id:"lookAtGroundTrack",
-             //sourceTrack: "motionTrackLOS",
+             sourceTrack: "cameraTrack",
              targetTrack: "groundTrack",
         }).addController("FocalLength", {
             focalLength: new CNodeMunge({

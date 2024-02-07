@@ -1,4 +1,5 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     name: "ity621",
@@ -6,7 +7,6 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
 
 
     targetSize: 200, // in feet
-    tilt: 1.24,
 
     frames: 708, // currently needs manual setting
     terrain: {lat: 47.812613, lon: -4.260180, zoom: 9, nTiles: 8},
@@ -33,5 +33,11 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 
+    ...commonKMLTrackToTrack,
+    targetObject: {file: "TargetObjectFile"},
+    displayFrustum: true,
+
+
+    tilt: 1.24,
 
 })

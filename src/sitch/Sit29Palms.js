@@ -37,16 +37,13 @@ export const Sit29Palms = {
 
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
 
-    fromLat: 34.399060162,
-    fromLon: -115.858257450,
+    // fromLat: 34.399060162,
+    // fromLon: -115.858257450,
+    //
+    // fromAltFeet: 1402,   ///426,
+    // fromAltFeetMin: 1300,
+    // fromAltFeetMax: 1500,
 
-    fromAltFeet: 1402,   ///426,
-    fromAltFeetMin: 1300,
-    fromAltFeetMax: 1500,
-
-    // with a ptz setup, add showGUI:true to allow changing it
-    // then can set it to false once the settings are locked in
-    ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
     mainCamera: {
         fov: 30,
@@ -57,6 +54,10 @@ export const Sit29Palms = {
 
     lookCamera: {fov: 10,},
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5, background: '#132d44',},
+
+    cameraTrack: {LLA: [34.399060162,-115.858257450, 1402]},
+    followTrack: {}, // will default to lookCamera and cameraTrack
+    ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
 
     targetSize: 500,

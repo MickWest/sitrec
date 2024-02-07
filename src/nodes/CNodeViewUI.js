@@ -26,6 +26,8 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         this.cx = 50
         this.cy = 50
 
+        this.inheritSize();
+
         this.wpx = this.widthPx;
         this.hpx = this.heightPx
 

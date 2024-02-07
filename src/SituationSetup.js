@@ -1,14 +1,13 @@
-import {gui, mainCamera, NodeMan, setGlobalPTZ, setMainCamera, Sit} from "./Globals";
+import {gui,  NodeMan, setGlobalPTZ, setMainCamera, Sit} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
-import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
+import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
-import {Color} from "../three.js/build/three.module";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {abs, assert, floor, scaleF2M} from "./utils";
+import {abs, assert, f2m, floor, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -21,14 +20,13 @@ import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
-import {ViewMan} from "./nodes/CNodeView";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 
-
-export function SituationSetup() {
+export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
 
-    new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
+    if (!runDeferred)
+        new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
 
     let mainView, mainCameraNode, mainCamera;
 
@@ -40,6 +38,18 @@ export function SituationSetup() {
         // we can have undefined values in Sit, so skip them
         // this normall occurs when we have a base situation, and then override some values
         if (data === undefined) continue;
+
+        const dataDeferred = data.defer ?? false;
+        // assert dataDeferred is a boolean
+        assert(typeof dataDeferred === "boolean", "SituationSetup: data.defer must be a boolean")
+        // assert runDeferred is a boolean
+        assert(typeof runDeferred === "boolean", "SituationSetup: runDeferred must be a boolean")
+
+        if (dataDeferred !== runDeferred) {
+            if (!runDeferred)
+                console.log("SituationSetup: skipping deferred data: " + key)
+            continue;
+        }
 
         function SSLog() {
             console.log("SituationSetup: " + key + " " + JSON.stringify(data))
@@ -123,6 +133,7 @@ export function SituationSetup() {
                 })
 
                 const lookCameraNode = NodeMan.get("lookCamera");
+
                 if (data.addFOVController) {
                     gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
                         lookCameraNode.camera.updateProjectionMatrix()
@@ -141,7 +152,8 @@ export function SituationSetup() {
 
                 const id = data.id ?? "cameraTrack";
                 if (data.LLA !== undefined) {
-                    makePositionLLA(id, data.LLA[0], data.LLA[1], data.LLA[2]);
+                    makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]))
+                        .frames = Sit.frames;
                 } else {
                     const file = data.file ?? "cameraFile";
 
@@ -286,11 +298,16 @@ export function SituationSetup() {
 
             case "ptz":
                 SSLog();
+
+                console.log("MAKE PTZ lookCamera, quaternion = "+NodeMan.get("lookCamera").camera.quaternion.x)
+
                 setGlobalPTZ(new PTZControls({
                         az: data.az, el: data.el, fov: data.fov, camera: "lookCamera", showGUI: data.showGUI
                     },
                     gui
                 ))
+                console.log("made PTZ lookCamera, quaternion = "+NodeMan.get("lookCamera").camera.quaternion.x)
+
                 break;
 
             case "lookPosition":
@@ -324,6 +341,13 @@ export function SituationSetup() {
                         desc: "Camera Alt (ft)"
                     }, gui),
                     radiusMiles: "radiusMiles",
+                })
+                break;
+
+            case "followTrack":
+                SSLog();
+                NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition",{
+                    sourceTrack: data.sourceTrack ?? "cameraTrack",
                 })
                 break;
 
@@ -366,7 +390,7 @@ export function SituationSetup() {
                         new CNodeGUIValue({value: data.size??3, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
                     ),
                     layers: LAYER.MASK_LOOK,
-                    color: "#FFFFFF"
+                    color: data.color ?? "#FFFFFF"
                 })
                 break;
 
@@ -409,7 +433,14 @@ export function SituationSetup() {
                 }
                 AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
                 labelVideo.setVisible(true)
-                break
+                break;
+
+            case "tilt":
+                SSLog();
+                NodeMan.get("lookCamera").addController("Tilt", {
+                    tilt: makeCNodeGUIValue("tilt", data, -30, 30, 0.01, "Tilt", gui),
+                })
+                break;
 
 
     default:

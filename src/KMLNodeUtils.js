@@ -11,7 +11,7 @@ import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
-import {CNodeControllerTrackAzEl} from "./nodes/CNodeController";
+import {CNodeControllerTrackPosition} from "./nodes/CNodeController";
 
 
 export const KMLTrackManager = new CManager();
@@ -68,7 +68,7 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
 
             const switchNode = NodeMan.get("cameraSwitch");
             switchNode.removeOption("KML Track")
-            switchNode.addOption("KML Track", new CNodeControllerTrackAzEl({
+            switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
                 cameraTrack: target,
             }) )
 
