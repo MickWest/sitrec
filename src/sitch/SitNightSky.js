@@ -20,7 +20,7 @@ import {assert} from "../utils";
 
 export const SitNightSky = {
     name: "nightsky",
-    menuName: "Night Sky",
+    menuName: "Night Sky / Starlink",
 
     nightSky: true,
     useGlobe: true,

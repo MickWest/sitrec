@@ -15,7 +15,6 @@ export const SitFolsomLake = {
     targetSize: 1, // in feet
     displayFrustum: true,
     frustumRadius: 20,
-    frustumColor: 0xff0000,
     frustumLineWeight: 1.5,
 
 

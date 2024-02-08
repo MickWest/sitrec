@@ -68,8 +68,8 @@ const situationDefaults = {
 
     displayFrustum: false,
     frustumRadius: 50000,
-    frustumColor: 0xffff00,
-    frustumLineWeight: 2,
+    frustumColor: "white",
+    frustumLineWeight: 1.5,
 
     // startCameraPosition:[-7136.71,380520.26,747460.97],
     // startCameraTarget:[-7150.08,380080.93,746562.74]

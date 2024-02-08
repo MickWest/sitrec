@@ -49,7 +49,7 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.radius = v.radius ?? 100
         this.camera = NodeMan.get(v.camera).camera;
 
-        this.color = v.color
+        this.color = v.color.v();
         this.lineWeigh = v.lineWeight ?? 1;
         this.matLine = makeMatLine(this.color, this.lineWeigh);
 

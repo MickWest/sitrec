@@ -12,7 +12,6 @@ export const SitPorterville = {
     targetSize: 1, // in feet
     displayFrustum: true,
     frustumRadius: 2000,
-    frustumColor: 0xff0000,
     frustumLineWeight: 1.5,
 
 
