@@ -8,7 +8,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
 
     azSlider: false,
-    animated: true,
     nightSky: true,
     useGlobe: true,
     useDayNightGlobe: true,

@@ -8,7 +8,6 @@ export const SitArea6 = {
     menuName: "Area 6",
 
     azSlider: false,
-    animated: true,
     nightSky: true,
     useGlobe: true,
     displayFrustum: true,

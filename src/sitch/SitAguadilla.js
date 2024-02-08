@@ -44,7 +44,6 @@ export const SitAguadilla = {
     menuName: "Aguadilla",
 
     azSlider:false,
-    animated:true,
 
     fps: 29.97,
     frames: 7028,  // note, old CSV was 7027, so duplicated the last line to match the video at 7028

@@ -24,7 +24,6 @@ export const SitHayle = {
     menuName: "Hayle Beach / St. Ives",
 
     azSlider: false,
-    animated: true,
 
     files: {
         hayleCSV: "hayle/hayle-track.csv",

@@ -9,7 +9,6 @@ export const SitJellyfish    = {
     menuName: "Jellyfish in Iraq",
 
     azSlider:false,
-    animated:true,
 
     simSpeed: 1,
     videoSpeed: 1,

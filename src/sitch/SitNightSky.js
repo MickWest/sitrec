@@ -23,7 +23,6 @@ export const SitNightSky = {
     menuName: "Night Sky",
 
     azSlider: false,
-    animated: true,
     nightSky: true,
     useGlobe: true,
     useDayNightGlobe: true,

@@ -15,7 +15,6 @@ export const Sit29Palms = {
 
 
     azSlider: false,
-    animated: true,
     nightSky: true,
     displayFrustum: true,
     frustumRadius: 10000,
