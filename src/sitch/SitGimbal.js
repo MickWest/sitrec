@@ -47,6 +47,7 @@ const GimbalDefaults = {
     bFrame: 1030,
 
     jetStuff: true, // gimbal is the only place this is used
+    azSlider:true,
 
     //OVERRIDES:
     startDistance: 32,

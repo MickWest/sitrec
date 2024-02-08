@@ -6,9 +6,6 @@ export const SitLineTest = {
     name: "linetest",
     menuName: "Line Detector",
 
-
-    azSlider:false,
-
     fps: 29.97,
     frames: 1000,
     aFrame: 0,

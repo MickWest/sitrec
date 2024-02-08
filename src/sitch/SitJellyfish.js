@@ -8,8 +8,6 @@ export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
 
-    azSlider:false,
-
     simSpeed: 1,
     videoSpeed: 1,
 

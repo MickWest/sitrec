@@ -28,7 +28,6 @@ export const SitKML = {
    // it's a root Sitch, not meant to be used alone, but we can't flag it as "hidden"
     // because that would get inherited - so, we just leave menuName undefined
     // which has the same effect
-    azSlider: false,
     fps: 30,
     isSitKML: true,
 

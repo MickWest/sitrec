@@ -14,7 +14,6 @@ export const Sit29Palms = {
     menuName: "Twentynine Palms",
 
 
-    azSlider: false,
     nightSky: true,
     displayFrustum: true,
     frustumRadius: 10000,

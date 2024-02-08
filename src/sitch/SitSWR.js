@@ -8,7 +8,6 @@ export const SitSWR = {
     menuName: "Skinwalker Ranch",
 
 
-    azSlider:false,
 
     fps: 29.97,
     frames: 7027,

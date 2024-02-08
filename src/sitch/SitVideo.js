@@ -7,9 +7,6 @@ export const SitVideo = {
     name: "video",
     menuName: "Video Viewer",
 
-
-    azSlider:false,
-
     fps: 30,
     frames: 0,
     aFrame: 0,

@@ -3,8 +3,6 @@ export const SitDume = {
     name: "dume",
     menuName: "Pt Dume -> Mt Jacinto",
 
-
-    azSlider:false,
     animated:false,
 
     displayFrustum: true,

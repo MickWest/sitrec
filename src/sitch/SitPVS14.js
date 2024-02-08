@@ -20,7 +20,6 @@ export const SitPVS14 = {
     menuName: "PVS-14 Pilot Video",
 
 
-    azSlider: false,
     nightSky: true,
     useGlobe: true,
     displayFrustum: true,

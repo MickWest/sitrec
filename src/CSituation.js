@@ -43,7 +43,7 @@ const situationDefaults = {
     // Display Units
     bigUnits: "NM",
 
-    azSlider:true,
+    azSlider:false,
     animated:true,
 
     //

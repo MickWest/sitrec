@@ -7,7 +7,6 @@ export const SitArea6 = {
     name: "area6",
     menuName: "Area 6",
 
-    azSlider: false,
     nightSky: true,
     useGlobe: true,
     displayFrustum: true,

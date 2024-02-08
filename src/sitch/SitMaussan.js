@@ -7,7 +7,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     targetSize: 200, // in feet
 
 
-    azSlider: false,
     nightSky: true,
     useGlobe: true,
     useDayNightGlobe: true,

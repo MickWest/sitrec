@@ -41,12 +41,12 @@ export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
 
-
     fps: 29.97,
     frames: 2289,
     aFrame: 0,
     bFrame: 2288,
     startDistance:15,
+    azSlider:true,
 
     mainCamera: {
         startCameraPosition: [-126342.63, 56439.02, 101932.66],

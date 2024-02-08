@@ -6,9 +6,6 @@ export const SitAriel = {
     name: "ariel",
     menuName: "Ariel School",
 
-
-    azSlider:false,
-
     fps: 29.97,
     frames: 7027,
     aFrame: 0,
@@ -17,7 +14,6 @@ export const SitAriel = {
     lookCamera: {
         fov: 10,
     },
-
 
     mainCamera: {
         startCameraPosition: [-350.3905323693817, 1759.7688109547591, 1046.7086472689589],

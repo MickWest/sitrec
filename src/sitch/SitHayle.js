@@ -23,8 +23,6 @@ export const SitHayle = {
     name: "hayle",
     menuName: "Hayle Beach / St. Ives",
 
-    azSlider: false,
-
     files: {
         hayleCSV: "hayle/hayle-track.csv",
     },
