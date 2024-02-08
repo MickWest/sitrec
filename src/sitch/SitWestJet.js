@@ -22,6 +22,4 @@ export const SitWestJet = {
     lookCamera:{ fov: 10, far: 8000000 },
     cameraTrack: {},
     ptz: {az: -79.6, el: 0.6, fov: 25.7, showGUI: true},
-
-
 }

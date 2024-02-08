@@ -324,8 +324,6 @@ export const SitWestJet = {
     startTime: "2023-12-19T03:56:12.560Z",
     frames: 782,
 
-    ptz: {az: -79.6, el: 3.7, fov: 25.7, showGUI: true},
-
     mainCamera: {
         fov: 30, near:1,  far:60000000,
         startCameraPositionLLA: [38.602145, -86.506588, 4159762.165337],
@@ -333,7 +331,7 @@ export const SitWestJet = {
     },
     lookCamera:{ fov: 10, far: 8000000 },
     cameraTrack: {},
-
+    ptz: {az: -79.6, el: 0.6, fov: 25.7, showGUI: true},
 }
 ```
 WestJet is a case of Starlink satellites observed from a plane. This new case was similar to the PVS14 sitch, so we use that as a base with the ...SitPVS14 line.
@@ -346,7 +344,6 @@ the remaining lines show everything that needs to change
 - videoFile - the segment of the video we are interested in - reduced to 720p for speed
 - startTime - the start time of the video. 
 - frames - the number of frames in the video (which is the default 30 fps)
-- ptz - The Pan/Tilt/Zoom orientation of the camera
 - mainCamera - definition of the main camera
   - startCamera... etc - the absolute position of the camera for the mainView (i.e. the world view on the left)
   - fov - the _vertical_ field of view of the mainView
@@ -354,5 +351,7 @@ the remaining lines show everything that needs to change
   - far - far plane distance in meters (defaults to 8000000. i.e. 8000km)
 - lookCamera - definition of the look camera
   - fov, far, etc, same as mainCamera
+- cameraTrack - creates a camera track, defaulting to one from cameraFile using startTime and frames for the interval.
+- ptz - The Pan/Tilt/Zoom orientation of the camera
 
 Note the views are not changed from PVS14, as it's a fairly standard landscape mode. 
