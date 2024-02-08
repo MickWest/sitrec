@@ -3,6 +3,7 @@ import {NodeMan} from "../Globals";
 import {makeArrayNodeFromColumn} from "../nodes/CNodeArray";
 import {abs, assert, floor} from "../utils"
 import {par} from "../par";
+import {commonKMLTracks} from "./CommonSitch";
 
 //export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake = {
@@ -39,7 +40,10 @@ export const SitFolsomLake = {
         startCameraTargetLLA: [38.725176, -121.163979, -90.574624],
     },
     lookCamera:{ fov: 42.15},
+
     cameraTrack: { id: "cameraTrack", file: "cameraFile"},
+    followTrack: {},
+
     focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
 
 

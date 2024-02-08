@@ -1,5 +1,5 @@
 import {SitKML} from "./SitKML";
-import {commonKMLTarget} from "./CommonSitch";
+import {commonKMLCamera, commonKMLTarget, commonKMLTracks} from "./CommonSitch";
 
 export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     name: "aa2292",
@@ -38,7 +38,7 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
 //    tilt:13,
     ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
 
-    ...commonKMLTarget,
+    ...commonKMLTracks,
     targetSizedSphere: { size:100 },
 
 

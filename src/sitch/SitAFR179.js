@@ -1,12 +1,9 @@
 import {SitKML} from "./SitKML";
+import {commonKMLTracks} from "./CommonSitch";
 
 export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
     name: "afr179",
     menuName: "AFR179 Fly-by",
-
-
-    targetSize: 200, // in feet
-    tilt: -7.61,
 
     frames: 157 * 8, // currently needs manual setting
     videoSpeed: 8,
@@ -26,32 +23,15 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
         startCameraTarget: [51817.84, 32302.32, 97810.85],
     },
 
-    lookCamera: {
-        fov: 62,
-        addFOVController: true,
-    },
-
-
     mainView:{left:0.0, top:0, width:0.9,height:1},
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     displayFrustum:true,
 
-// point we look at, this is up near Chigago
-    lookAt: {toLat:  41.878633, toLon: -87.983577, toAlt: 3302.2,},
-
     skyColor: '#AFBDD1',  // grey from the video
 
-    cameraTrack: {},
-    targetTrackKML: {kind: "trackFromDataFile", file: "KMLTarget", dataID: "KMLTargetData",},
-    targetTrack: {kind: "SmoothedPositionTrack", source: "targetTrackKML", method: "catmull", intervals: 20, tension: 0.5 },
-    displayKMLTarget: {kind: "DisplayTrack", track: "KMLTargetData", color: [1,0,0], width: 1,},
-    displaySmoothedTarget: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 4,},
-    displayLOS: {kind: "DisplayTrackToTrack"},
-
+    ...commonKMLTracks,
     targetObject: {file: "TargetObjectFile",},
-    targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
-    cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
-
+    ptz: {az: -36.2, el: 1.98, fov: 62, showGUI: true},
 
 })

@@ -24,6 +24,7 @@ import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
+import {CNodeWind} from "./nodes/CNodeWind";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -393,6 +394,7 @@ export function SituationSetup(runDeferred = false) {
                 new CNodeDisplayTargetModel({
                     track: data.track ?? "targetTrack",
                     TargetObjectFile: data.file,
+                    wind: data.wind ?? undefined,
                   //  ...maybeWind,
                 })
                 break;
@@ -467,6 +469,39 @@ export function SituationSetup(runDeferred = false) {
                 const sphereMask = data.sphereMask ?? LAYER.MASK_HELPERS;
                 const removeDuplicates = data.removeDuplicates ?? false;
                 addKMLTracks(data.tracks, removeDuplicates, sphereMask);
+                break;
+
+            case "targetWind":
+                SSLog();
+                new CNodeWind({
+                    id: "targetWind",
+                    from: data.from,
+                    knots: data.knots,
+                    name: "Target",
+                    arrowColor: "red"
+                }, gui)
+                break;
+
+            case "objectWind":
+                SSLog();
+                new CNodeWind({
+                    id: "objectWind",
+                    from: data.from,
+                    knots: data.knots,
+                    name: "Target",
+                    arrowColor: "cyan"
+                }, gui)
+                break;
+
+            case "localWind":
+                SSLog();
+                new CNodeWind({
+                    id: "localWind",
+                    from: data.from,
+                    knots: data.knots,
+                    name: "Target",
+                    arrowColor: "yellow"
+                }, gui)
                 break;
 
     default:

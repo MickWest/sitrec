@@ -17,7 +17,6 @@ import {GlobalScene} from "../LocalFrame";
 import {gui} from "../Globals";
 import {NodeMan} from "../Globals";
 import {V3} from "../threeExt";
-import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {pointAltitude} from "../SphericalMath";
 
 
@@ -66,180 +65,89 @@ export const SitKML = {
 
     setup: function() {
 
-        Sit.setupWind()
 
         const view = NodeMan.get("mainView");
 
-        // displaying the target model or sphere
-        // model will be rotated by the wind vector
-        if (!Sit.landingLights) {
-
-            let maybeWind = {};
-            if (NodeMan.exists("targetWind")) {
-                maybeWind = {
-                    wind: "targetWind",
-                }
-            }
-
-            if (NodeMan.exists("targetTrackAverage")) {
-                // optional target model, like a plane
-                if (Sit.targetObject) {
-                    new CNodeDisplayTargetModel({
-                        track: "targetTrackAverage",
-                        TargetObjectFile: Sit.targetObject.file,
-                        ...maybeWind,
-                    })
-                } else {
-                // no target model, just a sphere, of adjustable size
-                    new CNodeDisplayTargetSphere({
-                        inputs: {
-                            track: "targetTrackAverage",
-                            cameraTrack: "cameraTrack",
-                            size: new CNodeScale("sizeScaled", scaleF2M,
-                                new CNodeGUIValue({
-                                    value: Sit.targetSize,
-                                    start: 1,
-                                    end: 1000,
-                                    step: 0.1,
-                                    desc: "Target size ft"
-                                }, gui)
-                            )
-                        },
-                        layers: LAYER.MASK_LOOK,
-                    })
-                }
-            }
-
-        } else {
-            // Has landingLights
-            // landing lights are just a sphere scaled by the distance and the view angle
-            // (i.e. you get a brighter light if it's shining at the camera
-            if (NodeMan.exists("targetTrackAverage")) {
-                new CNodeDisplayLandingLights({
-                    inputs: {
-                        track: "targetTrackAverage",
-                        cameraTrack: "cameraTrack",
-                        size: new CNodeScale("sizeScaled", scaleF2M,
-                            new CNodeGUIValue({
-                                value: Sit.targetSize,
-                                start: 1000,
-                                end: 20000,
-                                step: 0.1,
-                                desc: "Landing Light Scale"
-                            }, gui)
-                        )
-                    },
-                    layers: LAYER.MASK_LOOK,
-                })
-            }
-        }
-
-
-        if (NodeMan.exists("lookCamera")) {
-
-            // right now everything has a look camera
-
-            const cameraNode = NodeMan.get("lookCamera")
-
-            if (this.ptz) {
-                cameraNode.addController("TrackPosition",{
-                        sourceTrack: "cameraTrack",
-                    })
-
-            } else {
-
-                if (NodeMan.exists("targetTrackAverage")) {
-
-                    cameraNode.addController("TrackToTrack", {
-                        sourceTrack: "cameraTrack",
-                        targetTrack: "targetTrackAverage",
-                    })
-                } else {
-                    cameraNode.addController("TrackPosition", {
-                        sourceTrack: "cameraTrack",
-                    })
-                }
-            }
-
-            // if there's a focal length field in the camera track, then use it
-            const cameraTrack = NodeMan.get("cameraTrack")
-            const focal_len = cameraTrack.v(0).focal_len;
-            if (focal_len !== undefined) {
-                console.warn("Skipping legacy focal length controller generation")
-                // NodeMan.get("lookCamera").addController("FocalLength", {
-                //     focalLength: "cameraTrack",
-                // })
-            }
-
-            if (Sit.toLat !== undefined) {
-                NodeMan.get("lookCamera").addController("LookAtLLA", {
-                  lat: Sit.toLat,
-                  lon: Sit.toLon,
-                  alt: Sit.toAlt,
-                })
-            }
-
-       }
-
+        // // displaying the target model or sphere
+        // // model will be rotated by the wind vector
+        // if (!Sit.landingLights) {
+        // } else {
+        //     // Has landingLights
+        //     // landing lights are just a sphere scaled by the distance and the view angle
+        //     // (i.e. you get a brighter light if it's shining at the camera
+        //     if (NodeMan.exists("targetTrackAverage")) {
+        //         new CNodeDisplayLandingLights({
+        //             inputs: {
+        //                 track: "targetTrackAverage",
+        //                 cameraTrack: "cameraTrack",
+        //                 size: new CNodeScale("sizeScaled", scaleF2M,
+        //                     new CNodeGUIValue({
+        //                         value: Sit.targetSize,
+        //                         start: 1000,
+        //                         end: 20000,
+        //                         step: 0.1,
+        //                         desc: "Landing Light Scale"
+        //                     }, gui)
+        //                 )
+        //             },
+        //             layers: LAYER.MASK_LOOK,
+        //         })
+        //     }
+        // }
 
 
         var viewNar = NodeMan.get("lookView");
 
-        if (this.ptz) {
 
-        } else {
-
-            // patch in the FLIR shader effect if flagged, for Chilean
-            // Note this has to be handled in the render function if you override it
-            // See Chilean for example
-            viewNar.effects = this.useFLIRShader ? {FLIRShader: {},} : undefined,
+        // patch in the FLIR shader effect if flagged, for Chilean
+        // Note this has to be handled in the render function if you override it
+        // See Chilean for example
+        viewNar.effects = this.useFLIRShader ? {FLIRShader: {},} : undefined,
 
 
-            viewNar.renderFunction = function (frame) {
+        viewNar.renderFunction = function (frame) {
 
-                // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
-                // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
+            // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
+            // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
 
-                // bit of a patch to get in the FOV
-                if (Sit.chileanData !== undefined) {
-                    // frame, mode, Focal Leng
-                    var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
-                    const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
+            // bit of a patch to get in the FOV
+            if (Sit.chileanData !== undefined) {
+                // frame, mode, Focal Leng
+                var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
+                const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
 
-                    // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
-                    var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
+                // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
+                var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
 
-                    if (mode !== "IR") {
-                        vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
-                    }
-                    this.camera.fov = vFOV;
-                    this.camera.updateProjectionMatrix()
+                if (mode !== "IR") {
+                    vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
                 }
-
-                // extract camera angle
-                var _x = V3()
-                var _y = V3()
-                var _z = V3()
-                this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
-
-                var heading = -degrees(Math.atan2(_z.x, _z.z))
-                if (heading < 0) heading += 180;
-                par.az = heading;
-
-                if (this.visible) {
-                    if (this.effectsEnabled)
-                        this.composer.render();
-                    else
-                        this.renderer.render(GlobalScene, this.camera);
-                }
-                //this.renderer.render(GlobalScene, this.camera);
+                this.camera.fov = vFOV;
+                this.camera.updateProjectionMatrix()
             }
 
+            // extract camera angle
+            var _x = V3()
+            var _y = V3()
+            var _z = V3()
+            this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
+
+            var heading = -degrees(Math.atan2(_z.x, _z.z))
+            if (heading < 0) heading += 180;
+            par.az = heading;
+
+            if (this.visible) {
+                if (this.effectsEnabled)
+                    this.composer.render();
+                else
+                    this.renderer.render(GlobalScene, this.camera);
+            }
+            //this.renderer.render(GlobalScene, this.camera);
         }
 
 
         if (this.losTarget !== undefined) {
-
+        // ONly used for LAXUAP
             let control = {};
             if (this.losTarget.distance) {
                 new CNodeScale("controlLOS", scaleF2M,

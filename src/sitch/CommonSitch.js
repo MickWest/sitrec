@@ -8,15 +8,21 @@ export const commonKMLTarget = {
     targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
 }
 
+export const commonKMLCamera = {
+    cameraTrack: {},
+    followTrack: {},
+    cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
+}
+
 export const commonKMLTracks = {
     ...commonKMLTarget,
+    ...commonKMLCamera,
     displayLOS: {kind: "DisplayTrackToTrack"},
     //   targetObject: {file: "TargetObjectFile",},
-    cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
 }
 
 export const commonKMLTrackToTrack = {
     ...commonKMLTracks,
-    lookAtTrack: {},
+    lookAtTrack: {},  // and look at targetTrack
 }
 

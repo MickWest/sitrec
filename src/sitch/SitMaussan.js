@@ -46,10 +46,10 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65},
     mainView:{left:0.0, top:0, width:1,height:1,background:'#000000'},
 
-// point we look at, this is up near Chigago
-    toLat:  41.878633,
-    toLon: -87.983577,
-    toAlt: 3302.2,
+// // point we look at, this is up near Chigago
+//     toLat:  41.878633,
+//     toLon: -87.983577,
+//     toAlt: 3302.2,
 
     skyColor: '#AFBDD1',  // grey from the video
 

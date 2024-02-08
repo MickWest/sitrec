@@ -61,6 +61,7 @@ export const SitPorterville = {
     displayTargetTrack: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 2,},
     // targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
     displayLOS: {kind: "DisplayTrackToTrack"},
+    followTrack:{},
     lookAtTrack: {},
     targetSizedSphere: { size:1, color: "black"},
 

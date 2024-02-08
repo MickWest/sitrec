@@ -21,6 +21,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         v.layers ??= LAYER.MASK_HELPERS;
         super(v);
 
+
+
+
         // newer method - allow input nodes to be declared outside the inputs object
         // and automatically convert constant inputs to CConstantNodes
         this.input("track") // track contains position, and optionally color

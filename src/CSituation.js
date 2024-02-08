@@ -126,7 +126,6 @@ export class CSituation {
     setup() {
         // more data-driven stuff that's indepent of type of situation
 
-
         if (this.marks) this.marks.forEach(mark => {
             var enu = LLAToEUS(mark.LL.lat, mark.LL.lon)
             GlobalScene.add(boxMark(enu, mark.width, 10000, mark.width, mark.color))
@@ -178,45 +177,6 @@ export class CSituation {
         } else {
             makePositionLLA("cameraTrack", Sit.fromLat, Sit.fromLon, Sit.fromAltFeet);
         }
-    }
-
-    setupWind()
-    {
-
-        if (this.targetWind !== undefined) {
-            new CNodeWind({
-                id: "targetWind",
-                from: this.targetWind.from,
-                knots: this.targetWind.knots,
-                name: "Target",
-                arrowColor: "red"
-
-            }, gui)
-        }
-
-        if (this.objectWind !== undefined) {
-            new CNodeWind({
-                id: "objectWind",
-                from: this.objectWind.from,
-                knots: this.objectWind.knots,
-                name: "Object",
-                arrowColor: "cyan"
-
-            }, gui)
-        }
-
-
-        if (this.localWind !== undefined) {
-            new CNodeWind({
-                id: "localWind",
-                from: this.localWind.from,
-                knots: this.localWind.knots,
-                name: "Target",
-                arrowColor: "cyan"
-
-            }, gui)
-        }
-
     }
 
 

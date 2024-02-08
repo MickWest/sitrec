@@ -213,9 +213,17 @@ class CNode {
             } else if (frameFloat > this.frames - 1) {
                 const value0 = this.getValueFrame(this.frames - 2)
                 const value1 = this.getValueFrame(this.frames - 1)
-                if (value0.position === undefined)
-                    value = value1 + (frameFloat-(this.frames-1)) * (value1-value0)
-                else {
+                if (value0.position === undefined) {
+                    // check it's a number
+                    if (typeof value0 === 'number' && typeof value1 === 'number') {
+                        value = value1 + (frameFloat - (this.frames - 1)) * (value1 - value0)
+                    } else {
+                        // interpolating raw 3D vectors
+                        assert (value0.x !== undefined, "Extrapolating non-vector in "+this.id+ " frame " + frameFloat);
+                        value = value1.clone().sub(value0).multiplyScalar(frameFloat-(this.frames-1)).add(value1)
+                    }
+
+                } else {
                     //value = value0 // to copy the color and other per-frame data
                     value = {}
                     value.position = value1.position.clone().sub(value0.position).multiplyScalar(frameFloat-(this.frames-1)).add(value1.position)

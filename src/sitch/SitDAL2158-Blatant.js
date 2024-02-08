@@ -22,7 +22,6 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
         startCameraTarget: [-585.88, 82459.73, -134213.45],
     },
     lookCamera:{ fov: 30},
-    cameraTrack: {},
 
     mainView:{ left:0.0, top:0, width:.50,height:1},
     lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},

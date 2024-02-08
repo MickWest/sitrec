@@ -1,5 +1,5 @@
 import {SitKML} from "./SitKML";
-import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
+import {commonKMLCamera, commonKMLTarget, commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitLAXUAP = {
     ...SitKML,
@@ -40,13 +40,16 @@ export const SitLAXUAP = {
 
     terrain: {lat:  33.948, lon:-118.43, zoom:11, nTiles:8},
 
+
     mainCamera: {
         startCameraPositionLLA: [35.017412, -118.249314, 36660.825660],
         startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
     },
     lookCamera:{ fov: 1.61},
     cameraTrack: {LLA: [33.953748, -118.412243, 36]},
-
+    ...commonKMLTarget,
+    followTrack:{},
+    lookAtTrack:{},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
@@ -62,13 +65,13 @@ export const SitLAXUAP = {
 
     skyColor: '#4264ab',
 
+
+
     targetWind:{from:295, knots: 23},
     //targetWind:{from:300, knots: 13},
     objectWind:{from:60, knots: 7},
 
-    ...commonKMLTrackToTrack,
-
-    targetObject: {file: "TargetObjectFile"},
+    targetObject: {file: "TargetObjectFile", wind: "targetWind"},
     displayFrustum: true,
 
 
