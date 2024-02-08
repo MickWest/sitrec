@@ -1,7 +1,6 @@
 import {NodeMan, Sit} from "../Globals";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
 import {initKeyboard} from "../KeyBoardHandler";
-import {addDefaultLights} from "../lighting";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 
 export const SitJellyfish    = {
@@ -179,10 +178,6 @@ export const SitJellyfish    = {
 // maybe have "call" setup to make these data drive - ask copilot chat
         AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
         AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
-
-
-        addDefaultLights(Sit.brightness)
-
     }
 
 }

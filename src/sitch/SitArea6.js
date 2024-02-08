@@ -1,8 +1,3 @@
-import {Sit} from "../Globals";
-
-import {initKeyboard} from "../KeyBoardHandler";
-import {addDefaultLights} from "../lighting";
-
 export const SitArea6 = {
     name: "area6",
     menuName: "Area 6",
@@ -47,11 +42,6 @@ export const SitArea6 = {
     videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
     labelView: {id:"labelVideo", overlay: "lookView"},
 
-    setup2: function () {
-
-         addDefaultLights(Sit.brightness)
-
-    },
 
 
 }

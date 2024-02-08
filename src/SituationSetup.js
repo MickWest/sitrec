@@ -22,6 +22,7 @@ import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
+import {addDefaultLights} from "./lighting";
 
 export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
@@ -444,6 +445,10 @@ export function SituationSetup(runDeferred = false) {
                 })
                 break;
 
+            case "defaultLights":
+                SSLog();
+                addDefaultLights(data.brightness ?? 100);
+                break;
 
     default:
                 // check to see if the "kind" is a node type

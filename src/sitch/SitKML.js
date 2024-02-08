@@ -18,7 +18,6 @@ import {gui} from "../Globals";
 import {NodeMan} from "../Globals";
 import {initKeyboard} from "../KeyBoardHandler";
 import {V3} from "../threeExt";
-import {addDefaultLights} from "../lighting";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {pointAltitude} from "../SphericalMath";
 
@@ -68,7 +67,6 @@ export const SitKML = {
 
     setup: function() {
 
-        addDefaultLights(Sit.brightness)
         initKeyboard();
 
         Sit.setupWind()

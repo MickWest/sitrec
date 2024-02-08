@@ -17,7 +17,6 @@ import {AddSpeedGraph} from "../JetGraphs";
 import {gui} from "../Globals";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
-import {addDefaultLights} from "../lighting";
 
 export const SitHayle = {
     name: "hayle",
@@ -155,8 +154,6 @@ export const SitHayle = {
             color: new CNodeConstant({value: new Color(1, 0, 0)}),
             width: 2,
         })
-
-        addDefaultLights(Sit.brightness)
 
     }
 }

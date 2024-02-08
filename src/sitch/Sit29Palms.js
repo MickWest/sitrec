@@ -2,7 +2,6 @@ import {gui, Sit} from "../Globals";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
 import {initKeyboard} from "../KeyBoardHandler";
-import {addDefaultLights} from "../lighting";
 import {CNodeImage} from "../nodes/CNodeImageAnalysis";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {addKMLTracks} from "../KMLNodeUtils";
@@ -75,7 +74,6 @@ export const Sit29Palms = {
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
-        addDefaultLights(Sit.brightness)
     }
 
 }

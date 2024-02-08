@@ -2,7 +2,6 @@ import { Vector3} from "../../three.js/build/three.module";
 import { gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
 
 import {initKeyboard} from "../KeyBoardHandler";
-import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -122,7 +121,6 @@ export const SitNightSky = {
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: viewLook});
         AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
-        addDefaultLights(Sit.brightness)
 
         const labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
         labelMainViewPVS.addText("videoLabelp1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")

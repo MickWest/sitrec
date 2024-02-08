@@ -66,19 +66,6 @@ export const SitSWR = {
         view.addOrbitControls(this.renderer);
 
 
-        // Lighting
-        var light = new DirectionalLight(0xffffff, 0.8);
-        light.position.set(100,300,100);
-        GlobalScene.add(light);
-
-
-        const hemiLight = new HemisphereLight(
-            'white', // bright sky color
-            'darkslategrey', // dim ground color
-            0.3, // intensity
-        );
-        GlobalScene.add(hemiLight);
-
 
     }
 

@@ -541,23 +541,6 @@ export var SitGoFast = {
         AddSpeedGraph("LOSTraverseSelect","Target Speed",0,250,0.62,0,-1,0.3)
         //       AddAltitudeGraph(10000, 45000)
 
-        // Lighting
-        var light = new DirectionalLight(0xffffff, 0.8);
-        light.position.set(100,300,100);
-        light.layers.enable(LAYER.LOOK)
-        light.layers.enable(LAYER.MAIN)
-        GlobalScene.add(light);
-
-        const hemiLight = new HemisphereLight(
-            'white', // bright sky color
-            'darkslategrey', // dim ground color
-            0.3, // intensity
-        );
-        hemiLight.layers.enable(LAYER.LOOK)
-        hemiLight.layers.enable(LAYER.MAIN)
-        GlobalScene.add(hemiLight);
-
-
         const gridSquaresGround = 200
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);

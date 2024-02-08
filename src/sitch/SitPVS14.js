@@ -4,7 +4,6 @@ import {
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 
 import {initKeyboard} from "../KeyBoardHandler";
-import {addDefaultLights} from "../lighting";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -123,7 +122,6 @@ export const SitPVS14 = {
             mainCam.fov = value
             mainCam.updateProjectionMatrix()
         }).listen().name("Main FOV")
-        addDefaultLights(Sit.brightness)
 
         var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
         labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")

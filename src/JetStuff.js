@@ -929,42 +929,6 @@ export function initViews() {
 
     const loader = new GLTFLoader()
 
-     // Lighting
-     var light = new DirectionalLight(0xffffff, 0.8);
-     light.position.set(100, 300, 100);
-     LocalFrame.add(light);
-
-    const hemiLight = new HemisphereLight(
-        'white', // bright sky color
-        'darkslategrey', // dim ground color
-        0.5, // intensity
-    );
-    GlobalScene.add(hemiLight);
-
-
-    // // From this glTF viewer
-    // // https://gltf-viewer.donmccurdy.com/
-    //
-    //  const hemiLight = new HemisphereLight();
-    //  hemiLight.name = 'hemi_light';
-    //
-    // GlobalScene.add(hemiLight);
-
-    /*
-const light1  = new AmbientLight(state.ambientColor, state.ambientIntensity);
-light1.name = 'ambient_light';
-this.defaultCamera.add( light1 );
-
-const light2  = new DirectionalLight(state.directColor, state.directIntensity);
-light2.position.set(0.5, 0, 0.866); // ~60º
-light2.name = 'main_light';
-this.defaultCamera.add( light2 );
-*/
-
-    //   GlobalScene.add(new AmbientLight(0xFFFFFF,0.2));
-    //     const axesHelper = new AxesHelper( 50 );
-    //     GlobalScene.add( axesHelper );
-
     var line_material = new LineBasicMaterial({color: 0xffffff});
     var line_materialRED = new LineBasicMaterial({color: 0xff8080, linewidth: 5});
 

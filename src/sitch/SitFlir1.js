@@ -387,21 +387,6 @@ export const SitFlir1 = {
         AddAltitudeGraph(20000,35000)
         AddSpeedGraph("LOSTraverseSelect","Target Speed",0,500,0.60,0,-1,0.25)
 
-        // Lighting
-        var light = new DirectionalLight(0xffffff, 0.8);
-        light.position.set(100,300,100);
-        light.layers.enable(LAYER.LOOK)
-        light.layers.enable(LAYER.MAIN)
-        GlobalScene.add(light);
-
-        const hemiLight = new HemisphereLight(
-            'white', // bright sky color
-            'darkslategrey', // dim ground color
-            0.3, // intensity
-        );
-        hemiLight.layers.enable(LAYER.LOOK)
-        hemiLight.layers.enable(LAYER.MAIN)
-        GlobalScene.add(hemiLight);
 
         initJetVariables();
 

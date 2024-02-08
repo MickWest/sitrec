@@ -7,16 +7,20 @@ import {GlobalScene} from "./LocalFrame";
 
 export function addDefaultLights(brightness = 100) {
 
+
     if (Sit.useGlobe) {
+
+        // Ambient light for the globe is the light for the dark side of the globe
         Sit.ambientLight = new AmbientLight(0xFFFFFF, 0.1);
         GlobalScene.add(Sit.ambientLight);
 
+        // then sunlight is direct light
         Sit.sunLight = new DirectionalLight(0xffffff, 3);
         Sit.sunLight.position.set(5,0,0);  // sun is along the X axis
         GlobalScene.add(Sit.sunLight);
 
-        const helper = new DirectionalLightHelper( Sit.sunLight, 1 );
-        GlobalScene.add( helper );
+        // const helper = new DirectionalLightHelper( Sit.sunLight, 1 );
+        // GlobalScene.add( helper );
     } else {
 
         var light = new DirectionalLight(0xffffff, 0.8 * brightness / 100);  /// was 0.8
@@ -34,7 +38,6 @@ export function addDefaultLights(brightness = 100) {
         hemiLight.castShadow = false
         hemiLight.layers.enable(LAYER.LOOK)
         hemiLight.layers.enable(LAYER.MAIN);
-
 
         GlobalScene.add(hemiLight);
     }
