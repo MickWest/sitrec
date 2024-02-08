@@ -21,7 +21,6 @@ export const SitPVS14 = {
 
 
     azSlider: false,
-    jetStuff: false,
     animated: true,
     nightSky: true,
     useGlobe: true,

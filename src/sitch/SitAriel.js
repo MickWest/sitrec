@@ -8,7 +8,6 @@ export const SitAriel = {
 
 
     azSlider:false,
-    jetStuff:false,
     animated:true,
 
     fps: 29.97,

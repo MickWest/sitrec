@@ -41,7 +41,6 @@ export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
 
-    jetStuff: false,
 
     fps: 29.97,
     frames: 2289,

@@ -9,7 +9,6 @@ export const SitVideo = {
 
 
     azSlider:false,
-    jetStuff:false,
 
     fps: 30,
     frames: 0,

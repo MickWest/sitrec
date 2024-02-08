@@ -44,7 +44,6 @@ export const SitAguadilla = {
     menuName: "Aguadilla",
 
     azSlider:false,
-    jetStuff:false,
     animated:true,
 
     fps: 29.97,

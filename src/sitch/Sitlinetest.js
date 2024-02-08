@@ -8,7 +8,6 @@ export const SitLineTest = {
 
 
     azSlider:false,
-    jetStuff:false,
 
     fps: 29.97,
     frames: 1000,

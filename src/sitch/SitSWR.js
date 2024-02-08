@@ -9,7 +9,6 @@ export const SitSWR = {
 
 
     azSlider:false,
-    jetStuff:false,
     animated:true,
 
     fps: 29.97,

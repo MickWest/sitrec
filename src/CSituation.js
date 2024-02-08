@@ -44,7 +44,6 @@ const situationDefaults = {
     bigUnits: "NM",
 
     azSlider:true,
-    jetStuff:true,
     animated:true,
 
     //

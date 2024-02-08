@@ -29,7 +29,6 @@ export const SitKML = {
     // because that would get inherited - so, we just leave menuName undefined
     // which has the same effect
     azSlider: false,
-    jetStuff: false,
     animated: true,
     fps: 30,
     isSitKML: true,

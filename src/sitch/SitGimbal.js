@@ -46,6 +46,8 @@ const GimbalDefaults = {
     aFrame: 0,
     bFrame: 1030,
 
+    jetStuff: true, // gimbal is the only place this is used
+
     //OVERRIDES:
     startDistance: 32,
     targetSpeed: 340,

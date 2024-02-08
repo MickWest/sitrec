@@ -5,7 +5,6 @@ export const SitDume = {
 
 
     azSlider:false,
-    jetStuff:false,
     animated:false,
 
     displayFrustum: true,

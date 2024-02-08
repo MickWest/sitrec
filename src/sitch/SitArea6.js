@@ -8,7 +8,6 @@ export const SitArea6 = {
     menuName: "Area 6",
 
     azSlider: false,
-    jetStuff: false,
     animated: true,
     nightSky: true,
     useGlobe: true,
@@ -52,7 +51,6 @@ export const SitArea6 = {
 
     setup2: function () {
 
-         initKeyboard()
          addDefaultLights(Sit.brightness)
 
     },

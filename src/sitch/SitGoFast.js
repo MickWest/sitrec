@@ -54,7 +54,6 @@ export var SitGoFast = {
     name: "gofast",
     menuName: "GoFast",
 
-    jetStuff: false,
     animate:true,
 
     fps: 29.97,

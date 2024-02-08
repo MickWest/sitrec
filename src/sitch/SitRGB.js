@@ -7,7 +7,6 @@ export const SitRGB = {
     menuName: "RGB Profile",
 
     azSlider:false,
-    jetStuff:false,
 
 
     animated:false,
