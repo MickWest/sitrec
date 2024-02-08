@@ -16,7 +16,6 @@ import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
 import {GlobalScene} from "../LocalFrame";
 import {gui} from "../Globals";
 import {NodeMan} from "../Globals";
-import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {V3} from "../threeExt";
 import {addDefaultLights} from "../lighting";
@@ -72,143 +71,12 @@ export const SitKML = {
 
     setup: function() {
 
-        SetupGUIFrames()
+        addDefaultLights(Sit.brightness)
+        initKeyboard();
 
         Sit.setupWind()
 
         const view = NodeMan.get("mainView");
-        addDefaultLights(Sit.brightness)
-
-        // Sit.makeCameraTrack();
-
-        // if (FileManager.exists("KMLTarget")) {
-        //     makeTrackFromDataFile("KMLTarget", "KMLTargetData", "targetTrack")
-        // }
-
-        // The moving average smoothed target KML track
-        // new CNodeSmoothedPositionTrack({ id:"targetTrackAverage",
-        //     source: "targetTrack",
-        //     smooth: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Target Smooth Window"},gui),
-        //     iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations"},gui),
-        // })
-
-
-// these need to be moved to the individual sitches
-        // if (NodeMan.exists("targetTrack")) {
-        //     new CNodeSmoothedPositionTrack({
-        //         id: "targetTrackAverage",
-        //         source: "targetTrack",
-        //         // new spline based smoothing in 3D
-        //         method: "catmull",
-        //         intervals: new CNodeGUIValue({value: 20, start: 1, end: 200, step: 1, desc: "Catmull Intervals"}, gui),
-        //         tension: new CNodeGUIValue({value: 0.5, start: 0, end: 5, step: 0.001, desc: "Catmull Tension"}, gui),
-        //     })
-        // }
-
-
-
-        // // KMLOther is currently only used in ITY621
-        // if (FileManager.exists("KMLOther")) {
-        //     NodeMan.createNodesJSON(`
-        //     [
-        //         {"new":"KMLDataTrack",  "id":"KMLOtherData",   "KMLFile":"KMLOther"},
-        //         {"new":"TrackFromTimed",      "id":"KMLOtherTarget",       "timedData":"KMLOtherData"},
-        //     ]`);
-        //
-        //     new CNodeDisplayTrack({
-        //         id: "KMLDisplayOtherData",
-        //         track: "KMLOtherData",
-        //         color: new CNodeConstant({value: new Color(1, 0, 0)}),
-        //         dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
-        //         width: 1,
-        //         //       toGround: 1, // spacing for lines to ground
-        //         ignoreAB: true,
-        //     })
-        //
-        //     // Spheres displayed in the main view (helpers)
-        //     new CNodeDisplayTargetSphere({
-        //         track: "KMLOtherTarget",
-        //         size: 2000, color: "blue", layers: LAYER.MASK_HELPERS,
-        //     })
-        //
-        //
-        //     // plae-sized sphere displaye din look view
-        //     new CNodeDisplayTargetSphere({
-        //         inputs: {
-        //             track: "KMLOtherTarget",
-        //             cameraTrack: "cameraTrack",
-        //             size: new CNodeScale("sizeScaledOther", scaleF2M,
-        //                 new CNodeGUIValue({
-        //                     value: Sit.targetSize,
-        //                     start: 1,
-        //                     end: 1000,
-        //                     step: 0.1,
-        //                     desc: "Other size ft"
-        //                 }, gui)
-        //             )
-        //         },
-        //         layers: LAYER.MASK_LOOK,
-        //     })
-        // }
-
-
-        // // The camera track data would be the extended track data from the KML
-        // // The actual track used is a smoothed subset of this
-        // if (NodeMan.exists("cameraTrackData")) {
-        //     new CNodeDisplayTrack({
-        //         id: "KMLDisplayMainData",
-        //         track: "cameraTrackData",
-        //         color: new CNodeConstant({value: new Color(0.7, 0.3, 0)}),
-        //         dropColor: new CNodeConstant({value: new Color(0.6, 0.6, 0)}),
-        //         width: 1,
-        //         //    toGround:1, // spacing for lines to ground
-        //         ignoreAB: true,
-        //         layers: LAYER.MASK_HELPERS,
-        //     })
-        // }
-
-        // // The smoothed target track
-        // if (NodeMan.exists("targetTrackAverage")) {
-        //     // Segment of target track that's covered by the animation
-        //     // here a thicker red track segment
-        //     new CNodeDisplayTrack({
-        //         id: "KMLDisplayTarget",
-        //         track: "targetTrackAverage",
-        //         color: new CNodeConstant({value: new Color(1, 0, 0)}),
-        //         width: 4,
-        //         //    toGround:5*30, // spacing for lines to ground
-        //         layers: LAYER.MASK_HELPERS,
-        //     })
-        // }
-
-        // // Target data from the KML - i.e. the entire track, sparse points, as downloaded for an ADS-B provider
-        // if (NodeMan.exists("KMLTargetData")) {
-        //     new CNodeDisplayTrack({
-        //         id: "KMLDisplayTargetData",
-        //         track: "KMLTargetData",
-        //         color: new CNodeConstant({value: new Color(1, 0, 0)}),
-        //         dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
-        //         width: 1,
-        //         //      toGround:1, // spacing for lines to ground
-        //         ignoreAB: true,
-        //         layers: LAYER.MASK_HELPERS,
-        //     })
-        // }
-
-
-        // // display white line from camera track to target track
-        // if (NodeMan.exists("targetTrackAverage")) {
-        //     // DISPLAY The line from the camera track to the target track
-        //     new CNodeDisplayTrackToTrack({
-        //         id: "DisplayLOS",
-        //         cameraTrack: "cameraTrack",
-        //         targetTrack: "targetTrackAverage",
-        //         color: new CNodeConstant({value: new Color(1, 1, 1)}),
-        //         width: 1,
-        //         layers: LAYER.MASK_HELPERS,
-        //     })
-        // }
-
 
         // displaying the target model or sphere
         // model will be rotated by the wind vector
@@ -458,7 +326,6 @@ export const SitKML = {
 
         }
 
-        initKeyboard();
     },
 
     update: function(f) {

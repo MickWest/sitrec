@@ -1,7 +1,6 @@
 import {gui, Sit} from "../Globals";
 import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 
-import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {CNodeImage} from "../nodes/CNodeImageAnalysis";
@@ -64,7 +63,6 @@ export const Sit29Palms = {
 
     setup2: function () {
 
-        SetupGUIFrames()
         initKeyboard()
 
         addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_WORLD)

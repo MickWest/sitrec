@@ -1,7 +1,6 @@
 import {CNodeView3D} from "../nodes/CNodeView3D";
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {GlobalScene} from "../LocalFrame";
-import {SetupGUIFrames} from "../JetGUI";
 import {Color} from "three";
 
 export const SitSWR = {
@@ -49,8 +48,6 @@ export const SitSWR = {
 
 
     setup: function() {
-
-        SetupGUIFrames()
 
         const farClip = 5000000;
 

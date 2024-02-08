@@ -14,8 +14,7 @@ import {CNodeLOSMotionTrack} from "../nodes/CNodeLOSMotionTrack";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddSpeedGraph} from "../JetGraphs";
-import {gui, guiTweaks, } from "../Globals";
-import {SetupGUIFrames} from "../JetGUI";
+import {gui} from "../Globals";
 import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {addDefaultLights} from "../lighting";
@@ -66,7 +65,6 @@ export const SitHayle = {
 
     setup2: function () {
 
-        SetupGUIFrames()
         initKeyboard()
 
         new CNodeLOSMotionTrack({

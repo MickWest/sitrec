@@ -21,6 +21,7 @@ import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
+import {SetupGUIFrames} from "./JetGUI";
 
 export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
@@ -66,6 +67,9 @@ export function SituationSetup(runDeferred = false) {
 
         switch (key) {
 
+            case "frames":
+                SetupGUIFrames();
+                break;
 
             case "flattening":
                 SSLog();

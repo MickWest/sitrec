@@ -419,8 +419,6 @@ export const SitFlir1 = {
             par.renderOne = true;
         }).listen().name('Jet Pitch')
 
-        guiJetTweaks.hide();
-
         ///////////////////////
     }
 }

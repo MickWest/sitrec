@@ -3,7 +3,6 @@ import {
 } from "../../three.js/build/three.module";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 
-import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {par} from "../par";
@@ -90,7 +89,6 @@ export const SitPVS14 = {
 
     setup2: function () {
 
-        SetupGUIFrames()
         initKeyboard()
 
 

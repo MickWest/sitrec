@@ -38,8 +38,6 @@ export function updateGUIFrames() {
 
 export function SetupJetGUI() {
 
-    SetupGUIFrames()
-
     guiTweaks.add(Sit, 'aFrame', 0, Sit.frames - 1, 1).listen().onChange(function () {
         if (Sit.bFrame < Sit.aFrame) Sit.bFrame = paSitr.aFrame
         par.frame = Sit.aFrame;

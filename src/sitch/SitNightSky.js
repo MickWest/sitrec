@@ -1,7 +1,6 @@
 import { Vector3} from "../../three.js/build/three.module";
 import { gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
 
-import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard} from "../KeyBoardHandler";
 import {addDefaultLights} from "../lighting";
 import {par} from "../par";
@@ -60,27 +59,14 @@ export const SitNightSky = {
         fov: 10,
     },
 
-
-//    terrain: {lat: 36.208582, lon: -115.984598, zoom: 12, nTiles: 8},
-  //terrain: {lat: 51.48, lon: -3.16, zoom: 12, nTiles: 8},
-
     lat: 51.48,
     lon: -3.16,
-
-    // fromLat: 51.48,
-    // fromLon: -3.16,
-    //
-    // fromAltFeet: 822,
-    // fromAltFeetMin: 0,
-    // fromAltFeetMax: 55000,
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
     ptz: {az: 6.2, el: 9.8, fov: 32, showGUI: true},
 
     lookPosition: { fromLat: 51.48, fromLon: -3.16, fromAltFeet: 822, fromAltFeetMin: 0, fromAltFeetMax: 55000,},
-
-
 
     targetSpeedMax: 100,
 
@@ -98,18 +84,14 @@ export const SitNightSky = {
     targetSize: 500,
 
     videoFile: "../sitrec-videos/private/Area6-1x-speed-08-05-2023 0644UTC.mp4",
-//    syncVideoZoom: true,
 
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#132d44'},
     lookView: {left: 0.5, top: 0, width: 0.5, height: 1,
         ptzControls:true, // flag so dragging the view around will alter the ptz controls
     },
-  //  videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
-
 
     setup2: function () {
 
-        SetupGUIFrames()
         initKeyboard()
 
         const cameraSwitch = new CNodeSwitch({

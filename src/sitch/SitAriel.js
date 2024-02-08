@@ -1,7 +1,6 @@
 
 import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {GlobalScene} from "../LocalFrame";
-import {SetupGUIFrames} from "../JetGUI";
 
 export const SitAriel = {
     name: "ariel",
@@ -41,8 +40,6 @@ export const SitAriel = {
 
 
     setup: function() {
-
-        SetupGUIFrames()
 
         // Lighting
         var light = new DirectionalLight(0xffffff, 0.8);

@@ -29,7 +29,6 @@ import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddSpeedGraph} from "../JetGraphs";
 import {guiTweaks} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
-import {SetupGUIFrames} from "../JetGUI";
 import {initKeyboard, showHider, toggler} from "../KeyBoardHandler";
 import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
 import {DebugSphere, MV3, V3} from "../threeExt";
@@ -112,10 +111,6 @@ export const SitAguadilla = {
     setup: function() {
 
         assert(GlobalScene !== undefined,"Missing GlobalScene")
-
-        // gui controls for frame number/time
-        SetupGUIFrames()
-
 
         // Flag for camera to follow the jet
         gui.add(par, 'lockCameraToJet').listen().name("Lock Camera to Plane");

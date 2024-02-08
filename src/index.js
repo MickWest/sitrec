@@ -204,16 +204,21 @@ _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
     window.location.assign(url) //
 })
 
-var _guiShowHide = _gui.addFolder('Show/Hide').close();
-var _guiTweaks = _gui.addFolder('Tweaks').close();
-var _guiJetTweaks = _gui.addFolder('Jet Tweaks').close();
-setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,_guiJetTweaks)
 
-guiTweaks.add(par,"effects")
+
 
 const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
 assert(startSitch !== null, "Can't find startup Sitch: "+lower)
 setSit(new CSituation(startSitch))
+
+var _guiShowHide = _gui.addFolder('Show/Hide').close();
+var _guiTweaks = _gui.addFolder('Tweaks').close();
+var _guiJetTweaks;
+if (Sit.jetStuff) {
+    _guiJetTweaks = _gui.addFolder('Jet Tweaks').close();
+}
+setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,_guiJetTweaks)
+guiTweaks.add(par,"effects")
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // At this point Sit is set up.

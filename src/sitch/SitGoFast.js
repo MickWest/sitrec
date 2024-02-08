@@ -42,7 +42,6 @@ import {GlobalScene} from "../LocalFrame";
 import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
 import {GridHelperWorld, MV3, V3} from "../threeExt";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
-import {SetupGUIFrames} from "../JetGUI";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
@@ -110,7 +109,6 @@ export var SitGoFast = {
 
     setup: function () {
 
-        SetupGUIFrames()
         SetupCommon()
 
         // NOTE: ADDED SMOOTHING GURERNTLY, MAYBE TOO MUCH?
@@ -564,10 +562,7 @@ export var SitGoFast = {
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);
 
-
-        guiJetTweaks.hide();
         guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
-
 
         initJetVariables();
         // initViews relies on some other views setup in the init() fucntion
