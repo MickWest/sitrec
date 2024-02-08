@@ -28,11 +28,13 @@ export class CNode3DGroup extends CNode3D {
         if (v.color !== undefined && !(v.color instanceof CNodeConstant)) {
             var colorObject = v.color;
             if (! (colorObject instanceof Color)) {
-                if (typeof colorObject === "string") {
+                if (typeof colorObject === "string" || typeof colorObject === "number" ) {
+                    // hex string or number
                     colorObject = new Color(colorObject)
                 } else if (Array.isArray(colorObject)) {
                     colorObject = new Color(colorObject[0], colorObject[1], colorObject[2])
                 } else {
+                    assert(0, "CNode3DGroup color input not understood");
                     console.log("CNode3DGroup color input not understood")
                 }
             }

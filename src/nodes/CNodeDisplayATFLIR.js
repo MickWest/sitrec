@@ -144,7 +144,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
                 container: LocalFrame,
                 radius: vizRadius,
                 fov: ViewMan.list.podsEyeView.data.camera.fov / 2,
-                color: matLineCyan,
+                color: "cyan",
             })
             showHider(this.cameraFrustum.group, "F[R]ustum of camera", true, 'r')
         }
