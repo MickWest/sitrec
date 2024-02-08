@@ -54,25 +54,21 @@ export const Sit29Palms = {
     followTrack: {}, // will default to lookCamera and cameraTrack
     ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
-
     targetSize: 500,
 
-    setup2: function () {
+   imageThreePlanes: { kind: "Image",
+        filename: 'threePlanes',
+       // smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
+        draggable: true, resizable: true,
+        left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
+    },
 
+    labelView: {},
+
+    setup2: function () {
         initKeyboard()
 
         addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_WORLD)
-
-        const ia = new CNodeImage({
-            id: "ImageEditorView",
-            filename: 'threePlanes',
-            smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
-            draggable: true, resizable: true,
-            left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
-        })
-
-        var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
-        AddTimeDisplayToUI(labelVideo, 50,96, 2.5, "#f0f000")
 
     }
 
