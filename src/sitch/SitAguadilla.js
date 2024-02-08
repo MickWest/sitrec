@@ -747,7 +747,7 @@ export const SitAguadilla = {
             LOS:"JetLOS",
             traverse:"LOSTraverseSelectSmoothed",
             container:GlobalScene,
-            color: 0x0000ff,
+            color: "#0000ff",
             width: 1,
             spacing: 60,
 
