@@ -10,7 +10,7 @@ import {
 import {GlobalScene} from "./LocalFrame";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {radians} from "./utils";
-import {Sit} from "./Globals";
+import {Globals, Sit} from "./Globals";
 import {ShaderMaterial} from "three";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
 import {renderOne} from "./par";
