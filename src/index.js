@@ -31,7 +31,7 @@ import {SetupFrameSlider, updateFrameSlider} from "./FrameSlider";
 import {registerNodes} from "./RegisterNodes";
 import {registerSitches} from "./RegisterSitches";
 import {SetupMouseHandler} from "./mouseMoveView";
-import {isKeyHeld, showHider} from "./KeyBoardHandler";
+import {initKeyboard, isKeyHeld, showHider} from "./KeyBoardHandler";
 import {
     CommonJetStuff,
     Frame2Az,
@@ -530,6 +530,8 @@ console.log("FINISHED Load Assets")
 console.log("Setup()")
 
 SituationSetup(false);
+
+initKeyboard();
 
 if (Sit.jetStuff) {
     initJetVariables();

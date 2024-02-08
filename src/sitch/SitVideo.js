@@ -1,5 +1,4 @@
 import {GlobalURLParams, gui, Sit} from "../Globals";
-import {initKeyboard} from "../KeyBoardHandler";
 import {setURLParameters} from "../utils";
 import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 
@@ -87,7 +86,6 @@ export const SitVideo = {
 
         }).name("Preset Video")
 
-        initKeyboard();
     }
 
 }

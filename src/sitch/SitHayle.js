@@ -15,7 +15,6 @@ import {CNodeWind} from "../nodes/CNodeWind";
 import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddSpeedGraph} from "../JetGraphs";
 import {gui} from "../Globals";
-import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 
 export const SitHayle = {
@@ -59,8 +58,6 @@ export const SitHayle = {
 
 
     setup2: function () {
-
-        initKeyboard()
 
         new CNodeLOSMotionTrack({
             id: "motionTrackLOS",

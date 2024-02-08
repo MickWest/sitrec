@@ -1,7 +1,5 @@
 import { Vector3} from "../../three.js/build/three.module";
 import { gui, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
-
-import {initKeyboard} from "../KeyBoardHandler";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -88,7 +86,6 @@ export const SitNightSky = {
 
     setup2: function () {
 
-        initKeyboard()
 
         const cameraSwitch = new CNodeSwitch({
             id: "cameraSwitch",

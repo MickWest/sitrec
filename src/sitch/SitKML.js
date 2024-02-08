@@ -16,7 +16,6 @@ import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
 import {GlobalScene} from "../LocalFrame";
 import {gui} from "../Globals";
 import {NodeMan} from "../Globals";
-import {initKeyboard} from "../KeyBoardHandler";
 import {V3} from "../threeExt";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {pointAltitude} from "../SphericalMath";
@@ -66,8 +65,6 @@ export const SitKML = {
     labelView: {id:"labelVideo", overlay: "lookView"},
 
     setup: function() {
-
-        initKeyboard();
 
         Sit.setupWind()
 
@@ -136,20 +133,6 @@ export const SitKML = {
                 })
             }
         }
-
-        // // Much larger HELPER spheres in the main view for target track and camera track
-        // if (NodeMan.exists("targetTrackAverage")) {
-        //     // Spheres displayed in the main view (helpers)
-        //     new CNodeDisplayTargetSphere({
-        //         track: "targetTrackAverage",
-        //         size: this.cameraSphereSize, color: "blue", layers: LAYER.MASK_HELPERS,
-        //     })
-        // }
-        //
-        // new CNodeDisplayTargetSphere({
-        //     track: "cameraTrack",
-        //     size: this.cameraSphereSize, color: "yellow", layers: LAYER.MASK_HELPERS,
-        // })
 
 
         if (NodeMan.exists("lookCamera")) {

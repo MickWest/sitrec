@@ -29,7 +29,7 @@ import {CNodeHeading} from "../nodes/CNodeHeading";
 import {AddSpeedGraph} from "../JetGraphs";
 import {guiTweaks} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
-import {initKeyboard, showHider, toggler} from "../KeyBoardHandler";
+import {showHider, toggler} from "../KeyBoardHandler";
 import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
 import {DebugSphere, MV3, V3} from "../threeExt";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
@@ -784,8 +784,6 @@ export const SitAguadilla = {
             lookCamera.updateProjectionMatrix()
             par.renderOne = true;
         }).listen().name("Look Cam FOV")
-
-        initKeyboard()
 
         toggler('g', gui.add(par, 'showGraphs').listen().name("[G]raphs").onChange(value =>
             ViewMan.iterateTest(

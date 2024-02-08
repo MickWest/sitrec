@@ -1,6 +1,5 @@
 import {NodeMan, Sit} from "../Globals";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
-import {initKeyboard} from "../KeyBoardHandler";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 
 export const SitJellyfish    = {
@@ -153,8 +152,6 @@ export const SitJellyfish    = {
 
 
     setup2: function() {
-
-        initKeyboard()
 
         NodeMan.get("lookCamera").addController("TrackToTrack", {
             id:"lookAtGroundTrack",

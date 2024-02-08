@@ -1,11 +1,4 @@
-import {gui, Sit} from "../Globals";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
-
-import {initKeyboard} from "../KeyBoardHandler";
-import {CNodeImage} from "../nodes/CNodeImageAnalysis";
-import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {addKMLTracks} from "../KMLNodeUtils";
-import {AddTimeDisplayToUI} from "../UIHelpers";
 import * as LAYER from "../LayerMasks";
 
 export const Sit29Palms = {
@@ -66,7 +59,6 @@ export const Sit29Palms = {
     labelView: {},
 
     setup2: function () {
-        initKeyboard()
 
         addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_WORLD)
 

@@ -9,7 +9,7 @@ import {DebugArrowAB, dispose, GridHelperWorld, MV3, propagateLayerMaskObject, s
 import * as LAYER from "./LayerMasks";
 import {Line2} from '../three.js/examples/jsm/lines/Line2.js';
 import {LineGeometry} from '../three.js/examples/jsm/lines/LineGeometry.js';
-import {initKeyboard, showHider, toggles} from "./KeyBoardHandler";
+import {showHider, toggles} from "./KeyBoardHandler";
 import {VG, ViewMan} from "./nodes/CNodeView";
 import {
     chartDiv,
@@ -1009,8 +1009,6 @@ export function initViews() {
 
 
     updateSize(true);
-
-    initKeyboard()
 }
 
 export function SetupCommon(altitude=25000) {

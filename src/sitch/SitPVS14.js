@@ -3,7 +3,6 @@ import {
 } from "../../three.js/build/three.module";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 
-import {initKeyboard} from "../KeyBoardHandler";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -85,7 +84,6 @@ export const SitPVS14 = {
 
     setup2: function () {
 
-        initKeyboard()
 
 
 
