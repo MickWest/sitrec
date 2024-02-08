@@ -1,7 +1,7 @@
 
 export const Sit29Palms = {
     name: "29palms",
-    menuName: "Twentynine Palms",
+    menuName: "29 Palms Back Photo",
 
 
     nightSky: true,
@@ -19,17 +19,14 @@ export const Sit29Palms = {
 
     fps: 30,
     frames: 30 * 6,
-    startTime: "2021-04-21T03:23:53.000Z", // see https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744
+    startTime: "2021-04-21T03:23:53.000Z",
+
+    // discussion thread, not currently used, but could be displayed in the GUI
+    // Most sitches have a metabunk thread.
+    threadURl: "https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744",
+
 
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
-
-    // fromLat: 34.399060162,
-    // fromLon: -115.858257450,
-    //
-    // fromAltFeet: 1402,   ///426,
-    // fromAltFeetMin: 1300,
-    // fromAltFeetMax: 1500,
-
 
     mainCamera: {
         fov: 30,
