@@ -1,6 +1,6 @@
 // Lighting. Could be improved
 import {AmbientLight, DirectionalLight, DirectionalLightHelper, HemisphereLight} from "../three.js/build/three.module";
-import {Sit} from "./Globals";
+import {Globals, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {GlobalScene} from "./LocalFrame";
 
@@ -11,15 +11,15 @@ export function addDefaultLights(brightness = 100) {
     if (Sit.useGlobe) {
 
         // Ambient light for the globe is the light for the dark side of the globe
-        Sit.ambientLight = new AmbientLight(0xFFFFFF, 0.1);
-        GlobalScene.add(Sit.ambientLight);
+        Globals.ambientLight = new AmbientLight(0xFFFFFF, 0.1);
+        GlobalScene.add(Globals.ambientLight);
 
         // then sunlight is direct light
-        Sit.sunLight = new DirectionalLight(0xffffff, 3);
-        Sit.sunLight.position.set(5,0,0);  // sun is along the X axis
-        GlobalScene.add(Sit.sunLight);
+        Globals.sunLight = new DirectionalLight(0xffffff, 3);
+        Globals.sunLight.position.set(5,0,0);  // sun is along the X axis
+        GlobalScene.add(Globals.sunLight);
 
-        // const helper = new DirectionalLightHelper( Sit.sunLight, 1 );
+        // const helper = new DirectionalLightHelper( Globals.sunLight, 1 );
         // GlobalScene.add( helper );
     } else {
 

@@ -1,4 +1,4 @@
-import {gui,  NodeMan, Sit} from "./Globals";
+import {gui, NodeMan, setSit, Sit} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -14,7 +14,6 @@ import {DragDropHandler} from "./DragDropHandler";
 import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
-import {CNodeControllerPTZUI} from "./nodes/CNodeControllerPTZUI";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
@@ -24,9 +23,21 @@ import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
+import stringify from "json-stringify-pretty-compact";
+
 
 export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
+
+////    const serialized = JSON.stringify(Sit, null);
+//     const serialized = stringify(Sit, {maxLength: 180, indent: 2});
+//     console.log(serialized);
+//
+//     const deserialized = JSON.parse(serialized);
+//     console.log(deserialized);
+//
+//
+//     setSit(deserialized);
 
     if (!runDeferred)
         new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});

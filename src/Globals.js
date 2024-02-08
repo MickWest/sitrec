@@ -4,6 +4,8 @@ export function incrementMainLoopCount() {
 //    console.log("Incrementing mainLoopCount to " + mainLoopCount);
 };
 
+export var Globals = {}
+
 export var Sit;
 export function setSit(s) {Sit = s;}
 

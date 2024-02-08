@@ -3,7 +3,6 @@ export const Sit29Palms = {
     name: "29palms",
     menuName: "29 Palms Back Photo",
 
-
     nightSky: true,
     displayFrustum: true,
     frustumRadius: 10000,
@@ -24,7 +23,6 @@ export const Sit29Palms = {
     // discussion thread, not currently used, but could be displayed in the GUI
     // Most sitches have a metabunk thread.
     threadURl: "https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744",
-
 
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
 

@@ -15,6 +15,7 @@
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.5.0",
     "jquery": "^3.6.0",
+    "json-stringify-pretty-compact": "^4.0.0",
     "mini-css-extract-plugin": "^2.6.0",
     "ndarray": "^1.0.19",
     "ndarray-pack": "^1.2.1",

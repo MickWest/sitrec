@@ -55,7 +55,7 @@ export function createSphereDayNight(radius, radius1, segments) {
         uniforms: {
             dayTexture: { value: dayTexture },
             nightTexture: { value: nightTexture },
-            sunDirection: { value: Sit.sunLight.position}, // reference, so normalize before use
+            sunDirection: { value: Globals.sunLight.position}, // reference, so normalize before use
             ...sharedUniforms,
         },
         vertexShader: `

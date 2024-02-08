@@ -10,7 +10,7 @@ import {
     Vector3
 } from "../../three.js/build/three.module";
 import {radians, assert, sin, cos, degrees} from "../utils";
-import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode} from "../Globals";
+import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals} from "../Globals";
 import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
@@ -1347,8 +1347,8 @@ void main() {
             const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
             // DebugArrow("Sunarrow", eusDir, eus, 2000000,"#FFFFFF")
 
-             if (Sit.sunLight) {
-                 Sit.sunLight.position.copy(eusDir)
+             if (Globals.sunLight) {
+                 Globals.sunLight.position.copy(eusDir)
              }
 
              // sunDir is the direction vector FROM the sun. i.e. the direction sunlight is in.

@@ -42,6 +42,4 @@ export const SitArea6 = {
     videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
     labelView: {id:"labelVideo", overlay: "lookView"},
 
-
-
 }
