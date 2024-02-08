@@ -23,6 +23,7 @@ import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
+import {addKMLTracks} from "./KMLNodeUtils";
 
 export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
@@ -448,6 +449,13 @@ export function SituationSetup(runDeferred = false) {
             case "defaultLights":
                 SSLog();
                 addDefaultLights(data.brightness ?? 100);
+                break;
+
+            case "addKMLTracks":
+                SSLog();
+                const sphereMask = data.sphereMask ?? LAYER.MASK_HELPERS;
+                const removeDuplicates = data.removeDuplicates ?? false;
+                addKMLTracks(data.tracks, removeDuplicates, sphereMask);
                 break;
 
     default:

@@ -1,5 +1,3 @@
-import {addKMLTracks} from "../KMLNodeUtils";
-import * as LAYER from "../LayerMasks";
 
 export const Sit29Palms = {
     name: "29palms",
@@ -58,10 +56,6 @@ export const Sit29Palms = {
 
     labelView: {},
 
-    setup2: function () {
-
-        addKMLTracks(["KMLTarget1", "KMLTarget2", "KMLTarget3"], false, LAYER.MASK_WORLD)
-
-    }
+    addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD"},
 
 }
