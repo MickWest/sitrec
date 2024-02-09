@@ -58,7 +58,7 @@ export const SitNightSky = {
 
     // with a ptz setup, add showGUI:true to allow changing it
     // then can set it to false once the settings are locked in
-    ptz: {az: 6.2, el: 9.8, fov: 32, showGUI: true},
+    ptz: {az: 6.2, el: 9.8, fov: 32, roll:0, showGUI: true},
 
     lookPosition: { fromLat: 51.48, fromLon: -3.16, fromAltFeet: 822, fromAltFeetMin: 0, fromAltFeetMax: 55000,},
 
