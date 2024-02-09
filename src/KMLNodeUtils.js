@@ -69,7 +69,7 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
             const switchNode = NodeMan.get("cameraSwitch");
             switchNode.removeOption("KML Track")
             switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
-                cameraTrack: target,
+                sourceTrack: target,
             }) )
 
             // add a "Sync to Track" button, if there isn't one.

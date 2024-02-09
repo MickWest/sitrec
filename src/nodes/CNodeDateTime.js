@@ -212,7 +212,7 @@ export class CNodeDateTime extends CNode {
         const startTime = timedTrackNode.getTrackStartTime();
         console.log(">>>"+startTime)
 
-        this.setStartTime(new Date(startTime));
+        this.setStartDateTime(new Date(startTime));
 
         // rebuild anything the depends on that track
         timedTrackNode.recalculateCascade(0);
