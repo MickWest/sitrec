@@ -1,24 +1,3 @@
-import {par} from "../par";
-import {Sit} from "../Globals";
-import * as LAYER from "../LayerMasks";
-import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "../nodes/CNodeDisplayTargetSphere";
-import {CNodeScale} from "../nodes/CNodeScale";
-import {
-    atan,
-    degrees,
-    getArrayValueFromFrame,
-    radians,
-    scaleF2M,
-    tan,
-} from "../utils";
-import {CNodeGUIValue, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeDisplayLandingLights} from "../nodes/CNodeDisplayLandingLights";
-import {GlobalScene} from "../LocalFrame";
-import {gui} from "../Globals";
-import {NodeMan} from "../Globals";
-import {V3} from "../threeExt";
-import {pointAltitude} from "../SphericalMath";
-
 
 export const SitKML = {
     name: "kml",
@@ -57,64 +36,64 @@ export const SitKML = {
 
     labelView: {id:"labelVideo", overlay: "lookView"},
 
-    setup: function() {
-        // // displaying the target model or sphere
-        // // model will be rotated by the wind vector
-        // if (!Sit.landingLights) {
-        // } else {
-        //     // Has landingLights
-        //     // landing lights are just a sphere scaled by the distance and the view angle
-        //     // (i.e. you get a brighter light if it's shining at the camera
-        //     if (NodeMan.exists("targetTrackAverage")) {
-        //         new CNodeDisplayLandingLights({
-        //             inputs: {
-        //                 track: "targetTrackAverage",
-        //                 cameraTrack: "cameraTrack",
-        //                 size: new CNodeScale("sizeScaled", scaleF2M,
-        //                     new CNodeGUIValue({
-        //                         value: Sit.targetSize,
-        //                         start: 1000,
-        //                         end: 20000,
-        //                         step: 0.1,
-        //                         desc: "Landing Light Scale"
-        //                     }, gui)
-        //                 )
-        //             },
-        //             layers: LAYER.MASK_LOOK,
-        //         })
-        //     }
-        // }
+    // setup: function() {
+    //     // // displaying the target model or sphere
+    //     // // model will be rotated by the wind vector
+    //     // if (!Sit.landingLights) {
+    //     // } else {
+    //     //     // Has landingLights
+    //     //     // landing lights are just a sphere scaled by the distance and the view angle
+    //     //     // (i.e. you get a brighter light if it's shining at the camera
+    //     //     if (NodeMan.exists("targetTrackAverage")) {
+    //     //         new CNodeDisplayLandingLights({
+    //     //             inputs: {
+    //     //                 track: "targetTrackAverage",
+    //     //                 cameraTrack: "cameraTrack",
+    //     //                 size: new CNodeScale("sizeScaled", scaleF2M,
+    //     //                     new CNodeGUIValue({
+    //     //                         value: Sit.targetSize,
+    //     //                         start: 1000,
+    //     //                         end: 20000,
+    //     //                         step: 0.1,
+    //     //                         desc: "Landing Light Scale"
+    //     //                     }, gui)
+    //     //                 )
+    //     //             },
+    //     //             layers: LAYER.MASK_LOOK,
+    //     //         })
+    //     //     }
+    //     // }
+    //
+    //
+    //     // var viewNar = NodeMan.get("lookView");
+    //     // viewNar.renderFunction = function (frame) {
+    //     //
+    //     //     // // extract camera angle
+    //     //     // var _x = V3()
+    //     //     // var _y = V3()
+    //     //     // var _z = V3()
+    //     //     // this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
+    //     //     // var heading = -degrees(Math.atan2(_z.x, _z.z))
+    //     //     // if (heading < 0) heading += 180;
+    //     //     // par.az = heading;
+    //     //
+    //     //     if (this.visible) {
+    //     //         if (this.effectsEnabled)
+    //     //             this.composer.render();
+    //     //         else
+    //     //             this.renderer.render(GlobalScene, this.camera);
+    //     //     }
+    //     // }
+    //
+    //
+    // },
 
-
-        var viewNar = NodeMan.get("lookView");
-        viewNar.renderFunction = function (frame) {
-
-            // extract camera angle
-            var _x = V3()
-            var _y = V3()
-            var _z = V3()
-            this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
-            var heading = -degrees(Math.atan2(_z.x, _z.z))
-            if (heading < 0) heading += 180;
-            par.az = heading;
-
-            if (this.visible) {
-                if (this.effectsEnabled)
-                    this.composer.render();
-                else
-                    this.renderer.render(GlobalScene, this.camera);
-            }
-        }
-
-
-    },
-
-    update: function(f) {
-        const lookCamera = NodeMan.get("lookCamera")
-        const lookPos = lookCamera.camera.position;
-        const altMeters = pointAltitude(lookPos)
-
-        par.cameraAlt = altMeters;
-    }
+    // update: function(f) {
+    //     const lookCamera = NodeMan.get("lookCamera")
+    //     const lookPos = lookCamera.camera.position;
+    //     const altMeters = pointAltitude(lookPos)
+    //
+    //     par.cameraAlt = altMeters;
+    // }
 
 }
