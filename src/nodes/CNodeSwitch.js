@@ -50,10 +50,16 @@ class CNodeSwitch extends CNode {
     }
 
     removeOption(option) {
-        console.log("(reoving) this.choice = "+this.choice)
+        console.log("(removing) this.choice = "+this.choice)
         delete this.inputs[option]
         removeOption(this.controller, option)
         console.log("(removing) this.choice = "+this.choice)
+    }
+
+    selectOption(option) {
+        this.choice = option
+        this.controller.setValue(option)
+        this.recalculateCascade()
     }
 
     onChange(f) {

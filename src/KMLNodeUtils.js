@@ -71,9 +71,13 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
             switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
                 sourceTrack: target,
             }) )
+            // and select it
+            switchNode.selectOption("KML Track")
 
             // add a "Sync to Track" button, if there isn't one.
             GlobalDateTimeNode.addSyncToTrack(trackDataID);
+            // and call it
+            //GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
 
         }
 
