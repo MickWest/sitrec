@@ -20,8 +20,6 @@ export const SitJellyfish    = {
     lookCamera: { fov: 10.6, },
     terrain: {lat:  33.33395, lon: 43.609, zoom:15, nTiles:8},
 
-
-
     // the origin
     lat: 33.323126,
     lon: 43.608689,
@@ -65,18 +63,7 @@ export const SitJellyfish    = {
         ],
     },
 
-    // A "track" that takes its position from a camera node
-    // generally the lookCamera
-//   cameraTrack: {kind:"LOSConstantCamera", camera: "lookCamera"},
-
     //    fixed viewpoint
-    // This creates a camera controller.
-    // fromLat: 33.323126,
-    // fromLon: 43.608689,
-    // fromAltFeet: 2978,
-    // fromAltFeetMin: 1000,
-    // fromAltFeetMax: 4000,
-
     cameraTrack: {LLA: [ 33.323126, 43.608689, 2978]},
 
     // the green ground track
@@ -115,7 +102,7 @@ export const SitJellyfish    = {
 
     sphereSize:{ kind:"sizeFeet", value: 2, start: 0.1, end: 6, step: 0.1, desc: "Target size ft"},
 
-//    angularSize: {kind: "GUIValue", value: 0.001, start: 0, end: 0.010, step: 0.0001, desc: "Angular Size"},
+// TODO   angularSize: {kind: "GUIValue", value: 0.001, start: 0, end: 0.010, step: 0.0001, desc: "Angular Size"},
 
     sphereInMainView: {
         kind: "DisplayTargetSphere",
