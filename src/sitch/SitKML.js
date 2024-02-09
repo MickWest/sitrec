@@ -51,14 +51,8 @@ export const SitKML = {
     },
 
     showAltitude: true,
-
- //   tilt: -15,  //Not a good default!
-
     defaultCameraDist: 3000000,  // for SitKML stuff we generalyl want a large camera distance for defaults
-
     targetSize: 10000,
-
-
     skyColor: "rgb(0%,0%,10%)",
 
     labelView: {id:"labelVideo", overlay: "lookView"},
@@ -145,6 +139,7 @@ export const SitKML = {
             //this.renderer.render(GlobalScene, this.camera);
         }
 
+//         MOVE TO SETUP
 
         if (this.losTarget !== undefined) {
         // ONly used for LAXUAP

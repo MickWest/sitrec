@@ -14,8 +14,6 @@ export const SitPorterville = {
     frustumRadius: 2000,
     frustumLineWeight: 1.5,
 
-
-
     frames: 21191,     // ful vid is 21207,
     fps: 59.94,
 
