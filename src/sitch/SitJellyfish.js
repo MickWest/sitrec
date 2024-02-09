@@ -9,8 +9,6 @@ export const SitJellyfish    = {
     simSpeed: 1,
     videoSpeed: 1,
 
-    useFLIRShader: true,
-
     videoFile: "../sitrec-videos/private/FULL Jellyfish Stab crop LOW BR.mp4",
     fps: 23.976,
     frames: 2982,

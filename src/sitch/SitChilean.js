@@ -19,8 +19,6 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
 
     tilt: 0,
 
-    useFLIRShader: true,
-
     frames: 17969,
     terrain: {lat: -33.2611, lon: -71.192388, zoom: 9, nTiles: 8},
 
@@ -46,10 +44,10 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     videoFile: "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 720p.mp4",
     skyColor: 'skyblue',
 
-    lookView: {             left: 0.5, top: 0.5, width: -1920/1080, height: 0.5,},
+    lookView: {             left: 0.5, top: 0.5, width: -1920/1080, height: 0.5,
+        effects: {FLIRShader: {},},},
+
     videoView: {             left: 0.5, top: 0, width: -1920/1080, height: 0.5,},
-   // lookView: {             left: 0.6250, top: 0.5, width: -1.8, height: 0.5,},
-   // videoView: {             left: 0.6250, top: 0, width: -1.8, height: 0.5,},
     mainView:{left:0.0, top:0, width:0.625,height:1},
 
     displayFrustum:true,

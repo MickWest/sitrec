@@ -91,14 +91,6 @@ export const SitKML = {
 
 
         var viewNar = NodeMan.get("lookView");
-
-
-        // patch in the FLIR shader effect if flagged, for Chilean
-        // Note this has to be handled in the render function if you override it
-        // See Chilean for example
-        viewNar.effects = this.useFLIRShader ? {FLIRShader: {},} : undefined,
-
-
         viewNar.renderFunction = function (frame) {
 
             // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
