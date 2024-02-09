@@ -282,7 +282,7 @@ export const SitNightSky = {
         lookPTZ.az = p.az;
         lookPTZ.el = p.el;
         lookPTZ.fov = p.fov;
-        lookPTZ.roll = p.roll;
+        lookPTZ.roll = p.roll ?? 0;
         lookPTZ.refresh();
         NodeMan.get("cameraLat").value = p.lat;
         NodeMan.get("cameraLon").value = p.lon;
