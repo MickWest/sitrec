@@ -56,7 +56,6 @@ export const SitLAXUAP = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
-    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
 
     cameraSphereSize: 2,
     targetSphereSize: 2,
@@ -65,8 +64,6 @@ export const SitLAXUAP = {
 
     skyColor: '#4264ab',
 
-
-
     targetWind:{from:295, knots: 23},
     //targetWind:{from:300, knots: 13},
     objectWind:{from:60, knots: 7},
@@ -74,5 +71,10 @@ export const SitLAXUAP = {
     targetObject: {file: "TargetObjectFile", wind: "targetWind"},
     displayFrustum: true,
 
+    // losTarget is a sphere that sits on a LOS at a certain frame
+    // and is at a certain altitude
+    // offset is the angle of the target from the LOS, perpendicular to the track
+    // i.e. it would be to the side of a plane
+    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
 
 }

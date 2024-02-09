@@ -7,7 +7,7 @@ import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {abs, assert, f2m, floor, scaleF2M} from "./utils";
+import {abs, assert, f2m, floor, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -15,7 +15,7 @@ import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
-import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
+import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "./nodes/CNodeDisplayTargetSphere";
 import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
@@ -504,7 +504,70 @@ export function SituationSetup(runDeferred = false) {
                 }, gui)
                 break;
 
-    default:
+            case "losTarget":
+                    // ONly used for LAXUAP
+                let control = {};
+                if (data.distance) {
+                    new CNodeScale("controlLOS", scaleF2M,
+                        new CNodeGUIValue({
+                            value: data.distance,
+                            start: 1,
+                            end: 100000,
+                            step: 0.1,
+                            desc: "LOS Sphere dist ft"
+                        }, gui))
+                    control = { distance: "controlLOS" }
+                } else if (data.altitude) {
+                    new CNodeScale("controlLOS", scaleF2M,
+                        new CNodeGUIValue({
+                            value: data.altitude,
+                            start: 1,
+                            end: 40000,
+                            step: 0.1,
+                            desc: "LOS Sphere alt ft"
+                        }, gui))
+                    control = {altitude: "controlLOS"}
+                }
+
+
+                new CNodeLOSTargetAtDistance ({
+                    id:"LOSTargetTrack",
+                    track:data.track,
+                    camera:data.camera,
+                    ...control,
+                    frame:data.frame,
+                    offsetRadians:radians(data.offset),
+                })
+
+                new CNodeLOSTargetAtDistance ({
+                    id:"LOSTargetWithWindTrack",
+                    track:data.track,
+                    camera:data.camera,
+                    ...control,
+                    frame:data.frame,
+                    offsetRadians:radians(data.offset),
+                    wind:"objectWind",
+                })
+
+                new CNodeDisplayTargetSphere({
+                    track:"LOSTargetTrack",
+                    size: new CNodeScale("sizeScaledLOS", scaleF2M,
+                        new CNodeGUIValue({value: data.size, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
+                    ),
+                    layers: LAYER.MASK_LOOK,
+                    color: "#00c000"  // green fixed relative to ground
+                })
+
+                new CNodeDisplayTargetSphere({
+                    track:"LOSTargetWithWindTrack",
+                    size: "sizeScaledLOS",
+                    layers: LAYER.MASK_LOOK,
+                    color: "#00ffff"  // cyan = with wind
+                })
+                break;
+
+
+            default:
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
                 // passing in the data as the constructor

@@ -9,9 +9,7 @@ export const SitLAXUAP2 = {
     startTime: "2023-12-10T18:18:07.000Z",
     fps:60,
     frames: 229,
-
-    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 154, altitude:10000, size:1, offset: -0.02 },
-
     lookCamera:{ fov: 0.4},
+    losTarget:{track: "targetTrack", camera: "lookCamera", frame: 154, altitude:10000, size:1, offset: -0.02 },
 
 }

@@ -194,7 +194,7 @@ export class CNodeControllerLookAtLLA extends CNodeController {
 
 }
 
-
+//Az and El from a data track that returns a structur with pitch and heading members
 export class CNodeControllerAzElData extends CNodeController {
     constructor(v) {
         super(v);
@@ -211,6 +211,7 @@ export class CNodeControllerAzElData extends CNodeController {
     }
 }
 
+// Az and El as inputs (so generally single numbers, but can also be tracks
 export class CNodeControllerAbsolutePitchHeading extends CNodeController {
     constructor(v) {
         super(v);
@@ -227,7 +228,7 @@ export class CNodeControllerAbsolutePitchHeading extends CNodeController {
 }
 
 
-// TODO - this like PTZ contrsiol, but not using a local up vector
+// TODO - this like PTZ control, but not using a local up vector
 // is it used?
 export function applyPitchAndHeading(object, pitch, heading)
 {
