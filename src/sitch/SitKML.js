@@ -58,10 +58,6 @@ export const SitKML = {
     labelView: {id:"labelVideo", overlay: "lookView"},
 
     setup: function() {
-
-
-        const view = NodeMan.get("mainView");
-
         // // displaying the target model or sphere
         // // model will be rotated by the wind vector
         // if (!Sit.landingLights) {
@@ -93,31 +89,11 @@ export const SitKML = {
         var viewNar = NodeMan.get("lookView");
         viewNar.renderFunction = function (frame) {
 
-            // THERE ARE THREE CAMERA MODIFIED IN HERE - EXTRACT OUT INTO Camera Nodes
-            // MIGHT NEEED SEPERATE POSITION, ORIENTATION, AND ZOOM MODIFIERS?
-
-            // bit of a patch to get in the FOV
-            if (Sit.chileanData !== undefined) {
-                // frame, mode, Focal Leng
-                var focalLength = getArrayValueFromFrame(Sit.chileanData, 0, 2, frame)
-                const mode = getArrayValueFromFrame(Sit.chileanData, 0, 1, frame);
-
-                // See: https://www.metabunk.org/threads/the-shape-and-size-of-glare-around-bright-lights-or-ir-heat-sources.10596/post-300052
-                var vFOV = 2 * degrees(atan(675 * tan(radians(0.915 / 2)) / focalLength))
-
-                if (mode !== "IR") {
-                    vFOV /= 2;  /// <<<< TODO - figure out the exact correction. IR is right, but EOW/EON is too wide
-                }
-                this.camera.fov = vFOV;
-                this.camera.updateProjectionMatrix()
-            }
-
             // extract camera angle
             var _x = V3()
             var _y = V3()
             var _z = V3()
             this.camera.matrix.extractBasis(_x, _y, _z)  // matrix or matrixWorld? parent is GlobalScene, so
-
             var heading = -degrees(Math.atan2(_z.x, _z.z))
             if (heading < 0) heading += 180;
             par.az = heading;
@@ -128,7 +104,6 @@ export const SitKML = {
                 else
                     this.renderer.render(GlobalScene, this.camera);
             }
-            //this.renderer.render(GlobalScene, this.camera);
         }
 
 
@@ -141,6 +116,5 @@ export const SitKML = {
 
         par.cameraAlt = altMeters;
     }
-
 
 }

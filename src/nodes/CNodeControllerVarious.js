@@ -148,14 +148,14 @@ export class CNodeControllerFocalLength extends CNodeController {
     }
 
     apply(f, objectNode) {
-        const focal_len = this.in.focalLength.v(f).focal_len;
+        let focal_len = this.in.focalLength.v(f)
+        // if it's a number then it's a single value, if it's an object, get the .focal_len member
+        if (typeof focal_len === "object") focal_len = focal_len.focal_len
 
         // focal_len of 0 means we don't have a focal length data field, so use the UI FOV
         if (focal_len === 0) return;
 
         const camera = objectNode.camera
-        //const referenceFocalLength = 166;               // reference focal length
-        //const referenceFOV = radians(5)         // reference FOV angle
         const sensorSize = 2 * this.referenceFocalLength * tan(radians(this.referenceFOV) / 2)
 
         const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))

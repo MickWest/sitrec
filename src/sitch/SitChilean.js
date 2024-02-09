@@ -55,11 +55,9 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
 
     targetObject:{file: "TargetObjectFile",},
 
+    wescamFOV: {file: "DataFile", focalIndex: 2, modeIndex: 1, len: 675, fov: 0.915},
 
     setup2: function() {
-
-        Sit.chileanData = FileManager.get("DataFile")
-
 
         // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph
         new CNodeWind({

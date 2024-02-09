@@ -7,7 +7,7 @@ import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {abs, assert, f2m, floor, radians, scaleF2M} from "./utils";
+import {abs, assert, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -16,7 +16,7 @@ import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "./nodes/CNodeDisplayTargetSphere";
-import {makeArrayNodeFromColumn} from "./nodes/CNodeArray";
+import {CNodeArray, makeArrayNodeFromColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
@@ -25,6 +25,7 @@ import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
+import {FileManager} from "./CFileManager";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -204,6 +205,35 @@ export function SituationSetup(runDeferred = false) {
                     referenceFocalLength: data.len,
                     referenceFOV: data.fov,
                 })
+                break;
+
+            case "wescamFOV":
+                SSLog();
+
+                // get the CSV data from the file
+                let wescamSource = FileManager.get(data.file)
+
+                // now make a per-frame array of focal lengths
+                const focalLengths = new Array(Sit.frames);
+                for (var frame = 0; frame < Sit.frames; frame++) {
+                    var focalLength = getArrayValueFromFrame(wescamSource, 0, data.focalIndex, frame)
+                    const mode = getArrayValueFromFrame(wescamSource, 0, data.modeIndex, frame);
+                    if (mode !== "IR") {
+                        focalLength *= 2
+                    }
+                    focalLengths [frame] = focalLength;
+                }
+
+                // wrap the array in a node
+                new CNodeArray({id: "focalLengthsNode", array: focalLengths});
+
+                // and add a focal length controller based on this.
+                NodeMan.get("lookCamera").addController("FocalLength", {
+                    focalLength: "focalLengthsNode",
+                    referenceFocalLength: data.len,
+                    referenceFOV: data.fov,
+                })
+
                 break;
 
             case "mainView":
