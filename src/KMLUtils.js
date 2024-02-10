@@ -121,6 +121,13 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
                 const p = route.Placemark
                 for (var i=0;i<p.length;i++) {
                     const date = p[i].TimeStamp.when["#text"]
+
+                    if (i>0 && p[i].TimeStamp.when["#text"] === p[i].TimeStamp.when["#text"]) {
+                        console.warn("getKMLTrackWhenCoord: FR24 Duplicate time "+p[i].TimeStamp.when["#text"])
+                        continue;
+                    }
+
+
                     when.push(Date.parse(date))
 
                     var c = p[i].Point.coordinates["#text"]
@@ -178,6 +185,12 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
         coordArray = gxTrack["gx:coord"]
         const len = whenArray.length;
         for (var i = 0; i < len; i++) {
+
+            if (i>0 && whenArray[i]["#text"] === whenArray[i-1]["#text"]) {
+                console.warn("getKMLTrackWhenCoord: Duplicate time "+whenArray[i]["#text"])
+                continue;
+            }
+
             var w = whenArray[i]["#text"]
             var c = coordArray[i]["#text"]
             var cs = c.split(' ')

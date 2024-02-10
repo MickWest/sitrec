@@ -17,8 +17,6 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
     }
 
     recalculate() {
-
-
         var startTime = this.in.startTime.getStartTimeString()
         var msStart = this.in.startTime.getStartTimeValue()
 
@@ -27,14 +25,11 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
 
         assert(this.frames === Math.floor(this.frames),`Frames must be an integer, it's ${this.frames}`)
 
-//        const times = this.in.timedData.times;
-//        const positions = this.in.timedData.coord;
-
         const data = this.in.timedData.data;
 
         // now find the first time pair that our start time falls in
 
-        console.log("Start time: "+ startTime+" = "+msStart+" ms")
+//        console.log("Start time: "+ startTime+" = "+msStart+" ms")
         var points = data.length
         var slot = 0;
         var msNeeded = Sit.frames*Sit.fps*1000;
@@ -53,6 +48,8 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
 
             if (slot < points-1) {
 
+                assert(data[slot + 1].time !== data[slot].time, "Time data is not increasing slot ="+slot+" time="+data[slot].time)
+
                // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
                 var fraction = (msNow - data[slot].time) / (data[slot + 1].time - data[slot].time)
                 var lat = interpolate(data[slot].lla.lat, data[slot + 1].lla.lat, fraction)
@@ -62,6 +59,8 @@ export class CNodeTrackFromTimed extends CNodeEmptyArray {
                 var pos = LLAToEUS(lat, lon, alt)
                 // end product, a per-frame array of positions
                 // that is a track.
+
+                assert(!Number.isNaN(pos.x),"CNodeTrackFromTimed:recalculate(): pos.x NaN")
 
                 // minumum data that is needed
                 const product = {position: pos.clone()}

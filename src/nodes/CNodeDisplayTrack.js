@@ -155,6 +155,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         }
         dispose(this.trackGeometry)
         this.trackGeometry = new LineGeometry();
+
+
+
+        assert(line_points.length > 0, "CNodeDisplayTrack: no points in track")
         this.trackGeometry.setPositions(line_points);
         this.trackGeometry.setColors(line_colors);
 

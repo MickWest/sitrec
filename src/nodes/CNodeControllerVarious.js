@@ -1,4 +1,4 @@
-import {atan, degrees, radians, tan} from "../utils";
+import {assert, atan, degrees, radians, tan} from "../utils";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
@@ -67,6 +67,7 @@ export class CNodeControllerTrackPosition extends CNodeController {
     apply(f, objectNode) {
         const camera = objectNode.camera
         var camPos = this.in.sourceTrack.p(f)
+        assert(!Number.isNaN(camPos.x),"CNodeControllerTrackPosition: camera.position.x NaN")
 
         updateCameraAndUI(camPos, camera, objectNode);
     }
