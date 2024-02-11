@@ -1,10 +1,8 @@
-import {cos, assert, metersFromBig, metersFromNM, radians, sin} from "../utils";
+import {cos, assert, metersFromNM, radians, sin} from "../utils";
 import {CNodeDDI} from "./CNodeDDI";
 import {Sit} from "../Globals";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
 import {par} from "../par";
-import {trackHeading, trackVelocity} from "./CNode";
+import {trackVelocity} from "./CNode";
 
 const pipText = ['N', '⦁', '⦁', '3', '⦁', '⦁', '6', '⦁', '⦁',
     'E', '⦁', '⦁','12', '⦁', '⦁','15', '⦁', '⦁',

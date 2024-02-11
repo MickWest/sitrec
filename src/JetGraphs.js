@@ -1,7 +1,7 @@
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
 import {CNodeMunge, makeMunge} from "./nodes/CNodeMunge";
-import {NodeMan, Sit} from "./Globals";
+import {NodeMan, Sit, Units} from "./Globals";
 import {acos, degrees, m2f, metersFromMiles, NMFromMeters} from "./utils";
 import {pointAltitude} from "./SphericalMath";
 import {assert} from "./utils"
@@ -165,7 +165,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             },
             xLabel: "Frame",
             xStep: 200,
-            yLabel: caption+" " + Sit.speedUnits,
+            yLabel: caption+" " + Units.speedUnits,
             yStep: 10,
             points: [],
             xLabelDelta: true,
@@ -184,7 +184,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                         move.sub(this.in.source.p(f - 1))
                         move.sub(this.in.wind.p(f))
                         move.y = 0;
-                        return (move.length() * this.in.source.fps * Sit.m2Speed)
+                        return (move.length() * this.in.source.fps * Units.m2Speed)
                     }
                 }),
                 name: "Horizontal Air Speed",
@@ -202,7 +202,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                         let move = this.in.source.p(f)
                         move.sub(this.in.source.p(f - 1))
                         move.y = 0;
-                        return (move.length() * this.in.source.fps * Sit.m2Speed)
+                        return (move.length() * this.in.source.fps * Units.m2Speed)
                     }
                 }),
                 name: "Horizontal Ground Speed",
@@ -217,7 +217,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                         if (f === 0) f = 1;
                         let move = this.in.source.p(f)
                         move.sub(this.in.source.p(f - 1))
-                        return (move.length() * this.in.source.fps * Sit.m2Speed)
+                        return (move.length() * this.in.source.fps * Units.m2Speed)
                     }
                 }),
                 name: "Object Speed",
@@ -233,7 +233,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                         if (f === 0) f = 1;
                         let move = this.in.source.p(f)
                         move.sub(this.in.source.p(f - 1))
-                        return (move.y * this.in.source.fps * Sit.m2Speed)
+                        return (move.y * this.in.source.fps * Units.m2Speed)
                     }
                 }),
                 name: "Vertical Speed",
@@ -273,7 +273,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                 },
                 xLabel: "Frame",
                 xStep: 200,
-                yLabel: "Fleet Speed " + Sit.speedUnits,
+                yLabel: "Fleet Speed " + Units.speedUnits,
                 yStep: 100,
                 points: [],
                 xLabelDelta: true,
@@ -291,7 +291,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                             let move = this.in.source.p(f)
                             move.sub(this.in.source.p(f - 1))
                             move.y = 0;
-                            return (move.length() * this.in.source.fps * Sit.m2Speed)
+                            return (move.length() * this.in.source.fps * Units.m2Speed)
                         }
                     }),
                     name: "Horizontal Speed",

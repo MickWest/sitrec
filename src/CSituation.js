@@ -1,17 +1,15 @@
 import {Color} from "../three.js/build/three.module.js";
-import {guiTweaks, infoDiv, Sit} from "./Globals";
-import {LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
-import {boxMark, MV3, V3} from "./threeExt";
+import {guiTweaks, infoDiv, Sit, Units} from "./Globals";
+import {LLAToEUS} from "./LLA-ECEF-ENU";
+import {boxMark, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {GlobalScene} from "./LocalFrame";
-import {gui} from "./Globals";
 import {NightSkyFiles} from "./ExtraFiles";
-import {f2m,assert} from "./utils";
+import {f2m} from "./utils";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {CNodeWind} from "./nodes/CNodeWind";
 import {FileManager} from "./CFileManager";
 
 
@@ -99,23 +97,22 @@ export class CSituation {
             this.bFrame = this.frames-1;
         }
 
-        switch (this.bigUnits) {
+        Units.bigUnits = this.bigUnits;
+        switch (Units.bigUnits) {
             case "NM": // Nautical miles and feet
-                this.m2Big = 0.000539957;   // scale meters to big units
-                this.big2M = 1852;          // scale meters to big units
-                this.smallUnits = "Feet"
-                this.m2Small = 3.28084      // scale meters to small (feet)
-                this.small2M = 0.3048       // scale small (feet) to meters
-                this.speedUnits = "Knots"
-                this.m2Speed = 1.94384      // 1 m/s to knots
+                Units.big2M = 1852;          // scale meters to big units
+                Units.smallUnits = "Feet"
+                Units.m2Small = 3.28084      // scale meters to small (feet)
+                Units.small2M = 0.3048       // scale small (feet) to meters
+                Units.speedUnits = "Knots"
+                Units.m2Speed = 1.94384      // 1 m/s to knots
                 break;
             case "miles":
             case "Miles": // Statute (ordinary) miles and feet
-                this.smallUnits = "Feet"
-                this.m2Big = 0.000621371
-                this.big2M = 1609.34
-                this.speedUnits = "mph"
-                this.m2Speed = 2.23694
+                Units.smallUnits = "Feet"
+                Units.big2M = 1609.34
+                Units.speedUnits = "mph"
+                Units.m2Speed = 2.23694
                 break;
         }
 

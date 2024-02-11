@@ -1,6 +1,6 @@
 import {assert, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
-import {NodeMan, Sit} from "../Globals";
+import {NodeMan, Sit, Units} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {V3} from "../threeExt";
 import {CNode} from "./CNode";
@@ -100,7 +100,7 @@ export class CNodeTrackSpeed extends CNode {
         move.sub(this.in.source.p(f - 1))
         if (this.horizontal)
             move.y = 0;
-        return (move.length() * this.in.source.fps * Sit.m2Speed)
+        return (move.length() * this.in.source.fps * Units.m2Speed)
     }
 
 }

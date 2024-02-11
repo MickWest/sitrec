@@ -47,3 +47,4 @@ export function setupGUIGlobals(_gui, _show, _tweaks, _jetTweaks) {
 // seem bigger, and hence with a shallower curve
 //export const EarthRadiusMiles = 3963 * 7 / 6
 export const EarthRadiusMiles = 3963.190592  // exact wgs84.RADIUS
+export const Units = {};

@@ -1,7 +1,7 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
 // so mostly related to Gimbal, GoFast, and FLIR1
 
-import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit} from "./Globals";
+import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit, Units} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
@@ -66,6 +66,7 @@ import {isLocal} from "../config";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
+
 
 var matLineWhite = makeMatLine(0xffffff);
 var matLineCyan = makeMatLine(0x00ffff,1.5);
@@ -717,7 +718,7 @@ export function CreateTraverseNodes(traverseInputs) {
 
     // A GUI variable for the start distance - this is one of the biggest variables
     // It's the distance of the start of the traverse along the first LOS
-    var nodeStartDistance = new CNodeScale("startDistance", Sit.big2M, new CNodeGUIValue({
+    var nodeStartDistance = new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
         value: startDistance,
         start: Sit.startDistanceMin,
         end: Sit.startDistanceMax,
@@ -736,13 +737,13 @@ export function CreateTraverseNodes(traverseInputs) {
 
 
     // GUI variable Target Speed in Knots (scaled to m/s)
-    new CNodeScale("speedScaled", 1 / Sit.m2Speed,
+    new CNodeScale("speedScaled", 1 / Units.m2Speed,
         new CNodeGUIValue({
             value: Sit.targetSpeed,
             start: Sit.targetSpeedMin,
             end: Sit.targetSpeedMax,
             step: Sit.targetSpeedStep,
-            desc: "Target Speed " + Sit.speedUnits
+            desc: "Target Speed " + Units.speedUnits
         }, gui))
 
     // Traverse at constant GROUND speed (using the above)

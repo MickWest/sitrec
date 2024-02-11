@@ -16,8 +16,6 @@ function atan2(y,x) {return Math.atan2(y,x)}  // note unexpected parameter order
 
 function metersFromMiles(m) {return 1609.344*m}
 export function metersFromNM(m) {return 1852*m}
-export function metersFromBig(m) {return Sit.big2M * m}
-export function metersFromFeet(f) {return  3.28084 * f}
 export function NMFromMeters(m) {return m/1852}
 
 function radians(Value) {     return Value * Math.PI / 180;}

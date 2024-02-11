@@ -1,6 +1,6 @@
 import {metersFromMiles, metersFromNM, radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
-import {Sit} from "../Globals";
+import {Sit, Units} from "../Globals";
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
@@ -69,10 +69,10 @@ export class CNodeFleeter extends CNodeEmptyArray {
 
             if (!turnStarted && f>this.in.turnFrame.v0) {
                 turnStarted = true;
-                var speed = Sit.m2Speed * vel.length() * Sit.fps;
+                var speed = Units.m2Speed * vel.length() * Sit.fps;
              //   console.log("Fleet speed WAS "+speed)
                 vel.multiplyScalar(this.in.acc.v0)
-                speed = Sit.m2Speed * vel.length() * Sit.fps;
+                speed = Units.m2Speed * vel.length() * Sit.fps;
              //   console.log("Fleet speed scaled to "+speed)
 
     //            this.turnRate*=2 // PATCH
