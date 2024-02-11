@@ -197,59 +197,67 @@ export function initKeyboard() {
         keyCodeHeld[keyCode] = true
         console.log("Key: " + key + " keyCode: " + keyCode)
 
-        const cameraNode = NodeMan.get("mainCamera")
-        const  c = cameraNode.camera;
 
-        switch (keyCode) {
-            case 'NumpadDecimal':
-                c.up.set(0, 1, 0);
-                cameraNode.resetCamera();
-                break
+        if (NodeMan.exists("mainCamera")) {
 
-            // these numpad keys (intened to reset camera postiona) are largely useless right now
+            const cameraNode = NodeMan.get("mainCamera")
+            const c = cameraNode.camera;
+
+            switch (keyCode) {
+                case 'NumpadDecimal':
+                    c.up.set(0, 1, 0);
+                    cameraNode.resetCamera();
+                    break
+
+                // these numpad keys (intened to reset camera postiona) are largely useless right now
                 // especially on Globes
 
-            // case 'NumPad0':
-            //     c.up.set(0, 1, 0);
-            //     break;
+                // case 'NumPad0':
+                //     c.up.set(0, 1, 0);
+                //     break;
 
-            case 'Numpad1':
-                c.position.x = 0;
-                c.position.y = 0;
-                c.position.z = Sit.defaultCameraDist;  // 1300 works for 10°
-                c.up.set(0, 1, 0);
+                case 'Numpad1':
+                    c.position.x = 0;
+                    c.position.y = 0;
+                    c.position.z = Sit.defaultCameraDist;  // 1300 works for 10°
+                    c.up.set(0, 1, 0);
 
-                c.lookAt(new Vector3(0, 0, 0));
-                break;
+                    c.lookAt(new Vector3(0, 0, 0));
+                    break;
 
-            case 'Numpad7':
-                c.position.x = 0;
-                c.position.y = Sit.defaultCameraDist;
-                c.position.z = 0;
-                c.up.set(0, 1, 0);
-                //      c.up.x = 0;
-                //      c.up.y = 0;
-                //      c.up.z = -1;
+                case 'Numpad7':
+                    c.position.x = 0;
+                    c.position.y = Sit.defaultCameraDist;
+                    c.position.z = 0;
+                    c.up.set(0, 1, 0);
+                    //      c.up.x = 0;
+                    //      c.up.y = 0;
+                    //      c.up.z = -1;
 
-                c.lookAt(new Vector3(0, 0, 0));
-                break;
+                    c.lookAt(new Vector3(0, 0, 0));
+                    break;
 
-            case 'Numpad3':
-                c.position.x = Sit.defaultCameraDist;
-                c.position.y = 0;
-                c.position.z = 0;
-                c.up.set(0, 1, 0);
+                case 'Numpad3':
+                    c.position.x = Sit.defaultCameraDist;
+                    c.position.y = 0;
+                    c.position.z = 0;
+                    c.up.set(0, 1, 0);
 
-                c.lookAt(new Vector3(0, 0, 0));
-                break;
+                    c.lookAt(new Vector3(0, 0, 0));
+                    break;
 
-            case 'Numpad9':
-                c.position.x = -c.position.x;
-                c.position.y = -c.position.y;
-                c.position.z = -c.position.z;
+                case 'Numpad9':
+                    c.position.x = -c.position.x;
+                    c.position.y = -c.position.y;
+                    c.position.z = -c.position.z;
 
-                c.lookAt(new Vector3(0, 0, 0));
-                break;
+                    c.lookAt(new Vector3(0, 0, 0));
+                    break;
+            }
+        }
+
+        // and things that don't rely on the camera
+        switch (keyCode) {
 
 
             case 'Space' :
@@ -313,8 +321,6 @@ export function initKeyboard() {
     }
 
     document.onkeyup = function (e) {
-//        console.log ("Key Up: ")
-//        console.log(e)
 
         keyCodeHeld[e.code] = false
 
