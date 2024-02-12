@@ -455,8 +455,8 @@ export function MV3(x=0,y=0,z=0) {
 }
 
 // https://stackoverflow.com/questions/41275311/a-good-way-to-find-a-vector-perpendicular-to-another-vector
-// given a vector. find an vector pependicular to it
-// to do this we take the cross product of the vector an whatever basis vector it is least paralell to
+// given a vector. find an vector perpendicular to it
+// to do this we take the cross product of the vector an whatever basis vector it is least parallel to
 export function perpendicularVector(N){
     var Ax = Math.abs(N.x)
     var Ay = Math.abs(N.y)

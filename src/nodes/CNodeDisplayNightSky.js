@@ -50,6 +50,7 @@ import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMat
 import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {FileManager} from "../CFileManager";
+import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
 
 
 // other source of stars, if we need more (for zoomed-in pics)
@@ -382,6 +383,36 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.rot = 0
 
+
+        this.glareBandGroup = new Group();
+
+        new CNodeDisplayGlobeCircle({
+            id: "globeCircle1",
+            normal: new Vector3(1, 0, 0),
+            color: [1,1,0],
+            width: 2,
+            offset: 3800000,
+            container: this.glareBandGroup,
+        })
+
+        new CNodeDisplayGlobeCircle({
+            id: "globeCircle2",
+            normal: new Vector3(1, 0, 0),
+            color: [0,1,0],
+            width: 2,
+            offset: 4900000,
+            container: this.glareBandGroup,
+        })
+
+        GlobalScene.add(this.glareBandGroup)
+
+        this.showGlareBand = false;
+        this.glareBandGroup.visible = this.showGlareBand;
+        guiShowHide.add(this, "showGlareBand").listen().onChange(()=>{
+            par.renderOne=true;
+            this.glareBandGroup.visible = this.showGlareBand;
+        }).name("Glare Band")
+
         console.log("Done with CNodeDisplayNightSky constructor")
     }
 
@@ -461,6 +492,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
 //        this.updateSatelliteScales(this.camera)
+
+        //const fromSun = this.fromSun
+
+        if (NodeMan.exists("globeCircle1")) {
+            const globeCircle1 = NodeMan.get("globeCircle1")
+            globeCircle1.normal = this.fromSun.clone().normalize();
+            globeCircle1.rebuild();
+            const globeCircle2 = NodeMan.get("globeCircle2")
+            globeCircle2.normal = this.fromSun.clone().normalize();
+            globeCircle2.rebuild();
+        }
+
+
 
     }
 

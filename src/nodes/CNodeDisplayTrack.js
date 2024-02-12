@@ -4,8 +4,6 @@ import {gui, Sit}                   from "../Globals";
 import {dispose}                    from "../threeExt";
 import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
 import {LineMaterial}               from "../../three.js/examples/jsm/lines/LineMaterial";
-import { Wireframe }                from '../../three.js/examples/jsm/lines/Wireframe.js';
-import { WireframeGeometry2 }       from '../../three.js/examples/jsm/lines/WireframeGeometry2.js';
 
 import {Line2}                      from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup}                    from "./CNode3DGroup";
