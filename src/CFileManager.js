@@ -200,7 +200,7 @@ class CFileManager extends CManager {
 
             }
 
-            console.log("DONE Parse " + filename)
+            console.log("parseAsset: DONE Parse " + filename)
 
             // if a promise then promise to wrap the result of that in a structure
             if (prom !== undefined) {
