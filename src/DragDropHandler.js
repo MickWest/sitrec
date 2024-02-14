@@ -5,6 +5,7 @@ import {NodeMan, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {FileManager} from "./CFileManager";
+import {par} from "./par";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -137,6 +138,7 @@ class CDragDropHandler {
                     }
                 }
                 console.log("parseResult: DONE Parse " + filename)
+                par.renderOne = true;
             })
     }
 }

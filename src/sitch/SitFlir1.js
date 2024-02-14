@@ -324,6 +324,7 @@ export const SitFlir1 = {
             track: "LOSTraverseSelect",
             TargetObjectFile: "TargetObjectFile",
             wind:"targetWind",
+            tiltType: "banking",
         })
 
           new CNodeDisplayTargetSphere({

@@ -1,13 +1,14 @@
 // fiddly temporary class to handle the jet target
 import {GLTFLoader} from "../../three.js/examples/jsm/loaders/GLTFLoader";
 import {CNode3DTarget} from "./CNode3DTarget";
-import {gui} from "../Globals";
+import {gui, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 import {Matrix4} from "../../three.js/build/three.module";
 
-import {trackAcceleration, trackVelocity} from "./CNode";
+import {trackAcceleration, trackDirection, trackVelocity} from "./CNode";
 import {FileManager} from "../CFileManager";
+import {degrees, radians, tan} from "../utils";
 
 
 // By default it will create a model from the file tagged "TargetObjectFile"
@@ -19,7 +20,7 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
         this.input("track")
         this.optionalInputs(["wind", "airTrack"])
 
-        this.tiltType = v.tiltType ?? "velocity"
+        this.tiltType = v.tiltType ?? "none"
 
         const data = FileManager.get(v.TargetObjectFile ?? "TargetObjectFile")
 
@@ -33,7 +34,7 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
 
         // This ia specific to the flying saucer
-        if (this.tiltType !== "velocity") {
+        if (this.tiltType !== "banking") {
             gui.add(this,"tiltType",{
                 axialPush:"axialPush",
                 axialPull:"axialPull",
@@ -65,9 +66,54 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
                 var next = this.in.track.p(f + 1)
 
                 switch (this.tiltType.toLowerCase()) {
-                    case "velocity":
+                    case "banking":
+                        // with banking, we calculate the angular velocity
+                        // from the track, and then use that to rotate the model
+                        // around the track direction
+
+                        const sampleDuration = 1;
+                        // first get the
+                        const velocityA = trackDirection(this.in.track, f-sampleDuration*Sit.fps/2)
+                        const velocityB = trackDirection(this.in.track, f+sampleDuration*Sit.fps/2)
+                        const velocity = trackVelocity(this.in.track, f)
+                        const fwd = velocity.clone().normalize()
+                        let angularVelocity = velocityA.angleTo(velocityB) / sampleDuration;  // radians per second
+
+                        // is it left or right turn? If the cross product of the two velocities is up, then it's a right turn
+                        const cross = V3().crossVectors(velocityA, velocityB)
+                        const right = cross.y > 0
+                        if (right)
+                            angularVelocity = -angularVelocity
+
+
+                        const speed = velocity.length()*Sit.fps; // meters per second
+                        // convert angular velocity to bank angle
+                    // function turnRate(bankDegrees, speedMPS) {
+                    //     var g = 9.77468   // local gravity at 36°latitude, 25000 feet https://www.sensorsone.com/local-gravity-calculator/
+                    //     var rate = (g * tan(radians(bankDegrees))) / speedMPS
+                    //     return degrees(rate);
+                    // }
+                        // rate = g * tan(bank) / speed
+                        // so bank = atan(rate * speed / g)
+
+                        const bankAngle = Math.atan(angularVelocity * speed / 9.77468)
+
+                        // and rotate the model about fwd by the bank angle
+                        const m = new Matrix4()
+                        m.makeRotationAxis(fwd, bankAngle)
+
+                        // // apply the rotation to the model's existing orientation
+                        // this.model.quaternion.multiply(m)
+                        // this.model.updateMatrix()
+                        // this.model.updateMatrixWorld()
+
+                        this.model.rotateOnWorldAxis(fwd, bankAngle);
+                        this.model.updateMatrix()
+                        this.model.updateMatrixWorld()
+
 
                         break;
+
                     case "axialpush":
                     case "axialpull":
                         // In Lazarian thrust, the vertical axis is aligned in the net force vector,

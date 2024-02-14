@@ -28,7 +28,10 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     files: {
         cameraFile: 'chilean/Chile Chopper Track from video GPSTime.kml',
         KMLTarget: "chilean/IB6830 - Incorporating Radar Positions.kml",
-        TargetObjectFile: 'models/A340-600-F18Engine.glb',
+//        TargetObjectFile: 'models/A340-600-F18Engine.glb',
+        TargetObjectFile: 'models/A340-600.glb',
+        //TargetObjectFile: './models/FA-18F.glb',
+
         DataFile: 'chilean/Chilean Navy Extracted Data 720.csv',
 
     },
@@ -53,9 +56,11 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     displayFrustum:true,
     ...commonKMLTrackToTrack,
 
-    targetObject:{file: "TargetObjectFile",},
+    targetObject:{file: "TargetObjectFile", tiltType: "banking"},
 
     wescamFOV: {file: "DataFile", focalIndex: 2, modeIndex: 1, len: 675, fov: 0.915},
+
+    smoothTrack: {track: "targetTrack"},
 
     setup2: function() {
 

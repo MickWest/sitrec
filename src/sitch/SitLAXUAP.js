@@ -68,6 +68,8 @@ export const SitLAXUAP = {
     //targetWind:{from:300, knots: 13},
     objectWind:{from:60, knots: 7},
 
+    smoothTrack: {track: "targetTrack"},
+
     targetObject: {file: "TargetObjectFile", wind: "targetWind"},
     displayFrustum: true,
 

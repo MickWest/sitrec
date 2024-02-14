@@ -455,6 +455,13 @@ export function trackVelocity(source, f) {
     return fwd
 }
 
+// per frame direction vector (normalized velocity)
+export function trackDirection(source, f) {
+    return trackVelocity(source, f).normalize();
+}
+
+
+
 // per frame acceleration
 // essential the first derivative of the position
 export function trackAcceleration(source, f) {
