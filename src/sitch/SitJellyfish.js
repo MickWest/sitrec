@@ -134,8 +134,7 @@ export const SitJellyfish    = {
 
   //  targetSizedSphere: { defer:true, size:1.5, color: "grey"},
 
-    DisplayCameraFrustum: {targetTrack:"traverseTrack"},
-
+    DisplayCameraFrustum: {targetTrack: "traverseTrack", units: "meters", step: 100},
 
     setup2: function() {
 

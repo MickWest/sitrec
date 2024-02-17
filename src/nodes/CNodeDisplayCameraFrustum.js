@@ -1,4 +1,4 @@
-import {radians, tan} from "../utils";
+import {radians, tan, unitsToMeters} from "../utils";
 import {LineGeometry} from "../../three.js/examples/jsm/lines/LineGeometry";
 import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
@@ -6,6 +6,7 @@ import {assert} from "../utils"
 import {dispose} from "../threeExt";
 import {NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
+import {LineSegmentsGeometry} from "../../three.js/examples/jsm/lines/LineSegmentsGeometry";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -33,6 +34,8 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
             0, s * 1.3, -d,
             s / 2, s, -d,
         ]
+
+
         this.FrustumGeometry = new LineGeometry();
         this.FrustumGeometry.setPositions(line_points);
         var line = new Line2(this.FrustumGeometry, this.matLine);
@@ -54,6 +57,9 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.color = v.color.v();
         this.lineWeigh = v.lineWeight ?? 1.5;
         this.matLine = makeMatLine(this.color, this.lineWeigh);
+
+        this.units = v.units ?? "meters";
+        this.step = v.step ?? 0;
 
         this.camera.visible = true;
 
@@ -78,15 +84,35 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
             0, 0, 0, w, -h, -d,
             0, 0, 0, -w, -h, -d,
             0, 0, 0, -w, h, -d,
-            -w, -h, -d,
-            w, -h, -d,
-            w, h, -d,
-            -w, h, -d,
-            -w / 2, h, -d,
-            0, h * 1.3, -d,
-            w / 2, h, -d,
+            -w, -h, -d, w, -h, -d,
+            w, -h, -d,  w, h, -d,
+            w, h, -d, -w, h, -d,
+            -w, h, -d, -w, -h, -d,
+            // -w / 2, h, -d,
+            // 0, h * 1.3, -d,
+            // w / 2, h, -d,
         ]
-        this.FrustumGeometry = new LineGeometry();
+
+        if (this.step > 0) {
+
+            const step = unitsToMeters(this.units,this.step);
+
+            for (let r = step; r < this.radius; r += step) {
+                h = r * tan(radians(this.camera.fov / 2))
+                w = h * this.camera.aspect;
+                d = r;
+                line_points.push(
+                    -w, -h, -d, w, -h, -d,
+                    w, -h, -d, w, h, -d,
+                    w, h, -d, -w, h, -d,
+                    -w, h, -d, -w, -h, -d,
+                )
+            }
+
+        }
+
+
+        this.FrustumGeometry = new LineSegmentsGeometry();
         this.FrustumGeometry.setPositions(line_points);
         this.line = new Line2(this.FrustumGeometry, this.matLine);
         this.line.computeLineDistances();

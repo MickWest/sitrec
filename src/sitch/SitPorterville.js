@@ -62,7 +62,7 @@ export const SitPorterville = {
     lookAtTrack: {},
     targetSizedSphere: { size:1, color: "black"},
 
-    DisplayCameraFrustum: {targetTrack: "targetTrack"},
+    DisplayCameraFrustum: {targetTrack: "targetTrack", units: "miles", step: 0.1},
 
 
 }

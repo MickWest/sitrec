@@ -27,6 +27,24 @@ export var scaleF2M = 0.3048
 export function f2m(f) {return f * scaleF2M}
 export function m2f(m) {return m / scaleF2M}
 
+export function unitsToMeters(units, value) {
+    const lower = units.toLowerCase();
+
+    switch (lower) {
+        case "miles": return metersFromMiles(value)
+        case "feet": return f2m(value)
+        case "meters": case "m": return value
+        case "nm": return metersFromNM(value)
+        case "km": case "kilometers": return value * 1000
+
+        default: assert(false, "Unknown units: "+units);
+    }
+
+
+    return value
+
+}
+
 // pad a string with leading zeros if it is shorter than the required size
 // longer numbers are returned unchanged
 function pad(num, size) {
