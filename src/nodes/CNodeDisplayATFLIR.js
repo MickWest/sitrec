@@ -10,7 +10,7 @@ import {showHider} from "../KeyBoardHandler";
 import {par} from "../par";
 import {AzElHelper, SphericalGridHelper} from "../CHelper";
 import {Sit} from "../Globals";
-import {CNodeDisplayCameraFrustum, CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
+import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
 import {dispose, propagateLayerMaskObject, V3} from "../threeExt";

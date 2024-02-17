@@ -64,14 +64,6 @@ const situationDefaults = {
     cameraSphereSize: 2000,
     targetSphereSize: 2000,
 
-    displayFrustum: false,
-    frustumRadius: 50000,
-    frustumColor: "white",
-    frustumLineWeight: 1.5,
-
-    // startCameraPosition:[-7136.71,380520.26,747460.97],
-    // startCameraTarget:[-7150.08,380080.93,746562.74]
-
     defaultLights: {brightness: 100}
 
 }

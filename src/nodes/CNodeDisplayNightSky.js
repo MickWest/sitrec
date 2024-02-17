@@ -293,6 +293,35 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.flareRegionGroup.visible = this.showFlareRegion;
         }).name("Flare Region")
 
+        this.flareBandGroup = new Group();
+
+        new CNodeDisplayGlobeCircle({
+            id: "globeCircle1",
+            normal: new Vector3(1, 0, 0),
+            color: [1,1,0],
+            width: 2,
+            offset: 3800000,
+            container: this.flareBandGroup,
+        })
+
+        new CNodeDisplayGlobeCircle({
+            id: "globeCircle2",
+            normal: new Vector3(1, 0, 0),
+            color: [0,1,0],
+            width: 2,
+            offset: 4900000,
+            container: this.flareBandGroup,
+        })
+
+        GlobalScene.add(this.flareBandGroup)
+
+        this.showFlareBand = false;
+        this.flareBandGroup.visible = this.showFlareBand;
+        guiShowHide.add(this, "showFlareBand").listen().onChange(()=>{
+            par.renderOne=true;
+            this.flareBandGroup.visible = this.showFlareBand;
+        }).name("Flare Band")
+
 
         this.showSatellites = true;
         guiShowHide.add(this, "showSatellites").listen().onChange(()=>{
@@ -384,34 +413,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.rot = 0
 
 
-        this.glareBandGroup = new Group();
-
-        new CNodeDisplayGlobeCircle({
-            id: "globeCircle1",
-            normal: new Vector3(1, 0, 0),
-            color: [1,1,0],
-            width: 2,
-            offset: 3800000,
-            container: this.glareBandGroup,
-        })
-
-        new CNodeDisplayGlobeCircle({
-            id: "globeCircle2",
-            normal: new Vector3(1, 0, 0),
-            color: [0,1,0],
-            width: 2,
-            offset: 4900000,
-            container: this.glareBandGroup,
-        })
-
-        GlobalScene.add(this.glareBandGroup)
-
-        this.showGlareBand = false;
-        this.glareBandGroup.visible = this.showGlareBand;
-        guiShowHide.add(this, "showGlareBand").listen().onChange(()=>{
-            par.renderOne=true;
-            this.glareBandGroup.visible = this.showGlareBand;
-        }).name("Glare Band")
 
         console.log("Done with CNodeDisplayNightSky constructor")
     }

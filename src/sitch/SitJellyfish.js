@@ -104,17 +104,17 @@ export const SitJellyfish    = {
 
 // TODO   angularSize: {kind: "GUIValue", value: 0.001, start: 0, end: 0.010, step: 0.0001, desc: "Angular Size"},
 
-    sphereInMainView: {
-        kind: "DisplayTargetSphere",
-        track: "traverseTrack",
-        size: 100,
-        layers: "HELPERS",
-    },
+    // sphereInMainView: {
+    //     kind: "DisplayTargetSphere",
+    //     track: "traverseTrack",
+    //     size: 100,
+    //     layers: "HELPERS",
+    // },
 
     sphereInLookView: { kind: "DisplayTargetSphere",
         track: "traverseTrack",
         size: "sphereSize",
-        layers: "LOOK"
+        layers: "LOOKRENDER"
     },
 
     traverseTrackDisplay: { kind: "DisplayTrack",
@@ -124,16 +124,17 @@ export const SitJellyfish    = {
     },
 
     // the red line that joins the camera track to the target - i.e. the current LOS.
-    DisplayLOS: { kind: "DisplayTrackToTrack",
-        cameraTrack: "motionTrackLOS",
-        targetTrack: "traverseTrack",
-        color: [1, 0, 0],
-        width: 2,
-    },
+    // [REMOVED, AS USING FRUSTUM]
+    // DisplayLOS: { kind: "DisplayTrackToTrack",
+    //     cameraTrack: "motionTrackLOS",
+    //     targetTrack: "traverseTrack",
+    //     color: [1, 0, 0],
+    //     width: 2,
+    // },
 
   //  targetSizedSphere: { defer:true, size:1.5, color: "grey"},
 
-    displayFrustum: true,
+    DisplayCameraFrustum: {targetTrack:"traverseTrack"},
 
 
     setup2: function() {

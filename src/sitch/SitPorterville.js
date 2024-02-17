@@ -10,9 +10,6 @@ export const SitPorterville = {
     tilt: 0,
 
     targetSize: 1, // in feet
-    displayFrustum: true,
-    frustumRadius: 2000,
-    frustumLineWeight: 1.5,
 
     frames: 21191,     // ful vid is 21207,
     fps: 59.94,
@@ -43,6 +40,8 @@ export const SitPorterville = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
+
+
     cameraSphereSize: 20,
     targetSphereSize: 20,
 
@@ -62,5 +61,8 @@ export const SitPorterville = {
     followTrack:{},
     lookAtTrack: {},
     targetSizedSphere: { size:1, color: "black"},
+
+    DisplayCameraFrustum: {targetTrack: "targetTrack"},
+
 
 }

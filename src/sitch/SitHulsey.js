@@ -8,8 +8,6 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     nightSky: true,
     landingLights:true,
     useGlobe: true,
-    displayFrustum: true,
-
 
     // maybe have these in CSituation
     nearClip: 1,
@@ -45,6 +43,8 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     cameraTrack: {},
     followTrack: {},
     mainView:{left:0.0, top:0, width:.50,height:1},
+
+    DisplayCameraFrustum: {radius:100000},
 
 
 })

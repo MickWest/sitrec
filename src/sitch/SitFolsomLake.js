@@ -14,9 +14,6 @@ export const SitFolsomLake = {
     tilt: 0,
 
     targetSize: 1, // in feet
-    displayFrustum: true,
-    frustumRadius: 20,
-    frustumLineWeight: 1.5,
 
 
     frames: 1156,
@@ -59,56 +56,5 @@ export const SitFolsomLake = {
 
     arrayDataPTZ: { arrayNode: "cameraTrack", pitch: "gPitch", heading: "heading", labelView: "labelVideo" },
 
-    OLDsetup2: function() {
-
-        // smooth some parts of cameraTrack
-        // TODO: make this general and data driven, assuming the data exits
-        assert (NodeMan.exists("cameraTrack"), "cameraTrack missing")
-
-
-        const cameraTrack = NodeMan.get("cameraTrack");
-        const array = cameraTrack.array
-        assert (array !== undefined, "cameraTrack missing array object")
-
-
-//        makeArrayNodeFromColumn("headingCol", array, "heading",30, true)
-  //      makeArrayNodeFromColumn("pitchCol", array, "gPitch",30, true)
-         // makeArrayNodeFromColumn("pitchCol1", array, "gPitch",30, true)
-         // makeArrayNodeFromColumn("pitchCol2", array, "pitch",30, true)
-
-       // makeComboNode("pitchCol","pitchCol1","pitchCol2",(a,b) => {return a+b})
-
-        // NodeMan.get("lookCamera").addControllerNode(
-        //     new CNodeControllerAzElData({
-        //         sourceTrack: "cameraTrack",
-        //     })
-        // )
-
-        // NodeMan.get("lookCamera").addController(
-        //     "AbsolutePitchHeading",
-        //     {pitch: "pitchCol", heading: "headingCol"}
-        // )
-
-        // const labelVideo = NodeMan.get("labelVideo")
-        // // custom drone specific UI
-        // labelVideo.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
-        //     this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
-        // })
-        //
-        // labelVideo.addLine("---").listen(par, "az", function (value) {
-        //     this.text = "Az " + value.toFixed(2) + "°";
-        // })
-        //
-        //
-        // labelVideo.addLine("---").update(function (value) {
-        //     this.text = "Pitch " + NodeMan.get("pitchCol2").v(par.frame).toFixed(2) + "°";
-        // })
-        //
-        // labelVideo.addLine("---").update(function (value) {
-        //     this.text = "gPitch " + NodeMan.get("pitchCol1").v(par.frame).toFixed(2) + "°";
-        // })
-
-  //      NodeMan.reinterpret("cameraTrack", "SmoothedPositionTrack", {smooth:100}, "source")
-
-    }
+    DisplayCameraFrustum: {radius: 600},
 }

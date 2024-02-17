@@ -4,8 +4,6 @@ export const Sit29Palms = {
     menuName: "29 Palms Back Photo",
 
     nightSky: true,
-    displayFrustum: true,
-    frustumRadius: 10000,
 
     files: {
         threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
@@ -52,5 +50,8 @@ export const Sit29Palms = {
     labelView: {},
 
     addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD"},
+
+    DisplayCameraFrustum: {radius:100000},
+
 
 }

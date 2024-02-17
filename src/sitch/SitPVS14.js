@@ -20,7 +20,6 @@ export const SitPVS14 = {
 
     nightSky: true,
     useGlobe: true,
-    displayFrustum: true,
 
     starScale: 0.65,
 
@@ -77,6 +76,8 @@ export const SitPVS14 = {
     mainView:{left:0.0, top:0, width:0.5,height:1,background:'#000000'},
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,background:'#000000'},
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
+    DisplayCameraFrustum: {radius:100000},
+
 
     ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},
 

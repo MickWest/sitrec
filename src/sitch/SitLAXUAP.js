@@ -71,12 +71,14 @@ export const SitLAXUAP = {
     smoothTrack: {track: "targetTrack"},
 
     targetObject: {file: "TargetObjectFile", wind: "targetWind"},
-    displayFrustum: true,
 
     // losTarget is a sphere that sits on a LOS at a certain frame
     // and is at a certain altitude
     // offset is the angle of the target from the LOS, perpendicular to the track
     // i.e. it would be to the side of a plane
     losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
+
+
+    DisplayCameraFrustum: {targetTrack:"targetTrack"},
 
 }

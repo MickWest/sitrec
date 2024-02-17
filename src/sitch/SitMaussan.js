@@ -10,7 +10,6 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     nightSky: true,
     useGlobe: true,
     useDayNightGlobe: true,
-    displayFrustum: true,
 
     simSpeed: 25,
 

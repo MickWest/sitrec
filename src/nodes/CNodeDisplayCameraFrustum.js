@@ -44,13 +44,15 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
 
 export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     constructor(v) {
+        v.color ??= "white";
        // v.container = v.camera;
         super(v);
         this.radius = v.radius ?? 100
-        this.camera = NodeMan.get(v.camera).camera;
+        this.input("targetTrack",true)
+        this.camera = NodeMan.get(v.camera ?? "lookCamera").camera;
 
         this.color = v.color.v();
-        this.lineWeigh = v.lineWeight ?? 1;
+        this.lineWeigh = v.lineWeight ?? 1.5;
         this.matLine = makeMatLine(this.color, this.lineWeigh);
 
         this.camera.visible = true;
@@ -62,6 +64,9 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
 
         this.group.remove(this.line)
         dispose(this.FrustumGeometry)
+
+
+
 
         var h = this.radius * tan(radians(this.camera.fov/2))
         // aspect is w/h so w = h * aspect
@@ -91,11 +96,17 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.lastFOV = this.camera.fov;
     }
 
-    update() {
+    update(f) {
+
+        if (this.in.targetTrack !== undefined) {
+            const targetPos = this.in.targetTrack.p(f)
+            this.radius = targetPos.clone().sub(this.camera.position).length()
+        }
+
         this.group.position.copy(this.camera.position)
         this.group.quaternion.copy(this.camera.quaternion)
         this.group.updateMatrix();
-        if (this.lastFOV !== this.camera.fov || this.lastAspect !== this.camera.aspect) {
+        if (this.lastFOV !== this.camera.fov || this.lastAspect !== this.camera.aspect || (this.in.targetTrack !== undefined)) {
             this.lastAspect = this.camera.aspect;
             this.lastFOV = this.camera.fov;
             this.rebuild();

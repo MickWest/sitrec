@@ -35,8 +35,6 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
 
     ...commonKMLTrackToTrack,
     targetObject: {file: "TargetObjectFile"},
-    displayFrustum: true,
-
 
     tilt: 1.24,
 

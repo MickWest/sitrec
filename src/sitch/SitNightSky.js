@@ -23,8 +23,6 @@ export const SitNightSky = {
     useGlobe: true,
     useDayNightGlobe: true,
     globeScale: 1,  // was defaulting to 0.99
-    displayFrustum: true,
-    frustumRadius: 500000,
     localLatLon: true,
 
     showDateTime: true, // opens the DateTime folder in the UI
@@ -83,6 +81,9 @@ export const SitNightSky = {
     lookView: {left: 0.5, top: 0, width: 0.5, height: 1,
         ptzControls:true, // flag so dragging the view around will alter the ptz controls
     },
+
+    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
+
 
     setup2: function () {
 

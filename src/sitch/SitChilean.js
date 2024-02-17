@@ -53,7 +53,6 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     videoView: {             left: 0.5, top: 0, width: -1920/1080, height: 0.5,},
     mainView:{left:0.0, top:0, width:0.625,height:1},
 
-    displayFrustum:true,
     ...commonKMLTrackToTrack,
 
     targetObject:{file: "TargetObjectFile", tiltType: "banking"},
@@ -61,6 +60,8 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     wescamFOV: {file: "DataFile", focalIndex: 2, modeIndex: 1, len: 675, fov: 0.915},
 
     smoothTrack: {track: "targetTrack"},
+
+
 
     setup2: function() {
 

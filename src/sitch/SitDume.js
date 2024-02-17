@@ -5,8 +5,6 @@ export const SitDume = {
 
     animated:false,
 
-    displayFrustum: true,
-    frustumRadius: 200000,
 
     fps: 29.97,
     frames: 7027,

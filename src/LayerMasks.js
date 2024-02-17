@@ -15,9 +15,9 @@ export const MAIN = 3       // things that we want to see in the main camera
 export const LOOK = 4       // things that we want to see in the look camera
 export const HELPERS = 5    // things like lines that we want ONLY in the main view, but not in the recreation
 
-export const MASK_WORLD = (1<<WORLD);       // all normal 3D objects in the GlobalScene (default)
-export const MASK_MAIN = (1<<MAIN);         // things that we want to see in the main camera
-export const MASK_LOOK = (1<<LOOK);      // things that we want to see in the look camera
+export const MASK_WORLD = (1<<WORLD);      // all normal 3D objects in the GlobalScene (default)
+export const MASK_MAIN = (1<<MAIN);        // things that we want to see in the main camera
+export const MASK_LOOK = (1<<LOOK);        // things that we want to see in the look camera
 export const MASK_HELPERS = (1<<HELPERS)   // things like lines that we want ONLY in the main view, but not in the recreation
 
 // Lighitng applies to all non-helpers

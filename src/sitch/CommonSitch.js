@@ -17,8 +17,9 @@ export const commonKMLCamera = {
 export const commonKMLTracks = {
     ...commonKMLTarget,
     ...commonKMLCamera,
-    displayLOS: {kind: "DisplayTrackToTrack"},
+//    displayLOS: {kind: "DisplayTrackToTrack"},
     //   targetObject: {file: "TargetObjectFile",},
+    DisplayCameraFrustum: {targetTrack: "targetTrack"},
 }
 
 export const commonKMLTrackToTrack = {

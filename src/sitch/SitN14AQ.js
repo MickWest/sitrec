@@ -36,7 +36,6 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
     mainView:{left:0.0, top:0, width:.50,height:1},
 
     ...commonKMLTrackToTrack,
-    displayFrustum: true,
     //targetSizedSphere: { size:200 },
     targetObject: {file: "TargetObjectFile"},
     targetSizedSphere: { size:200 },

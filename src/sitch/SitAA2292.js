@@ -6,7 +6,6 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     menuName: "AA2292 Cruise Missile",
 
     targetSize: 85, // in feet
-    displayFrustum: true,
 
     frames:2000,
     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},

@@ -53,7 +53,6 @@ import {assert} from "./utils"
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {CNodeDateTime, MakeDateTimeNode} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
-import {CNodeDisplayCameraFrustum} from "./nodes/CNodeDisplayCameraFrustum";
 import JSURL from "./js/jsurl";
 import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 
@@ -318,7 +317,7 @@ function startAnimating(fps) {
 }
 
 function animate(newtime) {
-    requestAnimationFrame( animate );
+    // requestAnimationFrame( animate );
 
     now = newtime;
     elapsed = now - then;
@@ -348,6 +347,8 @@ function animate(newtime) {
         renderMain();
         par.paused = oldPaused;
     }
+    requestAnimationFrame( animate );
+
 }
 
 function windowChanged() {
@@ -583,15 +584,15 @@ if (Sit.nightSky) {
     addNightSky()
 }
 
-if (Sit.displayFrustum) {
-    console.log("addFrustum()")
-     Sit.frustum = new CNodeDisplayCameraFrustum({
-         radius: Sit.frustumRadius,
-         camera: "lookCamera",
-         color: Sit.frustumColor,
-         lineWeight: Sit.frustumLineWeight
-     })
-}
+// if (Sit.displayFrustum) {
+//     console.log("addFrustum()")
+//      Sit.frustum = new CNodeDisplayCameraFrustum({
+//          radius: Sit.frustumRadius,
+//          camera: "lookCamera",
+//          color: Sit.frustumColor,
+//          lineWeight: Sit.frustumLineWeight
+//      })
+// }
 
 // Finally move the camera and reset the start time, if defined in the URL parameters
 if (urlParams.get("data")) {
