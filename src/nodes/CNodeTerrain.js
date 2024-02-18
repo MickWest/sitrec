@@ -147,5 +147,17 @@ export class CNodeTerrain extends CNode {
     getGroup() {
         return this.maps[this.mapType].group;
     }
+
+    getIntersects(raycaster) {
+        const collisionSet = this.getGroup().children
+        return raycaster.intersectObjects(collisionSet, true)
+    }
+
+    getClosestIntersect(raycaster) {
+        const intersects = this.getIntersects(raycaster)
+        return intersects.length > 0 ? intersects[0] : null
+    }
+
+
 }
 

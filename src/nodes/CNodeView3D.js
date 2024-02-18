@@ -407,23 +407,29 @@ export class CNodeView3D extends CNodeViewCanvas {
             // but if there's a terrain node, then use that
             if (NodeMan.exists("TerrainModel")) {
                 let terrainNode = NodeMan.get("TerrainModel")
-                collisionSet = terrainNode.getGroup().children
-
-                var intersects = this.raycaster.intersectObjects(collisionSet, true);
-
-                for (var i = 0; i < intersects.length; i++) {
-                    var intersectDistance = this.camera.position.distanceTo(intersects[i].point)
-                    //debugText += "CHECKING: "+intersects[i].point.x+","+intersects[i].point.y+","+intersects[i].point.z+"<br>"
-                    //debugText += "Intersect Distance = "+intersectDistance+", distance = " + distance+"<br>";
-                    if (intersectDistance < distance) {
-                        if (intersects[i].object != this.cursorSprite) {
-                            distance = intersectDistance;
-                            closestPoint.copy(intersects[i].point);
-                            found = true;
-                        //    console.log("COLLISION FOUND: " + closestPoint.x + "," + closestPoint.y + "," + closestPoint.z + "<br>")
-                        }
-                    }
+                const firstIntersect = terrainNode.getClosestIntersect(this.raycaster)
+                if (firstIntersect) {
+                    closestPoint.copy(firstIntersect.point)
+                    found = true;
                 }
+
+                // collisionSet = terrainNode.getGroup().children
+                //
+                // var intersects = this.raycaster.intersectObjects(collisionSet, true);
+                //
+                // for (var i = 0; i < intersects.length; i++) {
+                //     var intersectDistance = this.camera.position.distanceTo(intersects[i].point)
+                //     //debugText += "CHECKING: "+intersects[i].point.x+","+intersects[i].point.y+","+intersects[i].point.z+"<br>"
+                //     //debugText += "Intersect Distance = "+intersectDistance+", distance = " + distance+"<br>";
+                //     if (intersectDistance < distance) {
+                //         if (intersects[i].object != this.cursorSprite) {
+                //             distance = intersectDistance;
+                //             closestPoint.copy(intersects[i].point);
+                //             found = true;
+                //         //    console.log("COLLISION FOUND: " + closestPoint.x + "," + closestPoint.y + "," + closestPoint.z + "<br>")
+                //         }
+                //     }
+                // }
 
             }
 
