@@ -24,7 +24,6 @@ export var par = {
     podRollIdeal: 0, // ideal roll from the pod = globalRoll-jetRoll
     podRollPhysical: 0, // physical roll of the pod head = ideal roll or angle from glare
     deroFromGlare: false,
-    lockCameraToJet: false,
     showPodHead: false,
     showPodsEye: false,
     graphSize: 100,

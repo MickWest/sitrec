@@ -2,7 +2,7 @@ import {CNodeView, mouseInViewOnly, ViewMan} from "./CNodeView";
 import {par} from "../par";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {GlobalComposer, gui, NodeMan} from "../Globals";
+import {GlobalComposer, gui, NodeMan, Sit} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {} from "../Globals"
 import {makeMouseRay} from "../mouseMoveView";
@@ -121,6 +121,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
         this.focusTrackName = "default"
+        this.lockTrackName = "default"
         if (v.focusTracks) {
             this.addFocusTracks(v.focusTracks);
         }
@@ -142,9 +143,15 @@ export class CNodeView3D extends CNodeViewCanvas {
     }
 
     addFocusTracks(focusTracks) {
+        this.focusTrackName = "default"
+        this.lockTrackName = "default"
         gui.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
             //
         }).name("Focus Track")
+        gui.add(this, "lockTrackName", focusTracks).onChange(lockTrackName => {
+            //
+            console.log(this.lockTrackName)
+        }).name("Lock Track")
     }
 
     get camera() {
@@ -392,19 +399,8 @@ export class CNodeView3D extends CNodeViewCanvas {
 
             this.raycaster.setFromCamera(mouseRay, this.camera);
 
-            // by default we check for collisions with the entire scene
-            var collisionSet = this.scene.children;
-
             var closestPoint = V3()
-            var distance = 10000000000;
             var found = false;
-
-            // NOW ONLY WITH TERRAIN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // old was to use any geometry, allowing rotating around jets, etc
-            // but that's WAY too fiddly now, so only to it with terrain
-            // SWR is a goo test case, as it's high altitude
-
-            // but if there's a terrain node, then use that
             if (NodeMan.exists("TerrainModel")) {
                 let terrainNode = NodeMan.get("TerrainModel")
                 const firstIntersect = terrainNode.getClosestIntersect(this.raycaster)
@@ -412,29 +408,9 @@ export class CNodeView3D extends CNodeViewCanvas {
                     closestPoint.copy(firstIntersect.point)
                     found = true;
                 }
-
-                // collisionSet = terrainNode.getGroup().children
-                //
-                // var intersects = this.raycaster.intersectObjects(collisionSet, true);
-                //
-                // for (var i = 0; i < intersects.length; i++) {
-                //     var intersectDistance = this.camera.position.distanceTo(intersects[i].point)
-                //     //debugText += "CHECKING: "+intersects[i].point.x+","+intersects[i].point.y+","+intersects[i].point.z+"<br>"
-                //     //debugText += "Intersect Distance = "+intersectDistance+", distance = " + distance+"<br>";
-                //     if (intersectDistance < distance) {
-                //         if (intersects[i].object != this.cursorSprite) {
-                //             distance = intersectDistance;
-                //             closestPoint.copy(intersects[i].point);
-                //             found = true;
-                //         //    console.log("COLLISION FOUND: " + closestPoint.x + "," + closestPoint.y + "," + closestPoint.z + "<br>")
-                //         }
-                //     }
-                // }
-
             }
 
             let target;
-
 
             if (found) {
                 target = closestPoint.clone();
@@ -454,10 +430,9 @@ export class CNodeView3D extends CNodeViewCanvas {
                 }else {
 
                     // Not found a collision with anything in the GlobalScene, so just collide with the 25,000 foot plane
-                    const selectPlane = new Plane(new Vector3(0, -1, 0), f2m(this.defaultTargetHeight))   // TODO - 25,000 is hard coded gimbal
+                    const selectPlane = new Plane(new Vector3(0, -1, 0), f2m(this.defaultTargetHeight))
 
                     if (this.raycaster.ray.intersectPlane(selectPlane, possibleTarget)) {
-                     //   console.log("defaultTargetHeight PLANE HIT: " + possibleTarget.x + "," + possibleTarget.y + "," + possibleTarget.z + "<br>")
                         target = possibleTarget.clone()
                     }
                 }

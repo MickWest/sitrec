@@ -395,7 +395,7 @@ export const SitFlir1 = {
         // which needs "jetstuff"
         initViews()
 
-        guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
+    //    guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
 
 
         guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {

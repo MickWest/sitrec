@@ -314,10 +314,10 @@ const GimbalDefaults = {
         new CNodeDisplayTrack({
             id:"AirTrackDisplay",
             track: "airTrack",
-            color: new CNodeConstant({value: new Color(0, 0, 1)}),
-            secondColor:    new CNodeConstant({value: new Color(0, 0, 0.75)}),
+            color: new CNodeConstant({value: new Color(0, 0.5, 1)}),
+       //     secondColor:    new CNodeConstant({value: new Color(0, 0, 0.75)}),
 
-            width: 1,
+            width: 2,
             visibleCheck: (()=> {return ViewMan.get("SAPage").buttonBoxed(16)}),
         })
 
@@ -441,9 +441,9 @@ export const SitGimbalNear = {
         TargetObjectFile: './models/saucer01a.glb',
     },
 
-    startDistance: 9,
+    startDistance: 6,
     targetSpeed: 320,
-    targetSize: 22,   // diamater sif suacer to match visually, around 22 feet.
+    targetSize: 1,   // diameter of sphere, around 22 feet.
 
 
     defaultTraverse:"Straight Line",
@@ -458,7 +458,7 @@ export const SitGimbalNear = {
     cloudWindFrom: 240,
     cloudWindKnots: 17,
     targetWindFrom: 280,
-    targetWindKnots: 90,
+    targetWindKnots: 120,
     localWindFrom: 280,
     localWindKnots: 120,
 
@@ -503,7 +503,7 @@ export const SitGimbalNear = {
                     }, gui)
                 )
             },
-            tiltType: "axialPull",
+            tiltType: "glareAngle",
             wind:"targetWind",
 
             //  model: FA182,

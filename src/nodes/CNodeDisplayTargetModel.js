@@ -1,7 +1,7 @@
 // fiddly temporary class to handle the jet target
 import {GLTFLoader} from "../../three.js/examples/jsm/loaders/GLTFLoader";
 import {CNode3DTarget} from "./CNode3DTarget";
-import {gui, Sit} from "../Globals";
+import {gui, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 import {Matrix4} from "../../three.js/build/three.module";
@@ -9,6 +9,8 @@ import {Matrix4} from "../../three.js/build/three.module";
 import {trackAcceleration, trackDirection, trackVelocity} from "./CNode";
 import {FileManager} from "../CFileManager";
 import {degrees, radians, tan} from "../utils";
+import {getGlareAngleFromFrame} from "../JetStuff";
+import {par} from "../par";
 
 
 // By default it will create a model from the file tagged "TargetObjectFile"
@@ -38,10 +40,13 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
             gui.add(this,"tiltType",{
                 axialPush:"axialPush",
                 axialPull:"axialPull",
+                axialPushZeroG:"axialPushZeroG",
+                axialPullZeroG:"axialPullZeroG",
                 frontPointing:"frontPointing",
                 frontPointingAir:"frontPointingAir",
                 bottomPointing:"bottomPointing",
                 bottomPointingAir:"bottomPointingAir",
+                glareAngle:"glareAngle",
             }).name("saucer tilt type")
                 .listen(()=>{par.renderOne = true})
         }
@@ -116,6 +121,8 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
                     case "axialpush":
                     case "axialpull":
+                    case "axialpullzerog":
+                    case "axialpushzerog":
                         // In Lazarian thrust, the vertical axis is aligned in the net force vector,
                         // including gravity.
                         // so a saucer tilts in the direction it is going in
@@ -133,8 +140,11 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
                         if (this.tiltType === "axialPull")
                             accelerationDir.negate()
 
-                        const gravity = V3(0, -9.81 / this.fps / this.fps, 0) // 9.81 is per sercond, so divide by fps^2 to get per frame
-                        accelerationDir.sub(gravity) // add in a force opposite gravity
+                        if (this.tiltType === "axialPull" || this.tiltType === "axialPush") {
+                            const gravity = V3(0, -9.81 / this.fps / this.fps, 0) // 9.81 is per sercond, so divide by fps^2 to get per frame
+                            accelerationDir.sub(gravity) // add in a force opposite gravity
+                        }
+
                         this.pointBottomAt(pos, pos.clone().add(accelerationDir))
 
 
@@ -168,6 +178,29 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
                         this.model.lookAt(next)
                         this.model.updateMatrix()
                         this.model.updateMatrixWorld()
+                        break;
+
+                    case "glareangle":
+                        // so we just need to rotate it around the line of sight by the glare angle
+                        var glare = radians(getGlareAngleFromFrame(f) + 90);
+                        var mg = new Matrix4()
+                        // get LOS from the camera to the target
+                        var to = this.in.airTrack.p(f)
+
+                        if (NodeMan.exists("jetTrack")) {
+
+                            var from = NodeMan.get("jetTrack").p(f)
+                            var fwdLOS = to.clone().sub(from).normalize()
+                            // make mg a rotation matrix that rotates around the line of sight
+                            mg.makeRotationAxis(fwdLOS, glare)
+
+                            // and appy it to the model
+                            this.model.quaternion.setFromRotationMatrix(mg);
+                            this.model.updateMatrix()
+                            this.model.updateMatrixWorld()
+                        } else {
+                            console.warn("jetTrack not found for glare angle in CNodeDisplayTargetModel.js")
+                        }
                         break;
 
                 }

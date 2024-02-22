@@ -5,6 +5,7 @@ import {NodeMan, Sit, Units} from "./Globals";
 import {acos, degrees, m2f, metersFromMiles, NMFromMeters} from "./utils";
 import {pointAltitude} from "./SphericalMath";
 import {assert} from "./utils"
+import {getGlareAngleFromFrame} from "./JetStuff";
 
 // add a graph of the subtended size of the target
 // as a percentage of its size at the start of the video
@@ -146,7 +147,26 @@ export function AddTailAngleGraph(mungeInputs, windowParams={}, editorParams={})
     addGenericJetGraph("tailAngleGraph", "Tail Angle", mungeInputs, windowParams, editorParams, mungeFunction);
 }
 
-export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.60, top = 0, width = -1, height = 0.25) {
+export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.60, top = 0, width = -1, height = 0.25, lines=[]) {
+
+    let maybeGlare = {};
+
+    if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
+        maybeGlare = {
+            // black = glare angle
+            compare4: new CNodeGraphSeries({
+                // Munge node to convert a traverse track to speed
+                source: new CNodeMunge({
+                    inputs: {source: source},
+                    munge: function (f) {
+                        return getGlareAngleFromFrame(f)
+                    }
+                }),
+                name: "Glare Angle",
+                color: "#800000",
+            })
+        }
+    }
 
     var speedGraphNode = new CNodeCurveEditor({
         id: "speedGraph_"+source,
@@ -170,6 +190,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             points: [],
             xLabelDelta: true,
 
+            lines: lines,
 
         },
         inputs: {
@@ -238,7 +259,11 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                 }),
                 name: "Vertical Speed",
                 color: "#800000",
-            })
+            }),
+
+            ...maybeGlare,
+
+
 
         },
 

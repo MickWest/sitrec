@@ -19,7 +19,7 @@ import {assert, degrees, scaleF2M, vdump} from '../utils.js'
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
 import {CNodeFactory} from "./CNodeFactory";
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 
@@ -323,13 +323,13 @@ class CNode {
     // the "depth" patameter here is just used for indenting.
     recalculateCascade(f, noControllers = false, depth = 0) {
 
-        // if (par.paused) {
-        //     if (depth === 0) {
-        //         console.log("\nRecalculate Start With "+ this.id)
-        //     } else {
-        //         console.log("|---".repeat(depth) + " " + this.id)
-        //     }
-        // }
+         if (par.paused) {
+            if (depth === 0) {
+                console.log("\nRecalculate Start With "+ this.id)
+            } else {
+                console.log("|---".repeat(depth) + " " + this.id)
+            }
+        }
 
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
@@ -440,6 +440,8 @@ export class CNodeMovablePoint extends CNode {
 
 // get heading in the XZ plane - i.e. the compass heading
 export function trackHeading(source, f) {
+    if (f > Sit.frames-2) f = Sit.frames-2; // hand out of range
+    if (f < 0) f = 0
     var fwd = source.p(f+1).sub(source.p(f))
     var heading = degrees(Math.atan2(fwd.x, -fwd.z))
     return heading
@@ -451,6 +453,8 @@ export function trackHeading(source, f) {
 // given that source.p(f) is the position at frame f
 // we calculate the velocity vector at f as the position at f+1 minus the position at f
 export function trackVelocity(source, f) {
+    if (f > Sit.frames-2) f = Sit.frames-2; // hand out of range
+    if (f < 0) f = 0
     var fwd = source.p(f+1).sub(source.p(f))
     return fwd
 }

@@ -3,10 +3,13 @@ import {LineGeometry} from "../../three.js/examples/jsm/lines/LineGeometry";
 import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
-import {dispose} from "../threeExt";
+import {DebugArrow, DebugArrowAB, dispose, intersectSphere2} from "../threeExt";
 import {NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "../../three.js/examples/jsm/lines/LineSegmentsGeometry";
+import {Ray, Raycaster, Sphere, Vector3} from "three";
+import {getLocalUpVector} from "../SphericalMath";
+import {wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -112,6 +115,104 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         }
 
 
+        function terrainCollideCameraRelative(terrain, camera, localPos) {
+            const pos = camera.localToWorld(localPos);
+            const rayCaster = new Raycaster(camera.position, pos.sub(camera.position).normalize());
+            const ground = terrain.getClosestIntersect(rayCaster);
+            if (ground !== null) {
+                return ground.point;
+            }
+            return null;
+        }
+
+        function sphereCollideCameraRelative(sphere, camera, localPos) {
+            const pos = camera.localToWorld(localPos);
+            const ray = new Ray(camera.position, pos.sub(camera.position).normalize());
+            const sphereCollision = new Vector3();
+            if (intersectSphere2(ray, sphere, sphereCollision))
+                return sphereCollision;
+            return null;
+
+        }
+
+
+// WORK IN PROGRESS.  calculating the ground quadrilateral intersecting the frustum with the ground
+
+
+        let corner = new Array(4)
+
+        if (NodeMan.exists("TerrainModel")) {
+            let terrainNode = NodeMan.get("TerrainModel")
+            corner[0] = terrainCollideCameraRelative(terrainNode, this.camera, new Vector3(-w, -h, -d))
+            corner[1] = terrainCollideCameraRelative(terrainNode, this.camera, new Vector3(w, -h, -d))
+            corner[2] = terrainCollideCameraRelative(terrainNode, this.camera, new Vector3(w, h, -d))
+            corner[3] = terrainCollideCameraRelative(terrainNode, this.camera, new Vector3(-w, h, -d))
+        } else {
+            corner[0] = null;
+            corner[1] = null;
+            corner[2] = null;
+            corner[3] = null;
+        }
+
+        // if any corner is null, then we don't have a complete quadrilateral
+        // so we try the collisions again, but this time against a globe, a sphere
+        // if all corners are nell then radius of the globle is wgs84.radius
+        // otherwise it's the average.
+        // note the results are in world space
+        const sphereCenter = new Vector3(0,-wgs84.RADIUS,0);
+        // first calculate the radius of the sphere
+        let sphereRadius = wgs84.RADIUS;
+        // let n = 0;
+        // let rSum = 0;
+        // for (let i = 0; i < 4; i++) {
+        //     if (corner[i] !== null) {
+        //         n++;
+        //         rSum += corner[i].clone().sub(sphereCenter).length();
+        //     }
+        // }
+        // if (n > 0) {
+        //     sphereRadius = rSum / n;
+        // }
+
+        // now make a sphere with that radius
+        const globe = new Sphere(sphereCenter, sphereRadius);
+
+        // now we can try the sphere collisions for any that missed the terrain
+        if (corner[0] === null) {
+            corner[0] = sphereCollideCameraRelative(globe, this.camera, new Vector3(-w, -h, -d))
+        }
+        if (corner[1] === null) {
+            corner[1] = sphereCollideCameraRelative(globe, this.camera, new Vector3(w, -h, -d))
+        }
+        if (corner[2] === null) {
+            corner[2] = sphereCollideCameraRelative(globe, this.camera, new Vector3(w, h, -d))
+        }
+        if (corner[3] === null) {
+            corner[3] = sphereCollideCameraRelative(globe, this.camera, new Vector3(-w, h, -d))
+        }
+
+        // if we have all 4 corners, then we can draw the quadrilateral
+        // Construct the quadrilateral from the corners
+        // converting them back to local space, as they are attached to the camera
+        if (corner[0] !== null && corner[1] !== null && corner[2] !== null && corner[3] !== null) {
+            const localUp = getLocalUpVector(corner[0])
+            corner[0] = this.camera.worldToLocal(corner[0]).add(localUp);
+            corner[1] = this.camera.worldToLocal(corner[1]).add(localUp);
+            corner[2] = this.camera.worldToLocal(corner[2]).add(localUp);
+            corner[3] = this.camera.worldToLocal(corner[3]).add(localUp);
+            line_points.push(
+                corner[0].x, corner[0].y, corner[0].z,
+                corner[1].x, corner[1].y, corner[1].z,
+                corner[1].x, corner[1].y, corner[1].z,
+                corner[2].x, corner[2].y, corner[2].z,
+                corner[2].x, corner[2].y, corner[2].z,
+                corner[3].x, corner[3].y, corner[3].z,
+                corner[3].x, corner[3].y, corner[3].z,
+                corner[0].x, corner[0].y, corner[0].z,
+            )
+        }
+
+
         this.FrustumGeometry = new LineSegmentsGeometry();
         this.FrustumGeometry.setPositions(line_points);
         this.line = new Line2(this.FrustumGeometry, this.matLine);
@@ -120,10 +221,14 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.add(this.line)
         this.propagateLayerMask();
         this.lastFOV = this.camera.fov;
+
+
+
     }
 
     update(f) {
 
+        // if we have a target track, then we can use that to set the radius (distance to the end of the frustum)
         if (this.in.targetTrack !== undefined) {
             const targetPos = this.in.targetTrack.p(f)
             this.radius = targetPos.clone().sub(this.camera.position).length()
@@ -132,11 +237,12 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.position.copy(this.camera.position)
         this.group.quaternion.copy(this.camera.quaternion)
         this.group.updateMatrix();
-        if (this.lastFOV !== this.camera.fov || this.lastAspect !== this.camera.aspect || (this.in.targetTrack !== undefined)) {
+        this.group.updateMatrixWorld();
+    //    if (this.lastFOV !== this.camera.fov || this.lastAspect !== this.camera.aspect || (this.in.targetTrack !== undefined)) {
             this.lastAspect = this.camera.aspect;
             this.lastFOV = this.camera.fov;
             this.rebuild();
-        }
+    //    }
     }
 }
 

@@ -109,7 +109,7 @@ export const SitAguadilla = {
         assert(GlobalScene !== undefined,"Missing GlobalScene")
 
         // Flag for camera to follow the jet
-        gui.add(par, 'lockCameraToJet').listen().name("Lock Camera to Plane");
+     //   gui.add(par, 'lockCameraToJet').listen().name("Lock Camera to Plane");
 
         // adjusing the main FOV, not really used now it's set well.
         gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
@@ -129,38 +129,39 @@ export const SitAguadilla = {
             lookCam.fov = lookFOV
             lookCam.updateProjectionMatrix()
 
-            if (par.lockCameraToJet) {
-                const f = par.frame
-                const track = NodeMan.get("jetTrackSmooth")
+            // if (par.lockCameraToJet) {
+            //     const f = par.frame
+            //     const track = NodeMan.get("jetTrackSmooth")
+            //
+            //     var pos = track.p(f)
+            //     const heading = trackHeading(track, f)
+            //
+            //     if (this.lastPlanePos === undefined) {
+            //         this.lastPlanePos = pos
+            //         this.lastHeading = heading
+            //     }
+            //
+            //     var headingChange = heading - this.lastHeading;
+            //     if (headingChange < -180) headingChange += 360;
+            //
+            //     var offset = pos.clone().sub(this.lastPlanePos)
+            //     this.lastPlanePos = pos;
+            //     this.lastHeading = heading;
+            //     const mainCam = NodeMan.get("mainCamera").camera;
+            //
+            //     mainCam.position.add(offset)
+            //
+            //     // rotate camera about the jet position
+            //     mainCam.position.sub(pos)
+            //     mainCam.position.applyAxisAngle(V3(0, 1, 0), -radians(headingChange))
+            //     mainCam.position.add(pos)
+            //
+            //     mainCam.rotateOnAxis(V3(0, 1, 0), -radians(headingChange))
+            //
+            //     mainCam.updateMatrix()
+            //     mainCam.updateMatrixWorld()
+            // }
 
-                var pos = track.p(f)
-                const heading = trackHeading(track, f)
-
-                if (this.lastPlanePos === undefined) {
-                    this.lastPlanePos = pos
-                    this.lastHeading = heading
-                }
-
-                var headingChange = heading - this.lastHeading;
-                if (headingChange < -180) headingChange += 360;
-
-                var offset = pos.clone().sub(this.lastPlanePos)
-                this.lastPlanePos = pos;
-                this.lastHeading = heading;
-                const mainCam = NodeMan.get("mainCamera").camera;
-
-                mainCam.position.add(offset)
-
-                // rotate camera about the jet position
-                mainCam.position.sub(pos)
-                mainCam.position.applyAxisAngle(V3(0, 1, 0), -radians(headingChange))
-                mainCam.position.add(pos)
-
-                mainCam.rotateOnAxis(V3(0, 1, 0), -radians(headingChange))
-
-                mainCam.updateMatrix()
-                mainCam.updateMatrixWorld()
-            }
             // composer is used for effects.
             this.composer.render();
         }

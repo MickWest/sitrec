@@ -545,7 +545,7 @@ export var SitGoFast = {
         var gridHelperGround = new GridHelperWorld(f2m(0),metersFromNM(gridSquaresGround), gridSquaresGround, metersFromNM(EarthRadiusMiles), 0xffff00, 0xffff00);
         GlobalScene.add(gridHelperGround);
 
-        guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
+   //     guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
 
         initJetVariables();
         // initViews relies on some other views setup in the init() fucntion

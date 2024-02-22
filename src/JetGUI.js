@@ -94,8 +94,8 @@ export function SetupJetGUI() {
 
         })
     }))
-    guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
-
+    // guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
+    //
 
     toggler('v', guiShowHide.add(par, 'showVideo').listen().name("[V]ideo").onChange(value => {
         ViewMan.get("video").setVisible(value);

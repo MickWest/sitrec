@@ -97,10 +97,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 line_points.push(A.x, A.y, A.z);
                 var color = trackPoint.color // the track itself can override the color defaults
                 if (color === undefined) {
-                    if (f <= par.frame || this.in.secondColor === undefined)
+          //         if (f <= par.frame || this.in.secondColor === undefined)
                         color = this.in.color.v(f)
-                    else
-                        color = this.in.secondColor.v(f)
+          //          else
+          //              color = this.in.secondColor.v(f)
 
                     if (trackPoint.bad)
                         if (this.in.badColor !== undefined)

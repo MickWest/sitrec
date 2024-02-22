@@ -463,21 +463,21 @@ export function ChangedPR() {
     //
 
 
-    // Lock camera to jet by adding the same ffset and rotating by the heading change
-    if (par.lockCameraToJet) {
-        const mainCam = NodeMan.get("mainCamera").camera;
-
-        mainCam.position.add(offset)
-
-        mainCam.position.sub(LocalFrame.position)
-        mainCam.position.applyAxisAngle(upAxis, -radians(headingChange))
-        mainCam.position.add(LocalFrame.position)
-
-        mainCam.rotateOnAxis(upAxis, -radians(headingChange))
-
-        mainCam.updateMatrix()
-        mainCam.updateMatrixWorld()
-    }
+    // // Lock camera to jet by adding the same ffset and rotating by the heading change
+    // if (par.lockCameraToJet) {
+    //     const mainCam = NodeMan.get("mainCamera").camera;
+    //
+    //     mainCam.position.add(offset)
+    //
+    //     mainCam.position.sub(LocalFrame.position)
+    //     mainCam.position.applyAxisAngle(upAxis, -radians(headingChange))
+    //     mainCam.position.add(LocalFrame.position)
+    //
+    //     mainCam.rotateOnAxis(upAxis, -radians(headingChange))
+    //
+    //     mainCam.updateMatrix()
+    //     mainCam.updateMatrixWorld()
+    // }
 
     // now the forward vector of the jet will be correct
     // we need to adjust the local frame so the up Vector is correct,
@@ -1044,7 +1044,14 @@ export function SetupCommon(altitude=25000) {
 }
 
 export function CommonJetStuff() {
-    AddSpeedGraph("LOSTraverseSelect","Target Speed")
+    // only gimbal uses this
+    AddSpeedGraph("LOSTraverseSelect","Target Speed",0,500,0.6,0,-1,0.25,
+        [
+        {x: 716, x2:725, color: "#FF00ff40"},
+        {x: 813,x2:828, color: "#ff00ff40"},
+        {x: 861,x2:943, color: "#ff00ff40"},
+        {x: 978,x2:984, color: "#ff00ff40"},
+    ])
     AddAltitudeGraph(10000, 45000)
 
     if (Sit.name == "gimbal") {
