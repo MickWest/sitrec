@@ -1,5 +1,5 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
-// so mostly related to Gimbal, GoFast, and FLIR1
+// so mostly related to Gimbal, GoFast, FLIR1 and Aguadilla
 
 import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit, Units} from "./Globals";
 import {par} from "./par";
@@ -1060,10 +1060,6 @@ export function CommonJetStuff() {
 
     AddTargetDistanceGraph()
     AddSizePercentageGraph()
-
-
-
-
 
     initViews()
 
