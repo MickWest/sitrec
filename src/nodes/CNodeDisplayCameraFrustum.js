@@ -4,11 +4,11 @@ import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {DebugArrow, DebugArrowAB, dispose, intersectSphere2} from "../threeExt";
-import {NodeMan, Sit} from "../Globals";
+import {Label3DMan, NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "../../three.js/examples/jsm/lines/LineSegmentsGeometry";
 import {Ray, Raycaster, Sphere, Vector3} from "three";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
@@ -66,6 +66,11 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
 
         this.camera.visible = true;
 
+        this.label = Label3DMan.addLabel("camera", "Camera", this.camera.position)
+
+        const camPos = this.camera.position;
+        this.measureAltitude = Label3DMan.addMeasure("camerameasure", "1700m", camPos, new Vector3(camPos.x,0,camPos.z))
+
         this.rebuild()
     }
 
@@ -74,10 +79,8 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.group.remove(this.line)
         dispose(this.FrustumGeometry)
 
-
-
-
         var h = this.radius * tan(radians(this.camera.fov/2))
+        assert(!isNaN(h), "h is NaN, fov="+this.camera.fov+" radius="+this.radius+" aspect="+this.camera.aspect+" units="+this.units+" step="+this.step);
         // aspect is w/h so w = h * aspect
         var w = h * this.camera.aspect;
         var d = (this.radius - 2)
@@ -233,6 +236,18 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
             const targetPos = this.in.targetTrack.p(f)
             this.radius = targetPos.clone().sub(this.camera.position).length()
         }
+
+        this.label.changePosition(this.camera.position)
+
+        const A = this.camera.position;
+        let B;
+        if (NodeMan.exists("TerrainModel")) {
+            let terrainNode = NodeMan.get("TerrainModel")
+            B = terrainNode.getPointBelow(A)
+        } else {
+            B = pointOnSphereBelow(A);
+        }
+        this.measureAltitude.changeAB(A,B)
 
         this.group.position.copy(this.camera.position)
         this.group.quaternion.copy(this.camera.quaternion)

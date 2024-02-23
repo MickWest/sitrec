@@ -13,6 +13,8 @@ import {gui} from "../Globals";
 // to path.js
 import * as LAYER from "../LayerMasks.js"
 import {GlobalScene} from "../LocalFrame";
+import {getLocalDownVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
+import {Raycaster} from "three";
 
 export class CNodeTerrain extends CNode {
     constructor(v) {
@@ -156,6 +158,21 @@ export class CNodeTerrain extends CNode {
     getClosestIntersect(raycaster) {
         const intersects = this.getIntersects(raycaster)
         return intersects.length > 0 ? intersects[0] : null
+    }
+
+    getPointBelow(A) {
+        // given a point in ENU, return the point on the terrain
+        // by casting a ray from the point to the center of the earth
+        // and finding the intersection with the terrain
+        const down = getLocalDownVector(A)
+        const rayCaster = new Raycaster(A, down);
+        const intersect = this.getClosestIntersect(rayCaster);
+        if (intersect !== null) {
+            return intersect.point;
+        } else {
+            return pointOnSphereBelow(A)
+        }
+
     }
 
 

@@ -506,3 +506,4 @@ export function setURLParameters(params) {
 export function stripParentheses(callStack) {
     return callStack.replace(/\(.*?\)/g, '');
 }
+

@@ -19,7 +19,7 @@ import {
     setGlobalDateTimeNode,
     Sit,
     SitchMan,
-    GlobalDateTimeNode, NodeMan
+    GlobalDateTimeNode, NodeMan, setLabel3DMan, Label3DMan
 } from "./Globals";
 import {buildDate, disableScroll, radians} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
@@ -59,6 +59,7 @@ import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
 import {V3} from "./threeExt";
+import {CLabel3DManager} from "./Labels3D";
 
 checkLocal()
 
@@ -290,6 +291,8 @@ function init() {
 
     GlobalScene.add(LocalFrame)
 
+    setLabel3DMan(new CLabel3DManager());
+
  //   GlobalScene.matrixWorldAutoUpdate = false
 
 
@@ -380,8 +383,9 @@ function renderMain() {
         Sit.update(par.frame)
     }
 
-
     UpdateNodes(par.frame)
+    Label3DMan.update(par.frame)
+
     windowChanged();
 
     if (Sit.jetStuff && Sit.showGlare) {
@@ -398,6 +402,9 @@ function renderMain() {
         if (view.visible) {
             view.setFromDiv(view.div)
             view.updateWH()
+            if (view.camera) {
+                Label3DMan.updateScale(view.camera)
+            }
             updateLockTrack(view, par.frame)
             view.render(par.frame)
         }

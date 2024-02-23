@@ -177,6 +177,11 @@ export function getLocalUpVector(position, radius=wgs84.RADIUS) {
     return centerToPosition.normalize();
 }
 
+export function getLocalDownVector(position, radius=wgs84.RADIUS) {
+    return getLocalUpVector(position, radius).negate();
+}
+
+
 export function getLocalNorthVector(position, radius=wgs84.RADIUS) {
     // to get a northish direction we get the vector from here to the north pole.
     // to get the north pole in EUS, we take the north pole's position in ECEF
@@ -254,4 +259,10 @@ export function extractRollFromMatrix(m) {
         angle = -angle;
 
     return angle
+}
+
+export function pointOnSphereBelow(p) {
+    const center = V3(0,-wgs84.RADIUS, 0);
+    const toP = p.clone().sub(center)
+    return toP.normalize().multiplyScalar(wgs84.RADIUS).add(center);
 }

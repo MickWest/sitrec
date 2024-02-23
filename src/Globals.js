@@ -15,6 +15,9 @@ export function setNodeMan(n) {NodeMan = n;}
 export var SitchMan;
 export function setSitchMan(n) {SitchMan = n;}
 
+export var Label3DMan;
+export function setLabel3DMan(n) {Label3DMan = n;}
+
 export var gui;
 export var guiTweaks;
 export var guiShowHide;

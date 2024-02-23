@@ -150,8 +150,12 @@ export class CNodeControllerFocalLength extends CNodeController {
 
     apply(f, objectNode) {
         let focal_len = this.in.focalLength.v(f)
+        assert(focal_len !== undefined, "CNodeControllerFocalLength: focal_len is undefined")
+        assert(focal_len !== null, "CNodeControllerFocalLength: focal_len is null")
+
         // if it's a number then it's a single value, if it's an object, get the .focal_len member
         if (typeof focal_len === "object") focal_len = focal_len.focal_len
+        assert(!Number.isNaN(focal_len), "CNodeControllerFocalLength: focal_len is NaN");
 
         // focal_len of 0 means we don't have a focal length data field, so use the UI FOV
         if (focal_len === 0) return;
@@ -162,6 +166,7 @@ export class CNodeControllerFocalLength extends CNodeController {
         const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
 
         camera.fov = vFOV;
+        assert(!Number.isNaN(camera.fov), "CNodeControllerFocalLength: camera.fov is NaN, focal_len="+focal_len+" vFOV="+vFOV);
         camera.updateProjectionMatrix()
 
         objectNode.syncUIPosition();

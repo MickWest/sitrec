@@ -265,6 +265,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.camera = NodeMan.get("lookCamera").camera;
         assert(this.camera, "CNodeDisplayNightSky needs a look camera")
 
+        this.mainCamera = NodeMan.get("mainCamera").camera;
+        assert(this.mainCamera, "CNodeDisplayNightSky needs a main camera")
+
         this.showSunArrows = false;
         this.sunArrowGroup = new Group();
         this.sunArrowGroup.visible = this.showSunArrows;
@@ -360,8 +363,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.satelliteTextGroup = new Group();
         this.satelliteTextGroup.visible = false;
 
-
-      //  GlobalScene.add(this.satelliteTextGroup)
+        GlobalScene.add(this.satelliteTextGroup)
 
         this.satelliteTextGroup.matrixWorldAutoUpdate = false
 
@@ -483,9 +485,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         if ( this.showSatellites && this.TLEData) {
             // Update satellites to correct position for nowDate
-            // for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-            //     const success = this.updateSatelliteSprite(sat.sprite, sat, nowDate)
-            // }
+            for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
+                const success = this.updateSatelliteSprite(sat.spriteText, sat, nowDate)
+            }
 
             this.updateAllSatellites(nowDate)
         }
@@ -1069,7 +1071,7 @@ void main() {
 
 
 
-//     addSatellites(scene, textScene) {
+//     addSatellites(scene, textGroup) {
 //
 //         assert(Sit.lat !== undefined, "addSatellites needs Sit.lat")
 //         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon")
@@ -1104,7 +1106,7 @@ void main() {
 //
 //             const spriteText = new SpriteText(name,5);
 //             sat.spriteText = spriteText
-//             textScene.add(spriteText);
+//             textGroup.add(spriteText);
 //
 //             this.updateSatelliteSprite(sprite, sat, date)
 //
@@ -1113,7 +1115,47 @@ void main() {
 //     }
 
 
-    addSatellites(scene, textScene) {
+    updateSatelliteSprite(sprite, satrec1, date)
+    {
+        const positionAndVelocity = satellite.propagate(satrec1, date);
+
+        // hardwired to used the lookCamera
+        // theoretically could do it for both viewports
+        // but the lookCamera is the one where we will see individual satellites
+        const camera = this.camera;
+
+        if (positionAndVelocity && positionAndVelocity.position) {
+            const positionEci = positionAndVelocity.position;
+
+            var gmst   = satellite.gstime(date);
+            var ecefK   = satellite.eciToEcf(positionEci, gmst)
+            const ecef= V3(ecefK.x*1000,ecefK.y*1000,ecefK.z*1000)
+            const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
+            const eus = V3(enu.x, enu.z, -enu.y)
+
+            // Set the position and scale of the sprite
+            sprite.position.set(eus.x, eus.y, eus.z);
+
+            // Calculate distance from camera to sprite
+            const distance = camera.position.distanceTo(sprite.position);
+
+            // Calculate scale to make the sprite appear the same size on screen
+            let scale =  0.010 * distance * Math.tan((camera.fov / 2) * (Math.PI / 180));
+
+            scale *= Sit.starScale ?? 1;
+
+            // Set the sprite scale
+//            sprite.scale.set(scale, scale, 1);
+            sprite.scale.set(scale * 2 * sprite.aspect, scale * 2, 1);
+
+
+            return true;
+        }
+        return false;
+    }
+
+
+    addSatellites(scene, textGroup) {
         assert(Sit.lat !== undefined, "addSatellites needs Sit.lat");
         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon");
 
@@ -1236,8 +1278,9 @@ void main() {
             // Manage sprite text separately
             var name = sat.name.replace("0 STARLINK", "SL").replace("STARLINK", "SL");
             const spriteText = new SpriteText(name, 5);
+            spriteText.layers.mask = LAYER.MASK_LOOK;
             sat.spriteText = spriteText;
-            textScene.add(spriteText);
+            textGroup.add(spriteText);
         }
 
         // Attach data to geometry
