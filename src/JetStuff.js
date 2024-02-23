@@ -1045,7 +1045,7 @@ export function SetupCommon(altitude=25000) {
 
 export function CommonJetStuff() {
     // only gimbal uses this
-    AddSpeedGraph("LOSTraverseSelect","Target Speed",0,500,0.6,0,-1,0.25,
+    AddSpeedGraph("LOSTraverseSelect","Target Speed",0,360,0.6,0,-1,0.25,
         [
         {x: 716, x2:725, color: "#FF00ff40"},
         {x: 813,x2:828, color: "#ff00ff40"},

@@ -6,6 +6,7 @@ import {acos, degrees, m2f, metersFromMiles, NMFromMeters} from "./utils";
 import {pointAltitude} from "./SphericalMath";
 import {assert} from "./utils"
 import {getGlareAngleFromFrame} from "./JetStuff";
+import {CNodeTrackScreenAngle} from "./nodes/CNodeJetTrack";
 
 // add a graph of the subtended size of the target
 // as a percentage of its size at the start of the video
@@ -164,7 +165,17 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
                 }),
                 name: "Glare Angle",
                 color: "#800000",
+            }),
+
+            compare5: new CNodeGraphSeries({
+                source: new CNodeTrackScreenAngle({
+                    targetTrack: source,
+                    cameraTrack: "jetTrack",
+                }),
+                name: "Screen Angle",
+                color: "#800080",
             })
+
         }
     }
 

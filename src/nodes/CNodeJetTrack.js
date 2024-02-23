@@ -1,4 +1,4 @@
-import {assert, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
+import {assert, degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {NodeMan, Sit, Units} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
@@ -104,4 +104,40 @@ export class CNodeTrackSpeed extends CNode {
     }
 
 }
+
+// angle of the track on screen in degrees
+// "on screen" means the angle between the track in the plane defined by
+// the camera's forward vector and the track's current position
+// and the camera's left vector
+// assumes the camera is looking at the target track
+export class CNodeTrackScreenAngle extends CNode {
+    constructor(v) {
+        v.targetTrack ??= "targetTrack";
+        v.cameraTrack ??= "cameraTrack";
+        super(v);
+        this.input("targetTrack")
+        this.input("cameraTrack")
+        this.frames = this.in.targetTrack.frames
+    }
+
+    getValueFrame(f) {
+        if (f === 0) f = 1;
+        let pos = this.in.targetTrack.p(f)
+        let vel = pos.clone().sub(this.in.targetTrack.p(f - 1))
+        let cameraPos = this.in.cameraTrack.p(f)
+
+        let cameraFwd = pos.clone().sub(cameraPos)
+        cameraFwd.normalize() // this is the normal of the view plane
+        let cameraUp = getLocalUpVector(cameraPos)
+        let cameraLeft = V3().crossVectors(cameraUp, cameraFwd)
+        // project vel onto the plane defined by the camera's forward vector
+        vel.projectOnPlane(cameraFwd);
+
+        // and get angle between the projected vel vector and the camera's up
+        let angle = degrees(vel.angleTo(cameraLeft))
+        return angle
+    }
+
+}
+
 
