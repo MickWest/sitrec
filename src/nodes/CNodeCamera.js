@@ -32,6 +32,14 @@ export class CNodeCamera extends CNode3D {
 
     }
 
+    // when a camera object is treated like a track
+    // it can only return the current position
+    // so if you want to get the position at a specific frame
+    // you need to use a CNodeTrack object or similar
+    getValueFrame(f) {
+        return this._object.position;
+    }
+
     resetCamera() {
         if (this.startPos !== undefined) {
             this._object.position.copy(MV3(this.startPos));  // MV3 converts from array to a Vector3

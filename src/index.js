@@ -59,7 +59,7 @@ import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
 import {V3} from "./threeExt";
-import {CLabel3DManager} from "./Labels3D";
+import {CLabel3DManager} from "./nodes/CNodeLabels3D";
 
 checkLocal()
 

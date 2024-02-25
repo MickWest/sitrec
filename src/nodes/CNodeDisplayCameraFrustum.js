@@ -55,7 +55,8 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         super(v);
         this.radius = v.radius ?? 100
         this.input("targetTrack",true)
-        this.camera = NodeMan.get(v.camera ?? "lookCamera").camera;
+        this.cameraNode = NodeMan.get(v.camera ?? "lookCamera")
+        this.camera = this.cameraNode.camera;
 
         this.color = v.color.v();
         this.lineWeigh = v.lineWeight ?? 1.5;
@@ -66,10 +67,10 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
 
         this.camera.visible = true;
 
-        this.label = Label3DMan.addLabel("camera", "Camera", this.camera.position)
+        this.label = Label3DMan.addLabel({id: "cameraLabel", text: "Camera", position: this.cameraNode})
 
         const camPos = this.camera.position;
-        this.measureAltitude = Label3DMan.addMeasure("camerameasure", "1700m", camPos, new Vector3(camPos.x,0,camPos.z))
+        this.measureAltitude = Label3DMan.addMeasureAltitude( {id: "altitudeLabel", position: this.cameraNode})
 
         this.rebuild()
     }
@@ -237,17 +238,17 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
             this.radius = targetPos.clone().sub(this.camera.position).length()
         }
 
-        this.label.changePosition(this.camera.position)
+      //  this.label.changePosition(this.camera.position)
 
-        const A = this.camera.position;
-        let B;
-        if (NodeMan.exists("TerrainModel")) {
-            let terrainNode = NodeMan.get("TerrainModel")
-            B = terrainNode.getPointBelow(A)
-        } else {
-            B = pointOnSphereBelow(A);
-        }
-        this.measureAltitude.changeAB(A,B)
+        // const A = this.camera.position;
+        // let B;
+        // if (NodeMan.exists("TerrainModel")) {
+        //     let terrainNode = NodeMan.get("TerrainModel")
+        //     B = terrainNode.getPointBelow(A)
+        // } else {
+        //     B = pointOnSphereBelow(A);
+        // }
+     //   this.measureAltitude.changeAB(A,B)
 
         this.group.position.copy(this.camera.position)
         this.group.quaternion.copy(this.camera.quaternion)
