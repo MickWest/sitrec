@@ -34,7 +34,7 @@ export const SitPVS14 = {
         cameraFile: "pvs14/N77552-track-press_alt_uncorrected.kml",
     },
 
-    bigUnits: "Miles",
+    units: "Imperial",
     lookCamera: {
         fov: 10,
     },

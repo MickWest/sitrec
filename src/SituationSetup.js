@@ -31,13 +31,16 @@ import {FileManager} from "./CFileManager";
 export function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
 
-//     const serialized = stringify(Sit, {maxLength: 180, indent: 2});
-//     console.log(serialized);
-//
-//     const deserialized = JSON.parse(serialized);
-//     console.log(deserialized);
-//
-//     setSit(deserialized);
+    // a good test is Jellyfish as it fails on jetOrigin, which is a Vector in Sit
+    // which does not work with serialization
+    // and probaby needs reworking to be a node
+     // const serialized = stringify(Sit, {maxLength: 180, indent: 2});
+     // console.log(serialized);
+     //
+     // const deserialized = JSON.parse(serialized);
+     // console.log(deserialized);
+     //
+     // setSit(deserialized);
 
     if (!runDeferred)
         new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});

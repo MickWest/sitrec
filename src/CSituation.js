@@ -11,6 +11,7 @@ import {f2m} from "./utils";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {FileManager} from "./CFileManager";
+import {CUnits} from "./CUnits";
 
 
 // These are some parameters used as defaults for a situation
@@ -39,7 +40,9 @@ const situationDefaults = {
     targetSize:1,   // the diameter of the default target sphere F/A-18E/F wingspan = 45 feet
 
     // Display Units
-    bigUnits: "NM",
+    //bigUnits: "NM",
+
+    units: "Nautical",
 
     azSlider:false,
     animated:true,
@@ -71,44 +74,19 @@ const situationDefaults = {
 export class CSituation {
     constructor(props) {
         Object.assign(this,situationDefaults);
+        console.log("Setting units to: ",this.units)
         Object.assign(this,props);
 
-        this.updateUnits();
+        console.log("Setting units to: ",this.units)
+        Units.changeUnits(this.units);
+
     }
 
     change(props) {
         Object.assign(this,props);
-        this.updateUnits()
+        Units.changeUnits(this.units);
     }
 
-    updateUnits() {
-
-        // if we don't specify a bFrame (last frame to be played as part of the animation)
-        // then set it to the last frame based on Sit.frames
-        if (this.bFrame === undefined) {
-            this.bFrame = this.frames-1;
-        }
-
-        Units.bigUnits = this.bigUnits;
-        switch (Units.bigUnits) {
-            case "NM": // Nautical miles and feet
-                Units.big2M = 1852;          // scale meters to big units
-                Units.smallUnits = "Feet"
-                Units.m2Small = 3.28084      // scale meters to small (feet)
-                Units.small2M = 0.3048       // scale small (feet) to meters
-                Units.speedUnits = "Knots"
-                Units.m2Speed = 1.94384      // 1 m/s to knots
-                break;
-            case "miles":
-            case "Miles": // Statute (ordinary) miles and feet
-                Units.smallUnits = "Feet"
-                Units.big2M = 1609.34
-                Units.speedUnits = "mph"
-                Units.m2Speed = 2.23694
-                break;
-        }
-
-    }
 
     // Most complex sitches will FULLY override this CSituation::setup() function
     // So don't rely on anything in here for things like Gimbal, Agua, etc....

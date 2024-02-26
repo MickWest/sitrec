@@ -15,9 +15,6 @@ export function setNodeMan(n) {NodeMan = n;}
 export var SitchMan;
 export function setSitchMan(n) {SitchMan = n;}
 
-export var Label3DMan;
-export function setLabel3DMan(n) {Label3DMan = n;}
-
 export var gui;
 export var guiTweaks;
 export var guiShowHide;
@@ -50,4 +47,5 @@ export function setupGUIGlobals(_gui, _show, _tweaks, _jetTweaks) {
 // seem bigger, and hence with a shallower curve
 //export const EarthRadiusMiles = 3963 * 7 / 6
 export const EarthRadiusMiles = 3963.190592  // exact wgs84.RADIUS
-export const Units = {};
+export var Units;
+export function setUnits(u) {Units = u;}

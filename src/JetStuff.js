@@ -723,7 +723,7 @@ export function CreateTraverseNodes(traverseInputs) {
         start: Sit.startDistanceMin,
         end: Sit.startDistanceMax,
         step: 0.01,
-        desc: "Tgt Start Dist " + Sit.bigUnits
+        desc: "Tgt Start Dist " + Units.bigUnitsAbbrev
     }, gui))
 
 

@@ -12,7 +12,7 @@ export const Sit29Palms = {
         KMLTarget3: "29palms/N279SY-track-EGM96.kml",
     },
 
-    bigUnits: "Miles",
+    units: "Imperial",
 
     fps: 30,
     frames: 30 * 6,

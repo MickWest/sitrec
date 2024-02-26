@@ -27,3 +27,10 @@ export const commonKMLTrackToTrack = {
     lookAtTrack: {},  // and look at targetTrack
 }
 
+export const commonLabels = {
+    cameraLabel:        { kind: "Label3D", text: "Camera", position: "lookCamera"},
+    targetLabel:        { kind: "Label3D", text: "Target", position: "targetTrack"},
+    altitudeLabel:      { kind: "MeasureAltitude",position: "lookCamera" },
+    targetAltitudeLabel:{ kind: "MeasureAltitude",position: "targetTrack"},
+    distanceLabel:      { kind: "MeasureAB",A: "lookCamera", B: "targetTrack"},
+}

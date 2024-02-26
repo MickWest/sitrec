@@ -1,6 +1,7 @@
 import {NodeMan, Sit} from "../Globals";
 import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
 import {CNodeMunge} from "../nodes/CNodeMunge";
+import {commonLabels} from "./CommonSitch";
 
 export const SitJellyfish    = {
     name: "jellyfish",
@@ -13,7 +14,7 @@ export const SitJellyfish    = {
     fps: 23.976,
     frames: 2982,
 
-    bigUnits:"Miles", // this woudl defauly to NM, but we want to use miles for this situation
+    units:"imperial", // this woudl defauly to NM, but we want to use miles for this situation
 
     syncVideoZoom: true,
 
@@ -45,7 +46,7 @@ export const SitJellyfish    = {
     focusTracks: {
              "Ground (No Track)": "default",
              "Camera Position": "cameraTrack",
-             "Traverse Track": "traverseTrack",
+             "Target Track": "targetTrack",
     },
 
     targetSize:2,
@@ -93,7 +94,7 @@ export const SitJellyfish    = {
 
     startDistanceFeet: {value: 5000, start: 0, end: 12000, step: 1, desc: "Tgt Start Dist (Ft)"},
 
-    traverseTrack: {
+    targetTrack: {
         kind: "LOSTraverseStraightLine",
         LOS: "motionTrackLOS",
         startDist: "startDistance",
@@ -106,19 +107,19 @@ export const SitJellyfish    = {
 
     // sphereInMainView: {
     //     kind: "DisplayTargetSphere",
-    //     track: "traverseTrack",
+    //     track: "targetTrack",
     //     size: 100,
     //     layers: "HELPERS",
     // },
 
     sphereInLookView: { kind: "DisplayTargetSphere",
-        track: "traverseTrack",
+        track: "targetTrack",
         size: "sphereSize",
         layers: "LOOKRENDER"
     },
 
-    traverseTrackDisplay: { kind: "DisplayTrack",
-        track: "traverseTrack",
+    targetTrackDisplay: { kind: "DisplayTrack",
+        track: "targetTrack",
         color: [0, 1, 1],
         width: 1,
     },
@@ -127,14 +128,16 @@ export const SitJellyfish    = {
     // [REMOVED, AS USING FRUSTUM]
     // DisplayLOS: { kind: "DisplayTrackToTrack",
     //     cameraTrack: "motionTrackLOS",
-    //     targetTrack: "traverseTrack",
+    //     targetTrack: "targetTrack",
     //     color: [1, 0, 0],
     //     width: 2,
     // },
 
   //  targetSizedSphere: { defer:true, size:1.5, color: "grey"},
 
-    DisplayCameraFrustum: {targetTrack: "traverseTrack", units: "meters", step: 100},
+    DisplayCameraFrustum: {targetTrack: "targetTrack", units: "meters", step: 100},
+
+    ...commonLabels,
 
     setup2: function() {
 
@@ -158,8 +161,8 @@ export const SitJellyfish    = {
         });
 
 // maybe have "call" setup to make these data drive - ask copilot chat
-        AddSpeedGraph("traverseTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
-        AddAltitudeGraph(0, 3000, "traverseTrack", 0.25, 0, 0.20, 0.25,500)
+        AddSpeedGraph("targetTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
+        AddAltitudeGraph(0, 3000, "targetTrack", 0.25, 0, 0.20, 0.25,500)
     }
 
 }

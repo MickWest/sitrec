@@ -10,6 +10,7 @@ import {LineSegmentsGeometry} from "../../three.js/examples/jsm/lines/LineSegmen
 import {Ray, Raycaster, Sphere, Vector3} from "three";
 import {getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";
+import {CNodeLabel3D, CNodeMeasureAB, CNodeMeasureAltitude} from "./CNodeLabels3D";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -66,11 +67,6 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.step = v.step ?? 0;
 
         this.camera.visible = true;
-
-        this.label = Label3DMan.addLabel({id: "cameraLabel", text: "Camera", position: this.cameraNode})
-
-        const camPos = this.camera.position;
-        this.measureAltitude = Label3DMan.addMeasureAltitude( {id: "altitudeLabel", position: this.cameraNode})
 
         this.rebuild()
     }

@@ -26,7 +26,7 @@ export const SitHayle = {
     },
     videoFile: "../sitrec-videos/private/Hayle Beach UFO.mp4",
 
-    bigUnits: "Miles",
+    units: "Imperial",
 
     fps: 29.97,
     frames: 2780,

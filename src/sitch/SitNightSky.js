@@ -42,7 +42,7 @@ export const SitNightSky = {
 
     },
 
-    bigUnits: "Miles",
+    units: "Imperial",
 
     fps: 30,
     frames: (10*60+50)*30,

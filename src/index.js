@@ -19,7 +19,7 @@ import {
     setGlobalDateTimeNode,
     Sit,
     SitchMan,
-    GlobalDateTimeNode, NodeMan, setLabel3DMan, Label3DMan
+    GlobalDateTimeNode, NodeMan, setUnits,
 } from "./Globals";
 import {buildDate, disableScroll, radians} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
@@ -59,7 +59,7 @@ import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
 import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
 import {V3} from "./threeExt";
-import {CLabel3DManager} from "./nodes/CNodeLabels3D";
+import {CUnits} from "./CUnits";
 
 checkLocal()
 
@@ -205,7 +205,7 @@ _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
     window.location.assign(url) //
 })
 
-
+setUnits(new CUnits("Nautical"));
 
 
 const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
@@ -290,8 +290,6 @@ function init() {
     setupLocalFrame(new Group())
 
     GlobalScene.add(LocalFrame)
-
-    setLabel3DMan(new CLabel3DManager());
 
  //   GlobalScene.matrixWorldAutoUpdate = false
 
@@ -384,7 +382,6 @@ function renderMain() {
     }
 
     UpdateNodes(par.frame)
-    Label3DMan.update(par.frame)
 
     windowChanged();
 
@@ -398,12 +395,21 @@ function renderMain() {
                 targetSphere.layers.disable(LAYER.podsEye)
         }
     }
+
+    // render each viewport
     ViewMan.iterate((key, view) => {
         if (view.visible) {
             view.setFromDiv(view.div)
             view.updateWH()
             if (view.camera) {
-                Label3DMan.updateScale(view.camera)
+               // Label3DMan.updateScale(view.camera)
+                // some nodes need code running on a per-viewport basis - like textSprites
+                NodeMan.iterate((id, node) => {
+                    if (node.preViewportUpdate !== undefined) {
+                        node.preViewportUpdate(view.camera)
+                    }
+                })
+
             }
             updateLockTrack(view, par.frame)
             view.render(par.frame)

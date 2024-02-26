@@ -10,7 +10,7 @@ export const SitArea6 = {
     },
     videoFile: "../sitrec-videos/private/Area6-1x-speed-08-05-2023 0644UTC.mp4",
 
-    bigUnits: "Miles",
+    units: "Imperial",
 
     fps: 29.97,
     frames: (10*60+50)*29.97,
