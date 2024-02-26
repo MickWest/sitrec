@@ -1,6 +1,6 @@
-import {SitKML} from "./SitKML";
 
-export const SitHulsey = Object.assign(Object.assign({},SitKML),{
+export const SitHulsey = {
+    include_kml: true,
     name: "hulsey",
     menuName: "Hulsey Starlink",
 
@@ -47,4 +47,4 @@ export const SitHulsey = Object.assign(Object.assign({},SitKML),{
     DisplayCameraFrustum: {radius:100000},
 
 
-})
+}

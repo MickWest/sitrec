@@ -1,6 +1,6 @@
 
 export const SitLAXUAP = {
-    include_kml: true, // incorporates the SitKML object, same as doing ...SitKML
+    include_kml: true,
     name: "laxuap",
     menuName: "LAX Balloon-Likes",
     nightSky: true,

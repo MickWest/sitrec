@@ -1,4 +1,3 @@
-import {SitKML} from "./SitKML";
 import {AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
 import {CNodeWind} from "../nodes/CNodeWind";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
@@ -7,10 +6,9 @@ import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {degrees, scaleF2M} from "../utils";
 import {trackHeading} from "../nodes/CNode";
-import {FileManager} from "../CFileManager";
-import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
-export const SitChilean = Object.assign(Object.assign({},SitKML),{
+export const SitChilean = {
+    include_kml: true,
     name: "chilean",
     menuName: "Chilean Navy IB 6830",
 
@@ -53,7 +51,7 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
     videoView: {             left: 0.5, top: 0, width: -1920/1080, height: 0.5,},
     mainView:{left:0.0, top:0, width:0.625,height:1},
 
-    ...commonKMLTrackToTrack,
+    include_KMLTrackToTrack: true,
 
     targetObject:{file: "TargetObjectFile", tiltType: "banking"},
 
@@ -123,4 +121,4 @@ export const SitChilean = Object.assign(Object.assign({},SitKML),{
  //       console.log(azRelative)
     },
 
-})
+}

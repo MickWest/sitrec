@@ -137,7 +137,7 @@ export const SitJellyfish    = {
 
     DisplayCameraFrustum: {targetTrack: "targetTrack", units: "meters", step: 100},
 
-    ...commonLabels,
+    include_Labels: true,
 
     setup2: function() {
 

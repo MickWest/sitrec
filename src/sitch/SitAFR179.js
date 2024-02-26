@@ -1,7 +1,6 @@
-import {SitKML} from "./SitKML";
-import {commonKMLTracks} from "./CommonSitch";
 
-export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
+export const SitAFR179 = {
+    include_kml: true,
     name: "afr179",
     menuName: "AFR179 Fly-by",
 
@@ -29,8 +28,8 @@ export const SitAFR179 = Object.assign(Object.assign({},SitKML),{
 
     skyColor: '#AFBDD1',  // grey from the video
 
-    ...commonKMLTracks,
+    include_KMLTracks: true,
     targetObject: {file: "TargetObjectFile",},
     ptz: {az: -36.2, el: 1.98, fov: 62, showGUI: true},
 
-})
+}

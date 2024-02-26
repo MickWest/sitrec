@@ -1,7 +1,5 @@
-import {SitKML} from "./SitKML";
-import {commonKMLTrackToTrack} from "./CommonSitch";
-
-export const SitITY621 = Object.assign(Object.assign({},SitKML),{
+export const SitITY621 = {
+    include_kml: true,
     name: "ity621",
     menuName: "ITY621 Dark Contrails",
 
@@ -33,9 +31,9 @@ export const SitITY621 = Object.assign(Object.assign({},SitKML),{
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 
-    ...commonKMLTrackToTrack,
+    include_KMLTrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
 
     tilt: 1.24,
 
-})
+}

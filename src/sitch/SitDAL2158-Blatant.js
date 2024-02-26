@@ -1,7 +1,8 @@
 import {SitKML} from "./SitKML";
 import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
-export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
+export const SitDAL2158 = {
+    include_kml: true,
     name: "dal2158",
     menuName: "Blatant's DAL2158",
 
@@ -25,8 +26,6 @@ export const SitDAL2158 = Object.assign(Object.assign({},SitKML),{
 
     mainView:{ left:0.0, top:0, width:.50,height:1},
     lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},
-    ...commonKMLTrackToTrack,
+    include_KMLTrackToTrack: true,
     targetSizedSphere: { size:200 },
-
-
-})
+}

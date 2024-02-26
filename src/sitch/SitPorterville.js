@@ -1,9 +1,5 @@
-import {SitKML} from "./SitKML";
-import {commonKMLTrackToTrack} from "./CommonSitch";
-
-//export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitPorterville = {
-    ...SitKML,
+    include_kml: true,
     name: "porterville",
     menuName: "Porterville Sphere",
 

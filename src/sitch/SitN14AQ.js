@@ -1,16 +1,10 @@
-import {SitKML} from "./SitKML";
-import {commonKMLTrackToTrack} from "./CommonSitch";
-
-export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
+export const SitN14AQ = {
+    include_kml: true,
     name: "n14aq",
     menuName: "N14AQ Reddit UFO",
 
-
     targetSize: 200, // in feet
     tilt: 2.6,
-
-
-
     frames: 84,
     terrain: {lat: 32.226890, lon: -82.940488, zoom: 9, nTiles: 8},
     files: {
@@ -30,14 +24,11 @@ export const SitN14AQ = Object.assign(Object.assign({},SitKML),{
     lookCamera:{ fov: 23},
     cameraTrack: {},
 
-
     lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
     mainView:{left:0.0, top:0, width:.50,height:1},
 
-    ...commonKMLTrackToTrack,
-    //targetSizedSphere: { size:200 },
+    include_KMLTrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
     targetSizedSphere: { size:200 },
-
-})
+}

@@ -1,7 +1,5 @@
-import {SitKML} from "./SitKML";
-import {commonKMLCamera, commonKMLTarget, commonKMLTracks} from "./CommonSitch";
-
-export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
+export const SitAA2292 = {
+    include_kml: true,
     name: "aa2292",
     menuName: "AA2292 Cruise Missile",
 
@@ -34,11 +32,10 @@ export const SitAA2292 = Object.assign(Object.assign({},SitKML),{
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
     mainView:{left:0.0, top:0, width:.50,height:1},
     focusTracks: {},
-//    tilt:13,
     ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
 
-    ...commonKMLTracks,
+    include_KMLTracks: true,
     targetSizedSphere: { size:100 },
 
 
-})
+}

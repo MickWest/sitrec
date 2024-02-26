@@ -5,9 +5,8 @@ import {abs, assert, floor} from "../utils"
 import {par} from "../par";
 import {commonKMLTracks} from "./CommonSitch";
 
-//export const SitPorterville = Object.assign(Object.assign({},SitKML),{
 export const SitFolsomLake = {
-    ...SitKML,
+    include_kml: true,
     name: "folsomlake",
     menuName: "Folsom Lake Test",
 
