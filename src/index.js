@@ -168,6 +168,13 @@ var lower = situation.slice().toLowerCase();
 //  --name-width: 36%;
 var _gui = new GUI()
 
+var _guiShowHide = _gui.addFolder('Show/Hide').close();
+var _guiTweaks = _gui.addFolder('Tweaks').close();
+
+setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,null)
+setUnits(new CUnits("Nautical"));
+
+
 if (lower == "testall") {
     const url = SITREC_ROOT + "?testAll=1"
     window.location.assign(url)
@@ -205,15 +212,11 @@ _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
     window.location.assign(url) //
 })
 
-setUnits(new CUnits("Nautical"));
-
 
 const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
 assert(startSitch !== null, "Can't find startup Sitch: "+lower)
 setSit(new CSituation(startSitch))
 
-var _guiShowHide = _gui.addFolder('Show/Hide').close();
-var _guiTweaks = _gui.addFolder('Tweaks').close();
 var _guiJetTweaks;
 if (Sit.jetStuff) {
     _guiJetTweaks = _gui.addFolder('Jet Tweaks').close();

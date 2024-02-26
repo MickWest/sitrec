@@ -6,11 +6,14 @@
 // 3. Nautical
 
 import {assert} from "./utils";
+import {guiTweaks} from "./Globals";
 
 export class CUnits {
-    constructor(_units = "metric") {
+    constructor(_units = "metric", gui) {
         this.units = _units.toLowerCase();
+        this.selectableUnits = {"Metric": "Metric", "Imperial/US":"Imperial", "Nautical":"Nautical"};
         this.changeUnits(this.units);
+        guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x));
     }
 
     changeUnits(_units) {
@@ -51,6 +54,14 @@ export class CUnits {
         this.m2Small = 1 / this.small2M;
         this.m2Speed = 3600 * this.m2Big; // m/s to big units. so 3600 m in one hour, convert 3600 m to big units
         this.speed2M = 1 / this.m2Speed;
+
+        // find the unitName from the units, setting it for the GUI
+        for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
+            if (unit.toLowerCase() === this.units) {
+                this.unitsName = unitName;
+                break;
+            }
+        }
 
     }
 
