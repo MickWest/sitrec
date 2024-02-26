@@ -3,12 +3,8 @@
 // and adjusts the scale of the sprites on a per-camera basis
 
 import SpriteText from '../js/three-spritetext';
-import {CManager} from "../CManager";
-import {GlobalScene} from "../LocalFrame";
 import * as LAYER from "../LayerMasks";
-import {Group} from "three";
 import {DebugArrowAB, removeDebugArrow} from "../threeExt";
-import {CNode} from "./CNode";
 import {pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
 import {NodeMan, Units} from "../Globals";
@@ -18,6 +14,8 @@ import {CNode3DGroup} from "./CNode3DGroup";
 export class CNodeLabel3D extends CNode3DGroup {
     constructor(v) {
         super(v)
+        this.unitSize = v.unitSize ?? "big";
+        this.decimals = v.decimals ?? 2;
         this.size = v.size ?? 12;
         this.sprite = new SpriteText(v.text, this.size);
         this.input("position")
@@ -92,7 +90,7 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         DebugArrowAB(this.id+"end", this.D, this.B, 0x00ff00, true);
 
         const length = this.A.distanceTo(this.B);
-        const text = Units.bigWithUnits(length,2);
+        const text = Units.withUnits(length,this.decimals,this.unitSize);
         this.changeText(text);
 
     }
@@ -113,7 +111,7 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
             inputs: {source: v.A},
             munge: (f) => {
                 let B;
-                const posNode = NodeMan.get(v.A);
+                const posNode = NodeMan.get(v.A); // cant use this.in.A as super hasnt been called yet
                 const A = posNode.p(f);
                 if (NodeMan.exists("TerrainModel")) {
                     let terrainNode = NodeMan.get("TerrainModel")
@@ -126,8 +124,14 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
         })
         v.B = B;
 
+        v.unitSize ??= "small";
+        v.decimals ??= 0;
+
         super(v);
+
     }
+
+
 }
 
 

@@ -11,12 +11,13 @@ import {guiTweaks} from "./Globals";
 export class CUnits {
     constructor(_units = "metric", gui) {
         this.units = _units.toLowerCase();
-        this.selectableUnits = {"Metric": "Metric", "Imperial/US":"Imperial", "Nautical":"Nautical"};
+        this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical"};
         this.changeUnits(this.units);
-        guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x));
+        guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
     }
 
-    changeUnits(_units) {
+    changeUnits(_units, updateGUI=true) {
+        console.log("CUnits: changeUnits: " + _units);
         this.units = _units.toLowerCase();
         switch (this.units) {
             case "nautical": // Nautical miles and feet
@@ -55,33 +56,59 @@ export class CUnits {
         this.m2Speed = 3600 * this.m2Big; // m/s to big units. so 3600 m in one hour, convert 3600 m to big units
         this.speed2M = 1 / this.m2Speed;
 
-        // find the unitName from the units, setting it for the GUI
-        for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
-            if (unit.toLowerCase() === this.units) {
-                this.unitsName = unitName;
-                break;
+        if (updateGUI) {
+            // find the unitName from the units, setting it for the GUI
+            for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
+                console.log("unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
+                if (unit.toLowerCase() === this.units) {
+                    this.unitsName = unitName;
+                    console.log("Found unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
+                    break;
+                }
             }
         }
-
     }
 
     // convert meters to the big units
-    big(m) {
-        return m * this.m2Big;
+    big(m, decimals = 0) {
+        return (m * this.m2Big).toFixed(decimals);
     }
 
     bigWithUnits(m, decimals = 0) {
-        return this.big(m).toFixed(decimals) + " " + this.bigUnitsAbbrev;
+        return this.big(m,decimals) + " " + this.bigUnitsAbbrev;
     }
 
     // convert meters to the small units
-    small(m) {
-        return m * this.m2Small;
+    small(m, decimals = 0) {
+        return (m * this.m2Small).toFixed(decimals);
     }
+
+    smallWithUnits(m, decimals = 0) {
+        return this.small(m,decimals) + " " + this.smallUnitsAbbrev;
+    }
+
+    withUnits(m, decimals=0, unitSize="big") {
+        if (unitSize === "big")
+            return this.bigWithUnits(m, decimals);
+        else
+            return this.smallWithUnits(m, decimals);
+    }
+
 
     // convert meters/second to speed units
     speed(m) {
         return m * this.m2Speed;
+    }
+
+    convertMeters(m, unitSize="big", decimals=0) {
+        switch (toUnits) {
+            case "big":
+                return this.big(m);
+            case "small":
+                return this.small(m);
+            default:
+                assert(0, "CUnits: unknown units: " + toUnits);
+        }
     }
 
 
