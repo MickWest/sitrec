@@ -384,7 +384,7 @@ export const SitFlir1 = {
             clipSeaLevel: false,
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
-            color: 0x303030,
+            color: 0x308080,
             spacing: 120,
 
         })

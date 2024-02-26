@@ -104,6 +104,10 @@ export const SitAguadilla = {
         "Traverse Path (UFO)": "LOSTraverseSelectSmoothed"
     },
 
+    altitudeLabel1:      { kind: "MeasureAltitude",position: "jetTrackSmooth" , defer: true},
+    altitudeLabel2:      { kind: "MeasureAltitude",position: "LOSTraverseSelectSmoothed", defer: true },
+    distanceLabel:      { kind: "MeasureAB",A: "jetTrackSmooth", B: "LOSTraverseSelectSmoothed", defer: true},
+
     setup: function() {
 
         assert(GlobalScene !== undefined,"Missing GlobalScene")

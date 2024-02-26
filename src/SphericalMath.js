@@ -266,3 +266,8 @@ export function pointOnSphereBelow(p) {
     const toP = p.clone().sub(center)
     return toP.normalize().multiplyScalar(wgs84.RADIUS).add(center);
 }
+
+export function altitudeAboveSphere(p) {
+    const center = V3(0,-wgs84.RADIUS, 0);
+    return p.clone().sub(center).length() - wgs84.RADIUS;
+}

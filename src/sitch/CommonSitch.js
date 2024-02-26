@@ -14,18 +14,6 @@ export const commonKMLCamera = {
     cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
 }
 
-export const commonKMLTracks = {
-    ...commonKMLTarget,
-    ...commonKMLCamera,
-//    displayLOS: {kind: "DisplayTrackToTrack"},
-    //   targetObject: {file: "TargetObjectFile",},
-    DisplayCameraFrustum: {targetTrack: "targetTrack"},
-}
-
-export const commonKMLTrackToTrack = {
-    ...commonKMLTracks,
-    lookAtTrack: {},  // and look at targetTrack
-}
 
 export const commonLabels = {
     cameraLabel:        { kind: "Label3D", text: "Camera", position: "lookCamera"},
@@ -39,4 +27,18 @@ export const commonJetLabels = {
     altitudeLabel1:      { kind: "MeasureAltitude",position: "jetTrack" , defer: true},
     altitudeLabel2:      { kind: "MeasureAltitude",position: "LOSTraverseSelect", defer: true },
     distanceLabel:      { kind: "MeasureAB",A: "jetTrack", B: "LOSTraverseSelect", defer: true},
+}
+
+export const commonKMLTracks = {
+    ...commonKMLTarget,
+    ...commonKMLCamera,
+//    displayLOS: {kind: "DisplayTrackToTrack"},
+    //   targetObject: {file: "TargetObjectFile",},
+    DisplayCameraFrustum: {targetTrack: "targetTrack"},
+    ...commonLabels,
+}
+
+export const commonKMLTrackToTrack = {
+    ...commonKMLTracks,
+    lookAtTrack: {},  // and look at targetTrack
 }

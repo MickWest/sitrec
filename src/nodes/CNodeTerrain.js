@@ -13,7 +13,7 @@ import {gui} from "../Globals";
 // to path.js
 import * as LAYER from "../LayerMasks.js"
 import {GlobalScene} from "../LocalFrame";
-import {getLocalDownVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalDownVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {Raycaster} from "three";
 
 export class CNodeTerrain extends CNode {
@@ -167,14 +167,15 @@ export class CNodeTerrain extends CNode {
         const down = getLocalDownVector(A)
         const rayCaster = new Raycaster(A, down);
         const intersect = this.getClosestIntersect(rayCaster);
+
         if (intersect !== null) {
-            return intersect.point;
-        } else {
-            return pointOnSphereBelow(A)
+            // only return the point if it's above sea level
+            if (altitudeAboveSphere(intersect.point) >= 0)
+                return intersect.point;
         }
 
+
+        return pointOnSphereBelow(A)
     }
-
-
 }
 

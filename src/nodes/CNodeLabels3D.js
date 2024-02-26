@@ -128,10 +128,7 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
         v.decimals ??= 0;
 
         super(v);
-
     }
-
-
 }
 
 
