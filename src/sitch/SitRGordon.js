@@ -1,11 +1,9 @@
-import {SitPVS14} from "./SitPVS14";
-
 // This needs to be derived from something better than SitPVS14 (looking out a plane window)
 // or SitKML (looking at a target track)
 // make it more general and data driven
 
 export const SitRGordon = {
-    ...SitPVS14,
+    include_pvs14: true,
     name: "rgordon",
     menuName: "RGordon Starlink",
     simSpeed: 1,

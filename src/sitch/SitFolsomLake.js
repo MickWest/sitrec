@@ -1,10 +1,3 @@
-import {SitKML} from "./SitKML";
-import {NodeMan} from "../Globals";
-import {makeArrayNodeFromColumn} from "../nodes/CNodeArray";
-import {abs, assert, floor} from "../utils"
-import {par} from "../par";
-import {commonKMLTracks} from "./CommonSitch";
-
 export const SitFolsomLake = {
     include_kml: true,
     name: "folsomlake",

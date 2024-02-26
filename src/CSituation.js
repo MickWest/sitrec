@@ -12,6 +12,7 @@ import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {FileManager} from "./CFileManager";
 import {CUnits} from "./CUnits";
+import {expandSitData} from "./SituationSetup";
 
 
 // These are some parameters used as defaults for a situation
@@ -78,18 +79,16 @@ export class CSituation {
     constructor(props) {
         Object.assign(this,situationDefaults);
         console.log("Setting units to: ",this.units)
-        Object.assign(this,props);
-
-        console.log("Setting units to: ",this.units)
-        Units.changeUnits(this.units);
-
+        this.change(props)
     }
 
     change(props) {
+        props = expandSitData(props);  // Do we really want to do this here? The whole CSituation class is a bit of a mess.
+        // as we WERE also doing it in the SituationSetupFromData() function
         Object.assign(this,props);
+        console.log("Setting units to: ",this.units)
         Units.changeUnits(this.units);
     }
-
 
     // Most complex sitches will FULLY override this CSituation::setup() function
     // So don't rely on anything in here for things like Gimbal, Agua, etc....

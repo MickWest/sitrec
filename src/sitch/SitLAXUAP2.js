@@ -1,7 +1,5 @@
-import {SitLAXUAP} from "./SitLAXUAP";
-
 export const SitLAXUAP2 = {
-    ...SitLAXUAP,
+    include_laxuap:true,
     name: "laxuap2",
     menuName: "LAX Balloon-Like 2",
 

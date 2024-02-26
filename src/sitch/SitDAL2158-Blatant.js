@@ -1,6 +1,3 @@
-import {SitKML} from "./SitKML";
-import {commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
-
 export const SitDAL2158 = {
     include_kml: true,
     name: "dal2158",

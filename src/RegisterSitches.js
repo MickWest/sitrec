@@ -23,13 +23,13 @@ export function registerSitches() {
         Object.keys(moduleExports).forEach(exportKey => {
             const exportObject = moduleExports[exportKey];
             if(exportKey.startsWith('Sit')) {
-                console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
+         //       console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 SitchMan.add(exportObject.name, exportObject);
                 //const sitchName = exportKey.substring(3);
                 //SitchMan.add(sitchName, exportObject);
 
             } else if (exportKey.startsWith('common')) {
-                console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
+         //       console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 // remove the common prefix
                 const commonName = exportKey.substring(6);
                 SitchMan.add(commonName, exportObject);

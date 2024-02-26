@@ -1,7 +1,6 @@
-import {SitPVS14} from "./SitPVS14";
 
 export const SitWestJet = {
-    ...SitPVS14,
+    include_pvs14:true,
     name: "westjet",
     menuName: "WestJet Triangle",
 

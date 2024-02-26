@@ -1,7 +1,6 @@
-import {SitFolsomLake} from "./SitFolsomLake";
 
 export const SitFolsomLake2 = {
-    ...SitFolsomLake,
+    include_folsomlake: true,
     name: "folsomlake2",
     menuName: "Folsom Lake Test2",
 

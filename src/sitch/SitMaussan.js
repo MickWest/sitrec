@@ -1,11 +1,10 @@
-import {SitPVS14} from "./SitPVS14";
 
-export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
+export const SitMaussan = {
+    include_pvs14: true,
     name: "maussan",
     menuName: "Maussan Starlink",
 
     targetSize: 200, // in feet
-
 
     nightSky: true,
     useGlobe: true,
@@ -15,14 +14,12 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
 
     starScale: 0.65,
 
-
     nearClip: 1,
     farClipLook: 6800*1000,
     nearClipLook: 1,
 
     frames: 790, // currently needs manual setting
 
-//    terrain: {lat: 37.897411, lon: -84.402051, zoom: 9, nTiles: 8},
     lat:  27.89,
     lon: -104.69,
 
@@ -40,21 +37,12 @@ export const SitMaussan = Object.assign(Object.assign({},SitPVS14),{
     lookCamera:{ fov: 62},
     cameraTrack: {},
 
-
     lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,background:'#000000'},
     videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65},
     mainView:{left:0.0, top:0, width:1,height:1,background:'#000000'},
 
-// // point we look at, this is up near Chigago
-//     toLat:  41.878633,
-//     toLon: -87.983577,
-//     toAlt: 3302.2,
-
     skyColor: '#AFBDD1',  // grey from the video
-
-//    targetObject:{file: "TargetObjectFile",},
-
     ptz: {az: -89.2, el: -6.6, fov: 53.2, showGUI: true},
 
 
-})
+}

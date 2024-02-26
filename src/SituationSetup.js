@@ -71,7 +71,8 @@ export function expandSitData(sitData, into = {}) {
 
 export function SituationSetupFromData(sitData, runDeferred) {
 
-    const sitDataExpanded = expandSitData(sitData);
+    // const sitDataExpanded = expandSitData(sitData); // see CSituation constructor
+    const sitDataExpanded = sitData;  //
 
     let mainView, mainCameraNode, mainCamera; // WHY?
 
@@ -79,7 +80,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
         const data = sitDataExpanded[key];
 
-        console.log("SituationSetup iterating: key = " + key );
+//        console.log("SituationSetup iterating: key = " + key );
 
         // we can have undefined values in sitData, so skip them
         // this normall occurs when we have a base situation, and then override some values

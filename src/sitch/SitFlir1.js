@@ -1,4 +1,3 @@
-import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
 import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
 import {Sit, guiJetTweaks, NodeMan, guiTweaks} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
