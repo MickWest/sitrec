@@ -96,7 +96,7 @@ export var SitGoFast = {
 
     targetSizedSphere: { defer: true, size:3, targetTrack: "LOSTraverseSelect" },
 
-    ...commonJetLabels,
+    include_JetLabels: true,
 
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")

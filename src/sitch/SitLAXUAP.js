@@ -1,12 +1,9 @@
-import {SitKML} from "./SitKML";
-import {commonKMLCamera, commonKMLTarget, commonKMLTracks, commonKMLTrackToTrack} from "./CommonSitch";
 
 export const SitLAXUAP = {
-    ...SitKML,
+    include_KML: true,
     name: "laxuap",
     menuName: "LAX Balloon-Likes",
     nightSky: true,
-  //  useGlobe: true,
 
     showAltitude:false,
     showAz:false,
@@ -20,18 +17,9 @@ export const SitLAXUAP = {
         TargetObjectFile: "./models/DC-10.glb",
     },
 
-
     videoFile: "../sitrec-videos/private/LAXUAP 11-08-37 - 720P.mp4",
     startTime: "2023-12-10T19:08:37.480Z",
     frames: 90,
-
-
-    // fromLat:  33.953748, //
-    // fromLon: -118.412243,
-    //
-    // fromAltFeet: 36,
-    // fromAltFeetMin: 0,
-    // fromAltFeetMax: 1000,
 
     tilt: 0,
 
@@ -40,14 +28,15 @@ export const SitLAXUAP = {
 
     terrain: {lat:  33.948, lon:-118.43, zoom:11, nTiles:8},
 
-
     mainCamera: {
         startCameraPositionLLA: [35.017412, -118.249314, 36660.825660],
         startCameraTargetLLA: [35.008685, -118.250429, 36474.428565],
     },
     lookCamera:{ fov: 1.61},
     cameraTrack: {LLA: [33.953748, -118.412243, 36]},
-    ...commonKMLTarget,
+
+    include_KMLTarget: true,
+
     followTrack:{},
     lookAtTrack:{},
 
@@ -78,7 +67,5 @@ export const SitLAXUAP = {
     // i.e. it would be to the side of a plane
     losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
 
-
     DisplayCameraFrustum: {targetTrack:"targetTrack"},
-
 }

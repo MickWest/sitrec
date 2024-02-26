@@ -83,8 +83,7 @@ export const SitFlir1 = {
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
 
-
-    ...commonJetLabels,
+    include_JetLabels: true,
 
     setup: function () {
 

@@ -1,4 +1,4 @@
-import {gui, NodeMan, setSit, Sit} from "./Globals";
+import {gui, NodeMan, setSit, Sit, SitchMan} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -49,16 +49,37 @@ export function SituationSetup(runDeferred = false) {
 
 }
 
+// this is a recursive function that expands the "include_" keys in the sitData
+// into a single object
+// this is used to allow us to have a base situation, and then override some values
+// effectively the same as using ... includes.
+export function expandSitData(sitData, into = {}) {
+    for (let key in sitData) {
+        const data = sitData[key];
+        if (key.startsWith("include_") && data) {
+            const includeKey = key.slice(8);
+            console.log("+++ SituationSetup: including: " + includeKey)
+            expandSitData(SitchMan.get(includeKey), into);
+        } else {
+            console.log("### SituationSetup: adding: " + key )
+            into[key] = data;
+        }
+    }
+    return into;
+}
+
 
 export function SituationSetupFromData(sitData, runDeferred) {
 
+    const sitDataExpanded = expandSitData(sitData);
 
     let mainView, mainCameraNode, mainCamera; // WHY?
 
-    for (let key in sitData) {
-//        console.log(key)
+    for (let key in sitDataExpanded) {
 
-        const data = sitData[key];
+        const data = sitDataExpanded[key];
+
+        console.log("SituationSetup iterating: key = " + key );
 
         // we can have undefined values in sitData, so skip them
         // this normall occurs when we have a base situation, and then override some values
@@ -77,7 +98,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
         }
 
         function SSLog() {
-            console.log("SituationSetup: " + key + " " + JSON.stringify(data))
+            console.log("SSLog SituationSetup: " + key + " " + JSON.stringify(data))
         }
 
         if (data.kind !== undefined) {
@@ -89,9 +110,12 @@ export function SituationSetupFromData(sitData, runDeferred) {
             key = data.kind;
         }
 
+
+
         switch (key) {
 
             case "frames":
+                SSLog();
                 SetupGUIFrames();
                 break;
 
@@ -649,8 +673,6 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     SSLog();
                     NodeMan.create(key, data);
                 }
-                ;
-
 
         }
     }

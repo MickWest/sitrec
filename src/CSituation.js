@@ -15,6 +15,9 @@ import {CUnits} from "./CUnits";
 
 
 // These are some parameters used as defaults for a situation
+// NOTE: The order used here will override the order in any sitch that uses these
+// even if you overide the values.
+
 const situationDefaults = {
     name: "gimbal",
     fps: 30,

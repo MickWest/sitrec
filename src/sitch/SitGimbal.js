@@ -80,7 +80,7 @@ const GimbalDefaults = {
     },
 
 
-    ...commonJetLabels,
+    include_JetLabels: true,
 
     setup: function () {
         setupOpts();
