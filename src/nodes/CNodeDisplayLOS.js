@@ -32,7 +32,13 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         this.LOSLengthMiles = v.LOSLength ?? 200;
         this.spacing = v.spacing ?? 30;
 
-        this.material = makeMatLine(v.color ?? 0x808080, v.width ?? 0.75)
+        let color = 0x808080;
+        // at this point v.color will be a node, so we need to get the value
+        if (v.color !== undefined) {
+            color = v.color.getValue();
+        }
+
+        this.material = makeMatLine(color, v.width ?? 0.75)
 
         this.Jet_LOS3D = [] // see below
 

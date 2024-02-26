@@ -660,16 +660,17 @@ export function SetupTrackLOSNodes() {
             },
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
-            color: 0x606060,
+            color: 0x404040,
 
-            // @dimebag2 lines
-            highlightLines: {
-                30: makeMatLine(0x800000, 2),  // 1*30 PT1 Red
-                330: makeMatLine(0x000080, 2), // 11 sec PT2 Blue
-                630: makeMatLine(0x805300, 2), // 21 sec PT3 Orange
-                930: makeMatLine(0x800080, 2), // 31 sec PT4 Magnenta
-                1020: makeMatLine(0x008000, 2)
-            }, // 34 sec PT5 green
+
+            // // @dimebag2 lines
+            // highlightLines: {
+            //     30: makeMatLine(0x800000, 2),  // 1*30 PT1 Red
+            //     330: makeMatLine(0x000080, 2), // 11 sec PT2 Blue
+            //     630: makeMatLine(0x805300, 2), // 21 sec PT3 Orange
+            //     930: makeMatLine(0x800080, 2), // 31 sec PT4 Magnenta
+            //     1020: makeMatLine(0x008000, 2)
+            // }, // 34 sec PT5 green
 
 
         })

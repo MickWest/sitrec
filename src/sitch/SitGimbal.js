@@ -38,6 +38,7 @@ import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {FileManager} from "../CFileManager";
 import {setupOpts} from "../JetChart";
+import {commonJetLabels} from "./CommonSitch";
 
 const GimbalDefaults = {
     name:"gimbal",
@@ -77,6 +78,9 @@ const GimbalDefaults = {
         //"Target Track": "targetTrack",
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
+
+
+    ...commonJetLabels,
 
     setup: function () {
         setupOpts();
@@ -464,7 +468,7 @@ export const SitGimbalNear = {
 
     relativeHeading: 10,
 
-
+    altitudeLabelFar:      { kind: "MeasureAltitude",position: "FARLOSTraverseConstantSpeed", defer: true },
 
     setup2: function () {
 

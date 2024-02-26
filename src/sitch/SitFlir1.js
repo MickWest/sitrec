@@ -36,6 +36,7 @@ import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager} from "../CFileManager";
 import {CNodeMunge} from "../nodes/CNodeMunge";
+import {commonJetLabels} from "./CommonSitch";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -81,6 +82,9 @@ export const SitFlir1 = {
         "Jet track": "jetTrack",
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
+
+
+    ...commonJetLabels,
 
     setup: function () {
 
@@ -380,7 +384,7 @@ export const SitFlir1 = {
             clipSeaLevel: false,
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
-            color: 0x606060,
+            color: 0x303030,
             spacing: 120,
 
         })

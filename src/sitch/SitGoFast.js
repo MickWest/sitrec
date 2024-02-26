@@ -49,6 +49,7 @@ import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {FileManager} from "../CFileManager";
 import {Color, MeshStandardMaterial, TextureLoader} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
+import {commonJetLabels} from "./CommonSitch";
 
 export var SitGoFast = {
     name: "gofast",
@@ -94,6 +95,8 @@ export var SitGoFast = {
     },
 
     targetSizedSphere: { defer: true, size:3, targetTrack: "LOSTraverseSelect" },
+
+    ...commonJetLabels,
 
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")

@@ -45,14 +45,22 @@ export function SituationSetup(runDeferred = false) {
     if (!runDeferred)
         new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
 
-    let mainView, mainCameraNode, mainCamera;
+    SituationSetupFromData(Sit, runDeferred);
 
-    for (let key in Sit) {
+}
+
+
+export function SituationSetupFromData(sitData, runDeferred) {
+
+
+    let mainView, mainCameraNode, mainCamera; // WHY?
+
+    for (let key in sitData) {
 //        console.log(key)
 
-        const data = Sit[key];
+        const data = sitData[key];
 
-        // we can have undefined values in Sit, so skip them
+        // we can have undefined values in sitData, so skip them
         // this normall occurs when we have a base situation, and then override some values
         if (data === undefined) continue;
 
@@ -103,7 +111,7 @@ export function SituationSetup(runDeferred = false) {
                     zoom: data.zoom,
                     nTiles: data.nTiles,
                     flattening: Sit.flattening ? "flattening" : undefined,
-                    tileSegments: Sit.terrain.tileSegments ?? 100,
+                    tileSegments: data.tileSegments ?? 100,
                 })
                 break;
 
@@ -145,7 +153,7 @@ export function SituationSetup(runDeferred = false) {
                 new CNodeCamera({
                     id: "lookCamera",
                     fov: data.fov ?? 10,
-        //            aspect: window.innerWidth / window.innerHeight,
+                    //            aspect: window.innerWidth / window.innerHeight,
                     near: data.near ?? 1,
                     far: data.far ?? 8000000,
                     layers: data.mask ?? LAYER.MASK_LOOKRENDER,
@@ -187,12 +195,11 @@ export function SituationSetup(runDeferred = false) {
 
                     new CNodeDisplayTrack({
                         id: id + "DisplayData",
-                        track: id+"Data",
+                        track: id + "Data",
                         color: [0.7, 0.3, 0],
                         width: 1,
                         ignoreAB: true,
                     })
-
 
 
                 }
@@ -348,19 +355,19 @@ export function SituationSetup(runDeferred = false) {
             case "ptz":
                 SSLog();
 
-                console.log("MAKE PTZ lookCamera, quaternion = "+NodeMan.get("lookCamera").camera.quaternion.x)
+                console.log("MAKE PTZ lookCamera, quaternion = " + NodeMan.get("lookCamera").camera.quaternion.x)
 
                 const camera = data.camera ?? "lookCamera";
                 data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
                 const showGUI = data.showGUI ?? true;
-                NodeMan.get(camera).addController("PTZUI", {gui:gui, ...data})
+                NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data})
 
                 break;
 
             case "lookPosition":
                 SSLog();
                 NodeMan.get("lookCamera").addController("UIPositionLLA", {
-                    id:"CameraLLA",
+                    id: "CameraLLA",
                     fromLat: new CNodeGUIValue({
                         id: "cameraLat",
                         value: data.fromLat,
@@ -393,7 +400,7 @@ export function SituationSetup(runDeferred = false) {
 
             case "followTrack":
                 SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition",{
+                NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition", {
                     sourceTrack: data.sourceTrack ?? "cameraTrack",
                 })
                 break;
@@ -401,9 +408,9 @@ export function SituationSetup(runDeferred = false) {
             case "lookAt":
                 SSLog();
                 NodeMan.get("lookCamera").addController("LookAtLLA", {
-                    toLat:data.toLat,
-                    toLon:data.toLon,
-                    toAlt:data.toAlt,
+                    toLat: data.toLat,
+                    toLon: data.toLon,
+                    toAlt: data.toAlt,
                 })
                 break;
 
@@ -427,29 +434,35 @@ export function SituationSetup(runDeferred = false) {
                     TargetObjectFile: data.file,
                     wind: data.wind ?? undefined,
                     tiltType: data.tiltType ?? "none",
-                  //  ...maybeWind,
+                    //  ...maybeWind,
                 })
                 break;
 
             case "targetSizedSphere":
                 SSLog();
                 new CNodeDisplayTargetSphere({
-                    track:data.targetTrack ?? "targetTrack",
-                    size: new CNodeScale("sizeScaledLOS"+data.id, scaleF2M,
-                        new CNodeGUIValue({value: data.size??3, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
+                    track: data.targetTrack ?? "targetTrack",
+                    size: new CNodeScale("sizeScaledLOS" + data.id, scaleF2M,
+                        new CNodeGUIValue({
+                            value: data.size ?? 3,
+                            start: 0,
+                            end: 200,
+                            step: 0.01,
+                            desc: "LOS Sphere size ft"
+                        }, gui)
                     ),
                     layers: LAYER.MASK_LOOK,
                     color: data.color ?? "#FFFFFF"
                 })
                 break;
 
-                // Take pan and tilt data from a file and use it to control the camera
+            // Take pan and tilt data from a file and use it to control the camera
             case "arrayDataPTZ":
                 SSLog();
                 const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
                 const array = cameraTrack.array
-                assert (array !== undefined, "arrayDataPTZ missing array object")
-                makeArrayNodeFromColumn("headingCol", array, data.heading,30, true)
+                assert(array !== undefined, "arrayDataPTZ missing array object")
+                makeArrayNodeFromColumn("headingCol", array, data.heading, 30, true)
                 makeArrayNodeFromColumn("pitchCol", array, data.pitch, 30, true)
                 NodeMan.get(data.camera ?? "lookCamera").addController(
                     "AbsolutePitchHeading",
@@ -457,7 +470,7 @@ export function SituationSetup(runDeferred = false) {
                 )
                 if (data.labelView !== undefined) {
                     const labelView = NodeMan.get(data.labelView)
-                    labelView.addText("alt", "---", 0, 5, 5, '#FFFFFF','left').listen(par, "cameraAlt", function (value) {
+                    labelView.addText("alt", "---", 0, 5, 5, '#FFFFFF', 'left').listen(par, "cameraAlt", function (value) {
                         this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
                     })
 
@@ -537,7 +550,7 @@ export function SituationSetup(runDeferred = false) {
                 break;
 
             case "losTarget":
-                    // ONly used for LAXUAP
+                // ONly used for LAXUAP
                 let control = {};
                 if (data.distance) {
                     new CNodeScale("controlLOS", scaleF2M,
@@ -548,7 +561,7 @@ export function SituationSetup(runDeferred = false) {
                             step: 0.1,
                             desc: "LOS Sphere dist ft"
                         }, gui))
-                    control = { distance: "controlLOS" }
+                    control = {distance: "controlLOS"}
                 } else if (data.altitude) {
                     new CNodeScale("controlLOS", scaleF2M,
                         new CNodeGUIValue({
@@ -562,36 +575,42 @@ export function SituationSetup(runDeferred = false) {
                 }
 
 
-                new CNodeLOSTargetAtDistance ({
-                    id:"LOSTargetTrack",
-                    track:data.track,
-                    camera:data.camera,
+                new CNodeLOSTargetAtDistance({
+                    id: "LOSTargetTrack",
+                    track: data.track,
+                    camera: data.camera,
                     ...control,
-                    frame:data.frame,
-                    offsetRadians:radians(data.offset),
+                    frame: data.frame,
+                    offsetRadians: radians(data.offset),
                 })
 
-                new CNodeLOSTargetAtDistance ({
-                    id:"LOSTargetWithWindTrack",
-                    track:data.track,
-                    camera:data.camera,
+                new CNodeLOSTargetAtDistance({
+                    id: "LOSTargetWithWindTrack",
+                    track: data.track,
+                    camera: data.camera,
                     ...control,
-                    frame:data.frame,
-                    offsetRadians:radians(data.offset),
-                    wind:"objectWind",
+                    frame: data.frame,
+                    offsetRadians: radians(data.offset),
+                    wind: "objectWind",
                 })
 
                 new CNodeDisplayTargetSphere({
-                    track:"LOSTargetTrack",
+                    track: "LOSTargetTrack",
                     size: new CNodeScale("sizeScaledLOS", scaleF2M,
-                        new CNodeGUIValue({value: data.size, start: 0, end: 200, step: 0.01, desc: "LOS Sphere size ft"}, gui)
+                        new CNodeGUIValue({
+                            value: data.size,
+                            start: 0,
+                            end: 200,
+                            step: 0.01,
+                            desc: "LOS Sphere size ft"
+                        }, gui)
                     ),
                     layers: LAYER.MASK_LOOK,
                     color: "#00c000"  // green fixed relative to ground
                 })
 
                 new CNodeDisplayTargetSphere({
-                    track:"LOSTargetWithWindTrack",
+                    track: "LOSTargetWithWindTrack",
                     size: "sizeScaledLOS",
                     layers: LAYER.MASK_LOOK,
                     color: "#00ffff"  // cyan = with wind
@@ -602,11 +621,23 @@ export function SituationSetup(runDeferred = false) {
                 SSLog();
                 NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                     {
-                    source: data.track,
-                    method:"catmull",
-                    intervals: new CNodeGUIValue({value: 20, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-                    tension: new CNodeGUIValue({value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension"},gui),
-                },
+                        source: data.track,
+                        method: "catmull",
+                        intervals: new CNodeGUIValue({
+                            value: 20,
+                            start: 1,
+                            end: 200,
+                            step: 1,
+                            desc: "Catmull Intervals"
+                        }, gui),
+                        tension: new CNodeGUIValue({
+                            value: 0.5,
+                            start: 0,
+                            end: 5,
+                            step: 0.001,
+                            desc: "Catmull Tension"
+                        }, gui),
+                    },
                     "source");
                 break;
 
@@ -617,12 +648,11 @@ export function SituationSetup(runDeferred = false) {
                 if (NodeMan.validType(key)) {
                     SSLog();
                     NodeMan.create(key, data);
-                };
+                }
+                ;
 
 
         }
-
-
     }
 }
 

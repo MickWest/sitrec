@@ -34,3 +34,9 @@ export const commonLabels = {
     targetAltitudeLabel:{ kind: "MeasureAltitude",position: "targetTrack"},
     distanceLabel:      { kind: "MeasureAB",A: "lookCamera", B: "targetTrack"},
 }
+
+export const commonJetLabels = {
+    altitudeLabel1:      { kind: "MeasureAltitude",position: "jetTrack" , defer: true},
+    altitudeLabel2:      { kind: "MeasureAltitude",position: "LOSTraverseSelect", defer: true },
+    distanceLabel:      { kind: "MeasureAB",A: "jetTrack", B: "LOSTraverseSelect", defer: true},
+}
