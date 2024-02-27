@@ -61,7 +61,7 @@ export function expandSitData(sitData, into = {}) {
             console.log("+++ SituationSetup: including: " + includeKey)
             expandSitData(SitchMan.get(includeKey), into);
         } else {
-            console.log("### SituationSetup: adding: " + key )
+//            console.log("### SituationSetup: adding: " + key )
             into[key] = data;
         }
     }

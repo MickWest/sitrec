@@ -6,7 +6,7 @@ import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {UpdateNodes} from "./nodes/CNode";
 import {
-    GlobalDateTimeNode,
+    GlobalDateTimeNode, Globals,
     gui,
     guiTweaks,
     incrementMainLoopCount,
@@ -61,6 +61,7 @@ import {SituationSetup} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
+import {checkLogin} from "./login";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -68,6 +69,8 @@ import {updateFrame} from "./updateFrame";
 
 // Check to see if we are running in a local environment
 checkLocal()
+
+await checkLogin();
 
 // Some metacode to find the node types and sitches (and common setup fragments)
 setNodeMan(new CNodeFactory())

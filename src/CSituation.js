@@ -86,7 +86,7 @@ export class CSituation {
     change(props) {
 
         const serialized = stringify(props, {maxLength: 180, indent: 2});
-        console.log(serialized);
+//        console.log(serialized);
 
 
         props = expandSitData(props);  // Do we really want to do this here? The whole CSituation class is a bit of a mess.

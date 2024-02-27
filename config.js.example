@@ -64,7 +64,9 @@ export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL
 console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
 console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
 
-
+export const _configParams = {
+   rehostRequiresLogin: false,      // if true, rehosting requires login - currently only supported for Metabunk/Xenforo
+};
 
 ////////////////////////////////////////////////\\
 // / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
@@ -72,4 +74,3 @@ console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
 // This is the sitch that is loaded when running on local
 export const localSituation = "nightsky";
 //////////////////////////////////////////////
-
