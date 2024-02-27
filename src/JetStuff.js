@@ -90,6 +90,9 @@ export function jetPitchFromFrame(f = -1) {
 }
 
 
+// marker spheres and maybe a sprite for the glare
+// these are all in the LocalFrame
+// setup by Gimbal, GoFast, FLIR1 and Aguadilla
 export function initJetVariables() {
     targetSphere = sphereMark(V3(0,0,0),2,0xffffff, LocalFrame)
 
@@ -1068,12 +1071,13 @@ export function CommonJetStuff() {
     UpdateChart()
 }
 
+// for Gimbal, GoFast, FLIR1, and Aguadilla
 export function initJetStuff() {
     console.log(">>>+++ initJetStuff()")
 
-    var farClip = metersFromMiles(2000)
     // note that since we have a very large distance to the far clipping plane
-    // we need a near clipping plane larger than the default 1, so I'm using 100
+    // but we use a logarithmic depth buffer, so it works out.
+    var farClip = metersFromMiles(2000)
 
     const mainCam = NodeMan.get("mainCamera").camera;
     mainCam.layers.enable(LAYER.podBack)
@@ -1088,11 +1092,9 @@ export function initJetStuff() {
         var ufoTrack = NodeMan.get("LOSTraverseSelect")
         var jetTrack = NodeMan.get("jetTrack")
 
-
         const vScale = Sit.frames
         const windVelocityScaledLocal = windTrackLocal.v(par.frame).multiplyScalar(vScale)
         const windVelocityScaledTarget = windTrackTarget.v(par.frame).multiplyScalar(vScale)
-
 
         let jetPosition = ufoTrack.p(par.frame);
         let jetVelocityScaled = trackVelocity(ufoTrack, par.frame).multiplyScalar(vScale)

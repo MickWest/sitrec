@@ -13,6 +13,7 @@ import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {FileManager} from "./CFileManager";
 import {CUnits} from "./CUnits";
 import {expandSitData} from "./SituationSetup";
+import stringify from "json-stringify-pretty-compact";
 
 
 // These are some parameters used as defaults for a situation
@@ -83,6 +84,11 @@ export class CSituation {
     }
 
     change(props) {
+
+        const serialized = stringify(props, {maxLength: 180, indent: 2});
+        console.log(serialized);
+
+
         props = expandSitData(props);  // Do we really want to do this here? The whole CSituation class is a bit of a mess.
         // as we WERE also doing it in the SituationSetupFromData() function
         Object.assign(this,props);
@@ -92,25 +98,25 @@ export class CSituation {
 
     // Most complex sitches will FULLY override this CSituation::setup() function
     // So don't rely on anything in here for things like Gimbal, Agua, etc....
-    setup() {
-        // more data-driven stuff that's indepent of type of situation
-
-        if (this.marks) this.marks.forEach(mark => {
-            var enu = LLAToEUS(mark.LL.lat, mark.LL.lon)
-            GlobalScene.add(boxMark(enu, mark.width, 10000, mark.width, mark.color))
-        })
-
-        new CNodeGUIValue({
-            id: "altAdjust",
-            value: 0,
-            start: -1000,
-            end: 1000,
-            step: 0.1,
-            desc: "Altitude adjustment"
-        }, guiTweaks)
-
-        // This seems excessive - sort out the above, remove duplicate code, make it all data driven.
-    }
+    // setup() {
+    //     // more data-driven stuff that's indepent of type of situation
+    //
+    //     // if (this.marks) this.marks.forEach(mark => {
+    //     //     var enu = LLAToEUS(mark.LL.lat, mark.LL.lon)
+    //     //     GlobalScene.add(boxMark(enu, mark.width, 10000, mark.width, mark.color))
+    //     // })
+    //
+    //     // new CNodeGUIValue({
+    //     //     id: "altAdjust",
+    //     //     value: 0,
+    //     //     start: -1000,
+    //     //     end: 1000,
+    //     //     step: 0.1,
+    //     //     desc: "Altitude adjustment"
+    //     // }, guiTweaks)
+    //
+    //     // This seems excessive - sort out the above, remove duplicate code, make it all data driven.
+    // }
 
     get duration() {
         return this.frames / this.fps

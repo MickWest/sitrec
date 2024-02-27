@@ -507,3 +507,4 @@ export function stripParentheses(callStack) {
     return callStack.replace(/\(.*?\)/g, '');
 }
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))

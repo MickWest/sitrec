@@ -11,7 +11,8 @@ import {
     MeshBasicMaterial,
     SphereGeometry,
     Vector2,
-    Vector3, WireframeGeometry
+    Vector3,
+    WireframeGeometry
 } from '../three.js/build/three.module.js';
 
 import {drop3} from "./SphericalMath"
@@ -490,3 +491,9 @@ export function pointObject3DAt(object, _normal) {
 
 export {V3};
 export {V2};
+
+export function isVisible(ob) {
+    if (ob.visible == false) return false; // if not visible, then that can't be overridden
+    if (ob.parent != null) return isVisible(ob.parent) // visible, but parents can override
+    return true; // visible all the way up to the root
+}

@@ -1,48 +1,48 @@
 import {Group, REVISION, Scene,} from "../three.js/build/three.module.js";
-import {makeMatLine} from "./MatLines";
 import "./js/uPlot/uPlot.css"
 import "./extra.css"
 import "./js/jquery.csv.js?v=2"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
-import {trackHeading, UpdateNodes} from "./nodes/CNode";
+import {UpdateNodes} from "./nodes/CNode";
 import {
+    GlobalDateTimeNode,
     gui,
-    guiTweaks, incrementMainLoopCount,
-    infoDiv, mainLoopCount,
+    guiTweaks,
+    incrementMainLoopCount,
+    infoDiv,
+    NodeMan,
+    setGlobalDateTimeNode,
     setGlobalURLParams,
     setInfoDiv,
     setNodeMan,
     setSit,
     setSitchMan,
+    setUnits,
     setupGUIGlobals,
-    setGlobalDateTimeNode,
     Sit,
     SitchMan,
-    GlobalDateTimeNode, NodeMan, setUnits,
 } from "./Globals";
-import {buildDate, disableScroll, radians} from './utils.js'
+import {disableScroll} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par} from "./par";
 
 import * as LAYER from "./LayerMasks.js"
-import {SetupFrameSlider, updateFrameSlider} from "./FrameSlider";
+import {SetupFrameSlider} from "./FrameSlider";
 import {registerNodes} from "./RegisterNodes";
 import {registerSitches} from "./RegisterSitches";
 import {SetupMouseHandler} from "./mouseMoveView";
-import {initKeyboard, isKeyHeld, showHider} from "./KeyBoardHandler";
+import {initKeyboard, showHider} from "./KeyBoardHandler";
 import {
     CommonJetStuff,
     Frame2Az,
-    Frame2El,
     glareSprite,
     initJetStuff,
     initJetStuffOverlays,
     initJetVariables,
     targetSphere,
     UIChangedAz,
-    UpdatePRFromEA,
     updateSize
 } from "./JetStuff";
 import {GlobalScene, LocalFrame, setupLocalFrame, setupScene} from "./LocalFrame";
@@ -51,26 +51,33 @@ import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {assert} from "./utils"
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
-import {CNodeDateTime, MakeDateTimeNode} from "./nodes/CNodeDateTime";
+import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
-import {checkLocal, isLocal, SITREC_ROOT, localSituation} from "../config";
+import {checkLocal, isLocal, localSituation, SITREC_ROOT} from "../config";
 
 import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
-import {V3} from "./threeExt";
 import {CUnits} from "./CUnits";
+import {updateLockTrack} from "./updateLockTrack";
+import {updateFrame} from "./updateFrame";
 
+// This is the main entry point for the sitrec application
+// However note that the imports above might have code that is executed
+// before this code is executed.
+
+// Check to see if we are running in a local environment
 checkLocal()
 
-console.log("setNodeMan")
+// Some metacode to find the node types and sitches (and common setup fragments)
 setNodeMan(new CNodeFactory())
-console.log("registerNodes")
 registerNodes();
 
 setSitchMan(new CSitchFactory())
 registerSitches();
 
+// Create the selectable sitches menu
+// basically anything that is not hidden and has a menuName
 const selectableSitchesUnsorted = {}
 SitchMan.iterate((key, sitch) =>{
     if (sitch.hidden !== true && sitch.menuName !== undefined ) {
@@ -86,17 +93,17 @@ const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
 // Create a new sorted object
 const selectableSitches = {};
 sortedKeys.forEach(key => {
-//    console.log(selectableSitchesUnsorted[key]);
     selectableSitches[key] = selectableSitchesUnsorted[key];
 });
+// Add the "Test All" option which smoke-tests all sitches
+// and the "Test Here+" option (which does the same as test all, but starts at the current sitch)
 
-// Add the "Test All" option
 selectableSitches["* Test All *"] = "testall";
 selectableSitches["* Test Here+ *"] = "testhere";
 
-console.log("SITREC START")
-console.log("Three.JS Revision = " + REVISION)
+console.log("SITREC START - Three.JS Revision = " + REVISION)
 
+// Get the URL and extract parameters
 const queryString = window.location.search;
 console.log(">"+queryString);
 const urlParams = new URLSearchParams(queryString);
@@ -107,21 +114,25 @@ setGlobalURLParams(urlParams)
 var situation = "nightsky";
 
 ///////////////////////////////////////////////////////////////////////
-// LOCAL TEST  agua, linetest, rgb,  gimbal, gofast, flir1
+// But if it's local, we default to the local situation, defined in config.js
 if (isLocal) {
     situation = localSituation
     console.log("LOCAL TEST MODE: " + situation + "\n")
 }
+
 ///////////////////////////////////////////////////////////////////////
 // A smoke test of one or more situations.
 var toTest
+
 var testing = false;
 if (urlParams.get("test")) {
+    // get the list of situations to test
     toTest = urlParams.get("test")
     testing = true;
 }
 
-// A smoke test of all situations
+// A smoke test of all situations, so we generate the list
+// which then gets passed as a URL, as above.
 if (urlParams.get("testAll")) {
     toTest = ""
     for (var key in selectableSitches) {
@@ -131,9 +142,6 @@ if (urlParams.get("testAll")) {
     toTest+="gimbal"  // just so we end up with something more interesting for more of a soak test
 }
 
-
-
-
 // toTest is a comma separated list of situations to test
 // if it is set, we will test the first one, then the rest
 // will be tested in order.
@@ -142,7 +150,6 @@ if (toTest !== undefined) {
     situation = testArray.shift() // remove the first (gimbal)
     toTest = testArray.join(",")
     console.log("Testing "+situation+", will text next: "+toTest)
-
 }
 
 // Either "sit" (deprecated) or "sitch" can be used to specify a situation in the url params
@@ -205,13 +212,12 @@ _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
         }
         toTest+=situation  // end up back where we started
         url = SITREC_ROOT + "?test="+toTest;
-
     }
-
-
     window.location.assign(url) //
 })
 
+///////////////////////////////////////////////////////////////////////////////
+// Start to setup the sitch
 
 const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
 assert(startSitch !== null, "Can't find startup Sitch: "+lower)
@@ -243,30 +249,8 @@ if (document.title != newTitle) {
     document.title = newTitle;
 }
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
-
 // housekeeping
-var container, stats;
-
-export var labelRenderer;
-
-// These are shortcuts, we can use makeMatLine directly for static geometry
-// I feel matLine might not be ideal for specifying colors
-var matLine =  makeMatLine(0x40ff40);
-var matLineRed = makeMatLine(0xff8080,1.0);
-var matLineRed2 = makeMatLine(0xff8080,2.0);
-var matLineRedThin = makeMatLine(0xff8080,0.75);
-var matLineBlue = makeMatLine(0x8080ff,1.0);
-var matLineHorizon = makeMatLine(0x0000ff,2.5);
-var matLineWhite = makeMatLine(0xffffff);
-var matLineGreen = makeMatLine(0x00ff00);
-var matLineCyan = makeMatLine(0x00ffff,1.5);
-var matLineGreenThin = makeMatLine(0x00c000,1.0);
-var matLineWhiteThin = makeMatLine(0x808080, 0.75);
-var matLineWhiteDashed = makeMatLine(0xffffff, 1, true); // dashed is not working
-
-// Kilometers per mile, used for conversion
-var KMM = 0.621371;
+var container;
 
 function init() {
     // create a single div that contains everything
@@ -293,16 +277,6 @@ function init() {
     setupLocalFrame(new Group())
 
     GlobalScene.add(LocalFrame)
-
- //   GlobalScene.matrixWorldAutoUpdate = false
-
-
-}
-
-function isVisible (ob) {
-    if (ob.visible == false) return false; // if not visible, then that can't be overridden
-    if (ob.parent != null) return isVisible(ob.parent) // visible, but parents can override
-    return true; // visible all the way up to the root
 }
 
 // Method of setting frame rate, from:
@@ -310,7 +284,7 @@ function isVisible (ob) {
 // uses the sub-ms resolution timer window.performance.now() (a double)
 // and does nothing if the time has not elapsed
 
-var fps, fpsInterval, startTime, now, then, elapsed;
+var fpsInterval, startTime, now, then, elapsed;
 
 function startAnimating(fps) {
     fpsInterval = 1000 / fps ;           // e.g. 1000/30 = 33.333333
@@ -327,9 +301,6 @@ function animate(newtime) {
     now = newtime;
     elapsed = now - then;
 
-//    console.log("Frame now = " + now);
-
-
     // if enough time has elapsed, draw the next frame
     if (elapsed > fpsInterval) {
 
@@ -337,18 +308,16 @@ function animate(newtime) {
         // Also, adjust for fpsInterval not being multiple of 16.67
         then = now - (elapsed % fpsInterval);
         // draw stuff here
-//        console.log("Normal renderMain call")
         renderMain()
 
        // if (par.effects)
        //     GlobalComposer.render();
 
     } else {
-        // we don't have enough time for a new frame
-        // so just render - which will allow smooth 60 fps motion
+        // It is not yet time for a new frame
+        // so just render - which will allow smooth 60 fps motion moving the camera
         const oldPaused = par.paused
         par.paused = true;
-//        console.log("PAUSED renderMain call")
         renderMain();
         par.paused = oldPaused;
     }
@@ -422,130 +391,16 @@ function renderMain() {
 }
 
 
-
-// move the main camera based on the lock track
-// this makes the camera follow the track (i.e. a plane)
-// the camera is moved based on the difference between the current
-// position and the last position
-// the camera is rotated based on the difference between the current
-// heading and the last heading
-
-function updateLockTrack(view, f) {
-    if (view.lockTrackName !== "default" && view.lockTrackName !== undefined) {
-        const lockTrack = NodeMan.get(view.lockTrackName);
-        // get the current position and heading from the track
-        const lockPos = lockTrack.p(f);
-        const lockHeading = trackHeading(lockTrack, f)
-        if (view.lastLockPos !== null) {
-            const mainCam = view.camera;
-            // TODO: this is a about the Y axis, should it not be local up?
-            // TODO: that would require that trackHeading() use the same up vector
-            const upAxis = V3(0, 1, 0)
-            const offset = lockPos.clone().sub(view.lastLockPos)
-            let headingChange = lockHeading - view.lastLockHeading;
-
-        //    console.log("Frame = "+f+" lockPos = "+lockPos.x+","+lockPos.y+","+lockPos.z+" lockHeading = "+lockHeading+" offset = "+offset.x+","+offset.y+","+offset.z+" headingChange = "+headingChange);
-
-
-            mainCam.position.add(offset)
-
-            // we ignore large heading changes, which will typically be 180s
-            // such as in gimbalnear
-            // this generally does not happen.
-            if (Math.abs(headingChange) > 90) {
-                headingChange = 0;
-            }
-
-            mainCam.position.sub(lockPos)
-            mainCam.position.applyAxisAngle(upAxis, -radians(headingChange))
-            mainCam.position.add(lockPos)
-            mainCam.rotateOnAxis(upAxis, -radians(headingChange))
-
-
-            mainCam.updateMatrix()
-            mainCam.updateMatrixWorld()
-        }
-
-        view.lastLockPos = lockPos;
-        view.lastLockHeading = lockHeading;
-
-    } else {
-        // if we are not following, then reset the last lock position
-        // so that we don't get a jump when we start following again
-        view.lastLockPos = null;
-        view.lastLockHeading = null;
-    }
-}
-
-
-function updateFrame() {
-    const lastFrame = par.frame;
-
-    const A = Sit.aFrame;
-    const B = Sit.bFrame;
-
-    if (isKeyHeld('arrowup')) {
-        par.frame = Math.round(par.frame - 10);
-        par.paused = true;
-    } else if (isKeyHeld('arrowdown')) {
-        par.frame = Math.round(par.frame + 10);
-        par.paused = true;
-    } else if (isKeyHeld('arrowleft')) {
-        par.frame = Math.round(par.frame - 1);
-        par.paused = true;
-    } else if (isKeyHeld('arrowright')) {
-        par.frame = Math.round(par.frame + 1);
-        par.paused = true;
-    } else if (!par.paused) {
-        // Frame advance with no controls (i.e. just playing)
-        // time is advanced based on frames in the video
-        // Sit.simSpeed is how much the is speeded up from reality
-        // so 1.0 is real time, 0.5 is half speed, 2.0 is double speed
-        // par.frame is the frame number in the video
-        // (par.frame * Sit.simSpeed) is the time (based on frame number) in reality
-        par.frame = Math.round(par.frame + par.direction);
-
-        // A-B wrapping
-        if (par.frame > B) {
-            if (par.pingPong) {
-                par.frame = B;
-                par.direction = -par.direction
-            } else {
-                par.frame = 0;  // wrap if auto playing
-            }
-        }
-    }
-
-    if (par.frame > B) {
-        par.frame = B;
-        if (par.pingPong) par.direction = -par.direction
-    }
-    if (par.frame < A) {
-        par.frame = A;
-        if (par.pingPong) par.direction = -par.direction
-    }
-
-    updateFrameSlider();
-
-
-    //      if (par.frame != lastFrame) {
-    par.time = par.frame / Sit.fps
-    if (Sit.azSlider) {
-        const oldAz = par.az;
-        const oldEl = par.el;
-        par.az = Frame2Az(par.frame)
-        par.el = Frame2El(par.frame)
-        if (par.az != oldAz || par.el != oldEl)
-            UpdatePRFromEA()
-    }
-}
-
 init();
 
+// Parse the URL parameters, if any
+// setting up stuff like the local coordinate system
+// this will override things like Sit.lat and Sit.lon
 
 // bit of a patch
-// if we are going to load a starlink file (i.e. id = starLink - noe capitalization)
+// if we are going to load a starlink file (i.e. id = starLink - note capitalization)
 //  check the flag rhs, which is set to rhs: FileManager.rehostedStarlink,
+//  if it's set, then delete the starLink from Sit.files
 var urlData
 if (urlParams.get("data")) {
     urlData = urlParams.get("data")
@@ -555,28 +410,22 @@ if (urlParams.get("data")) {
         FileManager.rehostedStarlink = true;
         console.log("Deleted starLink from sit, as urlObject.rhs = "+urlObject.rhs)
     }
-}
 
-// Parse the URL parameters, if any
-// setting up stuff like the local coordinate system
-// this will override things like Sit.lat and Sit.lon
-if (urlParams.get("data")) {
-    urlData = urlParams.get("data")
     if (Sit.parseURLDataBeforeSetup) {
+        // currently only used by SitNightSky, and only slightly, to setup Sit.lat/lon from olat/olon URL parameters
         Sit.parseURLDataBeforeSetup(urlData)
     }
 }
 
-// data drive loading and setup
-// Start loading assets but don't await it yet
+// Start loading the assets in Sit.files, but don't await them yet
 
 console.log("START Load Assets")
 const assetsLoading = Sit.loadAssets();
 
 console.log("START Location Request")
 
-// get only get the local lat/lon if we don't have URL data.
-// and if we are not testing
+// While that's loading, we can get the local lat/lon (i.e. the user's location)
+// get only get the local lat/lon if we don't have URL data and if we are not testing
 if (!testing && Sit.localLatLon && urlData === undefined) {
     await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -604,28 +453,31 @@ console.log("WAIT Load Assets")
 await assetsLoading;
 console.log("FINISHED Load Assets")
 
-console.log("Setup()")
-
+// Now that the assets are loaded, we can setup the situation
+// First we do the data-driven stuff by expainding and then parseing the Sit object
+console.log("SituationSetup()")
 SituationSetup(false);
 
+// setup the common keyboard handler
 initKeyboard();
 
+// jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
 if (Sit.jetStuff) {
     initJetVariables();
     initJetStuff()
 }
 
-
-if (Sit.setup !== undefined) Sit.setup();
-console.log("Setup2()")
+// Each sitch can have a setup() and setup2() function
+// however only Gimbal actually used setup2() as gimbal and gimabalfar have different setup2() functions
+if (Sit.setup !== undefined && Sit.setup2 !== undefined) {
+    console.warn("Sit.setup() and Sit.setup2() both exist in Sit: "+Sit.name)
+};
+if (Sit.setup  !== undefined) Sit.setup();
 if (Sit.setup2 !== undefined) Sit.setup2();
 
-// any deferred setup - i.e data members that have defer: true
+// Redo tnhe data-driven setuo, but this is for any deferred setup
+// i.e data members that have defer: true
 SituationSetup(true);
-
-
-// minor patch, defer setting up the ATFLIR UI, as it references the altitude
-if (Sit.jetStuff) initJetStuffOverlays()
 
 console.log("Finalizing....")
 
@@ -645,6 +497,8 @@ if (Sit.azSlider) {
 
 if (Sit.jetStuff) {
     // only gimbal
+    // minor patch, defer setting up the ATFLIR UI, as it references the altitude
+    initJetStuffOverlays()
     console.log("CommonJetStuff()")
     CommonJetStuff();
 }
@@ -660,16 +514,6 @@ if (Sit.nightSky) {
     console.log("addNightSky()")
     addNightSky()
 }
-
-// if (Sit.displayFrustum) {
-//     console.log("addFrustum()")
-//      Sit.frustum = new CNodeDisplayCameraFrustum({
-//          radius: Sit.frustumRadius,
-//          camera: "lookCamera",
-//          color: Sit.frustumColor,
-//          lineWeight: Sit.frustumLineWeight
-//      })
-// }
 
 // Finally move the camera and reset the start time, if defined in the URL parameters
 if (urlParams.get("data")) {
@@ -690,7 +534,7 @@ windowChanged()
 infoDiv.innerHTML = ""
 startAnimating(30);
 
-// if testing, then wait two seconds, and then load the next test URL
+// if testing, then wait 3.5 seconds, and then load the next test URL
 
 setTimeout( function() {
     if (toTest != undefined && toTest != "") {
