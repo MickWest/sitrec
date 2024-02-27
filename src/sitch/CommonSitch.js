@@ -16,11 +16,11 @@ export const commonKMLCamera = {
 
 
 export const commonLabels = {
-    cameraLabel:        { kind: "Label3D", text: "Camera", position: "lookCamera"},
-    targetLabel:        { kind: "Label3D", text: "Target", position: "targetTrack"},
-    altitudeLabel:      { kind: "MeasureAltitude",position: "lookCamera" },
-    targetAltitudeLabel:{ kind: "MeasureAltitude",position: "targetTrack"},
-    distanceLabel:      { kind: "MeasureAB",A: "lookCamera", B: "targetTrack"},
+    cameraLabel:        { kind: "Label3D", text: "Camera", position: "lookCamera" , defer: true},
+    targetLabel:        { kind: "Label3D", text: "Target", position: "targetTrack" , defer: true},
+    altitudeLabel:      { kind: "MeasureAltitude",position: "lookCamera" , defer: true },
+    targetAltitudeLabel:{ kind: "MeasureAltitude",position: "targetTrack" , defer: true},
+    distanceLabel:      { kind: "MeasureAB",A: "lookCamera", B: "targetTrack" , defer: true},
 }
 
 export const commonJetLabels = {

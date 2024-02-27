@@ -92,7 +92,7 @@ export const SitPVS14 = {
              sourceTrack: "cameraTrack",
         })
 
-        //animated segement of camera track
+        // animated segment of camera track
         new CNodeDisplayTrack({
             id:"KMLDisplay",
             track: "cameraTrack",

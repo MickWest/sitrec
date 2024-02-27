@@ -9,5 +9,4 @@ export const SitLAXUAP2 = {
     frames: 229,
     lookCamera:{ fov: 0.4},
     losTarget:{track: "targetTrack", camera: "lookCamera", frame: 154, altitude:10000, size:1, offset: -0.02 },
-
 }

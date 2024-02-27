@@ -308,10 +308,8 @@ Note in the above, mainView covers the entire screen, but it's also typical to l
 ![WestJet Screenshot](readmeImages/westjet.jpg)
 
 ```javascript
-import {SitPVS14} from "./SitPVS14";
-
 export const SitWestJet = {
-    ...SitPVS14,
+    include_pvs14:true,
     name: "westjet",
     menuName: "WestJet Triangle",
 
@@ -332,11 +330,12 @@ export const SitWestJet = {
     lookCamera:{ fov: 10, far: 8000000 },
     cameraTrack: {},
     ptz: {az: -79.6, el: 0.6, fov: 25.7, showGUI: true},
+    altitudeLabel:      { kind: "MeasureAltitude",position: "lookCamera"},
 }
 ```
-WestJet is a case of Starlink satellites observed from a plane. This new case was similar to the PVS14 sitch, so we use that as a base with the ...SitPVS14 line.
+WestJet is a case of Starlink satellites observed from a plane. This new case was similar to the PVS14 sitch, so we use that as a base with the include_pvs14 line. 
 
-the remaining lines show everything that needs to change
+The remaining lines show everything that needs to change
 
 - files: 
   - starLink - a TLE file of all starlink satellites for the day in question
@@ -353,5 +352,6 @@ the remaining lines show everything that needs to change
   - fov, far, etc, same as mainCamera
 - cameraTrack - creates a camera track, defaulting to one from cameraFile using startTime and frames for the interval.
 - ptz - The Pan/Tilt/Zoom orientation of the camera
+- altitudeLabel - a label with arrows showing the altitude of the camera. Note this is a new feature, and is not in the PVS14 sitch.
 
 Note the views are not changed from PVS14, as it's a fairly standard landscape mode. 
