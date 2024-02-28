@@ -3,7 +3,7 @@ import {
     DirectionalLight,
     HemisphereLight,
 } from "../../three.js/build/three.module";
-import {EarthRadiusMiles, guiJetTweaks, Sit} from "../Globals";
+import {EarthRadiusMiles, FileManager, guiJetTweaks, Sit} from "../Globals";
 import * as LAYER from "../LayerMasks";
 import {
     ExpandKeyframes,
@@ -46,7 +46,6 @@ import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
-import {FileManager} from "../CFileManager";
 import {Color, MeshStandardMaterial, TextureLoader} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
 import {commonJetLabels} from "./CommonSitch";

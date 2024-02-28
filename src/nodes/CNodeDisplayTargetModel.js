@@ -1,13 +1,12 @@
 // fiddly temporary class to handle the jet target
 import {GLTFLoader} from "../../three.js/examples/jsm/loaders/GLTFLoader";
 import {CNode3DTarget} from "./CNode3DTarget";
-import {gui, NodeMan, Sit} from "../Globals";
+import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 import {Matrix4} from "../../three.js/build/three.module";
 
 import {trackAcceleration, trackDirection, trackVelocity} from "./CNode";
-import {FileManager} from "../CFileManager";
 import {degrees, radians, tan} from "../utils";
 import {getGlareAngleFromFrame} from "../JetStuff";
 import {par} from "../par";

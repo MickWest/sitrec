@@ -1,6 +1,6 @@
 import {trackHeading} from "../nodes/CNode";
 import {par} from "../par";
-import {gui, NodeMan, Sit} from "../Globals";
+import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {
     DirectionalLight,
     HemisphereLight,
@@ -35,7 +35,6 @@ import {DebugSphere, MV3, V3} from "../threeExt";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {CNodeSmoothedPositionTrack, CNodeTrackClosest, CNodeTransferSpeed} from "../nodes/CNodeTrack";
 import {makeMatLine} from "../MatLines";
-import {FileManager} from "../CFileManager";
 import {Color} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
 

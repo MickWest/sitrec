@@ -3,7 +3,7 @@ import {AlwaysDepth, Color, Vector3} from "../../three.js/build/three.module";
 import {par} from "../par";
 import {arrayColumn, ExpandKeyframes, RollingAverage, scaleF2M} from "../utils";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
-import {guiJetTweaks, NodeMan, Sit} from "../Globals";
+import {FileManager, guiJetTweaks, NodeMan, Sit} from "../Globals";
 import {CNodeArray} from "../nodes/CNodeArray";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeInterpolate} from "../nodes/CNodeInterpolate";
@@ -36,7 +36,6 @@ import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSp
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
-import {FileManager} from "../CFileManager";
 import {setupOpts} from "../JetChart";
 import {commonJetLabels} from "./CommonSitch";
 

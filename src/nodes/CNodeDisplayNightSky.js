@@ -10,7 +10,7 @@ import {
     Vector3
 } from "../../three.js/build/three.module";
 import {radians, assert, sin, cos, degrees} from "../utils";
-import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals} from "../Globals";
+import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
 import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
@@ -49,7 +49,6 @@ import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMat
 
 import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {FileManager} from "../CFileManager";
 import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
 
 

@@ -1,5 +1,5 @@
 import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
-import {Sit, guiJetTweaks, NodeMan, guiTweaks} from "../Globals";
+import {Sit, guiJetTweaks, NodeMan, guiTweaks, FileManager} from "../Globals";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {CNodeArray} from "../nodes/CNodeArray";
 import {CNodeGUIValue, makeCNodeGUIFlag, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
@@ -33,7 +33,6 @@ import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {FileManager} from "../CFileManager";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {commonJetLabels} from "./CommonSitch";
 

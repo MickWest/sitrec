@@ -1,5 +1,5 @@
 import { Vector3} from "../../three.js/build/three.module";
-import {gui, NodeMan, Sit, GlobalDateTimeNode, Globals} from "../Globals";
+import {gui, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -11,7 +11,6 @@ import {isLocal, SITREC_SERVER} from "../../config";
 import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeControllerVarious";
-import {FileManager} from "../CFileManager";
 import {assert} from "../utils";
 import {asyncCheckLogin} from "../login";
 

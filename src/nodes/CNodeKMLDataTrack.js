@@ -2,7 +2,8 @@ import {CNodeEmptyArray} from "./CNodeArray";
 import {getKMLTrackWhenCoord, SRT} from "../KMLUtils";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {assert} from "../utils";
-import {FileManager} from "../CFileManager";
+
+import {FileManager} from "../Globals";
 
 // a timed track has an arbitary set of LLA (and EUS?) points with timestamps
 // For example, an ADS-B track that might be hours long,

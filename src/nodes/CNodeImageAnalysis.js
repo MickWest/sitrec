@@ -1,13 +1,12 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
-import {Sit} from "../Globals";
+import {FileManager, Sit} from "../Globals";
 import {RollingAverage} from "../utils";
 import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
 import {CNodeGraphSeries} from "./CNodeGraphSeries";
 import {par} from "../par";
-import {FileManager} from "../CFileManager";
 
 
 function getPixelData(image) {

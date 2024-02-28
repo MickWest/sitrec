@@ -4,17 +4,21 @@ import {parseCSVAirdata, parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
+import {gui} from "./Globals";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
 // the FileManager adds the ability to load files from URLs, and to parse them
 // it also adds the ability to rehost files, needed for the Celestrack proxy and for TLEs
 // an KMLs, and other data files that are dragged in.
-class CFileManager extends CManager {
+export class CFileManager extends CManager {
     constructor() {
         super()
         this.rawFiles = [];
         this.rehostedStarlink = false;
+
+        this.guiFolder = gui.addFolder("FileManager");
+
     }
 
     // general file asset loader, detect file type from extension and add to manager
@@ -300,5 +304,3 @@ export function detectCSVType(csv) {
     return type;
 }
 
-var FileManager = new CFileManager(); // single instance
-export {FileManager};

@@ -6,12 +6,13 @@ import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {UpdateNodes} from "./nodes/CNode";
 import {
+    FileManager,
     GlobalDateTimeNode, Globals,
     gui,
     guiTweaks,
     incrementMainLoopCount,
     infoDiv,
-    NodeMan,
+    NodeMan, setFileManager,
     setGlobalDateTimeNode,
     setGlobalURLParams,
     setInfoDiv,
@@ -56,12 +57,12 @@ import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
 import {checkLocal, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
 
-import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
+import {CFileManager} from "./CFileManager";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -71,6 +72,7 @@ import {checkLogin} from "./login";
 checkLocal()
 
 await checkLogin();
+
 
 // Some metacode to find the node types and sitches (and common setup fragments)
 setNodeMan(new CNodeFactory())
@@ -187,8 +189,10 @@ var _gui = new GUI()
 var _guiShowHide = _gui.addFolder('Show/Hide').close();
 var _guiTweaks = _gui.addFolder('Tweaks').close();
 
+
 setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,null)
 setUnits(new CUnits("Nautical"));
+setFileManager(new CFileManager())
 
 
 if (lower == "testall") {

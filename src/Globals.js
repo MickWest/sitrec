@@ -15,6 +15,9 @@ export function setNodeMan(n) {NodeMan = n;}
 export var SitchMan;
 export function setSitchMan(n) {SitchMan = n;}
 
+
+
+
 export var gui;
 export var guiTweaks;
 export var guiShowHide;
@@ -49,3 +52,6 @@ export function setupGUIGlobals(_gui, _show, _tweaks, _jetTweaks) {
 export const EarthRadiusMiles = 3963.190592  // exact wgs84.RADIUS
 export var Units;
 export function setUnits(u) {Units = u;}
+
+export var FileManager;
+export function setFileManager(f) {FileManager = f;}

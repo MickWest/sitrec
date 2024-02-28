@@ -1,4 +1,4 @@
-import {gui, NodeMan, setSit, Sit, SitchMan} from "./Globals";
+import {FileManager, gui, NodeMan, setSit, Sit, SitchMan} from "./Globals";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -25,7 +25,6 @@ import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
-import {FileManager} from "./CFileManager";
 
 
 export function SituationSetup(runDeferred = false) {
