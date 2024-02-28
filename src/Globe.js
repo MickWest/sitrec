@@ -122,10 +122,14 @@ export function addAlignedGlobe(globeScale = 0.999) {
     GlobalScene.add(world);
     let sphere
 
+    const equatorRadius = wgs84.RADIUS * globeScale;
+//    const polarRadius = wgs84.POLAR_RADIUS * globeScale;
+    const polarRadius = wgs84.RADIUS * globeScale;
+
     if (Sit.useDayNightGlobe)
-        sphere = createSphereDayNight(wgs84.RADIUS * globeScale, wgs84.POLAR_RADIUS * globeScale, 80);
+        sphere = createSphereDayNight(equatorRadius, polarRadius, 80);
     else
-        sphere = createSphere(wgs84.RADIUS * globeScale, wgs84.POLAR_RADIUS * globeScale, 80);
+        sphere = createSphere(equatorRadius, polarRadius, 80);
 
     sphere.position.set(0, -wgs84.RADIUS, 0)
     world.add(sphere)

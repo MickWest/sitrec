@@ -515,7 +515,11 @@ if (Sit.jetStuff) {
 
 if (Sit.useGlobe) {
     console.log("addAlignedGlobe()")
-    Sit.globe = addAlignedGlobe(Sit.globeScale ?? 0.999);
+
+    // if a globe scale is set, then use that
+    // otherwise, if terrain is set, then use 0.9999 (to avoid z-fighting)
+    // otherwise use 1.0, so we get a perfect match with collisions.
+    Sit.globe = addAlignedGlobe(Sit.globeScale ?? (Sit.terrain !== undefined ? 0.9999 : 1.0))
     showHider(Sit.globe,"[G]lobe", true, "g")
 }
 
