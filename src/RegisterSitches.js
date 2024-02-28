@@ -1,5 +1,6 @@
 // Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
+import {parseJavascriptObject} from "./Serialize";
 
 //const sitchContext = require.context('./sitch', false, /^\.\/Sit.*\.js$/);
 const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
@@ -17,7 +18,7 @@ const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
-export function registerSitches() {
+export function registerSitches(textSitches) {
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);
         Object.keys(moduleExports).forEach(exportKey => {
@@ -36,4 +37,17 @@ export function registerSitches() {
             }
         });
     });
+
+    // add the text sitches
+    for (const key in textSitches) {
+        const text = textSitches[key];
+        // strip off everything up to the first {
+        const firstBrace = text.indexOf("{");
+        const data = text.substring(firstBrace);
+        const obj = parseJavascriptObject(data)
+
+        SitchMan.add(key, obj);
+    }
+
+
 }

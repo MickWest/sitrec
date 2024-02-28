@@ -54,7 +54,7 @@ import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
-import {checkLocal, isLocal, localSituation, SITREC_ROOT} from "../config";
+import {checkLocal, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
 
 import {FileManager} from "./CFileManager";
 import {SituationSetup} from "./SituationSetup";
@@ -76,8 +76,14 @@ await checkLogin();
 setNodeMan(new CNodeFactory())
 registerNodes();
 
+let textSitches = [];
+await fetch((SITREC_SERVER+"getsitches.php"), {mode: 'cors'}).then(response => response.text()).then(data => {
+    console.log("TEXT BASED Sitches: " + data)
+    textSitches = JSON.parse(data) // will give an array of text based sitches
+})
+
 setSitchMan(new CSitchFactory())
-registerSitches();
+registerSitches(textSitches);
 
 // Create the selectable sitches menu
 // basically anything that is not hidden and has a menuName
