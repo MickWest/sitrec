@@ -1,5 +1,5 @@
 
-export const SitMaussan = {
+SitMaussan = {
     include_pvs14: true,
     name: "maussan",
     menuName: "Maussan Starlink",
@@ -15,7 +15,7 @@ export const SitMaussan = {
     starScale: 0.65,
 
     nearClip: 1,
-    farClipLook: 6800*1000,
+    farClipLook: 6800000,
     nearClipLook: 1,
 
     frames: 790, // currently needs manual setting
@@ -37,8 +37,8 @@ export const SitMaussan = {
     lookCamera:{ fov: 62},
     cameraTrack: {},
 
-    lookView: { left: 0.70, top: 0.35, width: -480/852, height: 0.65,background:'#000000'},
-    videoView: { left: 0.5, top: 0.35, width: -480/852, height: 0.65},
+    lookView: { left: 0.70, top: 0.35, width: -0.56338028169, height: 0.65,background:'#000000'},
+    videoView: { left: 0.5, top: 0.35, width: -0.56338028169, height: 0.65},
     mainView:{left:0.0, top:0, width:1,height:1,background:'#000000'},
 
     skyColor: '#AFBDD1',  // grey from the video
