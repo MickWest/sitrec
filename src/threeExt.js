@@ -241,10 +241,19 @@ export 	function intersectSphere2( ray, sphere, target0, target1 ) {
             t2 = t;
         }
         if (target0 !== undefined) {
+            // if target0 is behind the origin, then we don't want to return it
+            if (t1 < 0) {
+                if (t2 < 0) {
+                    return false;
+                }
+                // if t1 is behind and t2 is in front, so just use t2
+                t1 = t2;
+            }
+
             target0.copy(ray.origin)
             target0.add(ray.direction.clone().multiplyScalar(t1))
 
-            if (target1 !== undefined) {
+            if (target1 !== undefined && t2 !== t1) {
                 target1.copy(ray.origin)
                 target1.add(ray.direction.clone().multiplyScalar(t2))
             }
