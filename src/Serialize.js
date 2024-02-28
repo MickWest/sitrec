@@ -10,6 +10,36 @@ function removeQuotesFromKeys(jsonString) {
 }
 
 
+// This takes a string of a javascript object and adds quotes to the keys
+// to make it JSON compliant. It then returns the string.
+// for example
+// {
+//     include_pvs14: true,
+//     name: "westjet",
+//     menuName: "WestJet Triangle",
+//     files: {
+//         starLink: "westjet/starlink-2023-12-18.tle",
+//         cameraFile: "westjet/FlightAware_WJA1517_KPHX_CYYC_20231219.kml",
+//     },
+// }
+//
+// becomes
+//
+// {
+//     "include_pvs14": true,
+//     "name": "westjet",
+//     "menuName": "WestJet Triangle",
+//     "files": {
+//         "starLink": "westjet/starlink-2023-12-18.tle",
+//         "cameraFile": "westjet/FlightAware_WJA1517_KPHX_CYYC_20231219.kml",
+//     },
+// }
+//
+// This is done by parsing the string as a javascript object using acorn, then traversing the AST
+// and adding quotes to the keys.
+// The resulting AST is then converted back to a string using escodegen.
+// comments are removed in the process
+
 
 function addQuotesToKeys(jsObjectString) {
     const ast = acorn.parse(jsObjectString, {sourceType: "module", ecmaVersion: 2021});
@@ -35,7 +65,10 @@ function addQuotesToKeys(jsObjectString) {
 }
 
 // given  text string of a javascript object, parse it and return the object
-// this is done by adding quotes to the keys to make it JSON compliant, then parsing it as JSON
+// this is done by adding quotes to the keys to make it JSON compliant (see addQuotesToKeys),
+// then parsing it as JSON
+// syntax errors are not handled, but get reported in the console
+// note you can't use expressions in the object (like 1/2), only literals (0.5)
 export function parseJavascriptObject(jsObjectString) {
     // add quotes to the keys. We need the paranteses to make sure it's evaulated as an object
     const requoted = addQuotesToKeys('(' + jsObjectString + ')');
