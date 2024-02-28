@@ -36,8 +36,6 @@ export const SitPorterville = {
     lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
-
-
     cameraSphereSize: 20,
     targetSphereSize: 20,
 
@@ -60,5 +58,8 @@ export const SitPorterville = {
 
     DisplayCameraFrustum: {targetTrack: "targetTrack", units: "miles", step: 0.1},
 
+    altitudeLabel1:      { kind: "MeasureAltitude",position: "cameraTrack" , defer: true},
+
+    smoothTrack: {track: "cameraTrack", method: "moving"},
 
 }

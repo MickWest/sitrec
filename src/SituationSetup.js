@@ -5,7 +5,7 @@ import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
-import {CNodeSmoothedPositionTrack, makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {abs, assert, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
@@ -644,26 +644,47 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "smoothTrack":
                 SSLog();
-                NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
-                    {
-                        source: data.track,
-                        method: "catmull",
-                        intervals: new CNodeGUIValue({
-                            value: 20,
-                            start: 1,
-                            end: 200,
-                            step: 1,
-                            desc: "Catmull Intervals"
-                        }, gui),
-                        tension: new CNodeGUIValue({
-                            value: 0.5,
-                            start: 0,
-                            end: 5,
-                            step: 0.001,
-                            desc: "Catmull Tension"
-                        }, gui),
-                    },
-                    "source");
+
+                if (data.method === "moving") {
+                    NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                        {
+                            source: data.track,
+                            method: data.method,
+                            copyData: true,
+                            window: new CNodeGUIValue({
+                                value: data.window ?? 20,
+                                start: 1,
+                                end: 200,
+                                step: 1,
+                                desc: "Smoothing window size"
+                            }, gui),
+                        },
+                        "source"
+                    );
+                } else {
+                    NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                        {
+                            source: data.track,
+                            method: data.method,
+                            intervals: new CNodeGUIValue({
+                                value: 20,
+                                start: 1,
+                                end: 200,
+                                step: 1,
+                                desc: "Catmull Intervals"
+                            }, gui),
+                            tension: new CNodeGUIValue({
+                                value: 0.5,
+                                start: 0,
+                                end: 5,
+                                step: 0.001,
+                                desc: "Catmull Tension"
+                            }, gui),
+                            copyData: true,
+                        },
+                        "source"
+                    );
+                }
                 break;
 
             default:

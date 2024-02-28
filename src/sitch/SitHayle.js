@@ -70,7 +70,7 @@ export const SitHayle = {
             xCol: 1,
             yCol: 2,
             frames: Sit.frames,
-            smooth: 30,
+            window: 30,
         })
 
         new CNodeDisplayLOS({

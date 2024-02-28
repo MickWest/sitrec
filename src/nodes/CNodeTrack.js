@@ -169,15 +169,16 @@ export class CNodeTrackClosest extends CNodeArray {
 
 } // given an array of "positions" smooth the x,y,and z tracks by moving average
 // or other techniques
+// optionally copy any other data (like color, fov, etc) to the new array
+
 export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
     constructor(v) {
         super(v)
         this.method = v.method || "moving"
         this.input("source") // source array node
         if (this.method === "moving") {
-            this.input("smooth") // amount to smooth (rolling average window size)
+            this.input("window") // amount to smooth (rolling average window size)
             this.optionalInputs(["iterations"])
-            this.copyColor = v.copyColor;
         }
 
         this.frames = this.in.source.frames;
@@ -188,28 +189,40 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
             this.input("intervals")
         }
 
+        this.copyData = v.copyData ?? false;
+
         this.recalculate()
     }
 
     recalculate() {
 
-        var sourceArray = this.in.source.array;
+        this.sourceArray = this.in.source.array;
 
-        if (sourceArray === undefined) {
+        if (this.sourceArray === undefined) {
             // need to build it from source node, possibly calculating the values
-            sourceArray = []
+            // this gives us a per-frame array of {position:...} type vectors
+            // and the original data if we want to copy that
+            this.sourceArray = []
             for (var i = 0; i < this.in.source.frames; i++) {
-                sourceArray.push({position: this.in.source.p(i)})
+                if (this.copyData) {
+                    const original = this.in.source.v(i);
+                    // make a copy of the original object
+                    // and add the smoothed position to it
+                    const copy = {...original, position: this.in.source.p(i)};
+                    this.sourceArray.push(copy)
+                } else {
+                    this.sourceArray.push({position: this.in.source.p(i)})
+                }
             }
         }
 
         if (this.method === "moving") {
 
-            const x = sourceArray.map(pos => pos.position.x)
-            const y = sourceArray.map(pos => pos.position.y)
-            const z = sourceArray.map(pos => pos.position.z)
+            const x = this.sourceArray.map(pos => pos.position.x)
+            const y = this.sourceArray.map(pos => pos.position.y)
+            const z = this.sourceArray.map(pos => pos.position.z)
 
-            var smooth = this.in.smooth.v0
+            var window = this.in.window.v0
             var iterations = 1
             if (this.in.iterations)
                 iterations = this.in.iterations.v0
@@ -218,9 +231,9 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
             var xs, ys, zs;
             //     if (quickToggle("Smooth Derivative", false) === false) {
-            xs = RollingAverage(x, smooth, iterations)
-            ys = RollingAverage(y, smooth, iterations)
-            zs = RollingAverage(z, smooth, iterations)
+            xs = RollingAverage(x, window, iterations)
+            ys = RollingAverage(y, window, iterations)
+            zs = RollingAverage(z, window, iterations)
             //     } else {
             //         xs = smoothDerivative(x, smooth, iterations)
             //         ys = smoothDerivative(y, smooth, iterations)
@@ -229,19 +242,7 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
             this.array = []
             for (var i = 0; i < x.length; i++) {
-                if (this.copyColor)
-                    this.array.push({
-                        position: V3(xs[i], ys[i], zs[i]),
-
-                        // Note: color might be undefined, meaning it's the default (e.g. white)
-                        color: this.in.source.v(i).color, // TODO: check if this is a reference
-                    })
-                else
                     this.array.push({position: V3(xs[i], ys[i], zs[i])})
-
-                //     DebugSphere(this.id+"smoothed"+i, V3(xs[i], ys[i], zs[i]),1)
-
-
             }
             this.frames = this.array.length;
         } else {
@@ -251,7 +252,7 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
             var interval = Math.floor(this.frames / this.in.intervals.v0)
             var data = []
             for (var i = 0; i < this.frames; i += interval) {
-                var splinePoint = sourceArray[i].position.clone()
+                var splinePoint = this.sourceArray[i].position.clone()
         //        DebugSphere("SplinePoint" + i, splinePoint, 20, 0xff00ff)
 
                 data.push(splinePoint)
@@ -271,15 +272,27 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
     }
 
     getValueFrame(frame) {
-        if (this.method === "moving")
-            return super.getValueFrame(frame);
+        let pos;
+        if (this.method === "moving") {
+            pos = this.array[frame].position
+        }
         else {
-            var pos = V3()
+            pos = V3()
             var t = frame / this.frames
             this.spline.getPoint(t, pos)
             //       console.log(vdump(pos))
+        }
+
+        if (this.copyData) {
+            return {
+                ...this.sourceArray[frame], // might have other data, if copyData was set
+                ...{position: pos}
+            }
+        } else {
+            // just a bit quicker to not copy the data if we don't have to
             return {position: pos}
         }
+
     }
 
 

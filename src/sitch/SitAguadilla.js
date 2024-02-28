@@ -285,7 +285,7 @@ export const SitAguadilla = {
         // The moving average smoothed jet track
         new CNodeSmoothedPositionTrack({ id:"jetTrackAverage",
             source: "jetTrack",
-            smooth: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Camera Smooth Window"},gui),
+            window: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Camera Smooth Window"},gui),
             iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Camera Smooth Iterations"},gui),
 
         })
@@ -373,7 +373,7 @@ export const SitAguadilla = {
 
         new CNodeSmoothedPositionTrack({ id:"targetTrackSmooth",
             source: "targetTrack",
-            smooth: new CNodeGUIValue({value: 1, start:1, end:1000, step:1, desc:"Target Smooth Value"},gui)
+            window: new CNodeGUIValue({value: 1, start:1, end:1000, step:1, desc:"Target Smooth Value"},gui)
         })
 
 
@@ -696,8 +696,8 @@ export const SitAguadilla = {
             source: "LOSTraverseSelect",
 //            source: "lanternSplineEditor",  // PATCH!!!!
 
-            smooth: new CNodeGUIValue({value: 0, start:1, end:500, step:1, desc:"Traverse Smooth"},gui),
-            copyColor: true,
+            window: new CNodeGUIValue({value: 0, start:1, end:500, step:1, desc:"Traverse Smooth Window"},gui),
+            copyData: true,
         })
 
 

@@ -1,9 +1,7 @@
 // Buffer node just holds an array of the GetValueFrame for each frame
 // of another node, and has a getBuffer() method to return it
 import {assert} from "../utils";
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {CNodeSmoothedPositionTrack} from "./CNodeTrack";
 
 export class CNodeBuffer extends CNode {
     constructor(v) {
