@@ -68,76 +68,92 @@ import {CFileManager} from "./CFileManager";
 // However note that the imports above might have code that is executed
 // before this code is executed.
 
-// Check to see if we are running in a local environment
-checkLocal()
-
-await checkLogin();
-
-
-// Some metacode to find the node types and sitches (and common setup fragments)
-setNodeMan(new CNodeFactory())
-registerNodes();
-
-let textSitches = [];
-await fetch((SITREC_SERVER+"getsitches.php"), {mode: 'cors'}).then(response => response.text()).then(data => {
-    console.log("TEXT BASED Sitches: " + data)
-    console.log ("parsed data: ")
-    textSitches = JSON.parse(data) // will give an array of text based sitches
-    console.log ("parse done");
-})
-
-setSitchMan(new CSitchFactory())
-registerSitches(textSitches);
-
-// Create the selectable sitches menu
-// basically anything that is not hidden and has a menuName
-const selectableSitchesUnsorted = {}
-SitchMan.iterate((key, sitch) =>{
-    if (sitch.hidden !== true && sitch.menuName !== undefined ) {
-
-        if (isLocal && sitch.isSitKML)
-            sitch.menuName = sitch.menuName + " (KML)"
-
-        selectableSitchesUnsorted[sitch.menuName] = key;
-    }
-})
-// Extract sitch keys (the lower case version of the name) and sort them
-const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
-// Create a new sorted object
+let urlParams;
+// We default to nightsky on the public version
+// as it's now the most popular usage.
+let situation = "nightsky";
 const selectableSitches = {};
-sortedKeys.forEach(key => {
-    selectableSitches[key] = selectableSitchesUnsorted[key];
-});
+
+
+// Initialize is called only once, at the start of the application
+// setus up the global objects, annd does initial parsing of the url
+async function initialize() {
+
+// Check to see if we are running in a local environment
+    checkLocal()
+
+    await checkLogin();
+
+    setNodeMan(new CNodeFactory())
+    setSitchMan(new CSitchFactory())
+
+    // Some metacode to find the node types and sitches (and common setup fragments)
+
+    registerNodes();
+
+// Get all the text based sitches from the server
+// these are the sitches defined by <name>.sitch.js files inside the folder of the same name in data
+    let textSitches = [];
+    await fetch((SITREC_SERVER+"getsitches.php"), {mode: 'cors'}).then(response => response.text()).then(data => {
+        console.log("TEXT BASED Sitches: " + data)
+        console.log ("parsed data: ")
+        textSitches = JSON.parse(data) // will give an array of text based sitches
+        console.log ("parse done");
+    })
+
+    registerSitches(textSitches);
+
+    // Create the selectable sitches menu
+// basically anything that is not hidden and has a menuName
+    const selectableSitchesUnsorted = {}
+    SitchMan.iterate((key, sitch) =>{
+        if (sitch.hidden !== true && sitch.menuName !== undefined ) {
+
+            if (isLocal && sitch.isSitKML)
+                sitch.menuName = sitch.menuName + " (KML)"
+
+            selectableSitchesUnsorted[sitch.menuName] = key;
+        }
+    })
+// Extract sitch keys (the lower case version of the name) and sort them
+    const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
+// Create a new sorted object
+    sortedKeys.forEach(key => {
+        selectableSitches[key] = selectableSitchesUnsorted[key];
+    });
 // Add the "Test All" option which smoke-tests all sitches
 // and the "Test Here+" option (which does the same as test all, but starts at the current sitch)
 
-selectableSitches["* Test All *"] = "testall";
-selectableSitches["* Test Here+ *"] = "testhere";
+    selectableSitches["* Test All *"] = "testall";
+    selectableSitches["* Test Here+ *"] = "testhere";
 
-console.log("SITREC START - Three.JS Revision = " + REVISION)
+    console.log("SITREC START - Three.JS Revision = " + REVISION)
 
 // Get the URL and extract parameters
-const queryString = window.location.search;
-console.log(">"+queryString);
-const urlParams = new URLSearchParams(queryString);
-setGlobalURLParams(urlParams)
+    const queryString = window.location.search;
+    console.log(">"+queryString);
+    urlParams = new URLSearchParams(queryString);
+    setGlobalURLParams(urlParams)
 
-// We default to nightsky on the public version
-// as it's now the most popular usage.
-var situation = "nightsky";
+
 
 ///////////////////////////////////////////////////////////////////////
 // But if it's local, we default to the local situation, defined in config.js
-if (isLocal) {
-    situation = localSituation
-    console.log("LOCAL TEST MODE: " + situation + "\n")
+    if (isLocal) {
+        situation = localSituation
+        console.log("LOCAL TEST MODE: " + situation + "\n")
+    }
+
 }
+
+await initialize();
+
 
 ///////////////////////////////////////////////////////////////////////
 // A smoke test of one or more situations.
-var toTest
+let toTest
 
-var testing = false;
+let testing = false;
 if (urlParams.get("test")) {
     // get the list of situations to test
     toTest = urlParams.get("test")
@@ -148,7 +164,7 @@ if (urlParams.get("test")) {
 // which then gets passed as a URL, as above.
 if (urlParams.get("testAll")) {
     toTest = ""
-    for (var key in selectableSitches) {
+    for (const key in selectableSitches) {
         if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
             toTest += selectableSitches[key]+",";
     }
@@ -197,7 +213,7 @@ setUnits(new CUnits("Nautical"));
 setFileManager(new CFileManager())
 
 
-if (lower == "testall") {
+if (lower === "testall") {
     const url = SITREC_ROOT + "?testAll=1"
     window.location.assign(url)
 }
@@ -260,7 +276,7 @@ gui.title(process.env.BUILD_VERSION_STRING);
 
 var newTitle = "Sitrec "+Sit.name
 
-if (document.title != newTitle) {
+if (document.title !== newTitle) {
     document.title = newTitle;
 }
 
@@ -500,8 +516,8 @@ GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
 
 if (Sit.azSlider) {
 // I use 0.2 as a step instead of 0.1 as it ensures we can stop on whole number (0.0 not 0.1)
-    var aZMin = Frame2Az(0)
-    var aZMax = Frame2Az(Sit.frames - 1)
+    let aZMin = Frame2Az(0)
+    let aZMax = Frame2Az(Sit.frames - 1)
     if (aZMin > aZMax) {
         const t = aZMin;
         aZMin = aZMax;
