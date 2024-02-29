@@ -7,9 +7,32 @@ import * as LAYER from "../LayerMasks";
 import {DebugArrowAB, removeDebugArrow} from "../threeExt";
 import {pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
-import {NodeMan, Units} from "../Globals";
+import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
+import {par} from "../par";
 
+
+// a global flag to show/hide all measurements
+let measurementUIDdone = false;
+let measureArrowGroupNode = null;
+function setupMeasurementUI() {
+    if (measurementUIDdone) return;
+    measurementUIDdone = true;
+    Globals.showMeasurements = true;
+
+    measureArrowGroupNode = new CNode3DGroup({id: "MeasurementsGroupNode"});
+    measureArrowGroupNode.isMeasurement = true
+
+    guiShowHide.add(Globals, "showMeasurements").onChange( (value) => {
+        NodeMan.iterate((key, node) => {
+            if (node.isMeasurement) {
+                console.log ("Setting visibility of " + key + " to " + value)
+                node.group.visible = value;
+            }
+        })
+        par.renderOne = true;
+    })
+}
 
 export class CNodeLabel3D extends CNode3DGroup {
     constructor(v) {
@@ -23,6 +46,9 @@ export class CNodeLabel3D extends CNode3DGroup {
         this.sprite.position.set(pos.x, pos.y, pos.z);
         this.sprite.layers.mask = v.layers ?? LAYER.MASK_HELPERS;
         this.group.add(this.sprite);
+        this.isMeasurement = true;
+
+        setupMeasurementUI();
 
     }
 
@@ -86,8 +112,8 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         this.D = this.B.clone().lerp(midPoint, 0.9);
 
         // add an arrow from A to C and B to D
-        DebugArrowAB(this.id+"start", this.C, this.A, 0x00ff00, true);
-        DebugArrowAB(this.id+"end", this.D, this.B, 0x00ff00, true);
+        DebugArrowAB(this.id+"start", this.C, this.A, 0x00ff00, true, measureArrowGroupNode.group);
+        DebugArrowAB(this.id+"end", this.D, this.B, 0x00ff00, true, measureArrowGroupNode.group);
 
         const length = this.A.distanceTo(this.B);
         const text = Units.withUnits(length,this.decimals,this.unitSize);
