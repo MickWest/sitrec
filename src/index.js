@@ -81,7 +81,9 @@ registerNodes();
 let textSitches = [];
 await fetch((SITREC_SERVER+"getsitches.php"), {mode: 'cors'}).then(response => response.text()).then(data => {
     console.log("TEXT BASED Sitches: " + data)
+    console.log ("parsed data: ")
     textSitches = JSON.parse(data) // will give an array of text based sitches
+    console.log ("parse done");
 })
 
 setSitchMan(new CSitchFactory())

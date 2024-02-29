@@ -5,6 +5,7 @@ import {SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {gui} from "./Globals";
+import {DragDropHandler} from "./DragDropHandler";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -18,6 +19,51 @@ export class CFileManager extends CManager {
         this.rehostedStarlink = false;
 
         this.guiFolder = gui.addFolder("FileManager");
+
+        this.guiFolder.add(this, "importFile").name("Import File");
+
+
+        let textSitches = [];
+        fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+            console.log("Local files: " + data)
+            let localfiles = JSON.parse(data) // will give an array of local files
+        })
+
+
+    }
+
+    importFile() {
+        // Create an input element
+        const inputElement = document.createElement('input');
+
+        // Set its type to 'file'
+        inputElement.type = 'file';
+
+        // Listen for changes on the input element
+        inputElement.addEventListener('change', (event) => {
+            // Get the selected file
+            const file = event.target.files[0];
+
+            // Create a FileReader to read the file
+            const reader = new FileReader();
+
+            // Listen for the 'load' event on the FileReader
+            reader.addEventListener('load', () => {
+                // When the file has been read, parse it as an asset
+             //   this.parseAsset(file.name, file.name, reader.result)
+                Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
+                   console.log("Imported File Rehosted as " + rehostResult);
+                });
+                DragDropHandler.parseResult(file.name, reader.result);
+
+            });
+
+            // Read the file as an array buffer (binary data)
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Trigger a click event on the input element
+        inputElement.click();
 
     }
 
@@ -200,8 +246,9 @@ export class CFileManager extends CManager {
                 default:
                     // theoretically we could inspect the file contents and then reload it...
                     // but let's trust the extensions
-                    assert(0, "Unhandled extension " + fileExt + " for " + filename)
-
+                    //assert(0, "Unhandled extension " + fileExt + " for " + filename)
+                    alert("Unhandled extension " + fileExt + " for " + filename)
+                    return Promise.resolve({filename: filename, parsed: null});
             }
 
             console.log("parseAsset: DONE Parse " + filename)
