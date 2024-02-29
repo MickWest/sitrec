@@ -45,7 +45,7 @@ export const SitFlir1 = {
     aFrame: 0,
     bFrame: 2288,
     startDistance:15,
-    azSlider:true,
+    azSlider:{defer:true},
 
     mainCamera: {
         startCameraPosition: [-126342.63, 56439.02, 101932.66],

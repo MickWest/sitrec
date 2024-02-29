@@ -116,7 +116,7 @@ export function createSphereDayNight(radius, radius1, segments) {
 
 
 
-export function addAlignedGlobe(globeScale = 0.999) {
+export function addAlignedGlobe(globeScale = 1) {
 
     const world = new Group();
     GlobalScene.add(world);

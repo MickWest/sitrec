@@ -55,7 +55,7 @@ export var SitGoFast = {
     menuName: "GoFast",
 
     animate:true,
-    azSlider:true,
+    azSlider:{defer:true},
 
     fps: 29.97,
     frames: 1031,

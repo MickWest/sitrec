@@ -251,6 +251,31 @@ function selectInitialSitch() {
     setSit(new CSituation(startSitch))
 }
 
+async function requestGeoLocation() {
+    await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition((position) => {
+            let lat = position.coords.latitude;
+            let long = position.coords.longitude;
+
+            Sit.lat = parseFloat(lat.toFixed(2));
+            Sit.lon = parseFloat(long.toFixed(2));
+            Sit.fromLat = Sit.lat;
+            Sit.fromLon = Sit.lon;
+
+            NodeMan.get("cameraLat").value = Sit.lat
+            NodeMan.get("cameraLon").value = Sit.lon
+
+            console.log("RESOLVED Local Lat, Lon =", Sit.lat, Sit.lon);
+
+            resolve(); // Resolve the promise when geolocation is obtained
+        }, (error) => {
+            //   reject(error); // Reject the promise if there's an error
+            console.log("Location request failed")
+            resolve(); // if nothing, then just continue with defaults
+        });
+    });
+}
+
 await initialize();
 selectInitialSitch();
 
@@ -458,29 +483,6 @@ const assetsLoading = Sit.loadAssets();
 
 console.log("START Location Request")
 
-// While that's loading, we can get the local lat/lon (i.e. the user's location)
-// get only get the local lat/lon if we don't have URL data and if we are not testing
-if (!testing && Sit.localLatLon && urlData === undefined) {
-    await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition((position) => {
-            let lat = position.coords.latitude;
-            let long = position.coords.longitude;
-
-            Sit.lat = parseFloat(lat.toFixed(2));
-            Sit.lon = parseFloat(long.toFixed(2));
-            Sit.fromLat = Sit.lat;
-            Sit.fromLon = Sit.lon;
-
-            console.log("RESOLVED Local Lat, Lon =", Sit.lat, Sit.lon);
-
-            resolve(); // Resolve the promise when geolocation is obtained
-        }, (error) => {
-         //   reject(error); // Reject the promise if there's an error
-            console.log("Location request failed")
-            resolve(); // if nothing, then just continue with defaults
-        });
-    });
-}
 
 // Now that geolocation is obtained, await the asset loading
 console.log("WAIT Load Assets")
@@ -492,7 +494,6 @@ console.log("FINISHED Load Assets")
 console.log("SituationSetup()")
 SituationSetup(false);
 
-
 // jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
 if (Sit.jetStuff) {
     initJetVariables();
@@ -501,31 +502,26 @@ if (Sit.jetStuff) {
 
 // Each sitch can have a setup() and setup2() function
 // however only Gimbal actually used setup2() as gimbal and gimabalfar have different setup2() functions
-if (Sit.setup !== undefined && Sit.setup2 !== undefined) {
-    console.warn("Sit.setup() and Sit.setup2() both exist in Sit: "+Sit.name)
-};
+
 if (Sit.setup  !== undefined) Sit.setup();
 if (Sit.setup2 !== undefined) Sit.setup2();
 
-// Redo tnhe data-driven setuo, but this is for any deferred setup
+// Redo tnhe data-driven setup, but this is for any deferred setup
 // i.e data members that have defer: true
 SituationSetup(true);
+
+
+// We can get the local lat/lon (i.e. the user's location)
+// get only get the local lat/lon if we don't have URL data and if we are not testing
+if (!testing && Sit.localLatLon && urlData === undefined) {
+    await requestGeoLocation()
+}
+
 
 console.log("Finalizing....")
 
 GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
 
-if (Sit.azSlider) {
-// I use 0.2 as a step instead of 0.1 as it ensures we can stop on whole number (0.0 not 0.1)
-    let aZMin = Frame2Az(0)
-    let aZMax = Frame2Az(Sit.frames - 1)
-    if (aZMin > aZMax) {
-        const t = aZMin;
-        aZMin = aZMax;
-        aZMax = t;
-    }
-    gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
-}
 
 if (Sit.jetStuff) {
     // only gimbal
@@ -568,7 +564,7 @@ animate(true); // Passing in true for ForceRender to render even if the windows 
 windowChanged()
 
 infoDiv.innerHTML = ""
-startAnimating(30);
+startAnimating(Sit.fps);
 
 // if testing, then wait 3.5 seconds, and then load the next test URL
 

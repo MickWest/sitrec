@@ -25,6 +25,7 @@ import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
+import {Frame2Az, UIChangedAz} from "./JetStuff";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -683,6 +684,20 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         },
                         "source"
                     );
+                }
+                break;
+
+            case "azSlider":
+                if (data) {
+                    SSLog();
+                    let aZMin = Frame2Az(0)
+                    let aZMax = Frame2Az(Sit.frames - 1)
+                    if (aZMin > aZMax) {
+                        const t = aZMin;
+                        aZMin = aZMax;
+                        aZMax = t;
+                    }
+                    gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
                 }
                 break;
 

@@ -48,7 +48,6 @@ const situationDefaults = {
 
     units: "Nautical",
 
-    azSlider:false,
     animated:true,
 
     //
