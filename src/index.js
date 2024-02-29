@@ -165,7 +165,7 @@ async function initialize() {
 // The onChange function will change the url to the new situation
 // which will cause the page to reload with the new situation
 // selectableSitches is defined in situations.js
-    _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
+    _gui.add(par, "name", selectableSitches).name("Sitch").listen().onChange(sitch => {
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
         var url = SITREC_ROOT+"?sitch=" + sitch
 
