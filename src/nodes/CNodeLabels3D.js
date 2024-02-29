@@ -20,10 +20,11 @@ function setupMeasurementUI() {
     measurementUIDdone = true;
     Globals.showMeasurements = true;
 
+    // We create a group node to hold all the measurement arrows
     measureArrowGroupNode = new CNode3DGroup({id: "MeasurementsGroupNode"});
     measureArrowGroupNode.isMeasurement = true
 
-    guiShowHide.add(Globals, "showMeasurements").onChange( (value) => {
+    guiShowHide.add(Globals, "showMeasurements").name("Measurements").onChange( (value) => {
         NodeMan.iterate((key, node) => {
             if (node.isMeasurement) {
                 console.log ("Setting visibility of " + key + " to " + value)
