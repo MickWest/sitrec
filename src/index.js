@@ -63,6 +63,7 @@ import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
 import {CFileManager} from "./CFileManager";
+import {scaleArrows} from "./threeExt";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -440,6 +441,9 @@ function renderMain() {
                         node.preViewportUpdate(view.camera)
                     }
                 })
+
+                // patch in arrow head scaling
+                scaleArrows(view.camera);
 
             }
             updateLockTrack(view, par.frame)

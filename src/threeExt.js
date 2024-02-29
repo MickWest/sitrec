@@ -360,23 +360,28 @@ export function DebugWireframeSphere(name, origin, radius = 100, color = 0xfffff
 var DebugArrows = {}
 // creat a debug arrow if it does not exist, otherwise update the existing one
 // uses an array to record all the debug arrows.
-export function DebugArrow(name, direction, origin, length = 100, color="#FFFFFF", visible=true, parent, headLength=0.1, layerMask=LAYER.MASK_HELPERS) {
+export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFFF", visible=true, parent, _headLength=20, layerMask=LAYER.MASK_HELPERS) {
     const dir = direction.clone()
     dir.normalize();
+
 
     if (parent === undefined)
         parent = GlobalScene;
 
-    // if a fraction, then treat that as a fraction of the total length, else an absolute calue
-    if (headLength < 1) {
-        headLength = length * headLength;
+    // if a fraction, then treat that as a fraction of the total length, else an absolute value
+    if (_headLength < 1) {
+        _headLength = _length * _headLength;
     }
 
 
     if (DebugArrows[name] == undefined) {
         color = new Color(color)  // convert from whatever format, like "green" or "#00ff00" to a THREE.Color(r,g,b)
-        DebugArrows[name] = new ArrowHelper(dir, origin, length, color, headLength);
+        DebugArrows[name] = new ArrowHelper(dir, origin, _length, color, _headLength);
         DebugArrows[name].visible = visible
+        DebugArrows[name].length = _length;
+        DebugArrows[name].headLength = _headLength;
+        DebugArrows[name].direction = dir;
+
         if (layerMask !== undefined) {
             setLayerMaskRecursive(DebugArrows[name], layerMask)
         }
@@ -385,12 +390,29 @@ export function DebugArrow(name, direction, origin, length = 100, color="#FFFFFF
         assert(parent === DebugArrows[name].parent, "Parent changed on debug arrow!")
         DebugArrows[name].setDirection(dir)
         DebugArrows[name].position.copy(origin)
-        DebugArrows[name].setLength(length, headLength)
+        DebugArrows[name].setLength(_length, _headLength)
         DebugArrows[name].visible = visible
+        DebugArrows[name].length = _length;
+        DebugArrows[name].headLength = _headLength;
+        DebugArrows[name].direction = dir;
+
 
     }
     return DebugArrows[name]
 }
+
+export function scaleArrows(camera) {
+    let campos = camera.position.clone();
+    const fovScale = 0.0025 * Math.tan((camera.fov / 2) * (Math.PI / 180))
+    for (var key in DebugArrows) {
+        const arrow = DebugArrows[key]
+        let headPosition = arrow.position.clone().add(arrow.direction.clone().multiplyScalar(arrow.length));
+        let distance = campos.distanceTo(headPosition);
+        arrow.setLength(arrow.length, distance * fovScale * arrow.headLength);
+    }
+
+}
+
 
 export function removeDebugArrow(name) {
     if (DebugArrows[name]) {
@@ -410,12 +432,12 @@ export function DebugAxes(name, scene, position, length) {
 }
 
 
-function DebugArrowOrigin(name, direction, length = 100, color, visible=true, parent, headLength=0.1, layerMask) {
+function DebugArrowOrigin(name, direction, length = 100, color, visible=true, parent, headLength=20, layerMask) {
     const origin = new Vector3(0, 0, 0);
     return DebugArrow(name, direction, origin, length, color, visible, parent, headLength)
 }
 
-export function DebugArrowAB(name, A, B, color, visible, parent, headLength=0.1, layerMask) {
+export function DebugArrowAB(name, A, B, color, visible, parent, headLength=20, layerMask) {
     var direction = B.clone()
     direction.sub(A)
     var length = direction.length()
