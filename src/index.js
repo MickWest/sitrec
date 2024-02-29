@@ -20,7 +20,7 @@ import {
     setSit,
     setSitchMan,
     setUnits,
-    setupGUIGlobals,
+    setupGUIGlobals, setupGUIjetTweaks,
     Sit,
     SitchMan,
 } from "./Globals";
@@ -73,6 +73,8 @@ let urlParams;
 // as it's now the most popular usage.
 let situation = "nightsky";
 const selectableSitches = {};
+let toTest;
+let testing = false;
 
 
 // Initialize is called only once, at the start of the application
@@ -144,50 +146,88 @@ async function initialize() {
         console.log("LOCAL TEST MODE: " + situation + "\n")
     }
 
+    // note in lil-gui.esm.js I changed
+//   --name-width: 45%;
+// to
+//  --name-width: 36%;
+    var _gui = new GUI()
+
+    var _guiShowHide = _gui.addFolder('Show/Hide').close();
+    var _guiTweaks = _gui.addFolder('Tweaks').close();
+
+
+    setupGUIGlobals(_gui,_guiShowHide,_guiTweaks)
+    setUnits(new CUnits("Nautical"));
+    setFileManager(new CFileManager())
+
+
+    // Add the menu to select a situation
+// The onChange function will change the url to the new situation
+// which will cause the page to reload with the new situation
+// selectableSitches is defined in situations.js
+    _gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
+        console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
+        var url = SITREC_ROOT+"?sitch=" + sitch
+
+// smoke test of everything after the current sitch
+        if (sitch === "testhere") {
+            toTest = ""
+            let skip = true;
+            for (var key in selectableSitches) {
+                if (skip) {
+                    if (selectableSitches[key] === situation)
+                        skip = false;
+                } else {
+                    if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                        toTest += selectableSitches[key] + ",";
+                }
+            }
+            toTest+=situation  // end up back where we started
+            url = SITREC_ROOT + "?test="+toTest;
+        }
+        window.location.assign(url) //
+    })
+
+    // setup the common keyboard handler
+    initKeyboard();
+
 }
+function selectInitialSitch() {
 
-await initialize();
-
-
-///////////////////////////////////////////////////////////////////////
-// A smoke test of one or more situations.
-let toTest
-
-let testing = false;
-if (urlParams.get("test")) {
-    // get the list of situations to test
-    toTest = urlParams.get("test")
-    testing = true;
-}
+    if (urlParams.get("test")) {
+        // get the list of situations to test
+        toTest = urlParams.get("test")
+        testing = true;
+    }
 
 // A smoke test of all situations, so we generate the list
 // which then gets passed as a URL, as above.
-if (urlParams.get("testAll")) {
-    toTest = ""
-    for (const key in selectableSitches) {
-        if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
-            toTest += selectableSitches[key]+",";
+    if (urlParams.get("testAll")) {
+        toTest = ""
+        for (const key in selectableSitches) {
+            if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                toTest += selectableSitches[key] + ",";
+        }
+        toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
     }
-    toTest+="gimbal"  // just so we end up with something more interesting for more of a soak test
-}
 
 // toTest is a comma separated list of situations to test
 // if it is set, we will test the first one, then the rest
 // will be tested in order.
-if (toTest !== undefined) {
-    var testArray = toTest.split(',');
-    situation = testArray.shift() // remove the first (gimbal)
-    toTest = testArray.join(",")
-    console.log("Testing "+situation+", will text next: "+toTest)
-}
+    if (toTest !== undefined) {
+        var testArray = toTest.split(',');
+        situation = testArray.shift() // remove the first (gimbal)
+        toTest = testArray.join(",")
+        console.log("Testing " + situation + ", will text next: " + toTest)
+    }
 
 // Either "sit" (deprecated) or "sitch" can be used to specify a situation in the url params
-if (urlParams.get("sit")) {
-    situation = urlParams.get("sit")
-}
-if (urlParams.get("sitch")) {
-    situation = urlParams.get("sitch")
-}
+    if (urlParams.get("sit")) {
+        situation = urlParams.get("sit")
+    }
+    if (urlParams.get("sitch")) {
+        situation = urlParams.get("sitch")
+    }
 
 // situation is a global variable that is used to determine which situation to load
 // It's a string, and it's case insensitive.
@@ -196,69 +236,32 @@ if (urlParams.get("sitch")) {
 // This allows for variants like FLIR1/Tictac
 // to test for a particular situation, use Sit.name
 // slice
-var lower = situation.slice().toLowerCase();
-
-// note in lil-gui.esm.js I changed
-//   --name-width: 45%;
-// to
-//  --name-width: 36%;
-var _gui = new GUI()
-
-var _guiShowHide = _gui.addFolder('Show/Hide').close();
-var _guiTweaks = _gui.addFolder('Tweaks').close();
+    var lower = situation.slice().toLowerCase();
 
 
-setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,null)
-setUnits(new CUnits("Nautical"));
-setFileManager(new CFileManager())
+    if (lower === "testall") {
+        const url = SITREC_ROOT + "?testAll=1"
+        window.location.assign(url)
+    }
 
+    par.name = lower;
 
-if (lower === "testall") {
-    const url = SITREC_ROOT + "?testAll=1"
-    window.location.assign(url)
+    const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
+    assert(startSitch !== null, "Can't find startup Sitch: "+lower)
+    setSit(new CSituation(startSitch))
 }
 
-// Add the menu to select a situation
-// The onChange function will change the url to the new situation
-// which will cause the page to reload with the new situation
-// selectableSitches is defined in situations.js
-
-par.name = lower;
-_gui.add(par, "name", selectableSitches).name("Sitch").onChange(sitch => {
-    console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
-    var url = SITREC_ROOT+"?sitch=" + sitch
-
-// smoke test of everything after the current sitch
-    if (sitch === "testhere") {
-        toTest = ""
-        let skip = true;
-        for (var key in selectableSitches) {
-            if (skip) {
-                if (selectableSitches[key] === situation)
-                    skip = false;
-            } else {
-                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
-                    toTest += selectableSitches[key] + ",";
-            }
-        }
-        toTest+=situation  // end up back where we started
-        url = SITREC_ROOT + "?test="+toTest;
-    }
-    window.location.assign(url) //
-})
+await initialize();
+selectInitialSitch();
 
 ///////////////////////////////////////////////////////////////////////////////
-// Start to setup the sitch
-
-const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
-assert(startSitch !== null, "Can't find startup Sitch: "+lower)
-setSit(new CSituation(startSitch))
+//
 
 var _guiJetTweaks;
 if (Sit.jetStuff) {
-    _guiJetTweaks = _gui.addFolder('Jet Tweaks').close();
+    _guiJetTweaks = guiTweaks.addFolder('Jet Tweaks').close();
 }
-setupGUIGlobals(_gui,_guiShowHide,_guiTweaks,_guiJetTweaks)
+setupGUIjetTweaks(_guiJetTweaks)
 guiTweaks.add(par,"effects")
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -485,12 +488,10 @@ await assetsLoading;
 console.log("FINISHED Load Assets")
 
 // Now that the assets are loaded, we can setup the situation
-// First we do the data-driven stuff by expainding and then parseing the Sit object
+// First we do the data-driven stuff by expanding and then parsing the Sit object
 console.log("SituationSetup()")
 SituationSetup(false);
 
-// setup the common keyboard handler
-initKeyboard();
 
 // jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
 if (Sit.jetStuff) {

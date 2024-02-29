@@ -36,12 +36,16 @@ export var GlobalDateTimeNode;
 export function setGlobalDateTimeNode(i) {GlobalDateTimeNode=i;}
 
 
-export function setupGUIGlobals(_gui, _show, _tweaks, _jetTweaks) {
+export function setupGUIGlobals(_gui, _show, _tweaks) {
     gui = _gui
     guiShowHide = _show;
     guiTweaks = _tweaks;
+}
+
+export function setupGUIjetTweaks(_jetTweaks) {
     guiJetTweaks = _jetTweaks
 }
+
 
 
 // the curvature of the earth WAS adjusted for refraction using the standard 7/6R
