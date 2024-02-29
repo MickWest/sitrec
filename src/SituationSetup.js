@@ -664,7 +664,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                         {
                             source: data.track,
-                            method: data.method,
+                            method: "catmull",
                             intervals: new CNodeGUIValue({
                                 value: 20,
                                 start: 1,
