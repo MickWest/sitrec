@@ -54,6 +54,10 @@ const GimbalDefaults = {
     targetSpeed: 340,
     defaultTraverse:"Constant Speed",
 
+    // arbritary lat/lon, off the coast of Florida
+    lat: 28.5,
+    lon: -79.5,
+
 
     files: {
         GimbalCSV: 'gimbal/GimbalData.csv',

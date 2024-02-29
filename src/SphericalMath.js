@@ -1,8 +1,9 @@
 import {Plane, Vector3} from '../three.js/build/three.module.js';
-import {atan2, cos, degrees, radians, sin} from "./utils.js";
+import {assert, atan2, cos, degrees, radians, sin} from "./utils.js";
 import {V3} from "./threeExt";
 import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";
 import {Sit} from "./Globals";
+
 
 // Local coordinates are a local tangent plane similar to ENU, but with N = -Z
 // so XYZ = EUS (East, Up, South), not ENU (East, North, Up)
@@ -183,16 +184,21 @@ export function getLocalDownVector(position, radius=wgs84.RADIUS) {
 
 
 export function getLocalNorthVector(position, radius=wgs84.RADIUS) {
+    assert(Sit.lat !== undefined && Sit.lon !== undefined, "Sit.lat and Sit.lon must be defined for getLocalNorthVector() to work.");
     // to get a northish direction we get the vector from here to the north pole.
     // to get the north pole in EUS, we take the north pole's position in ECEF
     const northPoleECEF = V3(0,0,radius)
     const northPoleEUS = ECEF2EUS(northPoleECEF,radians(Sit.lat),radians(Sit.lon),radius)
     const toNorth = northPoleEUS.clone().sub(position).normalize()
-    // take only the component perpendicular
+    // take only the component perpendicular to the local up vector
     const up = getLocalUpVector(position, radius);
     const dot = toNorth.dot(up)
     const north = toNorth.clone().sub(up.clone().multiplyScalar(dot)).normalize()
     return north;
+}
+
+export function getLocalSouthVector(position, radius=wgs84.RADIUS) {
+    return getLocalNorthVector(position, radius).negate();
 }
 
 export function getLocalEastVector(position, radius=wgs84.RADIUS) {
@@ -202,7 +208,10 @@ export function getLocalEastVector(position, radius=wgs84.RADIUS) {
     const east = V3().crossVectors(up, south)
     return east;
 
+}
 
+export function getLocalWestVector(position, radius=wgs84.RADIUS) {
+    return getLocalEastVector(position, radius).negate();
 }
 
 

@@ -226,7 +226,8 @@ export const SitFlir1 = {
             from: 0 ,
             knots: 100,
             name: "Target",
-            arrowColor: "cyan"
+            arrowColor: "cyan",
+   //         originTrack: "jetOrigin",
 
         }, gui)
 
@@ -235,7 +236,8 @@ export const SitFlir1 = {
             from: 0 ,
             knots: 70,
             name: "Local",
-            arrowColor: "cyan"
+            arrowColor: "cyan",
+   //         originTrack: "jetOrigin",
 
         }, gui)
 

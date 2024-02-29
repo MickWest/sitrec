@@ -66,6 +66,9 @@ export var SitGoFast = {
     startDistanceMax: 15,
     targetSize: 3,
 
+    // arbritary lat/lon, off the coast of Florida
+    lat: 28.5,
+    lon: -79.5,
 
     heading: 262,   // initial heading of the jet - was 314
 

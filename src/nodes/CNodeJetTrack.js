@@ -1,5 +1,5 @@
 import {assert, degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {NodeMan, Sit, Units} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {V3} from "../threeExt";
@@ -36,12 +36,20 @@ export class CNodeJetTrack extends CNodeTrack {
 
         }
 
+        // Note: Previously the jet was always starting at 0,0,0 in EUS
+        // But now it might be at a different location, especially if we have a terrain.
 
         var jetPos = Sit.jetOrigin.clone();
 
+        // old code, jet was always at 0,0,0
+        //  var jetFwd = V3(0, 0, -1) // start out pointing north (Z = -1 in EUS
+        //  var jetUp = V3(0, 1, 0) // start out pointing up
 
-        var jetFwd = V3(0, 0, -1) // start out pointing north (Z = -1 in EUS
-        jetFwd.applyAxisAngle(V3(0,1,0), radians(-jetHeading))
+        //  new code, jet is at jetOrigin, an arbitrary point in EUS
+        var jetFwd = getLocalNorthVector(jetPos)
+        var jetUp = getLocalUpVector(jetPos)
+
+        jetFwd.applyAxisAngle(jetUp, radians(-jetHeading))
 
         for (var f = 0; f < this.frames; f++) {
             // first store the current position
@@ -56,7 +64,8 @@ export class CNodeJetTrack extends CNodeTrack {
             var jetSpeed = metersPerSecondFromKnots(this.in.speed.getValueFrame(f))  // 351 from CAS of 241 (239-242)
             jetPos.add(jetFwd.clone().multiplyScalar(jetSpeed / Sit.fps)) // one frame
 
-            // add in the wind vector. This
+            // add in the wind vector, uses the local North and Up vectors for reference
+            this.in.wind.setPosition(jetPos)
             jetPos.add(this.in.wind.v(f))
 
             // get the angle we rotate around the up axis this frame

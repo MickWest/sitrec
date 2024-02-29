@@ -1,9 +1,9 @@
 import {CNode} from "./CNode";
-import {f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
+import {assert, f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {DebugArrowAB, V3} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalNorthVector, getLocalSouthVector, getLocalUpVector} from "../SphericalMath";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeWind extends CNode {
@@ -28,30 +28,40 @@ export class CNodeWind extends CNode {
         guiMenu.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
         guiMenu.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
 
+        this.optionalInputs(["originTrack"])
+        // wind defaults to being in the frame of reference of the EUS origin (0,0,0)
+        this.position=V3(0,0,0);
+
+        // But if there a track is supplied, then the wind is in the frame of reference of the track
+        // we just set the position to the origin of the track
+        // if (this.in.originTrack !== undefined) {
+        //     this.position = this.in.originTrack.p(0)
+        // }
 
         this.recalculate()
     }
 
+    setPosition(pos) {
+        this.position = pos.clone();
+    }
 
     // returns a pre-frame wind vector, indicating wind motion for that frame
+    // in EUS coordinates
+    // optionally supply a position to get the wind at that position
+    // with reference to local north and up vectors
     getValueFrame(f) {
-        let fwd = V3(0, 0, -metersPerSecondFromKnots(this.knots) / Sit.fps);
-        fwd.applyAxisAngle(V3(0,1,0), radians(180-this.from))
 
-        // TODO make it tangent to the surface
-        // but position is depending on wind
-        // and wind needs position to get the tangent!!
-        // so probably need to use an approximate position
-        // var pos = this.in.pos.p(f)
-        // var radius = metersFromMiles(this.in.radius.v(f))
-        //
-        // var upAxis = getLocalUpVector(pos, radius)
-        // var rightAxis = V3()
-        // rightAxis.crossVectors(upAxis, fwd)  // right is calculated as being at right angles to up and fwd
-        // fwd.crossVectors(rightAxis, upAxis) // then fwd is a right angles to right and up
-        //
+        //let wind = V3(0, 0, -metersPerSecondFromKnots(this.knots) / Sit.fps);
+        //const posUp = V3(0, 1, 0)
+        let wind = getLocalNorthVector(this.position)
+        wind.multiplyScalar(metersPerSecondFromKnots(this.knots) / Sit.fps)
+        const posUp = getLocalUpVector(this.position)
+        wind.applyAxisAngle(posUp, radians(180-this.from))
 
-        return fwd;
+        // assert no NaNs in the wind vector
+        assert(!isNaN(wind.x) && !isNaN(wind.y) && !isNaN(wind.z), "Wind vector has NaNs");
+
+        return wind;
     }
 
 
