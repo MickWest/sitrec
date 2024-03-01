@@ -69,178 +69,33 @@ import {scaleArrows} from "./threeExt";
 // However note that the imports above might have code that is executed
 // before this code is executed.
 
-let urlParams;
 // We default to nightsky on the public version
 // as it's now the most popular usage.
 let situation = "nightsky";
+
+// Some (essentially) global variables
+let urlParams;
 const selectableSitches = {};
 let toTest;
 let testing = false;
+let container;
+var fpsInterval, startTime, now, then, elapsed;
 
-
-// Initialize is called only once, at the start of the application
-// setus up the global objects, annd does initial parsing of the url
 
 
 await initializeOnce();
-
 selectInitialSitch();
 
-///////////////////////////////////////////////////////////////////////////////
-//
 
-var _guiJetTweaks;
-if (Sit.jetStuff) {
-    _guiJetTweaks = guiTweaks.addFolder('Jet Tweaks').close();
-}
-setupGUIjetTweaks(_guiJetTweaks)
-guiTweaks.add(par,"effects")
-
-///////////////////////////////////////////////////////////////////////////////////////
-// At this point Sit is set up.
-
-setGlobalDateTimeNode(new CNodeDateTime({
-    id:"dateTimeStart",
-}))
-
-// check if Sit.name is all lower case
-assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
-
-//gui.title("Sitrec "+Sit.name+" - [U]I")
-gui.title(process.env.BUILD_VERSION_STRING);
-
-var newTitle = "Sitrec "+Sit.name
-
-if (document.title !== newTitle) {
-    document.title = newTitle;
-}
-
-// housekeeping
-var container;
+legacySetup();
 
 
-// Method of setting frame rate, from:
-// http://jsfiddle.net/chicagogrooves/nRpVD/2/
-// uses the sub-ms resolution timer window.performance.now() (a double)
-// and does nothing if the time has not elapsed
 
-var fpsInterval, startTime, now, then, elapsed;
+
 
 initRendering();
 
-///////////////////////////////////////////////////////////////////////////////////////
-// SITUATION SPECIFIC SETUP
-
-// Parse the URL parameters, if any
-// setting up stuff like the local coordinate system
-// this will override things like Sit.lat and Sit.lon
-
-// bit of a patch
-// if we are going to load a starlink file (i.e. id = starLink - note capitalization)
-//  check the flag rhs, which is set to rhs: FileManager.rehostedStarlink,
-//  if it's set, then delete the starLink from Sit.files
-var urlData
-if (urlParams.get("data")) {
-    urlData = urlParams.get("data")
-    var urlObject = JSURL.parse(urlData)
-    if (urlObject.rhs && (Sit.files.starLink !== undefined)) {
-        delete Sit.files.starLink
-        FileManager.rehostedStarlink = true;
-        console.log("Deleted starLink from sit, as urlObject.rhs = "+urlObject.rhs)
-    }
-
-    if (Sit.parseURLDataBeforeSetup) {
-        // currently only used by SitNightSky, and only slightly, to setup Sit.lat/lon from olat/olon URL parameters
-        Sit.parseURLDataBeforeSetup(urlData)
-    }
-}
-
-// Start loading the assets in Sit.files, but don't await them yet
-
-console.log("START Load Assets")
-const assetsLoading = Sit.loadAssets();
-
-console.log("START Location Request")
-
-
-// Now that geolocation is obtained, await the asset loading
-console.log("WAIT Load Assets")
-await assetsLoading;
-console.log("FINISHED Load Assets")
-
-
-
-//
-// Now that the assets are loaded, we can setup the situation
-// First we do the data-driven stuff by expanding and then parsing the Sit object
-console.log("SituationSetup()")
-SituationSetup(false);
-
-// jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
-if (Sit.jetStuff) {
-    initJetVariables();
-    initJetStuff()
-}
-
-// Each sitch can have a setup() and setup2() function
-// however only Gimbal actually used setup2() as gimbal and gimabalfar have different setup2() functions
-
-if (Sit.setup  !== undefined) Sit.setup();
-if (Sit.setup2 !== undefined) Sit.setup2();
-
-// Redo tnhe data-driven setup, but this is for any deferred setup
-// i.e data members that have defer: true
-SituationSetup(true);
-
-
-// We can get the local lat/lon (i.e. the user's location)
-// get only get the local lat/lon if we don't have URL data and if we are not testing
-if (!testing && Sit.localLatLon && urlData === undefined) {
-    await requestGeoLocation()
-}
-
-
-console.log("Finalizing....")
-
-GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
-
-if (Sit.jetStuff) {
-    // only gimbal
-    // minor patch, defer setting up the ATFLIR UI, as it references the altitude
-    initJetStuffOverlays()
-    console.log("CommonJetStuff()")
-    CommonJetStuff();
-}
-
-
-if (Sit.useGlobe) {
-    console.log("addAlignedGlobe()")
-
-    // if a globe scale is set, then use that
-    // otherwise, if terrain is set, then use 0.9999 (to avoid z-fighting)
-    // otherwise use 1.0, so we get a perfect match with collisions.
-    Sit.globe = addAlignedGlobe(Sit.globeScale ?? (Sit.terrain !== undefined ? 0.9999 : 1.0))
-    showHider(Sit.globe,"[G]lobe", true, "g")
-}
-
-if (Sit.nightSky) {
-    console.log("addNightSky()")
-    addNightSky()
-}
-
-// Finally move the camera and reset the start time, if defined in the URL parameters
-if (urlParams.get("data")) {
-    urlData = urlParams.get("data")
-    if (Sit.parseURLDataAfterSetup) {
-        Sit.parseURLDataAfterSetup(urlData)
-    }
-}
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-
-disableScroll()
-SetupMouseHandler();
-window.addEventListener( 'resize', windowChanged, false );
+await setupFunctions();
 
 console.log("animate")
 animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
@@ -378,7 +233,6 @@ async function initializeOnce() {
 
 }
 
-
 function initRendering() {
     // create a single div that contains everything
     container = document.createElement('div');
@@ -404,9 +258,157 @@ function initRendering() {
     setupLocalFrame(new Group())
 
     GlobalScene.add(LocalFrame)
+
+    disableScroll()
+    SetupMouseHandler();
+    window.addEventListener( 'resize', windowChanged, false );
+
 }
 
+// some sitch specific stuff that needs to be done before the main setup
+function legacySetup() {
+    var _guiJetTweaks;
+    if (Sit.jetStuff) {
+        _guiJetTweaks = guiTweaks.addFolder('Jet Tweaks').close();
+    }
+    setupGUIjetTweaks(_guiJetTweaks)
+    guiTweaks.add(par,"effects")
+
+///////////////////////////////////////////////////////////////////////////////////////
+// At this point Sit is set up.
+
+    setGlobalDateTimeNode(new CNodeDateTime({
+        id:"dateTimeStart",
+    }))
+
+// check if Sit.name is all lower case
+    assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
+
+//gui.title("Sitrec "+Sit.name+" - [U]I")
+    gui.title(process.env.BUILD_VERSION_STRING);
+
+    var newTitle = "Sitrec "+Sit.name
+
+    if (document.title !== newTitle) {
+        document.title = newTitle;
+    }
+}
+
+async function setupFunctions() {
+///////////////////////////////////////////////////////////////////////////////////////
+// SITUATION SPECIFIC SETUP
+
+// Parse the URL parameters, if any
+// setting up stuff like the local coordinate system
+// this will override things like Sit.lat and Sit.lon
+
+// bit of a patch
+// if we are going to load a starlink file (i.e. id = starLink - note capitalization)
+//  check the flag rhs, which is set to rhs: FileManager.rehostedStarlink,
+//  if it's set, then delete the starLink from Sit.files
+    var urlData
+    if (urlParams.get("data")) {
+        urlData = urlParams.get("data")
+        var urlObject = JSURL.parse(urlData)
+        if (urlObject.rhs && (Sit.files.starLink !== undefined)) {
+            delete Sit.files.starLink
+            FileManager.rehostedStarlink = true;
+            console.log("Deleted starLink from sit, as urlObject.rhs = "+urlObject.rhs)
+        }
+
+        if (Sit.parseURLDataBeforeSetup) {
+            // currently only used by SitNightSky, and only slightly, to setup Sit.lat/lon from olat/olon URL parameters
+            Sit.parseURLDataBeforeSetup(urlData)
+        }
+    }
+
+// Start loading the assets in Sit.files, but don't await them yet
+
+    console.log("START Load Assets")
+    const assetsLoading = Sit.loadAssets();
+
+    console.log("START Location Request")
+
+
+// Now that geolocation is obtained, await the asset loading
+    console.log("WAIT Load Assets")
+    await assetsLoading;
+    console.log("FINISHED Load Assets")
+
+
+
+//
+// Now that the assets are loaded, we can setup the situation
+// First we do the data-driven stuff by expanding and then parsing the Sit object
+    console.log("SituationSetup()")
+    SituationSetup(false);
+
+// jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
+    if (Sit.jetStuff) {
+        initJetVariables();
+        initJetStuff()
+    }
+
+// Each sitch can have a setup() and setup2() function
+// however only Gimbal actually used setup2() as gimbal and gimabalfar have different setup2() functions
+
+    if (Sit.setup  !== undefined) Sit.setup();
+    if (Sit.setup2 !== undefined) Sit.setup2();
+
+// Redo tnhe data-driven setup, but this is for any deferred setup
+// i.e data members that have defer: true
+    SituationSetup(true);
+
+
+// We can get the local lat/lon (i.e. the user's location)
+// get only get the local lat/lon if we don't have URL data and if we are not testing
+    if (!testing && Sit.localLatLon && urlData === undefined) {
+        await requestGeoLocation()
+    }
+
+
+    console.log("Finalizing....")
+
+    GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
+
+    if (Sit.jetStuff) {
+        // only gimbal
+        // minor patch, defer setting up the ATFLIR UI, as it references the altitude
+        initJetStuffOverlays()
+        console.log("CommonJetStuff()")
+        CommonJetStuff();
+    }
+
+
+    if (Sit.useGlobe) {
+        console.log("addAlignedGlobe()")
+
+        // if a globe scale is set, then use that
+        // otherwise, if terrain is set, then use 0.9999 (to avoid z-fighting)
+        // otherwise use 1.0, so we get a perfect match with collisions.
+        Sit.globe = addAlignedGlobe(Sit.globeScale ?? (Sit.terrain !== undefined ? 0.9999 : 1.0))
+        showHider(Sit.globe,"[G]lobe", true, "g")
+    }
+
+    if (Sit.nightSky) {
+        console.log("addNightSky()")
+        addNightSky()
+    }
+
+// Finally move the camera and reset the start time, if defined in the URL parameters
+    if (urlParams.get("data")) {
+        urlData = urlParams.get("data")
+        if (Sit.parseURLDataAfterSetup) {
+            Sit.parseURLDataAfterSetup(urlData)
+        }
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////
+}
+
+
+
 function startAnimating(fps) {
+
     fpsInterval = 1000 / fps ;           // e.g. 1000/30 = 33.333333
     then = window.performance.now();    //
     startTime = then;
@@ -416,6 +418,12 @@ function startAnimating(fps) {
 }
 
 function animate(newtime) {
+    // Method of setting frame rate, from:
+    // http://jsfiddle.net/chicagogrooves/nRpVD/2/
+    // uses the sub-ms resolution timer window.performance.now() (a double)
+    // and does nothing if the time has not elapsed
+
+
     // requestAnimationFrame( animate );
 
     now = newtime;
