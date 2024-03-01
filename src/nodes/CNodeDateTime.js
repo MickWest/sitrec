@@ -100,7 +100,6 @@ export class CNodeDateTime extends CNode {
 
         console.log("CNodeDateTime - par.frame = "+par.frame+" Sit.fps = "+Sit.fps+" Sit.simSpeed = "+Sit.simSpeed+" Sit.startTime = "+Sit.startTime)
 
-        
         super (v)
 
         this.refreshingUI = false;

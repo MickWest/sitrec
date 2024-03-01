@@ -24,10 +24,6 @@ export class CNode3D extends CNode {
     }
 
     applyControllers(f, depth = 0) {
-
-
-   //     if (f === 19) debugger;
-
         // To prevent loops, we only apply controllers at most twice per frame
         // remember the f value called with
         // if it's new, then rest count to zero
