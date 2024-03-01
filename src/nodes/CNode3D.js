@@ -1,5 +1,5 @@
 import {CNode} from "./CNode";
-import {NodeMan} from "../Globals";
+import {guiShowHide, NodeMan} from "../Globals";
 import {par} from "../par";
 
 import {stripParentheses} from "../utils";
@@ -16,6 +16,11 @@ export class CNode3D extends CNode {
     update(f) {
         super.update(f);
         this.applyControllers(f);
+    }
+
+    // add a gui checkbox toggle for a member variable
+    guiToggle(member, name) {
+        guiShowHide.add(this, member).name(name ?? member).listen().onChange((v) => {par.renderOne = true})
     }
 
     applyControllers(f, depth = 0) {
