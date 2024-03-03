@@ -63,6 +63,8 @@ export const SitFlir1 = {
         Flir1El: 'flir1/FLIR1 EL.csv',
         DataFile: 'flir1/Flir1 FOV Data.csv',
         TargetObjectFile: './models/FA-18F.glb',
+        ATFLIRModel: 'models/ATFLIR.glb',
+        FA18Model: 'models/FA-18F.glb',
     },
     videoFile: "../sitrec-videos/public/f4-aspect-corrected-242x242-was-242x216.mp4",
 
