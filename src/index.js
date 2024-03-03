@@ -112,14 +112,17 @@ await setupFunctions();
 // but it's not a promise, so we can't use await
 // so we have to use a flag to wait for it to complete
 // we just count how many things are being parsed, and then wait for that to go to zero
-// await waitForParsingToComplete();
-// disposeEverything();
+
+for (let i= 0; i < 10; i++) {
+    console.log("reload loop "+i)
+    await waitForParsingToComplete();
+    disposeEverything();
 // // theoretically we should new be able to do the above again....
 //
-// selectInitialSitch();
-// legacySetup();
-// await setupFunctions();
-
+    selectInitialSitch();
+    legacySetup();
+    await setupFunctions();
+}
 
 console.log("animate")
 animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
@@ -673,8 +676,8 @@ function disposeEverything() {
 
     // what about the terrain? that should be removed by the terrain node....
 
-    ViewMan.disposeAll()
-
+   // ViewMan.disposeAll()
+    assert(ViewMan.size() === 0, "ViewMan.size() should be zero, it's " + ViewMan.size());
 }
 
 /**

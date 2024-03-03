@@ -6,6 +6,10 @@ class CManager {
         this.list = {}
     }
 
+    size() {
+        return Object.keys(this.list).length;
+    }
+
     add (id, data, original=null) {
         assert (this.list[id] === undefined, "seem to be adding <"+id+"> twice to a CManager ")
         this.list[id] = {
@@ -89,7 +93,6 @@ class CManager {
 
     disposeAll() {
         // delete all entries in this.rawFiles and this.list
-        this.rawFiles = [];
         Object.keys(this.list).forEach(key => {
             this.disposeRemove(key);
         });

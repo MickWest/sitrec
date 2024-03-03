@@ -932,7 +932,6 @@ export function initViews() {
 
     }
 
-    const loader = new GLTFLoader()
 
     var line_material = new LineBasicMaterial({color: 0xffffff});
     var line_materialRED = new LineBasicMaterial({color: 0xff8080, linewidth: 5});

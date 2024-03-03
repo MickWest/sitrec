@@ -652,6 +652,15 @@ export class CVideoWebCodecData extends CVideoData {
         }
     }
 
+    dispose() {
+
+        if (this.decoder !== undefined) {
+            this.decoder.close()
+        }
+        this.killWorkers()
+        super.dispose()
+    }
+
 }
 
 

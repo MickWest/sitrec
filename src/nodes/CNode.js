@@ -54,6 +54,22 @@ class CNode {
     }
 
     dispose() {
+        // clear the inputs and outputs
+
+        // remove this from the outputs of all the input nodes
+        for (let key in this.inputs) {
+            let input = this.inputs[key];
+            input.outputs = input.outputs.filter(node => node !== this);
+        }
+
+        // and remove this from the inputs of all the output nodes
+        for (let output of this.outputs) {
+            output.inputs = Object.fromEntries(Object.entries(output.inputs).filter(([key, value]) => value !== this));
+        }
+        this.inputs = {}
+        this.outputs = [];
+
+
     }  // any garbage collection
 
     // v0 = shorthand accessor for the value at 0,

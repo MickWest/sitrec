@@ -66,33 +66,33 @@ class CNodeView extends CNode {
 
             this.setVisible(this.visible)
 
-            document.body.appendChild(this.div);
-            if (this.draggable) {
-
-                $(this.div).draggable({
-                    drag: function(event, ui) {
-                        var view = $(this).data('CView')
-                        if (!view.draggable)
-                            return false;
-                        if (view.shiftDrag)
-                            return event.shiftKey;
-                        else
-                            return true;
-                        //  view.dumpPosition()
-                    }
-                }).data("CView",this)
-            }
-            if (this.resizable) {
-                $(this.div).resizable({
-                    handles: 'all',
-                    aspectRatio: !this.freeAspect,
-                    resize: function(event, ui) {
-                        var view = $(this).data('CView')
-                        //view.dumpPosition()
-                        return true;
-                    }
-                }).data("CView",this);
-            }
+             document.body.appendChild(this.div);
+            // if (this.draggable) {
+            //
+            //     $(this.div).draggable({
+            //         drag: function(event, ui) {
+            //             var view = $(this).data('CView')
+            //             if (!view.draggable)
+            //                 return false;
+            //             if (view.shiftDrag)
+            //                 return event.shiftKey;
+            //             else
+            //                 return true;
+            //             //  view.dumpPosition()
+            //         }
+            //     }).data("CView",this)
+            // }
+            // if (this.resizable) {
+            //     $(this.div).resizable({
+            //         handles: 'all',
+            //         aspectRatio: !this.freeAspect,
+            //         resize: function(event, ui) {
+            //             var view = $(this).data('CView')
+            //             //view.dumpPosition()
+            //             return true;
+            //         }
+            //     }).data("CView",this);
+            // }
 
         }
 
@@ -100,6 +100,24 @@ class CNodeView extends CNode {
         ViewMan.add(v.id,this)
     }
 
+    dispose() {
+        console.log("Disposing CNodeView: "+this.id)
+
+        // if (this.id === "mainView")
+        //     debugger;
+
+        // if it's an overlay view, then we don't want to remove the div
+        if (this.overlayView === undefined && this.div) {
+
+            document.body.removeChild(this.div);
+ //           this.div = null
+        }
+        super.dispose()
+
+        // views are stored in two managers, the node manager and the view manager
+        // so we need to remove from both
+        ViewMan.remove(this.id);
+    }
 
 
     containerWidth() {

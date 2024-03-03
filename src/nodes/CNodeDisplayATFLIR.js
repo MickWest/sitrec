@@ -13,7 +13,7 @@ import {FileManager, Globals, Sit} from "../Globals";
 import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
-import {dispose, propagateLayerMaskObject, V3} from "../threeExt";
+import {dispose, disposeScene, propagateLayerMaskObject, V3} from "../threeExt";
 import {} from "../Globals";
 
 import {GLTFLoader} from '../../three.js/examples/jsm/loaders/GLTFLoader.js';
@@ -207,6 +207,25 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         this.makeTrackLine()
         makePointingLine()
     }
+
+    dispose() {
+
+
+        disposeScene(PodFrame);
+
+        Pod = undefined;
+        PODBack = undefined;
+        EOSU = undefined;
+        Ball = undefined;
+        Pointer = undefined;
+        PodFrame = undefined;
+        FA18 = undefined;
+
+        super.dispose();
+    }
+
+
+
 }
 
 var PointingLineGeometry

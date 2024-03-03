@@ -20,15 +20,27 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
         this.fileName = v.file;
 
-        let dropArea = this.div
-
-        dropArea.addEventListener('dragenter', this.handlerFunction, false)
-        dropArea.addEventListener('dragleave', this.handlerFunction, false)
-        dropArea.addEventListener('dragover', this.handlerFunction, false)
-        dropArea.addEventListener('drop', e => this.onDrop(e), false)
+        this.handlerFunction = this.handlerFunction.bind(this);
+        this.onDropBound = this.onDrop.bind(this); // Bind and store the reference for removal later
 
         this.addLoadingMessage()
 
+        this.addEventListeners();
+
+    }
+
+    addEventListeners() {
+        this.div.addEventListener('dragenter', this.handlerFunction, false);
+        this.div.addEventListener('dragleave', this.handlerFunction, false);
+        this.div.addEventListener('dragover', this.handlerFunction, false);
+        this.div.addEventListener('drop', this.onDropBound, false); // Use the bound reference
+    }
+
+    removeEventListeners() {
+        this.div.removeEventListener('dragenter', this.handlerFunction, false);
+        this.div.removeEventListener('dragleave', this.handlerFunction, false);
+        this.div.removeEventListener('dragover', this.handlerFunction, false);
+        this.div.removeEventListener('drop', this.onDropBound, false); // Remove using the same reference
     }
 
     addLoadingMessage() {
@@ -117,6 +129,14 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
     update(f) {
 
+    }
+
+    dispose() {
+
+        // remove the event listeners, otherwise they stop the object being garbage collected
+        this.removeEventListeners();
+
+        super.dispose()
     }
 
 

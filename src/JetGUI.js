@@ -8,6 +8,7 @@ import {toggler, togglerNodes} from "./KeyBoardHandler";
 import {FA18, PODBack} from "./nodes/CNodeDisplayATFLIR";
 import {ViewMan} from "./nodes/CNodeView";
 import {f2m} from "./utils";
+import {DebugArrows} from "./threeExt";
 
 
 function guiRemove(gui, obj, property) {

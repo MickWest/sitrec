@@ -4,6 +4,7 @@ import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {drop} from '../../SphericalMath'
 import * as LAYER from "../../LayerMasks";
 import {SITREC_SERVER} from "../../../config";
+import {assert} from "../../utils";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
@@ -557,6 +558,8 @@ class Map {
   }
 
   clean() {
+      console.log("map33 clean()");
+
 
     // abort the pending loading of tiles
     this.controller.abort();
@@ -565,7 +568,18 @@ class Map {
       if (tile.mesh !== undefined) {
         this.scene.remove(tile.mesh)
         tile.mesh.geometry.dispose();
-        ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => tile.mesh.material.uniforms[key].value.dispose())
+      //  console.log("Disposing "+tile.key())
+
+        if (tile.mesh.material.uniforms !== undefined) {
+            assert(tile.mesh.material.uniforms !== undefined, 'Uniforms not defined');
+
+          ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => {
+//            console.log("Disposing "+key)
+            tile.mesh.material.uniforms[key].value.dispose();
+          });
+
+        }
+
         tile.mesh.material.dispose()
       }
     })

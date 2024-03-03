@@ -119,9 +119,10 @@ export class CNodeDisplayClouds extends CNode3DGroup {
     }
 
     dispose() {
-        super.dispose()
+
         this.group.remove(this.cloudMesh)
         dispose(this.cloudGeometry)
+        super.dispose()
     }
 
     recalculate() {

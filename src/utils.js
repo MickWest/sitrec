@@ -62,6 +62,7 @@ assert = function(condition,message=false) {
     if (!condition){
         console.trace()
         console.error("ASSERT: "+message);
+
         debugger;
     }
 }

@@ -357,7 +357,7 @@ export function DebugWireframeSphere(name, origin, radius = 100, color = 0xfffff
 
 }
 
-var DebugArrows = {}
+export var DebugArrows = {}
 
 export function disposeDebugArrows() {
     console.log("Disposing all debug arrows")

@@ -152,11 +152,11 @@ export function quickToggle(key, start = false, toggleGui = gui) {
 
 export function showHider(_ob, id, visible, key) {
     const ob = _ob;
-    if (visible == undefined) visible = false;
-    if (par[id] == undefined) {
+    if (visible === undefined) visible = false;
+   // if (par[id] === undefined) {
         par[id] = visible
         ob.visible = visible
-    }
+   // }
     const con = toggles[key] ?? guiShowHide.add(par, id).listen();
 
     con.onChange(value => {

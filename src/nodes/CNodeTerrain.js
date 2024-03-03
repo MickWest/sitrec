@@ -177,15 +177,19 @@ export class CNodeTerrain extends CNode {
         // given a point in ENU, return the point on the terrain
         // by casting a ray from the point to the center of the earth
         // and finding the intersection with the terrain
-        const down = getLocalDownVector(A)
-        const rayCaster = new Raycaster(A, down);
-        const intersect = this.getClosestIntersect(rayCaster);
 
-        if (intersect !== null) {
-            // only return the point if it's above sea level
-            if (altitudeAboveSphere(intersect.point) >= 0)
-                return intersect.point;
-        }
+        // TODO - altitude above ground is very slow
+        // redo it useing the tiles, not the geometry
+
+        // const down = getLocalDownVector(A)
+        // const rayCaster = new Raycaster(A, down);
+        // const intersect = this.getClosestIntersect(rayCaster);
+        //
+        // if (intersect !== null) {
+        //     // only return the point if it's above sea level
+        //     if (altitudeAboveSphere(intersect.point) >= 0)
+        //         return intersect.point;
+        // }
 
 
         return pointOnSphereBelow(A)
