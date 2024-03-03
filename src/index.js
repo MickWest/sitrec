@@ -4,7 +4,6 @@ import "./extra.css"
 import "./js/jquery.csv.js?v=2"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
-import {UpdateNodes} from "./nodes/CNode";
 import {
     FileManager,
     GlobalDateTimeNode, Globals,
@@ -46,7 +45,14 @@ import {
     UIChangedAz,
     updateSize
 } from "./JetStuff";
-import {GlobalScene, LocalFrame, setupLocalFrame, setupScene} from "./LocalFrame";
+import {
+    GlobalNightSkyScene,
+    GlobalScene,
+    LocalFrame,
+    setupLocalFrame,
+    setupNightSkyScene,
+    setupScene
+} from "./LocalFrame";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
@@ -63,7 +69,8 @@ import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
 import {CFileManager} from "./CFileManager";
-import {scaleArrows} from "./threeExt";
+import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
+import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -81,21 +88,38 @@ let testing = false;
 let container;
 var fpsInterval, startTime, now, then, elapsed;
 
-
-
 await initializeOnce();
-selectInitialSitch();
-
-
-legacySetup();
-
-
-
-
-
 initRendering();
 
+selectInitialSitch();
+legacySetup();
 await setupFunctions();
+
+
+// Problem. The sitches are defined from data structures which contain parameters that get passed to variosu setup functions
+// however, once we call them, the parameters get added to - especially when we need some defaults
+// so, for example, the ptz object has no ID, so it gets and id of "lookCameraPTZ" in SituationSetup
+//
+// Options
+// 1 - make a deep clone of the sitch object, and pass that to the setup functions
+// 2 - ensure that the setup functions don't add any new parameters to the sitch object
+// I think 2 is the best option, as it's the simplest, and it's the most likely to be correct
+// so, we need to go through all the setup functions and make sure they don't add any new parameters to the sitch object
+//
+
+// This a a bit of patch for parshing things with the GLTF loader
+// as the parse funtion is actually async, and we need to wait for it to complete
+// but it's not a promise, so we can't use await
+// so we have to use a flag to wait for it to complete
+// we just count how many things are being parsed, and then wait for that to go to zero
+// await waitForParsingToComplete();
+// disposeEverything();
+// // theoretically we should new be able to do the above again....
+//
+// selectInitialSitch();
+// legacySetup();
+// await setupFunctions();
+
 
 console.log("animate")
 animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
@@ -103,6 +127,8 @@ windowChanged()
 
 infoDiv.innerHTML = ""
 startAnimating(Sit.fps);
+
+
 
 
 // if testing, then wait 3.5 seconds, and then load the next test URL
@@ -120,6 +146,8 @@ setTimeout( function() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 async function initializeOnce() {
+
+    Globals.parsing = 0;
 
 // Check to see if we are running in a local environment
     checkLocal()
@@ -190,10 +218,10 @@ async function initializeOnce() {
 //   --name-width: 45%;
 // to
 //  --name-width: 36%;
-    var _gui = new GUI()
+    var _gui = new GUI().perm()
 
-    var _guiShowHide = _gui.addFolder('Show/Hide').close();
-    var _guiTweaks = _gui.addFolder('Tweaks').close();
+    var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
+    var _guiTweaks = _gui.addFolder('Tweaks').close().perm();
 
 
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks)
@@ -205,7 +233,7 @@ async function initializeOnce() {
 // The onChange function will change the url to the new situation
 // which will cause the page to reload with the new situation
 // selectableSitches is defined in situations.js
-    _gui.add(par, "name", selectableSitches).name("Sitch").listen().onChange(sitch => {
+    _gui.add(par, "name", selectableSitches).name("Sitch").perm().listen().onChange(sitch => {
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
         var url = SITREC_ROOT+"?sitch=" + sitch
 
@@ -326,11 +354,6 @@ async function setupFunctions() {
 
     console.log("START Load Assets")
     const assetsLoading = Sit.loadAssets();
-
-    console.log("START Location Request")
-
-
-// Now that geolocation is obtained, await the asset loading
     console.log("WAIT Load Assets")
     await assetsLoading;
     console.log("FINISHED Load Assets")
@@ -437,10 +460,6 @@ function animate(newtime) {
         then = now - (elapsed % fpsInterval);
         // draw stuff here
         renderMain()
-
-        // if (par.effects)
-        //     GlobalComposer.render();
-
     } else {
         // It is not yet time for a new frame
         // so just render - which will allow smooth 60 fps motion moving the camera
@@ -481,7 +500,12 @@ function renderMain() {
         Sit.update(par.frame)
     }
 
-    UpdateNodes(par.frame)
+    NodeMan.iterate((key, node) => {
+        if (node.update !== undefined) {
+            node.update(par.frame)
+        }
+    })
+
 
     windowChanged();
 
@@ -603,4 +627,75 @@ async function requestGeoLocation() {
             resolve(); // if nothing, then just continue with defaults
         });
     });
+}
+
+function disposeEverything() {
+    console.log("");
+    console.log("");
+    console.log(" >>>>>>>>>>>>>>>>>>>>>>>> disposeEverything() <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+    console.log("");
+    console.log("");
+
+
+
+    // cancel any requested animation frames
+    cancelAnimationFrame(animate);
+
+
+    // dispose of the GUI, except for the permanent folders and items
+    gui.destroy(false);
+
+    // The measurement UI is a group node that holds all the measurement arrows
+    // it's created as needed, but will get destroyed with the scene
+    // so we need to make sure it knows it's been destroyed
+    removeMeasurementUI();
+
+    // delete all the nodes
+    NodeMan.disposeAll();
+    NodeMan.disposeAll();
+
+    disposeDebugArrows();
+    disposeDebugSpheres();
+    console.log("GlobalScene originally has " + GlobalScene.children.length + " children");
+    disposeScene(GlobalScene)
+    console.log("GlobalScene now (after dispose) has " + GlobalScene.children.length + " children");
+    if (GlobalNightSkyScene !== undefined) {
+        disposeScene(GlobalNightSkyScene)
+        setupNightSkyScene(undefined)
+    }
+
+    // add the local frame back to the global scene
+    GlobalScene.add(LocalFrame)
+
+
+    // unload all assets - which we might not want to do if jsut restarting
+    FileManager.disposeAll()
+
+    // what about the terrain? that should be removed by the terrain node....
+
+    ViewMan.disposeAll()
+
+}
+
+/**
+ * Waits until Globals.parsing becomes zero.
+ */
+async function waitForParsingToComplete() {
+    console.log("Waiting for parsing to complete... Globals.parsing = " + Globals.parsing);
+    // Use a Promise to wait
+    await new Promise((resolve, reject) => {
+        // Function to check the value of Globals.parsing
+        function checkParsing() {
+            if (Globals.parsing === 0) {
+                resolve(); // Resolve the promise if Globals.parsing is 0
+            } else {
+                // If not 0, wait a bit and then check again
+                setTimeout(checkParsing, 100); // Check every 100ms, adjust as needed
+            }
+        }
+
+        // Start checking
+        checkParsing();
+    });
+    console.log("Parsing complete!");
 }

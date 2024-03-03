@@ -165,4 +165,10 @@ export class CNodeFactory extends CManager{
             return super.get(n)
     }
 
+
+    disposeAll() {
+        console.log("Disposing all nodes")
+        super.disposeAll();
+    }
+
 }

@@ -358,6 +358,25 @@ export function DebugWireframeSphere(name, origin, radius = 100, color = 0xfffff
 }
 
 var DebugArrows = {}
+
+export function disposeDebugArrows() {
+    console.log("Disposing all debug arrows")
+
+    for (var key in DebugArrows) {
+       // DebugArrows[key].dispose();
+    }
+    DebugArrows = {}
+}
+
+export function disposeDebugSpheres() {
+    console.log("Disposing all debug spheres")
+    for (var key in DebugSpheres) {
+     //   DebugSpheres[key].dispose();
+    }
+    DebugSpheres = {}
+}
+
+
 // creat a debug arrow if it does not exist, otherwise update the existing one
 // uses an array to record all the debug arrows.
 export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFFF", visible=true, parent, _headLength=20, layerMask=LAYER.MASK_HELPERS) {
@@ -367,6 +386,7 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
 
     if (parent === undefined)
         parent = GlobalScene;
+
 
     // if a fraction, then treat that as a fraction of the total length, else an absolute value
     if (_headLength < 1) {
@@ -387,7 +407,7 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
         }
         parent.add(DebugArrows[name]);
     } else {
-        assert(parent === DebugArrows[name].parent, "Parent changed on debug arrow!")
+        assert(parent === DebugArrows[name].parent, "Parent changed on debug arrow: was "+DebugArrows[name].parent.debugTimeStamp+" now "+parent.debugTimeStamp)
         DebugArrows[name].setDirection(dir)
         DebugArrows[name].position.copy(origin)
         DebugArrows[name].setLength(_length, _headLength)
@@ -527,4 +547,55 @@ export function isVisible(ob) {
     if (ob.visible == false) return false; // if not visible, then that can't be overridden
     if (ob.parent != null) return isVisible(ob.parent) // visible, but parents can override
     return true; // visible all the way up to the root
+}
+
+
+// given a three.js scene, we can dispose of all the objects in it
+// this is used when we want to change scenes/sitches
+// we can't just delete the scene, as it's a THREE.Object3D, and we need to dispose of all the objects in it
+// and all the materials, etc.
+export function disposeScene(scene) {
+    console.log("Disposing scene");
+
+    // Recursive function to dispose of materials and geometries
+    function disposeObject(object) {
+        if (object.type === 'Mesh' || object.type === 'Line' || object.type === 'Points') {
+            // Dispose geometry
+            if (object.geometry) {
+                object.geometry.dispose();
+            }
+
+            // Dispose materials
+            if (Array.isArray(object.material)) {
+                // In case of an array of materials, dispose each one
+                object.material.forEach(material => disposeMaterial(material));
+            } else {
+                // Single material
+                disposeMaterial(object.material);
+            }
+        }
+
+        // Recurse into children
+        while (object.children.length > 0) {
+            disposeObject(object.children[0]);
+            object.remove(object.children[0]);
+        }
+    }
+
+    // Helper function to dispose materials and textures
+    function disposeMaterial(material) {
+        Object.keys(material).forEach(prop => {
+            if (material[prop] !== null && material[prop] != undefined && typeof material[prop].dispose === 'function') {
+                // This includes disposing textures, render targets, etc.
+                material[prop].dispose();
+            }
+        });
+        material.dispose(); // Dispose the material itself
+    }
+
+    // Start the disposal process from the scene's children
+    while (scene.children.length > 0) {
+        disposeObject(scene.children[0]);
+        scene.remove(scene.children[0]);
+    }
 }

@@ -343,11 +343,13 @@ class Tile {
 
   }
 
-  fetch() {
+  fetch(signal) {
     var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.url())
-//    console.log(url);
-
     return new Promise((resolve, reject) => {
+      if (signal.aborted) {
+        reject(new Error('Aborted'));
+        return;
+      }
       getPixels(url, (err, pixels) => {
         if (err) console.error("fetch() -> "+ err)
         this.computeElevation(pixels)
@@ -457,6 +459,7 @@ class Map {
 
     this.tileCache = {};
 
+
     this.init()
   }
 
@@ -476,8 +479,8 @@ class Map {
 
   init() {
     this.center = Utils.geo2tile(this.geoLocation, this.zoom)
- //   console.log({loc: this.geoLocation, center: this.center})
     const tileOffset = Math.floor(this.nTiles / 2)
+    this.controller = new AbortController();
 
     for (let i = 0; i < this.nTiles; i++) {
       for (let j = 0; j < this.nTiles; j++) {
@@ -487,27 +490,26 @@ class Map {
     }
 
     const promises = Object.values(this.tileCache).map(tile =>
-      tile.fetch().then(tile => {
-
-        tile.setPosition(this.center)
-        this.scene.add(tile.mesh)
-//        console.log("Added via init promises")
-        return tile
-      })
+        tile.fetch(this.controller.signal).then(tile => {
+          if (this.controller.signal.aborted) {
+            throw new Error('Aborted');
+          }
+          tile.setPosition(this.center)
+          this.scene.add(tile.mesh)
+          return tile
+        })
     )
 
-    // after ALL the tiles are loaded, then resolve seams between adjacent tiles
     Promise.all(promises).then(tiles => {
-      tiles.reverse().forEach(tile => {  // reverse to avoid seams artifacts
+      tiles.reverse().forEach(tile => {
         tile.recalculateCurve(this.radius)
         tile.resolveSeams(this.tileCache)
       })
-    // and call the loadedCallback
-      console.log("Terrain loaded, executing callback");
       if (this.loadedCallback) this.loadedCallback();
-
     })
 
+    // To abort the loading of tiles, call controller.abort()
+    // controller.abort();
   }
 
   recalculateCurveMap(radius) {
@@ -551,11 +553,17 @@ class Map {
   }
 
   clean() {
+
+    // abort the pending loading of tiles
+    this.controller.abort();
+
     Object.values(this.tileCache).forEach(tile => {
-      this.scene.remove(tile.mesh)
-      tile.mesh.geometry.dispose();
-      ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => tile.mesh.material.uniforms[key].value.dispose())
-      tile.mesh.material.dispose()
+      if (tile.mesh !== undefined) {
+        this.scene.remove(tile.mesh)
+        tile.mesh.geometry.dispose();
+        ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => tile.mesh.material.uniforms[key].value.dispose())
+        tile.mesh.material.dispose()
+      }
     })
     this.tileCache = {}
   }

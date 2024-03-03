@@ -28,7 +28,7 @@ class CManager {
 
     disposeRemove(id) {
         if (this.exists(id)) {
-            if (this.list[id].dispose !== undefined) {
+            if (this.list[id].data.dispose !== undefined) {
                 this.list[id].data.dispose()
             }
             this.remove(id);
@@ -85,6 +85,15 @@ class CManager {
             }
         }
         return null;
+    }
+
+    disposeAll() {
+        // delete all entries in this.rawFiles and this.list
+        this.rawFiles = [];
+        Object.keys(this.list).forEach(key => {
+            this.disposeRemove(key);
+        });
+
     }
 
 

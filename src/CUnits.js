@@ -59,10 +59,10 @@ export class CUnits {
         if (updateGUI) {
             // find the unitName from the units, setting it for the GUI
             for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
-                console.log("unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
+//                console.log("unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
                 if (unit.toLowerCase() === this.units) {
                     this.unitsName = unitName;
-                    console.log("Found unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
+//                    console.log("Found unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
                     break;
                 }
             }

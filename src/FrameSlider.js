@@ -46,7 +46,7 @@ export function SetupFrameSlider() {
 
     //  $( function() {
     $( sliderDiv).slider({
-        max: Sit.frames,
+        max: 100,               // was Sit.frames, but we want to set this later
         slide: (event,ui) => {
 //            console.log("Slider SLIDE par frame = "+par.frame +", ui.value = "+ui.value+", $(sliderDiv).slider(\"value\") = " +$(sliderDiv).slider("value") )
             newFrame(ui.value)
@@ -115,7 +115,6 @@ export function updateFrameSlider() {
         if ($(sliderDiv).slider("value") !== par.frame) {
             $(sliderDiv).slider("option", "value", par.frame);
         }
-
 
         var max = $(sliderDiv).slider("option", "max");
         if (max != Sit.frames) {

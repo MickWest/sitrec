@@ -436,11 +436,18 @@ class Controller {
     /**
      * Destroys this controller and removes it from the parent GUI.
      */
-    destroy() {
-        this.listen( false );
-        this.parent.children.splice( this.parent.children.indexOf( this ), 1 );
-        this.parent.controllers.splice( this.parent.controllers.indexOf( this ), 1 );
-        this.parent.$children.removeChild( this.domElement );
+    destroy(all = false) {
+        if (all || !this.permanent) {
+            this.listen(false);
+            this.parent.children.splice(this.parent.children.indexOf(this), 1);
+            this.parent.controllers.splice(this.parent.controllers.indexOf(this), 1);
+            this.parent.$children.removeChild(this.domElement);
+        }
+    }
+
+    perm() {
+        this.permanent = true;
+        return this;
     }
 
 }
@@ -2354,19 +2361,28 @@ class GUI {
     /**
      * Destroys all DOM elements and event listeners associated with this GUI.
      */
-    destroy() {
+    // MICK: modified to allow some to be permanent.
+    destroy(all = true) {
 
-        if ( this.parent ) {
-            this.parent.children.splice( this.parent.children.indexOf( this ), 1 );
-            this.parent.folders.splice( this.parent.folders.indexOf( this ), 1 );
+        if (all || !this.permanent) {
+            if (this.parent) {
+                this.parent.children.splice(this.parent.children.indexOf(this), 1);
+                this.parent.folders.splice(this.parent.folders.indexOf(this), 1);
+            }
+
+            if (this.domElement.parentElement) {
+                this.domElement.parentElement.removeChild(this.domElement);
+            }
         }
 
-        if ( this.domElement.parentElement ) {
-            this.domElement.parentElement.removeChild( this.domElement );
-        }
+        Array.from( this.children ).forEach( c => c.destroy(all) );
 
-        Array.from( this.children ).forEach( c => c.destroy() );
+    }
 
+    // MICK: added to allow some to be permanent.
+    perm() {
+        this.permanent = true;
+        return this;
     }
 
     /**

@@ -9,7 +9,7 @@ import {
 import {showHider} from "../KeyBoardHandler";
 import {par} from "../par";
 import {AzElHelper, SphericalGridHelper} from "../CHelper";
-import {Sit} from "../Globals";
+import {FileManager, Globals, Sit} from "../Globals";
 import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
@@ -37,9 +37,11 @@ var matLineWhite = makeMatLine(0xffffff);
 var matLineCyan = makeMatLine(0x00ffff,1.5);
 var matLineGreen = makeMatLine(0x00ff00);
 
+
 // Container for the various 3D movesl that make up the atflir
 export class CNodeDisplayATFLIR extends CNode3DGroup {
     constructor(v) {
+        console.log("****************************** CNodeDisplayATFLIR")
 
         super(v);
 
@@ -51,9 +53,13 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
         /////////////////////////////////////////////////////
         // loading
+        const data = FileManager.get(v.ATFLIRModel ?? "ATFLIRModel")
         const loader = new GLTFLoader()
-        loader.load('data/models/ATFLIR.glb?v=27', gltf => {
-
+      //  loader.load('data/models/ATFLIR.glb?v=27', gltf => {
+        Globals.parsing ++;
+        loader.parse(data, "", (gltf) => {
+            Globals.parsing --;
+            console.log("Loaded and parsed ATFLIR model")
             Pod = gltf.scene
             PODBack = Pod.getObjectByName('BODY')
             EOSU = Pod.getObjectByName('HEAD')
@@ -97,23 +103,29 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
                 GlobalScene.environment = envMap;
             });
 */
-            // for quicker startup we load the jet after the pod
-            // as it's hidden by default.
 
-            loader.load('data/models/FA-18F.glb?v=8', function (gltf) {
-                FA18 = gltf.scene.getObjectByName('FA-18F')
-                var podScale = 10;
-                FA18.scale.setScalar(podScale);
-                FA18.position.z = 120
-                FA18.position.y = par.jetOffset
-
-                PodFrame.add(gltf.scene)
-                FA18.visible = false
-                showHider(FA18, "[J]et", false, 'j')
-                propagateLayerMaskObject(PodFrame)
-
-            })
         })
+
+        const dataFA18 = FileManager.get(v.FA18Model ?? "FA18Model")
+        //loader.load('data/models/FA-18F.glb?v=8', function (gltf) {
+        Globals.parsing ++;
+        loader.parse(dataFA18, "", (gltf2) => {
+            Globals.parsing --;
+            console.log("Loaded & parsed FA-18F model")
+            FA18 = gltf2.scene.getObjectByName('FA-18F')
+            var podScale = 10;
+            FA18.scale.setScalar(podScale);
+            FA18.position.z = 120
+            FA18.position.y = par.jetOffset
+
+            PodFrame.add(gltf2.scene)
+            FA18.visible = false
+            showHider(FA18, "[J]et", false, 'j')
+            propagateLayerMaskObject(PodFrame)
+
+        })
+
+
         // End loading
         //////////////////////////////////////////////
 

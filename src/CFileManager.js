@@ -18,9 +18,9 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        this.guiFolder = gui.addFolder("FileManager");
+        this.guiFolder = gui.addFolder("FileManager").perm();
 
-        this.guiFolder.add(this, "importFile").name("Import File");
+        this.guiFolder.add(this, "importFile").name("Import File").perm();
 
 
         let textSitches = [];
@@ -314,6 +314,12 @@ export class CFileManager extends CManager {
             }
         })
         return Promise.all(rehostPromises);
+    }
+
+    disposeAll() {
+        // delete all entries in this.rawFiles and this.list
+        this.rawFiles = [];
+        super.disposeAll()
     }
 
 }

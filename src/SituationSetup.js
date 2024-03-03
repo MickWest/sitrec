@@ -78,13 +78,27 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
     for (let key in sitDataExpanded) {
 
-        const data = sitDataExpanded[key];
-
-//        console.log("SituationSetup iterating: key = " + key );
+        // _data should be immutable, as we want to use it again
+        const _data = sitDataExpanded[key];
 
         // we can have undefined values in sitData, so skip them
         // this normall occurs when we have a base situation, and then override some values
-        if (data === undefined) continue;
+        if (_data === undefined) continue;
+
+
+        let data;
+        // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
+        if (typeof _data === "object") {
+
+            data = {..._data};
+        } else {
+            // if not an object (e.g. a number, boolean, or string), then just use _data
+            data = _data;
+        }
+
+//        console.log("SituationSetup iterating: key = " + key );
+
+
 
         const dataDeferred = data.defer ?? false;
         // assert dataDeferred is a boolean
@@ -383,9 +397,11 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 console.log("MAKE PTZ lookCamera, quaternion = " + NodeMan.get("lookCamera").camera.quaternion.x)
 
                 const camera = data.camera ?? "lookCamera";
-                data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
+                //data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
+                const addID = data.id ?? camera + "PTZ";
+                const idObject = {id: addID};
                 const showGUI = data.showGUI ?? true;
-                NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data})
+                NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data, ...idObject, showGUI: showGUI});
 
                 break;
 

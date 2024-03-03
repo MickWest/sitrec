@@ -106,6 +106,19 @@ export class CNodeTerrain extends CNode {
         console.table(GlobalScene.children)
     }
 
+    dispose() {
+        // first abort any pending request
+
+        for (const mapID in this.maps) {
+            if (this.maps[mapID].map !== undefined) {
+                this.maps[mapID].map.clean()
+                this.maps[mapID].map = undefined
+            }
+            GlobalScene.remove(this.maps[mapID].group)
+        }
+    }
+
+
     loadMap(id) {
         if (this.maps[id].map == undefined) {
             this.maps[id].map = new Map(this.maps[id].group, this.maps[id].source, this.position, {

@@ -23,9 +23,9 @@ import {NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 
-var nodeList = []
 
 var UniqueNodeNumber = 0;
+var debugNodeNumber = 0;
 
 // the node constructor takes a single object v
 class CNode {
@@ -38,7 +38,6 @@ class CNode {
         this.outputs = []               // outputs are just an array of nodes
         this.visible = true;            // some nodes are display nodes
         this.addInputs(v.inputs)
-        nodeList.push(this)             // master list of all nodes.. Is this needed?
         if (v.id != undefined) {
             this.id = v.id
         } else {
@@ -46,13 +45,16 @@ class CNode {
             this.id = this.constructor.name + UniqueNodeNumber++;
         }
 
+        this.debugNodeNumber = debugNodeNumber++;
+
         // Add call stack property
         this.callStack = (new Error()).stack;
 
         NodeMan.add(this.id, this)
     }
 
-    dispose() {}  // any garbage collection
+    dispose() {
+    }  // any garbage collection
 
     // v0 = shorthand accessor for the value at 0,
     // usually for nodes that are not frame dependent
@@ -397,15 +399,7 @@ export class CNodeConstant extends CNode {
     }
 }
 
-// call the update on any node that has one, with the current frame number
-export function UpdateNodes(f) {
-    nodeList.forEach(n => {if (n.update != undefined) n.update(f)})
-}
-
 export {CNode}
-
-
-
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {

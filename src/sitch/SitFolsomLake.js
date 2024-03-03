@@ -31,7 +31,14 @@ export const SitFolsomLake = {
     lookCamera:{ fov: 42.15},
 
     cameraTrack: { id: "cameraTrack", file: "cameraFile"},
+   // smoothTrack: {track: "cameraTrack", method:"moving", window: 20},
     followTrack: {},
+
+
+    focusTracks: {
+        "Ground (No Track)": "default",
+        "Drone track": "cameraTrack",
+    },
 
     focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
 

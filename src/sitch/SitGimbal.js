@@ -64,6 +64,7 @@ const GimbalDefaults = {
         GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
         TargetObjectFile: 'models/saucer01a.glb',
+        ATFLIRModel: 'models/ATFLIR.glb',
     },
 
     mainCamera: {},
@@ -373,11 +374,12 @@ export const SitGimbal = {
     localWindKnots: 120,
 
     files: {
+        FA18Model: 'models/FA-18F.glb',
         GimbalCSV: 'gimbal/GimbalData.csv',
         GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
         TargetObjectFile: 'models/FA-18F.glb',
-
+        ATFLIRModel: 'models/ATFLIR.glb',
     },
 
 
@@ -446,6 +448,9 @@ export const SitGimbalNear = {
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
 
         TargetObjectFile: './models/saucer01a.glb',
+        ATFLIRModel: 'models/ATFLIR.glb',
+        FA18Model: 'models/FA-18F.glb',
+
     },
 
     startDistance: 6,

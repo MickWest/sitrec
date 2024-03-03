@@ -35,6 +35,14 @@ function setupMeasurementUI() {
     })
 }
 
+export function removeMeasurementUI() {
+    if (measureArrowGroupNode) {
+        measureArrowGroupNode.dispose();
+        measureArrowGroupNode = null;
+        measurementUIDdone = false
+    }
+}
+
 export class CNodeLabel3D extends CNode3DGroup {
     constructor(v) {
         super(v)
@@ -78,7 +86,8 @@ export class CNodeLabel3D extends CNode3DGroup {
     }
 
     dispose() {
-        this.sprite.dispose();
+        this.sprite.material.dispose();
+        this.sprite.geometry.dispose();
     }
 
     changeText(text) {

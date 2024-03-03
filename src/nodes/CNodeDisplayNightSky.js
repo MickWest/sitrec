@@ -288,6 +288,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.showFlareRegion = false;
         this.flareRegionGroup = new Group();
+        // get a string of the current time in MS
+        const timeStamp = new Date().getTime().toString();
+        this.flareRegionGroup.debugTimeStamp = timeStamp;
         this.flareRegionGroup.visible = this.showFlareRegion;
         GlobalScene.add(this.flareRegionGroup)
         guiShowHide.add(this, "showFlareRegion").listen().onChange(()=>{
@@ -1535,6 +1538,7 @@ void main() {
 
          //   DebugArrowAB(sat.name, this.camera.position, sat.sprite.position, "#FF0000", true, this.sunArrowGroup,0.025)
 
+
             DebugArrowAB("ToGlint",P,bestX,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
             DebugArrow("ToSunFromGlint",this.toSun,bestX,5000000,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
             DebugWireframeSphere("ToGlint",bestX,500000,"#FF0000",4, this.flareRegionGroup)
@@ -1672,7 +1676,7 @@ function earthRotationAngle(jd){
 
 export function addNightSky() {
     console.log("Adding CNodeDisplayNightSky")
-    var nightSky = new CNodeDisplayNightSky({})
+    var nightSky = new CNodeDisplayNightSky({id: "NightSkyNode"});
 
     // iterate over any 3D views
     // and add an overlay to each for the star names (and any other night sky UI)

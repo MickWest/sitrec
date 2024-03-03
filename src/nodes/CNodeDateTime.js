@@ -142,7 +142,6 @@ export class CNodeDateTime extends CNode {
 
         const options = { timeZoneName: 'short' };
         const timeZone = new Date().toLocaleTimeString('en-us', options).split(' ')[2];
-        console.log(timeZone);
 
         this.timeZoneName = "PDT UTC-7";
         for (let tz of timeZoneKeys) {
