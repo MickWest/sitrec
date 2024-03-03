@@ -492,7 +492,8 @@ class Map {
     const promises = Object.values(this.tileCache).map(tile =>
         tile.fetch(this.controller.signal).then(tile => {
           if (this.controller.signal.aborted) {
-            throw new Error('Aborted');
+            // flag that it's aborted, so we can filter it out later
+            return Promise.resolve('Aborted');
           }
           tile.setPosition(this.center)
           this.scene.add(tile.mesh)
@@ -501,6 +502,9 @@ class Map {
     )
 
     Promise.all(promises).then(tiles => {
+      // Filter out the 'Aborted' values
+      tiles = tiles.filter(tile => tile !== 'Aborted');
+
       tiles.reverse().forEach(tile => {
         tile.recalculateCurve(this.radius)
         tile.resolveSeams(this.tileCache)
