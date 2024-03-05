@@ -55,6 +55,11 @@ export const SitFlir1 = {
 
     terrain: {lat:   31.605, lon:-117.870, zoom:7, nTiles:6},
 
+    // need this if we don't have terrain (for testing)
+    // lat: 31.205,
+    // lon:-117.870,
+
+
     jetLat: 31.205,
     jetLon:-117.870,
 

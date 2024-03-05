@@ -40,6 +40,11 @@ class ImageQueueManager {
         this.errorOccurred = false; // New flag to track if an error has occurred
     }
 
+    dispose() {
+        this.queue = [];
+        this.activeRequests = 0;
+    }
+
     enqueueImage(url, cb, retries = 0) {
         this.queue.push({ url, cb, retries });
         this.processQueue();
@@ -111,7 +116,7 @@ class ImageQueueManager {
 }
 
 // Usage
-const imageQueueManager = new ImageQueueManager();
+export const imageQueueManager = new ImageQueueManager();
 
 function defaultImage(url, cb) {
     imageQueueManager.enqueueImage(url, cb);
@@ -229,7 +234,7 @@ function handlePPM(url, cb) {
     xhr.send()
 }
 
-module.exports = function getPixels(url, cb) {
+export function getPixels(url, cb) {
 //    console.log("getPixels ("+url+")")
 //    var ext = path.extname(url)
     var ext = getFileExtension(url)

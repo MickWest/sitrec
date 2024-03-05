@@ -63,6 +63,8 @@ assert = function(condition,message=false) {
         console.trace()
         console.error("ASSERT: "+message);
 
+
+
         debugger;
     }
 }
@@ -508,4 +510,4 @@ export function stripParentheses(callStack) {
     return callStack.replace(/\(.*?\)/g, '');
 }
 
-const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))

@@ -38,12 +38,13 @@ var matLineCyan = makeMatLine(0x00ffff,1.5);
 var matLineGreen = makeMatLine(0x00ff00);
 
 
-// Container for the various 3D movesl that make up the atflir
+// Container for the various 3D models that make up the atflir
 export class CNodeDisplayATFLIR extends CNode3DGroup {
     constructor(v) {
         console.log("****************************** CNodeDisplayATFLIR")
 
         super(v);
+
 
         PodFrame = new Group();
         PodFrame.layers.mask = LAYER.MASK_HELPERS
@@ -51,12 +52,14 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         assert(PodFrame != undefined, "Missing PodFrame")
         LocalFrame.add(PodFrame)
 
+
         /////////////////////////////////////////////////////
         // loading
         const data = FileManager.get(v.ATFLIRModel ?? "ATFLIRModel")
         const loader = new GLTFLoader()
-      //  loader.load('data/models/ATFLIR.glb?v=27', gltf => {
+
         Globals.parsing ++;
+
         loader.parse(data, "", (gltf) => {
             Globals.parsing --;
             console.log("Loaded and parsed ATFLIR model")
@@ -84,26 +87,6 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
             propagateLayerMaskObject(PodFrame)
 
-
-            /*
-            // TODO: Maybe get this working again.
-            // it broke after we switched from global rendering to local (per-view) rendering
-            // however it was problematic anyway, due to affecting clouds
-            // and we are goin to need it in TWO renderers, not just one
-            // so maybe better to leave it alonf.
-            // sky texture after the pod
-            // This is for the environment mapping
-            // and affects the clouds ... ???
-            var skyLoader = new TextureLoader();
-            this.skyTexture = skyLoader.load("images/small-sky.jpg?v=3", function (texture) {
-
-            // this mainview was the patch I used.
-                var pmremGenerator = new PMREMGenerator(ViewMan.get("mainView").renderer);
-                var envMap = pmremGenerator.fromEquirectangular(texture).texture;
-                GlobalScene.environment = envMap;
-            });
-*/
-
         })
 
         const dataFA18 = FileManager.get(v.FA18Model ?? "FA18Model")
@@ -128,6 +111,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
         // End loading
         //////////////////////////////////////////////
+
 
         const size = 400;
         const divisions = 30;
@@ -221,6 +205,15 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         PodFrame = undefined;
         FA18 = undefined;
 
+        this._object = undefined;
+        this.SphericalGrid = undefined;
+        this.container = undefined;
+        this.AzElGrid = undefined;
+        if (this.TrackLineGeometry) this.TrackLineGeometry.dispose();
+        this.TrackLineGeometry = undefined;
+        if (this.TRACK_line) this.TRACK_line.geometry.dispose();
+        this.TRACK_line = undefined;
+
         super.dispose();
     }
 
@@ -250,5 +243,5 @@ function makePointingLine() {
     POINTING_line.computeLineDistances();
     POINTING_line.scale.set(1, 1, 1);
     LocalFrame.add(POINTING_line);
-    showHider(POINTING_line, "[L]ine of glare track", oldVisible, 'l');
+  //  showHider(POINTING_line, "[L]ine of glare track", oldVisible, 'l');
 }

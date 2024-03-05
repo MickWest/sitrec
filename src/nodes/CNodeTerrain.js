@@ -103,7 +103,12 @@ export class CNodeTerrain extends CNode {
             this.loadMap(v)
 
         })
-        console.table(GlobalScene.children)
+
+        // NOTE
+        // this call to console.table was passed the globalscene's children
+        // which seemed to create a extra references to them
+        // and caused a memory leak
+        // console.table(GlobalScene.children)
     }
 
     dispose() {
@@ -115,7 +120,10 @@ export class CNodeTerrain extends CNode {
                 this.maps[mapID].map = undefined
             }
             GlobalScene.remove(this.maps[mapID].group)
+            this.maps[mapID].group = undefined;
         }
+
+        super.dispose();
     }
 
 

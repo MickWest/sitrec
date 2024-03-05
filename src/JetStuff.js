@@ -5,7 +5,16 @@ import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit, Units} from ".
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
-import {DebugArrowAB, dispose, GridHelperWorld, MV3, propagateLayerMaskObject, sphereMark, V3} from "./threeExt";
+import {
+    DebugArrowAB,
+    DEBUGGroup,
+    dispose,
+    GridHelperWorld,
+    MV3,
+    propagateLayerMaskObject,
+    sphereMark,
+    V3
+} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {Line2} from '../three.js/examples/jsm/lines/Line2.js';
 import {LineGeometry} from '../three.js/examples/jsm/lines/LineGeometry.js';
@@ -66,6 +75,8 @@ import {isLocal} from "../config";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
+import {Group} from "three";
+import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeTrack";
 
 
 var matLineWhite = makeMatLine(0xffffff);
@@ -774,6 +785,14 @@ export function CreateTraverseNodes(traverseInputs) {
         airSpeed:true,
     })
 
+    // as above, but interpolate between the start and end frames
+    // remaining constant speed, but not necessarily on the LOS
+    new CNodeInterpolateTwoFramesTrack({
+        id: "LOSTraverseStraightConstantAir",
+        source: "LOSTraverseConstantAirSpeed"
+    })
+
+
     // In any Sitch we have an initialHeading and a relativeHeading
     // initialHeading is historically the start direction of the jet, like in Gimbal
     // it's the direction we set the jet going in
@@ -882,6 +901,8 @@ export function updateSize(force) {
     }
 }
 
+
+
 export function initViews() {
     new CNodeChartView({
         id: "chart",
@@ -912,14 +933,13 @@ export function initViews() {
     var farClipLook = metersFromMiles(500)
 
 
-    var gridHelperGround;
 
     if (Sit.name === "gimbal" || Sit.name === "gimbalnear" || Sit.name === "flir1") {
 
         // a grid spaced one Nautical mile square
         const gridSquaresGround = 200
-        gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
-        GlobalScene.add(gridHelperGround);
+        let gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
+
 
         setATFLIR(new CNodeDisplayATFLIR({
             inputs: {},

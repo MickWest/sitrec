@@ -19,6 +19,7 @@ import {drop3} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
+import {Group} from "three";
 
 
 // Wrapper for calling dispose function on object, allowing undefined
@@ -28,6 +29,8 @@ export function dispose(a) { if (a!=undefined) a.dispose()}
 class GridHelperWorldComplex extends LineSegments {
     constructor (altitude, xStart, xEnd, xStep, yStart, yEnd, yStep, radius, color1=0x444444, color2 = 0x888888)
     {
+
+
 
         color1 = new Color( color1 );
         color2 = new Color( color2 );
@@ -557,23 +560,29 @@ export function isVisible(ob) {
 export function disposeScene(scene) {
     console.log("Disposing scene");
 
+    if (scene === undefined) return;
+
     // Recursive function to dispose of materials and geometries
     function disposeObject(object) {
-        if (object.type === 'Mesh' || object.type === 'Line' || object.type === 'Points') {
+
+
+       // if (object.type === 'Mesh' || object.type === 'Line' || object.type === 'Points') {
             // Dispose geometry
             if (object.geometry) {
                 object.geometry.dispose();
             }
 
-            // Dispose materials
-            if (Array.isArray(object.material)) {
-                // In case of an array of materials, dispose each one
-                object.material.forEach(material => disposeMaterial(material));
-            } else {
-                // Single material
-                disposeMaterial(object.material);
+            if (object.material) {
+                // Dispose materials
+                if (Array.isArray(object.material)) {
+                    // In case of an array of materials, dispose each one
+                    object.material.forEach(material => disposeMaterial(material));
+                } else {
+                    // Single material
+                    disposeMaterial(object.material);
+                }
             }
-        }
+        //}
 
         // Recurse into children
         while (object.children.length > 0) {
@@ -594,8 +603,23 @@ export function disposeScene(scene) {
     }
 
     // Start the disposal process from the scene's children
-    while (scene.children.length > 0) {
-        disposeObject(scene.children[0]);
-        scene.remove(scene.children[0]);
+    if (scene.children!== undefined) {
+        while (scene.children.length > 0) {
+
+            //  if (scene.children[0].type === 'GridHelper')
+            //      debugger;
+
+            disposeObject(scene.children[0]);
+
+
+            scene.remove(scene.children[0]);
+        }
+    }
+}
+
+// A debug group so we can see specifically what's being disposed or not
+export class DEBUGGroup extends Group {
+    constructor() {
+        super();
     }
 }

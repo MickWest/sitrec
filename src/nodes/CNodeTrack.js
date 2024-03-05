@@ -398,6 +398,10 @@ export class CNodeInterpolateTwoFramesTrack extends CNodeTrack {
     constructor(v) {
         super(v);
         this.input("source")
+
+        v.start ??= 0;
+        v.end ??= this.in.source.frames-1;
+
         this.input("start")
         this.input("end")
         this.frames = this.in.source.frames;

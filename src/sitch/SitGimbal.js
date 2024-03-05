@@ -111,6 +111,7 @@ const GimbalDefaults = {
             "Straight Line": "LOSTraverseStraightLine",
             "Const Ground Spd": "LOSTraverseConstantSpeed",
             "Const Air Spd": "LOSTraverseConstantAirSpeed",
+            "Const Air AB": "LOSTraverseStraightConstantAir",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Constant Vc (closing vel)": "LOSTraverse1",
         },this.defaultTraverse)
@@ -325,7 +326,7 @@ const GimbalDefaults = {
             color: new CNodeConstant({value: new Color(0, 0.5, 1)}),
        //     secondColor:    new CNodeConstant({value: new Color(0, 0, 0.75)}),
 
-            width: 2,
+            width: 1,
             visibleCheck: (()=> {return ViewMan.get("SAPage").buttonBoxed(16)}),
         })
 
@@ -490,6 +491,8 @@ export const SitGimbalNear = {
             },
             airSpeed:false,
         })
+
+
 
         new CNodeDisplayTrack({
             track: "FARLOSTraverseConstantSpeed",

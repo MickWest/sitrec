@@ -88,13 +88,22 @@ export class CNodeFactory extends CManager{
     reinterpret(id, type, def, sourceKey) {
         const oldID = id+"_old";
         const oldNode = this.renameNodeUnsafe(id, oldID)
+
+        // copy (via reference) the old outputs
+        // and clear the old outputs
         const oldOutputs = oldNode.outputs;
         oldNode.outputs = [];
+
+        // if the sourceKey is defined, then we add the old node as an input to the new node
+        // using the sourceKey as the input name
         if (sourceKey !== undefined) {
             def[sourceKey] = oldID;
         }
 
+        // Copy the id from the old node to the new node
         def.id = id;
+
+        // create the new node
         const newNode = this.create(type,def)
 
         // just copy over the old output array from the old node to the new node

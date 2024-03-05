@@ -575,6 +575,8 @@ class MetaBezierCurveEditor {
         }
 
 
+
+
         this.recalculate()
         this.resize();
 
@@ -825,7 +827,10 @@ class MetaBezierCurveEditor {
                         realMaxY = mid + range/2
                     }
                 }
-                if (realMinY !== realMaxY) {
+
+                // check to see if they are withing 0.001 of each other
+                if (Math.abs(realMinY - realMaxY) > 0.01) {
+                //if (realMinY !== realMaxY) {
                     this.min.y = realMinY
                     this.max.y = realMaxY
                 } else {

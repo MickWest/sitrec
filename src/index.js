@@ -23,7 +23,7 @@ import {
     Sit,
     SitchMan,
 } from "./Globals";
-import {disableScroll} from './utils.js'
+import {disableScroll, sleep} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par} from "./par";
@@ -69,8 +69,9 @@ import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
 import {CFileManager} from "./CFileManager";
-import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
+import {DEBUGGroup, disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
 import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
+import {imageQueueManager} from "./js/get-pixels-mick";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -100,32 +101,45 @@ await setupFunctions();
 // however, once we call them, the parameters get added to - especially when we need some defaults
 // so, for example, the ptz object has no ID, so it gets and id of "lookCameraPTZ" in SituationSetup
 //
-// Options
+// Solution
 // 1 - make a deep clone of the sitch object, and pass that to the setup functions
-// 2 - ensure that the setup functions don't add any new parameters to the sitch object
-// I think 2 is the best option, as it's the simplest, and it's the most likely to be correct
-// so, we need to go through all the setup functions and make sure they don't add any new parameters to the sitch object
-//
 
-// This a a bit of patch for parshing things with the GLTF loader
-// as the parse funtion is actually async, and we need to wait for it to complete
-// but it's not a promise, so we can't use await
-// so we have to use a flag to wait for it to complete
-// we just count how many things are being parsed, and then wait for that to go to zero
 
-for (let i= 0; i < 10; i++) {
-    console.log("reload loop "+i)
-    await waitForParsingToComplete();
-    disposeEverything();
-// // theoretically we should new be able to do the above again....
+
+
+//  testing = true;
+// // SitchMan.iterate((key, sitch) =>{
+// for (let key in selectableSitches) {
+//     if (selectableSitches[key] === "testall" || selectableSitches[key] === "testhere")
+//         continue;
 //
-    selectInitialSitch();
-    legacySetup();
-    await setupFunctions();
-}
+//     let situation = selectableSitches[key]
+//     console.log("Change sitch to "+situation);
+//
+//     cancelAnimationFrame(animate);
+//     await waitForParsingToComplete();
+//
+//     disposeEverything();
+// // // theoretically we should new be able to do the above again....
+//     selectInitialSitch(situation);
+//     legacySetup();
+//     await setupFunctions();
+//
+//     // render one frame
+//     //renderMain();
+//
+//     // render five frames
+//     for (let i = 0; i < 5; i++) {
+//         updateFrame();
+//         renderMain();
+//
+//     }
+//
+// }
+// testing = false;
 
 console.log("animate")
-animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
+//animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
 windowChanged()
 
 infoDiv.innerHTML = ""
@@ -548,41 +562,45 @@ function renderMain() {
 
 }
 
-function selectInitialSitch() {
+function selectInitialSitch(force) {
 
-    if (urlParams.get("test")) {
-        // get the list of situations to test
-        toTest = urlParams.get("test")
-        testing = true;
-    }
+    if (!force) {
+        if (urlParams.get("test")) {
+            // get the list of situations to test
+            toTest = urlParams.get("test")
+            testing = true;
+        }
 
 // A smoke test of all situations, so we generate the list
 // which then gets passed as a URL, as above.
-    if (urlParams.get("testAll")) {
-        toTest = ""
-        for (const key in selectableSitches) {
-            if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
-                toTest += selectableSitches[key] + ",";
+        if (urlParams.get("testAll")) {
+            toTest = ""
+            for (const key in selectableSitches) {
+                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                    toTest += selectableSitches[key] + ",";
+            }
+            toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
         }
-        toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
-    }
 
 // toTest is a comma separated list of situations to test
 // if it is set, we will test the first one, then the rest
 // will be tested in order.
-    if (toTest !== undefined) {
-        var testArray = toTest.split(',');
-        situation = testArray.shift() // remove the first (gimbal)
-        toTest = testArray.join(",")
-        console.log("Testing " + situation + ", will text next: " + toTest)
-    }
+        if (toTest !== undefined) {
+            var testArray = toTest.split(',');
+            situation = testArray.shift() // remove the first (gimbal)
+            toTest = testArray.join(",")
+            console.log("Testing " + situation + ", will text next: " + toTest)
+        }
 
 // Either "sit" (deprecated) or "sitch" can be used to specify a situation in the url params
-    if (urlParams.get("sit")) {
-        situation = urlParams.get("sit")
-    }
-    if (urlParams.get("sitch")) {
-        situation = urlParams.get("sitch")
+        if (urlParams.get("sit")) {
+            situation = urlParams.get("sit")
+        }
+        if (urlParams.get("sitch")) {
+            situation = urlParams.get("sitch")
+        }
+    } else {
+        situation = force;
     }
 
 // situation is a global variable that is used to determine which situation to load
@@ -644,6 +662,8 @@ function disposeEverything() {
     // cancel any requested animation frames
     cancelAnimationFrame(animate);
 
+    // stop loading terrain
+    imageQueueManager.dispose();
 
     // dispose of the GUI, except for the permanent folders and items
     gui.destroy(false);
@@ -655,10 +675,12 @@ function disposeEverything() {
 
     // delete all the nodes
     NodeMan.disposeAll();
-    NodeMan.disposeAll();
 
     disposeDebugArrows();
     disposeDebugSpheres();
+
+ //   disposeScene(LocalFrame)
+
     console.log("GlobalScene originally has " + GlobalScene.children.length + " children");
     disposeScene(GlobalScene)
     console.log("GlobalScene now (after dispose) has " + GlobalScene.children.length + " children");
@@ -666,6 +688,11 @@ function disposeEverything() {
         disposeScene(GlobalNightSkyScene)
         setupNightSkyScene(undefined)
     }
+
+    // dispose of the renderers attached to the views
+    ViewMan.iterate((key, view) => {
+        view.renderer.renderLists.dispose();
+    });
 
     // add the local frame back to the global scene
     GlobalScene.add(LocalFrame)

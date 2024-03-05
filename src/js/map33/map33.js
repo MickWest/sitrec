@@ -1,4 +1,4 @@
-import getPixels from '../get-pixels-mick.js'
+import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "../../../three.js/build/three.module";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {drop} from '../../SphericalMath'
@@ -584,6 +584,7 @@ class Map {
       }
     })
     this.tileCache = {}
+    this.scene = null; // MICK - added to help with memory management
   }
 }
 

@@ -664,7 +664,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 if (data.method === "moving") {
                     NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                         {
-                            source: data.track,
+                         //   source: data.track,
                             method: data.method,
                             copyData: true,
                             window: new CNodeGUIValue({
@@ -680,7 +680,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 } else {
                     NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                         {
-                            source: data.track,
+                         //   source: data.track,
                             method: "catmull",
                             intervals: new CNodeGUIValue({
                                 value: 20,
@@ -702,6 +702,17 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     );
                 }
                 break;
+
+            case "straightenTrack":
+                SSLog();
+                NodeMan.reinterpret(data.track, "InterpolateTwoFramesTrack",
+                    {
+                        source: data.track,
+                    }
+                );
+                break;
+
+
 
             case "azSlider":
                 if (data) {
