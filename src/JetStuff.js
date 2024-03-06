@@ -939,7 +939,7 @@ export function initViews() {
         // a grid spaced one Nautical mile square
         const gridSquaresGround = 200
         let gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
-
+        GlobalScene.add(gridHelperGround);
 
         setATFLIR(new CNodeDisplayATFLIR({
             inputs: {},
