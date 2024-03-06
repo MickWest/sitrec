@@ -42,7 +42,6 @@ import {
     initJetStuffOverlays,
     initJetVariables,
     targetSphere,
-    UIChangedAz,
     updateSize
 } from "./JetStuff";
 import {
@@ -69,9 +68,10 @@ import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
 import {CFileManager} from "./CFileManager";
-import {DEBUGGroup, disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
+import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
 import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
 import {imageQueueManager} from "./js/get-pixels-mick";
+import {disposeGimbalChart} from "./JetChart";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -90,7 +90,6 @@ let container;
 var fpsInterval, startTime, now, then, elapsed;
 
 let animationFrameId;
-
 
 await initializeOnce();
 initRendering();
@@ -152,6 +151,9 @@ startAnimating(Sit.fps);
 
 setTimeout( checkForTest, 3500);
 
+// **************************************************************************************************
+// *********** That's it for top-level code. Functions follow ***************************************
+// **************************************************************************************************
 
 function checkForTest() {
     console.log("Testing = " + testing + " toTest = " + toTest)
@@ -607,6 +609,7 @@ function selectInitialSitch(force) {
                     toTest += selectableSitches[key] + ",";
             }
             toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
+            testing = true;
         }
 
 // toTest is a comma separated list of situations to test
@@ -649,10 +652,16 @@ function selectInitialSitch(force) {
 
     const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
     assert(startSitch !== null, "Can't find startup Sitch: "+lower)
+
+    console.log("");
+    console.log("NEW Situation = "+situation)
+    console.log("");
+
     setSit(new CSituation(startSitch))
 }
 
 async function requestGeoLocation() {
+    console.log("Requesting geolocation... Situation = " + Sit.name);
     await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition((position) => {
             let lat = position.coords.latitude;
@@ -663,10 +672,12 @@ async function requestGeoLocation() {
             Sit.fromLat = Sit.lat;
             Sit.fromLon = Sit.lon;
 
+
+            console.log("RESOLVED Local Lat, Lon =", Sit.lat, Sit.lon+ " situation = " + Sit.name);
+
             NodeMan.get("cameraLat").value = Sit.lat
             NodeMan.get("cameraLon").value = Sit.lon
 
-            console.log("RESOLVED Local Lat, Lon =", Sit.lat, Sit.lon);
 
             resolve(); // Resolve the promise when geolocation is obtained
         }, (error) => {
@@ -679,15 +690,14 @@ async function requestGeoLocation() {
 
 function disposeEverything() {
     console.log("");
-    console.log("");
     console.log(" >>>>>>>>>>>>>>>>>>>>>>>> disposeEverything() <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     console.log("");
-    console.log("");
-
-
 
     // cancel any requested animation frames
     cancelAnimationFrame(animationFrameId);
+
+    // specific to the gimbal chart, but no harm in calling it here in case it gets used in other situations
+    disposeGimbalChart();
 
     // stop loading terrain
     imageQueueManager.dispose();
@@ -706,8 +716,6 @@ function disposeEverything() {
     disposeDebugArrows();
     disposeDebugSpheres();
 
- //   disposeScene(LocalFrame)
-
     console.log("GlobalScene originally has " + GlobalScene.children.length + " children");
     disposeScene(GlobalScene)
     console.log("GlobalScene now (after dispose) has " + GlobalScene.children.length + " children");
@@ -724,7 +732,6 @@ function disposeEverything() {
     // add the local frame back to the global scene
     GlobalScene.add(LocalFrame)
 
-
     // unload all assets - which we might not want to do if jsut restarting
     FileManager.disposeAll()
 
@@ -732,6 +739,8 @@ function disposeEverything() {
 
    // ViewMan.disposeAll()
     assert(ViewMan.size() === 0, "ViewMan.size() should be zero, it's " + ViewMan.size());
+    console.log("disposeEverything() is finished");
+    console.log("");
 }
 
 /**

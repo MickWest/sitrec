@@ -27,8 +27,24 @@ import {V3} from "../threeExt";
 var UniqueNodeNumber = 0;
 var debugNodeNumber = 0;
 
-// the node constructor takes a single object v
+
+/**
+ * CNode is the base class for all nodes in the graph
+ * It has a list of inputs, and a list of outputs
+ * It has a value for each frame, and a function to calculate that value
+ * It has a unique id
+ * It has a list of inputs, and a list of outputs
+ * @class
+ * @type {CNode}    - the base class for all nodes in the graph
+ */
 class CNode {
+
+    /**
+     *
+     * @param v
+     * @param {number} v.fps - frames per second
+     * @param {number} v.frames - number of frames
+     */
     constructor (v) {
         this.props = v;
         this.isNumber = true;
@@ -52,6 +68,7 @@ class CNode {
 
         NodeMan.add(this.id, this)
     }
+
 
     dispose() {
         // clear the inputs and outputs

@@ -21,6 +21,12 @@ export class CNodeViewCanvas extends CNodeView {
         this.div.appendChild(this.canvas)
     }
 
+    dispose() {
+        super.dispose()
+        this.div.removeChild(this.canvas)
+        this.canvas = null;
+    }
+
     ignoreMouseEvents() {
         this.canvas.style.pointerEvents = 'none';
     }
@@ -55,6 +61,13 @@ class CNodeViewCanvas2D extends CNodeViewCanvas {
 
         this.autoClear = v.autoClear;
 
+    }
+
+    dispose() {
+        // release the WebGL context
+        this.ctx = null
+
+        super.dispose()
     }
 
     render(frame) {

@@ -142,6 +142,15 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     }
 
+    dispose() {
+        super.dispose();
+        this.renderer.dispose();
+        this.renderer = null;
+        this.composer.dispose();
+        this.composer = null;
+
+    }
+
     addFocusTracks(focusTracks) {
         this.focusTrackName = "default"
         this.lockTrackName = "default"

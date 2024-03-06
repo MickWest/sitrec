@@ -253,3 +253,9 @@ export function setupGimbalChart() {
     theChart = new uPlot(opts, data, chartDiv);
 }
 
+export function disposeGimbalChart() {
+    if (theChart !== undefined) {
+        theChart.destroy()
+        theChart = undefined
+    }
+}
