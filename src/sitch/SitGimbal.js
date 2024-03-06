@@ -659,7 +659,7 @@ export function SetupGimbal() {
             left: 0.0, top: 0.0, width: -1, height: 0.5,
             draggable: true, resizable: true, shiftDrag: true, freeAspect: true,
             editorConfig: {
-                minX: 0, maxX: 1031, minY: -0.20, maxY: 0.1,
+                minX: 0, maxX: 1031, minY: -0.30, maxY: 0.1,
                 xLabel: "Frame", xStep: 1, yLabel: "Cloud Speed", yStep: 0.02,
                 //        points:[0,-0.139,454.256,-0.129,746.435,-0.052,657.793,-0.07,1030,-0.023,900,-0.025],
                 // trying to match TheCholla's measurements of cloud speed.
