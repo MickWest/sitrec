@@ -89,6 +89,9 @@ let testing = false;
 let container;
 var fpsInterval, startTime, now, then, elapsed;
 
+let animationFrameId;
+
+
 await initializeOnce();
 initRendering();
 
@@ -145,22 +148,43 @@ windowChanged()
 infoDiv.innerHTML = ""
 startAnimating(Sit.fps);
 
-
-
-
 // if testing, then wait 3.5 seconds, and then load the next test URL
 
-setTimeout( function() {
+setTimeout( checkForTest, 3500);
+
+
+function checkForTest() {
+    console.log("Testing = " + testing + " toTest = " + toTest)
     if (toTest != undefined && toTest != "") {
-        var url = SITREC_ROOT + "?test=" + toTest
-        window.location.assign(url)
+//        var url = SITREC_ROOT + "?test=" + toTest
+//        window.location.assign(url)
+
+        var testArray = toTest.split(',');
+        situation = testArray.shift() // remove the first (gimbal)
+        toTest = testArray.join(",")
+        console.log("Testing " + situation + ", will text next: " + toTest)
+
+        newSitch(situation)
+        setTimeout( checkForTest, 3500);
+
     } else {
         testing = false;
     }
-}, 3500);
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function newSitch(situation) {
+    cancelAnimationFrame(animate);
+    await waitForParsingToComplete();
+    disposeEverything();
+    selectInitialSitch(situation);
+    legacySetup();
+    await setupFunctions();
+    startAnimating(Sit.fps);
+}
 
 async function initializeOnce() {
 
@@ -457,12 +481,14 @@ function startAnimating(fps) {
     animate();
 }
 
+
 function animate(newtime) {
     // Method of setting frame rate, from:
     // http://jsfiddle.net/chicagogrooves/nRpVD/2/
     // uses the sub-ms resolution timer window.performance.now() (a double)
     // and does nothing if the time has not elapsed
 
+ //   console.log("ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ")
 
     // requestAnimationFrame( animate );
 
@@ -485,7 +511,8 @@ function animate(newtime) {
         renderMain();
         par.paused = oldPaused;
     }
-    requestAnimationFrame( animate );
+ //   console.log("REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST ")
+    animationFrameId = requestAnimationFrame( animate );
 
 }
 
@@ -660,7 +687,7 @@ function disposeEverything() {
 
 
     // cancel any requested animation frames
-    cancelAnimationFrame(animate);
+    cancelAnimationFrame(animationFrameId);
 
     // stop loading terrain
     imageQueueManager.dispose();
