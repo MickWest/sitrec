@@ -3,6 +3,7 @@ import {par} from "../par";
 import {Sit} from "../Globals";
 import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
+import {Rehoster} from "../CRehoster";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
@@ -81,15 +82,18 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
     }
 
+    // for import or drag and drop files.
     uploadFile(file) {
 
-        this.fileName = "file"
+        Sit.frames = undefined; // need to recalculate this
+        this.fileName = file.name;
 
         this.stopStreaming()
         this.addLoadingMessage()
         this.Video = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
-
+        par.frame = 0;
+        par.paused = false; // unpause, otherwise we see nothing.
     }
 
     loadedCallback() {

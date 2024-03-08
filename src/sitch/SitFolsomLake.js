@@ -16,7 +16,6 @@ export const SitFolsomLake = {
     startAltitude: 145, // if a track is relative (like Mini DJI SRT files), then need an initial altitude
     adjustAltitude: 5, // and if not, then we might want to bring it up above the ground
     files: {
-        //cameraFile: 'folsomlake/MICK folsomake DJI_0031 - 01.srt',
         cameraFile:'folsomlake/Dec-22nd-2023-11-56AM-Flight-Airdata.csv',
     },
     startTime: "2023-12-22 20:00:18.000Z",  // start time of video, the cameraFile might start before this.

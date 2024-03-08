@@ -376,9 +376,22 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         console.log("Loading planets")
         this.addPlanets(this.celestialSphere)
 
-        if (FileManager.exists("starLink")) {
-            console.log("parsing starlink")
-            this.replaceTLE(FileManager.get("starLink"))
+        // if (FileManager.exists("starLink")) {
+        //     console.log("parsing starlink")
+        //     this.replaceTLE(FileManager.get("starLink"))
+        // }
+
+        // the file used is now passed in as a parameter "starlink"
+        // this is the id of the file in the FileManager
+        // which might be the filename, or an ID.
+        if (v.starLink !== undefined) {
+            console.log("parsing starlink "+v.starLink)
+            if (FileManager.exists(v.starLink)) {
+                this.replaceTLE(FileManager.get(v.starLink))
+            } else {
+                if (v.starLink !== "starLink")
+                    console.warn("Starlink file/ID "+v.starLink+" does not exist")
+            }
         }
 
         console.log("Adding celestial grid")
@@ -1674,9 +1687,9 @@ function earthRotationAngle(jd){
 /////////////////////////////////////////////////////////////////////////////////
 
 
-export function addNightSky() {
+export function addNightSky(def) {
     console.log("Adding CNodeDisplayNightSky")
-    var nightSky = new CNodeDisplayNightSky({id: "NightSkyNode"});
+    var nightSky = new CNodeDisplayNightSky({id: "NightSkyNode", ...def});
 
     // iterate over any 3D views
     // and add an overlay to each for the star names (and any other night sky UI)

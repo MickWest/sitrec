@@ -26,6 +26,8 @@ import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {Frame2Az, UIChangedAz} from "./JetStuff";
+import {addNightSky} from "./nodes/CNodeDisplayNightSky";
+import {SITREC_ROOT, SITREC_SERVER, SITREC_UPLOAD} from "../config";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -66,6 +68,53 @@ export function expandSitData(sitData, into = {}) {
         }
     }
     return into;
+}
+
+// for each possible kind in sitch.js, fileIDMap is a list of the keys which specify a file
+// in the data. This is used to pre load the files into the file manager
+// with startLoadingInlineAssets
+// example
+// cameraTrack: {file: "westjet/FlightAware_WJA1517_KPHX_CYYC_20231219.kml"},
+// usually there will just be one
+let fileIDMap = {
+    "cameraTrack": ["file"],
+    "KMLTargetData": ["file"],
+    "nightSky": ["starLink"],
+}
+
+export async function startLoadingInlineAssets(sitData) {
+    // load the inline assets
+    for (let key in sitData) {
+        const data = sitData[key];
+        const fileIDs = fileIDMap[key];
+        if (fileIDs) {
+            // see if any of the fileIDs are in the data as keys
+            for (let fileID of fileIDs) {
+                // we don't load the file if it already exists
+                // which generally means either:
+                // 1 - It was loaded already in some way
+                // 2 - It's an ID of a file specifed in files:{}
+                if (data[fileID] && !FileManager.exists(data[fileID])) {
+                    console.log("SituationSetup: loading inline asset: " + data[fileID])
+                    // we are using the filename as the ID
+                    // so later we can use FileManager.get("filename") to get the file
+                    // meaning the filename is the key to the file and it will just work when
+                    // the sitch file is parsed.
+                    let assetName = data[fileID];
+                    // if it does not start with http, then assume it's
+                    // in the in the sitrec-upload directory
+                    // if (!assetName.startsWith("http")) {
+                    //     assetName = SITREC_UPLOAD + assetName;
+                    //     console.log("Modifed asset  name to : " + assetName)
+                    // }
+
+                    await FileManager.loadAsset(assetName,assetName);
+                }
+            }
+        }
+
+    }
+
 }
 
 
@@ -225,6 +274,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     const file = data.file ?? "cameraFile";
 
                     makeTrackFromDataFile(file, id + "Data", id);
+
                     new CNodeDisplayTrack({
                         id: id + "Display",
                         track: id,
@@ -725,6 +775,17 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         aZMax = t;
                     }
                     gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
+                }
+                break;
+
+            case "nightSky":
+                SSLog();
+                // if data true or it is an object with no keys (i.e. {} )
+                // then add the default night sky
+                if (data === true || Object.keys(data).length === 0) {
+                    addNightSky({starLink: "starLink"})
+                } else {
+                    addNightSky(data)
                 }
                 break;
 

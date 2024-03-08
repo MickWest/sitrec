@@ -5,9 +5,7 @@ export const SitHulsey = {
     menuName: "Hulsey Starlink",
 
 
-    nightSky: true,
-    landingLights:true,
-    useGlobe: true,
+
 
     // maybe have these in CSituation
     nearClip: 1,
@@ -46,5 +44,8 @@ export const SitHulsey = {
 
     DisplayCameraFrustum: {radius:100000},
 
+    nightSky: true,
+    landingLights:true,
+    useGlobe: true,
 
 }

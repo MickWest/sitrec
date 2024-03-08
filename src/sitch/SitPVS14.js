@@ -18,8 +18,7 @@ export const SitPVS14 = {
     menuName: "PVS-14 Pilot Video",
 
 
-    nightSky: true,
-    useGlobe: true,
+
 
     starScale: 0.65,
 
@@ -78,15 +77,14 @@ export const SitPVS14 = {
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
     DisplayCameraFrustum: {radius:100000},
 
-
     ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},
 
     dragDropHandler: {},
 
+    nightSky: true,  // needs to be at the end of the list, as it needs the camera
+    useGlobe: true,
+
     setup2: function () {
-
-
-
 
         NodeMan.get("lookCamera").addController("TrackPosition",{
              sourceTrack: "cameraTrack",
@@ -116,11 +114,6 @@ export const SitPVS14 = {
         var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: "lookView"});
         AddTimeDisplayToUI(labelVideo, 50,96, 3.5, "#f0f000")
 
-        gui.add(par, 'mainFOV', 0.35, 150, 0.01).onChange(value => {
-            const mainCam = NodeMan.get("mainCamera").camera;
-            mainCam.fov = value
-            mainCam.updateProjectionMatrix()
-        }).listen().name("Main FOV")
 
         var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
         labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
@@ -128,14 +121,6 @@ export const SitPVS14 = {
 
     },
 
-    update: function(frame) {
-        // // with camera locked to a plane, propogate the plane's position
-        // // via the UI
-        // const lookCamera = NodeMan.get("lookCamera").camera
-        // const cursorPos = lookCamera.position;
-        // const ecef = EUSToECEF(cursorPos)
-        // const LLA = ECEFToLLAVD_Sphere(ecef)
-    },
 
 
 }

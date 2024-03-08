@@ -2,8 +2,7 @@ export const SitArea6 = {
     name: "area6",
     menuName: "Area 6",
 
-    nightSky: true,
-    useGlobe: true,
+
 
     files: {
         starLink: "area6/starlink-area6.txt",
@@ -42,5 +41,7 @@ export const SitArea6 = {
     labelView: {id:"labelVideo", overlay: "lookView"},
     DisplayCameraFrustum: {radius:100000},
 
+    nightSky: true,
+    useGlobe: true,
 
 }

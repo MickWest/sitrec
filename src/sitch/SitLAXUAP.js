@@ -3,7 +3,6 @@ export const SitLAXUAP = {
     include_kml: true,
     name: "laxuap",
     menuName: "LAX Balloon-Likes",
-    nightSky: true,
 
     showAltitude:false,
     showAz:false,
@@ -68,4 +67,7 @@ export const SitLAXUAP = {
     losTarget:{track: "targetTrack", camera: "lookCamera", frame: 50, altitude: 10000, size:1, offset: 0.26 },
 
     DisplayCameraFrustum: {targetTrack:"targetTrack"},
+
+    nightSky: true,
+
 }

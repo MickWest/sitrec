@@ -6,9 +6,7 @@ SitMaussan = {
 
     targetSize: 200, // in feet
 
-    nightSky: true,
-    useGlobe: true,
-    useDayNightGlobe: true,
+
 
     simSpeed: 25,
 
@@ -44,5 +42,8 @@ SitMaussan = {
     skyColor: '#AFBDD1',  // grey from the video
     ptz: {az: -89.2, el: -6.6, fov: 53.2, showGUI: true},
 
+    nightSky: true,
+    useGlobe: true,
+    useDayNightGlobe: true,
 
 }

@@ -3,7 +3,6 @@ export const Sit29Palms = {
     name: "29palms",
     menuName: "29 Palms Back Photo",
 
-    nightSky: true,
 
     files: {
         threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
@@ -53,5 +52,5 @@ export const Sit29Palms = {
 
     DisplayCameraFrustum: {radius:100000},
 
-
+    nightSky: true,
 }

@@ -19,11 +19,6 @@ export const SitNightSky = {
     name: "nightsky",
     menuName: "Night Sky / Starlink",
 
-    nightSky: true,
-    useGlobe: true,
-    useDayNightGlobe: true,
-    globeScale: 1,  // was defaulting to 0.99
-    localLatLon: true,
 
     showDateTime: true, // opens the DateTime folder in the UI
 
@@ -84,6 +79,12 @@ export const SitNightSky = {
 
     DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
+
+    nightSky: true,
+    useGlobe: true,
+    useDayNightGlobe: true,
+    globeScale: 1,  // was defaulting to 0.99
+    localLatLon: true,
 
     setup2: function () {
 

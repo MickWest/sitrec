@@ -247,7 +247,7 @@ export class CFileManager extends CManager {
                     // theoretically we could inspect the file contents and then reload it...
                     // but let's trust the extensions
                     //assert(0, "Unhandled extension " + fileExt + " for " + filename)
-                    alert("Unhandled extension " + fileExt + " for " + filename)
+                    console.warn("Unhandled extension " + fileExt + " for " + filename)
                     return Promise.resolve({filename: filename, parsed: null});
             }
 

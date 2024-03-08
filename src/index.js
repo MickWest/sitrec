@@ -62,7 +62,7 @@ import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
 import {checkLocal, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
 
-import {SituationSetup} from "./SituationSetup";
+import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
@@ -280,6 +280,8 @@ async function initializeOnce() {
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
         var url = SITREC_ROOT+"?sitch=" + sitch
 
+        let nextSitch = sitch;
+
 // smoke test of everything after the current sitch
         if (sitch === "testhere") {
             toTest = ""
@@ -294,9 +296,16 @@ async function initializeOnce() {
                 }
             }
             toTest+=situation  // end up back where we started
+            checkForTest();
             url = SITREC_ROOT + "?test="+toTest;
+        } else {
+            newSitch(nextSitch);
         }
-        window.location.assign(url) //
+
+        // not loading the new sitch, so just change the URL of this page
+        window.history.pushState({}, null, url);
+
+        //window.location.assign(url) //
     })
 
     // setup the common keyboard handler
@@ -393,12 +402,15 @@ async function setupFunctions() {
         }
     }
 
-// Start loading the assets in Sit.files, but don't await them yet
+// Start loading the assets in Sit.files, and wait for them to load
 
     console.log("START Load Assets")
     const assetsLoading = Sit.loadAssets();
     console.log("WAIT Load Assets")
     await assetsLoading;
+    console.log("START load inline assets")
+    await startLoadingInlineAssets(Sit)
+
     console.log("FINISHED Load Assets")
 
 
@@ -421,17 +433,15 @@ async function setupFunctions() {
     if (Sit.setup  !== undefined) Sit.setup();
     if (Sit.setup2 !== undefined) Sit.setup2();
 
-// Redo tnhe data-driven setup, but this is for any deferred setup
+// Redo the data-driven setup, but this is for any deferred setup
 // i.e data members that have defer: true
     SituationSetup(true);
-
 
 // We can get the local lat/lon (i.e. the user's location)
 // get only get the local lat/lon if we don't have URL data and if we are not testing
     if (!testing && Sit.localLatLon && urlData === undefined) {
         await requestGeoLocation()
     }
-
 
     console.log("Finalizing....")
 
@@ -456,10 +466,10 @@ async function setupFunctions() {
         showHider(Sit.globe,"[G]lobe", true, "g")
     }
 
-    if (Sit.nightSky) {
-        console.log("addNightSky()")
-        addNightSky()
-    }
+    // if (Sit.nightSky) {
+    //     console.log("addNightSky()")
+    //     addNightSky()
+    // }
 
 // Finally move the camera and reset the start time, if defined in the URL parameters
     if (urlParams.get("data")) {
@@ -471,15 +481,11 @@ async function setupFunctions() {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 }
 
-
-
 function startAnimating(fps) {
-
     fpsInterval = 1000 / fps ;           // e.g. 1000/30 = 33.333333
     then = window.performance.now();    //
     startTime = then;
     console.log("Startup time = " + startTime/1000);
-
     animate();
 }
 
@@ -489,9 +495,6 @@ function animate(newtime) {
     // http://jsfiddle.net/chicagogrooves/nRpVD/2/
     // uses the sub-ms resolution timer window.performance.now() (a double)
     // and does nothing if the time has not elapsed
-
- //   console.log("ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ANIMATE ")
-
     // requestAnimationFrame( animate );
 
     now = newtime;
@@ -513,7 +516,6 @@ function animate(newtime) {
         renderMain();
         par.paused = oldPaused;
     }
- //   console.log("REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST REQUEST ")
     animationFrameId = requestAnimationFrame( animate );
 
 }
@@ -593,7 +595,9 @@ function renderMain() {
 
 function selectInitialSitch(force) {
 
-    if (!force) {
+    if (force) {
+        situation = force;
+    } else {
         if (urlParams.get("test")) {
             // get the list of situations to test
             toTest = urlParams.get("test")
@@ -629,8 +633,6 @@ function selectInitialSitch(force) {
         if (urlParams.get("sitch")) {
             situation = urlParams.get("sitch")
         }
-    } else {
-        situation = force;
     }
 
 // situation is a global variable that is used to determine which situation to load
@@ -641,7 +643,6 @@ function selectInitialSitch(force) {
 // to test for a particular situation, use Sit.name
 // slice
     var lower = situation.slice().toLowerCase();
-
 
     if (lower === "testall") {
         const url = SITREC_ROOT + "?testAll=1"
