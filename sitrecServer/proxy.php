@@ -18,7 +18,17 @@
     $ext = strtolower($path_parts['extension']);
     $url_parts = parse_url($url);
 
+    // fail if it returns false
+    if ($url_parts === false) {
+        exit("Illegal URL");
+    }
+
     $caching = true;
+
+    // if it's not https then reject this request
+    if (strcmp($url_parts['scheme'],"https") !== 0) {
+        exit("Illegal scheme");
+    }
 
     // for hosts that don't have an extension, add the right one here.
     if (strcmp($url_parts['host'],"celestrak.org") === 0) {
@@ -48,8 +58,10 @@
 
     ob_start();
 
+    $lifetime = 60 * 60; // 1 hour
+
     // if cached file exists, and is less than 1 hour old, then return that.
-    if ($caching && file_exists($cachedFile) && ((time() - filemtime($cachedFile)) < (60 * 60)) ) {
+    if ($caching && file_exists($cachedFile) && ((time() - filemtime($cachedFile)) < ($lifetime)) ) {
         echo (time(). " - " . filemtime($cachedFile) . " = ". time()-filemtime($cachedFile));
         echo "cached file exists\n";
 
@@ -67,6 +79,11 @@
         }
         */
     } else {
+        // at some point we should delete all expired files
+        // but for now we just let them accumulate
+        // Note, some want to be permanent, so we can't just
+        // delete all files older than 24 hours
+        //
 
 //    echo "cache no found<br>";
 //    echo "<br>cachedFile: " . $cachedFile;
