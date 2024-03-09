@@ -267,7 +267,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.mainCamera = NodeMan.get("mainCamera").camera;
         assert(this.mainCamera, "CNodeDisplayNightSky needs a main camera")
 
-        this.showSunArrows = false;
+        this.showSunArrows = Sit.showSunArrows;
         this.sunArrowGroup = new Group();
         this.sunArrowGroup.visible = this.showSunArrows;
         GlobalScene.add(this.sunArrowGroup)
@@ -276,7 +276,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.sunArrowGroup.visible = this.showSunArrows;
         }).name("Sun Angle Arrows")
 
-        this.showVenusArrow = true;
+        this.showVenusArrow = Sit.showVenusArrow;
         this.venusArrowGroup = new Group();
         this.venusArrowGroup.visible = this.venusArrow;
         GlobalScene.add(this.venusArrowGroup)
@@ -286,7 +286,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }).name("Venus Arrow")
 
 
-        this.showFlareRegion = false;
+        this.showFlareRegion = Sit.showFlareRegion;
         this.flareRegionGroup = new Group();
         // get a string of the current time in MS
         const timeStamp = new Date().getTime().toString();
@@ -320,7 +320,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         GlobalScene.add(this.flareBandGroup)
 
-        this.showFlareBand = false;
+        this.showFlareBand = Sit.showFlareBand;
         this.flareBandGroup.visible = this.showFlareBand;
         guiShowHide.add(this, "showFlareBand").listen().onChange(()=>{
             par.renderOne=true;
@@ -653,8 +653,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             var arrowHelper2 = DebugArrowAB(sat.name + "sun", satPosition,
                                 satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
-                            var arrowHelper3 = DebugArrowAB(sat.name + "reflected", satPosition,
-                                satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
+                           // var arrowHelper3 = DebugArrowAB(sat.name + "reflected", satPosition,
+                           //     satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             sat.hasArrow = true;
                         } else {
                             if (sat.hasArrow) {

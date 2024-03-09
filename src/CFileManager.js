@@ -350,10 +350,13 @@ function createImageFromArrayBuffer(arrayBuffer, type) {
 }
 
 // given a 2d CSV file, attempt to detect what type of file it is
+// and the mappings of columns to data
 export function detectCSVType(csv) {
     var type = "Unknown";
     if (csv[0][0] === "time(millisecond)" && csv[0][1] === "datetime(utc)") {
         type = "Airdata"
+    } else if (csv[0][0] === "DPTS" && csv[0][1] === "Security:") {
+        type = "MISB1"
     }
 
     return type;

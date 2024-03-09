@@ -105,7 +105,7 @@ export class CNodeSRTDataTrack extends CNodeTimedTrack {
                 alt: Number(this.srt[i][SRT.abs_alt]),
             }
 
-            // minumum product is the time and the lla
+            // minimum product is the time and the lla
             const product = {
                 time: time,
                 lla: lla,

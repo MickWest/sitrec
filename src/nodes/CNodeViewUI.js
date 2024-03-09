@@ -136,6 +136,10 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
        delete this.textElements[key]
     }
 
+    removeAllText() {
+        this.textElements = {}
+    }
+
     // render for CNodeViewUI - extends CNodeViewCanvas2D
     render(frame) {
         super.render(frame) // will be CNodeViewCanvas2D

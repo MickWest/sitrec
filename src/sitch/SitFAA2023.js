@@ -7,6 +7,8 @@ import {ViewMan} from "../nodes/CNodeView";
 import {makeMouseRay} from "../mouseMoveView";
 import {MASK_MAINRENDER} from "../LayerMasks";
 import * as LAYERS from "../LayerMasks";
+import {CNodeViewUI} from "../nodes/CNodeViewUI";
+import {par} from "../par";
 
 export const SitFAA2023 = {
     include_nightsky: true,
@@ -21,10 +23,13 @@ export const SitFAA2023 = {
     lat: 38.48,
     lon: -99.16,
 
-    startCameraPositionLLA:[41.004248,-91.330286,16358862.102478],
-    startCameraTargetLLA:[41.004270,-91.330361,16357862.396449],
+    startCameraPositionLLA: [41.004248, -91.330286, 16358862.102478],
+    startCameraTargetLLA: [41.004270, -91.330361, 16357862.396449],
 
-    setup3: function() {
+    showFlareBand: true,
+    showSunArrows: true,
+
+    setup3: function () {
         const csv = FileManager.get("data")
         // a parse csv file is just a 2D array, [row][column]
         // the first row is the header
@@ -45,12 +50,12 @@ export const SitFAA2023 = {
         // for each row, get time, lat, lon, alt
         for (let i = 0; i < csv.length; i++) {
             const row = csv[i]
-            console.log("row"+i+":"+row[3]+" "+ row[10] + " "+row[11] +" "+ row[17])
+//            console.log("row"+i+":"+row[3]+" "+ row[10] + " "+row[11] +" "+ row[17])
             const time = new Date(row[3] + " UTC")
             const lat = parseFloat(row[10])
             const lon = parseFloat(row[11])
             //const alt = parseFloat(row[17]) // alt format is inconsistent
-            console.log("time", time, "lat", lat, "lon", lon)
+//            console.log("time", time, "lat", lat, "lon", lon)
 
             // check if lat and lon are valid numbers
             if (isNaN(lat) || isNaN(lon)) {
@@ -59,47 +64,40 @@ export const SitFAA2023 = {
             }
 
             const position = LLAToEUS(lat, lon, 10000)
-            const sphere = DebugSphere("FAA_marker_"+i, position, 50000, 0x00ff00, this.markerGroup)
+            const sphere = DebugSphere("FAA_marker_" + i, position, 50000, 0x00ff00, this.markerGroup)
             sphere.userData.time = time;
-            sphere.userData.index = i;
+            sphere.userData.rowNumber = i;
+            sphere.userData.markerNumber = this.numMarkers;
+            sphere.userData.sourceRow = row;
             this.numMarkers++;
 
         }
 
-        this.redoIndexSphere();
+        this.labelView = new CNodeViewUI({id: "labelFAA", overlayView: "mainView"});
+        this.labelView.setVisible(true);
 
+
+        this.redoIndexSphere();
 
 
         const mainView = ViewMan.get("mainView");
         mainView.div.addEventListener("pointermove", (event) => {
-
-            let mouseX = (event.clientX);
-            let mouseY = (event.clientY);
-            var mouseYUp = mainView.heightPx - (mouseY-mainView.topPx)
-            var mouseRay = makeMouseRay(mainView, mouseX, mouseYUp);
-
-          //  console.log("pointermove" + event.clientX + event.clientY)
-            const raycaster = new Raycaster();
-            raycaster.layers.mask = LAYERS.MASK_MAINRENDER
-            raycaster.setFromCamera( mouseRay, mainView.camera );
-            const intersects = raycaster.intersectObjects( this.markerGroup.children );
-            if ( intersects.length > 0 ) {
-              //  console.log("INTERSECTED", intersects[0].object.userData.time);
-                this.selectMarker(intersects[0].object.userData.index)
-            }
-
+            this.handleMouseMove(event)
+        })
+        mainView.div.addEventListener("pointerdown", (event) => {
+            this.handleMouseMove(event)
         })
 
 
+        window.addEventListener('keydown', (e) => {
 
-        window.addEventListener( 'keydown', (e) => {
-
+            const key = e.key.toLowerCase();
             let nextMarker;
-            if (e.key === "n") {
+            if (key === "n") {
                 nextMarker = Math.max(0, this.markerIndex - 1)
                 this.selectMarker(nextMarker)
             }
-            if (e.key === "m") {
+            if (key === "m") {
                 nextMarker = Math.min(this.numMarkers - 1, this.markerIndex + 1)
                 this.selectMarker(nextMarker)
             }
@@ -110,9 +108,73 @@ export const SitFAA2023 = {
 
     },
 
+    handleMouseMove: function (event) {
+        const mainView = ViewMan.get("mainView");
+        let mouseX = (event.clientX);
+        let mouseY = (event.clientY);
+        var mouseYUp = mainView.heightPx - (mouseY - mainView.topPx)
+        var mouseRay = makeMouseRay(mainView, mouseX, mouseYUp);
+
+        //  console.log("pointermove" + event.clientX + event.clientY)
+        const raycaster = new Raycaster();
+        raycaster.layers.mask = LAYERS.MASK_MAINRENDER
+        raycaster.setFromCamera(mouseRay, mainView.camera);
+        const intersects = raycaster.intersectObjects(this.markerGroup.children);
+
+
+        if (intersects.length > 0) {
+            //  console.log("INTERSECTED", intersects[0].object.userData.time);
+            // if left button pressed
+            if (event.buttons === 1) {
+                this.selectMarker(intersects[0].object.userData.markerNumber)
+            } else {
+                this.selectHover(intersects[0].object.userData.markerNumber)
+            }
+        } else {
+            removeDebugSphere("FAA_hover_index")
+        }
+    },
+
     redoIndexSphere() {
         removeDebugSphere("FAA_marker_index")
-        DebugSphere("FAA_marker_index", this.markerGroup.children[this.markerIndex].position, 60000, 0xff0000)
+
+        const marker = this.markerGroup.children[this.markerIndex]
+
+        DebugSphere("FAA_marker_index", marker.position, 60000, 0xff0000)
+
+        this.labelView.removeAllText()
+
+        this.text = this.labelView.addText("caseInfo", "Case "+(marker.userData.rowNumber+1),  25, 2, 1.6, "#00ff00", "left");
+        // get the text from column 2 of the csv
+        const desc = marker.userData.sourceRow[2];
+        // might have newlines in it, so split into lines and iterate over them
+        const lines = desc.split("\n");
+        // if any line is too long, split it into multiple lines
+        // splitting over maxLen characters, on the last space before 50, or on 50 if no space
+        // making a new array entry for each new line
+        const maxLen = 80;
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].length > maxLen) {
+                let newLines = [];
+                let line = lines[i];
+                while (line.length > maxLen) {
+                    let splitIndex = line.lastIndexOf(" ", maxLen);
+                    if (splitIndex === -1) splitIndex = maxLen;
+                    newLines.push(line.substring(0, splitIndex));
+                    line = line.substring(splitIndex);
+                }
+                newLines.push(line);
+                lines.splice(i, 1, ...newLines);
+            }
+        }
+
+
+        // add each line using this.labelView.addLine()
+        for (let i = 0; i < lines.length; i++) {
+            this.labelView.addLine(lines[i]);
+        }
+
+
     },
 
     selectMarker: function(index) {
@@ -132,8 +194,22 @@ export const SitFAA2023 = {
 
 
             this.redoIndexSphere();
+            par.renderOne = true;
+
         }
     },
 
+    selectHover: function(index) {
+        if (this.hoverIndex !== index) {
+            this.hoverIndex = index;
+            console.log("Hovering over marker " + index + " of " + this.numMarkers);
+            removeDebugSphere("FAA_hover_index")
+            const marker = this.markerGroup.children[index]
+
+            DebugSphere("FAA_hover_index", marker.position, 70000, 0xFFFFFF)
+
+
+        }
+    }
 
 }
