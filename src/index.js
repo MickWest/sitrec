@@ -432,6 +432,8 @@ async function setupFunctions() {
 
     if (Sit.setup  !== undefined) Sit.setup();
     if (Sit.setup2 !== undefined) Sit.setup2();
+    // we are allowing more, see SitFAA2023
+    if (Sit.setup3 !== undefined) Sit.setup3();
 
 // Redo the data-driven setup, but this is for any deferred setup
 // i.e data members that have defer: true

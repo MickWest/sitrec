@@ -507,4 +507,23 @@ export function stripParentheses(callStack) {
     return callStack.replace(/\(.*?\)/g, '');
 }
 
+export function cleanCSVText(buffer) {
+    // buffer is an ArrayBuffer
+    // replace any occurrence of the byte sequence E2 80 90 with two spaces and a single -
+    // this is because parseFloat can't handle the unicode character
+    const uint8Array = new Uint8Array(buffer);
+    const length = uint8Array.length;
+    for (let i = 0; i < length - 2; i++) {
+        if (uint8Array[i] === 226 && uint8Array[i + 1] === 128 && uint8Array[i + 2] === 144) {
+            uint8Array[i] = 32;       // ascii code for space
+            uint8Array[i + 1] = 32;
+            uint8Array[i + 2] = 45;  //
+        }
+    }
+    // convert back to ArrayBuffer and return
+    return uint8Array.buffer;
+
+
+}
+
 export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))

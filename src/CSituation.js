@@ -123,9 +123,10 @@ export class CSituation {
     async loadAssets() {
         // There's a per-sitch set of files
         // then other flags can cause files to be added, like the night sky
-        var assets = this.files;
+        var assets = this.files ?? {};
+        var assets2 = this.files2 ?? {}
         if (this.nightSky) {
-            assets = {...assets,...NightSkyFiles}
+            assets = {...assets,...assets2,...NightSkyFiles}
         }
         infoDiv.innerHTML = "Loading<br>"
         for (const key in assets) {

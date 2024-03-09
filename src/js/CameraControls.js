@@ -224,7 +224,7 @@ class CameraMapControls {
 			return;
 		}
 		if (this.state === STATE.NONE) return;
-//		console.log ("CameraMapControls Mouse MOVE, with non-zero state, enabled = "+this.enabled)
+	//	console.log ("CameraMapControls Mouse MOVE, with non-zero state, enabled = "+this.enabled)
 		this.updateStateFromEvent(event)
 
 		par.renderOne = true;

@@ -1,4 +1,4 @@
-import {assert, getFileExtension, isHttpOrHttps, versionString} from "./utils";
+import {assert, cleanCSVTex, cleanCSVText, getFileExtension, isHttpOrHttps, versionString} from "./utils";
 import JSZip from "./js/jszip";
 import {parseCSVAirdata, parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_SERVER} from "../config";
@@ -220,7 +220,9 @@ export class CFileManager extends CManager {
                     prom = createImageFromArrayBuffer(buffer, 'image/heic')
                     break
                 case "csv":
+                    const buffer2 = cleanCSVText(buffer)
                     var text = decoder.decode(buffer);
+
                     parsed = $.csv.toArrays(text);
                     const type = detectCSVType(parsed)
                     if (type === "Unknown") {

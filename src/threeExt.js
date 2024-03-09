@@ -311,7 +311,7 @@ export function boxMark(point,  xs = 1, ys=1, zs=1, color = 0xffffff, parent=nul
 
 // Create anywhere debug sphere
 var DebugSpheres = {}
-export function DebugSphere(name, origin, radius = 100, color = 0xffffff) {
+export function DebugSphere(name, origin, radius = 100, color = 0xffffff, parent = GlobalScene) {
 
     color = new Color(color)  // convert from whatever format, like "green" or "#00ff00" to a THREE.Color(r,g,b)
 
@@ -321,7 +321,7 @@ export function DebugSphere(name, origin, radius = 100, color = 0xffffff) {
         var sphere = new Mesh(geometry, material);
         DebugSpheres[name] = sphere
         sphere.layers.mask = LAYER.MASK_HELPERS;
-        GlobalScene.add(sphere);
+        parent.add(sphere);
     }
     DebugSpheres[name].position.copy(origin)
     DebugSpheres[name].scale.set(radius,radius,radius)
@@ -444,6 +444,16 @@ export function removeDebugArrow(name) {
         }
         DebugArrows[name].dispose();
         delete DebugArrows[name]
+    }
+}
+
+export function removeDebugSphere(name) {
+    if (DebugSpheres[name]) {
+        if (DebugSpheres[name].parent) {
+            DebugSpheres[name].parent.remove(DebugSpheres[name]);
+        }
+        DebugSpheres[name].geometry.dispose();
+        delete DebugSpheres[name]
     }
 }
 
