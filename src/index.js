@@ -26,7 +26,7 @@ import {
 import {disableScroll, sleep} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
-import {par} from "./par";
+import {par, resetPar} from "./par";
 
 import * as LAYER from "./LayerMasks.js"
 import {SetupFrameSlider} from "./FrameSlider";
@@ -91,6 +91,7 @@ var fpsInterval, startTime, now, then, elapsed;
 
 let animationFrameId;
 
+resetPar();
 await initializeOnce();
 initRendering();
 
@@ -375,8 +376,7 @@ function legacySetup() {
 }
 
 async function setupFunctions() {
-///////////////////////////////////////////////////////////////////////////////////////
-// SITUATION SPECIFIC SETUP
+    resetPar();
 
 // Parse the URL parameters, if any
 // setting up stuff like the local coordinate system
