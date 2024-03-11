@@ -7,6 +7,8 @@ import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../Sphe
 import {DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
 
+import {MISB} from "../MISB";
+
 
 // Position the camera on the source track
 // Look at the target track
@@ -199,6 +201,34 @@ export class CNodeControllerLookAtLLA extends CNodeController {
     }
 
 }
+
+// control FOV directly with a source node that can be a value, an object with a vFOV, or a track with MISB data
+export class CNodeControllerFOV extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("source")
+    }
+
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        const value = this.in.source.v(f);
+
+        // if it's a number then use that directly as the FOV
+        if (typeof value === "number") {
+            camera.fov = value;
+        } else if (value.misbRow !== undefined) {
+            camera.fov = value.misbRow[MISB.SensorVerticalFieldofView];
+        } else if (value.vFOV !== undefined) {
+            // it's a track with a vFOV member
+            camera.fov = value.vFOV;
+        } else {
+            assert(0, "CNodeControllerFOV: no vFOV or misbRow member in source track, can't set FOV")
+        }
+        camera.updateProjectionMatrix()
+    }
+
+}
+
 
 //Az and El from a data track that returns a structur with pitch and heading members
 export class CNodeControllerAzElData extends CNodeController {

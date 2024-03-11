@@ -1,6 +1,7 @@
 // parseXML from https://stackoverflow.com/questions/4200913/xml-to-javascript-object
-import {assert,f2m} from "./utils";
+import {assert, atan, degrees, f2m, radians, tan} from "./utils";
 import {Sit} from "./Globals";
+import {MISB, MISBFields} from "./MISB";
 
 export function parseXml(xml, arrayTags)
 {
@@ -30,7 +31,7 @@ export function parseXml(xml, arrayTags)
 
     function parseNode(xmlNode, result)
     {
-        if (xmlNode.nodeName == "#text") {
+        if (xmlNode.nodeName === "#text") {
             var v = xmlNode.nodeValue;
             if (v.trim()) {
                 result['#text'] = v;
@@ -273,18 +274,18 @@ F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 1
 
  */
 
-// things that
-const SRTMap = {
-    "F/":SRT.fnum,
-    "SS ":SRT.shutter,
-    "ISO ": SRT.iso,
-    "EV " : SRT.ev,
-    "H ": SRT.rel_alt
+// Mapping of SRT1 (DJI/Folsom Lake) fields to MISB fields
+const MISBMap = {
+//    "F/":   SRT.fnum,
+//    "SS ":  SRT.shutter,
+//    "ISO ": SRT.iso,
+//    "EV " : SRT.ev,
+    "H ":   MISB.SensorRelativeAltitude,
 }
 
 export function parseSRT2(lines) {
     const numPoints = Math.floor(lines.length / 4);
-    let SRTArray = new Array(numPoints);
+    let MISBArray = new Array(numPoints);
 
     const startTime = new Date(Sit.startTime);
 
@@ -294,35 +295,34 @@ export function parseSRT2(lines) {
     //    console.log(frameTimeString)
         const date = convertToRelativeTime(startTime,frameTimeString)
         console.log(date)
-        SRTArray[i] = new Array(SRTFields).fill(null);
-        SRTArray[i][SRT.date] = date;
-//        const frameInfo = lines[dataIndex + 2].split(', ')
+        MISBArray[i] = new Array(MISBFields).fill(null);
+        MISBArray[i][MISB.UnixTimeStamp] = date;
         const frameInfo = splitOnCommas(lines[dataIndex + 2])
         // Extract frame information
         frameInfo.forEach(info => {
             //console.log("# "+info)
             var gotInfo = false;
-            for (let start in SRTMap) {
+            for (let start in MISBMap) {
                 if (info.startsWith(start)) {
                     let value = info.substring(start.length);
              //       console.log(info+" - Set mapped field "+SRTMap[start] + " to "+value )
 
-                    SRTArray[i][SRTMap[start]] = value;
+                    MISBArray[i][MISBMap[start]] = value;
                     gotInfo = true;
                     break;
                 }
             }
             if (!gotInfo && info.startsWith("GPS ")) {
                 let value = info.substring(4); // 4 is len of "GPS "
-                const lla = extractLLA(value)
-                console.log (lla.latitude + ","+lla.longitude+","+lla.altitude)
-                SRTArray[i][SRT.latitude] = lla.latitude
-                SRTArray[i][SRT.longitude] = lla.longitude
-                SRTArray[i][SRT.abs_alt] = Sit.startAltitude + SRTArray[i][SRT.abs_alt];
+                const lla = extractLLA(value);
+                //console.log (lla.latitude + ","+lla.longitude+","+lla.altitude)
+                MISBArray[i][MISB.SensorLatitude] = lla.latitude;
+                MISBArray[i][MISB.SensorLongitude] = lla.longitude;
+                MISBArray[i][MISB.SensorTrueAltitude] = Sit.startAltitude + MISBArray[i][MISB.SensorRelativeAltitude];
 
             }
         });
-        SRTArray[i][SRT.focal_len] = 100
+        MISBArray[i][MISB.SensorVerticalFieldofView] = 10; // hard coded for now to DJI Mini 2 vfov
  //       console.log(SRTArray[i])
 
 
@@ -384,6 +384,32 @@ function convertToRelativeTime(startTime, relativeTimeString) {
     return relativeTime;
 }
 
+
+// maps the SRT fields that are directly equivalent to MISB fields
+// null entries are ignored, but some will need conversion
+const SRTMapMISB = {
+        FrameCnt: null,
+        DiffTime: null,
+        iso:null,
+        shutter:null,
+        fnum:null,
+        ev:null,
+        color_md:null,
+        focal_len:null,  // will need to convert this to FOV
+        latitude:MISB.SensorLatitude,
+        longitude:MISB.SensorLongitude,
+        rel_alt:MISB.SensorRelativeAltitude,
+        abs_alt:MISB.SensorTrueAltitude,
+        ct:null,
+        date: null,  // also needs converting
+        heading: MISB.PlatformHeadingAngle,
+        pitch: MISB.PlatformPitchAngle,
+        roll: MISB.PlatformPitchAngle,
+        gHeading: MISB.SensorRelativeAzimuthAngle,
+        gPitch: MISB.SensorRelativeElevationAngle,
+        gRoll: MISB.SensorRelativeRollAngle,
+}
+
 // SRT1 (e.g. SitPorterville) format is sets of six lines:
 // 0: 1
 // 1: 00:00:00,000 --> 00:00:00,016
@@ -393,7 +419,7 @@ function convertToRelativeTime(startTime, relativeTimeString) {
 // 5: ...blank line...
 export function parseSRT1(lines) {
     const numPoints = Math.floor(lines.length / 6);
-    let SRTArray = new Array(numPoints);
+    let MISBArray = new Array(numPoints);
 
     // iterate over all lines and remove any html formatting
     for (let i = 0; i < lines.length; i++) {
@@ -406,14 +432,19 @@ export function parseSRT1(lines) {
         let frameInfo = lines[dataIndex + 2].split(', ');
         let detailInfo = lines[dataIndex + 4].match(/\[(.*?)\]/g);
 
-        SRTArray[i] = new Array(SRTFields).fill(null);
+        MISBArray[i] = new Array(MISBFields).fill(null);
 
         // Extract frame information (FrameCnt and DiffTime in Porterville)
+        // NOT USED!!
         frameInfo.forEach(info => {
             let [key, value] = info.split(': ');
-        //    console.log(key +": "+value)
+//            console.log(key +": "+value)
             if (SRT.hasOwnProperty(key)) {
-                SRTArray[i][SRT[key]] = value.replace('ms', '').trim();
+//                MISBArray[i][SRT[key]] = value.replace('ms', '').trim();
+//                console.log("key: "+key+" value: "+value+" SRTMapMISB[SRT[key]]: "+SRTMapMISB[key]);
+                if(SRTMapMISB[key] !== null) {
+                    MISBArray[i][SRTMapMISB[key]] = value.replace('ms', '').trim();
+                }
             }
         });
 
@@ -423,21 +454,43 @@ export function parseSRT1(lines) {
             let tokens = details.split(' ');
             for (let j = 0; j < tokens.length; j += 2) {
                 let key = tokens[j].replace(':', '');
-                let value = tokens[j + 1];
-      //          console.log(key +": "+value)
+                let value = tokens[j + 1].trim();
 
                 if (SRT.hasOwnProperty(key)) {
-                    SRTArray[i][SRT[key]] = value.trim();
+       //             MISBArray[i][SRT[key]] = value;
+                    if(SRTMapMISB[key] !== null) {
+                        if (i<20) console.log("key: "+key+" value: "+value+" SRTMapMISB[SRT[key]]: "+SRTMapMISB[key]);
+                        MISBArray[i][SRTMapMISB[key]] = value;
+                    }
+
+                    if (key === 'focal_len') {
+                        // Convert focal length to FOV
+                        let focal_len = parseFloat(value);
+
+                        let referenceFocalLength = 166;
+                        let referenceFOV = 5;
+
+                        const sensorSize = 2 * referenceFocalLength * tan(radians(referenceFOV) / 2)
+                        const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
+
+                        MISBArray[i][MISB.SensorVerticalFieldofView] = vFOV;
+                    }
+
+
                 }
             }
         });
 
         // Extract date
-        SRTArray[i][SRT['date']] = lines[dataIndex + 3].trim();
-    //    console.log(SRTArray[i][SRT['date']])
+//        MISBArray[i][SRT['date']] = lines[dataIndex + 3].trim();
+        const date = Date.parse(lines[dataIndex + 3].trim());
+        // convert to milliseconds
+        const dateMS = new Date(date).getTime();
+        MISBArray[i][MISB.UnixTimeStamp] = dateMS;
+  //      console.log(MISBArray[i][MISB.UnixTimeStamp])
     }
 
-    return SRTArray;
+    return MISBArray;
 }
 
 /*
@@ -544,7 +597,7 @@ function parseUTCDate(dateStr) {
 // the header row indicated wih
 export function parseCSVAirdata(csv) {
     const rows = csv.length;
-    let SRTArray = new Array(rows-1);
+    let MISBArray = new Array(rows-1);
     try {
         const timeCol = findColumn(csv,"time(milli")
         const dateCol = findColumn(csv,"datetime")
@@ -565,23 +618,27 @@ export function parseCSVAirdata(csv) {
         console.log("Detected Airdata start time of "+startTime)
 
         for (let i=1;i<rows;i++) {
-            SRTArray[i-1] = new Array(SRTFields).fill(null);
+            MISBArray[i-1] = new Array(MISBFields).fill(null);
 
-            SRTArray[i-1][SRT.date] = addMillisecondsToDate(startTime, Number(csv[i][timeCol]));
+            MISBArray[i-1][MISB.UnixTimeStamp] = addMillisecondsToDate(startTime, Number(csv[i][timeCol]));
 
-            SRTArray[i-1][SRT.latitude] = Number(csv[i][latCol])
-            SRTArray[i-1][SRT.longitude] = Number(csv[i][lonCol])
-            SRTArray[i-1][SRT.abs_alt] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
+            MISBArray[i-1][MISB.SensorLatitude] = Number(csv[i][latCol])
+            MISBArray[i-1][MISB.SensorLongitude] = Number(csv[i][lonCol])
+            MISBArray[i-1][MISB.SensorTrueAltitude] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
 
-            // NOT HANDLING focal_len
-            SRTArray[i-1][SRT.focal_len] = 0
+            // NOT HANDLING focal_len / FOV
+            MISBArray[i-1][MISB.SensorVerticalFieldofView] = 0
 
-            SRTArray[i-1][SRT.heading] = Number(csv[i][headingCol])
-            SRTArray[i-1][SRT.pitch] = Number(csv[i][pitchCol])
-            SRTArray[i-1][SRT.roll] = Number(csv[i][rollCol])
-            SRTArray[i-1][SRT.gHeading] = Number(csv[i][gHeadingCol])
-            SRTArray[i-1][SRT.gPitch] = Number(csv[i][gPitchCol])
-            SRTArray[i-1][SRT.gRoll] = Number(csv[i][gRollCol])
+            // note in the airdata for my drone, we have both gimbal and drone heading, pitch, and roll
+            // but we use the drone heading and the gimbal pitch.
+
+            MISBArray[i-1][MISB.PlatformHeadingAngle] = Number(csv[i][headingCol])   // heading
+            MISBArray[i-1][MISB.PlatformPitchAngle] = Number(csv[i][gPitchCol])       // pitch
+            MISBArray[i-1][MISB.PlatformRollAngle] = Number(csv[i][rollCol])         // roll
+
+            // MISBArray[i-1][MISB.SensorRelativeAzimuthAngle] = Number(csv[i][gHeadingCol]) // gHeading
+            // MISBArray[i-1][MISB.SensorRelativeElevationAngle] = Number(csv[i][gPitchCol])     // gPitch
+            // MISBArray[i-1][MISB.SensorRelativeRollAngle] = Number(csv[i][gRollCol])       // gRoll
 
 
         }
@@ -590,7 +647,7 @@ export function parseCSVAirdata(csv) {
         console.error(error.message)
     }
 
-    return SRTArray;
+    return MISBArray;
 
 }
 
@@ -603,4 +660,28 @@ function addMillisecondsToDate(date, ms) {
 
     // Create a new Date object with the new time
     return new Date(newTime);
+}
+
+// Convert a KML track to MISB format
+// This is a simple conversion, and doesn't handle all the possible KML features
+// We just use the existing getKMLTrackWhenCoord function to get the data
+// which gives us an array of times and an array of coordinates
+// then we just map that to the MISB format
+// Which means we are only using the time, lat, lon, and alt fields
+export function KMLToMISB(kml) {
+    const _times = []
+    const _coord = []
+    const info = {}
+    getKMLTrackWhenCoord(kml, _times, _coord, info)
+
+    const misb = []
+    for (let i = 0; i < _times.length; i++) {
+        misb[i] = new Array(MISBFields);
+        misb[i][MISB.UnixTimeStamp] = _times[i]
+        misb[i][MISB.SensorLatitude] = _coord[i].lat
+        misb[i][MISB.SensorLongitude] = _coord[i].lon
+        misb[i][MISB.SensorTrueAltitude] = _coord[i].alt
+
+    }
+    return misb
 }

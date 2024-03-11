@@ -1,17 +1,17 @@
 // Creaitng timed data and then tracks from pre-parsed KML files
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {CNodeTrackFromTimed} from "./nodes/CNodeTrackFromTimed";
+import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "../three.js/build/three.module";
 import {scaleF2M} from "./utils";
 import {Sit, gui, NodeMan, GlobalDateTimeNode} from "./Globals";
-import {CNodeKMLDataTrack} from "./nodes/CNodeKMLDataTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
 import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
+import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 
 
 export const KMLTrackManager = new CManager();
@@ -46,30 +46,16 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
             NodeMan.disposeRemove("KMSphere" + track);
         }
 
-
         const trackDataID = "KMLTargetData"+track;
         const trackID = "KMLTarget"+track;
 
-        // the data track stores the raw positions and timestamps from the KML file
-        const targetData = new CNodeKMLDataTrack({
-            id: trackDataID,
-            KMLFile: track,
-        })
-
-
-        // the target segment is a per-frame track that is interpolated from part of the data track
-        const target = new CNodeTrackFromTimed({
-            id: trackID, // in all these we get a unique id by adding the track id
-            timedData: targetData,
-        })
+        makeTrackFromDataFile(track, trackDataID, trackID);
 
         if (NodeMan.exists("cameraSwitch")) {
-
-
             const switchNode = NodeMan.get("cameraSwitch");
             switchNode.removeOption("KML Track")
             switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
-                sourceTrack: target,
+                sourceTrack: trackID,
             }) )
             // and select it
             switchNode.selectOption("KML Track")

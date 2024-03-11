@@ -1,16 +1,15 @@
-import {CNode} from "./CNode";
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {getFileExtension, RollingAverage} from "../utils";
-import {DebugSphere, V3} from "../threeExt";
+import {V3} from "../threeExt";
 import {CatmullRomCurve3} from "../../three.js/build/three.module";
 import {saveAs} from "../js/FileSaver";
-import {par} from "../par";
 import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
-import {CNodeKMLDataTrack, CNodeSRTDataTrack} from "./CNodeKMLDataTrack";
-import {CNodeTrackFromTimed} from "./CNodeTrackFromTimed";
+import {CNodeTrackFromMISB} from "./CNodeTrackFromMISB";
 
 
 import {FileManager} from "../Globals";
+import {CNodeMISBDataTrack} from "./CNodeMISBData";
+import {KMLToMISB} from "../KMLUtils";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -426,26 +425,45 @@ export class CNodeInterpolateTwoFramesTrack extends CNodeTrack {
 // first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
 // the create a track node from that
 // Note, the track node might be recalculated, as it depends on the global start time
+//
+// sourceFile = the input, either a KLM file, or one already in MISB array format
+// if it's a kml file we will first make a MISB array
+// dataID = the id of the intermediate CNodeMISBDataTrack
 export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
     // determine what type of track it is
     const fileInfo = FileManager.getInfo(sourceFile);
     const ext = getFileExtension(fileInfo.filename)
 
+    let misb = null;
+
     if (ext === "kml") {
-        new CNodeKMLDataTrack({
-            id: dataID,
-            KMLFile: sourceFile,
-        })
+        // new CNodeKMLDataTrack({
+        //     id: dataID,
+        //     KMLFile: sourceFile,
+        // })
+        misb = KMLToMISB(FileManager.get(sourceFile));
     } else if (ext === "srt" || ext === "csv") {
-         new CNodeSRTDataTrack({
-             id: dataID,
-             dataFile: sourceFile,
-         })
+        misb = FileManager.get(sourceFile)
     }
 
-    new CNodeTrackFromTimed({
+    // first make a data track with id = dataID
+    // from the misb array source
+    // This will be an array of :
+    // {
+    // position: V3,
+    // time: ms,
+    // vFov: degrees, (optional)
+    // misbRow: object reference to the original row in the MISB array
+
+    new CNodeMISBDataTrack({
+        id: dataID,
+        misb: misb,
+    })
+
+    // then use that to make the per-frame track, which might just be a portion of the original data
+    return new CNodeTrackFromMISB({
         id:trackID,
-        timedData: dataID,
+        misb: dataID,
     })
 
 }

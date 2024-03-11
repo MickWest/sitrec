@@ -29,7 +29,11 @@ export const SitPorterville = {
     lookCamera:{ fov: 50},
 
     cameraTrack: {}, // by default, will create it from the cameraFile
-    focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+//    focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+
+    // with new MISB format, the FOV is in the camera track
+    // already calculated from the focal length in an SRT file.
+    fovController: {source: "cameraTrack", object: "lookCamera"},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 

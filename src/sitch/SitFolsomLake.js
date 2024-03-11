@@ -39,8 +39,9 @@ export const SitFolsomLake = {
         "Drone track": "cameraTrack",
     },
 
-    focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
-
+    // we don't want an fovController, as it's hard wired to one value, above
+   // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+   // fovController: {source: "cameraTrack", object: "lookCamera"},
 
     videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
 
@@ -52,7 +53,8 @@ export const SitFolsomLake = {
 
     showAltitude: false,
 
-    arrayDataPTZ: { arrayNode: "cameraTrack", pitch: "gPitch", heading: "heading", labelView: "labelVideo" },
+   // arrayDataPTZ: { arrayNode: "cameraTrack", pitch: "gPitch", heading: "heading", labelView: "labelVideo" },
+    arrayDataPTZ: { arrayNode: "cameraTrack", pitch: "MISB.PlatformPitchAngle", heading: "MISB.PlatformHeadingAngle", labelView: "labelVideo" },
 
     DisplayCameraFrustum: {radius: 600},
 }

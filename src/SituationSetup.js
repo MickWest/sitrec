@@ -16,7 +16,7 @@ import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "./nodes/CNodeDisplayTargetSphere";
-import {CNodeArray, makeArrayNodeFromColumn} from "./nodes/CNodeArray";
+import {CNodeArray, makeArrayNodeFromColumn, makeArrayNodeFromMISBColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
@@ -304,6 +304,13 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 })
                 break;
 
+            case "fovController":
+                SSLog();
+                NodeMan.get(data.object).addController("FOV", {
+                    source: data.source,
+                })
+                break;
+
             case "wescamFOV":
                 SSLog();
 
@@ -553,8 +560,8 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
                 const array = cameraTrack.array
                 assert(array !== undefined, "arrayDataPTZ missing array object")
-                makeArrayNodeFromColumn("headingCol", array, data.heading, 30, true)
-                makeArrayNodeFromColumn("pitchCol", array, data.pitch, 30, true)
+                makeArrayNodeFromMISBColumn("headingCol", array, data.heading, 30, true)
+                makeArrayNodeFromMISBColumn("pitchCol", array, data.pitch, 30, true)
                 NodeMan.get(data.camera ?? "lookCamera").addController(
                     "AbsolutePitchHeading",
                     {pitch: "pitchCol", heading: "headingCol"}
