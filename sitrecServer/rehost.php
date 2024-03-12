@@ -11,7 +11,7 @@ if (isset($_GET['getuser'])) {
     exit();
 }
 
-$userDir = getUserDir();
+$userDir = getUserDir($user_id);
 
 // need to be logged in, and a memmber of group 9 (Verified users)
 if ($user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
@@ -74,8 +74,6 @@ $userFilePath = $userDir . $newFileName;
 if (!file_exists($userFilePath)) {
     move_uploaded_file($_FILES['fileContent']['tmp_name'], $userFilePath);
 }
-
-
 
 // Return the URL of the rehosted file
 echo $storagePath . $user_id. '/' . $newFileName;

@@ -1,5 +1,6 @@
 <?php
 
+// Note, calling this twice in one session seems to crash Xenforo
 function getUserID()
 {
     if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
@@ -18,15 +19,17 @@ function getUserID()
         //print_r (XF::visitor());  # dumps entire object
         //print("<br>");
         $user = XF::visitor();
-        //print ($user->user_id."<br>"); # = 1 (0 if nobody logged in
+  //      print ("USER IS: ".$user->user_id."<br>"); # = 1 (0 if nobody logged in
         $user_id = $user->user_id;
     }
     return $user_id;
 }
 
-function getUserDir()
+
+function getUserDir($user_id)
 {
-    $user_id = getUserID();
+   // $user_id = getUserID();
+
     if ($user_id == 0) {
         return ""; // return an empty string if the user is not logged in
     }
@@ -36,6 +39,8 @@ function getUserDir()
 
 // Create a directory for the user if it doesn't exist
     $userDir = $storageDir . $user_id . '/';
+
+
     if (!file_exists($userDir)) {
         mkdir($userDir, 0777, true);
     }
