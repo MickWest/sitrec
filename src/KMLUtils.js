@@ -274,64 +274,69 @@ F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 1
 
  */
 
-// Mapping of SRT1 (DJI/Folsom Lake) fields to MISB fields
-const MISBMap = {
-//    "F/":   SRT.fnum,
-//    "SS ":  SRT.shutter,
-//    "ISO ": SRT.iso,
-//    "EV " : SRT.ev,
-    "H ":   MISB.SensorRelativeAltitude,
-}
-
-export function parseSRT2(lines) {
-    const numPoints = Math.floor(lines.length / 4);
-    let MISBArray = new Array(numPoints);
-
-    const startTime = new Date(Sit.startTime);
-
-    for (let i = 0; i < numPoints; i++) {
-        let dataIndex = i * 4;
-        const frameTimeString = lines[dataIndex + 1].split(' --> ')[0];
-    //    console.log(frameTimeString)
-        const date = convertToRelativeTime(startTime,frameTimeString)
-        console.log(date)
-        MISBArray[i] = new Array(MISBFields).fill(null);
-        MISBArray[i][MISB.UnixTimeStamp] = date;
-        const frameInfo = splitOnCommas(lines[dataIndex + 2])
-        // Extract frame information
-        frameInfo.forEach(info => {
-            //console.log("# "+info)
-            var gotInfo = false;
-            for (let start in MISBMap) {
-                if (info.startsWith(start)) {
-                    let value = info.substring(start.length);
-             //       console.log(info+" - Set mapped field "+SRTMap[start] + " to "+value )
-
-                    MISBArray[i][MISBMap[start]] = value;
-                    gotInfo = true;
-                    break;
-                }
-            }
-            if (!gotInfo && info.startsWith("GPS ")) {
-                let value = info.substring(4); // 4 is len of "GPS "
-                const lla = extractLLA(value);
-                //console.log (lla.latitude + ","+lla.longitude+","+lla.altitude)
-                MISBArray[i][MISB.SensorLatitude] = lla.latitude;
-                MISBArray[i][MISB.SensorLongitude] = lla.longitude;
-                MISBArray[i][MISB.SensorTrueAltitude] = Sit.startAltitude + MISBArray[i][MISB.SensorRelativeAltitude];
-
-            }
-        });
-        MISBArray[i][MISB.SensorVerticalFieldofView] = 10; // hard coded for now to DJI Mini 2 vfov
- //       console.log(SRTArray[i])
-
-
-    }
-
-
-    return SRTArray;
-
-}
+// DEPRECATED - but might be needed later.
+// SRT2 format was used for DJI drone data from my DJI Mini SE 2
+// But I use the Airdata format. This code was converted to use MISB field
+// but not tested.
+//
+// // Mapping of SRT2 (DJI/Folsom Lake) fields to MISB fields
+// const MISBMap = {
+// //    "F/":   SRT.fnum,
+// //    "SS ":  SRT.shutter,
+// //    "ISO ": SRT.iso,
+// //    "EV " : SRT.ev,
+//     "H ":   MISB.SensorRelativeAltitude,
+// }
+//
+// export function parseSRT2(lines) {
+//     const numPoints = Math.floor(lines.length / 4);
+//     let MISBArray = new Array(numPoints);
+//
+//     const startTime = new Date(Sit.startTime);
+//
+//     for (let i = 0; i < numPoints; i++) {
+//         let dataIndex = i * 4;
+//         const frameTimeString = lines[dataIndex + 1].split(' --> ')[0];
+//     //    console.log(frameTimeString)
+//         const date = convertToRelativeTime(startTime,frameTimeString)
+//         console.log(date)
+//         MISBArray[i] = new Array(MISBFields).fill(null);
+//         MISBArray[i][MISB.UnixTimeStamp] = date;
+//         const frameInfo = splitOnCommas(lines[dataIndex + 2])
+//         // Extract frame information
+//         frameInfo.forEach(info => {
+//             //console.log("# "+info)
+//             var gotInfo = false;
+//             for (let start in MISBMap) {
+//                 if (info.startsWith(start)) {
+//                     let value = info.substring(start.length);
+//              //       console.log(info+" - Set mapped field "+SRTMap[start] + " to "+value )
+//
+//                     MISBArray[i][MISBMap[start]] = value;
+//                     gotInfo = true;
+//                     break;
+//                 }
+//             }
+//             if (!gotInfo && info.startsWith("GPS ")) {
+//                 let value = info.substring(4); // 4 is len of "GPS "
+//                 const lla = extractLLA(value);
+//                 //console.log (lla.latitude + ","+lla.longitude+","+lla.altitude)
+//                 MISBArray[i][MISB.SensorLatitude] = lla.latitude;
+//                 MISBArray[i][MISB.SensorLongitude] = lla.longitude;
+//                 MISBArray[i][MISB.SensorTrueAltitude] = Sit.startAltitude + MISBArray[i][MISB.SensorRelativeAltitude];
+//
+//             }
+//         });
+//         MISBArray[i][MISB.SensorVerticalFieldofView] = 10; // hard coded for now to DJI Mini 2 vfov
+//  //       console.log(SRTArray[i])
+//
+//
+//     }
+//
+//
+//     return SRTArray;
+//
+// }
 
 function splitOnCommas(str) {
     // Regular expression to match commas that are not inside parentheses
