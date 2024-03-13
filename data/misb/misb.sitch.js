@@ -33,10 +33,12 @@ sitch = {
     targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 4,},
 
     lookAtTrack: {},  // and look at targetTrack
+    fovController: {source: "cameraTrack"},
 
     mainView:{left:0.0, top:0, width:0.5,height:1,background:'#000000'},
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,background:'#000000'},
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5},
+
 
 //    displaySmoothedTarget: {kind: "DisplayTrack", track: "cameraTrack", color: [1,0,0], width: 4,},
 

@@ -298,7 +298,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
             // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
             case "focalLenController":
                 SSLog();
-                NodeMan.get(data.object).addController("FocalLength", {
+                NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
                     focalLength: data.source,
                     referenceFocalLength: data.len,
                     referenceFOV: data.fov,
@@ -307,7 +307,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "fovController":
                 SSLog();
-                NodeMan.get(data.object).addController("FOV", {
+                NodeMan.get(data.object ?? "lookCamera").addController("FOV", {
                     source: data.source,
                 })
                 break;
