@@ -42,7 +42,9 @@ if (isset($_GET['get'])) {
 
     if ($_GET['get'] == "myfiles") {
         require('./user.php');
-        $dir = getUserDir();
+
+        $userID = getUserID();
+        $dir = getUserDir($userID);
 
         if ($dir == "") {
             echo json_encode(array());
