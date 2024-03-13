@@ -1,6 +1,5 @@
 // parseXML from https://stackoverflow.com/questions/4200913/xml-to-javascript-object
-import {assert, atan, degrees, f2m, radians, tan} from "./utils";
-import {Sit} from "./Globals";
+import {assert, atan, degrees, radians, tan} from "./utils";
 import {MISB, MISBFields} from "./MISB";
 
 export function parseXml(xml, arrayTags)
@@ -338,57 +337,6 @@ F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 1
 //
 // }
 
-function splitOnCommas(str) {
-    // Regular expression to match commas that are not inside parentheses
-    const regex = /,(?![^\(\)]*\))/g;
-//    return str.split(regex).map(s => s.trimStart());
-  // remove leading zeros and trailing "m" (for meters)
-    return str.split(regex).map(s => s.trimStart().replace(/m$/, ''));
-
-}
-
-// extract lla from something like "(-121.1689, 38.7225, 21)"
-function extractLLA(str) {
-    const regex = /(-?\d+\.\d+|\d+)/g;
-    const matches = str.match(regex);
-
-    if (matches && matches.length === 3) {
-        const longitude = parseFloat(matches[0]);
-        const latitude = parseFloat(matches[1]);
-        const altitude = parseFloat(matches[2]);
-
-        return { latitude, longitude, altitude };
-    } else {
-        return null; // or handle the error as needed
-    }
-}
-
-// startTime is a Date object, like new Date(Sit.startTime)
-function convertToRelativeTime(startTime, relativeTimeString) {
-
-    // Split the relative time string by comma to separate time and milliseconds
-    const parts = relativeTimeString.split(',');
-
-    // Further split the time part into hours, minutes, and seconds
-    const timeParts = parts[0].split(':');
-
-    // Extract hours, minutes, seconds, and milliseconds
-    const hours = parseInt(timeParts[0], 10);
-    const minutes = parseInt(timeParts[1], 10);
-    const seconds = parseInt(timeParts[2], 10);
-    const milliseconds = parseInt(parts[1], 10);
-
-    const relativeTime = new Date(startTime)
-
-    // Add hours, minutes, seconds, and milliseconds to the start time
-    relativeTime.setHours(startTime.getHours() + hours);
-    relativeTime.setMinutes(startTime.getMinutes() + minutes);
-    relativeTime.setSeconds(startTime.getSeconds() + seconds);
-    relativeTime.setMilliseconds(startTime.getMilliseconds() + milliseconds);
-
-    return relativeTime;
-}
-
 
 // maps the SRT fields that are directly equivalent to MISB fields
 // null entries are ignored, but some will need conversion
@@ -553,119 +501,6 @@ flycState
 message
 */
 
-
-function findColumn(csv, text) {
-    // Check if the csv is a non-empty array
-    if (!Array.isArray(csv) || csv.length === 0 || !Array.isArray(csv[0])) {
-        throw new Error("Invalid input: csv must be a non-empty 2D array.");
-    }
-
-    // Iterate through each column of the first row
-    for (let col = 0; col < csv[0].length; col++) {
-        // Check if the first element of the column starts with the text
-        if (csv[0][col].trimStart().startsWith(text)) {
-            return col; // Return the column index
-        }
-    }
-
-    // Throw an error if no column starts with the given text
-    throw new Error("No column found starting with " + text);
-
-}
-
-function parseUTCDate(dateStr) {
-    // Split the date and time parts
-    const [datePart, timePart] = dateStr.split(' ');
-
-    // Split the date into month, day, and year
-    const [year, month, day] = datePart.split('-').map(num => parseInt(num, 10));
-
-    // Adjust month value for JavaScript Date (0-indexed)
-    const adjustedMonth = month - 1;
-
-    // Split the time into hours, minutes, seconds, and AM/PM
-    const [time, modifier] = timePart.split(' ');
-    let [hours, minutes, seconds] = time.split(':').map(num => parseInt(num, 10));
-
-    // // Convert 12-hour format to 24-hour format
-    // if (hours === 12) {
-    //     hours = modifier.toUpperCase() === 'AM' ? 0 : 12;
-    // } else if (modifier.toUpperCase() === 'PM') {
-    //     hours += 12;
-    // }
-
-    // Create a new Date object in UTC
-    return new Date(Date.UTC(year, adjustedMonth, day, hours, minutes, seconds));
-}
-
-// take a csv file, which is a 2d array [row][col]
-// the header row indicated wih
-export function parseCSVAirdata(csv) {
-    const rows = csv.length;
-    let MISBArray = new Array(rows-1);
-    try {
-        const timeCol = findColumn(csv,"time(milli")
-        const dateCol = findColumn(csv,"datetime")
-        const latCol = findColumn(csv,"latitude")
-        const lonCol = findColumn(csv,"longitude")
-        const altCol = findColumn(csv, "altitude_above_seaLevel(feet)")
-
-
-        const headingCol = findColumn(csv,"compass_heading(degrees)");
-        const pitchCol = findColumn(csv,"pitch(degrees)");
-        const rollCol = findColumn(csv,"roll(degrees)");
-        const gHeadingCol = findColumn(csv,"gimbal_heading(degrees)");
-        const gPitchCol = findColumn(csv,"gimbal_pitch(degrees)");
-        const gRollCol = findColumn(csv,"gimbal_roll(degrees)");
-
-
-        const startTime = parseUTCDate(csv[1][dateCol])
-        console.log("Detected Airdata start time of "+startTime)
-
-        for (let i=1;i<rows;i++) {
-            MISBArray[i-1] = new Array(MISBFields).fill(null);
-
-            MISBArray[i-1][MISB.UnixTimeStamp] = addMillisecondsToDate(startTime, Number(csv[i][timeCol]));
-
-            MISBArray[i-1][MISB.SensorLatitude] = Number(csv[i][latCol])
-            MISBArray[i-1][MISB.SensorLongitude] = Number(csv[i][lonCol])
-            MISBArray[i-1][MISB.SensorTrueAltitude] = (Sit.adjustAltitude??0) + f2m(Number(csv[i][altCol]));
-
-            // NOT HANDLING focal_len / FOV
-            MISBArray[i-1][MISB.SensorVerticalFieldofView] = 0
-
-            // note in the airdata for my drone, we have both gimbal and drone heading, pitch, and roll
-            // but we use the drone heading and the gimbal pitch.
-
-            MISBArray[i-1][MISB.PlatformHeadingAngle] = Number(csv[i][headingCol])   // heading
-            MISBArray[i-1][MISB.PlatformPitchAngle] = Number(csv[i][gPitchCol])       // pitch
-            MISBArray[i-1][MISB.PlatformRollAngle] = Number(csv[i][rollCol])         // roll
-
-            // MISBArray[i-1][MISB.SensorRelativeAzimuthAngle] = Number(csv[i][gHeadingCol]) // gHeading
-            // MISBArray[i-1][MISB.SensorRelativeElevationAngle] = Number(csv[i][gPitchCol])     // gPitch
-            // MISBArray[i-1][MISB.SensorRelativeRollAngle] = Number(csv[i][gRollCol])       // gRoll
-
-
-        }
-
-    } catch (error) {
-        console.error(error.message)
-    }
-
-    return MISBArray;
-
-}
-
-function addMillisecondsToDate(date, ms) {
-    // Get the current time in milliseconds
-    const currentTime = date.getTime();
-
-    // Add the specified number of milliseconds
-    const newTime = currentTime + ms;
-
-    // Create a new Date object with the new time
-    return new Date(newTime);
-}
 
 // Convert a KML track to MISB format
 // This is a simple conversion, and doesn't handle all the possible KML features

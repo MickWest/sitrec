@@ -12,6 +12,8 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
         super(v);
     //    this.kml = FileManager.get(v.cameraFile)
 
+        this.columns = v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]
+
         this.input("misb")
 
         this.addInput("startTime",GlobalDateTimeNode)
@@ -28,6 +30,7 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
         var msStart = this.in.startTime.getStartTimeValue()
 
         const misb = this.in.misb;
+        misb.selectSourceColumns(this.columns);
 
         this.array = [];
         this.frames = Sit.frames;
@@ -56,40 +59,57 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
                 slot++;
             }
 
-            if (slot < points-1) {
+          //  if (slot < points-1) {
 
-                assert(misb.getTime(slot+1) > misb.getTime(slot), "Time data is not increasing slot ="+slot+" time="+misb.getTime(slot));
+              if (slot < points-1) {
+                  // for the in-range slots, check the time is increasing
+                  // which means the data is good and we can interpolate
+                  assert(misb.getTime(slot + 1) > misb.getTime(slot), "Time data is not increasing slot =" + slot + " time=" + misb.getTime(slot) + " next time=" + misb.getTime(slot + 1));
+              } else {
+                  // use the last two slots and interpolate (extrapolate) the position
+                  slot = points - 2
+              }
 
-               // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
-                const fraction = (msNow - misb.getTime(slot)) / (misb.getTime(slot + 1) - misb.getTime(slot))
-                const lat = interpolate(misb.getLat(slot), misb.getLat(slot + 1), fraction);
-                const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
-                const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
+            // note the extrapolation will work for slot <0 as well as slot > points-1
+            // however we might want to do something different for out or range
+            // as the first and last pairs of data points might not be good
 
-                const pos = LLAToEUS(lat, lon, alt)
-                // end product, a per-frame array of positions
-                // that is a track.
 
-                assert(!Number.isNaN(pos.x),"CNodeTrackFromMISB:recalculate(): pos.x NaN " + "lat = " + lat + " lon = " + lon + " alt = " + alt)
+           // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
+            const fraction = (msNow - misb.getTime(slot)) / (misb.getTime(slot + 1) - misb.getTime(slot))
+            const lat = interpolate(misb.getLat(slot), misb.getLat(slot + 1), fraction);
+            const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
+            const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
 
-                // minumum data that is needed
-                const product = {position: pos.clone()}
+            // if (f < 10 ) {
+            //     console.log("now",msNow,"slot",slot,"time",misb.getTime(slot),"next time",misb.getTime(slot+1),"fraction",fraction,"lat",lat,"lon",lon,"alt",alt)
+            //     console.log("misb LLA for slot ",slot,misb.getLat(slot),misb.getLon(slot),misb.getAlt(slot));
+            // }
 
-                // uniterpolated extra fields
-                const extraFields = [
-                    "focal_len",
-                    "heading",
-                    "pitch",
-                    "roll",
-                    "gHeading",
-                    "gPitch",
-                    "gRoll",
-                ]
+            const pos = LLAToEUS(lat, lon, alt)
+            // end product, a per-frame array of positions
+            // that is a track.
 
-                product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
-                // we store a reference to the misb row for later use
-                // so we can extract other data from it as needed
-                product["misbRow"] = misb.misb[slot];
+            assert(!Number.isNaN(pos.x),"CNodeTrackFromMISB:recalculate(): pos.x NaN " + "lat = " + lat + " lon = " + lon + " alt = " + alt)
+
+            // minumum data that is needed
+            const product = {position: pos.clone()}
+
+            // uniterpolated extra fields
+            const extraFields = [
+                "focal_len",
+                "heading",
+                "pitch",
+                "roll",
+                "gHeading",
+                "gPitch",
+                "gRoll",
+            ]
+
+            product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
+            // we store a reference to the misb row for later use
+            // so we can extract other data from it as needed
+            product["misbRow"] = misb.misb[slot];
 //                if (f<10) console.log("vFOV",product["vFOV"])
 
 //                 // optional additional data
@@ -101,12 +121,7 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
 //                     }
 //                 }
 
-                this.array.push(product)
-
-
-            } else {
-                this.array.push({position: V3()}) // no position
-            }
+            this.array.push(product)
             frameTime += Sit.simSpeed/Sit.fps
         }
 

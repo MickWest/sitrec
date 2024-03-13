@@ -53,4 +53,6 @@ export const Sit29Palms = {
     DisplayCameraFrustum: {radius:100000},
 
     nightSky: true,
+    useGlobe: true,
+    useDayNightGlobe: true,
 }

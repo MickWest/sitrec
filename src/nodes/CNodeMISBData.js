@@ -34,7 +34,19 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         } else {
             this.misb = FileManager.get(v.misb)
         }
+
+        this.selectSourceColumns(v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]);
+
         this.recalculate()
+    }
+
+    // given an array of the MISB column names for lat,lon,alt
+    // then store the column indices for the lat, lon, and alt
+    // this is soe we can switch between the sensor LLA, the frame center LLA, and the corners
+    selectSourceColumns(columns) {
+        this.latCol = MISB[columns[0]]
+        this.lonCol = MISB[columns[1]]
+        this.altCol = MISB[columns[2]]
     }
 
     // to display the full length track of original source data, (like, for a KML)
@@ -58,19 +70,19 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
     }
 
     getLat(i) {
-        return Number(this.misb[i][MISB.SensorLatitude]);
+        return Number(this.misb[i][this.latCol]);
     }
 
     getLon(i) {
-        return Number(this.misb[i][MISB.SensorLongitude]);
+        return Number(this.misb[i][this.lonCol]);
     }
 
     getAlt(i) {
-        return Number(this.misb[i][MISB.SensorTrueAltitude]);
+        return Number(this.misb[i][this.altCol]);
     }
 
     getTime(i) {
-        let time = this.misb[i][MISB.UnixTimeStamp]
+        let time = Number(this.misb[i][MISB.UnixTimeStamp])
         // check to see if it's in milliseconds or microseconds
         if (time > 31568461000000) {   // 31568461000000 is 1971 using microseconds, but 2970 using milliseconds
             time = time / 1000

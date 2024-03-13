@@ -17,6 +17,8 @@ sitch = {
     startTime: "2023-12-19T03:56:12.560Z",
     frames: 782,
 
+
+
     mainCamera: {
         fov: 30, near: 1, far: 60000000,
         startCameraPositionLLA: [38.602145, -86.506588, 4159762.165337],

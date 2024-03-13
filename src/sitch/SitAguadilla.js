@@ -107,6 +107,8 @@ export const SitAguadilla = {
     altitudeLabel2:      { kind: "MeasureAltitude",position: "LOSTraverseSelectSmoothed", defer: true },
     distanceLabel:      { kind: "MeasureAB",A: "jetTrackSmooth", B: "LOSTraverseSelectSmoothed", defer: true},
 
+    DisplayCameraFrustum: {targetTrack: "LOSTraverseSelectSmoothed", defer: true},
+
     setup: function() {
 
         assert(GlobalScene !== undefined,"Missing GlobalScene")

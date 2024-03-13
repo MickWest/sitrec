@@ -1,11 +1,13 @@
 import {assert, cleanCSVTex, cleanCSVText, getFileExtension, isHttpOrHttps, versionString} from "./utils";
 import JSZip from "./js/jszip";
-import {parseCSVAirdata, parseSRT, parseXml} from "./KMLUtils";
+import {parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {gui} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
+import {parseAirdataCSV} from "./ParseAirdataCSV";
+import {parseMISB1CSV} from "./MISB";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -228,7 +230,9 @@ export class CFileManager extends CManager {
                     if (type === "Unknown") {
                         parsed.shift(); // remove the header, legacy file type handled in specific code
                     } else if (type === "Airdata") {
-                        parsed = parseCSVAirdata(parsed);
+                        parsed = parseAirdataCSV(parsed);
+                    } else if (type === "MISB1") {
+                        parsed = parseMISB1CSV(parsed);
                     }
                     break;
                 case "kml":
@@ -352,13 +356,14 @@ function createImageFromArrayBuffer(arrayBuffer, type) {
 // given a 2d CSV file, attempt to detect what type of file it is
 // and the mappings of columns to data
 export function detectCSVType(csv) {
-    var type = "Unknown";
     if (csv[0][0] === "time(millisecond)" && csv[0][1] === "datetime(utc)") {
-        type = "Airdata"
+        return "Airdata"
     } else if (csv[0][0] === "DPTS" && csv[0][1] === "Security:") {
-        type = "MISB1"
+        return "MISB1"
     }
-
-    return type;
+    // not sure we need this warning, as some sitches have custom code to use
+    // specific columns of CSV files.
+    console.warn("Unhandled CSV type detected.  Please add to detectCSVType() function.")
+    return "Unknown";
 }
 

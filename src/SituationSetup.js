@@ -294,6 +294,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 }
                 break;
 
+
             // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
             case "focalLenController":
                 SSLog();
@@ -388,7 +389,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         inputs: {
                             zoom: new CNodeGUIValue({
                                 id: "videoZoom",
-                                value: 100, start: 100, end: 2000, step: 1,
+                                value: 100, start: 5, end: 2000, step: 1,
                                 desc: "Video Zoom %"
                             }, gui)
                         },

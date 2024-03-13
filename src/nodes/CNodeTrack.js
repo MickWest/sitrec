@@ -10,6 +10,7 @@ import {CNodeTrackFromMISB} from "./CNodeTrackFromMISB";
 import {FileManager} from "../Globals";
 import {CNodeMISBDataTrack} from "./CNodeMISBData";
 import {KMLToMISB} from "../KMLUtils";
+import {assert} from "../utils";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -429,7 +430,8 @@ export class CNodeInterpolateTwoFramesTrack extends CNodeTrack {
 // sourceFile = the input, either a KLM file, or one already in MISB array format
 // if it's a kml file we will first make a MISB array
 // dataID = the id of the intermediate CNodeMISBDataTrack
-export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
+export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns) {
+
     // determine what type of track it is
     const fileInfo = FileManager.getInfo(sourceFile);
     const ext = getFileExtension(fileInfo.filename)
@@ -444,6 +446,8 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
         misb = KMLToMISB(FileManager.get(sourceFile));
     } else if (ext === "srt" || ext === "csv") {
         misb = FileManager.get(sourceFile)
+    } else {
+        assert(0, "Unknown file type: " + fileInfo.filename)
     }
 
     // first make a data track with id = dataID
@@ -464,6 +468,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID) {
     return new CNodeTrackFromMISB({
         id:trackID,
         misb: dataID,
+        columns: columns,
     })
 
 }

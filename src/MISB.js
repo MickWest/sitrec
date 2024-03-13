@@ -99,4 +99,49 @@ export const MISB = {
     SensorRelativeAltitude: 121,
 }
 
+
 export const MISBFields = 121;
+
+// all the MISB identifiers above are the MISB 0601.8 tag's LS Names with spaces removed
+// so to parse a generic CSV file, we first assume the header row is the LS Names
+// we remove the spaces, and then compare to the MISB identifiers above
+// so it will work with or without spaces in the header row
+// we also do the comparison case-insensitive as the LS Names are generally capitalized
+// but some words, like "of" are not, and there might be use confusion
+// all LS Names are unique regardless of case
+
+export function parseMISB1CSV(csv) {
+    const rows = csv.length;
+    console.log("MISB CSV rows = "+rows);
+    let MISBArray = new Array(rows - 1);
+
+    // prefill the entire array with null
+    for (let i = 1; i < rows; i++) {
+        MISBArray[i - 1] = new Array(MISBFields).fill(null);
+    }
+
+    // for each column header, find the corresponding MISB field
+    // then parse the values for the entire column and put them in the MISBArray
+    // if the column header doesn't match a MISB field, ignore it
+    for (let col = 0; col < csv[0].length; col++) {
+        const header = csv[0][col].replace(/\s/g, "").toLowerCase();
+
+        //const field = MISB[header];
+        const field = Object.keys(MISB).find(key => key.toLowerCase() === header);
+
+        if (field !== undefined) {
+//            console.log("MISB Data "+csv[0][col] + " - row 1 = " + csv[1][col] + " - field = " + field + " - col = " + col);
+//            console.log("MISB LAST ROW = " + csv[rows-1][col]);
+            // got the MISB column, so just copy the values
+            for (let row = 1; row < rows; row++) {
+                // field is the name of the MISB field, and col is the column in the csv
+                // we use MISB[field] to get the index in the MISBArray
+                MISBArray[row - 1][MISB[field]] = csv[row][col];
+            }
+        } else {
+            console.warn("UNHANDLED MISB DATA: " + csv[0][col]);
+        }
+    }
+
+    return MISBArray;
+}
