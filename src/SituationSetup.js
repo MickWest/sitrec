@@ -25,7 +25,7 @@ import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
-import {Frame2Az, UIChangedAz} from "./JetStuff";
+import {CreateTraverseNodes, Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {SITREC_ROOT, SITREC_SERVER, SITREC_UPLOAD} from "../config";
 
@@ -795,6 +795,12 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 } else {
                     addNightSky(data)
                 }
+                break;
+
+            case "traverseNodes":
+                SSLog();
+                SetupTraverseNodes(data.menu, data.default);
+
                 break;
 
             default:

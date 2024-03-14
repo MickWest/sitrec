@@ -1,5 +1,15 @@
 // Common snippets of data definitions for sitrecs
 
+
+/*
+ Nodes can be converted by using this regular expression / replacement
+
+new\s+CNode(\w+)\(\s*\{\s*id:\s*"(\w+)",\s*((.|\s)+?)\}\s*\)
+
+$2: { kind: "$1",\n$3},
+
+ */
+
 export const commonKMLTarget = {
     KMLTargetData: {kind: "KMLData", file: "KMLTarget",},
     targetTrack: {kind: "trackFromDataFile", file: "KMLTarget", dataID: "KMLTargetData",},
@@ -42,3 +52,132 @@ export const commonKMLTrackToTrack = {
     ...commonKMLTracks,
     lookAtTrack: {},  // and look at targetTrack
 }
+
+// // common traverse nodes and UI
+// export const commonTraverse = {
+//
+//     // A GUI variable for the start distance - this is one of the biggest variables
+//     // It's the distance of the start of the traverse along the first LOS
+//     //var nodeStartDistance =
+//     "startDistance": { kind: "GUIValue",
+//         value: Sit.startDistance,
+//         start: Sit.startDistanceMin,
+//         end: Sit.startDistanceMax,
+//         step: 0.01,
+//         desc: "Tgt Start Dist " + Units.bigUnitsAbbrev
+//     },
+//
+//
+//     LOSTraverse1: { kind: "LOSTraverse",
+//         LOS: "JetLOS",
+//         startDist: "startDistance",
+//         VcMPH: new CNodeGUIValue({value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"}, gui),
+//     },
+//
+//
+//     speedUnscaled: {kind:"GUIValue",
+//         value: Sit.targetSpeed,
+//         start: Sit.targetSpeedMin,
+//         end: Sit.targetSpeedMax,
+//         step: Sit.targetSpeedStep,
+//         desc: "Target Speed " + Units.speedUnits
+//     },
+//
+//     // GUI variable Target Speed in Knots (scaled to m/s)
+// //    speedScaled: CNodeScale("speedScaled", 1 / Units.m2Speed,
+//     speedScaled: {kind: "Scale", scale: 1 / Units.m2Speed,},
+//
+//
+//     // Traverse at constant GROUND speed (using the above)
+//     LOSTraverseConstantSpeed: { kind: "LOSTraverseConstantSpeed",
+//         inputs: {
+//             LOS: "JetLOS",
+//             startDist: "startDistance",
+//             speed: "speedScaled",
+//             wind: "targetWind"
+//         },
+//         airSpeed:false,
+//     },
+//
+//     // Traverse at constant AIR speed
+//     LOSTraverseConstantAirSpeed: { kind: "LOSTraverseConstantSpeed",
+//         inputs: {
+//             LOS: "JetLOS",
+//             startDist: "startDistance",
+//             speed: "speedScaled",
+//             wind: "targetWind"
+//         },
+//         airSpeed:true,
+//     },
+//
+//     // as above, but interpolate between the start and end frames
+//     // remaining constant speed, but not necessarily on the LOS
+//     LOSTraverseStraightConstantAir: { kind: "InterpolateTwoFramesTrack",
+//         source: "LOSTraverseConstantAirSpeed"
+//     },
+//
+//
+//     // In any Sitch we have an initialHeading and a relativeHeading
+//     // initialHeading is historically the start direction of the jet, like in Gimbal
+//     // it's the direction we set the jet going in
+//     //
+//     // relativeHeading is added to initialHeading to get targetActualHeading
+//     //
+//     // for Gimbal and similar this allowed us to rotate the jet's path with initialHeading
+//     // and then adjust (rotate) the targetActualHeading realtive to that.
+//     // For Aguadilla though, the initialheading is a fixed 0, sicne the path is fixed
+//     // meaning that relativeHeading is actually absolut (i.e. relative to 0)
+//     // i.e. we have a single number defining targetActualHeading
+//
+//     targetRelativeHeading: {
+//         kind: "GUIValue",
+//         value: Sit.relativeHeading,
+//         start: -180,
+//         end: 180,
+//         step: 0.01,
+//         desc: "Tgt Relative Heading"
+//     },
+//
+//     targetActualHeading: {
+//         kind: "Munge",
+//         inputs: {initialHeading: "initialHeading", relativeHeading: "targetRelativeHeading"},
+//         munge: function (f) {
+//             var newHeading = this.in.initialHeading.getHeading() + this.in.relativeHeading.v0
+//             if (newHeading < 0) newHeading += 360;
+//             if (newHeading >= 360) newHeading -= 360
+//             return newHeading
+//         }
+//     },
+//
+//     // and with that target heading we can try for a stright line traversal
+//     // currently very simplistic and does not work with noisy data.
+//     LOSTraverseStraightLine: {
+//         kind:"LOSTraverseStraightLine",
+//         id: "LOSTraverseStraightLine",
+//         LOS: "JetLOS",
+//         startDist: "startDistance",
+//         radius: "radiusMiles",
+//         lineHeading: "targetActualHeading",
+//     },
+//
+//     LOSTraverseStraightLineFixed: {
+//         kind: "LOSTraverseStraightLineFixed",
+//         LOS: "JetLOS",  // we just need the first LOS
+//         startDist: "startDistance",
+//         radius: "radiusMiles",
+//         lineHeading: "targetActualHeading",
+//         speed: "speedScaled",
+//     },
+//
+//
+//     // Constant altitude
+//
+//     LOSTraverseConstantAltitude: { kind: "LOSTraverseConstantAltitude",
+//         inputs: {
+//             LOS: "JetLOS",
+//             startDist: "startDistance",
+//             radius: "radiusMiles",
+//         },
+//     },
+//
+// }

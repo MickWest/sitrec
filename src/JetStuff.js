@@ -77,6 +77,7 @@ import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
 import {Group} from "three";
 import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeTrack";
+import {CNodeHeading} from "./nodes/CNodeHeading";
 
 
 var matLineWhite = makeMatLine(0xffffff);
@@ -729,12 +730,12 @@ export function SetupTraverseNodes(traverseInputs,defaultTraverse) {
 //
 export function CreateTraverseNodes(traverseInputs) {
 
-    var startDistance = Sit.startDistance;
 
     // A GUI variable for the start distance - this is one of the biggest variables
     // It's the distance of the start of the traverse along the first LOS
-    var nodeStartDistance = new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
-        value: startDistance,
+    //var nodeStartDistance =
+    new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
+        value: Sit.startDistance,
         start: Sit.startDistanceMin,
         end: Sit.startDistanceMax,
         step: 0.01,
@@ -746,7 +747,7 @@ export function CreateTraverseNodes(traverseInputs) {
     new CNodeLOSTraverse({
         id: "LOSTraverse1",
         LOS: "JetLOS",
-        startDist: nodeStartDistance,
+        startDist: "startDistance",
         VcMPH: new CNodeGUIValue({value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"}, gui),
     })
 
@@ -766,7 +767,7 @@ export function CreateTraverseNodes(traverseInputs) {
         id: "LOSTraverseConstantSpeed",
         inputs: {
             LOS: "JetLOS",
-            startDist: nodeStartDistance,
+            startDist: "startDistance",
             speed: "speedScaled",
             wind: "targetWind"
         },
@@ -778,7 +779,7 @@ export function CreateTraverseNodes(traverseInputs) {
         id: "LOSTraverseConstantAirSpeed",
         inputs: {
             LOS: "JetLOS",
-            startDist: nodeStartDistance,
+            startDist: "startDistance",
             speed: "speedScaled",
             wind: "targetWind"
         },
@@ -805,6 +806,17 @@ export function CreateTraverseNodes(traverseInputs) {
     // meaning that relativeHeading is actually absolut (i.e. relative to 0)
     // i.e. we have a single number defining targetActualHeading
 
+    // initial Heading might not exist
+    if (!NodeMan.exists("initialHeading")) {
+        new CNodeHeading({
+            id: "initialHeading",
+            heading: Sit.heading ?? 0,
+            name: "Initial",
+            arrowColor: "green"
+
+        }, gui)
+    }
+
     new CNodeGUIValue({
         id: "targetRelativeHeading",
         value: Sit.relativeHeading,
@@ -830,7 +842,7 @@ export function CreateTraverseNodes(traverseInputs) {
     new CNodeLOSTraverseStraightLine({
         id: "LOSTraverseStraightLine",
         LOS: "JetLOS",
-        startDist: nodeStartDistance,
+        startDist: "startDistance",
         radius: "radiusMiles",
         lineHeading: "targetActualHeading",
     })
@@ -838,7 +850,7 @@ export function CreateTraverseNodes(traverseInputs) {
     new CNodeLOSTraverseStraightLineFixed({
         id: "LOSTraverseStraightLineFixed",
         LOS: "JetLOS",  // we just need the first LOS
-        startDist: nodeStartDistance,
+        startDist: "startDistance",
         radius: "radiusMiles",
         lineHeading: "targetActualHeading",
         speed: "speedScaled",
@@ -851,7 +863,7 @@ export function CreateTraverseNodes(traverseInputs) {
         id: "LOSTraverseConstantAltitude",
         inputs: {
             LOS: "JetLOS",
-            startDist: nodeStartDistance,
+            startDist: "startDistance",
             radius: "radiusMiles",
         },
     })
