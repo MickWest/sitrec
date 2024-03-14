@@ -6,3 +6,4 @@ config-install.js
 .env
 sitrec-videos
 sitrec-cache
+vendor/
