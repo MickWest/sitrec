@@ -393,7 +393,10 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
 
     // if a fraction, then treat that as a fraction of the total length, else an absolute value
     if (_headLength < 1) {
-        _headLength = _length * _headLength;
+//        _headLength = _length * _headLength;
+
+        // sinc
+        assert(0, "Head length as a fraction is deprecated")
     }
 
 

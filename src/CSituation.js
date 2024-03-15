@@ -39,7 +39,7 @@ const situationDefaults = {
 
     starScale: 1,
     satScale: 1,
-    satCutOff: 0.101,
+    satCutOff: 0,
 
     targetSize:1,   // the diameter of the default target sphere F/A-18E/F wingspan = 45 feet
 

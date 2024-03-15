@@ -86,6 +86,7 @@ export const SitNightSky = {
     globeScale: 1,  // was defaulting to 0.99
     localLatLon: true,
 
+
     setup2: function () {
 
 
@@ -126,6 +127,11 @@ export const SitNightSky = {
         labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
         labelMainViewPVS.addText("videoLabelp3", "Drag and drop .txt or .tle files", 12, 6, 1.5, "#f0f00080")
         labelMainViewPVS.setVisible(true)
+
+        par.validPct = 100;
+        labelMainViewPVS.addText("videoLabelInRange", "xx",    92, 2, 1.5, "#f0f00080").update(function() {
+            this.text = "In Range:" + par.validPct.toFixed(1) + "%"
+        });
 
         if (Globals.userID > 0)
             this.permaButton = gui.add(this, "makeNightSkyURL").name("Permalink")

@@ -243,8 +243,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
    //     GlobalNightSkyScene.matrixWorldAutoUpdate = false
 
 
-        this.glareAngle = 5
-        guiTweaks.add(this, 'glareAngle', 0, 20, 0.1).listen().name("SL Glare Angle")
+        this.flareAngle = 5
+        guiTweaks.add(this, 'flareAngle', 0, 20, 0.1).listen().name("SL Flare Angle")
 
         this.penumbraDepth = 5000
         guiTweaks.add(this, 'penumbraDepth', 0, 100000, 1).listen().name("Earth's Penumbra Depth")
@@ -500,9 +500,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         if ( this.showSatellites && this.TLEData) {
             // Update satellites to correct position for nowDate
-            for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-                const success = this.updateSatelliteSprite(sat.spriteText, sat, nowDate)
-            }
+            // for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
+            //     const success = this.updateSatelliteSprite(sat.spriteText, sat, nowDate)
+            // }
 
             this.updateAllSatellites(nowDate)
         }
@@ -575,8 +575,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 const sat = this.TLEData.satrecs[i];
 
                 // satellites might have invalid positions if we load a TLE that's not close to the time we are calculating for
-                if (sat.invalidPosition)
+                if (sat.invalidPosition) {
                     continue;
+                }
 
                 // stagger updates unless it has an arrow.
                 if ((i - camera.satStartTime) % camera.satTimeStep !== 0 && !sat.hasArrow)
@@ -586,7 +587,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
                 const satPosition = sat.eus;
 
-                let scale = 0.1;
+                let scale = 0.1;                // base value for scale
+                let darknessMultiplier = 0.3    // if in dark, multiply by this
                 var fade = 1
 
                 raycaster.set(satPosition, toSun)
@@ -600,16 +602,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                         // fade will give us a value from 1 (no fade) to 0 (occluded)
                         fade = 1 - occludedMeters/this.penumbraDepth
 
-                        scale *= 0.5 + 0.5 * fade
+                        scale *= darknessMultiplier + (1 - darknessMultiplier) * fade
                     } else {
                         fade = 0;
-                        if (sat.hasArrow) {
-                            removeDebugArrow(sat.name)
-                            removeDebugArrow(sat.name + "sun")
-                            removeDebugArrow(sat.name + "reflected")
-                            sat.hasArrow = false;
-                        }
-                        scale *= 0.5
+                        scale *= darknessMultiplier;
+                        this.removeSatArrows(sat);
                     }
                 }
 
@@ -641,7 +638,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                         //     scale *= 3 // a bit of a dodgy patch to make low atltitde trains stand out.
                         // }
 
-                        const spread = this.glareAngle
+                        const spread = this.flareAngle
                         const glintSize = 5;
                         if (glintAngle < spread) {
                             // we use the square of the angle (measured from the start of the spread)
@@ -650,32 +647,21 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             scale *= glintScale
 
                             // dark grey arrow if below horizon
-                            var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
+                            var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
                             var arrowHelper2 = DebugArrowAB(sat.name + "sun", satPosition,
-                                satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
+                                satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
                            // var arrowHelper3 = DebugArrowAB(sat.name + "reflected", satPosition,
                            //     satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
                             sat.hasArrow = true;
                         } else {
-                            if (sat.hasArrow) {
-                                removeDebugArrow(sat.name)
-                                removeDebugArrow(sat.name + "sun")
-                                removeDebugArrow(sat.name + "reflected")
-                                sat.hasArrow = false;
-                            }
+                            this.removeSatArrows(sat);
+
                             // do the scale again to incorporate al
                             // sat.sprite.scale.set(scale, scale, 1);
 
                         }
                     } else {
-                        if (sat.hasArrow) {
-                            // satellite is hidden, so remove arrows
-                            removeDebugArrow(sat.name)
-                            removeDebugArrow(sat.name + "sun")
-                            removeDebugArrow(sat.name + "reflected")
-                            sat.hasArrow = false;
-                        }
-
+                        this.removeSatArrows(sat);
                     }
                 }
 
@@ -1130,44 +1116,46 @@ void main() {
 //     }
 
 
-    updateSatelliteSprite(sprite, satrec1, date)
-    {
-        const positionAndVelocity = satellite.propagate(satrec1, date);
+//     updateSatelliteSprite(sprite, satrec1, date)
+//     {
+//         const positionAndVelocity = satellite.propagate(satrec1, date);
+//
+//         // hardwired to used the lookCamera
+//         // theoretically could do it for both viewports
+//         // but the lookCamera is the one where we will see individual satellites
+//         const camera = this.camera;
+//
+//         if (positionAndVelocity && positionAndVelocity.position) {
+//             const positionEci = positionAndVelocity.position;
+//
+//             var gmst   = satellite.gstime(date);
+//             var ecefK   = satellite.eciToEcf(positionEci, gmst)
+//             const ecef= V3(ecefK.x*1000,ecefK.y*1000,ecefK.z*1000)
+//             const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
+//             const eus = V3(enu.x, enu.z, -enu.y)
+//
 
-        // hardwired to used the lookCamera
-        // theoretically could do it for both viewports
-        // but the lookCamera is the one where we will see individual satellites
-        const camera = this.camera;
-
-        if (positionAndVelocity && positionAndVelocity.position) {
-            const positionEci = positionAndVelocity.position;
-
-            var gmst   = satellite.gstime(date);
-            var ecefK   = satellite.eciToEcf(positionEci, gmst)
-            const ecef= V3(ecefK.x*1000,ecefK.y*1000,ecefK.z*1000)
-            const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
-            const eus = V3(enu.x, enu.z, -enu.y)
-
-            // Set the position and scale of the sprite
-            sprite.position.set(eus.x, eus.y, eus.z);
-
-            // Calculate distance from camera to sprite
-            const distance = camera.position.distanceTo(sprite.position);
-
-            // Calculate scale to make the sprite appear the same size on screen
-            let scale =  0.010 * distance * Math.tan((camera.fov / 2) * (Math.PI / 180));
-
-            scale *= Sit.starScale ?? 1;
-
-            // Set the sprite scale
-//            sprite.scale.set(scale, scale, 1);
-            sprite.scale.set(scale * 2 * sprite.aspect, scale * 2, 1);
-
-
-            return true;
-        }
-        return false;
-    }
+//
+//             // Set the position and scale of the sprite
+//             sprite.position.set(eus.x, eus.y, eus.z);
+//
+//             // Calculate distance from camera to sprite
+//             const distance = camera.position.distanceTo(sprite.position);
+//
+//             // Calculate scale to make the sprite appear the same size on screen
+//             let scale =  0.010 * distance * Math.tan((camera.fov / 2) * (Math.PI / 180));
+//
+//             scale *= Sit.starScale ?? 1;
+//
+//             // Set the sprite scale
+// //            sprite.scale.set(scale, scale, 1);
+//             sprite.scale.set(scale * 2 * sprite.aspect, scale * 2, 1);
+//
+//
+//             return true;
+//         }
+//         return false;
+//     }
 
 
     addSatellites(scene, textGroup) {
@@ -1317,6 +1305,21 @@ void main() {
             var gmst = satellite.gstime(date);
             var ecefK = satellite.eciToEcf(positionEci, gmst);
             const ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000);
+
+            // get the altitude
+            const altitude = ecef.length() - wgs84.RADIUS;
+            // if the altitude is less than 100km, then it's in the atmosphere so we don't show it
+            if (altitude < 100000) {
+                return null;
+            }
+
+            // if it's significantly (10%) greater than geostationary orbit (35,786 km), then it's probably an error
+            // so we don't show it
+            // (This should probably be much lower for Starlink, but we'll leave it for now)
+            if (altitude > 40000000) {
+                return null;
+            }
+
             const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS);
             const eus = V3(enu.x, enu.z, -enu.y);
             return eus;
@@ -1335,7 +1338,9 @@ void main() {
 
         // Get the position attribute from the geometry
         const positions = this.satelliteGeometry.attributes.position.array;
+        const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
 
+        let validCount = 0;
         for (let i = 0; i < numSats; i++) {
             const sat = this.TLEData.satrecs[i];
 
@@ -1356,39 +1361,74 @@ void main() {
                 sat.eusB = this.calcSatUES(sat, dateB)
             }
 
+
+
             // if the position can't be calculated then A and/or B will be null
             // so just skip over this
             if (sat.eusA !== null && sat.eusB !== null) {
 
-                // Otherwise, we have a valid A and B, so do a linear interpolation
-                //sat.eus = sat.eusA.clone().add(sat.eusB.clone().sub(sat.eusA).multiplyScalar(
-                //    (timeMS - sat.timeA) / (sat.timeB - sat.timeA)
-                //));
+                // calculate the velocity from A to B in m/s
+                const velocity = sat.eusB.clone().sub(sat.eusA).multiplyScalar(1000 / (sat.timeB - sat.timeA)).length();
 
-                // for optimization do this directly
-                // Calculate the normalized time value
-                var t = (timeMS - sat.timeA) / (sat.timeB - sat.timeA);
+                // Starlink is typically 7.5 km/s, so if it's much higher than that, then it's probably an error
+                // I use 11,000 as an upper limit to include highly elliptical orbits, see:
+                // https://space.stackexchange.com/questions/48830/what-is-the-fastest-satellite-in-earth-orbit
+                if (velocity < 5000 || velocity > 11000) {
+                    // if the velocity is too high, then we assume it's an error and skip it
+                    sat.invalidPosition = true;
+                } else {
 
-                // Perform the linear interpolation (lerp) directly on x, y, z
-                sat.eus.x = sat.eusA.x + (sat.eusB.x - sat.eusA.x) * t;
-                sat.eus.y = sat.eusA.y + (sat.eusB.y - sat.eusA.y) * t;
-                sat.eus.z = sat.eusA.z + (sat.eusB.z - sat.eusA.z) * t;
+                    // Otherwise, we have a valid A and B, so do a linear interpolation
+                    //sat.eus = sat.eusA.clone().add(sat.eusB.clone().sub(sat.eusA).multiplyScalar(
+                    //    (timeMS - sat.timeA) / (sat.timeB - sat.timeA)
+                    //));
+
+                    // for optimization do this directly
+                    // Calculate the normalized time value
+                    var t = (timeMS - sat.timeA) / (sat.timeB - sat.timeA);
+
+                    // Perform the linear interpolation (lerp) directly on x, y, z
+                    sat.eus.x = sat.eusA.x + (sat.eusB.x - sat.eusA.x) * t;
+                    sat.eus.y = sat.eusA.y + (sat.eusB.y - sat.eusA.y) * t;
+                    sat.eus.z = sat.eusA.z + (sat.eusB.z - sat.eusA.z) * t;
 
 
-                // Update the position in the geometry's attribute
-                positions[i * 3] = sat.eus.x;
-                positions[i * 3 + 1] = sat.eus.y;
-                positions[i * 3 + 2] = sat.eus.z;
-                sat.invalidPosition = false;
-           } else {
+                    // Update the position in the geometry's attribute
+                    positions[i * 3] = sat.eus.x;
+                    positions[i * 3 + 1] = sat.eus.y;
+                    positions[i * 3 + 2] = sat.eus.z;
+                    sat.invalidPosition = false;
+                }
+            } else {
+                // if the new position is invalid, then we make it invisible
+                // so we will need to flag it as invalid
                 sat.invalidPosition = true;
             }
 
+            if (sat.invalidPosition) {
+                this.removeSatArrows(sat);
+                // to make it invisible, we set the magnitude to 0 and position to a million km away
+                magnitudes[i] = 0;
+                positions[i * 3] = 1000000000;
+            } else {
+                validCount++
+            }
 
         }
 
+        par.validPct = validCount / numSats * 100;
+
         // Notify THREE.js that the positions have changed
         this.satelliteGeometry.attributes.position.needsUpdate = true;
+    }
+
+    removeSatArrows(sat)   {
+        if (sat.hasArrow) {
+            removeDebugArrow(sat.name)
+            removeDebugArrow(sat.name + "sun")
+            removeDebugArrow(sat.name + "reflected")
+            sat.hasArrow = false;
+        }
     }
 
 
@@ -1535,12 +1575,17 @@ void main() {
                                 bestAngle = angle;
                                 bestGlintAngle = glintAngle;
                                 bestX = X.clone();
+
+                              //  console.log(bestX.y)
+
+              //                  DebugArrowAB("Best",P,bestX,"#FF00FF")
                             }
                         }
                     }
+                   // DebugArrowAB("ToGlint"+angle,P,X,"#008000")
+                   // DebugArrowAB("ToGlintO"+angle,O,X,"#8080FF")
                 }
-                //   DebugArrowAB("ToGlint"+angle,P,X,"#008000")
-                // DebugArrowAB("ToGlintO"+angle,O,X,"#8080FF")
+
 
                 start = bestAngle-step;
                 end = bestAngle+step;
@@ -1551,9 +1596,10 @@ void main() {
 
          //   DebugArrowAB(sat.name, this.camera.position, sat.sprite.position, "#FF0000", true, this.sunArrowGroup,0.025)
 
+          //  DebugArrowAB("BestGlint",P,bestX,"#FF00FF", true, this.flareRegionGroup, 0.1)
 
-            DebugArrowAB("ToGlint",P,bestX,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
-            DebugArrow("ToSunFromGlint",this.toSun,bestX,5000000,"#FF0000", true, this.flareRegionGroup, 0.1, LAYER.MASK_HELPERS)
+            DebugArrowAB("ToGlint",this.camera.position,bestX,"#FF0000", true, this.flareRegionGroup, 20, LAYER.MASK_HELPERS)
+            DebugArrow("ToSunFromGlint",this.toSun,bestX,5000000,"#FF0000", true, this.flareRegionGroup, 20, LAYER.MASK_HELPERS)
             DebugWireframeSphere("ToGlint",bestX,500000,"#FF0000",4, this.flareRegionGroup)
 
 
