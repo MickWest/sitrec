@@ -19,6 +19,8 @@ if ($user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
     exit("Internal Server Error");
 }
 
+
+
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
     // for local testing
     $storagePath = "http://localhost/sitrec-upload/";
@@ -68,6 +70,44 @@ $baseName = pathinfo($fileName, PATHINFO_FILENAME);
 // Append MD5 checksum before the extension
 $newFileName = $baseName . '-' . $md5Checksum . '.' . $extension;
 
+
+// if there's an aws_credentials.json file, then we'll use that to upload to S3
+if (file_exists('../../../sitrec-keys/aws_credentials.json')) {
+    require 'vendor/autoload.php';
+
+    // load the credentials from ../../../sitrec-keys/aws_credentials.json
+    $aws = json_decode(file_get_contents('../../../sitrec-keys/aws_credentials.json'), true);
+
+    // get it into the right format
+    $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
+
+    // Upload to S3
+    $s3 = new Aws\S3\S3Client([
+        'version' => 'latest',
+        'region' => $aws['region'],
+        'credentials' => $credentials
+    ]);
+
+    // Upload a file.
+    $result = $s3->putObject([
+        'Bucket' => $aws['bucket'],
+        'Key' => $user_id . '/' . $newFileName,
+        'Body' => $fileContent,
+        'ACL' => $aws['acl']
+    ]);
+
+    // check for errors and return the status code if something went wrong
+    if ($result['@metadata']['statusCode'] != 200) {
+        http_response_code($result['@metadata']['statusCode']);
+        exit("Internal Server Error");
+    }
+
+    // Success, so print the URL of the uploaded file
+    echo $result['ObjectURL'];
+    exit (0);
+}
+
+// No AWS credentials, so we'll just upload to the local server
 
 // Check if file exists, if not, write the file
 $userFilePath = $userDir . $newFileName;
