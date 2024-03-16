@@ -26,16 +26,11 @@ export class CNodeGUIConstant extends CNodeConstant {
 }
 
 export class CNodeGUIValue extends CNodeGUIConstant {
-    constructor(v, guiMenu) {
+    constructor(v, _guiMenu) {
 
         super(v);
 
-        if (guiMenu === undefined) {
-            if (v.gui === "Tweaks")
-                guiMenu = guiTweaks;
-            else
-                guiMenu = gui;
-        }
+        this.setGUI(v, _guiMenu)
 
         this.start = v.start ?? 0
         this.end = v.end ?? v.value * 2
@@ -45,7 +40,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         //   this.hideUnused = true;
 
-        this.guiEntry = guiMenu.add(this, "value", this.start, this.end, this.step).onChange(
+        this.guiEntry = this.gui.add(this, "value", this.start, this.end, this.step).onChange(
             value => {
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {
@@ -74,17 +69,12 @@ export function makeCNodeGUIValue(id, value, start, end, step, desc, guiMenu, ch
 
 export class CNodeGUIFlag extends CNodeConstant {
 
-    constructor(v, guiMenu) {
+    constructor(v, _guiMenu) {
 
         super(v);
-        if (guiMenu === undefined) {
-            if (v.gui === "Tweaks")
-                guiMenu = guiTweaks;
-            else
-                guiMenu = gui;
-        }
+        this.setGUI(v, _guiMenu)
         this.onChange = v.onChange;
-        this.guiEntry = guiMenu.add(this, "value").onChange(
+        this.guiEntry = this.gui.add(this, "value").onChange(
             value => {
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {

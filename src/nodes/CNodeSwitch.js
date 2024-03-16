@@ -1,21 +1,21 @@
-import {NodeMan} from "../Globals";
+import {gui, guiShowHide, guiTweaks, NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {addOption, removeOption} from "../lil-gui-extras";
 
 class CNodeSwitch extends CNode {
-    constructor(v, gui) {
+    constructor(v, _gui) {
         super(v);
         this.choice = v.default; // this is the key of the entry in choices
         this.onChange = v.onChange; // function to call when choice changes
-        this.gui = gui;
+
+        this.setGUI(v, _gui)
+
         if (this.choice == undefined) {
             this.choice = Object.keys(this.inputs)[0]
         }
 
-        // if a gui is passed in, it's assumed to be able
-        // to take lil-giu (or dat-gui) style parapmeters for addina a drop down box
-        //
+        // add the menu if the gui is defined
         if (this.gui !== undefined) {
             this.guiOptions = {}
 
@@ -38,6 +38,8 @@ class CNodeSwitch extends CNode {
                     }
 
                 })
+        } else {
+            console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()
     }

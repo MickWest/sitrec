@@ -41,11 +41,11 @@ sitch = {
 
     videoFile: "https://sitrec.s3.us-west-2.amazonaws.com/Aquadilla+High+Quality+Original.mp4",
 
-    units:      "metric",
+    units: "metric",
 
     // temporary hard wired, but we want to get these from the data
     startTime: "2023-03-10T12:29:02.000Z",  // start time maybe not from track data, as we might want a portion
-    lat:  18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
+    lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
     frames: 7000,  // from video
 
     // terrain is the smaller 3D map
@@ -54,13 +54,13 @@ sitch = {
     // nTiles is the number of tiles to load in each direction, so 8 will give you an 8x8 grid
     // the 3D world size of a tile is based on the zoom level, so if you decrease the zoom level by 1
     // that will double the length of a tile in meters.
-    terrain: {lat:  18.499617, lon: -67.113636, zoom:14, nTiles:8},
+    terrain: {lat: 18.499617, lon: -67.113636, zoom: 14, nTiles: 8},
 
     // mainCamera is the camera used for the God's eye view of the 3D world, typically on the left.
     mainCamera: {
         fov: 30, near: 1, far: 60000000,
-        startCameraPositionLLA:[18.634221,-67.374987,21503.365608], // agua mockup location
-        startCameraTargetLLA:[18.628870,-67.369038,21007.002833], // maybe should be auto
+        startCameraPositionLLA: [18.634221, -67.374987, 21503.365608], // agua mockup location
+        startCameraTargetLLA: [18.628870, -67.369038, 21007.002833], // maybe should be auto
     },
 
     // lookCamera is the camera used for the look view, typically on the right
@@ -70,18 +70,22 @@ sitch = {
     // here we get the camera track from a MISB file
     // using SensorLatitude, SensorLongitude, SensorAltitude
     cameraTrack: {file: "misb"},
-    smoothTrackCamera: {kind: "smoothTrack", track:"cameraTrack", smooth: 20},
+    smoothTrackCamera: {kind: "smoothTrack", track: "cameraTrack", smooth: 20},
     followTrack: {},            // camera follows the camera track
 
-    targetTrack: {kind: "TrackFromMISB", misb: "cameraTrackData", columns:["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]},
+    targetTrack: {
+        kind: "TrackFromMISB",
+        misb: "cameraTrackData",
+        columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
+    },
     smoothTrack: {track: "targetTrack", smooth: 20},
-    targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 4,},
+    targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1, 0, 0], width: 4,},
 
     lookAtTrack: {},  // and look at targetTrack
     fovController: {source: "cameraTrack"},
 
-    mainView:{left:0.0, top:0, width:0.5,height:1,background:'#000000'},
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,background:'#000000'},
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#000000'},
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000000'},
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5},
 
     // startTime:  "auto", // auto means we get it from the data file, ie, the first frame of the camera track
@@ -91,12 +95,23 @@ sitch = {
 
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
-    distanceLabel:      { kind: "MeasureAB",A: "cameraTrack", B: "targetTrack", defer: true},
+    distanceLabel: {kind: "MeasureAB", A: "cameraTrack", B: "targetTrack", defer: true},
 
 
     DisplayCameraFrustum: {targetTrack: "targetTrack"},
 
-    targetWind:{from:270, knots: 20}, // can we get this from the MISB? It's in a differnt location
+//    targetWind:{from:270, knots: 20}, // can we get this from the MISB? It's in a differnt location
+
+    Wind1: {kind: "Wind", from: 270, knots: 20},
+    Wind2: {kind: "Wind", from: 90, knots: 20},
+    targetWind: {
+        kind: "Switch", gui: "main", desc: "Target Wind", inputs: {
+            "Wind from West": "Wind1",
+            "Wind from East": "Wind2",
+        }
+    },
+    DisplayWindArrow: {source: "targetWind"},
+
 
     JetLOS: {kind: "LOSTrackTarget", cameraTrack: "cameraTrack", targetTrack: "targetTrack"},
 

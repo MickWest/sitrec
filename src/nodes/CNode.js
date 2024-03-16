@@ -19,7 +19,7 @@ import {assert, degrees, scaleF2M, vdump} from '../utils.js'
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
 import {CNodeFactory} from "./CNodeFactory";
-import {NodeMan, Sit} from "../Globals";
+import {gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 
@@ -111,7 +111,41 @@ class CNode {
         this.visible = false;
     }
 
-    // check all the inputs in this array exist
+    setGUI(v, _gui) {
+        _gui ??= v.gui;
+        if (_gui) {
+            // if it's a string, then it's from the data driven setup
+            if (typeof _gui === "string") {
+                switch (_gui.toLowerCase()) {
+                    case "showhide":
+                        this.gui = guiShowHide;
+                        break;
+                    case "tweaks":
+                        this.gui = guiTweaks;
+                        break;
+                    case "main":
+                        this.gui = gui;
+                        break;
+                    default:
+                        console.error("Unknown gui type: " + v.gui)
+                }
+            } else {
+                // otherwise, it's a gui object passed in the parameters
+                // check its type is  GUI class
+                assert(_gui.constructor.name === "GUI", "CNodeSwitch: gui must be a lil-gui object")
+                this.gui = _gui
+            }
+        } else {
+            // if no gui is specified, then use the main gui
+            console.warn("No gui specified for " + this.id + " using main gui")
+            this.gui = gui;
+        }
+
+    }
+
+
+
+// check all the inputs in this array exist
     checkInputs(inputList) {
         inputList.forEach(key => assert(this.inputs[key] != undefined, "CNode Missing input -> "+ key ))
     }

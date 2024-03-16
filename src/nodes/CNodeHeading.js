@@ -8,18 +8,14 @@ export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {
         super(v);
 
-        if (guiMenu === undefined) {
-            if (v.gui === "Tweaks")
-                guiMenu = guiTweaks;
-            else
-                guiMenu = gui;
-        }
+
+        this.setGUI(v, guiMenu)
 
         this.heading = v.heading;  // true heading
         this.name = v.name ?? ""
         this.arrowColor = v.arrowColor ?? "white"
 
-        guiMenu.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
+        this.gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
 
         this.recalculate()
     }

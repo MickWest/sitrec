@@ -7,26 +7,20 @@ import {getLocalNorthVector, getLocalSouthVector, getLocalUpVector} from "../Sph
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeWind extends CNode {
-    constructor(v, guiMenu) {
+    constructor(v, _guiMenu) {
         super(v);
 
-        if (guiMenu === undefined) {
-            if (v.gui === "Tweaks")
-                guiMenu = guiTweaks;
-            else
-                guiMenu = gui;
-        }
+        this.setGUI(v, _guiMenu)
 
         this.from = v.from;  // true heading of the wind soruce. North = 0
         this.knots = v.knots
-        this.name = v.name ?? ""
-        this.arrowColor = v.arrowColor ?? "white"
+        this.name = v.name ?? v.id // if no name is supplied, use the id
 
         // this.input("pos")
         // this.input("radius")
 
-        guiMenu.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
-        guiMenu.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+        this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
+        this.gui.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
 
         this.optionalInputs(["originTrack"])
         // wind defaults to being in the frame of reference of the EUS origin (0,0,0)
@@ -67,11 +61,26 @@ export class CNodeWind extends CNode {
 
     recalculate() {
 
-        var A = Sit.jetOrigin.clone()
-
-        var B = A.clone().add(this.p().multiplyScalar(Sit.frames))
-        DebugArrowAB(this.name+" Wind",A,B,this.arrowColor,true,GlobalScene)
+        // var A = Sit.jetOrigin.clone()
+        //
+        // var B = A.clone().add(this.p().multiplyScalar(Sit.frames))
+        // DebugArrowAB(this.id+" Wind",A,B,this.arrowColor,true,GlobalScene)
     }
 
 
+}
+
+export class CNodeDisplayWindArrow extends CNode {
+    constructor(v) {
+        super(v)
+        this.input("source")
+        this.arrowColor = v.arrowColor ?? "white"
+        this.recalculate();
+    }
+
+    recalculate() {
+        var A = Sit.jetOrigin.clone()
+        var B = A.clone().add(this.in.source.p().multiplyScalar(10000))
+        DebugArrowAB(this.id+" Wind",A,B,this.arrowColor,true,GlobalScene)
+    }
 }
