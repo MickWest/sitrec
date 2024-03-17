@@ -71,6 +71,7 @@ class CNodeSwitch extends CNode {
 
     recalculate() {
         // turn on or off gui for all gui sources
+        // possibly might need a more sophisticated for inputs.
         Object.keys(this.inputs).forEach(key => {
             if (key !== this.choice) {
                 //               console.log("HIDE "+key)

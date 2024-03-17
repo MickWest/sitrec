@@ -19,8 +19,8 @@ export class CNodeWind extends CNode {
         // this.input("pos")
         // this.input("radius")
 
-        this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
-        this.gui.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+        this.guiFrom = this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
+        this.guiKnots = this.gui.add (this, "knots", 0, 200, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
 
         this.optionalInputs(["originTrack"])
         // wind defaults to being in the frame of reference of the EUS origin (0,0,0)
@@ -33,6 +33,19 @@ export class CNodeWind extends CNode {
         // }
 
         this.recalculate()
+    }
+
+    // hide and show will be called from a switch node
+    hide() {
+        super.hide()
+        this.guiFrom.hide()
+        this.guiKnots.hide()
+    }
+
+    show() {
+        super.show()
+        this.guiFrom.show()
+        this.guiKnots.show()
     }
 
     setPosition(pos) {
@@ -57,7 +70,6 @@ export class CNodeWind extends CNode {
 
         return wind;
     }
-
 
     recalculate() {
 

@@ -2367,6 +2367,8 @@ class GUI {
         if (all || !this.permanent) {
             if (this.parent) {
                 this.parent.children.splice(this.parent.children.indexOf(this), 1);
+
+                // not sure about this....
                 this.parent.folders.splice(this.parent.folders.indexOf(this), 1);
             }
 
