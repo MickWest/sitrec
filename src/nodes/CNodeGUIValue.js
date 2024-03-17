@@ -2,25 +2,12 @@
 import {assert} from "../utils";
 import {CNodeConstant, NodeMan} from "./CNode";
 import {par} from "../par";
-import {gui, guiTweaks} from "../Globals";
 
 
 export class CNodeGUIConstant extends CNodeConstant {
     constructor(v) {
         super(v);
         this.value = v.value ?? assert(0, "CNodeGUIConstant missing 'value' parameter");
-    }
-
-    show() {
-        super.show()
-        this.guiEntry.enable()
-        return this
-    }
-
-    hide() {
-        super.hide()
-        this.guiEntry.disable()
-        return this
     }
 
 }
@@ -50,6 +37,19 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
     }
+
+    show() {
+        super.show()
+        this.guiEntry.show()
+        return this
+    }
+
+    hide() {
+        super.hide()
+        this.guiEntry.hide()
+        return this
+    }
+
 
     // onChange(f) {
     //     this.onChangeCallback = f;

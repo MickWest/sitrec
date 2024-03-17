@@ -1,4 +1,4 @@
-// attempt to traverse the LOS in a stright line (in the horizontal plane)
+// attempt to traverse the LOS in a stright line (straight in the horizontal plane, i.e. viewed from above)
 // given start distance and a heading track
 import {CNode} from "./CNode";
 import {metersFromMiles, radians, assert} from "../utils";

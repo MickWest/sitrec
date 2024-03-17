@@ -403,10 +403,8 @@ export const SitGimbal = {
                 )
             },
 
-
-
-
             wind:"targetWind",
+            airTrack: "airTrack",
 
             //  model: FA182,
         })
@@ -612,7 +610,7 @@ export function SetupGimbal() {
             id: "bank",
             inputs: {
                 "Recorded Angle": new CNodeArray({array: Sit.CSV.map(row => -parseFloat(row[3]))}),
-                "User Bank Angle": new CNodeGUIValue({
+                "User Bank Angle": new CNodeGUIValue({ id: "userBankAngle",
                     value: -35, desc: "User Bank Angle", start: -40, end: -20, step: 0.1
                 }, guiJetTweaks),
             },

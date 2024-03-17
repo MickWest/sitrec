@@ -40,12 +40,15 @@ export class CNodeWind extends CNode {
         super.hide()
         this.guiFrom.hide()
         this.guiKnots.hide()
+        return this;
+
     }
 
     show() {
         super.show()
         this.guiFrom.show()
         this.guiKnots.show()
+        return this;
     }
 
     setPosition(pos) {

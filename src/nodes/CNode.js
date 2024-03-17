@@ -111,6 +111,93 @@ class CNode {
         this.visible = false;
     }
 
+    countVisibleOutputs(depth = 0) {
+        // recursively count the number of visible outputs
+        // a switch node counds as visible if it has this as an input
+        let count = 0;
+
+        // let visibleOutputs = "";
+
+        for (let output of this.outputs) {
+            if (output.visible) {
+                // if it's a switch node, then it's visible if it has this as an input
+                if (output.constructor.name === "CNodeSwitch") {
+                    // check if the current choice of the Switch is this node
+                    // and that counts as visible
+                    if (output.inputs[output.choice] === this) {
+                        count++;
+                        count += output.countVisibleOutputs(depth+1);
+          //              visibleOutputs += output.id + " ";
+                    }
+                } else {
+                    count++;
+                    count += output.countVisibleOutputs(depth+1);
+          //          visibleOutputs += output.id + " ";
+                }
+            }
+        }
+        //if (depth === 0) console.log("Node " + this.id + " has " + count + " visible outputs: " + visibleOutputs);
+        //console.log("Node " + this.id + " has " + count + " visible outputs: " + visibleOutputs);
+        return count;
+    }
+
+    // hide this if it has only one output
+    // then also hide (recursively) the source of this node, if they have only one output (i.e. this)
+    hideInactiveSources() {
+        // check all the inputs, if they have only one output, then hide them
+        // if more than one output, then check if ANY are visible
+        // if not, then hide them
+
+        // breadth first search
+        // so we first set all the inputs to hidden if they have no visible outputs downtree
+        for (let key in this.inputs) {
+            let input = this.inputs[key];
+            // console.log("(Hide)" + input.id +" has "+input.countVisibleOutputs() + " visible outputs")
+            if (input.countVisibleOutputs() === 0) {
+                if (this.visible) console.log("hideInactiveSources: Hiding "+input.id)
+                input.hide();
+            }
+        }
+
+        // then check the inputs to those inputs, if they are now hidden then set their inputs to hidden
+        // (if those inputs have no other visible outputs)
+        for (let key in this.inputs) {
+            let input = this.inputs[key];
+            if (!input.visible) {
+                input.hideInactiveSources();
+            }
+        }
+
+    }
+
+
+
+    // recursively show all the sources of this node
+    showActiveSources() {
+        // breadth first search
+        for (let key in this.inputs) {
+            let input = this.inputs[key];
+
+            //    console.log("(Show)" + input.id +" has "+input.countVisibleOutputs() + " visible outputs")
+
+
+            if (input.countVisibleOutputs() > 0) {
+                if (!this.visible) console.log("showActiveSources: Showing "+input.id)
+                input.show();
+            }
+        }
+
+        // then check the inputs to those inputs
+
+        for (let key in this.inputs) {
+            let input = this.inputs[key];
+            if (input.visible) {
+                input.showActiveSources();
+            }
+        }
+    }
+
+
     setGUI(v, _gui) {
         _gui ??= v.gui;
         if (_gui) {

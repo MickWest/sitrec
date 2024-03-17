@@ -1,6 +1,4 @@
-import {gui, guiShowHide, guiTweaks, NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {CNodeCloudData} from "./CNodeCloudData";
 import {addOption, removeOption} from "../lil-gui-extras";
 
 class CNodeSwitch extends CNode {
@@ -26,11 +24,11 @@ class CNodeSwitch extends CNode {
                 //          assert(this.frames === this.choiceList[key].frames,"Frame number mismatch "+
                 //              this.frames + key + this.choiceList[key].frames)
             })
-            this.controller = gui.add(this, "choice", this.guiOptions)
+            this.controller = this.gui.add(this, "choice", this.guiOptions)
                 .name(v.desc)
                 .onChange((newValue) => {   // using ()=> preserves this
-                    console.log("Changed to "+newValue)
-                    console.log("(changing) this.choice = "+this.choice)
+//                    console.log("Changed to "+newValue)
+//                    console.log("(changing) this.choice = "+this.choice)
 
                     this.recalculateCascade()
                     if (this.onChange !== undefined) {
@@ -42,6 +40,18 @@ class CNodeSwitch extends CNode {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()
+    }
+
+    hide() {
+        super.hide()
+        this.controller.hide()
+        return this
+    }
+
+    show() {
+        super.show()
+        this.controller.show()
+        return this
     }
 
     addOption(option, value) {
@@ -70,17 +80,24 @@ class CNodeSwitch extends CNode {
     }
 
     recalculate() {
+        console.log("CNodeSwitch:recalculate "+this.id)
         // turn on or off gui for all gui sources
-        // possibly might need a more sophisticated for inputs.
+        // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {
             if (key !== this.choice) {
-                //               console.log("HIDE "+key)
-                this.inputs[key].hide()
+//                console.log("CNode:recalculate HIDE "+this.inputs[key].id)
+                if (this.inputs[key].outputs.length === 1) {
+                // if the input is only connected to this switch, then hide it
+                     this.inputs[key].hide()
+                 }
+                this.inputs[key].hideInactiveSources()
             } else {
-                //               console.log("SHOW "+key)
-                this.inputs[key].show()
             }
         })
+        // show the selected inputs AFTER all the hiding has been done
+  //      console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
+        this.inputs[this.choice].show()
+        this.inputs[this.choice].showActiveSources()
     }
 
 
