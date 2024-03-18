@@ -471,8 +471,8 @@ export function isHttpOrHttps(url) {
 }
 
 export function getFileExtension(filename) {
-    var splitDot = filename.split('.')
-    var fileExt = splitDot.pop();
+    let splitDot = filename.toLowerCase().split('.')
+    let fileExt = splitDot.pop();
     // if the extension ends in a / then we are probably trying to load an attachment
     // like https://www.metabunk.org/attachments/n615ux-track-egm96-kml.54528/
     // from Metabunk, so the extension is actually the end of the string before the last .
@@ -481,7 +481,17 @@ export function getFileExtension(filename) {
         var beforeExt = splitDot.pop();
         fileExt = beforeExt.split('-').pop()
     }
-    return fileExt.toLowerCase();
+
+    // handle specific extensions like .sitch.js
+    // get the part of the filename before the last dot
+    // and if it's a recognized type them prepend it to the extension
+    // returning, for example, sitch.js
+    if (fileExt === "js") {
+        let prev = splitDot.pop();
+        fileExt = prev +"."+ fileExt;
+    }
+
+    return fileExt;
 }
 
 // Finds the current browser URL, strips off the parameters, and adds new ones

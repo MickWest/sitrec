@@ -41,16 +41,25 @@ export function registerSitches(textSitches) {
     // add the text sitches
     for (const key in textSitches) {
         const text = textSitches[key];
+        const obj = textSitchToObject(text);
 //        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
-        // strip off everything up to the first {
-        const firstBrace = text.indexOf("{");
-        const data = text.substring(firstBrace);
-        console.log ("Parse >>>>>")
-        const obj = parseJavascriptObject(data)
-        console.log("<<<<<<<<<<< Parsed");
-
         SitchMan.add(key, obj);
     }
 
 
+}
+
+export function textSitchToObject(text) {
+// we have a text sitch, which starts with something like:
+    // sitch = {
+    //     include_pvs14: true,
+    //     name: "westjet",
+    // we want the contents of the object
+// strip off everything up to the first brace
+    const firstBrace = text.indexOf("{");
+    const data = text.substring(firstBrace);
+    console.log("Parse >>>>>")
+    const obj = parseJavascriptObject(data)
+    console.log("<<<<<<<<<<< Parsed");
+    return obj;
 }

@@ -151,6 +151,7 @@ startAnimating(Sit.fps);
 // if testing, then wait 3.5 seconds, and then load the next test URL
 
 setTimeout( checkForTest, 3500);
+setTimeout( checkForNewSitchText, 500);
 
 // **************************************************************************************************
 // *********** That's it for top-level code. Functions follow ***************************************
@@ -175,15 +176,37 @@ function checkForTest() {
     }
 }
 
+let newSitchText = undefined;
+function checkForNewSitchText() {
+    if (newSitchText !== undefined) {
+        console.log("New Sitch Text = " + newSitchText)
+        newSitch(newSitchText, true);
+        newSitchText = undefined;
+    }
+    setTimeout( checkForNewSitchText, 500);
+}
+
+export function setNewSitchText(text){
+    newSitchText = text;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-async function newSitch(situation) {
+async function newSitch(situation, customSetup = false ) {
     cancelAnimationFrame(animate);
     await waitForParsingToComplete();
     disposeEverything();
-    selectInitialSitch(situation);
+    if (!customSetup) {
+        // if it's not custom, then "situation" is a name of a default sitch
+        selectInitialSitch(situation);
+    } else {
+        // if it's custom, then "situation" is a sitch data file
+        // i.e. the text of a text based sitch
+        par.name = "CUSTOM";
+        setSit(new CSituation(situation))
+    }
     legacySetup();
     await setupFunctions();
     startAnimating(Sit.fps);

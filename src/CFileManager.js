@@ -53,10 +53,13 @@ export class CFileManager extends CManager {
             reader.addEventListener('load', () => {
                 // When the file has been read, parse it as an asset
              //   this.parseAsset(file.name, file.name, reader.result)
+
+                // do we want to always rehost?
+
                 Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
                    console.log("Imported File Rehosted as " + rehostResult);
+                    DragDropHandler.parseResult(file.name, reader.result);
                 });
-                DragDropHandler.parseResult(file.name, reader.result);
 
             });
 
@@ -240,8 +243,9 @@ export class CFileManager extends CManager {
                     parsed = parseXml(decoder.decode(buffer));
 
                     break;
-                case "glb":
-                case "bin":     // for binary files like BSC5 (the Yale Bright Star Catalog)
+                case "glb":             // 3D models in glTF binary format
+                case "bin":             // for binary files like BSC5 (the Yale Bright Star Catalog)
+                case "sitch.js":        // custom text sitch files
                     parsed = buffer;
                     break;
                 case "srt": // SRT is a subtitle file, but is used by DJI drones to store per-frame coordinates.

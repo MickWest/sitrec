@@ -43,6 +43,7 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
 
 //        console.log("Start time: "+ startTime+" = "+msStart+" ms")
         var points = misb.misb.length
+        assert(points > 1, "Not enough data to make a track for " + this.id)
         var slot = 0;
         var msNeeded = Sit.frames*Sit.fps*1000;
         var msEnd = msStart+msNeeded

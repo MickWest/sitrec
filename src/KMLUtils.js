@@ -122,7 +122,7 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
                 for (var i=0;i<p.length;i++) {
                     const date = p[i].TimeStamp.when["#text"]
 
-                    if (i>0 && p[i].TimeStamp.when["#text"] === p[i].TimeStamp.when["#text"]) {
+                    if (i>0 && p[i].TimeStamp.when["#text"] === p[i-1].TimeStamp.when["#text"]) {
                         console.warn("getKMLTrackWhenCoord: FR24 Duplicate time "+p[i].TimeStamp.when["#text"])
                         continue;
                     }

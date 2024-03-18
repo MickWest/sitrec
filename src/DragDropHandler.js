@@ -5,6 +5,8 @@ import {FileManager, NodeMan, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
+import {setNewSitchText} from "./index";
+import {textSitchToObject} from "./RegisterSitches";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -134,6 +136,18 @@ class CDragDropHandler {
                     } else if (fileExt === "kml") {
 //                        addKMLMarkers(x.parsed)
                         addKMLTracks([x.filename], true)
+                    } else if (fileExt === "sitch.js") {
+                        // x.parsed is a sitch text def
+                        // make a copy of the string (as we might be removing all the files)
+                        // and set it as the new sitch text
+                        let copy = x.parsed.slice();
+                        // if it's an arraybuffer, convert it to a sitch object
+                        if (copy instanceof ArrayBuffer) {
+                            const decoder = new TextDecoder('utf-8');
+                            const decodedString = decoder.decode(copy);
+                            copy = textSitchToObject(decodedString);
+                        }
+                        setNewSitchText(copy)
                     }
                 }
                 console.log("parseResult: DONE Parse " + filename)
