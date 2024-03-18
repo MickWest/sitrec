@@ -20,6 +20,8 @@ import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 export const SitHayle = {
     name: "hayle",
     menuName: "Hayle Beach / St. Ives",
+    isTextable: false,
+
 
     files: {
         hayleCSV: "hayle/hayle-track.csv",

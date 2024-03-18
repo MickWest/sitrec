@@ -14,6 +14,8 @@ export const SitFAA2023 = {
     include_nightsky: true,
     name: "faa2023",
     menuName: "FAA 2023",
+    isTextable: false,
+
     files2: {
         data: "faa2023/Responsive Records for 2024-01435_January 1 2023 to April 30 2023.csv",
     },

@@ -11,6 +11,7 @@ export const SitChilean = {
     include_kml: true,
     name: "chilean",
     menuName: "Chilean Navy IB 6830",
+    isTextable: false,
 
     planeCameraFOV: 0.75    ,
     targetSize: 1, // in feet

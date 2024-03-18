@@ -41,6 +41,8 @@ import {commonJetLabels} from "./CommonSitch";
 
 const GimbalDefaults = {
     name:"gimbal",
+    isTextable: false,
+
     fps: 29.97,
     frames: 1031,
     aFrame: 0,

@@ -20,7 +20,7 @@ export const SitKML = {
     mainView: {},  // Mainview is first, as it's often full-screen
     lookView: {},
 
-    videoView: {left: 0.5, top: 0, width: -9 / 16, height: 1,},
+    videoView: {left: 0.5, top: 0, width: -0.5625, height: 1,},
 
     focusTracks: {
         "Ground (No Track)": "default",

@@ -3,6 +3,7 @@ export const SitFolsomLake2 = {
     include_folsomlake: true,
     name: "folsomlake2",
     menuName: "Folsom Lake Test2",
+    isTextable: true,
 
     tilt: 0,
 

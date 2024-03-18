@@ -2,6 +2,8 @@ export const SitLakeMichiganTicTac = {
     include_kml: true,
     name: "lakemichigan",
     menuName: "Lake Michigan Tic-Tac",
+    isTextable: true,
+
 
     targetSize: 200, // in feet
     tilt: 0,

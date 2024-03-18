@@ -18,6 +18,7 @@ import {asyncCheckLogin} from "../login";
 export const SitNightSky = {
     name: "nightsky",
     menuName: "Night Sky / Starlink",
+    isTextable: false,
 
 
     showDateTime: true, // opens the DateTime folder in the UI

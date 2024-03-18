@@ -53,6 +53,8 @@ import {commonJetLabels} from "./CommonSitch";
 export var SitGoFast = {
     name: "gofast",
     menuName: "GoFast",
+    isTextable: false,
+
 
     animate:true,
     azSlider:{defer:true},

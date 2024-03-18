@@ -5,6 +5,8 @@ import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 export const SitRGB = {
     name: "rgb",
     menuName: "RGB Profile",
+    isTextable: false,
+
 
 
 

@@ -41,6 +41,7 @@ import {addControllerTo} from "../nodes/CNodeController";
 export const SitAguadilla = {
     name: "agua",
     menuName: "Aguadilla",
+    isTextable: false,
 
     fps: 29.97,
     frames: 7028,  // note, old CSV was 7027, so duplicated the last line to match the video at 7028

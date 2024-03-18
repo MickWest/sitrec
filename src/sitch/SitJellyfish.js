@@ -6,6 +6,8 @@ import {commonLabels} from "./CommonSitch";
 export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
+    isTextable: false,
+
 
     simSpeed: 1,
     videoSpeed: 1,

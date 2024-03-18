@@ -39,6 +39,8 @@ import {commonJetLabels} from "./CommonSitch";
 export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
+    isTextable: false,
+
 
     fps: 29.97,
     frames: 2289,

@@ -2,6 +2,7 @@ export const SitITY621 = {
     include_kml: true,
     name: "ity621",
     menuName: "ITY621 Dark Contrails",
+    isTextable: true,
 
 
     targetSize: 200, // in feet
@@ -27,8 +28,8 @@ export const SitITY621 = {
     cameraTrack: {},
 
 
-    lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
-    videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
+    lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
+    videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 
     include_KMLTrackToTrack: true,

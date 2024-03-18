@@ -3,20 +3,18 @@ export const SitHulsey = {
     include_kml: true,
     name: "hulsey",
     menuName: "Hulsey Starlink",
-
-
+    isTextable: true,
 
 
     // maybe have these in CSituation
     nearClip: 1,
-    farClipLook: 6800*1000,
+    farClipLook: 6800000,
     nearClipLook: 1,
 
     starScale: 0.44,
 
     frames: 623,
     terrain: {lat: 34.001856, lon: -118.806196, zoom: 9, nTiles: 8},
-//    lat: 34.001856, lon: -118.806196,
 
     files: {
         cameraFile: 'hulsey/N67WV-track-EGM96.kml',

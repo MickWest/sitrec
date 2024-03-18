@@ -5,6 +5,8 @@ import {CNodeVideoWebCodecView} from "../nodes/CNodeVideoWebCodecView";
 export const SitVideo = {
     name: "video",
     menuName: "Video Viewer",
+    isTextable: false,
+
 
     fps: 30,
     frames: 0,

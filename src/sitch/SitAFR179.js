@@ -1,10 +1,11 @@
-
 export const SitAFR179 = {
     include_kml: true,
     name: "afr179",
     menuName: "AFR179 Fly-by",
+    isTextable: true,
 
-    frames: 157 * 8, // currently needs manual setting
+
+    frames: 1256, // 157 * 8, // currently needs manual setting
     videoSpeed: 8,
 
     terrain: {lat: 37.897411, lon: -84.402051, zoom: 9, nTiles: 8},
@@ -23,8 +24,8 @@ export const SitAFR179 = {
     },
 
     mainView:{left:0.0, top:0, width:0.9,height:1},
-    lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
-    videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
+    lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
+    videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
 
     skyColor: '#AFBDD1',  // grey from the video
 

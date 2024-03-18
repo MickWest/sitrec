@@ -293,13 +293,13 @@ To get the camera position, just move it to where you want and then copy-and-pas
 
 To adjust the views, you can add a view rectangle specifier for each one. For example:
 ```javascript
-lookView: { left: 0.75, top: 0.35, width: -540/720, height: 0.65,},
-videoView: { left: 0.5, top: 0.35, width: -540/720, height: 0.65,},
+lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
+videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
 mainView: { left: 0.0, top: 0, width: 1, height: 1},
 ```
 
 Positions and size are specified as a fraction of the screen's width and height
-If one component (width or height) is negative, then that means it is a multiple of the other one. In the example above, we use a height of 0.65 of the window height, and then 540/720ths of that for the width. This ratio comes from the width and height of the video. 
+If one component (width or height) is negative, then that means it is a multiple of the other one. In the example above, we use a height of 0.65 of the window height, and then 0.75ths of that for the width. This ratio comes from the width and height of the video. 
 
 Note in the above, mainView covers the entire screen, but it's also typical to limit it to half the screen. 
 

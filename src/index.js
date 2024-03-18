@@ -178,7 +178,7 @@ function checkForTest() {
 Globals.newSitchText = undefined;
 
 function checkForNewSitchText() {
-    if (newSitchText !== undefined) {
+    if (Globals.newSitchText !== undefined) {
         console.log("New Sitch Text = " + Globals.newSitchText)
         newSitch(Globals.newSitchText, true);
         Globals.newSitchText = undefined;

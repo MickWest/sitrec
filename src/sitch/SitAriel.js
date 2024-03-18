@@ -1,6 +1,7 @@
 export const SitAriel = {
     name: "ariel",
     menuName: "Ariel School",
+    isTextable: true,
 
     fps: 29.97,
     frames: 7027,

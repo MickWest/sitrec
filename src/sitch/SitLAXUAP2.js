@@ -2,6 +2,7 @@ export const SitLAXUAP2 = {
     include_laxuap:true,
     name: "laxuap2",
     menuName: "LAX Balloon-Like 2",
+    isTextable: true,
 
     videoFile: "../sitrec-videos/private/LAXUAP - 10-18-07.mp4",
     startTime: "2023-12-10T18:18:07.000Z",

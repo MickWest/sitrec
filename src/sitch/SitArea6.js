@@ -1,7 +1,7 @@
 export const SitArea6 = {
     name: "area6",
     menuName: "Area 6",
-
+    isTextable: true,
 
 
     files: {
@@ -12,7 +12,7 @@ export const SitArea6 = {
     units: "Imperial",
 
     fps: 29.97,
-    frames: (10*60+50)*29.97,
+    frames: 19480, // (10*60+50)*29.97,
     startTime: "2023-08-05T07:39:13.000Z",
 
     starScale: 0.3,
@@ -32,12 +32,12 @@ export const SitArea6 = {
     mainView:{left:0.0, top:0, width:.50,height:1,background:'#132d44',},
 
     lookCamera: {fov: 10, far: 80000000, },
-    lookView: {left:0.5, top:0.5, width:-1280/714,height:0.5,background:'#132d44',},
+    lookView: {left:0.5, top:0.5, width:-1.792,height:0.5,background:'#132d44',},
     lookPosition: { fromLat: 36.208582, fromLon: -115.984598, fromAltFeet: 2700, fromAltMin: 0, framAltMax: 55000,},
 
     ptz: {az: -6.2, el: 9.8, fov: 11.8, showGUI: true},
 
-    videoView: {left: 0.5, top: 0, height: 0.5, width: -16 / 9 },
+    videoView: {left: 0.5, top: 0, height: 0.5, width: -1.777777 },
     labelView: {id:"labelVideo", overlay: "lookView"},
     DisplayCameraFrustum: {radius:100000},
 

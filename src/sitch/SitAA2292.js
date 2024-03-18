@@ -2,6 +2,8 @@ export const SitAA2292 = {
     include_kml: true,
     name: "aa2292",
     menuName: "AA2292 Cruise Missile",
+    isTextable: true,
+
 
     targetSize: 85, // in feet
 
@@ -11,8 +13,8 @@ export const SitAA2292 = {
         cameraFile: 'aa2292/FlightAware_AAL2292_KCVG_KPHX_20210221.kml',
         KMLTarget: "aa2292/FlightAware_N738RJ_KSLC_KBCT_20210221.kml"
     },
-    videoFile: undefined,
-    videoView: undefined,
+    videoFile: null,
+    videoView: null,
     startTime: "2021-02-21T19:10:10.800Z",
 
 

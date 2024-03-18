@@ -6,6 +6,8 @@ export const SitRGordon = {
     include_pvs14: true,
     name: "rgordon",
     menuName: "RGordon Starlink",
+    isTextable: true,
+
     simSpeed: 1,
     fps:24,
 

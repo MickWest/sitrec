@@ -6,6 +6,7 @@ import {Color} from "three";
 export const SitSWR = {
     name: "swr",
     menuName: "Skinwalker Ranch",
+    isTextable: false,
 
 
 

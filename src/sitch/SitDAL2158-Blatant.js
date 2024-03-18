@@ -2,6 +2,8 @@ export const SitDAL2158 = {
     include_kml: true,
     name: "dal2158",
     menuName: "Blatant's DAL2158",
+    isTextable: true,
+
 
     tilt: 0,
 

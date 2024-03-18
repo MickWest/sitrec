@@ -3,6 +3,8 @@ export const SitLAXUAP = {
     include_kml: true,
     name: "laxuap",
     menuName: "LAX Balloon-Likes",
+    isTextable: true,
+
 
     showAltitude:false,
     showAz:false,

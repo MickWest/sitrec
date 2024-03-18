@@ -2,6 +2,8 @@ export const SitPorterville = {
     include_kml: true,
     name: "porterville",
     menuName: "Porterville Sphere",
+    isTextable: true,
+
 
     tilt: 0,
 

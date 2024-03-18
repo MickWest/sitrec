@@ -2,6 +2,7 @@ export const SitFolsomLake = {
     include_kml: true,
     name: "folsomlake",
     menuName: "Folsom Lake Test",
+    isTextable: true,
 
     tilt: 0,
 

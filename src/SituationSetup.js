@@ -132,9 +132,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
         // we can have undefined values in sitData, so skip them
         // this normall occurs when we have a base situation, and then override some values
-        if (_data === undefined) continue;
-
-        assert(_data !== null, "SituationSetup: _data is null");
+        if (_data === undefined || _data === null) continue;
 
         let data;
         // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
