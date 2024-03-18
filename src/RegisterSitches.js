@@ -2,6 +2,16 @@
 import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
 
+//////////////////////////////////////////////////////////////////////////////////////
+// Note. This failed once due to what seemed to be a circular dependency
+// the require.context('./sitch', false, /^\.\/.*\.js$/); was not returning the "nightsky" sitch
+// I suspect a webpack bug.
+// The circular dependency arose with DragDropHandler.js importing a variable from index.js
+// and index.js includes a lot of things, including DragDropHandler (via FileManager)
+// Circular dependencies have caused other obscure failures, and are best avoided entirely.
+/////////////////////////////////////////////////////////////////////
+
+
 //const sitchContext = require.context('./sitch', false, /^\.\/Sit.*\.js$/);
 
 // the Sitchman is an object manager that contains both:
