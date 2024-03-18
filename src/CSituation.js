@@ -21,6 +21,8 @@ import stringify from "json-stringify-pretty-compact";
 
 const situationDefaults = {
     name: "gimbal",
+    isTextable: false,
+
     fps: 30,
     frames:1031,
     aFrame:0,

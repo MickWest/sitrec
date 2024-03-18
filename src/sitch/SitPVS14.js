@@ -73,8 +73,8 @@ export const SitPVS14 = {
     videoFile: "../sitrec-videos/private/pvs14-2023-pilot-video.mp4",
 
     mainView:{left:0.0, top:0, width:0.5,height:1,background:'#000000'},
-    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5,background:'#000000'},
-    videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,background:'#000000'},
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5},
     DisplayCameraFrustum: {radius:100000},
 
     ptz: {az: 24.8, el: 3.7, fov: 27.7, showGUI: true},

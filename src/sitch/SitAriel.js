@@ -1,7 +1,3 @@
-
-import {DirectionalLight, HemisphereLight} from "../../three.js/build/three.module";
-import {GlobalScene} from "../LocalFrame";
-
 export const SitAriel = {
     name: "ariel",
     menuName: "Ariel School",
@@ -31,24 +27,5 @@ export const SitAriel = {
 
     // Ariel
      terrain: {lat: -17.863574, lon: 31.290858, zoom: 15, nTiles: 3, tileSegments: 256},
-
-
-    setup: function() {
-
-        // Lighting
-        var light = new DirectionalLight(0xffffff, 0.8);
-        light.position.set(100,300,100);
-        GlobalScene.add(light);
-
-
-        const hemiLight = new HemisphereLight(
-            'white', // bright sky color
-            'darkslategrey', // dim ground color
-            0.3, // intensity
-        );
-        GlobalScene.add(hemiLight);
-
-
-    }
 
 }

@@ -134,6 +134,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
         // this normall occurs when we have a base situation, and then override some values
         if (_data === undefined) continue;
 
+        assert(_data !== null, "SituationSetup: _data is null");
 
         let data;
         // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)

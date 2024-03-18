@@ -35,9 +35,9 @@ export const SitPorterville = {
     // already calculated from the focal length in an SRT file.
     fovController: {source: "cameraTrack", object: "lookCamera"},
 
-    videoView: {left: 0.5, top: 0, width: -1280 / 714, height: 0.5},
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5},
 
-    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5},
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5},
     mainView:{left:0.0, top:0, width:0.5,height:1},
 
     cameraSphereSize: 20,

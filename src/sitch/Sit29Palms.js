@@ -2,7 +2,7 @@
 export const Sit29Palms = {
     name: "29palms",
     menuName: "29 Palms Back Photo",
-
+    isTextable: true,
 
     files: {
         threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
@@ -14,7 +14,7 @@ export const Sit29Palms = {
     units: "Imperial",
 
     fps: 30,
-    frames: 30 * 6,
+    frames: 180,
     startTime: "2021-04-21T03:23:53.000Z",
 
     // discussion thread, not currently used, but could be displayed in the GUI
@@ -31,7 +31,7 @@ export const Sit29Palms = {
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, fov: 50, background: '#132d44',},
 
     lookCamera: {fov: 10,},
-    lookView: {left: 0.5, top: 0.5, width: -1280 / 714, height: 0.5, background: '#132d44',},
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#132d44',},
 
     cameraTrack: {LLA: [34.399060162,-115.858257450, 1402]},
     followTrack: {}, // will default to lookCamera and cameraTrack
@@ -43,7 +43,7 @@ export const Sit29Palms = {
         filename: 'threePlanes',
        // smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
         draggable: true, resizable: true,
-        left: 0.5, top: 0, width: -1280 / 714, height: 0.5,
+        left: 0.5, top: 0, width: -1.7927, height: 0.5,
     },
 
     labelView: {},

@@ -48,8 +48,8 @@ export const SitHayle = {
     ptz: {az: -37.4, el: -4.3, fov: 45, showGUI: false},
 
     mainView: {left: 0.0, top: 0, width: 0.53, height: 1, background: "#989fa7"},
-    lookView: {left: 0.53, top: 0.5, width: -1280 / 714, height: 0.5,},
-    videoView: {left: 0.53, top: 0, width: -1280 / 714, height: 0.5,},
+    lookView: {left: 0.53, top: 0.5, width: -1.7927, height: 0.5,},
+    videoView: {left: 0.53, top: 0, width: -1.7927, height: 0.5,},
 
     targetSize: 3,
 

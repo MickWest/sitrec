@@ -3,7 +3,6 @@ import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
 
 //const sitchContext = require.context('./sitch', false, /^\.\/Sit.*\.js$/);
-const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 
 // the Sitchman is an object manager that contains both:
 // 1. the sitches
@@ -18,19 +17,21 @@ const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
+const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 export function registerSitches(textSitches) {
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);
         Object.keys(moduleExports).forEach(exportKey => {
             const exportObject = moduleExports[exportKey];
+            console.log("Checking key: "+key+ " Which exports = "+exportKey)
             if(exportKey.startsWith('Sit')) {
-         //       console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
+                console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 SitchMan.add(exportObject.name, exportObject);
                 //const sitchName = exportKey.substring(3);
                 //SitchMan.add(sitchName, exportObject);
 
             } else if (exportKey.startsWith('common')) {
-         //       console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
+                console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 // remove the common prefix
                 const commonName = exportKey.substring(6);
                 SitchMan.add(commonName, exportObject);

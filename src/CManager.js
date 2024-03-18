@@ -41,12 +41,21 @@ class CManager {
 
     // returns just the data member object (a parsed arraybuffer, type varies)
     get(id) {
+        if (this.list[id] === undefined) {
+            console.log("Missing Managed object "+id+", use exists() if you are just checking");
+            console.log("Available keys are: ");
+            for (let key in this.list) {
+                console.log("key", key)
+            }
+        }
         assert(this.list[id] !== undefined, "Missing Managed object "+id+", use exists() if you are just checking")
         return this.list[id].data
     }
 
     // returns the full object, so you can check filename, etc.
     getInfo(id) {
+
+
         assert(this.list[id] !== undefined, "Missing Managed object "+id+", use exists() if you are just checking")
         return this.list[id]
     }

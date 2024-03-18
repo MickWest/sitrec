@@ -488,6 +488,16 @@ export function getFileExtension(filename) {
     // returning, for example, sitch.js
     if (fileExt === "js") {
         let prev = splitDot.pop();
+        // it pre starts with "sit" then either:
+        // 1 - it's a sitch.js file or
+        // 2 - it' a code sitch, like SITAFR179.js
+        // the first is the most likely, coing forward, but we want to support
+        // the second for backwards compatibility
+        if (prev.startsWith("sit")) {
+            // so we just pretend it's got a sitch.js extension
+            prev = "sitch"
+        }
+
         fileExt = prev +"."+ fileExt;
     }
 
