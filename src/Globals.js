@@ -35,6 +35,9 @@ export function setGlobalURLParams(i) {GlobalURLParams=i;}
 export var GlobalDateTimeNode;
 export function setGlobalDateTimeNode(i) {GlobalDateTimeNode=i;}
 
+export function setNewSitchText(text){
+    Globals.newSitchText = text;
+}
 
 export function setupGUIGlobals(_gui, _show, _tweaks) {
     gui = _gui

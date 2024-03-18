@@ -1,11 +1,10 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
-import {addKMLMarkers, addKMLTracks} from "./KMLNodeUtils";
-import {FileManager, NodeMan, Sit} from "./Globals";
+import {addKMLTracks} from "./KMLNodeUtils";
+import {FileManager, NodeMan, setNewSitchText} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
-import {setNewSitchText} from "./index";
 import {textSitchToObject} from "./RegisterSitches";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing

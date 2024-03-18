@@ -56,7 +56,6 @@ import {CNodeFactory} from "./nodes/CNodeFactory";
 import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {assert} from "./utils"
-import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
@@ -176,18 +175,15 @@ function checkForTest() {
     }
 }
 
-let newSitchText = undefined;
+Globals.newSitchText = undefined;
+
 function checkForNewSitchText() {
     if (newSitchText !== undefined) {
-        console.log("New Sitch Text = " + newSitchText)
-        newSitch(newSitchText, true);
-        newSitchText = undefined;
+        console.log("New Sitch Text = " + Globals.newSitchText)
+        newSitch(Globals.newSitchText, true);
+        Globals.newSitchText = undefined;
     }
     setTimeout( checkForNewSitchText, 500);
-}
-
-export function setNewSitchText(text){
-    newSitchText = text;
 }
 
 
