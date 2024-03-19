@@ -26,7 +26,7 @@ import {addKMLTracks} from "./KMLNodeUtils";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
-import {AddAltitudeGraph, AddSpeedGraph} from "./JetGraphs";
+import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -538,14 +538,14 @@ export function SituationSetupFromData(sitData, runDeferred) {
             case "targetSizedSphere":
                 SSLog();
                 new CNodeDisplayTargetSphere({
-                    track: data.targetTrack ?? "targetTrack",
+                    track: data.track ?? "targetTrack",
                     size: new CNodeScale("sizeScaledLOS" + data.id, scaleF2M,
                         new CNodeGUIValue({
                             value: data.size ?? 3,
                             start: 0,
                             end: 200,
                             step: 0.01,
-                            desc: "LOS Sphere size ft"
+                            desc: "Target    Sphere size ft"
                         }, gui)
                     ),
                     layers: LAYER.MASK_LOOK,
@@ -619,6 +619,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     id: "targetWind",
                     from: data.from,
                     knots: data.knots,
+                    max: data.max,
                     name: "Target",
                     arrowColor: "red"
                 }, gui)
@@ -630,7 +631,8 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     id: "objectWind",
                     from: data.from,
                     knots: data.knots,
-                    name: "Target",
+                    max: data.max,
+                    name: "Object",
                     arrowColor: "cyan"
                 }, gui)
                 break;
@@ -641,7 +643,8 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     id: "localWind",
                     from: data.from,
                     knots: data.knots,
-                    name: "Target",
+                    max: data.max,
+                    name: "Local",
                     arrowColor: "yellow"
                 }, gui)
                 break;
@@ -699,7 +702,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                             start: 0,
                             end: 200,
                             step: 0.01,
-                            desc: "LOS Sphere size ft"
+                            desc: "Target Sphere size ft"
                         }, gui)
                     ),
                     layers: LAYER.MASK_LOOK,
@@ -830,6 +833,42 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
                 )
                 break;
+
+            case "tailAngleGraph":
+                SSLog();
+                AddTailAngleGraph(
+                    {
+                        targetTrack: data.targetTrack ?? "targetTrack",
+                        cameraTrack: data.cameraTrack ?? "cameraTrack",
+                        wind: data.wind ?? "targetWind",
+                    },
+                    {
+                        left: data.left ?? 0,
+                        top: data.top ?? 0,
+                        width: data.width ?? 0.15,
+                        height: data.height ?? 0.25,
+                    }
+
+                );
+                break;
+
+            case "targetDistanceGraph":
+                SSLog();
+                AddTargetDistanceGraph(
+                    {
+                        targetTrack: data.targetTrack ?? "targetTrack",
+                        cameraTrack: data.cameraTrack ?? "cameraTrack",
+                    },
+                    {
+                        left: data.left ?? 0,
+                        top: data.top ?? 0.25,
+                        width: data.width ?? 0.15,
+                        height: data.height ?? 0.25,
+                    }
+
+                );
+                break;
+
 
             default:
 

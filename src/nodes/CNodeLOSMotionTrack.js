@@ -1,8 +1,9 @@
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {ExpandKeyframes, radians, RollingAverage, tan} from "../utils";
-import {FileManager, NodeMan} from "../Globals";
+import {FileManager, NodeMan, Sit} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
-import {V3} from "../threeExt";
+import {DebugArrowAB, V3} from "../threeExt";
+import {GlobalScene} from "../LocalFrame";
 
 
 /*
@@ -22,6 +23,7 @@ example usage:
 
 export class CNodeLOSMotionTrack extends CNodeEmptyArray {
     constructor(v) {
+        v.frames ??= Sit.frames;
         super(v);
         this.input("cameraTrack")
         this.csv = FileManager.get(v.csv)
@@ -50,7 +52,7 @@ export class CNodeLOSMotionTrack extends CNodeEmptyArray {
         this.array = []
         // calculate the distance to the projection plane
         // units are arbitary, but we can think of it as the video scaled up
-        // to 1 pixel = 1 meter, then suspected in the air along the camera's -z vector
+        // to 1 pixel = 1 meter, then suspended in the air along the camera's -z vector
         // at a distance that fills the full width of the lookCam view
         // we can then take pixel positions calculated by the motion tracking data
         // and just add them to the center position of this virtual distant video
@@ -68,7 +70,7 @@ export class CNodeLOSMotionTrack extends CNodeEmptyArray {
             // find the midpoint of the virtual video (1 pixel = 1 meter, as above
             var mid = pos.clone().add(fwd.clone().multiplyScalar(d))
 
-//            DebugArrowAB("Cam to vid",pos,mid,0x00ffff,true,GlobalScene)
+        //    DebugArrowAB("Cam to vid",pos,mid,0x00ffff,true)
 
             var xoff = (this.xValues[f] - this.width / 2)
 //            var xoff = (this.width/2)

@@ -98,7 +98,7 @@ export var SitGoFast = {
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
 
-    targetSizedSphere: { defer: true, size:3, targetTrack: "LOSTraverseSelect" },
+    targetSizedSphere: { defer: true, size:3, track: "LOSTraverseSelect" },
 
     include_JetLabels: true,
 
