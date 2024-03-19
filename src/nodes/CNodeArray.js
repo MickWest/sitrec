@@ -1,6 +1,7 @@
 import {assert, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";
 import {MISB} from "../MISB";
+import {Sit} from "../Globals";
 
 export class CNodeArray extends CNode {
     constructor(v) {
@@ -23,6 +24,32 @@ export class CNodeEmptyArray extends CNodeArray {
         v.array = []
         super(v)
     }
+}
+
+// example (data driven):
+//     focalLength: {kind: "ManualData", data: [0,3000,  745, 1000,]},
+export class CNodeManualData extends CNodeEmptyArray {
+    constructor(v) {
+        super(v);
+        this.frames = Sit.frames;
+        this.data = v.data;
+        this.array = new Array(this.frames);
+        let dataIndex = 0;
+        let dataLength = this.data.length;
+        for (let f=0; f<this.frames;f++) {
+            // if the NEXT frame value is less than or equal to the current frame,
+            // then we need to move to the next data value
+            while (dataIndex < dataLength-2 && this.data[dataIndex+2] <= f) {
+                dataIndex += 2;
+            }
+            this.array[f] = this.data[dataIndex + 1];
+//            console.log("CNodeManualData: frame="+f+" dataIndex="+dataIndex+" value="+this.array[f]);
+        }
+
+    }
+
+
+
 }
 
 

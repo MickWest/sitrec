@@ -16,18 +16,17 @@ import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "./nodes/CNodeDisplayTargetSphere";
-import {CNodeArray, makeArrayNodeFromColumn, makeArrayNodeFromMISBColumn} from "./nodes/CNodeArray";
+import {CNodeArray, makeArrayNodeFromMISBColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
-import stringify from "json-stringify-pretty-compact";
 import {CNodeWind} from "./nodes/CNodeWind";
-import {CreateTraverseNodes, Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
+import {Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
-import {SITREC_ROOT, SITREC_SERVER, SITREC_UPLOAD} from "../config";
+import {AddAltitudeGraph, AddSpeedGraph} from "./JetGraphs";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -721,7 +720,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 if (data.method === "moving") {
                     NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                         {
-                         //   source: data.track,
+                            //   source: data.track,
                             method: data.method,
                             copyData: true,
                             window: new CNodeGUIValue({
@@ -737,7 +736,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 } else {
                     NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
                         {
-                         //   source: data.track,
+                            //   source: data.track,
                             method: "catmull",
                             intervals: new CNodeGUIValue({
                                 value: 20,
@@ -768,7 +767,6 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     }
                 );
                 break;
-
 
 
             case "azSlider":
@@ -802,15 +800,66 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
                 break;
 
-            default:
-                // check to see if the "kind" is a node type
-                // if so, then create a node of that type
-                // passing in the data as the constructor
-                if (NodeMan.validType(key)) {
-                    SSLog();
-                    NodeMan.create(key, data);
-                }
+            case "speedGraph":
+                SSLog();
+                AddSpeedGraph(
+                    data.track ?? "targetTrack",
+                    data.label ?? "Speed",
+                    data.min ?? 0,
+                    data.max ?? 100,
+                    data.left ?? 0,
+                    data.top ?? 0,
+                    data.width ?? 0.2,
+                    data.height ?? 0.25,
 
+                )
+                break;
+
+            case "altitudeGraph":
+                SSLog();
+                // this should be changed to be the same as the speed graph
+                AddAltitudeGraph(
+                    data.min ?? 0,
+                    data.max ?? 100,
+                    data.track ?? "targetTrack",
+//                    data.label ?? "Speed",
+                    data.left ?? 0,
+                    data.top ?? 0,
+                    data.width ?? 0.2,
+                    data.height ?? 0.25,
+
+                )
+                break;
+
+            default:
+
+
+                // what if it's a controller???
+                // we have custom setup above, but need a more generic way to do this
+                // with nodes. Specifically create the controller and add it to the camera
+                // so we'll have a "camera" key in the data, and we'll add the controller to that
+                // but need to detect if it's derived from CNodeController
+                // and then add it to the camera
+                if (NodeMan.isController("Controller" + key)) {
+                    const camera = data.camera ?? "lookCamera";
+                    const cameraNode = NodeMan.get(camera);
+                    if (cameraNode) {
+                        cameraNode.addController(key, data);
+                    } else {
+                        console.error("SituationSetup: controller " + key + " needs a camera")
+                    }
+                } else {
+
+                    // check to see if the "kind" is a node type
+                    // if so, then create a node of that type
+                    // passing in the data as the constructor
+                    if (NodeMan.validType(key)) {
+                        SSLog();
+                        // otherwise it's just a regular node
+                        NodeMan.create(key, data);
+                    }
+                }
+                break;
         }
     }
 }

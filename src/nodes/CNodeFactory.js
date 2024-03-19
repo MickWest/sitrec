@@ -3,6 +3,7 @@
 import {CManager} from "../CManager";
 import {assert} from "../utils";
 import {CNode} from "./CNode";
+import {CNodeController} from "./CNodeController";
 
 export class CNodeFactory extends CManager{
     constructor(props) {
@@ -50,6 +51,12 @@ export class CNodeFactory extends CManager{
         return result;
     }
 
+    // return true if "type" is a type of controller node
+    isController(type) {
+        console.log("Checking if "+type+" is a controller")
+        if (this.nodeTypes[type] === undefined) return false;
+        return this.nodeTypes[type].prototype instanceof CNodeController;
+    }
 
 
     // rename a node without relinking any of the outputs
@@ -173,6 +180,7 @@ export class CNodeFactory extends CManager{
         else
             return super.get(n)
     }
+
 
 
     disposeAll() {

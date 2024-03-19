@@ -1,13 +1,7 @@
-import {NodeMan, Sit} from "../Globals";
-import {AddAltitudeGraph, AddSpeedGraph} from "../JetGraphs";
-import {CNodeMunge} from "../nodes/CNodeMunge";
-import {commonLabels} from "./CommonSitch";
-
 export const SitJellyfish    = {
     name: "jellyfish",
     menuName: "Jellyfish in Iraq",
-    isTextable: false,
-
+    isTextable: true,
 
     simSpeed: 1,
     videoSpeed: 1,
@@ -126,45 +120,22 @@ export const SitJellyfish    = {
         width: 1,
     },
 
-    // the red line that joins the camera track to the target - i.e. the current LOS.
-    // [REMOVED, AS USING FRUSTUM]
-    // DisplayLOS: { kind: "DisplayTrackToTrack",
-    //     cameraTrack: "motionTrackLOS",
-    //     targetTrack: "targetTrack",
-    //     color: [1, 0, 0],
-    //     width: 2,
-    // },
-
-  //  targetSizedSphere: { defer:true, size:1.5, color: "grey"},
-
     DisplayCameraFrustum: {targetTrack: "targetTrack", units: "meters", step: 100},
 
     include_Labels: true,
 
-    setup2: function() {
 
-        NodeMan.get("lookCamera").addController("TrackToTrack", {
-            id:"lookAtGroundTrack",
-             sourceTrack: "cameraTrack",
-             targetTrack: "groundTrack",
-        }).addController("FocalLength", {
-            focalLength: new CNodeMunge({
-                munge:function(f) {
-                    // TOTO - abstract this out to a function that takes an array of frames/focal lengths
-                    if (f> 745) return {focal_len: 1000}
-                    else return {focal_len: 3000};
-                },
-                frames: this.frames,
+    tracking: {kind:"TrackToTrack", sourceTrack: "cameraTrack", targetTrack: "groundTrack",},
 
-            }),
-            referenceFOV: 0.6,
-            referenceFocalLength: 1000,
 
-        });
+    // manualData is pairs of frame, value
+    focalLengthData: {kind: "ManualData", data: [0,3000,  745, 1000,]},
 
-// maybe have "call" setup to make these data drive - ask copilot chat
-        AddSpeedGraph("targetTrack", "Target Speed", 0, Sit.targetSpeedMax, 0, 0, 0.20, 0.25)
-        AddAltitudeGraph(0, 3000, "targetTrack", 0.25, 0, 0.20, 0.25,500)
-    }
+    focalLenController: {source: "focalLengthData", len:1000, fov: 0.6},
+
+    speedGraph: {track: "targetTrack", label: "Target Speed", max: 30,},
+
+    altitudeGraph: {track: "targetTrack", max: 3000, left: 0.25},
+
 
 }
