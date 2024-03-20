@@ -23,6 +23,9 @@ export const SitNightSky = {
 
     showDateTime: true, // opens the DateTime folder in the UI
 
+    showFlareBand: true,
+    showSunArrows: true,
+
     farClipLook: 80000000,
 
 
@@ -214,6 +217,7 @@ export const SitNightSky = {
                 pd: par.paused,
                 ssa: nightSkyNode.showSunArrows,
                 sfr: nightSkyNode.showFlareRegion,
+                sfb: nightSkyNode.showFlareBand,
                 ssn: nightSkyNode.showSatelliteNames,
             }
 
@@ -349,9 +353,11 @@ export const SitNightSky = {
         if (p.ssa !== undefined) {
             nightSkyNode.showSunArrows = p.ssa;
             nightSkyNode.showFlareRegion = p.sfr;
+            nightSkyNode.showFlareBand = p.sfb ?? true;
             nightSkyNode.showSatelliteNames = p.ssn
             nightSkyNode.sunArrowGroup.visible = nightSkyNode.showSunArrows;
             nightSkyNode.flareRegionGroup.visible = nightSkyNode.showFlareRegion;
+            nightSkyNode.flareBandGroup.visible = nightSkyNode.showFlareBand;
             nightSkyNode.satelliteTextGroup.visible = nightSkyNode.showSatelliteNames;
         }
 
