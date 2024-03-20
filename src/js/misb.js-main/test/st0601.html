@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <head>
+    <title>ST0601 parser</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="author" content="Iván Sánchez Ortega" />
+    <meta name="description" content="" />
+    <meta property="og:description" content="ST0601 parser" />
+
+    <style>
+    table { border: 1px solid grey; border-collapse: collapse;}
+    table tr td { border: 1px solid grey}
+    </style>
+  </head>
+  <body>
+    <div>Choose a binary file containing ST0601 data:<input type="file" id="input"></div>
+    <div id="data">
+    <table id='data-table'></table>
+    </div>
+    <pre id="error-modal"></pre>
+    <script type="importmap">
+      {
+        "imports": {
+          "misb/": "../src/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as st0601 from "misb/st0601.mjs";
+
+
+      const fileInput = document.getElementById('input');
+      fileInput.onchange = () => {
+        const selectedFile = fileInput.files[0];
+        console.log(selectedFile);
+
+        selectedFile.arrayBuffer().then(buf=>{
+          const parsed = st0601.parse(buf);
+
+          console.log(parsed);
+
+          let str = '';
+          parsed.forEach(({key, name, value})=>{
+            str += `<tr><td>${key}</td><td>${name}</td><td>${value}</td></tr>`
+          })
+
+document.getElementById('data-table').innerHTML = str;
+        })
+
+
+      }
+
+    </script>
+  </body>
+</html>
