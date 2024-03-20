@@ -76,8 +76,11 @@ class CDragDropHandler {
         // Check if the URL is from the same domain we are hosting on
         // later we might support other domains, and load them via proxy
         const urlObject = new URL(url);
-          if (!isSubdomain(urlObject.hostname, SITREC_DOMAIN) && !isSubdomain(urlObject.hostname, SITREC_DEV_DOMAIN) )  {
-            console.warn('The provided URL is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN);
+          if (!isSubdomain(urlObject.hostname, SITREC_DOMAIN)
+              && !isSubdomain(urlObject.hostname, SITREC_DEV_DOMAIN)
+              && !isSubdomain(urlObject.hostname, "amazonaws.com")
+              )   {
+            console.warn('The provided URL ' + urlObject.hostname +' is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN + "or amazonaws.com");
             return;
         }
         fetch(url)
