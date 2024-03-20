@@ -40,15 +40,19 @@ class CManager {
     }
 
     // returns just the data member object (a parsed arraybuffer, type varies)
-    get(id) {
-        if (this.list[id] === undefined) {
-            console.log("Missing Managed object "+id+", use exists() if you are just checking");
-            console.log("Available keys are: ");
-            for (let key in this.list) {
-                console.log("key", key)
+    get(id, assertIfMissing=true) {
+        if (assertIfMissing) {
+            if (this.list[id] === undefined) {
+                console.log("Missing Managed object " + id + ", use exists() if you are just checking");
+                console.log("Available keys are: ");
+                for (let key in this.list) {
+                    console.log("key", key)
+                }
             }
+            assert(this.list[id] !== undefined, "Missing Managed object " + id + ", use exists() if you are just checking")
         }
-        assert(this.list[id] !== undefined, "Missing Managed object "+id+", use exists() if you are just checking")
+        if (this.list[id] === undefined)
+            return undefined;
         return this.list[id].data
     }
 

@@ -10,12 +10,12 @@ import {
 } from '../../three.js/build/three.module.js';
 import {degrees, f2m, radians, vdump} from "../utils";
 import {DebugArrow, DebugArrowAB, intersectSphere2, V3} from "../threeExt";
-import {mouseInViewOnly, mouseToCanvas, mouseToView} from "../nodes/CNodeView";
+import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
-import {EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
 import {getLocalUpVector} from "../SphericalMath";
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 
 const STATE = {
@@ -190,11 +190,27 @@ class CameraMapControls {
 		this.canvas.setPointerCapture(event.pointerId)
 		par.renderOne = true;
 		this.view.cursorSprite.visible = true;
+
+		const mainView = ViewMan.get("mainView")
+		const cursorPos = mainView.cursorSprite.position.clone();
+		// convert to LLA
+		const ecef = EUSToECEF(cursorPos)
+		const LLA = ECEFToLLAVD_Sphere(ecef)
+		console.log("Cursor LLA: "+vdump(LLA));
+		if (NodeMan.exists("cursorLLA")) {
+			NodeMan.get("cursorLLA").changeLLA(LLA.x, LLA.y, LLA.z)
+		} else {
+			NodeMan.create("LLALabel", {id: "cursorLLA", text: "Cursor LLA",
+				lat: LLA.x, lon: LLA.y, alt: LLA.z, size: 12, offsetX: 20, offsetY: 25, centerX:0, centerY:0})
+		}
+
+
 	}
 
 
 
 	handleMouseUp(event) {
+		NodeMan.disposeRemove("cursorLLA");
 		this.state = STATE.NONE
 		if (!this.enabled) return;
 		this.canvas.releasePointerCapture(event.pointerId)

@@ -4,12 +4,13 @@
 
 import SpriteText from '../js/three-spritetext';
 import * as LAYER from "../LayerMasks";
-import {DebugArrowAB, removeDebugArrow} from "../threeExt";
+import {DebugArrowAB, removeDebugArrow, V2, V3} from "../threeExt";
 import {pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
 import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {par} from "../par";
+import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 
 // a global flag to show/hide all measurements
@@ -50,25 +51,56 @@ export class CNodeLabel3D extends CNode3DGroup {
         this.decimals = v.decimals ?? 2;
         this.size = v.size ?? 12;
         this.sprite = new SpriteText(v.text, this.size);
-        this.input("position")
-        const pos = this.in.position.p(0);
-        this.sprite.position.set(pos.x, pos.y, pos.z);
+        this.optionalInputs(["position"])
+        this.position = V3();
+        if (this.in.position !== undefined) {
+            const pos = this.in.position.p(0);
+//            this.sprite.position.set(pos.x, pos.y, pos.z);
+            this.position.copy(pos)
+        }
         this.sprite.layers.mask = v.layers ?? LAYER.MASK_HELPERS;
         this.group.add(this.sprite);
         this.isMeasurement = true;
+
+        // for sprite center (anchor point), 0,0 is lower left
+        this.sprite.center = V2(v.centerX ?? 0.5, v.centerY ?? 0.5);
+        this.offset = V2(v.offsetX ?? 0, v.offsetY ?? 0);
 
         setupMeasurementUI();
 
     }
 
-    preViewportUpdate(camera) {
-        this.updateScale(camera);
+    preViewportUpdate(view) {
+        this.updateScale(view);
     }
 
     // Update the Scale based on the camera's position
-    // Since this is a simple fixed size, we coudl jsut use sizeAttenuation:false in the sprite material
+    // Since this is a simple fixed size, we code just use sizeAttenuation:false in the sprite material
     // however I might want to change the size based on distance in the future.
-    updateScale(camera) {
+    updateScale(view) {
+
+        const camera = view.camera
+
+        //this.sprite.position.copy(this.position)
+
+        // given:
+        // a 3D position in this.position
+        // a 2D pixel offset in this.offset
+        // a 3D camera position in camera.position
+        // the camera vertical FOV in camera.fov
+        // then modify the sprites position by the offset
+        // accounting for the camera's FOV and distance to the sprite, and the viewport size in pixels
+        // to keep the offset in pixels
+        let pos = this.position.clone();
+        pos.project(camera);
+        pos.x += this.offset.x / view.widthPx;
+        pos.y += this.offset.y / view.heightPx;
+        pos.unproject(camera);
+        this.sprite.position.copy(pos);
+
+
+
+
         const mask = camera.layers.mask;
         const fovScale = 0.0025 * Math.tan((camera.fov / 2) * (Math.PI / 180))
          const sprite = this.sprite;
@@ -81,13 +113,17 @@ export class CNodeLabel3D extends CNode3DGroup {
     }
 
     update(f) {
-        const pos = this.in.position.p(f);
-        this.sprite.position.set(pos.x, pos.y, pos.z);
+        if (this.in.position !== undefined) {
+            const pos = this.in.position.p(f);
+            this.position.set(pos.x, pos.y, pos.z);
+        }
     }
 
     dispose() {
+        this.group.remove(this.sprite)
         this.sprite.material.dispose();
         this.sprite.geometry.dispose();
+        super.dispose();
     }
 
     changeText(text) {
@@ -96,8 +132,39 @@ export class CNodeLabel3D extends CNode3DGroup {
     }
 
     // changePosition(position) {
-    //     this.sprite.position.set(position.x, position.y, position.z);
+    //     this.position.set(position.x, position.y, position.z);
     // }
+
+}
+
+// a text label that shows a given lat/lon at that position
+// for labeling pins, etc
+export class CNodeLLALabel extends CNodeLabel3D {
+    constructor(v) {
+        super(v);
+        this.lat = v.lat;
+        this.lon = v.lon;
+        this.alt = v.lon;
+        this.update(0);
+
+    }
+
+    update(f) {
+        const lat = this.lat;
+        const lon = this.lon;
+        const text = `${lat.toFixed(2)} ${lon.toFixed(2)}`;
+        this.changeText(text);
+
+        const pos = LLAToEUS(lat, lon, this.alt);
+        this.position.set(pos.x, pos.y, pos.z);
+
+    }
+
+    changeLLA(lat, lon, alt) {
+        this.lat = lat;
+        this.lon = lon;
+        this.update(0);
+    }
 
 }
 
@@ -114,7 +181,7 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         this.A = this.in.A.p(f);
         this.B = this.in.B.p(f);
         const midPoint = this.A.clone().add(this.B).multiplyScalar(0.5);
-        this.sprite.position.set(midPoint.x, midPoint.y, midPoint.z);
+        this.position.set(midPoint.x, midPoint.y, midPoint.z);
 
         // get a point that's 90% of the way from A to midPoint
         this.C = this.A.clone().lerp(midPoint, 0.9);
@@ -167,5 +234,15 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
     }
 }
 
+
+export function doLabel3D(id, pos, text, size, layers) {
+    let node = NodeMan.get(id, false);
+    if (node == undefined) {
+        node = new CNodeLabel3D({id, position: pos, text, size, layers});
+        NodeMan.add(id, node);
+    }
+    return node;
+
+}
 
 

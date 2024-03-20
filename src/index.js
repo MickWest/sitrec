@@ -599,7 +599,7 @@ function renderMain() {
                 // some nodes need code running on a per-viewport basis - like textSprites
                 NodeMan.iterate((id, node) => {
                     if (node.preViewportUpdate !== undefined) {
-                        node.preViewportUpdate(view.camera)
+                        node.preViewportUpdate(view)
                     }
                 })
 

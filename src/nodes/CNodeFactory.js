@@ -174,11 +174,11 @@ export class CNodeFactory extends CManager{
     // we override the get function to allow passing in a node
     // so we can resolve either a string or the actual node to a node
     // which simplifies the interface
-    get(n) {
+    get(n, assertIfMissing=true) {
         if (n instanceof CNode)
             return n
         else
-            return super.get(n)
+            return super.get(n, assertIfMissing)
     }
 
 
