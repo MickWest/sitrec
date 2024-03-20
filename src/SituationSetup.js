@@ -79,6 +79,7 @@ let fileIDMap = {
     "cameraTrack": ["file"],
     "KMLTargetData": ["file"],
     "nightSky": ["starLink"],
+    "addKMLTracks": ["tracks"], // this will be an array
 }
 
 export async function startLoadingInlineAssets(sitData) {
@@ -89,25 +90,34 @@ export async function startLoadingInlineAssets(sitData) {
         if (fileIDs) {
             // see if any of the fileIDs are in the data as keys
             for (let fileID of fileIDs) {
-                // we don't load the file if it already exists
-                // which generally means either:
-                // 1 - It was loaded already in some way
-                // 2 - It's an ID of a file specifed in files:{}
-                if (data[fileID] && !FileManager.exists(data[fileID])) {
-                    console.log("SituationSetup: loading inline asset: " + data[fileID])
-                    // we are using the filename as the ID
-                    // so later we can use FileManager.get("filename") to get the file
-                    // meaning the filename is the key to the file and it will just work when
-                    // the sitch file is parsed.
-                    let assetName = data[fileID];
-                    // if it does not start with http, then assume it's
-                    // in the in the sitrec-upload directory
-                    // if (!assetName.startsWith("http")) {
-                    //     assetName = SITREC_UPLOAD + assetName;
-                    //     console.log("Modifed asset  name to : " + assetName)
-                    // }
+                let possibleFiles = data[fileID];
+                // if not an array, make it an array
+                if (!Array.isArray(possibleFiles)) {
+                    possibleFiles = [possibleFiles];
+                }
 
-                    await FileManager.loadAsset(assetName,assetName);
+                for (let file of possibleFiles) {
+
+                    // we don't load the file if it already exists
+                    // which generally means either:
+                    // 1 - It was loaded already in some way
+                    // 2 - It's an ID of a file specifed in files:{}
+                    if (file && !FileManager.exists(file)) {
+                        console.log("SituationSetup: loading inline asset: " + file)
+                        // we are using the filename as the ID
+                        // so later we can use FileManager.get("filename") to get the file
+                        // meaning the filename is the key to the file and it will just work when
+                        // the sitch file is parsed.
+                        let assetName = file;
+                        // if it does not start with http, then assume it's
+                        // in the in the sitrec-upload directory
+                        // if (!assetName.startsWith("http")) {
+                        //     assetName = SITREC_UPLOAD + assetName;
+                        //     console.log("Modifed asset  name to : " + assetName)
+                        // }
+
+                        await FileManager.loadAsset(assetName, assetName);
+                    }
                 }
             }
         }

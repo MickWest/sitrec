@@ -1,6 +1,6 @@
 import {assert, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";
-import {MISB} from "../MISB";
+import {MISB} from "../MISBUtils";
 import {Sit} from "../Globals";
 
 export class CNodeArray extends CNode {

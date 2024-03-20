@@ -7,7 +7,7 @@ import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../Sphe
 import {DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
 
-import {MISB} from "../MISB";
+import {MISB} from "../MISBUtils";
 
 
 // Position the camera on the source track

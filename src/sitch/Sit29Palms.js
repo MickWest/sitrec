@@ -1,3 +1,14 @@
+// 29 Palms Back Photo
+// Has:
+//  - A static Camera - essentially a track with one location
+//  - A static image (a photo)
+//  - Three KML tracks (three planes which appear in the photo)
+//  - Terrain
+//
+// The purpose of this Sitch was to verify the time the photo was taken, using
+// the positions of the planes in the photo and the known positions of the planes from ADS-B data.
+// It was set up with the approximate time, then the start time was adjusted until the planes
+// matched the positions in the photo.
 
 export const Sit29Palms = {
     name: "29palms",
@@ -6,15 +17,13 @@ export const Sit29Palms = {
 
     files: {
         threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
-        KMLTarget1: "29palms/N891UA-track-EGM96.kml",
-        KMLTarget2: "29palms/N8564Z-track-EGM96.kml",
-        KMLTarget3: "29palms/N279SY-track-EGM96.kml",
+        // KMLTarget1: "29palms/N891UA-track-EGM96.kml",
+        // KMLTarget2: "29palms/N8564Z-track-EGM96.kml",
+        // KMLTarget3: "29palms/N279SY-track-EGM96.kml",
     },
 
     units: "Imperial",
 
-    fps: 30,
-    frames: 180,
     startTime: "2021-04-21T03:23:53.000Z",
 
     // discussion thread, not currently used, but could be displayed in the GUI
@@ -35,10 +44,13 @@ export const Sit29Palms = {
 
     cameraTrack: {LLA: [34.399060162,-115.858257450, 1402]},
     followTrack: {}, // will default to lookCamera and cameraTrack
+
+    // PTZ is used to set the camera position and fov, but after that it's not needed
+    // to be part of the UI (it's just setup). So you could set showGUI to false.
+    // which would simplify the menues.
     ptz: {az: 141.9, el: 9.8, fov: 25.4, showGUI: true}, // << good for photo match
 
-    targetSize: 500,
-
+    // A CNodeImage acts like a CNode View
    imageThreePlanes: { kind: "Image",
         filename: 'threePlanes',
        // smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
@@ -48,7 +60,10 @@ export const Sit29Palms = {
 
     labelView: {},
 
-    addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD"},
+//    addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD"},
+    addKMLTracks: { tracks: [ "29palms/N891UA-track-EGM96.kml",
+            "29palms/N8564Z-track-EGM96.kml",
+            "29palms/N279SY-track-EGM96.kml",], sphereMask:"WORLD"},
 
     DisplayCameraFrustum: {radius:100000},
 

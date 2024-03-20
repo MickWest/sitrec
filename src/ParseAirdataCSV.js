@@ -1,7 +1,7 @@
 // take a csv file, which is a 2d array [row][col]
 // the header row indicated wih
 import {addMillisecondsToDate, findColumn, parseUTCDate} from "./ParseUtils";
-import {MISB, MISBFields} from "./MISB";
+import {MISB, MISBFields} from "./MISBUtils";
 import {Sit} from "./Globals";
 import {f2m} from "./utils";
 

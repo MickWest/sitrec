@@ -1,16 +1,6 @@
-// this MISB object is for the internal represention of the MISB data
-// i.e. it's the index of the data withing a row
-// these cablues can be changed, and other values added (perhaps computed values)
-// these are standard MISB 0601 tags (keys) and values as listed in
-// https://upload.wikimedia.org/wikipedia/commons/1/19/MISB_Standard_0601.pdf
-// with the following exceptions:
-// any dash in the name is replaced with an underscore
-// any spaces or parenteses ' ', '(' and ')' in the name are removed
-// These are mostly just nubmers, but some are strings, and some are arrays of numbers
-
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager} from "../Globals";
-import {MISB} from "../MISB";
+import {MISB} from "../MISBUtils";
 import {CNodeEmptyArray} from "./CNodeArray";
 
 //export const MISBFields = Object.keys(MISB).length;

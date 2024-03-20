@@ -7,7 +7,7 @@ import {CManager} from "./CManager";
 import {gui} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
-import {parseMISB1CSV} from "./MISB";
+import {parseMISB1CSV} from "./MISBUtils";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects

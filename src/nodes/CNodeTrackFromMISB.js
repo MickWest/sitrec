@@ -5,7 +5,7 @@ import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {V3} from "../threeExt";
 
-import {MISB} from "../MISB";
+import {MISB} from "../MISBUtils";
 
 export class CNodeTrackFromMISB extends CNodeEmptyArray {
     constructor(v) {

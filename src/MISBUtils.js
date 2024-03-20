@@ -1,3 +1,16 @@
+// this MISB object is for the internal representation of the MISB data
+// i.e. it's the index of the data within
+// these are standard MISB 0601 tags (keys) and values as listed in
+// https://upload.wikimedia.org/wikipedia/commons/1/19/MISB_Standard_0601.pdf
+// with the following exceptions:
+// any dash in the name is replaced with an underscore
+// any spaces or parentheses ' ', '(' and ')' in the name are removed
+// These are mostly just numbers, but some are strings, and some are arrays of numbers
+//
+// For local extensions, other values can be added (perhaps computed values)
+// e.g. SensorRelativeAltitude = is the altitude above start point of the track
+// and is a value supplied by DJI Metadata.
+
 export const MISB = {
     Checksum: 1,
     UnixTimeStamp: 2,
@@ -86,7 +99,9 @@ export const MISB = {
     PlatformAngleofAttackFull: 92,
     PlatformSideslipAngleFull: 93,
     MIISCoreIdentifier: 94,
-    TargetWidthExtended: 96,
+    SARMotionImageryMetadata: 95,   // Mick: added this
+    TargetWidthExtended: 96,        // Mick: this is the last one listed in the MISB 0601.8 spec
+
     Geo_RegistrationLocalSet: 98,
     SensorEllipsoidHeightExtended: 104,
     AltitudeAGL: 113,
@@ -99,6 +114,9 @@ export const MISB = {
     SensorRelativeAltitude: 121,
 }
 
+
+// Some additional fields are listed here:
+// https://impleotv.com/content/misbcore/help//user-guide/st601-supported.html
 
 export const MISBFields = 121;
 
