@@ -2,8 +2,8 @@
 // we use this for the CNodeViewUI and the (upcoming) CNodeVideoView
 // passing in an "overlayView" parameter will attache
 import {CNodeView} from "./CNodeView";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {gui} from "../Globals";
+import {CNodeGUIValue} from "./CNodeGUIValue";
 
 
 export class CNodeViewCanvas extends CNodeView {
@@ -16,6 +16,20 @@ export class CNodeViewCanvas extends CNodeView {
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = 0 + 'px';
         this.canvas.style.left = 0 + 'px';
+
+        if (v.transparency) {
+            this.transparency = v.transparency;
+            this.canvas.style.opacity = this.transparency;
+            new CNodeGUIValue({
+                id: this.id+"_transparency",
+                value: this.transparency, start: 0, end: 1, step: 0.01,
+                desc: "Transparency %",
+                onChange: (value) => {
+                    this.transparency = value;
+                    this.canvas.style.opacity = this.transparency;
+                }
+            }, gui)
+        }
 
 
         this.adjustSize()

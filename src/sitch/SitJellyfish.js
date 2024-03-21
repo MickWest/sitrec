@@ -37,7 +37,6 @@ export const SitJellyfish    = {
         effects: {FLIRShader: {},},
     },
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5,},
-  //  videoView2: {kind: "videoView", left: 0.4, top: .25, width: -1.7927, height: 0.5,},
 
     // tracks that we can focus on - i.e. the zoom in and out will be relative to the selected track
     focusTracks: {

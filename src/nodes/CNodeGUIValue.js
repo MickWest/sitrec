@@ -31,7 +31,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             value => {
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {
-                    this.onChange()
+                    this.onChange(value)
                 }
                 par.renderOne = true;
             }

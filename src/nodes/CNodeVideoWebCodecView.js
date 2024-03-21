@@ -17,7 +17,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         // if it's an overlay view then we don't need to add the overlay UI view
         if (!v.overlayView) {
             // Add an overlay view to show status (mostly errors)
-            this.overlay = new CNodeViewUI({id: "videoOverlay", overlayView: this})
+            this.overlay = new CNodeViewUI({id: this.id+"_videoOverlay", overlayView: this})
             this.overlay.ignoreMouseEvents();
         }
 
