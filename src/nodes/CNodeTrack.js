@@ -444,7 +444,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns) {
         //     KMLFile: sourceFile,
         // })
         misb = KMLToMISB(FileManager.get(sourceFile));
-    } else if (ext === "srt" || ext === "csv") {
+    } else if (ext === "srt" || ext === "csv" || ext === "klv") {
         misb = FileManager.get(sourceFile)
     } else {
         assert(0, "Unknown file type: " + fileInfo.filename)
