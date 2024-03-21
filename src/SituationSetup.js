@@ -392,14 +392,18 @@ export function SituationSetupFromData(sitData, runDeferred) {
             case "videoView":
                 SSLog();
                 assert(Sit.videoFile !== undefined, "videoView needs a video file")
+                if (!NodeMan.exists("videoZoom")) {
+                    new CNodeGUIValue({
+                        id: "videoZoom",
+                        value: 100, start: 5, end: 2000, step: 1,
+                        desc: "Video Zoom %"
+                    }, gui)
+                }
+
                 new CNodeVideoWebCodecView({
-                        id: "video",
+                        id: /*data.id ?? */"video",
                         inputs: {
-                            zoom: new CNodeGUIValue({
-                                id: "videoZoom",
-                                value: 100, start: 5, end: 2000, step: 1,
-                                desc: "Video Zoom %"
-                            }, gui)
+                            zoom: "videoZoom"
                         },
                         visible: true,
                         draggable: true, resizable: true,

@@ -8,12 +8,18 @@ import {Rehoster} from "../CRehoster";
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
         super(v);
-//      this.checkInputs(["zoom"])
+        //this.checkInputs(["zoom"])
 
 
-        // Add an overlay view to show status (mostly errors)
-        this.overlay = new CNodeViewUI({id: "videoOverlay", overlayView:this })
-        this.overlay.ignoreMouseEvents();
+
+        this.input("zoom", true); // zoom input is optional
+
+        // if it's an overlay view then we don't need to add the overlay UI view
+        if (!v.overlayView) {
+            // Add an overlay view to show status (mostly errors)
+            this.overlay = new CNodeViewUI({id: "videoOverlay", overlayView: this})
+            this.overlay.ignoreMouseEvents();
+        }
 
         v.id = v.id + "_data"
         this.Video = new CVideoWebCodecData(v,
@@ -45,13 +51,16 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     }
 
     addLoadingMessage() {
-        this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
+        if (this.overlay)
+            this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
     }
 
     removeText() {
-        this.overlay.removeText("videoLoading")
-        this.overlay.removeText("videoError")
-        this.overlay.removeText("videoErrorName")
+        if (this.overlay) {
+            this.overlay.removeText("videoLoading")
+            this.overlay.removeText("videoError")
+            this.overlay.removeText("videoErrorName")
+        }
     }
 
     // just a stub to prevent stuff happening on drag events
@@ -102,9 +111,11 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
     errorCallback() {
         this.Video.error = false;
-        this.overlay.removeText("videoLoading")
-        this.overlay.addText("videoError", "Error Loading", 50, 45, 5, "#f0f000", "center")
-        this.overlay.addText("videoErrorName", this.fileName, 50, 55, 1.5, "#f0f000", "center")
+        if (this.overlay) {
+            this.overlay.removeText("videoLoading")
+            this.overlay.addText("videoError", "Error Loading", 50, 45, 5, "#f0f000", "center")
+            this.overlay.addText("videoErrorName", this.fileName, 50, 55, 1.5, "#f0f000", "center")
+        }
     }
 
     requestAndLoadFile() {

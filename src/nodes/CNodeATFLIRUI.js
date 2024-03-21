@@ -12,6 +12,10 @@ export class   CNodeATFLIRUI extends CNodeViewUI {
 
         this.input("jetAltitude")
 
+        this.timeStart = v.timeStart;
+        this.timeStartMin = v.timeStartMin;
+        this.timeStartSec = v.timeStartSec;
+
         this.cx = 50
         this.cy = 36.4
 

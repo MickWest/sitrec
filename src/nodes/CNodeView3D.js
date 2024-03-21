@@ -45,11 +45,13 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         super(v);
 
+        this.syncVideoZoom = v.syncVideoZoom ?? false;  // by default, don't sync the zoom with the video view, as we might not have a zoom controlelr
+        this.background = v.background ?? new Color(0x000000);
+
         // check if this.background is an array, and if so, convert to a color
         if (this.background instanceof Array) {
             this.background = new Color(this.background[0], this.background[1], this.background[2])
         }
-
 
         this.scene = GlobalScene;
 

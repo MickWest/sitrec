@@ -10,6 +10,8 @@ export class CNodeViewCanvas extends CNodeView {
     constructor(v) {
         super(v)
 
+        this.autoFill = v.autoFill;
+
         this.canvas = document.createElement('canvas')
         this.canvas.style.position = 'absolute';
         this.canvas.style.top = 0 + 'px';

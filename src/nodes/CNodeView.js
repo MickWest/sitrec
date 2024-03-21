@@ -9,8 +9,7 @@ import {assert} from '../utils.js'
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
 import {NodeMan, Sit} from "../Globals";
-import {CNodeCamera} from "./CNodeCamera";
-import {Camera} from "../../three.js/build/three.module";
+import {isLocal} from "../../config";
 
 const defaultCViewParams = {
     visible: true,
@@ -35,9 +34,37 @@ class CNodeView extends CNode {
         assert(v.id !== undefined,"View Node Requires ID")
         super(v)
 
+        // if (isLocal) {
+        //     // local debugging, make a (ref) copy of v for later checks
+        //     this.v_for_debug = v;
+        // }
+
         // merge defaults with the passed parameters
-        // into this
-        Object.assign(this,defaultCViewParams,v) // TODO - Don't do this!!
+        // into this. We used to merge in all of v, but that's not a good idea
+        // as it leads to unexpected behaviour.
+        // Object.assign(this,defaultCViewParams,v)
+        Object.assign(this,defaultCViewParams)
+
+        // // Instead of merging, we just copy the parameters we want
+        this.top = v.top;
+        this.left = v.left;
+        this.width = v.width;
+        this.height = v.height;
+        if (v.visible !== undefined)
+            this.visible = v.visible;
+        this.background = v.background;
+        this.up = v.up;
+        this.renderFunction = v.renderFunction;
+        this.fov = v.fov;
+        this.draggable = v.draggable;
+        this.resizable = v.resizable;
+        this.doubleClickResizes = v.doubleClickResizes;
+        this.doubleClickFullScreen = v.doubleClickFullScreen;
+        this.shiftDrag = v.shiftDrag;
+        this.freeAspect = v.freeAspect;
+        //
+        //
+
 
         // container defaults to the window, but could be something else
         // (not yet tested with anything else)
@@ -100,6 +127,20 @@ class CNodeView extends CNode {
         assert(!ViewMan.exists(v.id),"Adding "+v.id+" to ViewMan twice")
         ViewMan.add(v.id,this)
     }
+
+    // debug_v() {
+    //     if (!this.done_debug_v) {
+    //         this.done_debug_v = true;
+    //         // list the elements that are in v but not in this
+    //         for (const key in this.v_for_debug) {
+    //             // check if it's unchanged, and not an input
+    //             if (this[key] !== this.v_for_debug[key] && this.inputs[key] !== undefined) {
+    //                 console.warn(this.constructor.name + ": v." + key + " differs in this " + this.id + " values are: " + this.v_for_debug[key] + " and " + this[key])
+    //             }
+    //         }
+    //     }
+    // }
+
 
     dispose() {
         console.log("Disposing CNodeView: "+this.id)

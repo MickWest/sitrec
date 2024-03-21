@@ -370,7 +370,7 @@ export function detectCSVType(csv) {
     }
     // not sure we need this warning, as some sitches have custom code to use
     // specific columns of CSV files.
-    console.warn("Unhandled CSV type detected.  Please add to detectCSVType() function.")
+//    console.warn("Unhandled CSV type detected.  Please add to detectCSVType() function.")
     return "Unknown";
 }
 

@@ -228,8 +228,8 @@ async function initializeOnce() {
 // these are the sitches defined by <name>.sitch.js files inside the folder of the same name in data
     let textSitches = [];
     await fetch((SITREC_SERVER+"getsitches.php"), {mode: 'cors'}).then(response => response.text()).then(data => {
-        console.log("TEXT BASED Sitches: " + data)
-        console.log ("parsed data: ")
+//        console.log("TEXT BASED Sitches: " + data)
+//        console.log ("parsed data: ")
         textSitches = JSON.parse(data) // will give an array of text based sitches
         console.log ("parse done");
     })
@@ -573,6 +573,12 @@ function renderMain() {
         if (node.update !== undefined) {
             node.update(par.frame)
         }
+
+        // debug_v should not be used in production
+        if (node.debug_v !== undefined) {
+            node.debug_v()
+        }
+
     })
 
 
