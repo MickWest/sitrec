@@ -27,6 +27,7 @@ import {CNodeWind} from "./nodes/CNodeWind";
 import {Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
+import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -883,6 +884,18 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 );
                 break;
 
+            case "mirrorVideo":
+                SSLog();
+                new CNodeMirrorVideoView({
+                    id: data.id ?? "mirrorVideo",
+                    inputs: {
+                        zoom: "videoZoom"
+                    },
+                    mirror: "video",
+                    overlayView: "lookView",
+                    transparency: 0.15,
+                    ...data,
+                })
 
             default:
 

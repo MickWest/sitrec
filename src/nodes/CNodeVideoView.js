@@ -461,6 +461,19 @@ export class CNodeFramesVideoView extends CNodeVideoView {
     }
 }
 
+export class CNodeMirrorVideoView extends CNodeVideoView {
+    constructor(v) {
+        super(v);
+        this.input("mirror")
+
+        // a mirror video just shows the same frames as another video view
+        // so we are just reusing the data, and should not have to recalculate anything.
+
+        this.Video = this.in.mirror.Video;
+    }
+}
+
+
 
 export function addFiltersToVideoNode(videoNode) {
     videoNode.addMoreInputs({
