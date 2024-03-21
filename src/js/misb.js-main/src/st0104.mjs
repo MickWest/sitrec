@@ -2,6 +2,7 @@ import * as klv from "./klv.mjs";
 import { cast, startsWith } from "./klv.mjs";
 
 // module.exports.name = 'st0104'
+export const name = 'st0104';
 export const key = cast("060e2b34020101010e01010201010000");
 export const minSize = 31;
 

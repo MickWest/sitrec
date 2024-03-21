@@ -7,7 +7,7 @@ import {CManager} from "./CManager";
 import {gui} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
-import {parseMISB1CSV} from "./MISBUtils";
+import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -203,6 +203,9 @@ export class CFileManager extends CManager {
                 case "tle":
                 case "dat": // for bsc5.dat, the bright star catalog
                     parsed = decoder.decode(buffer);
+                    break;
+                case "klv":
+                    parsed = parseKLVFile(buffer);
                     break;
                 case "jpg":
                 case "jpeg":

@@ -4,6 +4,7 @@ import * as UserDefinedLocalSet from "./UserDefinedLocalSet.mjs";
 import { cast, startsWith } from "./klv.mjs";
 
 // module.exports.name = 'st0806'
+export const name = 'st0806';
 export const key = cast("060E2B34020B01010E01030102000000");
 export const minSize = 31;
 

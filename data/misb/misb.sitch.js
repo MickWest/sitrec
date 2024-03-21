@@ -14,11 +14,12 @@ sitch = {
 
     // using an external server requires that the server has CORS enabled
     // e.g. for Cloudflare R2 or Amazon S3 you edit the CORS settings
+    // note http vs. https is important
     // [
     //     {
     //         "AllowedOrigins": [
     //             "http://localhost",
-    //             "http://www.metabunk.org"
+    //             "https://www.metabunk.org"
     //         ],
     //         "AllowedMethods": [
     //             "GET"
@@ -29,24 +30,31 @@ sitch = {
     // using the Cloudflare R2 server (S3 Compatible)
     //files: {misb: "https://sitrec.metabunk.org/misb2-agua.csv"},
 
-    // using an Amazon S3 bucket
-    files: {misb: "https://sitrec.s3.us-west-2.amazonaws.com/misb2-agua.csv"},
-
+    files: {
+     //   misb: "https://sitrec.s3.us-west-2.amazonaws.com/misb2-agua.csv",
+        klv: "misb/Truck.klv",
+    },
 
     // video files likewise can be local or remote
     // currently videos are not streamed, just loaded in their entirety
 
-    //    videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
+//    videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
+    videoFile: "../sitrec-videos/public/Truck.mp4",
 
 
-    videoFile: "https://sitrec.s3.us-west-2.amazonaws.com/Aquadilla+High+Quality+Original.mp4",
+//    videoFile: "https://sitrec.s3.us-west-2.amazonaws.com/Aquadilla+High+Quality+Original.mp4",
 
     units: "metric",
 
     // temporary hard wired, but we want to get these from the data
-    startTime: "2023-03-10T12:29:02.000Z",  // start time maybe not from track data, as we might want a portion
-    lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
-    frames: 7000,  // from video
+//    startTime: "2023-03-10T12:29:02.000Z",  // start time maybe not from track data, as we might want a portion
+//    startTime: "2012-09-13T20:50:26.970Z",  // start time maybe not from track data, as we might want a portion
+    startTime: "2012-09-19T20:50:26.970Z",  // start time maybe not from track data, as we might want a portion
+    fps: 29.97,
+
+   // lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
+    lat: 41.0957, lon: -104.8702,
+    frames: 4438,  // from video
 
     // terrain is the smaller 3D map
     //  lan/lon is the center of the map
@@ -54,13 +62,16 @@ sitch = {
     // nTiles is the number of tiles to load in each direction, so 8 will give you an 8x8 grid
     // the 3D world size of a tile is based on the zoom level, so if you decrease the zoom level by 1
     // that will double the length of a tile in meters.
-    terrain: {lat: 18.499617, lon: -67.113636, zoom: 14, nTiles: 8},
+//    terrain: {lat: 18.499617, lon: -67.113636, zoom: 14, nTiles: 8},
+    terrain: {lat: 41.0957, lon: -104.8702, zoom: 14, nTiles: 8},
 
     // mainCamera is the camera used for the God's eye view of the 3D world, typically on the left.
     mainCamera: {
         fov: 30, near: 1, far: 60000000,
-        startCameraPositionLLA: [18.634221, -67.374987, 21503.365608], // agua mockup location
-        startCameraTargetLLA: [18.628870, -67.369038, 21007.002833], // maybe should be auto
+        //startCameraPositionLLA: [18.634221, -67.374987, 21503.365608], // agua mockup location
+        //startCameraTargetLLA: [18.628870, -67.369038, 21007.002833], // maybe should be auto
+        startCameraPositionLLA:[40.945882,-104.918343,16617.205002],
+        startCameraTargetLLA:[40.952762,-104.915401,16026.513301],
     },
 
     // lookCamera is the camera used for the look view, typically on the right
@@ -69,8 +80,8 @@ sitch = {
 
     // here we get the camera track from a MISB file
     // using SensorLatitude, SensorLongitude, SensorAltitude
-    cameraTrack: {file: "misb"},
-    smoothTrackCamera: {kind: "smoothTrack", track: "cameraTrack", smooth: 20},
+    cameraTrack: {file: "klv"},
+ //   smoothTrackCamera: {kind: "smoothTrack", track: "cameraTrack", smooth: 20},
     followTrack: {},            // camera follows the camera track
 
     targetTrack: {
@@ -78,7 +89,7 @@ sitch = {
         misb: "cameraTrackData",
         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
     },
-    smoothTrack: {track: "targetTrack", smooth: 20},
+ //   smoothTrack: {track: "targetTrack", smooth: 20},
     targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1, 0, 0], width: 4,},
 
     lookAtTrack: {},  // and look at targetTrack
@@ -99,6 +110,7 @@ sitch = {
 
 
     DisplayCameraFrustum: {targetTrack: "targetTrack"},
+
 
 //    targetWind:{from:270, knots: 20}, // can we get this from the MISB? It's in a differnt location
 
@@ -131,7 +143,8 @@ sitch = {
         track: "LOSTraverseSelect",
         color: [0,1,0],
         width: 4,
-    }
+    },
 
+    useGlobe: true,
 
 }

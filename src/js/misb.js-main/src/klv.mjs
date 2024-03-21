@@ -244,9 +244,9 @@ export function decode(data, standards, callback, options = {}) {
 	for (let i = 0; i < data.length; i++) {
 		const buffer = data.subarray(i, data.length);
 
-		try {
+	//	try {
 			for (const standard of standards) {
-				if (startsWithKey(buffer, standard.key)) {
+				if (startsWith(buffer, standard.key)) {
 					const { index, values, body } = parseStandard(
 						standard,
 						buffer,
@@ -266,9 +266,9 @@ export function decode(data, standards, callback, options = {}) {
 					// todo break out of loop if matched
 				}
 			}
-		} catch (e) {
-			console.debug(e);
-		}
+	//	} catch (e) {
+	//		console.error(e);
+	//	}
 	}
 	return packets;
 }

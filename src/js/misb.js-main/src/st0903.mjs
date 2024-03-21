@@ -5,6 +5,7 @@ import * as AlgorithmSeries from "./AlgorithmSeries.mjs";
 import { cast, startsWith } from "./klv.mjs";
 
 // module.exports.name = 'st0903'
+export const name = 'st0903';
 export const key = cast("060e2b34020b01010e01030306000000");
 export const minSize = 31;
 

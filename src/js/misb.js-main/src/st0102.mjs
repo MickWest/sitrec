@@ -2,6 +2,7 @@ import * as klv from "./klv.mjs";
 import { cast, asHexString } from "./klv.mjs";
 
 // module.exports.name = 'st0102'
+export const name = 'st0102';
 
 export function parse(buffer, options = {}) {
 	const packet = cast(buffer);

@@ -163,3 +163,73 @@ export function parseMISB1CSV(csv) {
 
     return MISBArray;
 }
+
+
+// import * as st0601 from './js/misb.js-main/src/st0601.mjs'
+// const klvTest =[
+//     '060E2B34 020B0101 0E0103010100000081D2020800046050584E0180030A4D697373696F6E20',
+//     '3132050271C20602FD3D070208B80A085072656461746F720B07454F204E6F73650C0E47656F',
+//     '64657469632057475338340D045595B66D0E045B5360C40F02C2211002CD9C1102D917120472',
+//     '4A0A20130487F84B86140400000000150403830926160212811704F101A229180414BC082B19',
+//     '0234F3301C01010102010703052F2F5553410C01070D060055005300411602000A4101065E22',
+//     '0170F592F02373364AF8AA9162C00F2EB2DA16B74341000841A0BE365B5AB96A36450102AA43'
+// ]
+// const json = st0601.parse(klvTest.join(''), { debug: true })
+// console.log(json)
+
+//const { st0601, st0903, st0104, st0806, klv } = require('./js/misb.js-main/index.js')
+
+import * as st0601 from './js/misb.js-main/src/st0601.mjs'
+import * as st0903 from './js/misb.js-main/src/st0903.mjs'
+import * as st0104 from './js/misb.js-main/src/st0104.mjs'
+import * as st0806 from './js/misb.js-main/src/st0806.mjs'
+import * as klv from './js/misb.js-main/src/klv.mjs'
+
+const standards = [st0601, st0903, st0806, st0104]
+const packets = {}
+for(const standard of standards) {
+    packets[standard.name] = []
+}
+
+// the code expects st0601 data packets to start with a key, which is
+// 060e2b34020b01010e01030101000000
+// this is then followed directly by the packet, like
+// 060E2B34020B01010E01030101000000 8190020800046CAE71B92030410101
+// instead, in the data extracted with ffmpeg, I get:
+// ..........0B01010E01030101000000 8190020800
+// i.e. the first five bytes of the key are missing
+// so we have an 11 byte key????
+
+
+export function parseKLVFile(data) {
+//    const result = klv.decode(data, standards, null, {debug: false})
+    const result = klv.decode(data, st0601, null, {debug: false})
+    // for (const standard of standards) {
+    //     for (const packet of result[standard.name]) {
+    //         packets[standard.name].push(packet)
+    //     }
+    // }
+    //
+    // for (const standard of standards) {
+    //     const name = standard.name
+    //     console.log(`${name}: ${packets[name]?.length ?? 0}`)
+    // }
+
+    const data0601 = result[st0601.name];
+    const n = data0601.length;
+    const MISBArray = new Array(n);
+    for (let i=0; i<n; i++) {
+        MISBArray[i] = new Array(MISBFields).fill(null);
+        for (const index of Object.keys(data0601[i])) {
+            const line = data0601[i][index];
+            MISBArray[i][line.key] = line.value;
+        }
+    }
+
+    return MISBArray;
+
+}
+
+
+
+

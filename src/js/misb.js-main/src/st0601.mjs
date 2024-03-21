@@ -5,6 +5,7 @@ import * as klv from "./klv.mjs";
 import { cast, startsWith, asHexString } from "./klv.mjs";
 
 // module.exports.name = 'st0601'
+export const name = "st0601";
 export const key = cast("060e2b34020b01010e01030101000000");
 export const minSize = 31;
 
@@ -438,7 +439,8 @@ function convert(key, dataview, options) {
 					key,
 					name: st0601data(key).name,
 					value:
-						buffer.compare(Buffer.from("8000", "hex")) === 0
+					//	buffer.compare(Buffer.from("8000", "hex")) === 0
+					dataview.getUint16(0, false) === 0x8000
 							? null
 							: klv.scale(
 									dataview.getInt16(0, false),
@@ -655,7 +657,8 @@ function convert(key, dataview, options) {
 				return {
 					key,
 					name: st0601data(key).name,
-					value: buffer.toString(),
+					//value: buffer.toString(),
+					value: textDecoder.decode(dataview),
 				};
 			case 62:
 				// klv.checkRequiredSize(key, buffer, 2)
@@ -690,12 +693,29 @@ function convert(key, dataview, options) {
 					name: st0601data(key).name,
 					value: dataview.getUint8(0, false),
 				};
-
+			case 67:
+				klv.checkRequiredSize(key, buffer, 4)
+				return {
+					key,
+					name: st0601data(key).name,
+					value: klv.scale(buffer.readInt32BE(0), [two32SignedMin, two32SignedMax], [-90, 90]),
+					unit: '°'
+				}
+			case 68:
+				klv.checkRequiredSize(key, buffer, 4)
+				return {
+					key,
+					name: st0601data(key).name,
+					value: klv.scale(buffer.readInt32BE(0), [two32SignedMin, two32SignedMax], [-180, 180]),
+					unit: '°'
+				}
 			case 70:
 				return {
 					key,
 					name: st0601data(key).name,
-					value: buffer.toString(),
+					// value: buffer.toString(),
+					value: textDecoder.decode(dataview),
+
 				};
 			case 71:
 				// klv.checkRequiredSize(key, buffer, 2)
@@ -741,6 +761,14 @@ function convert(key, dataview, options) {
 					),
 					unit: "m",
 				};
+			case 76:
+				klv.checkRequiredSize(key, buffer, 2)
+				return {
+					key,
+					name: st0601data(key).name,
+					value: klv.scale(buffer.readUInt16BE(0), [0, two16Unsigned], [-900, 19000]),
+					unit: 'm'
+				}
 			case 77:
 				// klv.checkRequiredSize(key, buffer, 1)
 				return {
@@ -1175,6 +1203,10 @@ function st0601data(key) {
 			return { name: "Platform Magnetic Heading" };
 		case 65:
 			return { name: "UAS Datalink LS Version Number" };
+		case 67:
+			return {name: 'Alternate Platform Latitude'}
+		case 68:
+			return {name: 'Alternate Platform Longitude'}
 		case 70:
 			return { name: "Alternate Platform Name" };
 		case 71:
@@ -1187,6 +1219,8 @@ function st0601data(key) {
 			return { name: "VMTI Local Set" };
 		case 75:
 			return { name: "Sensor Ellipsoid Height" };
+		case 76:
+			return {name: 'Alternate Platform Ellipsoid Height'}
 		case 77:
 			return { name: "Operational Mode" };
 		case 78:
