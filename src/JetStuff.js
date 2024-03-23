@@ -1342,6 +1342,7 @@ export function initJetStuffOverlays() {
         defaultFontSize: 3.5,
         defaultFontColor: '#E0E0E0',
         defaultFont: 'sans-serif',
+        syncVideoZoom: true,
     });
     ui.addText("info", "Derotated", 50, 90, 6, "#FFFF00")
 
@@ -1353,6 +1354,7 @@ export function initJetStuffOverlays() {
         defaultFontSize: 3.5,
         defaultFontColor: '#E0E0E0',
         defaultFont: 'sans-serif',
+        syncVideoZoom: true,
     });
     ui.addText("info", "NAR Cam", 50, 90, 6, "#FFFF00")
     ViewMan.get("ATFLIRUIOverlay").setVisible(par.showLookCam);

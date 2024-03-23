@@ -379,6 +379,10 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 const lookViewDef = {
                     id: "lookView",
                     //     draggable:true,resizable:true,
+
+                    // what might these defaults not work for?
+                    draggable:true,resizable:true,shiftDrag:true,freeAspect:false,
+
                     left: 0.75, top: 0, width: .25, height: 1,
                     fov: 50,
                     background: color,
@@ -387,7 +391,8 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     ...data,
                 }
                 const lookView = new CNodeView3D(lookViewDef);
-                lookView.addOrbitControls(Sit.renderer);
+                if (!data.noOrbitControls)
+                    lookView.addOrbitControls(Sit.renderer);
                 break;
 
             case "videoView":

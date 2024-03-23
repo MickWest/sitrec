@@ -330,6 +330,8 @@ export const SitFlir1 = {
             timeStartMin: 41,
             timeStartSec: 35,
             altitude: 20000,
+            syncVideoZoom: true,
+
         });
 
         new CNodeDisplayTargetModel({

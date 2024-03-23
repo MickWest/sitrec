@@ -91,6 +91,7 @@ export var SitGoFast = {
     mainView: {left: 0, top: 0, width: 1, height: 1,background:[0.05,0.05,0.05]},
     lookView: {left: 0.64, top: 1 - 0.3333, width: -1, height: 0.333,},
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+    mirrorVideo: { transparency: 0.15, autoClear: true, autoFill: false},
 
     focusTracks:{
         "Ground (no track)": "default",
@@ -441,6 +442,7 @@ export var SitGoFast = {
             timeStart: 4232,
             timeStartMin: 42,
             timeStartSec: 32,
+            syncVideoZoom: true,
 
         });
 

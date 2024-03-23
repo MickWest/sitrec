@@ -97,14 +97,14 @@ sitch = {
 
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#000000'},
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000000'},
-    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5},
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
 
 //    videoView2: {kind: "videoView", left: 0.4, top: .25, width: -1.7927, height: 0.5, transparency: 0.5 },
 //    videoView2: {kind: "videoView", overlayView: "lookView", transparency: 0.15 },
 
    // MirrorVideoView:{id: "mirrorView", mirror: "video", overlayView: "lookView", transparency: 0.15},
 
-    mirrorVideo: { transparency: 0.15},
+    mirrorVideo: { transparency: 0.15, autoClear:false},
 
     // startTime:  "auto", // auto means we get it from the data file, ie, the first frame of the camera track
     // location:   "auto",

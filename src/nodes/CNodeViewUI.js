@@ -31,17 +31,32 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         this.wpx = this.widthPx;
         this.hpx = this.heightPx
 
+        this.zoom = 1;
+        this.syncVideoZoom = v.syncVideoZoom;
+
     }
 
     // (cx,cy) = x and y of the center point (percentages)
 
+    // sx, sy = scale a pixel length
+    sx(x) {
+        return (this.wpx * x / 100 ) * this.zoom;
+    }
+
+    sy(y) {
+        return (this.hpx * y / 100) * this.zoom;
+    }
+
+
     // px, py = pixel position of a percentage, so 50,50 = center
     px(x) {
-        return this.wpx * x / 100
+        return this.wpx * (((x-50)  / 100) * this.zoom + 0.5);
     }
 
     py(y) {
-        return this.hpx * y / 100
+//        return this.hpx * y / 100 - 50) * this.zoom + 50;
+        return this.hpx *(((y-50)  / 100) * this.zoom + 0.5);
+
     }
 
     // return x component of x, y rotated about cx,cy, by a
@@ -63,7 +78,7 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     }
 
     arc(x, y, radius, startAngle = 0, endAngle = 360) {
-        this.ctx.arc(this.px(x), this.px(y), this.py(radius), radians(startAngle), radians(endAngle))
+        this.ctx.arc(this.px(x), this.px(y), this.sy(radius), radians(startAngle), radians(endAngle))
     }
 
     moveTo(x, y) {
@@ -143,6 +158,15 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     // render for CNodeViewUI - extends CNodeViewCanvas2D
     render(frame) {
         super.render(frame) // will be CNodeViewCanvas2D
+
+        this.zoom = 1;
+        if (this.syncVideoZoom && NodeMan.exists("videoZoom")) {
+            var videoZoom = NodeMan.get("videoZoom")
+            if (videoZoom != undefined) {
+                this.zoom = videoZoom.v0 / 100;
+            }
+        }
+
         if (this.overlayView && !this.overlayView.visible) return;
         this.setVisible(true)
 
@@ -170,9 +194,14 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
 
             t.checkListener()
 
-            const x = t.x * this.widthPx
-            const y = t.y * this.heightPx
-            this.ctx.font = Math.floor(this.heightPx * t.size) + 'px' + " " + t.font
+            // const x = t.x * this.widthPx
+            // const y = t.y * this.heightPx
+            // this.ctx.font = Math.floor(this.heightPx * t.size) + 'px' + " " + t.font
+
+            const x = this.px((t.x)*100)
+            const y = this.py((t.y)*100)
+            this.ctx.font = Math.floor(this.sx(t.size*100)) + 'px' + " " + t.font
+
             this.ctx.fillStyle = t.color;
             this.ctx.strokeStyle = t.color;
             this.ctx.textAlign = t.align;

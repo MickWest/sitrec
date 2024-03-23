@@ -76,6 +76,8 @@ class CNodeViewCanvas2D extends CNodeViewCanvas {
         // this.ctx.globalAlpha = 0.5;
 
         this.autoClear = v.autoClear;
+        this.autoFill = v.autoFill;
+        this.autoFillColor = v.autoFillColor;
 
     }
 

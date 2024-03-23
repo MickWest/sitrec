@@ -101,7 +101,7 @@ export class   CNodeATFLIRUI extends CNodeViewUI {
         const k = 4 // length of spike
         const k_top = 3 // length of spike
         c.beginPath();
-        c.arc(this.px(this.cx), this.py(this.cy), this.px(r), 0, 2 * Math.PI)
+        c.arc(this.px(this.cx), this.py(this.cy), this.sx(r), 0, 2 * Math.PI)
 
         c.moveTo(this.px(this.cx - r), this.py(this.cy))
         c.lineTo(this.px(this.cx - r - k), this.py(this.cy))
@@ -109,8 +109,8 @@ export class   CNodeATFLIRUI extends CNodeViewUI {
         c.moveTo(this.px(this.cx + r), this.py(this.cy))
         c.lineTo(this.px(this.cx + r + k), this.py(this.cy))
 
-        c.moveTo(this.px(this.cx), this.py(this.cy) - this.px(r))
-        c.lineTo(this.px(this.cx), this.py(this.cy - k_top) - this.px(r))  // px(r) in the y as we scale r by x for arc
+        c.moveTo(this.px(this.cx), this.py(this.cy) - this.sx(r))
+        c.lineTo(this.px(this.cx), this.py(this.cy - k_top) - this.sx(r))  // px(r) in the y as we scale r by x for arc
 
         c.stroke();
 

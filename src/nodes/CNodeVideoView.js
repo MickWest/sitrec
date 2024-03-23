@@ -249,7 +249,8 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
 
         this.optionalInputs(["brightness", "contrast", "blur", "greyscale"])
 
-        addFiltersToVideoNode(this)
+        if (this.overlayView !== undefined)
+            addFiltersToVideoNode(this)
 
         this.positioned = false;
         this.autoFill = v.autoFill ?? true; // default to autofill
@@ -259,7 +260,7 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         this.imageHeight = 0;
         this.scrubFrame = 0; // storing fractiona accumulation of frames while scrubbing
 
-
+        this.autoClear = (v.autoClear !== undefined)? v.autoClear : false;
 
         this.mouse = new CMouseHandler(this, {
 
@@ -321,6 +322,9 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         if (image) {
 
             const ctx = this.canvas.getContext("2d");
+
+           //  ctx.fillstyle = "#FF00FFFF"
+           //  ctx.fillRect(0, 0, this.canvas.width/3, this.canvas.height);
 
             // image width might change, for example, with the tiny images used by the old Gimbal video
             if (!this.positioned || this.imageWidth !== image.width) {
