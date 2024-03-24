@@ -144,7 +144,7 @@ export class CNodeLLALabel extends CNodeLabel3D {
         super(v);
         this.lat = v.lat;
         this.lon = v.lon;
-        this.alt = v.lon;
+        this.alt = v.alt;
         this.update(0);
 
     }
@@ -152,7 +152,7 @@ export class CNodeLLALabel extends CNodeLabel3D {
     update(f) {
         const lat = this.lat;
         const lon = this.lon;
-        const text = `${lat.toFixed(2)} ${lon.toFixed(2)}`;
+        const text = `${lat.toFixed(4)} ${lon.toFixed(4)}`;
         this.changeText(text);
 
         const pos = LLAToEUS(lat, lon, this.alt);
@@ -163,6 +163,7 @@ export class CNodeLLALabel extends CNodeLabel3D {
     changeLLA(lat, lon, alt) {
         this.lat = lat;
         this.lon = lon;
+        this.alt = alt;
         this.update(0);
     }
 
