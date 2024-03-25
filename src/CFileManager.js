@@ -12,7 +12,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_ROOT, SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {gui} from "./Globals";
+import {Globals, gui} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -28,11 +28,14 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
+
         this.guiFolder = gui.addFolder("FileManager").perm().close();
 
-        this.guiFolder.add(this, "importFile").name("Rehost File").perm();
-        this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
-
+        // custom sitches and rehosting only for logged-in users
+        if (Globals.userID > 0) {
+            this.guiFolder.add(this, "importFile").name("Rehost File").perm();
+            this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
+        }
 
         let textSitches = [];
         fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
