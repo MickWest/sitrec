@@ -397,7 +397,16 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "videoView":
                 SSLog();
-                assert(Sit.videoFile !== undefined, "videoView needs a video file")
+
+                // legacy sitches have the video file in the root of the sitch
+                // but we now use Sit.files.videoFile
+                // to keep the files consistent for rehosting
+                let videoFile = Sit.videoFile;
+                if (videoFile === undefined) {
+                    videoFile = Sit.files.videoFile
+                }
+
+                assert(videoFile !== undefined, "videoView needs a video file")
                 if (!NodeMan.exists("videoZoom")) {
                     new CNodeGUIValue({
                         id: "videoZoom",
@@ -405,6 +414,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         desc: "Video Zoom %"
                     }, gui)
                 }
+
 
                 new CNodeVideoWebCodecView({
                         id: /*data.id ?? */"video",
@@ -415,7 +425,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         draggable: true, resizable: true,
                         frames: Sit.frames,
                         videoSpeed: Sit.videoSpeed,
-                        file: Sit.videoFile,
+                        file: videoFile,
                         ...data,
                     }
                 )

@@ -547,3 +547,36 @@ export function cleanCSVText(buffer) {
 }
 
 export const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
+export function areArrayBuffersEqual(buffer1, buffer2) {
+    if (buffer1.byteLength !== buffer2.byteLength) {
+        return false;
+    }
+
+    const view1 = new Uint8Array(buffer1);
+    const view2 = new Uint8Array(buffer2);
+
+    for (let i = 0; i < view1.length; i++) {
+        if (view1[i] !== view2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Helper function to convert ArrayBuffer to String
+export function arrayBufferToString(buffer) {
+    return String.fromCharCode.apply(null, new Uint8Array(buffer));
+}
+
+// Helper function to convert String to ArrayBuffer
+export function stringToArrayBuffer(str) {
+    var buf = new ArrayBuffer(str.length); // 1 byte for each char
+    var bufView = new Uint8Array(buf);
+    for (var i=0, strLen=str.length; i<strLen; i++) {
+        bufView[i] = str.charCodeAt(i);
+    }
+    return buf;
+}
+

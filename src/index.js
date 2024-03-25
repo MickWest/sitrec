@@ -14,7 +14,7 @@ import {
     NodeMan, setFileManager,
     setGlobalDateTimeNode,
     setGlobalURLParams,
-    setInfoDiv,
+    setInfoDiv, setNewSitchText,
     setNodeMan,
     setSit,
     setSitchMan,
@@ -31,7 +31,7 @@ import {par, resetPar} from "./par";
 import * as LAYER from "./LayerMasks.js"
 import {SetupFrameSlider} from "./FrameSlider";
 import {registerNodes} from "./RegisterNodes";
-import {registerSitches} from "./RegisterSitches";
+import {registerSitches, textSitchToObject} from "./RegisterSitches";
 import {SetupMouseHandler} from "./mouseMoveView";
 import {initKeyboard, showHider} from "./KeyBoardHandler";
 import {
@@ -71,6 +71,9 @@ import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from
 import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
 import {imageQueueManager} from "./js/get-pixels-mick";
 import {disposeGimbalChart} from "./JetChart";
+import {CNodeMath} from "./nodes/CNodeMath";
+import {CNodeConstant} from "./nodes/CNode";
+import {DragDropHandler} from "./DragDropHandler";
 
 // This is the main entry point for the sitrec application
 // However note that the imports above might have code that is executed
@@ -94,7 +97,24 @@ resetPar();
 await initializeOnce();
 initRendering();
 
-selectInitialSitch();
+
+if (urlParams.get("custom")) {
+    const customSitch = urlParams.get("custom")
+    // customSitch is the URL of a sitch definition file
+    // fetch it, and then use that as the sitch
+    await fetch(customSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
+        console.log("Custom sitch = "+customSitch)
+        console.log("Result = "+data)
+
+        const sitchObject = textSitchToObject(data);
+        par.name = "CUSTOM";
+        setSit(new CSituation(sitchObject))
+
+
+    });
+} else {
+    selectInitialSitch();
+}
 legacySetup();
 await setupFunctions();
 
@@ -223,6 +243,33 @@ async function initializeOnce() {
     // Some metacode to find the node types and sitches (and common setup fragments)
 
     registerNodes();
+
+
+
+
+
+    // const test1 = new CNodeMath({
+    //     id: "test1",
+    //     inputs: {a: 5, b: 6},
+    //     math: "a+b",
+    // })
+    //
+    // console.log("TESTING CNodeMath")
+    // console.log("TESTING CNodeMath")
+    // console.log(test1.getValueFrame(0)) // 11
+
+    new CNodeConstant({id: "nodeA", value: 5})
+    new CNodeConstant({id: "nodeB", value: 17})
+
+    const test2 = new CNodeMath({
+        math: `X = $nodeA;
+                // comment line
+               Y = X + $nodeB + 100; // something
+               Z = X + Y;
+               Z * 100;
+               `,
+    })
+    console.log(test2.getValueFrame(0)) // 11
 
 // Get all the text based sitches from the server
 // these are the sitches defined by <name>.sitch.js files inside the folder of the same name in data
@@ -625,6 +672,10 @@ function selectInitialSitch(force) {
     if (force) {
         situation = force;
     } else {
+
+
+
+
         if (urlParams.get("test")) {
             // get the list of situations to test
             toTest = urlParams.get("test")

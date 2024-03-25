@@ -46,10 +46,10 @@ class CRehoster {
 
             console.log('File uploaded:', resultUrl);
 
-            // copy the URL to the clipboard
-            navigator.clipboard.writeText(resultUrl).then(() => {
-                console.log('URL copied to clipboard:', resultUrl);
-            })
+            // // copy the URL to the clipboard
+            // navigator.clipboard.writeText(resultUrl).then(() => {
+            //     console.log('URL copied to clipboard:', resultUrl);
+            // })
 
             return resultUrl
         } catch (error) {

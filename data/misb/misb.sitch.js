@@ -33,13 +33,13 @@ sitch = {
     files: {
      //   misb: "https://sitrec.s3.us-west-2.amazonaws.com/misb2-agua.csv",
         klv: "misb/Truck.klv",
+        videoFile: "../sitrec-videos/public/Truck.mp4",
     },
 
     // video files likewise can be local or remote
-    // currently videos are not streamed, just loaded in their entirety
+    // currently videos are not streamed, just loaed in their entirety
 
 //    videoFile: "../sitrec-videos/public/Aquadilla High Quality Original.mp4",
-    videoFile: "../sitrec-videos/public/Truck.mp4",
 
 
 //    videoFile: "https://sitrec.s3.us-west-2.amazonaws.com/Aquadilla+High+Quality+Original.mp4",
@@ -121,7 +121,10 @@ sitch = {
 
 //    targetWind:{from:270, knots: 20}, // can we get this from the MISB? It's in a differnt location
 
+    // fromX: {kind:"math", math: "270 - 15"},
+    // Wind1: {kind: "Wind", from: "fromX", knots: 20},
     Wind1: {kind: "Wind", from: 270, knots: 20},
+
     Wind2: {kind: "Wind", from: 90, knots: 20},
     targetWind: {
         kind: "Switch", gui: "main", desc: "Target Wind", inputs: {

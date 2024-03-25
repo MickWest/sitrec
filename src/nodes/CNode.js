@@ -247,20 +247,30 @@ class CNode {
 
     // add an input node, and add this to its list of outputs
     // this is so a node can add a globally defined node, like GlobalTime, as a default input
+    // the parameter nodeID can be a node object, or a node name,
+    // or a number (which will be wrapped in a CNodeConstant)
     addInput(key, nodeID, optional = false) {
         assert(this.in.key === undefined, `Adding input ${key} that is already defined`)
         var node;
         if (nodeID instanceof CNode) {
             node = nodeID
         } else {
-            if (optional) {
-                // if optional, then do nothing if the node does not exist.
-                if (!NodeMan.exists(nodeID))
-                    return;
-            }
+            // if not a number, then it's a node name
+            if (typeof nodeID !== 'number') {
 
-            node = NodeMan.get(nodeID)
-            assert(node instanceof CNode, "Non-Node with id=" + nodeID +"  found for input key=" + key)
+                if (optional) {
+                    // if optional, then do nothing if the node does not exist.
+                    if (!NodeMan.exists(nodeID))
+                        return;
+                }
+
+                node = NodeMan.get(nodeID)
+                assert(node instanceof CNode, "Non-Node with id=" + nodeID + "  found for input key=" + key)
+            }
+            else {
+                // it's a number, so wrap it in a CNodeConstant
+                node = new CNodeConstant({value: nodeID})
+            }
         }
 
         this.inputs[key] = node;
@@ -303,7 +313,9 @@ class CNode {
                 // auto constants must be numbers
                 assert(typeof this.props[i] === 'number', "Node with id "+i+" : "+this.props[i]+" not a node or number, probably name of noded that's not created")
                 // it's not a node, and it is a number so wrap it in a CNodeConstant
-                sourceNode = new CNodeConstant({value: this.props[i]})
+//                sourceNode = new CNodeConstant({value: this.props[i]})
+                // wrapping is now done in addInput, for consistent behavior
+                sourceNode = this.props[i];
             }
         }
         this.addInput(i, sourceNode)

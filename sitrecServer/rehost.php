@@ -72,7 +72,8 @@ $newFileName = $baseName . '-' . $md5Checksum . '.' . $extension;
 
 
 // if there's an aws_credentials.json file, then we'll use that to upload to S3
-if (file_exists('../../../sitrec-keys/aws_credentials.json')) {
+// AWS IS DISABLED FOR NOW - TIMEOUT ISSUES
+if (0 && file_exists('../../../sitrec-keys/aws_credentials.json')) {
     require 'vendor/autoload.php';
 
     // load the credentials from ../../../sitrec-keys/aws_credentials.json
@@ -95,6 +96,7 @@ if (file_exists('../../../sitrec-keys/aws_credentials.json')) {
         'Body' => $fileContent,
         'ACL' => $aws['acl']
     ]);
+
 
     // check for errors and return the status code if something went wrong
     if ($result['@metadata']['statusCode'] != 200) {

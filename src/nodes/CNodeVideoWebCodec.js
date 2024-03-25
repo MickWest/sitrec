@@ -1,6 +1,6 @@
 import {CVideoData} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
-import {infoDiv, Sit} from "../Globals";
+import {FileManager, infoDiv, Sit} from "../Globals";
 import {assert, loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
@@ -60,32 +60,49 @@ export class CVideoWebCodecData extends CVideoData {
         }
 
         let source = new MP4Source()
-        if (v.file !== undefined) {
-            source.loadURI(v.file,
-                () => {
-                    loadedCallback();
-                    updateSitFrames()
-                },
-                () => {
-                    errorCallback();
-                })
-        }
-        if (v.dropFile !== undefined) {
-            let reader = new FileReader()
-            reader.readAsArrayBuffer(v.dropFile)
-            // could maybe do partial loads, but this is local, so it's loading fast
-            // however would be a faster start.
-            reader.onloadend = () => {
-                // reader.result will be an ArrayBuffer
+
+        // check for local file
+        // if it's got no forward slashes, then it's a local file
+        if (v.file !== undefined && v.file.indexOf("/") === -1) {
+            FileManager.loadAsset(v.file,"video").then(result => {
                 // the file.appendBuffer expects an ArrayBuffer with a fileStart value (a byte offset) and
                 // and byteLength (total byte length)
-                reader.result.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
-                source.file.appendBuffer(reader.result)
+                result.parsed.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
+                source.file.appendBuffer(result.parsed)
                 source.file.flush();
                 loadedCallback();
                 updateSitFrames()
-            }
 
+            })
+        } else {
+
+            if (v.file !== undefined) {
+                source.loadURI(v.file,
+                    () => {
+                        loadedCallback();
+                        updateSitFrames()
+                    },
+                    () => {
+                        errorCallback();
+                    })
+            }
+            if (v.dropFile !== undefined) {
+                let reader = new FileReader()
+                reader.readAsArrayBuffer(v.dropFile)
+                // could maybe do partial loads, but this is local, so it's loading fast
+                // however would be a faster start.
+                reader.onloadend = () => {
+                    // reader.result will be an ArrayBuffer
+                    // the file.appendBuffer expects an ArrayBuffer with a fileStart value (a byte offset) and
+                    // and byteLength (total byte length)
+                    reader.result.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
+                    source.file.appendBuffer(reader.result)
+                    source.file.flush();
+                    loadedCallback();
+                    updateSitFrames()
+                }
+
+            }
         }
 
         // RGB filters need to make an ImageData copy to get the RGBA values

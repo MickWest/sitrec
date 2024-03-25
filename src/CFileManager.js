@@ -1,7 +1,15 @@
-import {assert, cleanCSVTex, cleanCSVText, getFileExtension, isHttpOrHttps, versionString} from "./utils";
+import {
+    areArrayBuffersEqual, arrayBufferToString,
+    assert,
+    cleanCSVTex,
+    cleanCSVText,
+    getFileExtension,
+    isHttpOrHttps, stringToArrayBuffer,
+    versionString
+} from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
-import {SITREC_SERVER} from "../config";
+import {SITREC_ROOT, SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {gui} from "./Globals";
@@ -20,9 +28,10 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        this.guiFolder = gui.addFolder("FileManager").perm();
+        this.guiFolder = gui.addFolder("FileManager").perm().close();
 
-        this.guiFolder.add(this, "importFile").name("Import File").perm();
+        this.guiFolder.add(this, "importFile").name("Rehost File").perm();
+        this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
 
 
         let textSitches = [];
@@ -33,6 +42,50 @@ export class CFileManager extends CManager {
 
 
     }
+
+    async openDirectory() {
+        try {
+            // This will show the directory picker dialog.
+            this.directoryHandle = await window.showDirectoryPicker();
+
+            // You can now access the files in the directory.
+            for await (const entry of this.directoryHandle.values()) {
+                console.log(entry);
+                // if it's a .sitch.js file, then load it like in importFile
+                if (entry.name.endsWith(".sitch.js")) {
+
+                    if (this.localSitchEntry === undefined) {
+                        this.guiFolder.add(this, "rehostSitch").name("Rehost Local Sitch").perm();
+                    }
+
+                    this.localSitchEntry = entry;
+                    this.checkForNewLocalSitch();
+                }
+            }
+
+            // To retain the directory handle for future access, store it in IndexedDB or elsewhere.
+        } catch (err) {
+            console.error(err.name, err.message);
+        }
+    }
+
+    async checkForNewLocalSitch() {
+
+        // load the local sitch and see if it has changed
+        const file = await this.localSitchEntry.getFile();
+        this.localSitchBuffer = await file.arrayBuffer();
+//        console.log("CHECKING CONTENTS OF Local Sitch " + file.name);
+
+        if (this.lastLocalSitchBuffer === undefined ||
+            !areArrayBuffersEqual(this.lastLocalSitchBuffer, this.localSitchBuffer)) {
+            this.lastLocalSitchBuffer = this.localSitchBuffer;
+            DragDropHandler.parseResult(file.name, this.localSitchBuffer);
+        }
+
+        setTimeout(() => this.checkForNewLocalSitch(), 500);
+    }
+
+
 
     importFile() {
         // Create an input element
@@ -52,13 +105,13 @@ export class CFileManager extends CManager {
             // Listen for the 'load' event on the FileReader
             reader.addEventListener('load', () => {
                 // When the file has been read, parse it as an asset
-             //   this.parseAsset(file.name, file.name, reader.result)
-
-                // do we want to always rehost?
-
                 Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
                    console.log("Imported File Rehosted as " + rehostResult);
-                    DragDropHandler.parseResult(file.name, reader.result);
+                 //   DragDropHandler.parseResult(file.name, reader.result);
+                    // display an alert with the new URL so the user can copy it
+                    //alert(rehostResult);
+                    createCustomModalWithCopy(rehostResult)();
+
                 });
 
             });
@@ -69,6 +122,64 @@ export class CFileManager extends CManager {
 
         // Trigger a click event on the input element
         inputElement.click();
+
+    }
+
+
+    rehostSitch() {
+        // rehosting a sitch is done when we have a local sitch file
+        // and (possibly) local assets that need to be rehosted
+        // we can then rehost them all and then reload the sitch
+        //
+        // the sitch itself will be in this.localSitchBuffer
+        // and any local assets will be in this.localAssets
+        // we will need to rehost them all, and alter the sitch to point to the new URLs
+        // in the Sit.file object
+
+        let sitchString = arrayBufferToString(this.localSitchBuffer);
+
+        // first rehost the files, so we can see what their new URLs are
+        this.iterate( (key, parsed) => {
+            const f = this.list[key];
+            assert(f.staticURL !== undefined, "File " + key + " has undefined staticURL");
+            if (f.staticURL === null) {
+                Rehoster.rehostFile(f.filename, f.original).then((staticURL) => {
+                    f.staticURL = staticURL;
+
+                    // now replace the original filename in this.localSitchBuffer
+                    // with the new URL, but only if it's in quotes
+                    const rehostedURL = f.staticURL;
+                    const rehostedFilename = f.filename;
+                    const rehostedFilenameQuoted = '"' + rehostedFilename + '"';
+                    const rehostedURLQuoted = '"' + rehostedURL + '"';
+                    console.log ("replacing " + rehostedFilenameQuoted + " with " + rehostedURLQuoted)
+                    sitchString = sitchString.replaceAll(rehostedFilenameQuoted, rehostedURLQuoted);
+//                    console.log(sitchString)
+
+                    // and again with single quotes, just in case
+                    const rehostedFilenameSingleQuoted = "'" + rehostedFilename + "'";
+                    const rehostedURLSingleQuoted = "'" + rehostedURL + "'";
+                    sitchString = sitchString.replaceAll(rehostedFilenameSingleQuoted, rehostedURLSingleQuoted);
+                })
+            }
+        })
+
+        // wait for all the files to be rehosted
+        // then rehost the sitch
+
+        Rehoster.waitForAllRehosts().then(() => {
+            this.localSitchBuffer = stringToArrayBuffer(sitchString);
+
+            // all files have been rehosted, so now we can rehost the sitch
+            Rehoster.rehostFile(this.localSitchEntry.name, this.localSitchBuffer).then((staticURL) => {
+                console.log("Sitch rehosted as " + staticURL);
+
+                // and make a URL that points to the new sitch
+                let customLink = SITREC_ROOT + "?custom=" + staticURL;
+
+                createCustomModalWithCopy(customLink)();
+            })
+        })
 
     }
 
@@ -91,8 +202,33 @@ export class CFileManager extends CManager {
             id = filename; // Fallback to use filename as id if id is undefined
         }
 
-        // if it's not a url, then redirect to the data folder
+        // If it has no forward slash, then it's a local file
+        // and will be in the this.directoryHandle folder
+        if (!filename.includes("/")) {
+            assert(this.directoryHandle !== undefined, "No directory handle for local file")
+            return this.directoryHandle.getFileHandle(filename).then(fileHandle => {
+                return fileHandle.getFile().then(file => {
+                    return file.arrayBuffer().then(arrayBuffer => {
+                        return this.parseAsset(filename, id, arrayBuffer).then(parsedAsset => {
+                            // We now have a full parsed asset in a {filename: filename, parsed: parsed} structure
+                            this.add(id, parsedAsset.parsed, arrayBuffer); // Add the loaded and parsed asset to the manager
+                            this.list[id].dynamicLink = false;
+                            this.list[id].staticURL = null; // indicates it has NOT been rehosted
+                            this.list[id].filename = filename
+                            return parsedAsset; // Return the asset for further chaining if necessary
+                        });
+                    });
+                });
+            });
+        }
+
+        // if not a local file, then it's a URL
+        // either a dynamic link (like to the current Starlink TLE) or a static link
+        // so fetch it and parse it
+
+
         if (!isHttpOrHttps(filename)) {
+            // if it's not a url, then redirect to the data folder
             filename = "./data/" + filename;
         }
 
@@ -110,10 +246,11 @@ export class CFileManager extends CManager {
                 // parseAsset always returns a promise
                 console.log("<<< loadAsset() Loading Finished: " + filename + " id=" + id);
 
-                if (dynamicLink)
+                //if (dynamicLink)
+                // always store the original
                     original = arrayBuffer;
-                else
-                    original = null;
+                //else
+                //    original = null;
 
                 const assetPromise = this.parseAsset(filename, id, arrayBuffer);
                 return assetPromise;
@@ -261,7 +398,7 @@ export class CFileManager extends CManager {
                     // but let's trust the extensions
                     //assert(0, "Unhandled extension " + fileExt + " for " + filename)
                     console.warn("Unhandled extension " + fileExt + " for " + filename)
-                    return Promise.resolve({filename: filename, parsed: null});
+                    return Promise.resolve({filename: filename, parsed: buffer});
             }
 
             console.log("parseAsset: DONE Parse " + filename)
@@ -374,3 +511,78 @@ export function detectCSVType(csv) {
     return "Unknown";
 }
 
+
+export function createCustomModalWithCopy(url) {
+    // Create the modal container
+    const modal = document.createElement('div');
+    modal.style.display = 'none';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '1';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+
+    // Create the modal content container
+    const modalContent = document.createElement('div');
+    modalContent.style.backgroundColor = '#fefefe';
+    modalContent.style.margin = '15% auto';
+    modalContent.style.padding = '20px';
+    modalContent.style.border = '1px solid #888';
+    modalContent.style.width = '50%';
+
+    // Create the close button
+    const closeButton = document.createElement('span');
+    closeButton.innerHTML = '&times;';
+    closeButton.style.color = '#aaa';
+    closeButton.style.float = 'right';
+    closeButton.style.fontSize = '28px';
+    closeButton.style.fontWeight = 'bold';
+    closeButton.style.cursor = 'pointer';
+
+    // Close modal event and cleanup
+    closeButton.onclick = function() {
+        modal.style.display = 'none';
+        // remove it from the DOM
+        document.body.removeChild(modal);
+        // remove the event listener
+        closeButton.onclick = null;
+
+    };
+
+    // Append the close button to the modal content
+    modalContent.appendChild(closeButton);
+
+    // Create and append the URL text
+    const urlText = document.createElement('p');
+    urlText.textContent = url;
+    modalContent.appendChild(urlText);
+
+    // Create and append the Copy button
+    const copyButton = document.createElement('button');
+    copyButton.textContent = 'Copy URL';
+    copyButton.onclick = function() {
+        navigator.clipboard.writeText(url).then(() => {
+            console.log('URL copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
+
+    modalContent.appendChild(copyButton);
+
+    // Append the modal content to the modal
+    modal.appendChild(modalContent);
+
+    // Append the modal to the body
+    document.body.appendChild(modal);
+
+    // Function to display the modal
+    const showModal = function() {
+        modal.style.display = 'block';
+    };
+
+    // Return the showModal function to allow opening the modal
+    return showModal;
+}

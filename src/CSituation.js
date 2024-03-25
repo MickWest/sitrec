@@ -137,8 +137,12 @@ export class CSituation {
         }
         infoDiv.innerHTML = "Loading<br>"
         for (const key in assets) {
-            infoDiv.innerHTML += this.files[key]+"<br>";
-            await FileManager.loadAsset(assets[key], key)
+
+            // videoFile is a special case, we don't want to load it here
+            if (key !== "videoFile") {
+                infoDiv.innerHTML += this.files[key] + "<br>";
+                await FileManager.loadAsset(assets[key], key)
+            }
         }
         infoDiv.innerHTML = "done loading"
     }
