@@ -617,9 +617,6 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 const overlayView = NodeMan.get(overlayNode);
                 var labelVideo = new CNodeViewUI({id: data.id ?? "labelVideo", overlayView: overlayView});
                 let textSize = 2.5;
-                if (labelVideo.widthPx > labelVideo.heightPx) {
-                    textSize = 5
-                }
                 AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
                 labelVideo.setVisible(true)
                 break;
