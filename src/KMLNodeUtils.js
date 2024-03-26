@@ -49,6 +49,8 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
         const trackDataID = "KMLTargetData"+track;
         const trackID = "KMLTarget"+track;
 
+        console.log("Creating track with trackID", trackID, "in addKMLTracks")
+
         makeTrackFromDataFile(track, trackDataID, trackID);
 
         if (NodeMan.exists("cameraSwitch")) {
@@ -100,7 +102,7 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
                 track: "KMLTarget"+track,
                 size: "sizeTargetScaled",
             },
-
+            color: [1, 1, 0],
             layers: sphereMask,
         })
 

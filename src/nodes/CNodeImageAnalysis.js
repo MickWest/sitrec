@@ -1,7 +1,7 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
-import {FileManager, Sit} from "../Globals";
+import {FileManager, NodeMan, Sit} from "../Globals";
 import {RollingAverage} from "../utils";
 import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
@@ -19,17 +19,53 @@ function getPixelData(image) {
     return canvas.getContext('2d').getImageData(0, 0, image.width, image.height).data
 }
 
-export class CNodeImage extends CNodeViewUI {
+export class CNodeImageView extends CNodeViewUI {
     constructor(v) {
         super(v);
-        this.image = FileManager.get(v.filename)
-        this.test = 0
 
+        this.stretchToFit = v.stretchToFit ?? false
+
+        if (v.mirror) {
+            this.image = NodeMan.get(v.mirror).image
+        } else {
+            this.image = FileManager.get(v.filename)
+            this.test = 0
+        }
     }
 
     render() {
         super.render(0)
-        this.ctx.drawImage(this.image,0,0,this.widthPx, this.heightPx)
+        if (this.stretchToFit) {
+            this.ctx.drawImage(this.image, 0, 0, this.widthPx, this.heightPx)
+        } else {
+            // center it vertically or horizontally
+            // by comparing the image aspect ratio to the canvas aspect ratio
+            var imageWidth = this.image.width
+            var imageHeight = this.image.height
+            var canvasWidth = this.canvas.width
+            var canvasHeight = this.canvas.height
+            var imageAspectRatio = imageWidth / imageHeight
+            var canvasAspectRatio = canvasWidth / canvasHeight
+            var renderableHeight, renderableWidth, xStart, yStart
+            if (imageAspectRatio < canvasAspectRatio) {
+                renderableHeight = canvasHeight
+                renderableWidth = imageWidth * (renderableHeight / imageHeight)
+                xStart = (canvasWidth - renderableWidth) / 2
+                yStart = 0
+            } else if (imageAspectRatio > canvasAspectRatio) {
+                renderableWidth = canvasWidth
+                renderableHeight = imageHeight * (renderableWidth / imageWidth)
+                xStart = 0
+                yStart = (canvasHeight - renderableHeight) / 2
+            } else {
+                renderableHeight = canvasHeight
+                renderableWidth = canvasWidth
+                xStart = 0
+                yStart = 0
+            }
+            this.ctx.drawImage(this.image, xStart, yStart, renderableWidth, renderableHeight)
+
+        }
 
     }
 
@@ -49,7 +85,7 @@ function imagedata_to_image(imagedata) {
 }
 
 
-export class CNodeImageAnalysis extends CNodeImage {
+export class CNodeImageAnalysis extends CNodeImageView {
     constructor(v) {
         v.shiftDrag = true;
         super(v);
@@ -143,8 +179,9 @@ export class CNodeImageAnalysis extends CNodeImage {
         this.graph.editor.disable = true;
 
 
-        this.regionView = new CNodeImage({
+        this.regionView = new CNodeImageView({
             id: "theImage",
+            stretchToFit: true,
             filename:v.filename,
             left: 0.60, top: 0.0, width: .40, height: .50,
             visible: true, draggable: true, resizable: true, shiftDrag: false, freeAspect: true,

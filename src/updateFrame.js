@@ -8,7 +8,8 @@ export function updateFrame() {
     const lastFrame = par.frame;
 
     const A = Sit.aFrame;
-    const B = Sit.bFrame;
+    let B = Sit.bFrame ?? Sit.frames-1;
+
 
     if (isKeyHeld('arrowup')) {
         par.frame = Math.round(par.frame - 10);
