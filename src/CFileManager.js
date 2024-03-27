@@ -232,7 +232,9 @@ export class CFileManager extends CManager {
 
         if (!isHttpOrHttps(filename)) {
             // if it's not a url, then redirect to the data folder
-            filename = "./data/" + filename;
+            //filename = "./data/" + filename;
+            filename = SITREC_ROOT + "data/" + filename;
+
         }
 
         var original = null;
@@ -274,6 +276,11 @@ export class CFileManager extends CManager {
                 this.add(id, parsedAsset.parsed, original); // Add the loaded and parsed asset to the manager
                 this.list[id].dynamicLink = dynamicLink;
                 this.list[id].staticURL = null; // indicates it has not been rehosted
+                if (isHttpOrHttps(filename) && !dynamicLink) {
+                    // if it's a URL, and it's not a dynamic link, then we can store the URL as the static URL
+                    // indicating we don't want to rehost this later.
+                    this.list[id].staticURL = filename;
+                }
                 this.list[id].filename = filename
                 if (id === "starLink") {
                     console.log("Flagging initial starlink file")

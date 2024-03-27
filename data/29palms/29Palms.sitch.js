@@ -26,6 +26,8 @@ export const Sit29Palms = {
         KMLTarget3: "29palms/N279SY-track-EGM96.kml",
     },
 
+    starScale: 0.69, // to match the photo
+
     units: "Imperial",
 
     startTime: "2021-04-21T03:23:51.000Z",

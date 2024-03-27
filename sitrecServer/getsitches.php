@@ -20,11 +20,36 @@ function getSitches()
 // filer out the folders that do not have a .sitch.js file inside of the same name as the folder
     $sitches = array();
     foreach ($folders as $folder) {
-        if (file_exists($dir . '/' . $folder . '/' . $folder . '.sitch.js')) {
-            $sitches[$folder] = file_get_contents($dir . '/' . $folder . '/' . $folder . '.sitch.js');
+        // Normalize the folder name to lowercase for comparison
+        $normalizedFolderName = strtolower($folder);
+        $folderPath = $dir . '/' . $folder;
+
+        // Check if the folder path is actually a directory
+        if (is_dir($folderPath)) {
+            // Scan the directory for files
+            $filesInFolder = scandir($folderPath);
+
+            // Normalize file names to lowercase for case-insensitive comparison
+            $normalizedFiles = array_map('strtolower', $filesInFolder);
+
+            // Construct the expected file name based on the folder name
+            $expectedFileName = $normalizedFolderName . '.sitch.js';
+
+            // Check if the normalized file names array contains the expected file name
+            if (in_array($expectedFileName, $normalizedFiles)) {
+                // Find the original file name by matching the normalized name
+                foreach ($filesInFolder as $file) {
+                    if (strtolower($file) === $expectedFileName) {
+                        // Read the content of the file when the case-insensitive match is found
+                        $sitches[$folder] = file_get_contents($folderPath . '/' . $file);
+                        break; // Stop the loop after finding the matching file
+                    }
+                }
+            }
         }
     }
     return $sitches;
+
 }
 
 // if no parapmeters passed then return the sitches as a json object
