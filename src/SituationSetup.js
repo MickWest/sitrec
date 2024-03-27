@@ -219,12 +219,23 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 //         startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
                 //         startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
                 // },
+
+                // if we don't have a startCameraPosition or startCameraPositionLLA, then add some defaults
+                // basically a high camera to the south of the region, looking at the center
+                if (data.startCameraPosition === undefined && data.startCameraPositionLLA === undefined) {
+                    data = {
+                        ...data,
+                        ...{startCameraPosition:[0,130000,160000],
+                            startCameraTarget:[0,0,0]}
+                    }
+                }
+
                 const cameraNode = new CNodeCamera({
                     id: "mainCamera",
                     fov: data.fov ?? 30,
                     aspect: window.innerWidth / window.innerHeight,
                     near: data.near ?? 1,
-                    far: data.far ?? 8000000,
+                    far: data.far ?? 80000000,
                     layers: data.mask ?? LAYER.MASK_MAINRENDER,
 
                     // one of these will be undefined. CNodeCamera uses the other
@@ -352,6 +363,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "mainView":
                 SSLog();
+
                 const mainViewDef = {
                     id: "mainView",
                     //     draggable:true,resizable:true,

@@ -45,9 +45,9 @@ class CManager {
             if (this.list[id] === undefined) {
                 console.log("Missing Managed object " + id + ", use exists() if you are just checking");
                 console.log("Available keys are: ");
-                for (let key in this.list) {
-                    console.log("key", key)
-                }
+                // for (let key in this.list) {
+                //     console.log("key", key)
+                // }
             }
             assert(this.list[id] !== undefined, "Missing Managed object " + id + ", use exists() if you are just checking")
         }
