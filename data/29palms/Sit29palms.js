@@ -9,15 +9,18 @@
 // the positions of the planes in the photo and the known positions of the planes from ADS-B data.
 // It was set up with the approximate time, then the start time was adjusted until the planes
 // matched the positions in the photo.
-
 export const Sit29Palms = {
     name: "29palms",
     menuName: "29 Palms Back Photo",
     isTextable: true,
 
-    targetSize: 600,
     frames: 180,  // 6 seconds at 30fps
 
+    // files used in the sitch. If there's a forward slash in it
+    // then we assume it's relative to the sitrec/data folder
+    // if it starts with http(s) then it's a URL
+    // otherwise it's a local file in a local sitch folder
+    // ("local" meaning on the user's computer, and they have to give permission)
     files: {
 //        threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
         threePlanes: "29palms/210420-M-ET234-1036-Pink.jpg",
@@ -26,23 +29,32 @@ export const Sit29Palms = {
         KMLTarget3: "29palms/N279SY-track-EGM96.kml",
     },
 
-    starScale: 0.69, // to match the photo
+    starScale: 0.69,        // to match the visiblity of stars in the photo
+    targetSize: 600,        // size of the target spheres, in feet. Brighter than photo, as we are interested in location
 
-    units: "Imperial",
+    units: "Imperial",      // Imperial, Metric, or Nautical
 
-    startTime: "2021-04-21T03:23:51.000Z",
+    startTime: "2021-04-21T03:23:51.000Z",  // Exact start time of the photo (corrected)
 
     // discussion thread, not currently  used, but could be displayed in the GUI
     // Most sitches have a metabunk thread.
     threadURl: "https://www.metabunk.org/threads/twentynine-palms-camp-wilson-triangle-uap-flares.12967/page-3#post-293744",
 
+    // Terrain Lat/Lon is the center of the map
+    // zoom is the zoom level of the map (1-15 for Mapbox)
+    // nTiles is the size of the square region to load (in tiles, so 8x8)
     terrain: {lat: 34.366222, lon: -115.975800, zoom: 12, nTiles: 8},
 
     mainCamera: {
-        fov: 30,
-        startCameraPosition: [-7888.59, 6602.16, -30715.32],
-        startCameraTarget: [-7324.29, 6493.84, -29896.89],
+        fov: 30, // fov will default to 30° if not specified (vertical)
+        // delete the following two lines to use the default start position
+        // which you'll want to do if the sitch is in a different location
+        // then look in the console output for the LLA start positions
+        // and copy them here.
+        startCameraPositionLLA:[34.946185,-117.021467,46923.760411],
+        startCameraTargetLLA:[34.940799,-117.013381,46636.128158],
     },
+
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, fov: 50, background: '#132d44',},
 
     lookCamera: {fov: 10,},
@@ -56,18 +68,18 @@ export const Sit29Palms = {
     // which would simplify the menus.
     ptz: {az: 141.7, el: 7.3, fov: 30.5, roll: -2.1, showGUI: true}, // << good for photo match
 
-    // A CNodeImageView acts like a CNode View
+    // A CNodeImageView is a like a static VideoView
    imageThreePlanes: { kind: "ImageView",
         filename: 'threePlanes',
-       // smooth: new CNodeGUIValue({id: "smooth", value: 20, start: 1, end: 200, step: 1, desc: "Filter"}, gui),
         draggable: true, resizable: true,
         left: 0.5, top: 0, width: -1.5, height: 0.5,
     },
 
-  //  MirrorVideoView:{id: "mirrorView", mirror: "video", overlayView: "lookView", transparency: 0.15},
 
+    // Here a CNodeImageView is an overlay, and it's a mirror (duplicate)of the above image
     imageMirror: { kind: "ImageView", mirror: "imageThreePlanes", overlayView: "lookView", transparency: 0.50 , autoClear:false},
 
+    // labelView defaults to adding an overlay to lookView, and adds the time and date
     labelView: {},
 
     addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD", sphereColor: [1,1,0]},
@@ -75,6 +87,7 @@ export const Sit29Palms = {
 //             "29palms/N8564Z-track-EGM96.kml",
 //             "29palms/N279SY-track-EGM96.kml",], sphereMask:"WORLD"},
 
+    // a bit of a patch to get all three tracks labeled
     altLabel1: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget1"},
     altLabel2: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget2"},
     altLabel3: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget3"},

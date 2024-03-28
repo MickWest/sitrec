@@ -121,7 +121,9 @@ module.exports = {
     optimization: {
         minimizer: [
             new TerserPlugin({
-                exclude: /\.sitch\.js$/, // Exclude files ending with .sitch.js from minification
+                //exclude: /\.sitch\.js$/, // Exclude files ending with .sitch.js from minification
+                // exclude files starting with "Sit" and ending with ".js"
+                exclude: /Sit.*\.js$/,
                 terserOptions: {
                     keep_classnames: true,
                 },

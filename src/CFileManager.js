@@ -54,8 +54,8 @@ export class CFileManager extends CManager {
             // You can now access the files in the directory.
             for await (const entry of this.directoryHandle.values()) {
                 console.log(entry);
-                // if it's a .sitch.js file, then load it like in importFile
-                if (entry.name.endsWith(".sitch.js")) {
+                // if it's a Sit????.js file, then load it like in importFile
+                if (entry.name.startsWith("Sit") && entry.name.endsWith(".js")) {
 
                     if (this.localSitchEntry === undefined) {
                         this.guiFolder.add(this, "rehostSitch").name("Rehost Local Sitch").perm();

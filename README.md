@@ -246,9 +246,9 @@ To create a new sitch, the simplest way is to copy and rename an existing one th
 
 Let's call the new stitch "Springfield" (just an example name), and assume you have KML files for the two planes, along with a location and time. 
 
-- Copy sitch/SitLake-Michigan-Tic-Tac.js to sitch/SitSpringfield.js (Sitch files must start with "Sit")
+- Copy sitch/SitLakeMichigan.js to sitch/SitSpringfield.js (Sitch files must start with "Sit")
 - Edit three names at the start of the Sitch definition:
-  - SitLakeMichiganTicTac -> SitSpringfield
+  - SitLakeMichigan -> SitSpringfield
   - "lakemichigan" -> "springfield" (lower case)
   - "Lake Michigan Tic-Tac" - > "Springfield window UAP"
 - Add the two KML files to data/springfield

@@ -1,6 +1,8 @@
 export const SitLineTest = {
     name: "linetest",
     menuName: "Line Detector",
+    isTextable: true,
+
 
     files: {
         LineTest: "linetest/ImageEditorDefault2.jpg"

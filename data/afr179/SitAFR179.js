@@ -1,9 +1,17 @@
+// AFR179 Fly-by
+// A plane-to-plane
+// fixed view
+// video
+// 8x speed
+
+
 export const SitAFR179 = {
     include_kml: true,
     name: "afr179",
     menuName: "AFR179 Fly-by",
     isTextable: true,
 
+    nightsky:true,
 
     frames: 1256, // 157 * 8, // currently needs manual setting
     videoSpeed: 8,

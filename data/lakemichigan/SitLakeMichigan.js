@@ -1,4 +1,4 @@
-export const SitLakeMichiganTicTac = {
+export const SitLakeMichigan = {
     include_kml: true,
     name: "lakemichigan",
     menuName: "Lake Michigan Tic-Tac",

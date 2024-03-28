@@ -1,3 +1,7 @@
+// AA2292 Cruise Missile
+// A KML plane-to-plane Sitch
+// No video
+
 export const SitAA2292 = {
     include_kml: true,
     name: "aa2292",

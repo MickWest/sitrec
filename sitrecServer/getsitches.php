@@ -18,6 +18,40 @@ function getSitches()
     }
 
 // filer out the folders that do not have a .sitch.js file inside of the same name as the folder
+//    $sitches = array();
+//    foreach ($folders as $folder) {
+//        // Normalize the folder name to lowercase for comparison
+//        $normalizedFolderName = strtolower($folder);
+//        $folderPath = $dir . '/' . $folder;
+//
+//        // Check if the folder path is actually a directory
+//        if (is_dir($folderPath)) {
+//            // Scan the directory for files
+//            $filesInFolder = scandir($folderPath);
+//
+//            // Normalize file names to lowercase for case-insensitive comparison
+//            $normalizedFiles = array_map('strtolower', $filesInFolder);
+//
+//            // Construct the expected file name based on the folder name
+//            $expectedFileName = $normalizedFolderName . '.sitch.js';
+//
+//            // Check if the normalized file names array contains the expected file name
+//            if (in_array($expectedFileName, $normalizedFiles)) {
+//                // Find the original file name by matching the normalized name
+//                foreach ($filesInFolder as $file) {
+//                    if (strtolower($file) === $expectedFileName) {
+//                        // Read the content of the file when the case-insensitive match is found
+//                        $sitches[$folder] = file_get_contents($folderPath . '/' . $file);
+//                        break; // Stop the loop after finding the matching file
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    // new naming convention is Sitname.js
+    // eg. for 29palms is Sit29palms.js
+    // so filter out the folders that do not have a .js file inside of the same name as the folder (with Sit prefix)
     $sitches = array();
     foreach ($folders as $folder) {
         // Normalize the folder name to lowercase for comparison
@@ -33,7 +67,8 @@ function getSitches()
             $normalizedFiles = array_map('strtolower', $filesInFolder);
 
             // Construct the expected file name based on the folder name
-            $expectedFileName = $normalizedFolderName . '.sitch.js';
+            // also in lower case, for comparision
+            $expectedFileName = 'sit' . $normalizedFolderName . '.js';
 
             // Check if the normalized file names array contains the expected file name
             if (in_array($expectedFileName, $normalizedFiles)) {
@@ -48,6 +83,7 @@ function getSitches()
             }
         }
     }
+
     return $sitches;
 
 }

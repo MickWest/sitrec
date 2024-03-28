@@ -35,13 +35,13 @@ export function registerSitches(textSitches) {
             const exportObject = moduleExports[exportKey];
 //            console.log("Checking key: "+key+ " Which exports = "+exportKey)
             if(exportKey.startsWith('Sit')) {
-//                console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
+                console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 SitchMan.add(exportObject.name, exportObject);
                 //const sitchName = exportKey.substring(3);
                 //SitchMan.add(sitchName, exportObject);
 
             } else if (exportKey.startsWith('common')) {
-//                console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
+                console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 // remove the common prefix
                 const commonName = exportKey.substring(6);
                 SitchMan.add(commonName, exportObject);
@@ -49,11 +49,13 @@ export function registerSitches(textSitches) {
         });
     });
 
+    console.log("Starting Text Sitches")
+
     // add the text sitches
     for (const key in textSitches) {
         const text = textSitches[key];
+        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
         const obj = textSitchToObject(text);
-//        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
         SitchMan.add(key, obj);
     }
 
@@ -69,8 +71,8 @@ export function textSitchToObject(text) {
 // strip off everything up to the first brace
     const firstBrace = text.indexOf("{");
     const data = text.substring(firstBrace);
-//    console.log("Parse >>>>>")
+    console.log("Parse >>>>>")
     const obj = parseJavascriptObject(data)
-//    console.log("<<<<<<<<<<< Parsed");
+    console.log("<<<<<<<<<<< Parsed");
     return obj;
 }
