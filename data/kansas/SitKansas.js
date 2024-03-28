@@ -3,13 +3,9 @@ export const SitKansas = {
     name: "kansas",
     menuName: "Kansas Tic-Tac",
     isTextable: true,
-    
-
     targetSize: 200, // in feet
-
-
-
     frames: 569,
+
     terrain: {lat: 38.890803, lon: -101.874630, zoom: 9, nTiles: 8},
     files: {
         cameraFile:   'kansas/N615UX-track-EGM96.kml',

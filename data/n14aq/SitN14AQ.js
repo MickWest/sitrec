@@ -5,7 +5,7 @@ export const SitN14AQ = {
     isTextable: true,
 
     targetSize: 200, // in feet
-    tilt: 2.6,
+
     frames: 84,
     terrain: {lat: 32.226890, lon: -82.940488, zoom: 9, nTiles: 8},
     files: {
@@ -28,6 +28,7 @@ export const SitN14AQ = {
     lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
     mainView:{left:0.0, top:0, width:.50,height:1},
+    tilt: 2.6,
 
     include_KMLTrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
