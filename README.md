@@ -5,7 +5,7 @@ Sitrec (Situation recreation) is a web application that allows for the real-time
 My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch.  
 
 - [Sitrec on Metabunk](https://www.metabunk.org/sitrec).
-- [No-code tutorial on creating a custom Sitch] (./docs/CustomSitches.md)
+- [No-code tutorial on creating a custom Sitch](./docs/CustomSitches.md)
 
 The most common use case is to display three views:
 - A video of a UAP situation 
