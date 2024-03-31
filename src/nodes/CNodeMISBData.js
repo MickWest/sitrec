@@ -1,7 +1,9 @@
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager} from "../Globals";
-import {MISB} from "../MISBUtils";
+import {MISB, MISBFields} from "../MISBUtils";
 import {CNodeEmptyArray} from "./CNodeArray";
+import {f2m} from "../utils";
+import {saveAs} from "../js/FileSaver";
 
 //export const MISBFields = Object.keys(MISB).length;
 
@@ -28,6 +30,29 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         this.selectSourceColumns(v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]);
 
         this.recalculate()
+        FileManager.addExportButton(this, "exportMISBCSV", "Export Raw MISB CSV " + this.id)
+
+    }
+
+    exportMISBCSV() {
+        let csv = ""
+        for (let i=0;i<MISBFields;i++) {
+            let name = "unknown";
+            for (let key in MISB) {
+                if (MISB[key] === i) {
+                    name = key;
+                    break;
+                }
+            }
+            csv = csv + name + (i<MISBFields-1?",":"\n");
+        }
+
+        for (let f=0;f<this.misb.length;f++) {
+            for (let i=0;i<MISBFields;i++) {
+                csv = csv + this.misb[f][i] + (i<MISBFields-1?",":"\n");
+            }
+        }
+        saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
     }
 
     // given an array of the MISB column names for lat,lon,alt

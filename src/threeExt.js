@@ -461,11 +461,26 @@ export function removeDebugSphere(name) {
 }
 
 // XYZ axes colored RGB
-export function DebugAxes(name, scene, position, length) {
+export function DebugAxes(name, position, length) {
     DebugArrow(name+"Xaxis",V3(1,0,0), position.clone().sub(V3(length/2,0,0)),length,"#FF8080")
     DebugArrow(name+"Yaxis",V3(0,1,0), position.clone().sub(V3(0,length/2,0)),length,"#80FF80")
     DebugArrow(name+"Zaxis",V3(0,0,1), position.clone().sub(V3(0,0,length/2)),length,"#8080FF")
 }
+
+export function DebugMatrixAxes(name, position, matrix, length) {
+    // extract the axes from the matrix
+    const x = new Vector3().setFromMatrixColumn(matrix, 0);
+    const y = new Vector3().setFromMatrixColumn(matrix, 1);
+    const z = new Vector3().setFromMatrixColumn(matrix, 2);
+    // draw the debug arrows
+    DebugArrow(name+"Xaxis",x, position.clone().sub(x.clone().multiplyScalar(length/2)),length,"#FF8080")
+    DebugArrow(name+"Yaxis",y, position.clone().sub(y.clone().multiplyScalar(length/2)),length,"#80FF80")
+    DebugArrow(name+"Zaxis",z, position.clone().sub(z.clone().multiplyScalar(length/2)),length,"#8080FF")
+
+}
+
+
+
 
 
 function DebugArrowOrigin(name, direction, length = 100, color, visible=true, parent, headLength=20, layerMask) {

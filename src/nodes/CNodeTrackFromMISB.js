@@ -1,11 +1,12 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {f2m, interpolate, vdump} from "../utils";
-import {Sit, GlobalDateTimeNode} from "../Globals";
+import {Sit, GlobalDateTimeNode, FileManager} from "../Globals";
 import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {V3} from "../threeExt";
 
 import {MISB} from "../MISBUtils";
+import {saveAs} from "../js/FileSaver";
 
 export class CNodeTrackFromMISB extends CNodeEmptyArray {
     constructor(v) {
@@ -18,6 +19,17 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
 
         this.addInput("startTime",GlobalDateTimeNode)
         this.recalculate()
+
+        FileManager.addExportButton(this, "exportTrackCSV", "Export CSV " + this.id)
+    }
+
+    exportTrackCSV() {
+        let csv = "Frame,Lat,Lon,Alt\n"
+        for (let f=0;f<this.frames;f++) {
+            const pos = this.array[f].lla
+            csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+        }
+        saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
     }
 
 
@@ -94,7 +106,7 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
             assert(!Number.isNaN(pos.x),"CNodeTrackFromMISB:recalculate(): pos.x NaN " + "lat = " + lat + " lon = " + lon + " alt = " + alt)
 
             // minumum data that is needed
-            const product = {position: pos.clone()}
+            const product = {position: pos.clone(), lla:[lat,lon,alt]}
 
             // uniterpolated extra fields
             const extraFields = [

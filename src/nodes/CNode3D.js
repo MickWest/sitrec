@@ -2,7 +2,7 @@ import {CNode} from "./CNode";
 import {guiShowHide, NodeMan} from "../Globals";
 import {par} from "../par";
 
-import {stripParentheses} from "../utils";
+import {assert, stripParentheses} from "../utils";
 import {mainLoopCount} from "../Globals";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
@@ -77,6 +77,7 @@ export class CNode3D extends CNode {
 
     addController(type, def) {
         console.log("Adding CONTROLLER " + type + " to " + this.id)
+        assert(def.camera === undefined, "Adding a controller with a camera defined, should be object!")
         this.addControllerNode(NodeMan.create("Controller"+type, def))
         return this;
     }

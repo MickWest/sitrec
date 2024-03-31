@@ -28,6 +28,8 @@ import {Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
 import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
+import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackAzEl";
+import {MISB} from "./MISBUtils";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -258,8 +260,10 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "lookCamera":
                 SSLog();
+
+                const cameraID = data.id ?? "lookCamera";
                 new CNodeCamera({
-                    id: "lookCamera",
+                    id: cameraID,
                     fov: data.fov ?? 10,
                     //            aspect: window.innerWidth / window.innerHeight,
                     near: data.near ?? 1,
@@ -268,12 +272,14 @@ export function SituationSetupFromData(sitData, runDeferred) {
                     //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
                 })
 
-                const lookCameraNode = NodeMan.get("lookCamera");
+                if (cameraID === "lookCamera") {
+                    const lookCameraNode = NodeMan.get("lookCamera");
 
-                if (data.addFOVController) {
-                    gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
-                        lookCameraNode.camera.updateProjectionMatrix()
-                    }).listen().name("Look Camera FOV")
+                    if (data.addFOVController) {
+                        gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                            lookCameraNode.camera.updateProjectionMatrix()
+                        }).listen().name("Look Camera FOV")
+                    }
                 }
 
                 break;
@@ -332,6 +338,13 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 })
                 break;
 
+            case "matrixController":
+                SSLog();
+                NodeMan.get(data.object ?? "lookCamera").addController("Matrix", {
+                    source: data.source,
+                })
+                break;
+
             case "wescamFOV":
                 SSLog();
 
@@ -353,7 +366,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
                 new CNodeArray({id: "focalLengthsNode", array: focalLengths});
 
                 // and add a focal length controller based on this.
-                NodeMan.get("lookCamera").addController("FocalLength", {
+                NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
                     focalLength: "focalLengthsNode",
                     referenceFocalLength: data.len,
                     referenceFOV: data.fov,
@@ -546,7 +559,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "lookAt":
                 SSLog();
-                NodeMan.get("lookCamera").addController("LookAtLLA", {
+                NodeMan.get(data.object ?? "lookCamera").addController("LookAtLLA", {
                     toLat: data.toLat,
                     toLon: data.toLon,
                     toAlt: data.toAlt,
@@ -555,7 +568,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "lookAtTrack":
                 SSLog();
-                NodeMan.get("lookCamera").addController("LookAtTrack", {
+                NodeMan.get(data.object ?? "lookCamera").addController("LookAtTrack", {
                     targetTrack: data.track ?? "targetTrack",
                 })
                 break;
@@ -621,6 +634,34 @@ export function SituationSetupFromData(sitData, runDeferred) {
                         this.text = "Pitch " + NodeMan.get("pitchCol").v(par.frame).toFixed(2) + "°";
                     })
                 }
+                break;
+
+            case "losTrackMISB":
+                SSLog();
+                const cameraTrackAngles = NodeMan.get(data.arrayNode ?? "cameraTrack");
+                const arrayAngles = cameraTrackAngles.sourceArray
+                assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
+
+                const smooth = data.smooth ?? 0;
+
+                makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.heading ?? MISB.PlatformHeadingAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("platformPitch",   arrayAngles, data.pitch   ?? MISB.PlatformPitchAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("platformRoll",    arrayAngles, data.roll    ?? MISB.PlatformRollAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorAz",        arrayAngles, data.heading ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorEl",        arrayAngles, data.pitch   ?? MISB.SensorRelativeElevationAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorRoll",      arrayAngles, data.roll    ?? MISB.SensorRelativeRollAngle, smooth, true)
+
+               // new CNodeGUIValue({id:"platformHeading", value:0, start:0, end:360, step:0.1, desc:"Platform Heading"}, gui)
+               // new CNodeGUIValue({id:"platformPitch", value:0, start:-90, end:90, step:0.1, desc:"Platform Pitch"}, gui)
+               // new CNodeGUIValue({id:"platformRoll", value:0, start:-180, end:180, step:0.1, desc:"Platform Roll"}, gui)
+               // new CNodeGUIValue({id:"sensorAz", value:0, start:0, end:360, step:0.1, desc:"Sensor Azimuth"}, gui)
+               // new CNodeGUIValue({id:"sensorEl", value:0, start:-90, end:90, step:0.1, desc:"Sensor Elevation"}, gui)
+               // new CNodeGUIValue({id:"sensorRoll", value:0, start:-180, end:180, step:0.1, desc:"Sensor Roll"}, gui)
+
+                new CNodeLOSTrackMISB({id:data.id ?? "losTrackMISB", cameraTrack: "cameraTrack",
+                    platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
+                    sensorAz: "sensorAz", sensorEl: "sensorEl", sensorRoll: "sensorRoll"})
+
                 break;
 
             case "labelView":

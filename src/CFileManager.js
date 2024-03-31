@@ -46,6 +46,14 @@ export class CFileManager extends CManager {
 
     }
 
+    addExportButton(object, functionName, name) {
+        if (this.exportFolder === undefined)
+            this.exportFolder = this.guiFolder.addFolder("Export")
+
+        this.exportFolder.add(object, functionName).name(name);
+
+    }
+
     async openDirectory() {
         try {
             // This will show the directory picker dialog.
@@ -596,3 +604,5 @@ export function createCustomModalWithCopy(url) {
     // Return the showModal function to allow opening the modal
     return showModal;
 }
+
+

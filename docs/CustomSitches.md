@@ -253,10 +253,13 @@ index.f2a65a27ee1778ea26ac.bundle.js:1 Sitch rehosted as https://www.metabunk.or
 ```
 And we see that both tracks and the video have been uploaded. The local filenames have been replaced with URLs, and a modified copy of the sitch has been uploaded. Sitrec will also display a custom sitch link:
 ![Custom-url.jpg](docimages%2FCustom-url.jpg)
+
 Copy it, and this will give you a sharable link:
+
 https://www.metabunk.org/sitrec/?custom=https://www.metabunk.org/sitrec-upload/1/Sitkansas2-e0d6bdfa107f13987ab9be49429f1fbd.js
 
 If you edit the sitch again, and re-share it you'll get a new URL. The old one will continue to work. For example here the same sitch with a a very narrow field of view
+
 https://www.metabunk.org/sitrec/?custom=https://www.metabunk.org/sitrec-upload/1/Sitkansas2-9bd601bc4e9dbc0d6cf7c241ba8a306d.js
 
 ### Work in progress

@@ -405,21 +405,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.equatorialSphereGroup.visible = this.showEquatorialGrid;
         }).name("Equatorial Grid")
         
-        //      addCelestialSphereLines(GlobalNightSkyScene,10,0x000080)
-
-        // var text = new MeshText2D("SOME STARS", { align: textAlign.right, font: '30px Arial', fillStyle: '#000000', antialias: true })
-        // text.position.set(0,0,100)
-        // GlobalNightSkyScene.add(text)
-
-        // const axesHelper = new AxesHelper(50);
-        // axesHelper.position.set(0, 0, 500)
-        // GlobalScene.add(axesHelper);
-
-        //DebugAxes("global_", GlobalScene, V3(0, 2000, 0), 1000);
-        // DebugAxes("celestial_", this.celestialSphere, V3(1000,2000,1000), 2000);
-        // this.celestialSphere.add(DebugSphere("celestialDebugSphere", V3(1000,2000,1000), 300, "#000000"))
-
-
         // For the stars to show up in the lookView
         // we need to enable the layer for everything in the celestial sphere.
         this.celestialSphere.layers.enable(LAYER.LOOK);  // probably not needed

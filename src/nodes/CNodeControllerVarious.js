@@ -8,6 +8,7 @@ import {DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
 
 import {MISB} from "../MISBUtils";
+import {Quaternion, Vector3} from "three";
 
 
 // Position the camera on the source track
@@ -230,6 +231,47 @@ export class CNodeControllerFOV extends CNodeController {
 }
 
 
+export class CNodeControllerMatrix extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("source")
+    }
+
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        const matrix = this.in.source.v(f).matrix;
+        assert(typeof matrix === "object", "CNodeControllerMatrix: worldMatrix is not an object")
+
+        const worldMatrix = matrix.clone();
+        // invert the Z basis of worldMatrix as camera is along -Z
+        worldMatrix.elements[8] = -worldMatrix.elements[8];
+        worldMatrix.elements[9] = -worldMatrix.elements[9];
+        worldMatrix.elements[10] = -worldMatrix.elements[10];
+
+
+// Assuming 'worldMatrix' is the THREE.Matrix4 instance representing the camera's orientation
+// And 'camera' is your THREE.PerspectiveCamera or THREE.OrthographicCamera instance
+
+        const position = new Vector3();
+        const quaternion = new Quaternion();
+        const scale = new Vector3();
+
+// Decompose the world matrix into position, quaternion, and scale
+        worldMatrix.decompose(position, quaternion, scale);
+
+// Apply the decomposed values to the camera's quaternion, but not position or scale
+//        camera.position.copy(position);
+        camera.quaternion.copy(quaternion);
+//        camera.scale.copy(scale);
+
+        camera.updateMatrixWorld();
+    }
+
+}
+
+
+
+
 //Az and El from a data track that returns a structur with pitch and heading members
 export class CNodeControllerAzElData extends CNodeController {
     constructor(v) {
@@ -288,6 +330,7 @@ export function applyPitchAndHeading(object, pitch, heading)
     //    const arrowDir2 = northAxis.clone().applyAxisAngle(upAxis, -radians(data.gHeading))
     //    DebugArrow("DroneGimbalHeading", arrowDir2, object.position, 100,"#FFFF00")
 }
+
 
 
 

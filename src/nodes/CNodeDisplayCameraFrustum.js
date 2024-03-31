@@ -11,6 +11,7 @@ import {Ray, Raycaster, Sphere, Vector3} from "three";
 import {getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeLabel3D, CNodeMeasureAB, CNodeMeasureAltitude} from "./CNodeLabels3D";
+import * as LAYER from "../LayerMasks";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -52,6 +53,7 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
 export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     constructor(v) {
         v.color ??= "white";
+        v.layers ??= LAYER.MASK_HELPERS;
        // v.container = v.camera;
         super(v);
         this.radius = v.radius ?? 100

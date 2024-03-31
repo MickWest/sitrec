@@ -125,8 +125,10 @@ export function makeMouseRay(view, mouseX, mouseY) {
     // get position in that view in pixels
     // views are defined from the TOP left of the window
     // so need to adjust (same as in mouseInView)
-    var viewX = mouseX - view.leftPx
-    var viewY = mouseY - (window.innerHeight-(view.topPx + view.heightPx));
+    // var viewX = mouseX - view.leftPx
+    // var viewY = mouseY - (window.innerHeight-(view.topPx + view.heightPx));
+    var viewX = mouseX;
+    var viewY = mouseY;
 
     // convert to proportion
     var viewXp = viewX / view.widthPx

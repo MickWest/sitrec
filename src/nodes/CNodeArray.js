@@ -99,6 +99,8 @@ export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, de
 //        console.log("makeArrayNodeFromMISBColumn: converted columnIndex to number = "+columnIndex)
     }
 
+    assert(array.length > 0, "makeArrayNodeFromMISBColumn: array is empty");
+
     //const extractedArray = array.map(x => x[columnIndex])
     // here the requested column is in the MISB data
     // the "array" is a per-frame array of position and misbRow;
@@ -107,6 +109,7 @@ export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, de
         const value = array[i].misbRow[columnIndex];
 //        console.log("makeArrayNodeFromMISBColumn: value = "+value+" i="+i+" columnIndex="+columnIndex);
         extractedArray[i] = value;
+        assert(!isNaN(value), "makeArrayNodeFromMISBColumn: NaN value in column "+columnIndex+" at frame "+i);
     }
 
     let smoothedArray;

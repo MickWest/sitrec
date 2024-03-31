@@ -42,6 +42,7 @@ export class CNode3DGroup extends CNode3D {
             v.color = new CNodeConstant({value: colorObject})
         }
 
+
         this._object = new Group()
 
         // if v.layers is a string then it's a layer make name
