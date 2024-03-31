@@ -422,8 +422,10 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
 
             let target;
+            let targetIsTerrain = false;
 
             if (found) {
+                targetIsTerrain = true;
                 target = closestPoint.clone();
             } else {
                 var possibleTarget = V3()
@@ -468,6 +470,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
                 if (this.controls) {
                     this.controls.target = target
+                    this.controls.targetIsTerrain = targetIsTerrain;
                 }
 
                 if (this.showLOSArrow) {

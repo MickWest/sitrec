@@ -41,6 +41,7 @@ class CameraMapControls {
 		this.zoomSpeed = 1;
 		this.rotateSpeed = 0.5;
 		this.target = new Vector3()
+		this.targetIsTerrain = false;
 
 		this.canvas.addEventListener( 'contextmenu', e => this.onContextMenu(e) );
 		this.canvas.addEventListener( 'pointerdown', e => this.handleMouseDown(e) );
@@ -383,6 +384,8 @@ class CameraMapControls {
 					- this.mouseEnd.y / height * 2 + 1
 				)
 
+//				console.log(par.frame + ": STATE.DRAG: Start: "+vdump(startPointer)+" End: "+vdump(endPointer))
+
 				if (startPointer.x === endPointer.x && startPointer.y === endPointer.y)
 					console.log("Drag with no motion")
 
@@ -394,13 +397,13 @@ class CameraMapControls {
 				var end3D = new Vector3();
 
 				raycaster.setFromCamera(startPointer, this.camera)
-				if (!this.useGlobe) {
+				if (this.targetIsTerrain || !this.useGlobe) {
 					if (!raycaster.ray.intersectPlane(dragPlane, start3D)) break;
 				} else {
 					if (!intersectSphere2(raycaster.ray, dragSphere, start3D)) break;
 				}
 				raycaster.setFromCamera(endPointer, this.camera)
-				if (!this.useGlobe) {
+				if (this.targetIsTerrain || !this.useGlobe) {
 					if (!raycaster.ray.intersectPlane(dragPlane, end3D)) break;
 				} else {
 					if (!intersectSphere2(raycaster.ray, dragSphere, end3D)) break;
