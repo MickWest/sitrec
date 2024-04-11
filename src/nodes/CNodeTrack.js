@@ -1,5 +1,5 @@
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {getFileExtension, RollingAverage} from "../utils";
+import {f2m, getFileExtension, RollingAverage} from "../utils";
 import {V3} from "../threeExt";
 import {CatmullRomCurve3} from "../../three.js/build/three.module";
 import {saveAs} from "../js/FileSaver";
@@ -7,7 +7,7 @@ import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
 import {CNodeTrackFromMISB} from "./CNodeTrackFromMISB";
 
 
-import {FileManager} from "../Globals";
+import {FileManager, NodeMan} from "../Globals";
 import {CNodeMISBDataTrack} from "./CNodeMISBData";
 import {KMLToMISB} from "../KMLUtils";
 import {assert} from "../utils";
@@ -193,6 +193,21 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
         this.copyData = v.copyData ?? false;
 
         this.recalculate()
+
+        this.exportable = v.exportable ?? false;
+        if (this.exportable) {
+            NodeMan.addExportButton(this, "exportTrackCSV", "Export Smoothed CSV ")
+        }
+    }
+
+
+    exportTrackCSV() {
+        let csv = "Frame,Lat,Lon,Alt\n"
+        for (let f=0;f<this.frames;f++) {
+            const pos = this.array[f].lla
+            csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+        }
+        saveAs(new Blob([csv]), "trackSmoothed-"+this.id+".csv")
     }
 
     recalculate() {
@@ -462,6 +477,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns) {
     new CNodeMISBDataTrack({
         id: dataID,
         misb: misb,
+        exportable: true,
     })
 
     // then use that to make the per-frame track, which might just be a portion of the original data
@@ -469,6 +485,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns) {
         id:trackID,
         misb: dataID,
         columns: columns,
+        exportable: true,
     })
 
 }

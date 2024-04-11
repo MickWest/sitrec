@@ -91,7 +91,7 @@ sitch = {
     cameraTrack: {file: "klv"},
 
  // added back the smoothing
-    smoothTrackCamera: {kind: "smoothTrack", track: "cameraTrack", smooth: 20},
+    smoothTrackCamera: {kind: "smoothTrack", method:"moving", track: "cameraTrack", window: 20},
 
     followTrack: {},            // camera follows the camera track
 
@@ -104,21 +104,16 @@ sitch = {
  //   smoothTrack: {track: "targetTrack", smooth: 20},
     targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1, 0, 0], width: 4,},
 
-//    LOSTrack: {cameraTrack: "cameraTrack", },
-
     lookAtTrack: {},  // and look at targetTrack
     fovController:    {source: "cameraTrack"},
 
+    // This is all for the second view, angles
     lookCamera2:  {kind: "lookCamera", fov:10, far:8000000},
     followTrack2: {kind: "followTrack", object: "lookCamera2"},            // camera follows the camera track
-    losTrackMISB: {arrayNode: "cameraTrack", smooth:100},
+    losTrackMISB: {arrayNode: "cameraTrack", smooth:120},
     matrixController: {object: "lookCamera2", source: "losTrackMISB"},
-    //lookAtTrack2: {kind:"lookAtTrack", object:"lookCamera2"},  // and look at targetTrack
     fovController2:    {kind: "fovController", object: "lookCamera2", source: "cameraTrack"},
-
     lookView2: {kind:"lookView", camera:"lookCamera2", left: 0.0, top: 0.5, width: -1.7927, height: 0.5, background: '#000030'},
-
-    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", radius: 1000, color: "yellow"},
 
 
 
@@ -148,7 +143,6 @@ sitch = {
 
 
 //    DisplayCameraFrustum: {targetTrack: "targetTrack"},
-    frustum1: {kind: "DisplayCameraFrustum", camera: "lookCamera", radius: 1000, color: "magenta"},
 
 
 //    targetWind:{from:270, knots: 20}, // can we get this from the MISB? It's in a differnt location
@@ -169,8 +163,10 @@ sitch = {
 
     JetLOS: {kind: "LOSTrackTarget", cameraTrack: "cameraTrack", targetTrack: "targetTrack"},
 
-
-    traverseNodes: {
+    // The "Track" traverse node uses the ground track
+    Track: {
+        kind: "traverseNodes",
+        los: "JetLOS",
         menu: {
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
@@ -179,20 +175,85 @@ sitch = {
         default: "Constant Altitude"
     },
 
+
+    // The "Angles" traverse node uses the platform + sensor angles
+    Angles: {
+        kind: "traverseNodes",
+        los: "losTrackMISB",
+        menu: {
+            "Constant Speed": "LOSTraverseConstantSpeed",
+            "Constant Altitude": "LOSTraverseConstantAltitude",
+            "Straight Line": "LOSTraverseStraightLine",
+        },
+        default: "Constant Altitude"
+    },
+
+    // here we are smoothing the generated traversal tracks
+
+    // WHY IS THE GREEN SPHere moving around if the camera should fixed on it????
+    smoothTrackTrack: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectTrack", window: 100},
+    smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
+
+
+
+    //    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", radius: 1000, color: "yellow"},
+    frustum1: {kind: "DisplayCameraFrustum", camera: "lookCamera", targetTrack: "LOSTraverseSelectTrack", color: "magenta"},
+    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", targetTrack: "LOSTraverseSelectAngles" , color: "yellow"},
+
     focusTracks: {
         "Ground (No Track)": "default",
         "Camera track": "cameraTrack",
         "Ground track": "targetTrack",
-        "Traverse Track":  "LOSTraverseSelect",
+        "Traverse Track (Track)":  "LOSTraverseSelectTrack",
+        "Traverse Track (Angles)":  "LOSTraverseSelectAngles",
     },
 
-    // display the traverse track
-    traverseDisplay: {
+    // display the traverse track (Angles)
+    traverseDisplayAngles: {
         kind: "DisplayTrack",
-        track: "LOSTraverseSelect",
+        track: "LOSTraverseSelectAngles",
         color: [0,1,0],
         width: 1,
     },
+
+    // display the traverse track 9(Track)
+    traverseDisplayTrack: {
+        kind: "DisplayTrack",
+        track: "LOSTraverseSelectTrack",
+        color: [0,0,1],
+        width: 1,
+    },
+
+
+    sphereAngles: { kind: "DisplayTargetSphere",
+        track: "LOSTraverseSelectAngles",
+        size: 5,
+        layers: "MAINRENDER",
+        color: [0,1,0],
+    },
+
+    // sphereTrack: { kind: "DisplayTargetSphere",
+    //     track: "LOSTraverseSelectTrack",
+    //     size: 5,
+    //     layers: "MAINRENDER",
+    //     color: [0,0,1],
+    // },
+
+    sphereCamera: { kind: "DisplayTargetSphere",
+        track: "cameraTrack",
+        size: 5,
+        layers: "MAINRENDER",
+        color: [1,1,0],
+    },
+
+    sphereCameraOld: { kind: "DisplayTargetSphere",
+        track: "cameraTrack_old",
+        size: 5,
+        layers: "MAINRENDER",
+        color: [1,0,1],
+    },
+
+
 
     useGlobe: true,
 

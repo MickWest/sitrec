@@ -719,54 +719,56 @@ export function SetupTrackLOSNodes() {
 }
 
 
-export function SetupTraverseNodes(traverseInputs,defaultTraverse) {
-    CreateTraverseNodes();
-    MakeTraverseNodesMenu(traverseInputs,defaultTraverse)
+export function SetupTraverseNodes(traverseInputs,defaultTraverse,los = "JetLOS", id="") {
+    CreateTraverseNodes(id, los);
+    MakeTraverseNodesMenu(traverseInputs,defaultTraverse, id)
 }
 
 
 
 // COMMON TRAVERSE NODE OPTIONS
 //
-export function CreateTraverseNodes(traverseInputs) {
+export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
 
 
     // A GUI variable for the start distance - this is one of the biggest variables
     // It's the distance of the start of the traverse along the first LOS
-    //var nodeStartDistance =
-    new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
-        value: Sit.startDistance,
-        start: Sit.startDistanceMin,
-        end: Sit.startDistanceMax,
-        step: 0.01,
-        desc: "Tgt Start Dist " + Units.bigUnitsAbbrev
-    }, gui))
-
+    if (!NodeMan.exists("startDistance")) {
+        new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
+            value: Sit.startDistance,
+            start: Sit.startDistanceMin,
+            end: Sit.startDistanceMax,
+            step: 0.01,
+            desc: "Tgt Start Dist " + Units.bigUnitsAbbrev
+        }, gui))
+    }
 
     console.log("+++ LOSTraverse")
     new CNodeLOSTraverse({
-        id: "LOSTraverse1",
-        LOS: "JetLOS",
+        id: "LOSTraverse1"+idExtra,
+        LOS: los,
         startDist: "startDistance",
         VcMPH: new CNodeGUIValue({value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"}, gui),
     })
 
 
     // GUI variable Target Speed in Knots (scaled to m/s)
-    new CNodeScale("speedScaled", 1 / Units.m2Speed,
-        new CNodeGUIValue({
-            value: Sit.targetSpeed,
-            start: Sit.targetSpeedMin,
-            end: Sit.targetSpeedMax,
-            step: Sit.targetSpeedStep,
-            desc: "Target Speed " + Units.speedUnits
-        }, gui))
+    if (!NodeMan.exists("speedScaled")) {
+        new CNodeScale("speedScaled", 1 / Units.m2Speed,
+            new CNodeGUIValue({
+                value: Sit.targetSpeed,
+                start: Sit.targetSpeedMin,
+                end: Sit.targetSpeedMax,
+                step: Sit.targetSpeedStep,
+                desc: "Target Speed " + Units.speedUnits
+            }, gui))
+    }
 
     // Traverse at constant GROUND speed (using the above)
     new CNodeLOSTraverseConstantSpeed({
-        id: "LOSTraverseConstantSpeed",
+        id: "LOSTraverseConstantSpeed"+idExtra,
         inputs: {
-            LOS: "JetLOS",
+            LOS: los,
             startDist: "startDistance",
             speed: "speedScaled",
             wind: "targetWind"
@@ -776,9 +778,9 @@ export function CreateTraverseNodes(traverseInputs) {
 
     // Traverse at constant AIR speed
     new CNodeLOSTraverseConstantSpeed({
-        id: "LOSTraverseConstantAirSpeed",
+        id: "LOSTraverseConstantAirSpeed"+idExtra,
         inputs: {
-            LOS: "JetLOS",
+            LOS: los,
             startDist: "startDistance",
             speed: "speedScaled",
             wind: "targetWind"
@@ -789,8 +791,8 @@ export function CreateTraverseNodes(traverseInputs) {
     // as above, but interpolate between the start and end frames
     // remaining constant speed, but not necessarily on the LOS
     new CNodeInterpolateTwoFramesTrack({
-        id: "LOSTraverseStraightConstantAir",
-        source: "LOSTraverseConstantAirSpeed"
+        id: "LOSTraverseStraightConstantAir"+idExtra,
+        source: "LOSTraverseConstantAirSpeed"+idExtra,
     })
 
 
@@ -817,39 +819,42 @@ export function CreateTraverseNodes(traverseInputs) {
         }, gui)
     }
 
-    new CNodeGUIValue({
-        id: "targetRelativeHeading",
-        value: Sit.relativeHeading,
-        start: -180,
-        end: 180,
-        step: 0.01,
-        desc: "Tgt Relative Heading"
-    }, gui)
+    if (!NodeMan.exists("targetRelativeHeading")) {
+        new CNodeGUIValue({
+            id: "targetRelativeHeading",
+            value: Sit.relativeHeading,
+            start: -180,
+            end: 180,
+            step: 0.01,
+            desc: "Tgt Relative Heading"
+        }, gui)
+    }
 
-    new CNodeMunge({
-        id: "targetActualHeading",
-        inputs: {initialHeading: "initialHeading", relativeHeading: "targetRelativeHeading"},
-        munge: function (f) {
-            var newHeading = this.in.initialHeading.getHeading() + this.in.relativeHeading.v0
-            if (newHeading < 0) newHeading += 360;
-            if (newHeading >= 360) newHeading -= 360
-            return newHeading
-        }
-    })
-
+    if (!NodeMan.exists("targetActualHeading")) {
+        new CNodeMunge({
+            id: "targetActualHeading",
+            inputs: {initialHeading: "initialHeading", relativeHeading: "targetRelativeHeading"},
+            munge: function (f) {
+                var newHeading = this.in.initialHeading.getHeading() + this.in.relativeHeading.v0
+                if (newHeading < 0) newHeading += 360;
+                if (newHeading >= 360) newHeading -= 360
+                return newHeading
+            }
+        })
+    }
     // and with that target heading we can try for a stright line traversal
     // currently very simplistic and does not work with noisy data.
     new CNodeLOSTraverseStraightLine({
-        id: "LOSTraverseStraightLine",
-        LOS: "JetLOS",
+        id: "LOSTraverseStraightLine"+idExtra,
+        LOS: los,
         startDist: "startDistance",
         radius: "radiusMiles",
         lineHeading: "targetActualHeading",
     })
 
     new CNodeLOSTraverseStraightLineFixed({
-        id: "LOSTraverseStraightLineFixed",
-        LOS: "JetLOS",  // we just need the first LOS
+        id: "LOSTraverseStraightLineFixed"+idExtra,
+        LOS: los,  // we just need the first LOS
         startDist: "startDistance",
         radius: "radiusMiles",
         lineHeading: "targetActualHeading",
@@ -860,9 +865,9 @@ export function CreateTraverseNodes(traverseInputs) {
     // Constant altitude
     console.log("+++ LOSTraverseConstantAltitude Node")
     new CNodeLOSTraverseConstantAltitude({
-        id: "LOSTraverseConstantAltitude",
+        id: "LOSTraverseConstantAltitude"+idExtra,
         inputs: {
-            LOS: "JetLOS",
+            LOS: los,
             startDist: "startDistance",
             radius: "radiusMiles",
         },
@@ -873,11 +878,18 @@ export function CreateTraverseNodes(traverseInputs) {
 // The LOSTraverseSelect node is the selected LOS traversal method
 // We pass in which ones of the above we want, plue any extra ones
 // (For example in Agua we add the ufoSplineEditor node)
-export function MakeTraverseNodesMenu(traverseInputs,defaultTraverse) {
+export function MakeTraverseNodesMenu(traverseInputs,defaultTraverse,idExtra="") {
+
+
+    let traverseInputs2 = {}
+    for (var id in traverseInputs) {
+        traverseInputs2[id] = traverseInputs[id]+idExtra
+    }
+
     new CNodeSwitch({
-        id: "LOSTraverseSelect",
-        inputs: traverseInputs,
-        desc: "LOS Traversal Method",
+        id: "LOSTraverseSelect"+idExtra,
+        inputs: traverseInputs2,
+        desc: "LOS Traverse " + idExtra,
         default: defaultTraverse,
 
     }, gui)

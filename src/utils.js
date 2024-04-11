@@ -206,7 +206,7 @@ export function smoothDerivative(data, window, iterations) {
 // NOTE: This is doing a simple linear interpolation, leading to discontinuities
 // in the first derivative
 // CHECK FIRST that it's accurate
-// MAYBE JUET SMOOTH?
+// MAYBE JUST SMOOTH?
 export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
     var out = new Array()
     var aFrame = parseInt(input[0][indexCol])
@@ -234,6 +234,28 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
         out.push(aValue)
     }
     return out;
+}
+
+// array is an array of objects, one per frame
+// each object has a "misbRow" array of values
+// misbRow is the MISB data for that frame, a row from the full MISB data 2D array
+// and we've get the columnIndex into that
+// however a misbRow might be reused over several frames
+// so first creat an array of [frame, misbRow] pairs for the first usage of each misbRow
+export function ExpandMISBKeyframes(array, columnIndex) {
+    const keyframes = []
+    let lastMISBRow = null;
+    for (let i=0;i<array.length;i++) {
+        const misbRow = array[i].misbRow
+        if (misbRow !== lastMISBRow) {
+            keyframes.push([i,misbRow[columnIndex]])
+            lastMISBRow = misbRow
+        }
+    }
+    // then just expand it.
+    return ExpandKeyframes(keyframes, array.length, 0, 1)
+
+
 }
 
 /**

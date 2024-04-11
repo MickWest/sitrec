@@ -1,5 +1,6 @@
 import {CNode} from "./CNode";
 import {addOption, removeOption} from "../lil-gui-extras";
+import {assert} from "../utils";
 
 class CNodeSwitch extends CNode {
     constructor(v, _gui) {
@@ -12,6 +13,8 @@ class CNodeSwitch extends CNode {
         if (this.choice == undefined) {
             this.choice = Object.keys(this.inputs)[0]
         }
+
+        assert(this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
 
         // add the menu if the gui is defined
         if (this.gui !== undefined) {

@@ -46,11 +46,11 @@ export class CFileManager extends CManager {
 
     }
 
-    addExportButton(object, functionName, name) {
+    makeExportButton(object, functionName, name) {
         if (this.exportFolder === undefined)
-            this.exportFolder = this.guiFolder.addFolder("Export")
+            this.exportFolder = this.guiFolder.addFolder("Export").perm()
 
-        this.exportFolder.add(object, functionName).name(name);
+        return this.exportFolder.add(object, functionName).name(name);
 
     }
 

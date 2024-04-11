@@ -639,24 +639,32 @@ export function SituationSetupFromData(sitData, runDeferred) {
             case "losTrackMISB":
                 SSLog();
                 const cameraTrackAngles = NodeMan.get(data.arrayNode ?? "cameraTrack");
-                const arrayAngles = cameraTrackAngles.sourceArray
+
+                // first check if there's a sourceArray, if not, use the array
+                // sourceArray is the original array in a smoothed node
+                let arrayAngles = cameraTrackAngles.sourceArray
+
+                if (arrayAngles === undefined) {
+                    arrayAngles = cameraTrackAngles.array;
+                }
+
                 assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
 
                 const smooth = data.smooth ?? 0;
 
-                makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.heading ?? MISB.PlatformHeadingAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("platformPitch",   arrayAngles, data.pitch   ?? MISB.PlatformPitchAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("platformRoll",    arrayAngles, data.roll    ?? MISB.PlatformRollAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorAz",        arrayAngles, data.heading ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorEl",        arrayAngles, data.pitch   ?? MISB.SensorRelativeElevationAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorRoll",      arrayAngles, data.roll    ?? MISB.SensorRelativeRollAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("platformPitch",   arrayAngles, data.platformPitch   ?? MISB.PlatformPitchAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("platformRoll",    arrayAngles, data.platformRoll    ?? MISB.PlatformRollAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorAz",        arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorEl",        arrayAngles, data.sensorEl   ?? MISB.SensorRelativeElevationAngle, smooth, true)
+                makeArrayNodeFromMISBColumn("sensorRoll",      arrayAngles, data.sensorRoll    ?? MISB.SensorRelativeRollAngle, smooth, true)
 
                // new CNodeGUIValue({id:"platformHeading", value:0, start:0, end:360, step:0.1, desc:"Platform Heading"}, gui)
-               // new CNodeGUIValue({id:"platformPitch", value:0, start:-90, end:90, step:0.1, desc:"Platform Pitch"}, gui)
-               // new CNodeGUIValue({id:"platformRoll", value:0, start:-180, end:180, step:0.1, desc:"Platform Roll"}, gui)
-               // new CNodeGUIValue({id:"sensorAz", value:0, start:0, end:360, step:0.1, desc:"Sensor Azimuth"}, gui)
-               // new CNodeGUIValue({id:"sensorEl", value:0, start:-90, end:90, step:0.1, desc:"Sensor Elevation"}, gui)
-               // new CNodeGUIValue({id:"sensorRoll", value:0, start:-180, end:180, step:0.1, desc:"Sensor Roll"}, gui)
+               //  new CNodeGUIValue({id:"platformPitch", value:0, start:-90, end:90, step:0.1, desc:"Platform Pitch"}, gui)
+               //  new CNodeGUIValue({id:"platformRoll", value:0, start:-180, end:180, step:0.1, desc:"Platform Roll"}, gui)
+               //  new CNodeGUIValue({id:"sensorAz", value:256.3, start:0, end:360, step:0.1, desc:"Sensor Azimuth"}, gui)
+               //  new CNodeGUIValue({id:"sensorEl", value:-27.1, start:-90, end:90, step:0.1, desc:"Sensor Elevation"}, gui)
+               //  new CNodeGUIValue({id:"sensorRoll", value:0, start:-180, end:180, step:0.1, desc:"Sensor Roll"}, gui)
 
                 new CNodeLOSTrackMISB({id:data.id ?? "losTrackMISB", cameraTrack: "cameraTrack",
                     platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
@@ -879,8 +887,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 
             case "traverseNodes":
                 SSLog();
-                SetupTraverseNodes(data.menu, data.default);
-
+                SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLos", data.id ?? "");
                 break;
 
             case "speedGraph":

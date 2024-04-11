@@ -1,7 +1,7 @@
-import {assert, RollingAverage, RollingAverageDegrees} from "../utils";
+import {assert, ExpandMISBKeyframes, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";
 import {MISB} from "../MISBUtils";
-import {Sit} from "../Globals";
+import {FileManager, NodeMan, Sit} from "../Globals";
 
 export class CNodeArray extends CNode {
     constructor(v) {
@@ -10,7 +10,21 @@ export class CNodeArray extends CNode {
         super(v);
         // frames?
         this.array = v.array
+
+        this.exportable = v.exportable ?? false;
+        if (this.exportable) {
+            NodeMan.addExportButton(this, "exportArray", "Export Array ")
+        }
     }
+
+    exportArray () {
+        let csv = "frame, value\n";
+        for (let f=0; f<this.frames; f++) {
+            csv += f + "," + this.array[f] + "\n";
+        }
+        saveAs(new Blob([csv]), "sitrecArray-"+this.id+".csv")
+    }
+
 
     getValueFrame(frame) {
         return this.array[frame]
@@ -101,16 +115,24 @@ export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, de
 
     assert(array.length > 0, "makeArrayNodeFromMISBColumn: array is empty");
 
+    // TODO: difference between smooth (angles) and discreet (FOV?) misb values
     //const extractedArray = array.map(x => x[columnIndex])
     // here the requested column is in the MISB data
     // the "array" is a per-frame array of position and misbRow;
-    const extractedArray = new Array(array.length);
-    for (let i = 0; i < array.length; i++) {
-        const value = array[i].misbRow[columnIndex];
-//        console.log("makeArrayNodeFromMISBColumn: value = "+value+" i="+i+" columnIndex="+columnIndex);
-        extractedArray[i] = value;
-        assert(!isNaN(value), "makeArrayNodeFromMISBColumn: NaN value in column "+columnIndex+" at frame "+i);
+    // const extractedArray = new Array(array.length);
+    // for (let i = 0; i < array.length; i++) {
+    //     const value = array[i].misbRow[columnIndex];
+    //     extractedArray[i] = value;
+    //     assert(!isNaN(value), "makeArrayNodeFromMISBColumn: NaN value in column "+columnIndex+" at frame "+i);
+    // }
+
+    const extractedArray = ExpandMISBKeyframes(array, columnIndex);
+
+    console.log("makeArrayNodeFromMISBColumn: id = "+id+" extractedArray.length = "+extractedArray.length);
+    for (let i=0;i<10; i++) {
+        console.log("makeArrayNodeFromMISBColumn: extractedArray["+i+"] = "+extractedArray[i]);
     }
+
 
     let smoothedArray;
     if (smooth !== 0) {
@@ -125,6 +147,7 @@ export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, de
     return new CNodeArray({
         id: id,
         array: smoothedArray,
+        exportable: true,
     })
 }
 

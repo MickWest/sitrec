@@ -4,6 +4,7 @@ import {CManager} from "../CManager";
 import {assert} from "../utils";
 import {CNode} from "./CNode";
 import {CNodeController} from "./CNodeController";
+import {FileManager} from "../Globals";
 
 export class CNodeFactory extends CManager{
     constructor(props) {
@@ -107,6 +108,11 @@ export class CNodeFactory extends CManager{
             def[sourceKey] = oldID;
         }
 
+        // if old node is exportable, then new one should also be
+        if (oldNode.exportable !== undefined) {
+            def.exportable = oldNode.exportable;
+        }
+
         // Copy the id from the old node to the new node
         def.id = id;
 
@@ -128,7 +134,25 @@ export class CNodeFactory extends CManager{
 
         oldNode.recalculateCascade(0)
 
+        // if the old node had an export button, then the new node should too
+        // and we need to rename the old export button to the _old name
+        if (oldNode.exportBaseName !== undefined) {
+            // copy over the old node's export button definition
+            //newNode.exportBaseName = oldNode.exportBaseName;
+            //newNode.exportFunction = oldNode.exportFunction;
+            // rename the old button
+            oldNode.exportUI.name(newNode.exportBaseName + oldNode.id)
+            //newNode.exportUI = FileManager.makeExportButton(newNode, newNode.exportFunction, newNode.exportBaseName + newNode.id)
+        }
+
         return newNode;
+    }
+
+    addExportButton(node, exportFunction, base) {
+        //note we store the base name so we can change it if
+        node.exportBaseName = base;
+        node.exportFunction = exportFunction;
+        node.exportUI = FileManager.makeExportButton(node, node.exportFunction, node.exportBaseName + node.id)
     }
 
 

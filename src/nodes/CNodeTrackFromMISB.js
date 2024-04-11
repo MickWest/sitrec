@@ -1,6 +1,6 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {f2m, interpolate, vdump} from "../utils";
-import {Sit, GlobalDateTimeNode, FileManager} from "../Globals";
+import {Sit, GlobalDateTimeNode, FileManager, NodeMan} from "../Globals";
 import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {V3} from "../threeExt";
@@ -10,6 +10,10 @@ import {saveAs} from "../js/FileSaver";
 
 export class CNodeTrackFromMISB extends CNodeEmptyArray {
     constructor(v) {
+
+        const exportable = v.exportable ?? false;
+        v.exportable = false; // we don't want the export button on the array
+
         super(v);
     //    this.kml = FileManager.get(v.cameraFile)
 
@@ -20,7 +24,10 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
         this.addInput("startTime",GlobalDateTimeNode)
         this.recalculate()
 
-        FileManager.addExportButton(this, "exportTrackCSV", "Export CSV " + this.id)
+        this.exportable = exportable;
+        if (this.exportable) {
+            NodeMan.addExportButton(this, "exportTrackCSV", "Export Track CSV ")
+        }
     }
 
     exportTrackCSV() {
@@ -94,6 +101,8 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
             const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
             const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
 
+        //    const alt = 2932;
+
             // if (f < 10 ) {
             //     console.log("now",msNow,"slot",slot,"time",misb.getTime(slot),"next time",misb.getTime(slot+1),"fraction",fraction,"lat",lat,"lon",lon,"alt",alt)
             //     console.log("misb LLA for slot ",slot,misb.getLat(slot),misb.getLon(slot),misb.getAlt(slot));
@@ -120,6 +129,10 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
             ]
 
             product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
+
+            // store the interpolated LLA for exporting
+            product["lla"] = [lat,lon,alt];
+
             // we store a reference to the misb row for later use
             // so we can extract other data from it as needed
             product["misbRow"] = misb.misb[slot];

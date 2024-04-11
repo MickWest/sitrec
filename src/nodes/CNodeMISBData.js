@@ -1,5 +1,5 @@
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {FileManager} from "../Globals";
+import {FileManager, NodeMan} from "../Globals";
 import {MISB, MISBFields} from "../MISBUtils";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {f2m} from "../utils";
@@ -30,8 +30,11 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         this.selectSourceColumns(v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]);
 
         this.recalculate()
-        FileManager.addExportButton(this, "exportMISBCSV", "Export Raw MISB CSV " + this.id)
 
+        this.exportable = v.exportable ?? false;
+        if (this.exportable) {
+            NodeMan.addExportButton(this, "exportMISBCSV", "Export MISB CSV ")
+        }
     }
 
     exportMISBCSV() {
