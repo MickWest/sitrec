@@ -1,35 +1,24 @@
 <?php
 
-// Note, calling this twice in one session seems to crash Xenforo
-function getUserID()
-{
-    if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
-        // for local testing
-        $user_id = 99999999;
+// we check for an optional file that can be used to customize the user id
+// this would be specific to your installation
+// on metabunk it's used to check if the user is logged into Xenforo
+// and if so, return the user id
+// is this file does not exist, we return 99999998
+$configPath = __DIR__ . '/../../sitrec-config/auth-config.php';
+
+function getUserID() {
+    global $configPath;
+    if (file_exists($configPath)) {
+        require $configPath;
+        return getUserIDCustom();
     } else {
-        // This code is specific to the metabunk.org implementation.
-        // if you want to use this code on your own site, you'll need to modify it.
-        // or use the local testing code above
-
-        $fileDir = '../../';  # relative path from this script to the Xenforo root
-        require($fileDir . '/src/XF.php');
-        XF::start($fileDir);
-        $app = XF::setupApp('XF\Pub\App');
-        $app->start();
-        //print_r (XF::visitor());  # dumps entire object
-        //print("<br>");
-        $user = XF::visitor();
-  //      print ("USER IS: ".$user->user_id."<br>"); # = 1 (0 if nobody logged in
-        $user_id = $user->user_id;
+        return 99999998;
     }
-    return $user_id;
 }
-
 
 function getUserDir($user_id)
 {
-   // $user_id = getUserID();
-
     if ($user_id == 0) {
         return ""; // return an empty string if the user is not logged in
     }
