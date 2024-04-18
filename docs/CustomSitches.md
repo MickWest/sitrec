@@ -126,7 +126,7 @@ Then save. **Saving should automatically reload the sitch**. This auto-reloading
 
 ### Including an existing sitch
 
-Instead of copy the entire file, you might want to just make a few changes to a complex sitch. The simplest way of doing that is to use "include_" follwed by the name of the sitch. The name here is the value defined in the sitch, e.g. "swr", and not the filename (so NOT "SitSWR.js").
+Instead of copying the entire file, you might want to just make a few changes to a complex sitch. The simplest way of doing that is to use "include_" follwed by the name of the sitch. The name here is the value defined in the sitch, e.g. "swr", and not the filename (so NOT "SitSWR.js").
 
 The include_ directive will override anything that comes before it, and then any lines after will override that. So here we use the SWR sitch, but change the mainView to be half the width of the screen, and change the background (sky) color to grey. 
 
