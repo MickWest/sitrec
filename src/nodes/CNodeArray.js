@@ -128,12 +128,6 @@ export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, de
 
     const extractedArray = ExpandMISBKeyframes(array, columnIndex);
 
-    console.log("makeArrayNodeFromMISBColumn: id = "+id+" extractedArray.length = "+extractedArray.length);
-    for (let i=0;i<10; i++) {
-        console.log("makeArrayNodeFromMISBColumn: extractedArray["+i+"] = "+extractedArray[i]);
-    }
-
-
     let smoothedArray;
     if (smooth !== 0) {
         if (degrees)

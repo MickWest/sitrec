@@ -53,7 +53,7 @@ sitch = {
     fps: 29.97,
 
    // lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
-    lat: 41.0957, lon: -104.8702,
+//    lat: 41.0957, lon: -104.8702,
     frames: 4438,  // from video
 
     startDistance: 1,

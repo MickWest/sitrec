@@ -3,7 +3,16 @@
 // /opt/homebrew/etc/php/8.2/php.ini
 // brew services restart php
 require('./user.php');
+
+// S3 -------
+// WHY IS THIS TIMING OUT TOO EARLY ON MAC
+// WHY DOES IT NOT WORK AT ALL ON metabunk.org (Ubuntu)
+// Let's set up debuggin in phpstorm
+
+// set_time_limit(10);
+
 $user_id = getUserID();
+
 
 // if we were passed the parameter "getuser", then we just return the user_id
 if (isset($_GET['getuser'])) {
@@ -54,13 +63,14 @@ if (!isset($_FILES['fileContent']) || !isset($_POST['filename'])) {
 }
 
 // Retrieve the file and filename
-$fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);
 $fileName = $_POST['filename'];
+$fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);//    require 'vendor/autoload.php';
+
 
 writeLog(print_r($_FILES, true));
 writeLog(print_r($_POST, true));
 
-// Create a filename with MD5 checksum
+// Create a filename with MD5 checksum of the contents of the file
 $md5Checksum = md5($fileContent);
 
 // Separate the filename and extension
@@ -72,47 +82,65 @@ $newFileName = $baseName . '-' . $md5Checksum . '.' . $extension;
 
 
 // if there's an aws_credentials.json file, then we'll use that to upload to S3
-// AWS IS DISABLED FOR NOW - TIMEOUT ISSUES
-if (0 && file_exists('../../../sitrec-keys/aws_credentials.json')) {
+
+// Using upload instead of putObject to allow for larger files
+// putObject was giving odd timeout errors.
+$s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
+
+if (file_exists($s3_config_path)) {
     require 'vendor/autoload.php';
+    require $s3_config_path;
 
-    // load the credentials from ../../../sitrec-keys/aws_credentials.json
-    $aws = json_decode(file_get_contents('../../../sitrec-keys/aws_credentials.json'), true);
+    // Load the credentials from ../../../sitrec-keys/aws_credentials.json
+    //$aws = json_decode(file_get_contents($awsCredentials), true);
 
-    // get it into the right format
+    $aws = getS3Credentials();
+
+    // Get it into the right format
     $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
 
-    // Upload to S3
+    // Create an S3 client
     $s3 = new Aws\S3\S3Client([
         'version' => 'latest',
         'region' => $aws['region'],
         'credentials' => $credentials
     ]);
 
-    // Upload a file.
-    $result = $s3->putObject([
-        'Bucket' => $aws['bucket'],
-        'Key' => $user_id . '/' . $newFileName,
-        'Body' => $fileContent,
-        'ACL' => $aws['acl']
-    ]);
+    $filePath = $_FILES['fileContent']['tmp_name'];  // Path to the temporary uploaded file
+    $fileStream = fopen($filePath, 'r');  // Open a file stream
 
+    // Upload the file using the high-level upload method
+    try {
+        $result = $s3->upload(
+            $aws['bucket'],
+            $user_id . '/' . $newFileName,
+            $fileStream,
+            $aws['acl']  // Access control list (e.g., 'public-read')
+        );
 
-    // check for errors and return the status code if something went wrong
-    if ($result['@metadata']['statusCode'] != 200) {
-        http_response_code($result['@metadata']['statusCode']);
-        exit("Internal Server Error");
+        // Success, print the URL of the uploaded file
+        echo $result['ObjectURL'];
+    } catch (Aws\Exception\S3Exception $e) {
+        // Catch an S3 specific exception.
+        http_response_code(555);
+        exit("Internal Server Error: " . $e->getMessage());
+    } finally {
+        if (is_resource($fileStream)) {
+            fclose($fileStream);  // Close the file stream to free up resources
+        }
     }
-
-    // Success, so print the URL of the uploaded file
-    echo $result['ObjectURL'];
     exit (0);
 }
+
+
 
 // No AWS credentials, so we'll just upload to the local server
 
 // Check if file exists, if not, write the file
 $userFilePath = $userDir . $newFileName;
+
+
+
 if (!file_exists($userFilePath)) {
     move_uploaded_file($_FILES['fileContent']['tmp_name'], $userFilePath);
 }

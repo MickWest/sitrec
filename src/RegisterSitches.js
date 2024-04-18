@@ -54,7 +54,7 @@ export function registerSitches(textSitches) {
     // add the text sitches
     for (const key in textSitches) {
         const text = textSitches[key];
-        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
+//        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
         const obj = textSitchToObject(text);
         SitchMan.add(key, obj);
     }

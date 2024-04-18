@@ -1,8 +1,11 @@
 <?php
 
+    print ("Hello World<br>");
+  exit(0);
+
 //    print_r($_COOKIE);
 
-    $fileDir = '../../';  # relative path from this script to the Xenforo root
+    $fileDir = '../../../';  # relative path from this script to the Xenforo root
     require($fileDir . '/src/XF.php');
     XF::start($fileDir);
     $app = XF::setupApp('XF\Pub\App');
