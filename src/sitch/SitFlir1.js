@@ -35,6 +35,7 @@ import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeMunge} from "../nodes/CNodeMunge";
 import {commonJetLabels} from "./CommonSitch";
+import {CNodeMath} from "../nodes/CNodeMath";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -183,8 +184,6 @@ export const SitFlir1 = {
         Sit.flir1Data = FileManager.get("DataFile")
 
         console.log("+++ azEditorNode")
-
-
 
         var azEditorNode = NodeMan.get("azEditor")
         // FLIR1

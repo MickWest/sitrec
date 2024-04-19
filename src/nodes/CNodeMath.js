@@ -19,7 +19,7 @@
 
 
 import {CNode} from "./CNode";
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {assert} from "../utils";
 const math = require('mathjs')
 
@@ -27,7 +27,7 @@ const math = require('mathjs')
 export class CNodeMath extends CNode {
     constructor(v) {
         super(v);
-
+        this.frameless = true; // set to indicate that this node does not need a frame number, but will pass the frame number to inputs
         this.math = v.math
     }
 

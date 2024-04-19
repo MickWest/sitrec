@@ -365,9 +365,23 @@ class CNode {
         }
 
         var value;
-        if (!this.frames ) {
+
+        var numFrames = this.frames
+
+        // if flagged as frameless, then the frame number is not used by this node
+        // but might be used by it's input nodes or referenced nodes
+        // currently only used by CNodeMath, but might be extended to other nodes
+        if (this.frameless) {
+            assert(Sit.frames !== undefined, "Sit.frames not defined");
+            assert(numFrames === 0, "Frameless node should have frames=0")
+            numFrames = Sit.frames;
+        }
+
+        if (numFrames <= 1 ) {
+            // zero of one frame, so we just get the last one
             value = this.getValueFrame(0);
         } else {
+            // here we have at least two frames, so can interpolate and extrapolate
             if (frameFloat < 0) {
                 // extrapolating backwards
                 const value0 = this.getValueFrame(0)
@@ -386,24 +400,24 @@ class CNode {
                   //  console.log("Extrapolating "+vdump(value0)+ "<-" +vdump(value1)+" by "+frameFloat)
                     value.position = value1.position.clone().sub(value0.position).multiplyScalar(frameFloat).add(value0.position)
                 }
-            } else if (frameFloat > this.frames - 1) {
+            } else if (frameFloat > numFrames - 1) {
                 // extrapolating forwards
-                const value0 = this.getValueFrame(this.frames - 2)
-                const value1 = this.getValueFrame(this.frames - 1)
+                const value0 = this.getValueFrame(numFrames - 2)
+                const value1 = this.getValueFrame(numFrames - 1)
                 if (value0.position === undefined) {
                     // check it's a number
                     if (typeof value0 === 'number' && typeof value1 === 'number') {
-                        value = value1 + (frameFloat - (this.frames - 1)) * (value1 - value0)
+                        value = value1 + (frameFloat - (numFrames - 1)) * (value1 - value0)
                     } else {
                         // interpolating raw 3D vectors
                         assert (value0.x !== undefined, "Extrapolating non-vector in "+this.id+ " frame " + frameFloat);
-                        value = value1.clone().sub(value0).multiplyScalar(frameFloat-(this.frames-1)).add(value1)
+                        value = value1.clone().sub(value0).multiplyScalar(frameFloat-(numFrames-1)).add(value1)
                     }
 
                 } else {
                     value = {...value0} // make a copy, so we can alter the position
-                    value.position = value1.position.clone().sub(value0.position).multiplyScalar(frameFloat-(this.frames-1)).add(value1.position)
-                    //console.warn("Extrapolated: "+vdump(value0)+" ... "+vdump(value1)+" by "+(frameFloat-(this.frames-1)) + " to "+vdump(value) + "STRIPPED ANY OTHER DATA");
+                    value.position = value1.position.clone().sub(value0.position).multiplyScalar(frameFloat-(numFrames-1)).add(value1.position)
+                    //console.warn("Extrapolated: "+vdump(value0)+" ... "+vdump(value1)+" by "+(frameFloat-(numFrames-1)) + " to "+vdump(value) + "STRIPPED ANY OTHER DATA");
                 }
             } else {
                 if (Number.isInteger(frameFloat)) {
