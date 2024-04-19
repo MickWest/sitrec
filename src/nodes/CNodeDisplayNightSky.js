@@ -1737,7 +1737,7 @@ export function addNightSky(def) {
         }
     })
 
-
+    return nightSky;
 }
 
 // TODO: check differences between this and the above GST calculator function.

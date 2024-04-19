@@ -2,7 +2,7 @@
 // and then the SMALLEST (closest to zero) frame it's another value
 // this gives us a simple perfect linear relationship with no additional interpolating needed
 // if we are not passed in the frame numbers, then we use 0 .. this.frame
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeCloudData} from "./CNodeCloudData";
 
@@ -11,6 +11,11 @@ class CNodeInterpolate extends CNode {
         super(v)
         // this.start = v.start;
         // this.end   = v.end;
+
+        if (this.frames === 0) {
+            console.warn("CNodeInterpolate: frames is zero, setting to Sit.frames")
+            this.frames = Sit.frames;
+        }
 
         this.input("start")
         this.input("end")

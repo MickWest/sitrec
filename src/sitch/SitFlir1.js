@@ -67,7 +67,7 @@ export const SitFlir1 = {
 
     files: {
         Flir1Az: 'flir1/FLIR1 AZ.csv',
-        Flir1El: 'flir1/FLIR1 EL.csv',
+   //     Flir1El: 'flir1/FLIR1 EL.csv',
         DataFile: 'flir1/Flir1 FOV Data.csv',
         TargetObjectFile: './models/FA-18F.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
@@ -92,6 +92,76 @@ export const SitFlir1 = {
 
     include_JetLabels: true,
 
+
+    /*
+        This be a good one to templatize.
+       We need to make the ExpandKeyframes more generic, so it make a node
+       and then used it by name in the nodes like azsources
+
+       then figure out the stuff like CNodeJetTrack,a nd all its inputs
+
+    */
+
+
+
+    jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"},
+    elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start"},
+    elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end"},
+    elNegate:   {kind: "GUIFlag",  value:false, desc: "Negate Elevation"},
+
+    elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd"},
+    el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)"},
+
+
+    azData:     {kind: "arrayFromKeyframes", file: "Flir1Az"},
+
+    azEditor: { kind: "CurveEditor",
+        visible: true,
+        left:0, top:0.5, width:-1,height:0.5,
+        draggable:true, resizable:true, shiftDrag: true, freeAspect: true,
+        editorConfig: {
+            useRegression:true,
+            minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,
+            xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
+            points:[0,4.325,300,4.325,1009.858,1.348,1009.858,0.227,1776.31,-4.17,1776.31,-5.291,2288,-8.675,2189,-8.675],
+        },
+        frames: -1, // -1 will inherit from Sit.frames
+    },
+
+    azLinear: { kind: "Interpolate", start: 5, end: -8,},
+
+    azSources: { kind: "Switch",
+        inputs: {
+            'Az Editor': "azEditor",
+            'Az FLIR Video': "azData",
+            'Linear': "azLinear",
+        },
+        desc: "Azimuth Type"
+    },
+
+    userBank: {kind: "GUIValue",value: 0, desc: "User Bank Angle", start: -5, end: 5, step: 0.1},
+
+    bank: { kind: "Switch",
+        inputs: {
+            "User Bank Angle": "userBank",
+        },
+        desc: "Bank Angle Type"
+    },
+
+
+
+
+    // MAYBE using an anonymous node definition for speed
+
+    turnRateBS: {kind: "TurnRateBS",
+        inputs: {
+            //  speed: { kind: "Watch", ob: par, id: "TAS"},
+            speed: { kind: "parWatch", watchID: "TAS"},
+            bank: "bank"
+        }
+    },
+
+
     setup: function () {
 
         SetupCommon(20000)
@@ -105,115 +175,44 @@ export const SitFlir1 = {
 
             const jetAltitude = NodeMan.get("jetAltitude").v();
             console.log("Initial jet alitide from jetAltitude node = "+jetAltitude)
-
             var enu = LLAToEUS(Sit.jetLat, Sit.jetLon, jetAltitude)
             Sit.jetOrigin = V3(enu.x, enu.y, enu.z)
             console.log (" enu.y="+enu.y)
-
         }
 
         Sit.flir1Data = FileManager.get("DataFile")
 
-        this.Flir1Az = ExpandKeyframes(FileManager.get('Flir1Az'), Sit.frames)
-
-        //eldata not used, as we do a more manual interpolation
-        this.Flir1El = ExpandKeyframes(FileManager.get('Flir1El'), Sit.frames)
-
-        // Stuff from SetupFLIR1
-
         console.log("+++ azEditorNode")
-        var azEditorNode = new CNodeCurveEditor({ id:"azEditor",  // GOFast
-                visible: false,
-                left:0, top:0.0, width:-1,height:0.5,
-                draggable:true, resizable:true, shiftDrag: true, freeAspect: true,
-                editorConfig: {
-                    useRegression:true,
-                    minX: 0, maxX: Sit.frames, minY: -10, maxY: 10,
-                    xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
-                    points:[0,4.325,300,4.325,1009.858,1.348,1009.858,0.227,1776.31,-4.17,1776.31,-5.291,2288,-8.675,2189,-8.675],
-                },
-                frames: Sit.frames,
-            }
-        )
-
-        this.azData = new CNodeArray({array: this.Flir1Az})
-
-// FLIR1
-        new CNodeGUIValue({id: "jetTAS", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"}, gui)
-
-        makeCNodeGUIValue("elStart", 5.7, 4.5,   6.5,   0.001,  "el Start", gui)
-        makeCNodeGUIValue("elEnd", 5, 4.5, 6.5,   0.001,  "el end", gui)
-
-//        gui.add(par, 'negateEl').listen().name("Negate Elevation");
-        makeCNodeGUIFlag("elNegate", false, "Negate Elevation", gui);
-
-        new CNodeInterpolate({id:"elNormal", start:"elStart", end:"elEnd", frames:Sit.frames})
-        new CNodeMunge({id:"el", inputs:{elNormal:"elNormal", elNegate:"elNegate"}, munge: function (f) {
-                if (this.in.elNegate.v(f)) {
-                    return this.in.elNormal.v(f) * -1
-                } else {
-                    return this.in.elNormal.v(f)
-                }
-            }})
 
 
-        // FLIR1
-        new CNodeSwitch({id:"azSources",
-            inputs: {
-                'Az Editor': "azEditor",
-                'Az FLIR Video': this.azData,
-                'Linear': new CNodeInterpolate({
-                    start: 5, startFrame: 0,
-                    end: -8, endFrame: Sit.frames-1,
-                    frames: Sit.frames,
-                })
-            },
-            desc: "Azimuth Type"
 
-        }, gui)
-
-   //     var azEditorNode = NodeMan.get("azEditor")
+        var azEditorNode = NodeMan.get("azEditor")
         // FLIR1
         azEditorNode.editorView.addInput("compare",
             new CNodeGraphSeries({
-                source: this.azData,
+                source: "azData",
                 color: "#008000",
 
             })
         )
 
-
         azEditorNode.editorView.addInput("compare1",
             new CNodeGraphSeries({
-                source: "el",
-                color: "#FFFF00",
+                source: "azSources",
+                color: "#000080",
             })
         )
 
-
-        azEditorNode.editorView.recalculate()
-
-
+        ///////////////////////////////
 
 // FLIR1
-        new CNodeSwitch({id:"bank",
-                inputs: {
-                    "User Bank Angle": new CNodeGUIValue({
-                        value: 0, desc: "User Bank Angle", start: -5, end: 5, step: 0.1
-                    }, gui),
-                },
-                desc: "Bank Angle Type"
-            },
-            gui)
 
-
-// FLIR1
-        new CNodeTurnRateBS({id:"turnRateBS",
-            inputs: {
-                speed: new CNodeWatch({ob: par, id: "TAS"}),
-                bank: "bank"
-            }
-        })
+        // new CNodeTurnRateBS({id:"turnRateBS",
+        //     inputs: {
+        //         speed: new CNodeWatch({ob: par, watchID: "TAS"}),
+        //         bank: "bank"
+        //     }
+        // })
 
 
 // FLIR1
@@ -226,7 +225,7 @@ export const SitFlir1 = {
                 "From Bank and Speed": "turnRateBS",
             },
             desc: "Turn Rate Type"
-        }, gui)
+        })
 
 // FLIR1
 
@@ -238,7 +237,7 @@ export const SitFlir1 = {
             arrowColor: "cyan",
    //         originTrack: "jetOrigin",
 
-        }, gui)
+        })
 
         new CNodeWind({
             id: "localWind",
@@ -248,7 +247,7 @@ export const SitFlir1 = {
             arrowColor: "cyan",
    //         originTrack: "jetOrigin",
 
-        }, gui)
+        })
 
 
 
@@ -258,11 +257,11 @@ export const SitFlir1 = {
             name: "Initial",
             arrowColor: "green"
 
-        }, gui)
+        })
 
         new CNodeJetTrack({id:"jetTrack",
             inputs: {
-                speed: "jetTAS",         // new CNodeWatch({ob:par,id:"TAS"}),
+                speed: "jetTAS",         // new CNodeWatch({ob:par,watchID:"TAS"}),
                 altitude: "jetAltitude",
                 turnRate: "turnRate",
                 radius: "radiusMiles",

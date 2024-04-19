@@ -216,7 +216,7 @@ export var SitGoFast = {
         new CNodeTurnRateBS({
             id: "turnRateBS",
             inputs: {
-                speed: new CNodeWatch({ob: par, id: "TAS"}),
+                speed: new CNodeWatch({ob: par, watchID: "TAS"}),
                 bank: "bank"
             }
         })
@@ -273,7 +273,7 @@ export var SitGoFast = {
         new CNodeJetTrack({
             id: "jetTrack",
             inputs: {
-                speed: "jetTAS",         // new CNodeWatch({ob:par,id:"TAS"}),
+                speed: "jetTAS",         // new CNodeWatch({ob:par,watchID:"TAS"}),
                 altitude: "jetAltitude",
                 turnRate: "turnRate",
                 radius: "radiusMiles",

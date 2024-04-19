@@ -650,7 +650,7 @@ export function SetupGimbal() {
     new CNodeTurnRateBS({
         id: "turnRateBS",
         inputs: {
-            speed: new CNodeWatch({ob: par, id: "TAS"}),
+            speed: new CNodeWatch({ob: par, watchID: "TAS"}),
             bank: "bank"
         }
     })

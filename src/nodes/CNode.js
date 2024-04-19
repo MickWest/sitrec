@@ -50,6 +50,7 @@ class CNode {
         this.isNumber = true;
         this.fps = v.fps ?? 30          // fps = frames per second
         this.frames = v.frames ?? 0     // frames of zero means it's constant or time indepedent
+        if (this.frames === -1) this.frames = Sit.frames;
         this.inputs = {}                // inputs are named
         this.outputs = []               // outputs are just an array of nodes
         this.visible = true;            // some nodes are display nodes

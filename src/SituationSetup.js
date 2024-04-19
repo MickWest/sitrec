@@ -1,5 +1,5 @@
 import {FileManager, gui, NodeMan, setSit, Sit, SitchMan} from "./Globals";
-import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
+import {CNode, CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
@@ -7,7 +7,7 @@ import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {abs, assert, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
+import {abs, assert, ExpandKeyframes, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -30,6 +30,7 @@ import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGra
 import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackAzEl";
 import {MISB} from "./MISBUtils";
+import {CNodeWatch} from "./nodes/CNodeWatch";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -135,7 +136,6 @@ export function SituationSetupFromData(sitData, runDeferred) {
     // const sitDataExpanded = expandSitData(sitData); // see CSituation constructor
     const sitDataExpanded = sitData;  //
 
-    let mainView, mainCameraNode, mainCamera; // WHY?
 
     for (let key in sitDataExpanded) {
 
@@ -143,26 +143,12 @@ export function SituationSetupFromData(sitData, runDeferred) {
         const _data = sitDataExpanded[key];
 
         // we can have undefined values in sitData, so skip them
-        // this normall occurs when we have a base situation, and then override some values
+        // this normally occurs when we have a base situation, and then override some values
         if (_data === undefined || _data === null) continue;
 
-        let data;
-        // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
-        if (typeof _data === "object") {
-
-            data = {..._data};
-        } else {
-            // if not an object (e.g. a number, boolean, or string), then just use _data
-            data = _data;
-        }
-
-//        console.log("SituationSetup iterating: key = " + key );
-
-
-
-        const dataDeferred = data.defer ?? false;
+        const dataDeferred = _data.defer ?? false;
         // assert dataDeferred is a boolean
-        assert(typeof dataDeferred === "boolean", "SituationSetup: data.defer must be a boolean")
+        assert(typeof dataDeferred === "boolean", "SituationSetup: _data.defer must be a boolean")
         // assert runDeferred is a boolean
         assert(typeof runDeferred === "boolean", "SituationSetup: runDeferred must be a boolean")
 
@@ -172,835 +158,902 @@ export function SituationSetupFromData(sitData, runDeferred) {
             continue;
         }
 
-        function SSLog() {
-            console.log("SSLog SituationSetup: " + key + " " + JSON.stringify(data))
-        }
+        SetupFromKeyAndData(key, _data);
 
-        if (data.kind !== undefined) {
-            // to allown
-            // new way of doing it, the "kind" is the kind of thing we want to setup
-            // which means the key is the id of the node OR the id of some setup code in the switch statement below
-            assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
-            data.id = key;
-            key = data.kind;
-        }
+    }
+}
 
+export function SetupFromKeyAndData(key, _data) {
+    let data;
+    // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
+    if (typeof _data === "object") {
 
+        data = {..._data};
 
-        switch (key) {
-
-            case "frames":
-                SSLog();
-                SetupGUIFrames();
-                break;
-
-            case "flattening":
-                SSLog();
-                new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
-                break
-
-            case "terrain":
-                SSLog();
-                //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
-                new CNodeTerrain({
-                    id: "TerrainModel",
-                    radiusMiles: "radiusMiles", // constant
-                    lat: data.lat,
-                    lon: data.lon,
-                    zoom: data.zoom,
-                    nTiles: data.nTiles,
-                    flattening: Sit.flattening ? "flattening" : undefined,
-                    tileSegments: data.tileSegments ?? 100,
-                })
-                break;
-
-            case "mainCamera":
-                SSLog();
-                // mainCamera: {
-                //     fov:  32,
-                //         startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
-                //         startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
-                // },
-
-                // if we don't have a startCameraPosition or startCameraPositionLLA, then add some defaults
-                // basically a high camera to the south of the region, looking at the center
-                if (data.startCameraPosition === undefined && data.startCameraPositionLLA === undefined) {
-                    data = {
-                        ...data,
-                        ...{startCameraPosition:[0,130000,160000],
-                            startCameraTarget:[0,0,0]}
+        function resolveAnonObjects(data) {
+            // iterate over the keys in data
+            // if the value for that key is an object
+            // and that object has a "kind" key, then recursively call SetupFromKeyAndData
+            for (let subKey in data) {
+                if (typeof data[subKey] === "object") {
+                    if (data[subKey].kind !== undefined) {
+                        // here the key will be the name of a variable
+                        // so we can't use it as a node id
+                        // so instead we pass in undefined,
+                        // so the node system will generate an id for it
+                        const anonResult = SetupFromKeyAndData(undefined, data[subKey]);
+                        // assert it's a CNode derived object
+                        assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object")
+                        // replace the object with the id of the object
+                        data[subKey] = anonResult.id;
                     }
                 }
+            }
+        }
 
-                const cameraNode = new CNodeCamera({
-                    id: "mainCamera",
-                    fov: data.fov ?? 30,
-                    aspect: window.innerWidth / window.innerHeight,
-                    near: data.near ?? 1,
-                    far: data.far ?? 80000000,
-                    layers: data.mask ?? LAYER.MASK_MAINRENDER,
+        resolveAnonObjects(data);
+        // if it has an "inputs" object then do the same with that
+        if (data.inputs !== undefined) {
+            resolveAnonObjects(data.inputs);
+        }
 
-                    // one of these will be undefined. CNodeCamera uses the other
-                    startPos: data.startCameraPosition,
-                    lookAt: data.startCameraTarget,
-                    startPosLLA: data.startCameraPositionLLA,
-                    lookAtLLA: data.startCameraTargetLLA,
 
-                })
+    } else {
+        // if not an object (e.g. a number, boolean, or string), then just use _data
+        data = _data;
+    }
 
-                mainCameraNode = cameraNode;
-                mainCamera = mainCameraNode.camera;
+//        console.log("SituationSetup iterating: key = " + key );
 
-                // setMainCamera(cameraNode.camera) // eventually might want to remove this and be a node
+    function SSLog() {
+        console.log("SSLog SituationSetup: " + key + " " + JSON.stringify(data))
+    }
 
-                gui.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
-                    cameraNode.camera.updateProjectionMatrix()
-                }).listen().name("Main FOV")
-                break;
+    if (data.kind !== undefined) {
+        // to allown
+        // new way of doing it, the "kind" is the kind of thing we want to setup
+        // which means the key is the id of the node OR the id of some setup code in the switch statement below
+        assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
+        data.id = key;
+        key = data.kind;
+    }
 
-            case "lookCamera":
-                SSLog();
 
-                const cameraID = data.id ?? "lookCamera";
-                new CNodeCamera({
-                    id: cameraID,
-                    fov: data.fov ?? 10,
-                    //            aspect: window.innerWidth / window.innerHeight,
-                    near: data.near ?? 1,
-                    far: data.far ?? 8000000,
-                    layers: data.mask ?? LAYER.MASK_LOOKRENDER,
-                    //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
-                })
+    let node = null;
 
-                if (cameraID === "lookCamera") {
-                    const lookCameraNode = NodeMan.get("lookCamera");
+    switch (key) {
 
-                    if (data.addFOVController) {
-                        gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
-                            lookCameraNode.camera.updateProjectionMatrix()
-                        }).listen().name("Look Camera FOV")
-                    }
-                }
+        case "frames":
+            SSLog();
+            SetupGUIFrames();
+            break;
 
-                break;
+        case "flattening":
+            SSLog();
+            node = new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
+            break
 
-            // cameraTrack: {
-            //     id: "cameraTrack",
-            //         file: "cameraFile",
+        case "terrain":
+            SSLog();
+            //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
+            node = new CNodeTerrain({
+                id: "TerrainModel",
+                radiusMiles: "radiusMiles", // constant
+                lat: data.lat,
+                lon: data.lon,
+                zoom: data.zoom,
+                nTiles: data.nTiles,
+                flattening: Sit.flattening ? "flattening" : undefined,
+                tileSegments: data.tileSegments ?? 100,
+            })
+            break;
+
+        case "mainCamera":
+            SSLog();
+            // mainCamera: {
+            //     fov:  32,
+            //         startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
+            //         startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
             // },
-            case "cameraTrack":
-                SSLog();
-                assert(Sit.lat !== undefined && Sit.lon !== undefined, "SituationSetup: cameraTrack needs Sit.lat and Sit.lon defined. i.e. after terrain");
 
-                const id = data.id ?? "cameraTrack";
-                if (data.LLA !== undefined) {
-                    makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]))
-                        .frames = Sit.frames;
-                } else {
-                    const file = data.file ?? "cameraFile";
-
-                    makeTrackFromDataFile(file, id + "Data", id);
-
-                    new CNodeDisplayTrack({
-                        id: id + "Display",
-                        track: id,
-                        color: [1, 1, 0],
-                        width: 2,
-                    })
-
-                    new CNodeDisplayTrack({
-                        id: id + "DisplayData",
-                        track: id + "Data",
-                        color: [0.7, 0.3, 0],
-                        width: 1,
-                        ignoreAB: true,
-                    })
-
-
-                }
-                break;
-
-
-            // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
-            case "focalLenController":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
-                    focalLength: data.source,
-                    referenceFocalLength: data.len,
-                    referenceFOV: data.fov,
-                })
-                break;
-
-            case "fovController":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("FOV", {
-                    source: data.source,
-                })
-                break;
-
-            case "matrixController":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("Matrix", {
-                    source: data.source,
-                })
-                break;
-
-            case "wescamFOV":
-                SSLog();
-
-                // get the CSV data from the file
-                let wescamSource = FileManager.get(data.file)
-
-                // now make a per-frame array of focal lengths
-                const focalLengths = new Array(Sit.frames);
-                for (var frame = 0; frame < Sit.frames; frame++) {
-                    var focalLength = getArrayValueFromFrame(wescamSource, 0, data.focalIndex, frame)
-                    const mode = getArrayValueFromFrame(wescamSource, 0, data.modeIndex, frame);
-                    if (mode !== "IR") {
-                        focalLength *= 2
-                    }
-                    focalLengths [frame] = focalLength;
-                }
-
-                // wrap the array in a node
-                new CNodeArray({id: "focalLengthsNode", array: focalLengths});
-
-                // and add a focal length controller based on this.
-                NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
-                    focalLength: "focalLengthsNode",
-                    referenceFocalLength: data.len,
-                    referenceFOV: data.fov,
-                })
-
-                break;
-
-            case "mainView":
-                SSLog();
-
-                const mainViewDef = {
-                    id: "mainView",
-                    //     draggable:true,resizable:true,
-                    left: 0.0, top: 0, width: .5, height: 1,
-                    fov: 50,
-                    background: data.background ?? Sit.skyColor,
-                    camera: "mainCamera",
+            // if we don't have a startCameraPosition or startCameraPositionLLA, then add some defaults
+            // basically a high camera to the south of the region, looking at the center
+            if (data.startCameraPosition === undefined && data.startCameraPositionLLA === undefined) {
+                data = {
                     ...data,
+                    ...{startCameraPosition:[0,130000,160000],
+                        startCameraTarget:[0,0,0]}
                 }
-                const view = new CNodeView3D(mainViewDef);
-                view.addOrbitControls(Sit.renderer);
-                mainView = view;
-                break;
+            }
 
-            case "lookView":
-                SSLog();
+            const cameraNode = new CNodeCamera({
+                id: "mainCamera",
+                fov: data.fov ?? 30,
+                aspect: window.innerWidth / window.innerHeight,
+                near: data.near ?? 1,
+                far: data.far ?? 80000000,
+                layers: data.mask ?? LAYER.MASK_MAINRENDER,
 
-                var color = Sit.skyColor
+                // one of these will be undefined. CNodeCamera uses the other
+                startPos: data.startCameraPosition,
+                lookAt: data.startCameraTarget,
+                startPosLLA: data.startCameraPositionLLA,
+                lookAtLLA: data.startCameraTargetLLA,
 
-                // if we have a mainView, then use its background color
-                if (NodeMan.exists("mainView")) {
-                    color = NodeMan.get("mainView").background;
+            })
+
+            gui.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                cameraNode.camera.updateProjectionMatrix()
+            }).listen().name("Main FOV")
+
+            node = cameraNode;
+            break;
+
+        case "lookCamera":
+            SSLog();
+
+            const cameraID = data.id ?? "lookCamera";
+            node = new CNodeCamera({
+                id: cameraID,
+                fov: data.fov ?? 10,
+                //            aspect: window.innerWidth / window.innerHeight,
+                near: data.near ?? 1,
+                far: data.far ?? 8000000,
+                layers: data.mask ?? LAYER.MASK_LOOKRENDER,
+                //                   layers: data.mask ?? LAYER.MASK_MAIN_HELPERS,
+            })
+
+            if (cameraID === "lookCamera") {
+                const lookCameraNode = NodeMan.get("lookCamera");
+
+                if (data.addFOVController) {
+                    gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                        lookCameraNode.camera.updateProjectionMatrix()
+                    }).listen().name("Look Camera FOV")
                 }
+            }
 
-                const lookViewDef = {
-                    id: "lookView",
-                    //     draggable:true,resizable:true,
+            break;
 
-                    // what might these defaults not work for?
-                    draggable:true,resizable:true,shiftDrag:true,freeAspect:false,
+        // cameraTrack: {
+        //     id: "cameraTrack",
+        //         file: "cameraFile",
+        // },
+        case "cameraTrack":
+            SSLog();
+            assert(Sit.lat !== undefined && Sit.lon !== undefined, "SituationSetup: cameraTrack needs Sit.lat and Sit.lon defined. i.e. after terrain");
 
-                    left: 0.75, top: 0, width: .25, height: 1,
-                    fov: 50,
-                    background: color,
-                    camera: "lookCamera",
-                    syncVideoZoom: true,
-                    ...data,
+            const id = data.id ?? "cameraTrack";
+            if (data.LLA !== undefined) {
+                node = makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]))
+                    .frames = Sit.frames;
+            } else {
+                const file = data.file ?? "cameraFile";
+
+                node = makeTrackFromDataFile(file, id + "Data", id);
+
+                new CNodeDisplayTrack({
+                    id: id + "Display",
+                    track: id,
+                    color: [1, 1, 0],
+                    width: 2,
+                })
+
+                new CNodeDisplayTrack({
+                    id: id + "DisplayData",
+                    track: id + "Data",
+                    color: [0.7, 0.3, 0],
+                    width: 1,
+                    ignoreAB: true,
+                })
+
+
+            }
+            break;
+
+
+        // focalLenController: {source: "cameraTrack", object: "lookCamera", len: 166, fov: 5},
+        case "focalLenController":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
+                focalLength: data.source,
+                referenceFocalLength: data.len,
+                referenceFOV: data.fov,
+            })
+            break;
+
+        case "fovController":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("FOV", {
+                source: data.source,
+            })
+            break;
+
+        case "matrixController":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("Matrix", {
+                source: data.source,
+            })
+            break;
+
+        case "wescamFOV":
+            SSLog();
+
+            // get the CSV data from the file
+            let wescamSource = FileManager.get(data.file)
+
+            // now make a per-frame array of focal lengths
+            const focalLengths = new Array(Sit.frames);
+            for (var frame = 0; frame < Sit.frames; frame++) {
+                var focalLength = getArrayValueFromFrame(wescamSource, 0, data.focalIndex, frame)
+                const mode = getArrayValueFromFrame(wescamSource, 0, data.modeIndex, frame);
+                if (mode !== "IR") {
+                    focalLength *= 2
                 }
-                const lookView = new CNodeView3D(lookViewDef);
-                if (!data.noOrbitControls)
-                    lookView.addOrbitControls(Sit.renderer);
-                break;
+                focalLengths [frame] = focalLength;
+            }
 
-            case "videoView":
-                SSLog();
+            // wrap the array in a node
+            new CNodeArray({id: "focalLengthsNode", array: focalLengths});
 
-                // legacy sitches have the video file in the root of the sitch
-                // but we now use Sit.files.videoFile
-                // to keep the files consistent for rehosting
-                let videoFile = Sit.videoFile;
-                if (videoFile === undefined) {
-                    videoFile = Sit.files.videoFile
-                }
+            // and add a focal length controller based on this.
+            NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
+                focalLength: "focalLengthsNode",
+                referenceFocalLength: data.len,
+                referenceFOV: data.fov,
+            })
 
-                assert(videoFile !== undefined, "videoView needs a video file")
-                if (!NodeMan.exists("videoZoom")) {
-                    new CNodeGUIValue({
-                        id: "videoZoom",
-                        value: 100, start: 5, end: 2000, step: 1,
-                        desc: "Video Zoom %"
-                    }, gui)
-                }
+            break;
 
 
-                new CNodeVideoWebCodecView({
-                        id: /*data.id ?? */"video",
-                        inputs: {
-                            zoom: "videoZoom"
-                        },
-                        visible: true,
-                        draggable: true, resizable: true,
-                        frames: Sit.frames,
-                        videoSpeed: Sit.videoSpeed,
-                        file: videoFile,
-                        ...data,
-                    }
-                )
-                break;
 
-            case "focusTracks":
-                SSLog();
-                NodeMan.get("mainView").addFocusTracks(data);
+        case "mainView":
+            SSLog();
 
-                break;
+            const mainViewDef = {
+                id: "mainView",
+                //     draggable:true,resizable:true,
+                left: 0.0, top: 0, width: .5, height: 1,
+                fov: 50,
+                background: data.background ?? Sit.skyColor,
+                camera: "mainCamera",
+                ...data,
+            }
+            const view = new CNodeView3D(mainViewDef);
+            view.addOrbitControls(Sit.renderer);
+            node = view;
+            break;
 
-            // need to implement views first, as the spline editor needs a renderer and controls
-            case "targetSpline":
-                SSLog();
-                assert(mainView !== undefined, "SituationSetup: targetSpline needs a mainView defined");
-                assert(mainCamera !== undefined, "SituationSetup: targetSpline needs a mainCamera defined");
-                new CNodeSplineEditor({
-                    id: data.id ?? "targetTrack",
-                    type: data.type,   // chordal give smoother velocities
-                    scene: GlobalScene,
-                    camera: "mainCamera",
-                    view: mainView,
-                    renderer: mainView.renderer,
-                    controls: mainView.controls,
-                    frames: Sit.frames,
-                    terrainClamp: data.terrainClamp ?? "TerrainModel",
+        case "lookView":
+            SSLog();
 
-                    initialPoints: data.initialPoints,
-                    initialPointsLLA: data.initialPointsLLA,
-                })
-                break;
+            var color = Sit.skyColor
 
-            case "dragDropHandler":
-                if (NodeMan.exists("mainView"))
-                    DragDropHandler.addDropArea(NodeMan.get("mainView").div);
-                if (NodeMan.exists("lookView"))
-                    DragDropHandler.addDropArea(NodeMan.get("lookView").div);
-                break;
+            // if we have a mainView, then use its background color
+            if (NodeMan.exists("mainView")) {
+                color = NodeMan.get("mainView").background;
+            }
 
-            case "startDistanceFeet":
-                SSLog();
-                new CNodeScale(data.id ?? "startDistance", scaleF2M, new CNodeGUIValue(
-                    {id: "startDistanceFeet", ...data}, gui))
-                break;
+            const lookViewDef = {
+                id: "lookView",
+                //     draggable:true,resizable:true,
 
-            case "sizeFeet":
-                SSLog();
-                new CNodeScale(data.id ?? "targetSize", scaleF2M, new CNodeGUIValue(
-                    {...data, ...{id: "targetSizeFeetGUI"}}, gui))
-                break;
+                // what might these defaults not work for?
+                draggable:true,resizable:true,shiftDrag:true,freeAspect:false,
 
-            case "ptz":
-                SSLog();
+                left: 0.75, top: 0, width: .25, height: 1,
+                fov: 50,
+                background: color,
+                camera: "lookCamera",
+                syncVideoZoom: true,
+                ...data,
+            }
+            const lookView = new CNodeView3D(lookViewDef);
+            node = lookView;
+            if (!data.noOrbitControls)
+                lookView.addOrbitControls(Sit.renderer);
+            break;
 
-                console.log("MAKE PTZ lookCamera, quaternion = " + NodeMan.get("lookCamera").camera.quaternion.x)
+        case "videoView":
+            SSLog();
 
-                const camera = data.camera ?? "lookCamera";
-                //data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
-                const addID = data.id ?? camera + "PTZ";
-                const idObject = {id: addID};
-                const showGUI = data.showGUI ?? true;
-                NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data, ...idObject, showGUI: showGUI});
+            // legacy sitches have the video file in the root of the sitch
+            // but we now use Sit.files.videoFile
+            // to keep the files consistent for rehosting
+            let videoFile = Sit.videoFile;
+            if (videoFile === undefined) {
+                videoFile = Sit.files.videoFile
+            }
 
-                break;
-
-            case "lookPosition":
-                SSLog();
-                NodeMan.get("lookCamera").addController("UIPositionLLA", {
-                    id: "CameraLLA",
-                    fromLat: new CNodeGUIValue({
-                        id: "cameraLat",
-                        value: data.fromLat,
-                        start: -90,
-                        end: 90,
-                        step: 0.001,
-                        desc: "Camera Lat"
-                    }, gui),
-
-                    fromLon: new CNodeGUIValue({
-                        id: "cameraLon",
-                        value: data.fromLon,
-                        start: -180,
-                        end: 180,
-                        step: 0.001,
-                        desc: "Camera Lon"
-                    }, gui),
-
-                    fromAltFeet: new CNodeGUIValue({
-                        id: "cameraAlt",
-                        value: data.fromAltFeet,
-                        start: data.fromAltFeetMin ?? 0,
-                        end: data.fromAltFeetMax ?? 50000,
-                        step: 0.1,
-                        desc: "Camera Alt (ft)"
-                    }, gui),
-                    radiusMiles: "radiusMiles",
-                })
-                break;
-
-            case "followTrack":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition", {
-                    sourceTrack: data.sourceTrack ?? "cameraTrack",
-                })
-                break;
-
-            case "lookAt":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("LookAtLLA", {
-                    toLat: data.toLat,
-                    toLon: data.toLon,
-                    toAlt: data.toAlt,
-                })
-                break;
-
-            case "lookAtTrack":
-                SSLog();
-                NodeMan.get(data.object ?? "lookCamera").addController("LookAtTrack", {
-                    targetTrack: data.track ?? "targetTrack",
-                })
-                break;
-
-            case "trackFromDataFile":
-                SSLog();
-
-                makeTrackFromDataFile(data.file, data.dataID, data.id);
-                break;
-
-            case "targetObject":
-                SSLog();
-                new CNodeDisplayTargetModel({
-                    track: data.track ?? "targetTrack",
-                    TargetObjectFile: data.file,
-                    wind: data.wind ?? undefined,
-                    tiltType: data.tiltType ?? "none",
-                    //  ...maybeWind,
-                })
-                break;
-
-            case "targetSizedSphere":
-                SSLog();
-                new CNodeDisplayTargetSphere({
-                    track: data.track ?? "targetTrack",
-                    size: new CNodeScale("sizeScaledLOS" + data.id, scaleF2M,
-                        new CNodeGUIValue({
-                            value: data.size ?? 3,
-                            start: 0,
-                            end: 200,
-                            step: 0.01,
-                            desc: "Target    Sphere size ft"
-                        }, gui)
-                    ),
-                    layers: LAYER.MASK_LOOK,
-                    color: data.color ?? "#FFFFFF"
-                })
-                break;
-
-            // Take pan and tilt data from a file and use it to control the camera
-            case "arrayDataPTZ":
-                SSLog();
-                const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
-                const array = cameraTrack.array
-                assert(array !== undefined, "arrayDataPTZ missing array object")
-                makeArrayNodeFromMISBColumn("headingCol", array, data.heading, 30, true)
-                makeArrayNodeFromMISBColumn("pitchCol", array, data.pitch, 30, true)
-                NodeMan.get(data.camera ?? "lookCamera").addController(
-                    "AbsolutePitchHeading",
-                    {pitch: "pitchCol", heading: "headingCol"}
-                )
-                if (data.labelView !== undefined) {
-                    const labelView = NodeMan.get(data.labelView)
-                    labelView.addText("alt", "---", 0, 5, 5, '#FFFFFF', 'left').listen(par, "cameraAlt", function (value) {
-                        this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
-                    })
-
-                    labelView.addLine("---").listen(par, "az", function (value) {
-                        this.text = "Az " + value.toFixed(2) + "°";
-                    })
-
-                    labelView.addLine("---").update(function (value) {
-                        this.text = "Pitch " + NodeMan.get("pitchCol").v(par.frame).toFixed(2) + "°";
-                    })
-                }
-                break;
-
-            case "losTrackMISB":
-                SSLog();
-                const cameraTrackAngles = NodeMan.get(data.arrayNode ?? "cameraTrack");
-
-                // first check if there's a sourceArray, if not, use the array
-                // sourceArray is the original array in a smoothed node
-                let arrayAngles = cameraTrackAngles.sourceArray
-
-                if (arrayAngles === undefined) {
-                    arrayAngles = cameraTrackAngles.array;
-                }
-
-                assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
-
-                const smooth = data.smooth ?? 0;
-
-                makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("platformPitch",   arrayAngles, data.platformPitch   ?? MISB.PlatformPitchAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("platformRoll",    arrayAngles, data.platformRoll    ?? MISB.PlatformRollAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorAz",        arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorEl",        arrayAngles, data.sensorEl   ?? MISB.SensorRelativeElevationAngle, smooth, true)
-                makeArrayNodeFromMISBColumn("sensorRoll",      arrayAngles, data.sensorRoll    ?? MISB.SensorRelativeRollAngle, smooth, true)
-
-               // new CNodeGUIValue({id:"platformHeading", value:0, start:0, end:360, step:0.1, desc:"Platform Heading"}, gui)
-               //  new CNodeGUIValue({id:"platformPitch", value:0, start:-90, end:90, step:0.1, desc:"Platform Pitch"}, gui)
-               //  new CNodeGUIValue({id:"platformRoll", value:0, start:-180, end:180, step:0.1, desc:"Platform Roll"}, gui)
-               //  new CNodeGUIValue({id:"sensorAz", value:256.3, start:0, end:360, step:0.1, desc:"Sensor Azimuth"}, gui)
-               //  new CNodeGUIValue({id:"sensorEl", value:-27.1, start:-90, end:90, step:0.1, desc:"Sensor Elevation"}, gui)
-               //  new CNodeGUIValue({id:"sensorRoll", value:0, start:-180, end:180, step:0.1, desc:"Sensor Roll"}, gui)
-
-                new CNodeLOSTrackMISB({id:data.id ?? "losTrackMISB", cameraTrack: "cameraTrack",
-                    platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
-                    sensorAz: "sensorAz", sensorEl: "sensorEl", sensorRoll: "sensorRoll"})
-
-                break;
-
-            case "labelView":
-                SSLog();
-                const overlayNode = data.overlay ?? "lookView";
-                const overlayView = NodeMan.get(overlayNode);
-                var labelVideo = new CNodeViewUI({id: data.id ?? "labelVideo", overlayView: overlayView});
-                let textSize = 2.5;
-                AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
-                labelVideo.setVisible(true)
-                break;
-
-            case "tilt":
-                SSLog();
-                NodeMan.get("lookCamera").addController("Tilt", {
-                    tilt: makeCNodeGUIValue("tilt", data, -30, 30, 0.01, "Tilt", gui),
-                })
-                break;
-
-            case "defaultLights":
-                SSLog();
-                addDefaultLights(data.brightness ?? 100);
-                break;
-
-            case "addKMLTracks":
-                SSLog();
-                const sphereMask = data.sphereMask ?? LAYER.MASK_HELPERS;
-                const removeDuplicates = data.removeDuplicates ?? false;
-                addKMLTracks(data.tracks, removeDuplicates, sphereMask);
-                break;
-
-            case "targetWind":
-                SSLog();
-                new CNodeWind({
-                    id: "targetWind",
-                    from: data.from,
-                    knots: data.knots,
-                    max: data.max,
-                    name: "Target",
-                    arrowColor: "red"
+            assert(videoFile !== undefined, "videoView needs a video file")
+            if (!NodeMan.exists("videoZoom")) {
+                new CNodeGUIValue({
+                    id: "videoZoom",
+                    value: 100, start: 5, end: 2000, step: 1,
+                    desc: "Video Zoom %"
                 }, gui)
-                break;
-
-            case "objectWind":
-                SSLog();
-                new CNodeWind({
-                    id: "objectWind",
-                    from: data.from,
-                    knots: data.knots,
-                    max: data.max,
-                    name: "Object",
-                    arrowColor: "cyan"
-                }, gui)
-                break;
-
-            case "localWind":
-                SSLog();
-                new CNodeWind({
-                    id: "localWind",
-                    from: data.from,
-                    knots: data.knots,
-                    max: data.max,
-                    name: "Local",
-                    arrowColor: "yellow"
-                }, gui)
-                break;
-
-            case "losTarget":
-                // ONly used for LAXUAP
-                let control = {};
-                if (data.distance) {
-                    new CNodeScale("controlLOS", scaleF2M,
-                        new CNodeGUIValue({
-                            value: data.distance,
-                            start: 1,
-                            end: 100000,
-                            step: 0.1,
-                            desc: "LOS Sphere dist ft"
-                        }, gui))
-                    control = {distance: "controlLOS"}
-                } else if (data.altitude) {
-                    new CNodeScale("controlLOS", scaleF2M,
-                        new CNodeGUIValue({
-                            value: data.altitude,
-                            start: 1,
-                            end: 40000,
-                            step: 0.1,
-                            desc: "LOS Sphere alt ft"
-                        }, gui))
-                    control = {altitude: "controlLOS"}
-                }
+            }
 
 
-                new CNodeLOSTargetAtDistance({
-                    id: "LOSTargetTrack",
-                    track: data.track,
-                    camera: data.camera,
-                    ...control,
-                    frame: data.frame,
-                    offsetRadians: radians(data.offset),
-                })
-
-                new CNodeLOSTargetAtDistance({
-                    id: "LOSTargetWithWindTrack",
-                    track: data.track,
-                    camera: data.camera,
-                    ...control,
-                    frame: data.frame,
-                    offsetRadians: radians(data.offset),
-                    wind: "objectWind",
-                })
-
-                new CNodeDisplayTargetSphere({
-                    track: "LOSTargetTrack",
-                    size: new CNodeScale("sizeScaledLOS", scaleF2M,
-                        new CNodeGUIValue({
-                            value: data.size,
-                            start: 0,
-                            end: 200,
-                            step: 0.01,
-                            desc: "Target Sphere size ft"
-                        }, gui)
-                    ),
-                    layers: LAYER.MASK_LOOK,
-                    color: "#00c000"  // green fixed relative to ground
-                })
-
-                new CNodeDisplayTargetSphere({
-                    track: "LOSTargetWithWindTrack",
-                    size: "sizeScaledLOS",
-                    layers: LAYER.MASK_LOOK,
-                    color: "#00ffff"  // cyan = with wind
-                })
-                break;
-
-            case "smoothTrack":
-                SSLog();
-
-                if (data.method === "moving") {
-                    NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
-                        {
-                            //   source: data.track,
-                            method: data.method,
-                            copyData: true,
-                            window: new CNodeGUIValue({
-                                value: data.window ?? 20,
-                                start: 1,
-                                end: 200,
-                                step: 1,
-                                desc: "Smoothing window size"
-                            }, gui),
-                        },
-                        "source"
-                    );
-                } else {
-                    NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
-                        {
-                            //   source: data.track,
-                            method: "catmull",
-                            intervals: new CNodeGUIValue({
-                                value: 20,
-                                start: 1,
-                                end: 200,
-                                step: 1,
-                                desc: "Catmull Intervals"
-                            }, gui),
-                            tension: new CNodeGUIValue({
-                                value: 0.5,
-                                start: 0,
-                                end: 5,
-                                step: 0.001,
-                                desc: "Catmull Tension"
-                            }, gui),
-                            copyData: true,
-                        },
-                        "source"
-                    );
-                }
-                break;
-
-            case "straightenTrack":
-                SSLog();
-                NodeMan.reinterpret(data.track, "InterpolateTwoFramesTrack",
-                    {
-                        source: data.track,
-                    }
-                );
-                break;
-
-
-            case "azSlider":
-                if (data) {
-                    SSLog();
-                    let aZMin = Frame2Az(0)
-                    let aZMax = Frame2Az(Sit.frames - 1)
-                    if (aZMin > aZMax) {
-                        const t = aZMin;
-                        aZMin = aZMax;
-                        aZMax = t;
-                    }
-                    gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
-                }
-                break;
-
-            case "nightSky":
-                SSLog();
-                // if data true or it is an object with no keys (i.e. {} )
-                // then add the default night sky
-                if (data === true || Object.keys(data).length === 0) {
-                    addNightSky({starLink: "starLink"})
-                } else {
-                    addNightSky(data)
-                }
-                break;
-
-            case "traverseNodes":
-                SSLog();
-                SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLos", data.id ?? "");
-                break;
-
-            case "speedGraph":
-                SSLog();
-                AddSpeedGraph(
-                    data.track ?? "targetTrack",
-                    data.label ?? "Speed",
-                    data.min ?? 0,
-                    data.max ?? 100,
-                    data.left ?? 0,
-                    data.top ?? 0,
-                    data.width ?? 0.2,
-                    data.height ?? 0.25,
-
-                )
-                break;
-
-            case "altitudeGraph":
-                SSLog();
-                // this should be changed to be the same as the speed graph
-                AddAltitudeGraph(
-                    data.min ?? 0,
-                    data.max ?? 100,
-                    data.track ?? "targetTrack",
-//                    data.label ?? "Speed",
-                    data.left ?? 0,
-                    data.top ?? 0,
-                    data.width ?? 0.2,
-                    data.height ?? 0.25,
-
-                )
-                break;
-
-            case "tailAngleGraph":
-                SSLog();
-                AddTailAngleGraph(
-                    {
-                        targetTrack: data.targetTrack ?? "targetTrack",
-                        cameraTrack: data.cameraTrack ?? "cameraTrack",
-                        wind: data.wind ?? "targetWind",
-                    },
-                    {
-                        left: data.left ?? 0,
-                        top: data.top ?? 0,
-                        width: data.width ?? 0.15,
-                        height: data.height ?? 0.25,
-                    }
-
-                );
-                break;
-
-            case "targetDistanceGraph":
-                SSLog();
-                AddTargetDistanceGraph(
-                    {
-                        targetTrack: data.targetTrack ?? "targetTrack",
-                        cameraTrack: data.cameraTrack ?? "cameraTrack",
-                    },
-                    {
-                        left: data.left ?? 0,
-                        top: data.top ?? 0.25,
-                        width: data.width ?? 0.15,
-                        height: data.height ?? 0.25,
-                    }
-
-                );
-                break;
-
-            case "mirrorVideo":
-                SSLog();
-                new CNodeMirrorVideoView({
-                    id: data.id ?? "mirrorVideo",
+            node = new CNodeVideoWebCodecView({
+                    id: /*data.id ?? */"video",
                     inputs: {
                         zoom: "videoZoom"
                     },
-                    mirror: "video",
-                    overlayView: "lookView",
-                    transparency: 0.15,
+                    visible: true,
+                    draggable: true, resizable: true,
+                    frames: Sit.frames,
+                    videoSpeed: Sit.videoSpeed,
+                    file: videoFile,
                     ...data,
+                }
+            )
+            break;
+
+        case "focusTracks":
+            SSLog();
+            NodeMan.get("mainView").addFocusTracks(data);
+
+            break;
+
+        // need to implement views first, as the spline editor needs a renderer and controls
+        case "targetSpline":
+            SSLog();
+            const mainView = NodeMan.get("mainView")
+            assert(mainView !== undefined, "SituationSetup: targetSpline needs a mainView defined");
+            node = new CNodeSplineEditor({
+                id: data.id ?? "targetTrack",
+                type: data.type,   // chordal give smoother velocities
+                scene: GlobalScene,
+                camera: "mainCamera",
+                view: mainView,
+                renderer: mainView.renderer,
+                controls: mainView.controls,
+                frames: Sit.frames,
+                terrainClamp: data.terrainClamp ?? "TerrainModel",
+
+                initialPoints: data.initialPoints,
+                initialPointsLLA: data.initialPointsLLA,
+            })
+            break;
+
+        case "dragDropHandler":
+            if (NodeMan.exists("mainView"))
+                DragDropHandler.addDropArea(NodeMan.get("mainView").div);
+            if (NodeMan.exists("lookView"))
+                DragDropHandler.addDropArea(NodeMan.get("lookView").div);
+            break;
+
+        case "startDistanceFeet":
+            SSLog();
+            node = new CNodeScale(data.id ?? "startDistance", scaleF2M, new CNodeGUIValue(
+                {id: "startDistanceFeet", ...data}, gui))
+            break;
+
+        case "sizeFeet":
+            SSLog();
+            node = new CNodeScale(data.id ?? "targetSize", scaleF2M, new CNodeGUIValue(
+                {...data, ...{id: "targetSizeFeetGUI"}}, gui))
+            break;
+
+        case "ptz":
+            SSLog();
+
+            console.log("MAKE PTZ lookCamera, quaternion = " + NodeMan.get("lookCamera").camera.quaternion.x)
+
+            const camera = data.camera ?? "lookCamera";
+            //data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
+            const addID = data.id ?? camera + "PTZ";
+            const idObject = {id: addID};
+            const showGUI = data.showGUI ?? true;
+            NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data, ...idObject, showGUI: showGUI});
+
+            break;
+
+        case "lookPosition":
+            SSLog();
+            NodeMan.get("lookCamera").addController("UIPositionLLA", {
+                id: "CameraLLA",
+                fromLat: new CNodeGUIValue({
+                    id: "cameraLat",
+                    value: data.fromLat,
+                    start: -90,
+                    end: 90,
+                    step: 0.001,
+                    desc: "Camera Lat"
+                }, gui),
+
+                fromLon: new CNodeGUIValue({
+                    id: "cameraLon",
+                    value: data.fromLon,
+                    start: -180,
+                    end: 180,
+                    step: 0.001,
+                    desc: "Camera Lon"
+                }, gui),
+
+                fromAltFeet: new CNodeGUIValue({
+                    id: "cameraAlt",
+                    value: data.fromAltFeet,
+                    start: data.fromAltFeetMin ?? 0,
+                    end: data.fromAltFeetMax ?? 50000,
+                    step: 0.1,
+                    desc: "Camera Alt (ft)"
+                }, gui),
+                radiusMiles: "radiusMiles",
+            })
+            break;
+
+        case "followTrack":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition", {
+                sourceTrack: data.sourceTrack ?? "cameraTrack",
+            })
+            break;
+
+        case "lookAt":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("LookAtLLA", {
+                toLat: data.toLat,
+                toLon: data.toLon,
+                toAlt: data.toAlt,
+            })
+            break;
+
+        case "lookAtTrack":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("LookAtTrack", {
+                targetTrack: data.track ?? "targetTrack",
+            })
+            break;
+
+        case "trackFromDataFile":
+            SSLog();
+
+            node = makeTrackFromDataFile(data.file, data.dataID, data.id);
+            break;
+
+        case "targetObject":
+            SSLog();
+            node = new CNodeDisplayTargetModel({
+                track: data.track ?? "targetTrack",
+                TargetObjectFile: data.file,
+                wind: data.wind ?? undefined,
+                tiltType: data.tiltType ?? "none",
+                //  ...maybeWind,
+            })
+            break;
+
+        case "targetSizedSphere":
+            SSLog();
+            node = new CNodeDisplayTargetSphere({
+                track: data.track ?? "targetTrack",
+                size: new CNodeScale("sizeScaledLOS" + data.id, scaleF2M,
+                    new CNodeGUIValue({
+                        value: data.size ?? 3,
+                        start: 0,
+                        end: 200,
+                        step: 0.01,
+                        desc: "Target    Sphere size ft"
+                    }, gui)
+                ),
+                layers: LAYER.MASK_LOOK,
+                color: data.color ?? "#FFFFFF"
+            })
+            break;
+
+        // Take pan and tilt data from a file and use it to control the camera
+        case "arrayDataPTZ":
+            SSLog();
+            const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
+            const array = cameraTrack.array
+            assert(array !== undefined, "arrayDataPTZ missing array object")
+            makeArrayNodeFromMISBColumn("headingCol", array, data.heading, 30, true)
+            makeArrayNodeFromMISBColumn("pitchCol", array, data.pitch, 30, true)
+            NodeMan.get(data.camera ?? "lookCamera").addController(
+                "AbsolutePitchHeading",
+                {pitch: "pitchCol", heading: "headingCol"}
+            )
+            if (data.labelView !== undefined) {
+                const labelView = NodeMan.get(data.labelView)
+                labelView.addText("alt", "---", 0, 5, 5, '#FFFFFF', 'left').listen(par, "cameraAlt", function (value) {
+                    this.text = "Alt " + (floor(0.499999 + abs(value))) + "m";
                 })
 
-            default:
+                labelView.addLine("---").listen(par, "az", function (value) {
+                    this.text = "Az " + value.toFixed(2) + "°";
+                })
+
+                labelView.addLine("---").update(function (value) {
+                    this.text = "Pitch " + NodeMan.get("pitchCol").v(par.frame).toFixed(2) + "°";
+                })
+            }
+            break;
+
+        case "losTrackMISB":
+            SSLog();
+            const cameraTrackAngles = NodeMan.get(data.arrayNode ?? "cameraTrack");
+
+            // first check if there's a sourceArray, if not, use the array
+            // sourceArray is the original array in a smoothed node
+            let arrayAngles = cameraTrackAngles.sourceArray
+
+            if (arrayAngles === undefined) {
+                arrayAngles = cameraTrackAngles.array;
+            }
+
+            assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
+
+            const smooth = data.smooth ?? 0;
+
+            makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
+            makeArrayNodeFromMISBColumn("platformPitch",   arrayAngles, data.platformPitch   ?? MISB.PlatformPitchAngle, smooth, true)
+            makeArrayNodeFromMISBColumn("platformRoll",    arrayAngles, data.platformRoll    ?? MISB.PlatformRollAngle, smooth, true)
+            makeArrayNodeFromMISBColumn("sensorAz",        arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+            makeArrayNodeFromMISBColumn("sensorEl",        arrayAngles, data.sensorEl   ?? MISB.SensorRelativeElevationAngle, smooth, true)
+            makeArrayNodeFromMISBColumn("sensorRoll",      arrayAngles, data.sensorRoll    ?? MISB.SensorRelativeRollAngle, smooth, true)
+
+            // new CNodeGUIValue({id:"platformHeading", value:0, start:0, end:360, step:0.1, desc:"Platform Heading"}, gui)
+            //  new CNodeGUIValue({id:"platformPitch", value:0, start:-90, end:90, step:0.1, desc:"Platform Pitch"}, gui)
+            //  new CNodeGUIValue({id:"platformRoll", value:0, start:-180, end:180, step:0.1, desc:"Platform Roll"}, gui)
+            //  new CNodeGUIValue({id:"sensorAz", value:256.3, start:0, end:360, step:0.1, desc:"Sensor Azimuth"}, gui)
+            //  new CNodeGUIValue({id:"sensorEl", value:-27.1, start:-90, end:90, step:0.1, desc:"Sensor Elevation"}, gui)
+            //  new CNodeGUIValue({id:"sensorRoll", value:0, start:-180, end:180, step:0.1, desc:"Sensor Roll"}, gui)
+
+            node = new CNodeLOSTrackMISB({id:data.id ?? "losTrackMISB", cameraTrack: "cameraTrack",
+                platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
+                sensorAz: "sensorAz", sensorEl: "sensorEl", sensorRoll: "sensorRoll"})
+
+            break;
+
+        case "labelView":
+            SSLog();
+            const overlayNode = data.overlay ?? "lookView";
+            const overlayView = NodeMan.get(overlayNode);
+            var labelVideo = new CNodeViewUI({id: data.id ?? "labelVideo", overlayView: overlayView});
+            let textSize = 2.5;
+            AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
+            labelVideo.setVisible(true)
+            node = labelVideo;
+            break;
+
+        case "tilt":
+            SSLog();
+            NodeMan.get("lookCamera").addController("Tilt", {
+                tilt: makeCNodeGUIValue("tilt", data, -30, 30, 0.01, "Tilt", gui),
+            })
+            break;
+
+        case "defaultLights":
+            SSLog();
+            addDefaultLights(data.brightness ?? 100);
+            break;
+
+        case "addKMLTracks":
+            SSLog();
+            const sphereMask = data.sphereMask ?? LAYER.MASK_HELPERS;
+            const removeDuplicates = data.removeDuplicates ?? false;
+            addKMLTracks(data.tracks, removeDuplicates, sphereMask);
+            break;
+
+        case "targetWind":
+            SSLog();
+            node = new CNodeWind({
+                id: "targetWind",
+                from: data.from,
+                knots: data.knots,
+                max: data.max,
+                name: "Target",
+                arrowColor: "red"
+            }, gui)
+            break;
+
+        case "objectWind":
+            SSLog();
+            node = new CNodeWind({
+                id: "objectWind",
+                from: data.from,
+                knots: data.knots,
+                max: data.max,
+                name: "Object",
+                arrowColor: "cyan"
+            }, gui)
+            break;
+
+        case "localWind":
+            SSLog();
+            node = new CNodeWind({
+                id: "localWind",
+                from: data.from,
+                knots: data.knots,
+                max: data.max,
+                name: "Local",
+                arrowColor: "yellow"
+            }, gui)
+            break;
+
+        case "losTarget":
+            // ONly used for LAXUAP
+            let control = {};
+            if (data.distance) {
+                new CNodeScale("controlLOS", scaleF2M,
+                    new CNodeGUIValue({
+                        value: data.distance,
+                        start: 1,
+                        end: 100000,
+                        step: 0.1,
+                        desc: "LOS Sphere dist ft"
+                    }, gui))
+                control = {distance: "controlLOS"}
+            } else if (data.altitude) {
+                new CNodeScale("controlLOS", scaleF2M,
+                    new CNodeGUIValue({
+                        value: data.altitude,
+                        start: 1,
+                        end: 40000,
+                        step: 0.1,
+                        desc: "LOS Sphere alt ft"
+                    }, gui))
+                control = {altitude: "controlLOS"}
+            }
 
 
-                // what if it's a controller???
-                // we have custom setup above, but need a more generic way to do this
-                // with nodes. Specifically create the controller and add it to the camera
-                // so we'll have a "camera" key in the data, and we'll add the controller to that
-                // but need to detect if it's derived from CNodeController
-                // and then add it to the camera
-                if (NodeMan.isController("Controller" + key)) {
-                    const camera = data.camera ?? "lookCamera";
-                    const cameraNode = NodeMan.get(camera);
-                    if (cameraNode) {
-                        cameraNode.addController(key, data);
-                    } else {
-                        console.error("SituationSetup: controller " + key + " needs a camera")
-                    }
-                } else {
+            new CNodeLOSTargetAtDistance({
+                id: "LOSTargetTrack",
+                track: data.track,
+                camera: data.camera,
+                ...control,
+                frame: data.frame,
+                offsetRadians: radians(data.offset),
+            })
 
-                    // check to see if the "kind" is a node type
-                    // if so, then create a node of that type
-                    // passing in the data as the constructor
-                    if (NodeMan.validType(key)) {
-                        SSLog();
-                        // otherwise it's just a regular node
-                        NodeMan.create(key, data);
-                    }
+            new CNodeLOSTargetAtDistance({
+                id: "LOSTargetWithWindTrack",
+                track: data.track,
+                camera: data.camera,
+                ...control,
+                frame: data.frame,
+                offsetRadians: radians(data.offset),
+                wind: "objectWind",
+            })
+
+            new CNodeDisplayTargetSphere({
+                track: "LOSTargetTrack",
+                size: new CNodeScale("sizeScaledLOS", scaleF2M,
+                    new CNodeGUIValue({
+                        value: data.size,
+                        start: 0,
+                        end: 200,
+                        step: 0.01,
+                        desc: "Target Sphere size ft"
+                    }, gui)
+                ),
+                layers: LAYER.MASK_LOOK,
+                color: "#00c000"  // green fixed relative to ground
+            })
+
+            new CNodeDisplayTargetSphere({
+                track: "LOSTargetWithWindTrack",
+                size: "sizeScaledLOS",
+                layers: LAYER.MASK_LOOK,
+                color: "#00ffff"  // cyan = with wind
+            })
+            break;
+
+        case "smoothTrack":
+            SSLog();
+
+            if (data.method === "moving") {
+                node = NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                    {
+                        //   source: data.track,
+                        method: data.method,
+                        copyData: true,
+                        window: new CNodeGUIValue({
+                            value: data.window ?? 20,
+                            start: 1,
+                            end: 200,
+                            step: 1,
+                            desc: "Smoothing window size"
+                        }, gui),
+                    },
+                    "source"
+                );
+            } else {
+                node = NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                    {
+                        //   source: data.track,
+                        method: "catmull",
+                        intervals: new CNodeGUIValue({
+                            value: 20,
+                            start: 1,
+                            end: 200,
+                            step: 1,
+                            desc: "Catmull Intervals"
+                        }, gui),
+                        tension: new CNodeGUIValue({
+                            value: 0.5,
+                            start: 0,
+                            end: 5,
+                            step: 0.001,
+                            desc: "Catmull Tension"
+                        }, gui),
+                        copyData: true,
+                    },
+                    "source"
+                );
+            }
+            break;
+
+        case "straightenTrack":
+            SSLog();
+            node = NodeMan.reinterpret(data.track, "InterpolateTwoFramesTrack",
+                {
+                    source: data.track,
                 }
-                break;
-        }
+            );
+            break;
+
+
+        case "azSlider":
+            if (data) {
+                SSLog();
+                let aZMin = Frame2Az(0)
+                let aZMax = Frame2Az(Sit.frames - 1)
+                if (aZMin > aZMax) {
+                    const t = aZMin;
+                    aZMin = aZMax;
+                    aZMax = t;
+                }
+                gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
+            }
+            break;
+
+        case "nightSky":
+            SSLog();
+            // if data true or it is an object with no keys (i.e. {} )
+            // then add the default night sky
+            if (data === true || Object.keys(data).length === 0) {
+                node = addNightSky({starLink: "starLink"})
+            } else {
+                node = addNightSky(data)
+            }
+            break;
+
+        case "traverseNodes":
+            SSLog();
+            SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLos", data.id ?? "");
+            break;
+
+        case "speedGraph":
+            SSLog();
+            AddSpeedGraph(
+                data.track ?? "targetTrack",
+                data.label ?? "Speed",
+                data.min ?? 0,
+                data.max ?? 100,
+                data.left ?? 0,
+                data.top ?? 0,
+                data.width ?? 0.2,
+                data.height ?? 0.25,
+
+            )
+            break;
+
+        case "altitudeGraph":
+            SSLog();
+            // this should be changed to be the same as the speed graph
+            AddAltitudeGraph(
+                data.min ?? 0,
+                data.max ?? 100,
+                data.track ?? "targetTrack",
+//                    data.label ?? "Speed",
+                data.left ?? 0,
+                data.top ?? 0,
+                data.width ?? 0.2,
+                data.height ?? 0.25,
+
+            )
+            break;
+
+        case "tailAngleGraph":
+            SSLog();
+            AddTailAngleGraph(
+                {
+                    targetTrack: data.targetTrack ?? "targetTrack",
+                    cameraTrack: data.cameraTrack ?? "cameraTrack",
+                    wind: data.wind ?? "targetWind",
+                },
+                {
+                    left: data.left ?? 0,
+                    top: data.top ?? 0,
+                    width: data.width ?? 0.15,
+                    height: data.height ?? 0.25,
+                }
+
+            );
+            break;
+
+        case "targetDistanceGraph":
+            SSLog();
+            AddTargetDistanceGraph(
+                {
+                    targetTrack: data.targetTrack ?? "targetTrack",
+                    cameraTrack: data.cameraTrack ?? "cameraTrack",
+                },
+                {
+                    left: data.left ?? 0,
+                    top: data.top ?? 0.25,
+                    width: data.width ?? 0.15,
+                    height: data.height ?? 0.25,
+                }
+
+            );
+            break;
+
+        case "mirrorVideo":
+            SSLog();
+            node = new CNodeMirrorVideoView({
+                id: data.id ?? "mirrorVideo",
+                inputs: {
+                    zoom: "videoZoom"
+                },
+                mirror: "video",
+                overlayView: "lookView",
+                transparency: 0.15,
+                ...data,
+            })
+            break;
+
+        case "arrayFromKeyframes":
+            SSLog();
+            const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames);
+            node = new CNodeArray({id: data.id, array: expanded});
+            break;
+
+            // creates a watch node for a variable in par
+        case "parWatch":
+            SSLog();
+            assert(par[data.watchID] !== undefined, "SituationSetup: parWatch needs a valid watchID that references a variable in par");
+            node = new CNodeWatch({id:data.id, ob:par, watchID:data.watchID});
+            break;
+
+
+        default:
+
+
+            // what if it's a controller???
+            // we have custom setup above, but need a more generic way to do this
+            // with nodes. Specifically create the controller and add it to the camera
+            // so we'll have a "camera" key in the data, and we'll add the controller to that
+            // but need to detect if it's derived from CNodeController
+            // and then add it to the camera
+            if (NodeMan.isController("Controller" + key)) {
+                const camera = data.camera ?? "lookCamera";
+                const cameraNode = NodeMan.get(camera);
+                if (cameraNode) {
+                    cameraNode.addController(key, data);
+                } else {
+                    console.error("SituationSetup: controller " + key + " needs a camera")
+                }
+            } else {
+
+                // check to see if the "kind" is a node type
+                // if so, then create a node of that type
+                // passing in the data as the constructor
+                if (NodeMan.validType(key)) {
+                    SSLog();
+                    // otherwise it's just a regular node
+                    node = NodeMan.create(key, data);
+                }
+            }
+            break;
     }
+
+    return node;
+
 }
+
 
 /*
  Nodes can be converted by using this regular expression / replacement

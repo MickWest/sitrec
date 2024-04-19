@@ -6,7 +6,7 @@ class CNodeWatch extends CNode {
     constructor(v) {
         super(v);
         this.watchObject = v.ob;
-        this.watchID = v.id;
+        this.watchID = v.watchID;
     }
 
     getValueFrame(frame) {

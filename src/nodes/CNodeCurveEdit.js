@@ -1,5 +1,5 @@
 import {MetaBezierCurveEditor} from "../MetaCurveEdit";
-import {NodeMan} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {CNodeGraphLine} from "./CNodeGraphLine";
@@ -52,6 +52,12 @@ export class CNodeCurveEditor extends CNode {
         super(v);
 
         v.id = v.id + "View"; // they can't share the same id, so add "view" to it
+
+        // bit of a patch here, FLIR1, etc use graphs  set to the number of frames in the sitch
+        // but that means we can't textualize it, so just pass a string and check here
+        if (v.editorConfig.maxX === "Sit.frames")
+            v.editorConfig.maxX = Sit.frames;
+
         this.editorView = new CNodeCurveEditorView(v)
         this.editor = this.editorView.editor
         this.editor.onChange = x => this.recalculateCascade();

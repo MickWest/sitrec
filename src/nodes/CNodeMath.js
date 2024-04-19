@@ -36,7 +36,7 @@ export class CNodeMath extends CNode {
         // make a copy of the math expression
         let expression = this.math.slice()
 
-        console.log("expression before : ", expression)
+    //    console.log("expression before : ", expression)
 
         // strip comments from the string
         // anything from a // to a newline
@@ -45,7 +45,7 @@ export class CNodeMath extends CNode {
         // and strip out any comments in the form /* ... */
         expression = expression.replace(/\/\*.*\*\//g, "")
 
-        console.log("Comments stripped : ", expression)
+    //    console.log("Comments stripped : ", expression)
 
 
         // find any string of the form $example, where "example" is id of a node
@@ -68,7 +68,7 @@ export class CNodeMath extends CNode {
 
             expression = expression.replace(match, value)
         }
-        console.log("expression after : ", expression)
+  //      console.log("expression after : ", expression)
 
         //
         // // get the input values and add them to a structure that math.js can use
@@ -90,7 +90,7 @@ export class CNodeMath extends CNode {
             // if line is empty, or just white space, skip it
             if (line.trim() === "") continue;
             result = (context.evaluate(line))
-            console.log("result : ", result)
+//            console.log("result : ", result)
         }
         // if it returns an array of results, we only use the first one
         if (typeof result === "object") {
