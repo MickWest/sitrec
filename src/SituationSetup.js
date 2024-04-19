@@ -163,12 +163,19 @@ export function SituationSetupFromData(sitData, runDeferred) {
     }
 }
 
+// given a key and some data, execute the appropiate setup
+// this is often a node, but can be a GUI element, or some other setup
+// setup commands start with lower case and are handled in the switch statement
+// nodes start with upper case and that's handled in the default case
 export function SetupFromKeyAndData(key, _data) {
     let data;
     // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
     if (typeof _data === "object") {
 
-        data = {..._data};
+        //  data = {..._data}; // old way, but this is a shallow copy
+        // make a deep copy of the object, as there are sub=objects, like "inputs"
+        // and the anonymous objects
+        data = JSON.parse(JSON.stringify(_data));
 
         function resolveAnonObjects(data) {
             // iterate over the keys in data
@@ -184,15 +191,20 @@ export function SetupFromKeyAndData(key, _data) {
                         const anonResult = SetupFromKeyAndData(undefined, data[subKey]);
                         // assert it's a CNode derived object
                         assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object")
-                        // replace the object with the id of the object
+                        // replace the object with the id of the newly created node
                         data[subKey] = anonResult.id;
                     }
                 }
             }
         }
 
+        // resolve any anonymous objects at the top level
+        // which will recursively call SetupFromKeyAndData as needed
+        // so you can nest anonymous objects as deep as you like
         resolveAnonObjects(data);
+
         // if it has an "inputs" object then do the same with that
+        // inputs (as a parameter) is largely legacy, but still required for a couple of things
         if (data.inputs !== undefined) {
             resolveAnonObjects(data.inputs);
         }
@@ -210,7 +222,6 @@ export function SetupFromKeyAndData(key, _data) {
     }
 
     if (data.kind !== undefined) {
-        // to allown
         // new way of doing it, the "kind" is the kind of thing we want to setup
         // which means the key is the id of the node OR the id of some setup code in the switch statement below
         assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
