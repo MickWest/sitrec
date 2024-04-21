@@ -36,6 +36,8 @@ export class CNodeWind extends CNode {
         //     this.position = this.in.originTrack.p(0)
         // }
 
+        this.lock = v.lock;
+
         this.recalculate()
     }
 
@@ -79,6 +81,28 @@ export class CNodeWind extends CNode {
     }
 
     recalculate() {
+        if (this.dontRecurse) return;
+        this.dontRecurse = true;
+
+        if (this.lock !== undefined) {
+            if (NodeMan.exists("lockWind")) {
+                const lock = NodeMan.get("lockWind");
+                if (lock.value) {
+                    const target = NodeMan.get(this.lock);
+
+                    // we set the value in the object rather than the UI, as we
+                    // don't want to trigger a recalculation
+                    target.from = this.from;
+                    target.knots = this.knots;
+                    // updateDisplay on the target from and knots will update the UI
+                    target.guiFrom.updateDisplay()
+                    target.guiKnots.updateDisplay()
+
+                }
+            }
+        }
+
+        this.dontRecurse = false;
 
         // var A = Sit.jetOrigin.clone()
         //
@@ -93,12 +117,14 @@ export class CNodeDisplayWindArrow extends CNode {
     constructor(v) {
         super(v)
         this.input("source")
+        this.input("displayOrigin")
         this.arrowColor = v.arrowColor ?? "white"
         this.recalculate();
     }
 
     recalculate() {
-        var A = Sit.jetOrigin.clone()
+    //    var A = Sit.jetOrigin.clone()
+        var A = this.in.displayOrigin.p(0);
         var B = A.clone().add(this.in.source.p().multiplyScalar(10000))
         DebugArrowAB(this.id+" Wind",A,B,this.arrowColor,true,GlobalScene)
     }

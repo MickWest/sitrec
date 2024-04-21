@@ -21,6 +21,7 @@ class CNodeSwitch extends CNode {
             this.guiOptions = {}
 
             this.frames = this.inputs[this.choice].frames
+
             // build the list of "key","key" pairs for the gui drop-down menu
             Object.keys(this.inputs).forEach(key => {
                 this.guiOptions[key] = key
@@ -83,7 +84,7 @@ class CNodeSwitch extends CNode {
     }
 
     recalculate() {
-        console.log("CNodeSwitch:recalculate "+this.id)
+//        console.log("CNodeSwitch:recalculate "+this.id)
         // turn on or off gui for all gui sources
         // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {

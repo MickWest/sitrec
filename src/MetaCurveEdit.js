@@ -567,11 +567,11 @@ class MetaBezierCurveEditor {
 
 
         if (this.yLabel === "Turn Rate") {
-            console.log("Update dirty Turn Rate")
+//            console.log("Update dirty Turn Rate")
         }
 
         if (this.yLabel === "Azimuth") {
-            console.log("Update dirty Azimuth")
+//            console.log("Update dirty Azimuth")
         }
 
 
@@ -1047,7 +1047,7 @@ class MetaBezierCurveEditor {
                 this.recalculate()
                 this.onChange();
                 this.dirty=true;
-                console.log("+++ Set Editor DIRTY here")
+//                console.log("+++ Set Editor DIRTY here")
 
 
             }

@@ -664,7 +664,9 @@ export const SitAguadilla = {
             id: "initialHeading",
             heading: 0,
             name: "Initial",
-            arrowColor: "green"
+            arrowColor: "green",
+            // this is just for where we display the wind vector
+            jetOrigin: "jetTrackSmooth",
 
         }, guiTweaks)
 

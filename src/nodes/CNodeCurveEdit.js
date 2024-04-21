@@ -27,6 +27,8 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
 
     recalculate() {
         this.editor.compareNode = []
+
+        // add the legacy nodes
         if (this.in.compare && this.in.compare.frames>0)  this.editor.compareNode.push (this.in.compare);
         if (this.in.compare1 && this.in.compare1.frames>0) this.editor.compareNode.push (this.in.compare1);
         if (this.in.compare2 && this.in.compare2.frames>0) this.editor.compareNode.push (this.in.compare2);
@@ -37,6 +39,16 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
         if (this.in.compare7 && this.in.compare7.frames>0) this.editor.compareNode.push (this.in.compare7);
         if (this.in.compare8 && this.in.compare8.frames>0) this.editor.compareNode.push (this.in.compare8);
         if (this.in.compare9 && this.in.compare9.frames>0) this.editor.compareNode.push (this.in.compare9);
+
+        // iterate over all the inputs, find any that are of type CNodeGraphSeries
+        // if their name is not "compare" and not "compareX", where X is a digit, then push it
+        for (let input in this.inputs) {
+            if (this.inputs[input].constructor.name === "CNodeGraphSeries") {
+                if (input !== "compare" && !input.match(/compare\d+/)) {
+                    this.editor.compareNode.push(this.inputs[input])
+                }
+            }
+        }
 
         this.editor.dirty = true;
 //        console.log("+++ Set Editor DIRTY in CNodeCurveEditorView.recalculate")

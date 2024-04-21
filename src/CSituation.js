@@ -66,9 +66,6 @@ const situationDefaults = {
 
     simSpeed:1,
 
-    jetOrigin: V3(0,f2m(25000),0),  // default for Gimbal and GOfast, will be ovewritten...
-
-
     cameraSphereSize: 2000,
     targetSphereSize: 2000,
 

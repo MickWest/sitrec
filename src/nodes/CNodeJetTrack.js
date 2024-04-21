@@ -9,8 +9,9 @@ import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeJetTrack extends CNodeTrack {
     constructor(v) {
+        if (v.frames === undefined) v.frames = Sit.frames;
         super(v);
-        this.checkInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading"])
+        this.checkInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading", "origin"])
         this.isNumber = false;
         this.recalculate()
     }
@@ -19,31 +20,8 @@ export class CNodeJetTrack extends CNodeTrack {
         this.array = []
         var jetHeading = this.in.heading.getHeading()
         var radius = metersFromMiles(this.in.radius.v0)
-        // note this is assuming constant altitude!!
 
-
-        if (Sit.jetLat === undefined) {
-            // TODO: Make Sit.jetOrigin be a node, so it fits into everything better
-
-            assert (Sit.jetOrigin.x === 0 && Sit.jetOrigin.z === 0,
-                "non-zero jet Origin" + Sit.jetOrigin.x+","+Sit.jetOrigin.z +"with no Sit.jetLat" )
-
-            Sit.jetOrigin.y = this.in.altitude.v0;  // for now we update it here
-        } else {
-            const jetAltitude = this.in.altitude.v0;
-            var enu = LLAToEUS(Sit.jetLat, Sit.jetLon, jetAltitude)
-            Sit.jetOrigin.copy(enu)
-
-        }
-
-        // Note: Previously the jet was always starting at 0,0,0 in EUS
-        // But now it might be at a different location, especially if we have a terrain.
-
-        var jetPos = Sit.jetOrigin.clone();
-
-        // old code, jet was always at 0,0,0
-        //  var jetFwd = V3(0, 0, -1) // start out pointing north (Z = -1 in EUS
-        //  var jetUp = V3(0, 1, 0) // start out pointing up
+        var jetPos = this.in.origin.p(0)
 
         //  new code, jet is at jetOrigin, an arbitrary point in EUS
         var jetFwd = getLocalNorthVector(jetPos)

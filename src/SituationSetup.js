@@ -31,6 +31,8 @@ import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackAzEl";
 import {MISB} from "./MISBUtils";
 import {CNodeWatch} from "./nodes/CNodeWatch";
+import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
+import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -547,6 +549,12 @@ export function SetupFromKeyAndData(key, _data) {
                 {...data, ...{id: "targetSizeFeetGUI"}}, gui))
             break;
 
+        case "inputFeet":
+            SSLog();
+            node = new CNodeScale(data.id, scaleF2M, new CNodeGUIValue(
+                {...data, ...{id: data.id + "GUI"}}, gui));
+            break
+
         case "ptz":
             SSLog();
 
@@ -933,7 +941,7 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "traverseNodes":
             SSLog();
-            SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLos", data.id ?? "");
+            SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLOS", data.id ?? "");
             break;
 
         case "speedGraph":
@@ -1018,7 +1026,7 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "arrayFromKeyframes":
             SSLog();
-            const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames);
+            const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames,0,1, data.stepped ?? false);
             node = new CNodeArray({id: data.id, array: expanded});
             break;
 
@@ -1027,6 +1035,18 @@ export function SetupFromKeyAndData(key, _data) {
             SSLog();
             assert(par[data.watchID] !== undefined, "SituationSetup: parWatch needs a valid watchID that references a variable in par");
             node = new CNodeWatch({id:data.id, ob:par, watchID:data.watchID});
+            break;
+
+
+        case "addGraphSeries":
+            // SSLog();
+            // assert(data.source !== undefined, "SituationSetup: addGraphSeries needs a source object");
+            // assert(data.graph !== undefined, "SituationSetup: addGraphSeries needs a graph object");
+            // const graph = NodeMan.get(data.graph);
+            // assert(graph instanceof CNodeCurveEditor, "SituationSetup: addGraphSeries needs a valid graph object");
+            // graph.editorView.addInput(data.id+"_view",
+            //     new CNodeGraphSeries({id:data.id, source:data.source, color: data.color ?? "#000000"}));
+            // graph.editorView.recalculate();
             break;
 
 
@@ -1056,6 +1076,10 @@ export function SetupFromKeyAndData(key, _data) {
                     SSLog();
                     // otherwise it's just a regular node
                     node = NodeMan.create(key, data);
+                } else {
+                    if (data.kind !== undefined) {
+                        assert(false, "SituationSetup: unknown kind: " + data.kind)
+                    }
                 }
             }
             break;

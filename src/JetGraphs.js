@@ -90,6 +90,7 @@ function addGenericJetGraph(id, yLabel, mungeInputs, windowParams, editorParams,
 
         displayInputs: {
             compare: new CNodeGraphSeries({
+                id: id+"_GenericJetGraph_Munge",
                 inputs: {
                     source: new CNodeMunge({
                         inputs: mungeInputs,

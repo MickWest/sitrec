@@ -46,6 +46,7 @@ class CNode {
      * @param {number} v.frames - number of frames
      */
     constructor (v) {
+        assert(v !== undefined, "CNode constructor: v parameter is undefined");
         this.props = v;
         this.isNumber = true;
         this.fps = v.fps ?? 30          // fps = frames per second
@@ -312,7 +313,7 @@ class CNode {
                 sourceNode = NodeMan.get(this.props[i])
             else {
                 // auto constants must be numbers
-                assert(typeof this.props[i] === 'number', "Node with id "+i+" : "+this.props[i]+" not a node or number, probably name of noded that's not created")
+                assert(typeof this.props[i] === 'number', "Node "+this.id+" has input "+i+" : "+this.props[i]+" which is not a node or number, probably name of noded that's not created")
                 // it's not a node, and it is a number so wrap it in a CNodeConstant
 //                sourceNode = new CNodeConstant({value: this.props[i]})
                 // wrapping is now done in addInput, for consistent behavior
@@ -427,6 +428,9 @@ class CNode {
                     const value0 = this.getValueFrame(frameInt)
                     const value1 = this.getValueFrame(frameInt+1)
 
+                    if (value0 === undefined)
+                        debugger;
+
                     if (value0.position === undefined)
                         value = value0 + (value1-value0) * (frameFloat - frameInt)
                     else {
@@ -505,6 +509,7 @@ class CNode {
         return currentMax
     }
 
+
     // recalculate the contents of this node
     // then recalculate all the child nodes
     // TODO - possible out-of-order recalculation
@@ -513,47 +518,15 @@ class CNode {
     // the "depth" patameter here is just used for indenting.
     recalculateCascade(f, noControllers = false, depth = 0) {
 
-        //  if (par.paused) {
-        //     if (depth === 0) {
-        //         console.log("\nRecalculate Start With "+ this.id)
-        //     } else {
-        //         console.log("|---".repeat(depth) + " " + this.id)
-        //     }
-        // }
+        if (f === undefined) f = par.frame;
 
+        let listOfOne = [this]
+        recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth)
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
         par.renderOne = true;
+        return
 
-        if (f === undefined) f = par.frame;
-        this.recalculate(f);
-
-
-
-        // Controllers are a bit of a special case
-        // they adjust a CNode3D's object, and that might depend on the value of that object
-        // for example, lookAt depends on the position of the object to calculate the heading
-        // so we need to reapply the controller after the object has been recalculated
-        // but before the children are recalculated (as they might depend on the effect of the controller on this node)
-        if (!noControllers && this.applyControllers !== undefined) {
-            // if (par.paused) {
-            //     console.log("|---".repeat(depth) + " Apply Controllers")
-            // }
-            this.applyControllers(f, depth)
-        }
-
-        this.outputs.forEach(output => {
-            // Two additional things
-            // If child is included multiple times in the graph (as a 1st generation child)
-            // then only update it once
-            // If we can get to this node in any other way (ie. child > 1st gneeration)
-            // then DO NOT update it, as it needs intermediates updated first
-            // (and 3rd, but elsewhere, no loops)
-
-            // but for now this will work.
-            output.recalculateCascade(f, noControllers, depth + 1)
-
-        })
 
     }
 
@@ -562,6 +535,47 @@ class CNode {
         for (const v of values)  {
             console.log(`Test node (${v}) = ${this.v(v)}`)
         }
+    }
+}
+
+
+// given a list of nodes
+// run recalculate on each one
+// maintain a list of output nodes, with no duplicates
+// then run recalculate on this list, if not empty
+function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
+    let outputs = []
+    // print the list on one line:
+//    console.log("Recalculating List:  " + list.map(node => node.id).join(", "));
+
+    for (let node of list) {
+//        console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
+
+        node.recalculate(f);
+
+        // Controllers are a bit of a special case
+        // they adjust a CNode3D's object, and that might depend on the value of that object
+        // for example, lookAt depends on the position of the object to calculate the heading
+        // so we need to reapply the controller after the object has been recalculated
+        // but before the children are recalculated (as they might depend on the effect of the controller on this node)
+
+        if (!noControllers && node.applyControllers !== undefined) {
+//            console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
+
+            node.applyControllers(f, depth)
+        }
+
+        // for each output in node.outputs, if it's not in the outputs list, add it
+        node.outputs.forEach(output => {
+            if (!outputs.includes(output)) {
+                outputs.push(output)
+            }
+        })
+    }
+
+    // if anything in the list, then recurse
+    if (outputs.length > 0) {
+        recalculateNodesBreadthFirst(outputs, f, noControllers, depth+1)
     }
 }
 
@@ -578,6 +592,19 @@ export class CNodeConstant extends CNode {
     getValueFrame(frame) {
         return this.value
     }
+}
+
+// CNodeOrigin is a node that returns a constant 0,0,0 vector
+export class CNodeOrigin extends CNode {
+    constructor(v) {
+        super(v);
+        this.value = V3(0,0,0)
+    }
+
+    getValueFrame(frame) {
+        return this.value
+    }
+
 }
 
 export {CNode}

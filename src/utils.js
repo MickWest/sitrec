@@ -207,7 +207,7 @@ export function smoothDerivative(data, window, iterations) {
 // in the first derivative
 // CHECK FIRST that it's accurate
 // MAYBE JUST SMOOTH?
-export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
+export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false) {
     var out = new Array()
     var aFrame = parseInt(input[0][indexCol])
     var aValue = parseFloat(input[0][dataCol])
@@ -219,8 +219,10 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
       //  console.log(f+": "+out[f]);
         f++;
         for (var i = aFrame + 1; i < bFrame; i++) {
-            out.push(aValue + (i - aFrame) * (bValue - aValue) / (bFrame - aFrame))
-      //      console.log(f+": "+out[f]);
+            if (stepped)
+                out.push(aValue);
+            else
+                out.push(aValue + (i - aFrame) * (bValue - aValue) / (bFrame - aFrame))
             f++;
         }
 
@@ -234,6 +236,12 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
         out.push(aValue)
     }
     return out;
+}
+
+// same as above, but with stepped keyframes
+// (i.e. no interpolation
+export function SteppedKeyframes(input, outLen, indexCol = 0, dataCol = 1) {
+    return ExpandKeyframes(input, outLen, indexCol, dataCol, true)
 }
 
 // array is an array of objects, one per frame

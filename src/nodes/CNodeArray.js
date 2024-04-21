@@ -57,7 +57,6 @@ export class CNodeManualData extends CNodeEmptyArray {
                 dataIndex += 2;
             }
             this.array[f] = this.data[dataIndex + 1];
-//            console.log("CNodeManualData: frame="+f+" dataIndex="+dataIndex+" value="+this.array[f]);
         }
 
     }

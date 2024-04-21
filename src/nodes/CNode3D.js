@@ -26,7 +26,7 @@ export class CNode3D extends CNode {
     applyControllers(f, depth = 0) {
         // To prevent loops, we only apply controllers at most twice per frame
         // remember the f value called with
-        // if it's new, then rest count to zero
+        // if it's new, then reset count to zero
         // if not new, increment count
         // if count > 100, then it's an inifite loop
         if (mainLoopCount !== this.lastF) {
@@ -34,8 +34,11 @@ export class CNode3D extends CNode {
             this.lastF = mainLoopCount;
             this.applyControllersCount = 0
         } else {
-//            console.log("Incrementing applyControllersCount for " + this.id + " at mainLoop " + mainLoopCount);
+//            console.log("Incrementing applyControllersCount to " + this.applyControllersCount+ " for " + this.id + " at mainLoop " + mainLoopCount);
             this.applyControllersCount++
+            if (this.applyControllersCount === 100) {
+                console.log("ApplyControllersCount reached 100 for " + this.id + " at mainLoop " + mainLoopCount)
+            }
             if (this.applyControllersCount > 100) {
                 console.warn("Infinite loop detected in controllers for " + this.id + " at mainLoop " + mainLoopCount);
                 console.warn("Constructor Call Stack: " + stripParentheses(this.callStack))
@@ -47,6 +50,11 @@ export class CNode3D extends CNode {
 
                     }
                 }
+
+                // Dump nodes
+             //   console.log("DUMPING NODES")
+             //   console.log(NodeMan.dumpNodes())
+
 
                 debugger;
                 return
@@ -61,13 +69,13 @@ export class CNode3D extends CNode {
             const input = this.inputs[inputID]
             if (input.isController) {
 
-                // if (par.paused) {
-                //     if (depth === 0) {
-                //         console.log("Apply: "+ input.id +" to " + this.id + "frame " + f + " depth " + depth);
-                //     } else {
-                //         console.log("|---".repeat(depth) + " Apply:  " + input.id)
-                //     }
-                // }
+                if (par.paused) {
+                    //if (depth === 0) {
+                    //    console.log("Apply: "+ input.id +" to " + this.id + "frame " + f + " depth " + depth);
+                    //} else {
+                    //    console.log("|---".repeat(depth) + " Apply:  " + input.id)
+                    //}
+                }
 
                 input.apply(f,this)
             }

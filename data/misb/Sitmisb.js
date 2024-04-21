@@ -158,6 +158,8 @@ sitch = {
             "Wind from East": "Wind2",
         }
     },
+
+    // will need a displayOrigin
     DisplayWindArrow: {source: "targetWind"},
 
 

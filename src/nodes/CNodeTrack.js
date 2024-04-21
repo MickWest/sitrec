@@ -7,10 +7,11 @@ import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
 import {CNodeTrackFromMISB} from "./CNodeTrackFromMISB";
 
 
-import {FileManager, NodeMan} from "../Globals";
+import {FileManager, NodeMan, Sit} from "../Globals";
 import {CNodeMISBDataTrack} from "./CNodeMISBData";
 import {KMLToMISB} from "../KMLUtils";
 import {assert} from "../utils";
+import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -369,6 +370,29 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 //
 //
 // }
+
+
+// A track from a lat, lon, alt source
+export class CNodeTrackFromLLA extends CNodeTrack {
+    constructor(v) {
+        super(v);
+        this.input("lat");
+        this.input("lon");
+        this.input("alt");
+        this.frames = this.in.lat.frames;
+        if (this.frames === 0) this.frames = Sit.frames
+    }
+
+    // takes LLA inputs and converts to a position in EUS format
+    getValueFrame(frame) {
+        const lat = this.in.lat.v(frame);
+        const lon = this.in.lon.v(frame);
+        const alt = this.in.alt.v(frame);
+        const eus = LLAToEUS(lat, lon, alt);
+        return {position: eus}
+    }
+
+}
 
 
 export class CNodeTrackAir extends CNodeTrack {

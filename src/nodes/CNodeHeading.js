@@ -8,6 +8,7 @@ export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {
         super(v);
 
+        this.input("jetOrigin")
 
         this.setGUI(v, guiMenu)
 
@@ -32,7 +33,9 @@ export class CNodeHeading extends CNode {
 
 
     recalculate() {
-        var A = Sit.jetOrigin.clone()
+        //var A = Sit.jetOrigin.clone()
+
+        var A = this.in.jetOrigin.p(0);
 
         var B = A.clone().add(this.p().multiplyScalar(10000))
         DebugArrowAB(this.name+" Heading",A,B,this.arrowColor,true,GlobalScene)

@@ -206,6 +206,28 @@ export class CNodeFactory extends CManager{
     }
 
 
+    dumpNodeRecursive(node, depth) {
+        var result = "|---".repeat(depth) + node.id + "\n"
+        for (const key in node.outputs) {
+            const output = node.outputs[key]
+            result += this.dumpNodeRecursive(output, depth+1)
+        }
+        return result;
+    }
+
+    dumpNodes() {
+        // for each node that has no inputs, call dumpNodeRecursive to print it and all it's outputs
+        let result="";
+        for (const key in this.list) {
+            const node = this.list[key].data
+            if (node.inputs === undefined || Object.keys(node.inputs).length === 0) {
+                result += this.dumpNodeRecursive(node, 0)
+            }
+        }
+        return result;
+
+    }
+
 
     disposeAll() {
         console.log("Disposing all nodes")

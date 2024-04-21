@@ -1,28 +1,15 @@
-import {ExpandKeyframes, getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
-import {Sit, guiJetTweaks, NodeMan, guiTweaks, FileManager} from "../Globals";
-import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
-import {CNodeArray} from "../nodes/CNodeArray";
-import {CNodeGUIValue, makeCNodeGUIFlag, makeCNodeGUIValue} from "../nodes/CNodeGUIValue";
-import {CNodeInterpolate} from "../nodes/CNodeInterpolate";
-import {CNodeSwitch} from "../nodes/CNodeSwitch";
-import {CNodeGraphSeries} from "../nodes/CNodeGraphSeries";
-import {CNodeTurnRateBS} from "../nodes/CNodeTurnRateBS";
-import {CNodeWatch} from "../nodes/CNodeWatch";
+import {getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
+import {Sit, NodeMan, guiTweaks, FileManager} from "../Globals";
+import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
 import {par} from "../par";
-import {CNodeJetTrack} from "../nodes/CNodeJetTrack";
-import {CNodeLOSTrackAzEl} from "../nodes/CNodeLOSTrackAzEl";
 import * as LAYER from "../LayerMasks";
-import {CNodeWind} from "../nodes/CNodeWind";
-import {CNodeHeading} from "../nodes/CNodeHeading";
 import {gui} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {
     curveChanged,
     initJetVariables,
     initViews,
-    SetupCommon,
     SetupTrackLOSNodes,
-    SetupTraverseNodes
 } from "../JetStuff";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
@@ -33,9 +20,6 @@ import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {CNodeMunge} from "../nodes/CNodeMunge";
-import {commonJetLabels} from "./CommonSitch";
-import {CNodeMath} from "../nodes/CNodeMath";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -62,9 +46,11 @@ export const SitFlir1 = {
     // lat: 31.205,
     // lon:-117.870,
 
+    // jetLat: 31.205,
+    // jetLon:-117.870,
 
-    jetLat: 31.205,
-    jetLon:-117.870,
+
+
 
     files: {
         Flir1Az: 'flir1/FLIR1 AZ.csv',
@@ -93,18 +79,6 @@ export const SitFlir1 = {
 
     include_JetLabels: true,
 
-
-    /*
-        This be a good one to templatize.
-       We need to make the ExpandKeyframes more generic, so it make a node
-       and then used it by name in the nodes like azsources
-
-       then figure out the stuff like CNodeJetTrack,a nd all its inputs
-
-    */
-
-
-
     jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"},
     elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start"},
     elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end"},
@@ -113,7 +87,7 @@ export const SitFlir1 = {
     elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd"},
     el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)"},
 
-
+    azRawData:  {kind: "arrayFromKeyframes", file: "Flir1Az", stepped: true},
     azData:     {kind: "arrayFromKeyframes", file: "Flir1Az"},
 
     azEditor: { kind: "CurveEditor",
@@ -124,7 +98,7 @@ export const SitFlir1 = {
             useRegression:true,
             minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,
             xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
-            points:[0,4.325,300,4.325,1009.858,1.348,1009.858,0.227,1776.31,-4.17,1776.31,-5.291,2288,-8.675,2189,-8.675],
+            points:[0,3.92,352.26,4.687,360.596,3.486,360.596,2.354,1009.858,1.347,1009.858,0.226,1776.31,-4.125,1776.31,-5.246,2288,-8.402,2189,-8.402],
         },
         frames: -1, // -1 will inherit from Sit.frames
     },
@@ -149,146 +123,111 @@ export const SitFlir1 = {
         desc: "Bank Angle Type"
     },
 
-
-
-
-    // MAYBE using an anonymous node definition for speed
-
+    // Note, using an anonymous node definition for the speed parameter
+    // this will automatically create a node with the given parameters
+    // and give it a unique ID.
     turnRateBS: {kind: "TurnRateBS",
         inputs: {
-            //  speed: { kind: "Watch", ob: par, id: "TAS"},
             speed: { kind: "parWatch", watchID: "TAS"},
             bank: "bank"
         }
     },
 
+    // Green line is the original smoothed data
+    azDataSeries:{kind:"addGraphSeries", graph: "azEditor", source: "azData", color: "#008000"},
 
-    setup: function () {
+    // red line is raw data
+    azRawDataSeries:{kind:"addGraphSeries", graph: "azEditor", source: "azRawData", color: "#800000"},
 
-        SetupCommon(20000)
+    // blue line is the value of az that is actually uses, i.e. the output of the switch "azSources"
+    azSourcesSeries:{kind:"addGraphSeries", graph: "azEditor", source: "azSources", color: "#008080"},
+
+    // blue stepped line is the final value, but rounded to the nearest integer
+    // so it's the value displayed as Az in the ATFLIR UI
+    azStepsSeries:{kind:"addGraphSeries", graph: "azEditor", color: "#008080", source:
+            {kind: "Math", math: "round($azSources)"},
+    },
 
 
-// Optionally we set the Jet origin to a particular Lat/Lon
-// this only makes sense if we have a terrain loaded
-// Example usage is in SitFlir1.js
-        // TODO - make common for other sitches
-        if (Sit.jetLat !== undefined) {
+    // jetLat: 31.205,
+    // jetLon:-117.870,
+    jetLat: {kind: "Constant", value: 31.205},
+    jetLon: {kind: "Constant", value: -117.870},
+    jetAltitude: {kind: "inputFeet",value: 20000, desc: "Altitude", start: 19500, end: 20500, step: 1},
 
-            const jetAltitude = NodeMan.get("jetAltitude").v();
-            console.log("Initial jet alitide from jetAltitude node = "+jetAltitude)
-            var enu = LLAToEUS(Sit.jetLat, Sit.jetLon, jetAltitude)
-            Sit.jetOrigin = V3(enu.x, enu.y, enu.z)
-            console.log (" enu.y="+enu.y)
+    // JetOrigin uses the above three nodes to set the initial position of the jet
+    jetOrigin: {kind: "TrackFromLLA", lat: "jetLat", lon: "jetLon", alt: "jetAltitude"},
+
+
+
+    targetWind: { kind: "Wind",from: 0, knots: 100, name: "Target", arrowColor: "cyan", lock: "localWind"},
+    localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind"},
+    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind"},
+
+    initialHeading: { kind: "Heading", heading: 227, name: "Initial", jetOrigin: "jetOrigin", arrowColor: "green" },
+
+    turnRate: {kind: "Switch",
+        inputs: {
+            //        "Curve Editor": turnRateEditorNode,
+            "User Constant": { kind: "GUIValue", value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001},
+            "From Bank and Speed": "turnRateBS",
+        },
+        desc: "Turn Rate Type"
+    },
+
+
+
+    jetTrack: { kind: "JetTrack",
+        inputs: {
+            speed: "jetTAS",
+            altitude: "jetAltitude",
+            turnRate: "turnRate",
+            radius: "radiusMiles",
+            wind: "localWind",
+            heading: "initialHeading",
+            origin: "jetOrigin",
+        },
+    },
+
+    JetLOS: { kind: "LOSTrackAzEl",
+        inputs: {
+            jetTrack: "jetTrack",
+            az: "azSources",
+            el: "el",
         }
+    },
 
-        Sit.flir1Data = FileManager.get("DataFile")
-
-        console.log("+++ azEditorNode")
-
-        var azEditorNode = NodeMan.get("azEditor")
-        // FLIR1
-        azEditorNode.editorView.addInput("compare",
-            new CNodeGraphSeries({
-                source: "azData",
-                color: "#008000",
-
-            })
-        )
-
-        azEditorNode.editorView.addInput("compare1",
-            new CNodeGraphSeries({
-                source: "azSources",
-                color: "#000080",
-            })
-        )
-
-        ///////////////////////////////
-
-// FLIR1
-
-        // new CNodeTurnRateBS({id:"turnRateBS",
-        //     inputs: {
-        //         speed: new CNodeWatch({ob: par, watchID: "TAS"}),
-        //         bank: "bank"
-        //     }
-        // })
-
-
-// FLIR1
-        new CNodeSwitch({id:"turnRate",
-            inputs: {
-                //        "Curve Editor": turnRateEditorNode,
-                "User Constant": new CNodeGUIValue({
-                    value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001
-                }, gui),
-                "From Bank and Speed": "turnRateBS",
-            },
-            desc: "Turn Rate Type"
-        })
-
-// FLIR1
-
-        new CNodeWind({
-            id: "targetWind",
-            from: 0 ,
-            knots: 100,
-            name: "Target",
-            arrowColor: "cyan",
-   //         originTrack: "jetOrigin",
-
-        })
-
-        new CNodeWind({
-            id: "localWind",
-            from: 0 ,
-            knots: 70,
-            name: "Local",
-            arrowColor: "cyan",
-   //         originTrack: "jetOrigin",
-
-        })
-
-
-
-        new CNodeHeading({
-            id: "initialHeading",
-            heading: 227,
-            name: "Initial",
-            arrowColor: "green"
-
-        })
-
-        new CNodeJetTrack({id:"jetTrack",
-            inputs: {
-                speed: "jetTAS",         // new CNodeWatch({ob:par,watchID:"TAS"}),
-                altitude: "jetAltitude",
-                turnRate: "turnRate",
-                radius: "radiusMiles",
-                wind: "localWind",
-                heading: "initialHeading",
-            },
-            frames:Sit.frames,
-        })
-
-// FLIR1
-        //JetLOSNode =
-        new CNodeLOSTrackAzEl({id:"JetLOS",
-            inputs: {
-                jetTrack: "jetTrack",
-                az: "azSources",
-                el: "el",
-            }
-        })
-
-
-        SetupTraverseNodes({
+    traverseNodes: {
+        menu: {
             "Constant Air Speed": "LOSTraverseConstantAirSpeed",
             "Constant Ground Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
             "Fixed Line": "LOSTraverseStraightLineFixed",
-                           })
+        },
+        default: "Constant Air Speed",
+    },
+    // ************************************************************************************
+    // ************************************************************************************
+
+    setup: function () {
+
+
+// Optionally we set the Jet origin to a particular Lat/Lon
+// this only makes sense if we have a terrain loaded
+// Example usage is in SitFlir1.js
+        // TODO - make common for other sitches
+        // if (Sit.jetLat !== undefined) {
+        //
+        //     const jetAltitude = NodeMan.get("jetAltitude").v();
+        //     console.log("Initial jet alitide from jetAltitude node = "+jetAltitude)
+        //     var enu = LLAToEUS(Sit.jetLat, Sit.jetLon, jetAltitude)
+        //     Sit.jetOrigin = V3(enu.x, enu.y, enu.z)
+        //     console.log (" enu.y="+enu.y)
+        // }
+
+        Sit.flir1Data = FileManager.get("DataFile")
 
         SetupTrackLOSNodes()
 

@@ -630,6 +630,8 @@ export function UIChangedTime() {
     par.paused = true;
 }
 
+
+// not sure if this function is even needed
 export function UIChangedFrame() {
     par.renderOne = true;
 
@@ -1070,14 +1072,14 @@ export function SetupCommon(altitude=25000) {
     //     desc: "Earth Radius"
     // }, guiTweaks)
 
-    console.log(">>>+++ jetAltitude Node")
-    scaleNodeF2M("jetAltitude", new CNodeGUIValue({
-        value: altitude,
-        desc: "Altitude",
-        start: altitude-500,
-        end: altitude+500,
-        step: 1
-    }, guiTweaks))
+    // console.log(">>>+++ jetAltitude Node")
+    // scaleNodeF2M("jetAltitude", new CNodeGUIValue({
+    //     value: altitude,
+    //     desc: "Altitude",
+    //     start: altitude-500,
+    //     end: altitude+500,
+    //     step: 1
+    // }, guiTweaks))
 
     console.log("+++ cloudAltitude Node")
     scaleNodeF2M("cloudAltitude", new CNodeGUIValue({

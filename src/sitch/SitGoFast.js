@@ -72,6 +72,14 @@ export var SitGoFast = {
     lat: 28.5,
     lon: -79.5,
 
+    jetLat: {kind: "Constant", value: 28.5},
+    jetLon: {kind: "Constant", value: -79.5},
+    jetAltitude: {kind: "inputFeet",value: 25000, desc: "Altitude", start: 24500, end: 25500, step: 1},
+
+    // JetOrigin uses the above three nodes to set the initial position of the jet
+    jetOrigin: {kind: "TrackFromLLA", lat: "jetLat", lon: "jetLon", alt: "jetAltitude"},
+
+
     heading: 262,   // initial heading of the jet - was 314
 
     files: {
@@ -266,7 +274,8 @@ export var SitGoFast = {
             id: "initialHeading",
             heading: Sit.heading,
             name: "Initial",
-            arrowColor: "green"
+            arrowColor: "green",
+            jetOrigin: "jetOrigin",
 
         }, gui)
 
@@ -279,6 +288,7 @@ export var SitGoFast = {
                 radius: "radiusMiles",
                 wind: "localWind",
                 heading: "initialHeading",
+                origin: "jetOrigin",
             },
             frames: Sit.frames,
         })

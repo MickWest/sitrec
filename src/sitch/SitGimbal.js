@@ -29,7 +29,7 @@ import {CNodeGraphSeries} from "../nodes/CNodeGraphSeries";
 import {CNodeTraverseAngularSpeed} from "../nodes/CNodeTraverseAngularSpeed";
 import {SetupCloudNodes} from "../Clouds";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
-import {CNodeConstant} from "../nodes/CNode";
+import {CNodeConstant, CNodeOrigin} from "../nodes/CNode";
 import {AddGenericNodeGraph} from "../JetGraphs";
 import {CNodeTrackAir} from "../nodes/CNodeTrack";
 import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSpeed";
@@ -59,6 +59,14 @@ const GimbalDefaults = {
     // arbritary lat/lon, off the coast of Florida
     lat: 28.5,
     lon: -79.5,
+
+    jetLat: {kind: "Constant", value: 28.5},
+    jetLon: {kind: "Constant", value: -79.5},
+    jetAltitude: {kind: "inputFeet",value: 25000, desc: "Altitude", start: 24500, end: 25500, step: 1},
+
+    // JetOrigin uses the above three nodes to set the initial position of the jet
+    jetOrigin: {kind: "TrackFromLLA", lat: "jetLat", lon: "jetLon", alt: "jetAltitude"},
+
 
 
     files: {
@@ -483,6 +491,8 @@ export const SitGimbalNear = {
 
     altitudeLabelFar:      { kind: "MeasureAltitude",position: "FARLOSTraverseConstantSpeed", defer: true },
 
+
+
     setup2: function () {
 
         new CNodeLOSTraverseConstantSpeed({
@@ -753,7 +763,8 @@ export function SetupGimbal() {
         id: "initialHeading",
         heading: 315,
         name: "Initial",
-        arrowColor: "green"
+        arrowColor: "green",
+        jetOrigin: "jetOrigin",
 
     }, gui)
 
@@ -766,7 +777,8 @@ export function SetupGimbal() {
             turnRate: "turnRate",
             radius: "radiusMiles",
             wind: "localWind",
-            heading: "initialHeading"
+            heading: "initialHeading",
+            origin: "jetOrigin",
         },
         frames: Sit.frames,
     })
