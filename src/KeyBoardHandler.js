@@ -288,13 +288,13 @@ export function initKeyboard() {
             case 'Comma':
                 par.frame--;
                 if (par.frame < 0) par.frame = 0;
-                UIChangedFrame();
+             //   UIChangedFrame();
                 break;
 
             case 'Period':
                 par.frame++;
                 if (par.frame > Sit.frames - 1) par.frame = Sit.frames - 1;
-                UIChangedFrame();
+              //  UIChangedFrame();
                 break;
 
 
