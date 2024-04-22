@@ -1,4 +1,4 @@
-import {CNode} from "./CNode";
+import {CNode, CNodeOrigin} from "./CNode";
 import {f2m, metersPerSecondFromKnots, radians} from "../utils";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {DebugArrowAB, V3} from "../threeExt";
@@ -8,7 +8,12 @@ export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {
         super(v);
 
-        this.input("jetOrigin")
+        // if no jetOrigin specificed, then we use the global origin
+        // which is traditionally what was used for Gimbal and Gofast
+        this.input("jetOrigin",true)
+        if (!this.in.jetOrigin) {
+            this.addInput("jetOrigin", new CNodeOrigin({}))
+        }
 
         this.setGUI(v, guiMenu)
 

@@ -1,4 +1,4 @@
-import {CNode} from "./CNode";
+import {CNode, CNodeOrigin} from "./CNode";
 import {assert, f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 import {DebugArrowAB, V3} from "../threeExt";
@@ -117,7 +117,10 @@ export class CNodeDisplayWindArrow extends CNode {
     constructor(v) {
         super(v)
         this.input("source")
-        this.input("displayOrigin")
+        this.input("displayOrigin",true)
+        if (!this.in.displayOrigin) {
+            this.addInput("displayOrigin", new CNodeOrigin({}))
+        }
         this.arrowColor = v.arrowColor ?? "white"
         this.recalculate();
     }
