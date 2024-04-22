@@ -211,6 +211,26 @@ export const SitFlir1 = {
         },
         default: "Constant Air Speed",
     },
+
+
+    jetTrackDisplay: { kind: "DisplayTrack",
+        track: "jetTrack",
+        color:        [0, 1, 1],
+        secondColor:  [0, 0.75, 0.75],
+        width:         3,
+        depthFunc:      "AlwaysDepth",
+        toGround:60,
+    },
+
+    LOSTraverseSelectDisplay: { kind: "DisplayTrack",
+        track: "LOSTraverseSelect",
+        color:          [0, 1, 0],
+        secondColor:    [0, 0.75, 0],
+        width:          3,
+        depthFunc:"AlwaysDepth",
+    },
+
+
     // ************************************************************************************
     // ************************************************************************************
 
@@ -234,25 +254,7 @@ export const SitFlir1 = {
     //    SetupTrackLOSNodes()
 
 
-        new CNodeDisplayTrack({
-            track: "jetTrack",
-            color: new CNodeConstant({value: new Color(0, 1, 1)}),
-            secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0.75)}),
-            width: 3,
-            depthFunc:AlwaysDepth,
-            toGround:60,
-        })
 
-        new CNodeDisplayTrack({
-            inputs: {
-                track: "LOSTraverseSelect",
-                color:          new CNodeConstant({value: new Color(0, 1, 0)}),
-                secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0)}),
-                width:          new CNodeConstant({value: 3}),
-            },
-            frames: Sit.frames,
-            depthFunc:AlwaysDepth,
-        })
 
         NodeMan.get("lookCamera").addController("TrackToTrack", {
             sourceTrack: "JetLOS",

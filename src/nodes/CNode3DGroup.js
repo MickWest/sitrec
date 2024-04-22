@@ -25,22 +25,7 @@ export class CNode3DGroup extends CNode3D {
         // a Color object
         // [r,g,b]
         // (this is a bit of a hack, but it's a common case)
-        if (v.color !== undefined && !(v.color instanceof CNodeConstant)) {
-            var colorObject = v.color;
-            if (! (colorObject instanceof Color)) {
-                if (typeof colorObject === "string" || typeof colorObject === "number" ) {
-                    // hex string or number
-                    colorObject = new Color(colorObject)
-                } else if (Array.isArray(colorObject)) {
-                    colorObject = new Color(colorObject[0], colorObject[1], colorObject[2])
-                } else {
-                    assert(0, "CNode3DGroup color input not understood");
-                    console.log("CNode3DGroup color input not understood")
-                }
-            }
-
-            v.color = new CNodeConstant({value: colorObject})
-        }
+        this.convertColorInput(v,"color")
 
 
         this._object = new Group()
@@ -64,6 +49,26 @@ export class CNode3DGroup extends CNode3D {
         this.container.add(this._object)
 
         this.visibleCheck = v.visibleCheck;
+
+    }
+
+    convertColorInput(v, name) {
+        if (v[name] !== undefined && !(v[name] instanceof CNodeConstant)) {
+            var colorObject = v[name];
+            if (! (colorObject instanceof Color)) {
+                if (typeof colorObject === "string" || typeof colorObject === "number" ) {
+                    // hex string or number
+                    colorObject = new Color(colorObject)
+                } else if (Array.isArray(colorObject)) {
+                    colorObject = new Color(colorObject[0], colorObject[1], colorObject[2])
+                } else {
+                    assert(0, "CNode3DGroup color input not understood");
+                    console.log("CNode3DGroup color input not understood")
+                }
+            }
+
+            v[name] = new CNodeConstant({value: colorObject})
+        }
 
     }
 

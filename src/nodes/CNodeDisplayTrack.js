@@ -13,14 +13,18 @@ import {LessDepth, Color,  LineSegments} from "../../three.js/build/three.module
 import {CNodeDisplayTargetSphere}   from "./CNodeDisplayTargetSphere";
 import * as LAYER                   from "../LayerMasks";
 import {par} from "../par";
+import {AlwaysDepth} from "three";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
         v.layers ??= LAYER.MASK_HELPERS;
         super(v);
 
-
-
+        // convert any color inputs to Color objects
+        this.convertColorInput(v,"color")
+        this.convertColorInput(v,"badColor")
+        this.convertColorInput(v,"secondColor")
+        this.convertColorInput(v,"dropColor")
 
         // newer method - allow input nodes to be declared outside the inputs object
         // and automatically convert constant inputs to CConstantNodes
@@ -47,6 +51,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         this.toGround = v.toGround
 
         this.depthFunc = v.depthFunc ?? LessDepth;
+
+        // functions are strings in new sitches
+        if (this.depthFunc === "AlwaysDepth") this.depthFunc = AlwaysDepth;
 
         if (v.autoSphere) {
             new CNodeDisplayTargetSphere({
@@ -156,7 +163,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
 
 
-        assert(line_points.length > 0, "CNodeDisplayTrack: no points in track")
+        assert(line_points.length > 0, "CNodeDisplayTrack: no points in track "+this.id)
         this.trackGeometry.setPositions(line_points);
         this.trackGeometry.setColors(line_colors);
 
