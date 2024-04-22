@@ -42,8 +42,6 @@ export class CFileManager extends CManager {
             console.log("Local files: " + data)
             let localfiles = JSON.parse(data) // will give an array of local files
         })
-
-
     }
 
     makeExportButton(object, functionName, name) {
