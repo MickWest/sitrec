@@ -1039,14 +1039,14 @@ export function SetupFromKeyAndData(key, _data) {
 
 
         case "addGraphSeries":
-            // SSLog();
-            // assert(data.source !== undefined, "SituationSetup: addGraphSeries needs a source object");
-            // assert(data.graph !== undefined, "SituationSetup: addGraphSeries needs a graph object");
-            // const graph = NodeMan.get(data.graph);
-            // assert(graph instanceof CNodeCurveEditor, "SituationSetup: addGraphSeries needs a valid graph object");
-            // graph.editorView.addInput(data.id+"_view",
-            //     new CNodeGraphSeries({id:data.id, source:data.source, color: data.color ?? "#000000"}));
-            // graph.editorView.recalculate();
+            SSLog();
+            assert(data.source !== undefined, "SituationSetup: addGraphSeries needs a source object");
+            assert(data.graph !== undefined, "SituationSetup: addGraphSeries needs a graph object");
+            const graph = NodeMan.get(data.graph);
+            assert(graph instanceof CNodeCurveEditor, "SituationSetup: addGraphSeries needs a valid graph object");
+            graph.editorView.addInput(data.id+"_view",
+                new CNodeGraphSeries({id:data.id, source:data.source, color: data.color ?? "#000000"}));
+            graph.editorView.recalculate();
             break;
 
 

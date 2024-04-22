@@ -20,6 +20,9 @@ import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {V3} from "../threeExt";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
+import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
+import {CNodeConstant} from "../nodes/CNode";
+import {AlwaysDepth, Color} from "../../three.js/build/three.module";
 
 export const SitFlir1 = {
     name:"flir1",
@@ -227,15 +230,36 @@ export const SitFlir1 = {
         //     console.log (" enu.y="+enu.y)
         // }
 
-        Sit.flir1Data = FileManager.get("DataFile")
 
-        SetupTrackLOSNodes()
+    //    SetupTrackLOSNodes()
+
+
+        new CNodeDisplayTrack({
+            track: "jetTrack",
+            color: new CNodeConstant({value: new Color(0, 1, 1)}),
+            secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0.75)}),
+            width: 3,
+            depthFunc:AlwaysDepth,
+            toGround:60,
+        })
+
+        new CNodeDisplayTrack({
+            inputs: {
+                track: "LOSTraverseSelect",
+                color:          new CNodeConstant({value: new Color(0, 1, 0)}),
+                secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0)}),
+                width:          new CNodeConstant({value: 3}),
+            },
+            frames: Sit.frames,
+            depthFunc:AlwaysDepth,
+        })
 
         NodeMan.get("lookCamera").addController("TrackToTrack", {
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
 
+        Sit.flir1Data = FileManager.get("DataFile")
         NodeMan.get("lookView").renderFunction = function(frame) {
 
             // bit of a patch to get in the FOV

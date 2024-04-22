@@ -527,7 +527,6 @@ class CNode {
         par.renderOne = true;
         return
 
-
     }
 
     // given an array of values, print the resuts to the console
@@ -544,13 +543,9 @@ class CNode {
 // maintain a list of output nodes, with no duplicates
 // then run recalculate on this list, if not empty
 function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
-    let outputs = []
-    // print the list on one line:
-//    console.log("Recalculating List:  " + list.map(node => node.id).join(", "));
-
+    let children = []
     for (let node of list) {
 //        console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
-
         node.recalculate(f);
 
         // Controllers are a bit of a special case
@@ -561,21 +556,40 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
 
         if (!noControllers && node.applyControllers !== undefined) {
 //            console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
-
             node.applyControllers(f, depth)
         }
 
         // for each output in node.outputs, if it's not in the outputs list, add it
         node.outputs.forEach(output => {
-            if (!outputs.includes(output)) {
-                outputs.push(output)
+            if (!children.includes(output)) {
+                children.push(output)
             }
         })
     }
 
+    // if any node in the children list is also a descendant of another node in the list
+    // the we need to remove it from the list
+    // we do this by making a new list, and only adding nodes that are not 2+ generation descendants of any node
+    let immediateChildren = []
+    for (let child of children) {
+        let isDescendant = false;
+        // for (let node of list) {
+        //     const maxDepth = node.maxDepthOf(child)
+        //     // see if it's a descendent for at least second generation
+        //     // and if so we don't want to recalculate it now, as it will get recalculate later by its immediate parent
+        //     if (maxDepth > 1) {
+        //         isDescendant = true;
+        //         break;
+        //     }
+        // }
+        if (!isDescendant) {
+            immediateChildren.push(child)
+        }
+    }
+
     // if anything in the list, then recurse
-    if (outputs.length > 0) {
-        recalculateNodesBreadthFirst(outputs, f, noControllers, depth+1)
+    if (children.length > 0) {
+        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1)
     }
 }
 
