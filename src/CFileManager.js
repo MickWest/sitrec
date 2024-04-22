@@ -28,7 +28,6 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-
         this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
 
         // custom sitches and rehosting only for logged-in users
