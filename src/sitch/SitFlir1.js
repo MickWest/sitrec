@@ -230,57 +230,23 @@ export const SitFlir1 = {
         depthFunc:"AlwaysDepth",
     },
 
+    trackToTrackController: {
+        kind: "TrackToTrack",
+        sourceTrack: "JetLOS",
+        targetTrack: "LOSTraverseSelect",
+    },
+
+
+    focalMode: {kind: "arrayFromKeyframes", file: "DataFile", dataCol: 2, string: true},
+   // sensorMode:{kind: "arrayFromKeyframes", file: "DataFile", dataCol: 1, stepped: true},
+    zoomMode:  {kind: "arrayFromKeyframes", file: "DataFile", dataCol: 3, stepped: true},
+
+    ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
 
     // ************************************************************************************
     // ************************************************************************************
 
     setup: function () {
-
-
-// Optionally we set the Jet origin to a particular Lat/Lon
-// this only makes sense if we have a terrain loaded
-// Example usage is in SitFlir1.js
-        // TODO - make common for other sitches
-        // if (Sit.jetLat !== undefined) {
-        //
-        //     const jetAltitude = NodeMan.get("jetAltitude").v();
-        //     console.log("Initial jet alitide from jetAltitude node = "+jetAltitude)
-        //     var enu = LLAToEUS(Sit.jetLat, Sit.jetLon, jetAltitude)
-        //     Sit.jetOrigin = V3(enu.x, enu.y, enu.z)
-        //     console.log (" enu.y="+enu.y)
-        // }
-
-
-    //    SetupTrackLOSNodes()
-
-
-
-
-        NodeMan.get("lookCamera").addController("TrackToTrack", {
-            sourceTrack: "JetLOS",
-            targetTrack: "LOSTraverseSelect",
-        })
-
-        Sit.flir1Data = FileManager.get("DataFile")
-        NodeMan.get("lookView").renderFunction = function(frame) {
-
-            // bit of a patch to get in the FOV
-            if (Sit.flir1Data !== undefined) {
-                // frame, mode, Focal Leng
-                var focalMode = getArrayValueFromFrame(Sit.flir1Data,0,2,frame)
-                var mode = getArrayValueFromFrame(Sit.flir1Data,0,1,frame)
-                var zoom = getArrayValueFromFrame(Sit.flir1Data,0,3,frame)
-
-                var vFOV = 0.7;
-                if (focalMode === "MFOV") vFOV = 3;
-                if (focalMode === "WFOV") vFOV = 6
-                if (zoom === "2") vFOV /= 2
-
-                this.camera.fov = vFOV;
-                this.camera.updateProjectionMatrix()
-            }
-            this.renderer.render(GlobalScene, this.camera);
-        }
 
         var ui = new CNodeATFLIRUI({
             id: "ATFLIRUIOverlay",

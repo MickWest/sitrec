@@ -207,14 +207,22 @@ export function smoothDerivative(data, window, iterations) {
 // in the first derivative
 // CHECK FIRST that it's accurate
 // MAYBE JUST SMOOTH?
-export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false) {
+export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false, string = false) {
+    if (string) stepped = true; // can't interpolate strings
     var out = new Array()
     var aFrame = parseInt(input[0][indexCol])
-    var aValue = parseFloat(input[0][dataCol])
+    var aValue
+    if (string)
+        aValue = input[0][dataCol]
+    else
+        aValue = parseFloat(input[0][dataCol])
     var f = 0;
     input.forEach(function (frame, index) {
         var bFrame = parseInt(frame[indexCol])
-        var bValue = parseFloat(frame[dataCol])
+        if (string)
+            bValue = frame[dataCol]
+        else
+            var bValue = parseFloat(frame[dataCol])
         out.push(aValue)
       //  console.log(f+": "+out[f]);
         f++;

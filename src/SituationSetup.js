@@ -626,6 +626,16 @@ export function SetupFromKeyAndData(key, _data) {
             })
             break;
 
+        case "trackToTrack":
+            SSLog();
+            NodeMan.get(data.object ?? "lookCamera").addController("TrackToTrack", {
+                sourceTrack: data.target ?? "cameraTrack",
+                targetTrack: data.target ?? "targetTrack",
+            })
+            break;
+
+
+
         case "trackFromDataFile":
             SSLog();
 
@@ -1026,7 +1036,8 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "arrayFromKeyframes":
             SSLog();
-            const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames,0,1, data.stepped ?? false);
+            const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames,
+                data.frameCol ?? 0, data.dataCol ?? 1, data.stepped ?? false, data.string ?? false);
             node = new CNodeArray({id: data.id, array: expanded});
             break;
 

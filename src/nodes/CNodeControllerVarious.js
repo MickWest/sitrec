@@ -1,8 +1,8 @@
-import {assert, atan, degrees, radians, tan} from "../utils";
+import {assert, atan, degrees, getArrayValueFromFrame, radians, tan} from "../utils";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
-import {gui, NodeMan} from "../Globals";
+import {gui, NodeMan, Sit} from "../Globals";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
@@ -302,6 +302,37 @@ export class CNodeControllerAbsolutePitchHeading extends CNodeController {
         const heading = this.in.heading.v(f);
         const object = objectNode._object;
         applyPitchAndHeading(object, pitch, heading)
+    }
+}
+
+
+export class CNodeControllerATFLIRCamera extends CNodeController {
+    constructor(v) {
+        super(v);
+        this.input("focalMode")
+   //     this.input("sensorMode")
+        this.input("zoomMode")
+
+    }
+
+    apply(f, objectNode) {
+        // frame, mode, Focal Leng
+        var focalMode = this.in.focalMode.v(f)
+      //  var mode = this.in.sensorMode.v(f)
+        var zoom = this.in.zoomMode.v(f)
+
+        var vFOV = 0.7;
+        if (focalMode === "MFOV")
+            vFOV = 3;
+        if (focalMode === "WFOV")
+            vFOV = 6
+        if (zoom === 2)
+            vFOV /= 2
+
+        const camera = objectNode.camera
+
+        camera.fov = vFOV;
+        camera.updateProjectionMatrix()
     }
 }
 
