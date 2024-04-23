@@ -981,6 +981,8 @@ export function SetupFromKeyAndData(key, _data) {
                 data.top ?? 0,
                 data.width ?? 0.2,
                 data.height ?? 0.25,
+                data.yStep ?? 5000,
+                data.xStep ?? 200,
 
             )
             break;
@@ -998,6 +1000,9 @@ export function SetupFromKeyAndData(key, _data) {
                     top: data.top ?? 0,
                     width: data.width ?? 0.15,
                     height: data.height ?? 0.25,
+                },
+                {
+                    maxY: data.maxY ?? 90,
                 }
 
             );
@@ -1015,6 +1020,9 @@ export function SetupFromKeyAndData(key, _data) {
                     top: data.top ?? 0.25,
                     width: data.width ?? 0.15,
                     height: data.height ?? 0.25,
+                },
+                {
+                    maxY: data.maxY ?? 30,
                 }
 
             );

@@ -939,13 +939,6 @@ export function initViews() {
 
     ViewMan.get("chart").setVisible(par.showChart);
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
-
-
-
-    }
-
-
     var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.video.data});
     labelVideo.addText("videolabel", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
     labelVideo.setVisible(true)

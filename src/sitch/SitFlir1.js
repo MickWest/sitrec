@@ -1,27 +1,12 @@
-import {getArrayValueFromFrame,  scaleF2M, tan} from "../utils";
-import {Sit, NodeMan, guiTweaks, FileManager} from "../Globals";
-import {CNodeGUIValue} from "../nodes/CNodeGUIValue";
+import {guiTweaks} from "../Globals";
 import {par} from "../par";
 import * as LAYER from "../LayerMasks";
-import {gui} from "../Globals";
-import {GlobalScene} from "../LocalFrame";
 import {
     curveChanged,
     initJetVariables,
     initViews,
-    SetupTrackLOSNodes,
 } from "../JetStuff";
-import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
-import {CNodeScale} from "../nodes/CNodeScale";
-import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
-import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
-import {ViewMan} from "../nodes/CNodeView";
-import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
-import {V3} from "../threeExt";
-import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
-import {CNodeConstant} from "../nodes/CNode";
 import {AlwaysDepth, Color} from "../../three.js/build/three.module";
 
 export const SitFlir1 = {
@@ -243,103 +228,77 @@ export const SitFlir1 = {
 
     ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
 
+
+    ATFLIRUIOverlay: { kind: "ATFLIRUI",
+        jetAltitude: "jetAltitude",
+        overlayView: "lookView",
+        defaultFontSize: 3.5,
+        defaultFontColor: '#E0E0E0',
+        defaultFont: 'sans-serif',
+        timeStartMin: 41,
+        timeStartSec: 35,
+        altitude: 20000,
+        syncVideoZoom: true,
+
+    },
+
+    TargetObjectModel: { kind: "DisplayTargetModel",
+        track: "LOSTraverseSelect",
+        TargetObjectFile: "TargetObjectFile",
+        wind:"targetWind",
+        tiltType: "banking",
+    },
+
+    targetSphere: { kind: "DisplayTargetSphere",
+        inputs: {
+            track: "LOSTraverseSelect",
+            size: {kind:"sizeFeet", value: 1, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
+        },
+        layers: LAYER.MASK_LOOK,
+    },
+
+
+    tailAngleGraph:{
+            targetTrack: "LOSTraverseSelect",
+            cameraTrack: "jetTrack",
+            wind: "targetWind",
+            left: 0.0, top: 0, width: .3, height: .25,
+    //        visible: true, draggable: true, resizable: true, shiftDrag: false, freeAspect: true,
+            maxY: 90
+        },
+
+    targetDistanceGraph: {
+        targetTrack: "LOSTraverseSelect",
+        cameraTrack: "jetTrack",
+        left: 0.0, top: 0.25, width: .3, height: .33,
+        maxY: 30,
+    },
+
+    displayLOSForJet: { kind: "DisplayLOS",
+        LOS: "JetLOS",
+        clipSeaLevel: false,
+        color: 0x308080,
+        spacing: 120,
+    },
+
+    altitudeGraphForTarget: { kind: "altitudeGraph",
+        track: "LOSTraverseSelect",
+        min: 20000, max: 35000,
+        left:0.73, top:0, width:-1, height:.25, xStep: 500, yStep:5000
+    },
+
+    speedGraphForTarget: { kind: "speedGraph",
+        label: "Target Speed",
+        track: "LOSTraverseSelect",
+        min:0, max:500,
+        left: 0.6, top:0, width: -1, height:0.25},
+
     // ************************************************************************************
     // ************************************************************************************
 
     setup: function () {
-
-        var ui = new CNodeATFLIRUI({
-            id: "ATFLIRUIOverlay",
-            jetAltitude: "jetAltitude",
-
-            overlayView: ViewMan.list.lookView.data,
-            defaultFontSize: 3.5,
-            defaultFontColor: '#E0E0E0',
-            defaultFont: 'sans-serif',
-            timeStartMin: 41,
-            timeStartSec: 35,
-            altitude: 20000,
-            syncVideoZoom: true,
-
-        });
-
-        new CNodeDisplayTargetModel({
-            track: "LOSTraverseSelect",
-            TargetObjectFile: "TargetObjectFile",
-            wind:"targetWind",
-            tiltType: "banking",
-        })
-
-          new CNodeDisplayTargetSphere({
-             inputs: {
-                 track: "LOSTraverseSelect",
-                 size: new CNodeScale("sizeScaled", scaleF2M,
-                     new CNodeGUIValue({
-                         value: Sit.targetSize,
-                         start: 0,
-                         end: 500,
-                         step: 0.1,
-                         desc: "Target size ft"
-                     }, gui)
-                 )
-             },
-
-             layers: LAYER.MASK_LOOK,
-         })
-
-        AddTailAngleGraph(
-            { // mungeInputs
-                targetTrack: "LOSTraverseSelect",
-                cameraTrack: "jetTrack",
-                wind: "targetWind",
-            },
-            { // windowParams
-                left: 0.0, top: 0, width: .3, height: .25,
-                visible: true, draggable: true, resizable: true, shiftDrag: false, freeAspect: true,
-            },
-            { // editor Params
-                    maxY: 90
-            },
-        );
-
-        AddTargetDistanceGraph(
-            {
-                targetTrack: "LOSTraverseSelect",
-                cameraTrack: "jetTrack",
-            },
-            {
-                left: 0.0, top: 0.25, width: .3, height: .33,
-            },
-            {
-                    maxY: 30,
-            }
-
-        );
-
-        new CNodeDisplayLOS({
-            inputs: {
-                LOS: "JetLOS",
-            },
-            clipSeaLevel: false,
-            //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
-
-            color: 0x308080,
-            spacing: 120,
-
-        })
-
-        AddAltitudeGraph(20000,35000)
-        AddSpeedGraph("LOSTraverseSelect","Target Speed",0,500,0.60,0,-1,0.25)
-
-
         initJetVariables();
-
-        // initViews relies on some other views setup in the init() fucntion
-        // which needs "jetstuff"
         initViews()
-
-    //    guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
-
 
         guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
             curveChanged();
