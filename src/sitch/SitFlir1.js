@@ -1,14 +1,4 @@
-import {guiTweaks} from "../Globals";
-import {par} from "../par";
-import * as LAYER from "../LayerMasks";
-import {
-    curveChanged,
-    initJetVariables,
-    initViews,
-} from "../JetStuff";
-import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "../JetGraphs";
-import {AlwaysDepth, Color} from "../../three.js/build/three.module";
-
+// This file is a Sit definition file for the FLIR1/Nimitz/Tic-Tac video.
 export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
@@ -27,22 +17,10 @@ export const SitFlir1 = {
         startCameraTarget: [-126346.69, 56137.48, 100979.21],
     },
 
-
     terrain: {lat:   31.605, lon:-117.870, zoom:7, nTiles:6},
-
-    // need this if we don't have terrain (for testing)
-    // lat: 31.205,
-    // lon:-117.870,
-
-    // jetLat: 31.205,
-    // jetLon:-117.870,
-
-
-
 
     files: {
         Flir1Az: 'flir1/FLIR1 AZ.csv',
-   //     Flir1El: 'flir1/FLIR1 EL.csv',
         DataFile: 'flir1/Flir1 FOV Data.csv',
         TargetObjectFile: './models/FA-18F.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
@@ -86,8 +64,7 @@ export const SitFlir1 = {
             useRegression:true,
             minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,
             xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
-            points:[0,3.92,352.26,4.687,360.596,3.486,360.596,2.354,1009.858,1.347,1009.858,0.226,1776.31,-4.125,1776.31,-5.246,2288,-8.402,2189,-8.402],
-        },
+            points:[0,4.012,352.26,4.779,360.596,3.486,360.596,2.354,999.406,1.259,999.406,0.138,1833.796,-4.44,1833.796,-5.561,2288,-8.673,2189,-8.673],        },
         frames: -1, // -1 will inherit from Sit.frames
     },
 
@@ -212,7 +189,7 @@ export const SitFlir1 = {
         color:          [0, 1, 0],
         secondColor:    [0, 0.75, 0],
         width:          3,
-        depthFunc:"AlwaysDepth",
+        depthFunc: "AlwaysDepth",
     },
 
     trackToTrackController: {
@@ -254,7 +231,7 @@ export const SitFlir1 = {
             track: "LOSTraverseSelect",
             size: {kind:"sizeFeet", value: 1, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
         },
-        layers: LAYER.MASK_LOOK,
+        layers: "LOOK",
     },
 
 
@@ -293,19 +270,9 @@ export const SitFlir1 = {
         min:0, max:500,
         left: 0.6, top:0, width: -1, height:0.25},
 
-    // ************************************************************************************
-    // ************************************************************************************
 
-    setup: function () {
-        initJetVariables();
-        initViews()
 
-        guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
-            curveChanged();
-           // calculateGlareStartAngle();
-            par.renderOne = true;
-        }).listen().name('Jet Pitch')
+    flir1LegacyCode: {},
 
-        ///////////////////////
-    }
+
 }

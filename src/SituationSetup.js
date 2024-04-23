@@ -1,4 +1,4 @@
-import {FileManager, gui, NodeMan, setSit, Sit, SitchMan} from "./Globals";
+import {FileManager, gui, guiTweaks, NodeMan, setSit, Sit, SitchMan} from "./Globals";
 import {CNode, CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -24,7 +24,7 @@ import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
 import {addKMLTracks} from "./KMLNodeUtils";
 import {CNodeWind} from "./nodes/CNodeWind";
-import {Frame2Az, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
+import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
 import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
@@ -1066,6 +1066,20 @@ export function SetupFromKeyAndData(key, _data) {
             graph.editorView.addInput(data.id+"_view",
                 new CNodeGraphSeries({id:data.id, source:data.source, color: data.color ?? "#000000"}));
             graph.editorView.recalculate();
+            break;
+
+            // a few bits of FLIR1 setup that were non-trivial to textualize
+            // but could eventaully be moved.
+            // note that initJetVariables is shared by GoFast and anything with Sit.jetStuff true
+        case "flir1LegacyCode":
+            SSLog();
+            initJetVariables();
+            initViews()
+            guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
+                curveChanged();
+                // calculateGlareStartAngle();
+                par.renderOne = true;
+            }).listen().name('Jet Pitch')
             break;
 
 
