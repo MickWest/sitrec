@@ -36,7 +36,7 @@ export const SitAA2292 = {
     },
     cameraTrack: {},
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{left:0.0, top:0, width:0.50,height:1},
     focusTracks: {},
     ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
 

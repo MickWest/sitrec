@@ -26,7 +26,7 @@ export const SitLakeMichigan = {
     lookCamera:{ fov: 5},
     cameraTrack: {},
 
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{left:0.0, top:0, width:0.50,height:1},
 
     include_KMLTrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},

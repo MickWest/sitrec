@@ -23,7 +23,7 @@ export const SitDAL2158 = {
     },
     lookCamera:{ fov: 30},
 
-    mainView:{ left:0.0, top:0, width:.50,height:1},
+    mainView:{ left:0.0, top:0, width:0.50,height:1},
     lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},
     include_KMLTrackToTrack: true,
     targetSizedSphere: { size:200 },

@@ -31,7 +31,7 @@ export const SitJellyfish    = {
         startCameraPositionLLA: [33.273278, 43.647572, 4926.633989],
         startCameraTargetLLA: [33.280159, 43.642938, 4451.060802],
     },
-    mainView:{ left:0.0, top:0, width:.50,height:1,background:'#000000'},
+    mainView:{ left:0.0, top:0, width:0.50,height:1,background:'#000000'},
 
     lookView:{ left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
         effects: {FLIRShader: {},},
@@ -56,7 +56,7 @@ export const SitJellyfish    = {
         initialPointsLLA: [
             // NOTE: YOU NEED THE FRAME NUMBERS to match the video
             [0, 33.35468429592996, 43.61248412995273, 81.607023447752],
-            [2981, 33.353484155273925, 43.601920332240205, 77.97203777451068],
+            [2981, 33.353484155273925, 43.601920332240205, 77.97203777451068]
         ],
     },
 
@@ -129,7 +129,7 @@ export const SitJellyfish    = {
 
 
     // manualData is pairs of frame, value
-    focalLengthData: {kind: "ManualData", data: [0,3000,  745, 1000,]},
+    focalLengthData: {kind: "ManualData", data: [0,3000,  745, 1000]},
 
     focalLenController: {source: "focalLengthData", len:1000, fov: 0.6},
 

@@ -29,7 +29,7 @@ export const SitArea6 = {
         startCameraTarget: [40980.64, 35831.97, 181352.36],
     },
 
-    mainView:{left:0.0, top:0, width:.50,height:1,background:'#132d44',},
+    mainView:{left:0.0, top:0, width:0.50,height:1,background:'#132d44',},
 
     lookCamera: {fov: 10, far: 80000000, },
     lookView: {left:0.5, top:0.5, width:-1.792,height:0.5,background:'#132d44',},

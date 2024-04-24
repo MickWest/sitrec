@@ -26,7 +26,7 @@ export const SitKansas = {
     lookCamera:{ fov: 22.25},
     cameraTrack: {},
 
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{left:0.0, top:0, width:0.50,height:1},
     tilt: 4.63,
 
     include_KMLTrackToTrack: true,

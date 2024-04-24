@@ -12,14 +12,10 @@ import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
 import * as LAYER from "../LayerMasks";
 
-
 export const SitPVS14 = {
     name: "pvs14",
     menuName: "PVS-14 Pilot Video",
     isTextable: false,
-
-
-
 
     starScale: 0.65,
 

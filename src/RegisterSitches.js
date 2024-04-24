@@ -68,11 +68,56 @@ export function textSitchToObject(text) {
     //     include_pvs14: true,
     //     name: "westjet",
     // we want the contents of the object
-// strip off everything up to the first brace
-    const firstBrace = text.indexOf("{");
-    const data = text.substring(firstBrace);
-    console.log("Parse >>>>>")
-    const obj = parseJavascriptObject(data)
-    console.log("<<<<<<<<<<< Parsed");
-    return obj;
+
+    // split into lines.
+    // then find the first line with a brace
+    // set all previous lines to ""
+    // then remove all text before the first brace on that line (with the brace)
+    // then join the lines back together
+    // const lines = text.split("\n");
+    // for (let i = 0; i < lines.length; i++) {
+    //     if (lines[i].includes("{")) {
+    //         lines[i] = lines[i].substring(lines[i].indexOf("{"));
+    //         break;
+    //     } else {
+    //         lines[i] = ""; // whitespace only, we want the lines so line numbers work
+    //     }
+    // }
+    // const data = lines.join("\n");
+
+    const data = text;
+
+    try {
+        const obj = parseJavascriptObject(data)
+        return obj;
+    } catch (e) {
+        console.error("Error parsing text sitch: ");
+        console.error(e);
+        // if the error message contains something like:  (line 51 column 18)
+        // then we can try to find that line and column in the text
+        // and display it in an alert
+        let match = e.message.match(/\(line (\d+) column (\d+)\)/);
+
+        // if no match, check for format like (line:column), e.g. (31:30)
+        if (!match) {
+            match = e.message.match(/\((\d+):(\d+)\)/);
+        }
+
+        if (match) {
+            const lineNumber = parseInt(match[1]);
+            const columnNumber = parseInt(match[2]);
+            const lines = text.split("\n");
+            let lineCount = 0;
+            let charCount = 0;
+            const line = lines[lineNumber-1]; // 0 based array, 1 based line numbers
+            alert("Error parsing text sitch: " + e + "\n" + line + "\n" + " ".repeat(columnNumber) + "^")
+            return {};
+        } else {
+            // also display an alert showing the error message e
+            alert("Error parsing text sitch: " + e)
+        }
+        return {};
+
+    }
+    return {};
 }

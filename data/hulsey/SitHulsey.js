@@ -38,7 +38,7 @@ export const SitHulsey = {
     },
     cameraTrack: {},
     followTrack: {},
-    mainView:{left:0.0, top:0, width:.50,height:1},
+    mainView:{left:0.0, top:0, width:0.50,height:1},
 
     DisplayCameraFrustum: {radius:100000},
 

@@ -72,6 +72,6 @@ export const SitChilean = {
                           left: 0.0, top: 0.25, width: .15, height: .33,},
 
     // Adds a sphere of selectable size at the target's position
-    targetSizedSphere: { track: "targetTrack", size: 3, color : 0x000000,},
+    targetSizedSphere: { track: "targetTrack", size: 3, color: "#000000",},
 
 }

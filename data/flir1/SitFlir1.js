@@ -1,4 +1,10 @@
 // This file is a Sit definition file for the FLIR1/Nimitz/Tic-Tac video.
+
+
+
+
+
+
 export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
@@ -33,8 +39,7 @@ export const SitFlir1 = {
 
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
-    lookView: {left: 0.653, top: 1 - 0.3333, width: -1., height: 0.3333,},
-
+    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,},
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
 
     focusTracks:{
@@ -254,7 +259,7 @@ export const SitFlir1 = {
     displayLOSForJet: { kind: "DisplayLOS",
         LOS: "JetLOS",
         clipSeaLevel: false,
-        color: 0x308080,
+        color: "#308080",
         spacing: 120,
     },
 
