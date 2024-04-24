@@ -68,22 +68,8 @@ export function textSitchToObject(text) {
     //     include_pvs14: true,
     //     name: "westjet",
     // we want the contents of the object
-
-    // split into lines.
-    // then find the first line with a brace
-    // set all previous lines to ""
-    // then remove all text before the first brace on that line (with the brace)
-    // then join the lines back together
-    // const lines = text.split("\n");
-    // for (let i = 0; i < lines.length; i++) {
-    //     if (lines[i].includes("{")) {
-    //         lines[i] = lines[i].substring(lines[i].indexOf("{"));
-    //         break;
-    //     } else {
-    //         lines[i] = ""; // whitespace only, we want the lines so line numbers work
-    //     }
-    // }
-    // const data = lines.join("\n");
+    // so we first convert it into a JSON comatible format
+    // then parse it as JSON
 
     const data = text;
 

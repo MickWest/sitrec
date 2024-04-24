@@ -64,6 +64,14 @@ function removeQuotesFromKeys(jsonString) {
 //     return escodegen.generate(ast, codegenOptions);
 // }
 
+
+// New ad-hoc parser
+// This is a simple parser that
+// - adds quotes to the keys of a javascript object
+// - removes comments
+// - adds a 0 before a decimal point (JSON does not allow numbers to start with a decimal point)
+// - converts single quotes to double quotes
+// - removes trailing commas
 class JSParser {
     constructor(js) {
         this.js = js;
@@ -268,78 +276,78 @@ class JSParser {
 }
 
 // test
-const js = `// This file is a Sit definition file for the FLIR1/Nimitz/Tic-Tac video.
-export const SitFlir1 = {
-    name:"flir1",
-    menuName: "FLIR1/Nimitz/Tic-Tac",
-    isTextable: false,
-
-
-    fps: 29.97,
-    frames: 2289,
-    aFrame: 0,
-    bFrame: 2288,
-    startDistance:15,
-    azSlider:{defer:true},
-
-    mainCamera: {
-        startCameraPosition: [-126342.63, 56439.02, 101932.66],
-        startCameraTarget: [-126346.69, 56137.48, 100979.21],
-    },
-
-    terrain: {lat:   31.605, lon:-117.870, zoom:7, nTiles:6},
-
-    files: {
-        Flir1Az: 'flir1/FLIR1 AZ.csv',
-        DataFile: 'flir1/Flir1 FOV Data.csv',
-        TargetObjectFile: './models/FA-18F.glb',
-        ATFLIRModel: 'models/ATFLIR.glb',
-        FA18Model: 'models/FA-18F.glb',
-    },
-    videoFile: "../sitrec-videos/public/f4-aspect-corrected-242x242-was-242x216.mp4",
-
-
-    lookCamera: {},
-
-
-    mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
-    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,},
-    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
-
-    focusTracks:{
-        "Ground (no track)": "default",
-        "Jet track": "jetTrack",
-        "Traverse Path (UFO)": "LOSTraverseSelect"
-    },
-
-    include_JetLabels: true,
-
-    jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"},
-    elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start"},
-    elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end"},
-    elNegate:   {kind: "GUIFlag",  value:false, desc: "Negate Elevation"},
-
-    elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd"},
-    el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)"},
-
-    azRawData:  {kind: "arrayFromKeyframes", file: "Flir1Az", stepped: true},
-    azData:     {kind: "arrayFromKeyframes", file: "Flir1Az"},
-
-    azEditor: { kind: "CurveEditor",
-        visible: true,
-        left:0, top:0.5, width:-1,height:0.5,
-        draggable:true, resizable:true, shiftDrag: true, freeAspect: true,
-        editorConfig: {
-            useRegression:true,
-            minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,
-            xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
-            points:[0,4.012,352.26,4.779,360.596,3.486,360.596,2.354,999.406,1.259,999.406,0.138,1833.796,-4.44,1833.796,-5.561,2288,-8.673,2189,-8.673],        },
-        frames: -1, // -1 will inherit from Sit.frames
-    },
-
-    azLinear: { kind: "Interpolate", start: 5, end: -8,},
-    }
-`
+// const js = `// This file is a Sit definition file for the FLIR1/Nimitz/Tic-Tac video.
+// export const SitFlir1 = {
+//     name:"flir1",
+//     menuName: "FLIR1/Nimitz/Tic-Tac",
+//     isTextable: false,
+//
+//
+//     fps: 29.97,
+//     frames: 2289,
+//     aFrame: 0,
+//     bFrame: 2288,
+//     startDistance:15,
+//     azSlider:{defer:true},
+//
+//     mainCamera: {
+//         startCameraPosition: [-126342.63, 56439.02, 101932.66],
+//         startCameraTarget: [-126346.69, 56137.48, 100979.21],
+//     },
+//
+//     terrain: {lat:   31.605, lon:-117.870, zoom:7, nTiles:6},
+//
+//     files: {
+//         Flir1Az: 'flir1/FLIR1 AZ.csv',
+//         DataFile: 'flir1/Flir1 FOV Data.csv',
+//         TargetObjectFile: './models/FA-18F.glb',
+//         ATFLIRModel: 'models/ATFLIR.glb',
+//         FA18Model: 'models/FA-18F.glb',
+//     },
+//     videoFile: "../sitrec-videos/public/f4-aspect-corrected-242x242-was-242x216.mp4",
+//
+//
+//     lookCamera: {},
+//
+//
+//     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
+//     lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,},
+//     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+//
+//     focusTracks:{
+//         "Ground (no track)": "default",
+//         "Jet track": "jetTrack",
+//         "Traverse Path (UFO)": "LOSTraverseSelect"
+//     },
+//
+//     include_JetLabels: true,
+//
+//     jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"},
+//     elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start"},
+//     elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end"},
+//     elNegate:   {kind: "GUIFlag",  value:false, desc: "Negate Elevation"},
+//
+//     elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd"},
+//     el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)"},
+//
+//     azRawData:  {kind: "arrayFromKeyframes", file: "Flir1Az", stepped: true},
+//     azData:     {kind: "arrayFromKeyframes", file: "Flir1Az"},
+//
+//     azEditor: { kind: "CurveEditor",
+//         visible: true,
+//         left:0, top:0.5, width:-1,height:0.5,
+//         draggable:true, resizable:true, shiftDrag: true, freeAspect: true,
+//         editorConfig: {
+//             useRegression:true,
+//             minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,
+//             xLabel: "Frame", xStep: 1, yLabel: "Azimuth", yStep: 5,
+//             points:[0,4.012,352.26,4.779,360.596,3.486,360.596,2.354,999.406,1.259,999.406,0.138,1833.796,-4.44,1833.796,-5.561,2288,-8.673,2189,-8.673],        },
+//         frames: -1, // -1 will inherit from Sit.frames
+//     },
+//
+//     azLinear: { kind: "Interpolate", start: 5, end: -8,},
+//     }
+// `
 // console.log(js);
 // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 // const parser = new JSParser(js);
@@ -350,7 +358,7 @@ export const SitFlir1 = {
 
 
 // given  text string of a javascript object, parse it and return the object
-// this is done by adding quotes to the keys to make it JSON compliant (see addQuotesToKeys),
+// this is done by adding quotes to the keys to make it JSON compliant
 // then parsing it as JSON
 // syntax errors are not handled, but get reported in the console
 // note you can't use expressions in the object (like 1/2), only literals (0.5)
@@ -358,15 +366,15 @@ export function parseJavascriptObject(jsObjectString) {
     // add quotes to the keys. We need the parentheses to make sure it's evaulated as an object
     const parser = new JSParser(jsObjectString);
     parser.parseStructure();
-    const requotedNoParens = parser.out;
+    const requoted = parser.out;
 
-    // console.log(requotedNoParens)
-    // const lines = requotedNoParens.split("\n");
+    // console.log(requoted)
+    // const lines = requoted.split("\n");
     // for (let i = 0; i < lines.length; i++) {
     //    console.log((i+1) + ": " + lines[i]);
     // }
 
-    const parsed = JSON.parse(requotedNoParens);
+    const parsed = JSON.parse(requoted);
     return parsed;
 
     //  console.log(stringify(parsed, {maxLength: 180, indent: 2}));
