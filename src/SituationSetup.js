@@ -951,7 +951,7 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "traverseNodes":
             SSLog();
-            SetupTraverseNodes(data.menu, data.default, data.los ?? "JetLOS", data.id ?? "");
+            SetupTraverseNodes(data.id ?? "LOSTraverseSelect", data.menu, data.default, data.los ?? "JetLOS", data.idExtra ?? "");
             break;
 
         case "speedGraph":

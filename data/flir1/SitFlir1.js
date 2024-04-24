@@ -167,7 +167,7 @@ export const SitFlir1 = {
         }
     },
 
-    traverseNodes: {
+    LOSTraverseSelect: { kind : "traverseNodes",
         menu: {
             "Constant Air Speed": "LOSTraverseConstantAirSpeed",
             "Constant Ground Speed": "LOSTraverseConstantSpeed",
@@ -239,7 +239,6 @@ export const SitFlir1 = {
         layers: "LOOK",
     },
 
-
     tailAngleGraph:{
             targetTrack: "LOSTraverseSelect",
             cameraTrack: "jetTrack",
@@ -275,9 +274,6 @@ export const SitFlir1 = {
         min:0, max:500,
         left: 0.6, top:0, width: -1, height:0.25},
 
-
-
     flir1LegacyCode: {},
-
 
 }

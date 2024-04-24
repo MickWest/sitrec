@@ -721,9 +721,9 @@ export function SetupTrackLOSNodes() {
 }
 
 
-export function SetupTraverseNodes(traverseInputs,defaultTraverse,los = "JetLOS", id="") {
-    CreateTraverseNodes(id, los);
-    MakeTraverseNodesMenu(traverseInputs,defaultTraverse, id)
+export function SetupTraverseNodes(id, traverseInputs,defaultTraverse,los = "JetLOS", idExtra="") {
+    CreateTraverseNodes(idExtra, los);
+    MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse, idExtra)
 }
 
 
@@ -880,16 +880,16 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
 // The LOSTraverseSelect node is the selected LOS traversal method
 // We pass in which ones of the above we want, plue any extra ones
 // (For example in Agua we add the ufoSplineEditor node)
-export function MakeTraverseNodesMenu(traverseInputs,defaultTraverse,idExtra="") {
+export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra="") {
 
 
     let traverseInputs2 = {}
-    for (var id in traverseInputs) {
-        traverseInputs2[id] = traverseInputs[id]+idExtra
+    for (var inputID in traverseInputs) {
+        traverseInputs2[inputID] = traverseInputs[inputID]+idExtra
     }
 
     new CNodeSwitch({
-        id: "LOSTraverseSelect"+idExtra,
+        id: id,
         inputs: traverseInputs2,
         desc: "LOS Traverse " + idExtra,
         default: defaultTraverse,

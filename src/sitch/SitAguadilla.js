@@ -683,7 +683,7 @@ export const SitAguadilla = {
         CreateTraverseNodes();
 
 
-        MakeTraverseNodesMenu(  {
+        MakeTraverseNodesMenu( "LOSTraverseSelect", {
             "Lantern Spline Editor":"lanternSplineEditor",
             "UAP Spline Editor":"uapSplineEditor",
             "Ground Spline Editor":"groundSplineEditor",

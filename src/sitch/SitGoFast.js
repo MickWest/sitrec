@@ -327,7 +327,7 @@ export var SitGoFast = {
             end: new CNodeConstant({value:Sit.bFrame}),
         })
 
-        SetupTraverseNodes({
+        SetupTraverseNodes("LOSTraverseSelect",{
             "Two point from RNG": "LOSTwoPoint",
             "Gofast RNG values": "LOSTraverseRNG",
             "Constant Speed": "LOSTraverseConstantSpeed",

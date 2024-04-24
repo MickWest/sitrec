@@ -121,7 +121,7 @@ const GimbalDefaults = {
         SetupJetGUI()
         SetupCommon()
         SetupGimbal();
-        SetupTraverseNodes({
+        SetupTraverseNodes("LOSTraverseSelect",{
             "Straight Line": "LOSTraverseStraightLine",
             "Const Ground Spd": "LOSTraverseConstantSpeed",
             "Const Air Spd": "LOSTraverseConstantAirSpeed",

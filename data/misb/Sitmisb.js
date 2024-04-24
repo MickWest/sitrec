@@ -129,9 +129,6 @@ sitch = {
     mirrorVideo: { transparency: 0.15, autoClear:false},
     mirrorVideo2: { kind: "mirrorVideo", overlayView:"lookView2", transparency: 0.15, autoClear:false},
 
-
-
-
     // startTime:  "auto", // auto means we get it from the data file, ie, the first frame of the camera track
     // location:   "auto",
     // frames:     "auto", // auto mean use the length of the video file
@@ -166,8 +163,9 @@ sitch = {
     JetLOS: {kind: "LOSTrackTarget", cameraTrack: "cameraTrack", targetTrack: "targetTrack"},
 
     // The "Track" traverse node uses the ground track
-    Track: {
+    LOSTraverseSelectTrack: {
         kind: "traverseNodes",
+        idExtra: "Track",
         los: "JetLOS",
         menu: {
             "Constant Speed": "LOSTraverseConstantSpeed",
@@ -179,8 +177,9 @@ sitch = {
 
 
     // The "Angles" traverse node uses the platform + sensor angles
-    Angles: {
+    LOSTraverseSelectAngles: {
         kind: "traverseNodes",
+        idExtra: "Angles",
         los: "losTrackMISB",
         menu: {
             "Constant Speed": "LOSTraverseConstantSpeed",
@@ -195,8 +194,6 @@ sitch = {
     // WHY IS THE GREEN SPHere moving around if the camera should fixed on it????
     smoothTrackTrack: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectTrack", window: 100},
     smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
-
-
 
     //    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", radius: 1000, color: "yellow"},
     frustum1: {kind: "DisplayCameraFrustum", camera: "lookCamera", targetTrack: "LOSTraverseSelectTrack", color: "magenta"},
