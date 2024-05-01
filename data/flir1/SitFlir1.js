@@ -1,14 +1,8 @@
 // This file is a Sit definition file for the FLIR1/Nimitz/Tic-Tac video.
-
-
-
-
-
-
 export const SitFlir1 = {
     name:"flir1",
     menuName: "FLIR1/Nimitz/Tic-Tac",
-    isTextable: false,
+    isTextable: true,
 
 
     fps: 29.97,

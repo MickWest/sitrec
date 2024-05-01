@@ -352,8 +352,8 @@ export class CVideoWebCodecData extends CVideoData {
         }
         const last = this.groups[this.groups.length - 1];
         assert(last != undefined, "last groups is undefined, I've loaded "+this.groups.length)
-        console.log("Last frame = "+last.frame+", length = "+last.length+", i.e. up to "+(last.frame+last.length-1))
-        assert(0,"group not found for frame "+frame)
+        console.warn("Last frame = "+last.frame+", length = "+last.length+", i.e. up to "+(last.frame+last.length-1))
+        //assert(0,"group not found for frame "+frame)
         return null;
     }
 

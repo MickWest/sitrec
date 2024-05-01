@@ -1,10 +1,8 @@
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {assert, metersFromMiles, radians, vdump} from "../utils";
+import {assert, radians} from "../utils";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {Matrix4} from "../../three.js/build/three.module";
-import {CNodeCloudData} from "./CNodeCloudData";
-import {DebugArrow, DebugAxes, DebugMatrixAxes, V3} from "../threeExt";
+import {DebugMatrixAxes, V3} from "../threeExt";
 import {Vector3} from "three";
 import {CNodeEmptyArray} from "./CNodeArray";
 
@@ -16,6 +14,7 @@ export class CNodeLOSTrackAzEl extends CNode {
         assert(this.in.jetTrack !== undefined)
         assert(this.in.az !== undefined)
         assert(this.in.el !== undefined)
+        this.absolute = v.absolute;
         this.recalculate()
     }
 
@@ -39,8 +38,15 @@ export class CNodeLOSTrackAzEl extends CNode {
             fwd.applyAxisAngle(upAxis, radians(-this.in.az.v(f)))
 
             var _x = V3()
-            var _y = getLocalUpVector(A, metersFromMiles(this.in.jetTrack.inputs.radius.v0))
-            var _z = this.in.jetTrack.v(f).fwd.clone().negate()
+            var _y = getLocalUpVector(A)
+            var _z;
+            if (this.absolute) {
+                // absolute mode, so relatice to the local north at the jet
+                _z = getLocalNorthVector(A);
+            } else {
+                // otherwise it's relative to the jet's forward vector
+                _z = this.in.jetTrack.v(f).fwd.clone().negate()
+            }
 
             _x.crossVectors(_y, _z)
             _z.crossVectors(_x, _y)

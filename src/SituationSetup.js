@@ -5,7 +5,7 @@ import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
-import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {CNodeTrack, makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {abs, assert, ExpandKeyframes, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
@@ -1045,8 +1045,12 @@ export function SetupFromKeyAndData(key, _data) {
         case "arrayFromKeyframes":
             SSLog();
             const expanded = ExpandKeyframes(FileManager.get(data.file), Sit.frames,
-                data.frameCol ?? 0, data.dataCol ?? 1, data.stepped ?? false, data.string ?? false);
-            node = new CNodeArray({id: data.id, array: expanded});
+                data.frameCol ?? 0,
+                data.dataCol ?? 1,
+                data.stepped ?? false,
+                data.string ?? false,
+                data.degrees ?? false);
+            node = new CNodeArray({id: data.id, array: expanded, exportable: data.exportable});
             break;
 
             // creates a watch node for a variable in par
@@ -1080,6 +1084,28 @@ export function SetupFromKeyAndData(key, _data) {
                 // calculateGlareStartAngle();
                 par.renderOne = true;
             }).listen().name('Jet Pitch')
+            break;
+
+        case "segmentSelect":
+            SSLog();
+
+            par.segment = data.default;
+            gui.add(par, 'segment', data.menu).onChange(function (v) {
+                console.log("Segment changed to " + v)
+                Sit.aFrame = v[0];
+                Sit.bFrame = v[1];
+                par.frame = Sit.aFrame;
+                // recalculate all tracks
+                NodeMan.iterate((key, node) => {
+                    // is node derived from CNodeTrack?
+                    //  if (node instanceof CNodeTrack) {
+                    node.recalculateCascade();
+                    //  }
+                })
+            });
+
+
+
             break;
 
 

@@ -117,7 +117,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 }
 
                 if (!this.ignoreAB && (f < Sit.aFrame || f > Sit.bFrame)) {
-                    color = {r: 0.25, g: 0.25, b: 0.25}
+                    if (this.in.secondColor !== undefined)
+                        color = this.in.secondColor.v(f)
+                    else
+                        color = {r: 0.25, g: 0.25, b: 0.25}
                 }
 
                 color = new Color(color)

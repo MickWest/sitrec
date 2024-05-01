@@ -32,7 +32,7 @@ export function unitsToMeters(units, value) {
 
     switch (lower) {
         case "miles": return metersFromMiles(value)
-        case "feet": return f2m(value)
+        case "feet": case "ft": case "f": return f2m(value)
         case "meters": case "m": return value
         case "nm": return metersFromNM(value)
         case "km": case "kilometers": return value * 1000
@@ -207,7 +207,7 @@ export function smoothDerivative(data, window, iterations) {
 // in the first derivative
 // CHECK FIRST that it's accurate
 // MAYBE JUST SMOOTH?
-export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false, string = false) {
+export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false, string = false, degrees = false) {
     if (string) stepped = true; // can't interpolate strings
     var out = new Array()
     var aFrame = parseInt(input[0][indexCol])
@@ -223,8 +223,24 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
             bValue = frame[dataCol]
         else
             var bValue = parseFloat(frame[dataCol])
+
+        // we are going to interpolate from aValue to bValue over the range aFrame to bFrame
+        // if degrees, then we need to handle wrap-around
+        // by adjusting aValue (not bValue, as that will need to be unchanged later)
+        // example1: a=350, b=10, then we need to interpolate from -10 to 10
+        // so we add 360 to a, and interpolate from 350 to 370
+        // example2: a=10, b=350, then we need to interpolate from 370 to 350
+        if (degrees) {
+            if (Math.abs(bValue - aValue) > 180) {
+                if (bValue > aValue)
+                    aValue += 360
+                else
+                    aValue -= 360
+            }
+        }
+
         out.push(aValue)
-      //  console.log(f+": "+out[f]);
+//        console.log(f+": "+out[f]);
         f++;
         for (var i = aFrame + 1; i < bFrame; i++) {
             if (stepped)

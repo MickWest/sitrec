@@ -3,7 +3,7 @@
 // range (distance from the plane - i.e. a fixed distance.
 import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {metersFromMiles, metersFromNM} from "../utils";
+import {metersFromMiles, metersFromNM, unitsToMeters} from "../utils";
 import {CNodeCloudData} from "./CNodeCloudData";
 
 export class CNodeLOSTraverse extends CNode {
@@ -11,6 +11,9 @@ export class CNodeLOSTraverse extends CNode {
         super(v);
         this.requireInputs(["LOS"])
         this.optionalInputs(["startDist", "VcMPH", "range"])
+
+        // historically this was in nautical miles, but we allow the user to specify
+        this.units = v.units ?? "NM";
 
         this.array = []
         this.recalculate()
@@ -21,10 +24,11 @@ export class CNodeLOSTraverse extends CNode {
         this.frames = this.in.LOS.frames
 
         // Range values are for like the gimbal video, range in NM, very specific, don't use for other thigns.
-        if (this.in.range != undefined) {
-            for (var f = 0; f < this.frames; f++) {
+        if (this.in.range !== undefined) {
+            for (let f = 0; f < this.frames; f++) {
 
-                const dist = metersFromNM(this.in.range.v(f))
+//                const dist = metersFromNM(this.in.range.v(f))
+                const dist = unitsToMeters(this.units, this.in.range.v(f))
                 const los = this.in.LOS.v(f)
                 let position = los.position.clone();
                 let heading = los.heading.clone();

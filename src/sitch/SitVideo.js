@@ -13,6 +13,7 @@ export const SitVideo = {
     aFrame: 0,
     bFrame: 0,
 
+
     setup: function() {
 
         this.selectableVideos = {
@@ -56,22 +57,16 @@ export const SitVideo = {
                 file: this.selectableVideos[this.file],
                 background: "black",
                 autoFill: true,
+                dragDropVideo: true,  // allows the user to drag and drop a video file onto the viewer
+
             }
         )
-
-
-
-
 //        addFiltersToVideoNode(this.VideoNode)
-
-
 
         this.loadFile = function() {
             this.VideoNode.requestAndLoadFile()
         }
         gui.add(this, "loadFile").name("Load Video")
-
-
 
         gui.add(this, "file", this.selectableVideos).onChange(file => {
             this.VideoNode.newVideo(file)
@@ -87,9 +82,7 @@ export const SitVideo = {
             setURLParameters("&video="+this.file)
 
         }).name("Preset Video")
-
     }
-
 }
 
 

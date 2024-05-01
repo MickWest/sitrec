@@ -32,7 +32,8 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
         this.addLoadingMessage()
 
-        this.addEventListeners();
+   //     if (v.dragDropVideo)
+            this.addEventListeners();
 
     }
 
