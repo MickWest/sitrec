@@ -130,4 +130,7 @@ export const SitFlir1 = {
     default: "All",
     },
 
+    speedGraph: {track: "LOSTraverseSelect", label: "Target Speed", max: 300,},
+    altitudeGraph: {track: "LOSTraverseSelect", max: 25000, left: 0.25},
+
 }
