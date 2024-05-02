@@ -15,7 +15,19 @@ sitch = {
     name: "trackwithangles",
     menuName: "Track with Angles",
 
-    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
+    lat: 40, lon: -100,
 
+    lookCamera: {fov: 10, near: 1, far: 8000000},
+    mainCamera: {fov: 30, near: 1, far: 60000000,
+        startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
+        startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
+    },
+
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#200000'},
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000020'},
+
+    dragDropHandler: true,
+    useGlobe: true,
 
 }

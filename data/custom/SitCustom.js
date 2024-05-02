@@ -1,7 +1,7 @@
 
 sitch = {
 
-    name: "misb",
+    name: "custom",
     menuName: "MISB",
 
 
@@ -40,7 +40,8 @@ sitch = {
     // using SensorLatitude, SensorLongitude, SensorAltitude
     cameraTrack: {file: "klv"},
 
-   startTime: {misbTrack: "cameraTrack", column: "SensorTime", frame: 0},
+    // later.... get start time from track
+  // startTime: {misbTrack: "cameraTrack", column: "SensorTime", frame: 0},
 
     // added back the smoothing
     smoothTrackCamera: {kind: "smoothTrack", method:"moving", track: "cameraTrack", window: 20},

@@ -92,9 +92,6 @@ sitch = {
     cameraTrack: {file: "klv"},
 
 
-    startTime: {misbTrack: "cameraTrack", column: "SensorTime", frame: 0},
-
-
     // added back the smoothing
     smoothTrackCamera: {kind: "smoothTrack", method:"moving", track: "cameraTrack", window: 20},
 
