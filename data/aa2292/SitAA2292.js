@@ -2,6 +2,7 @@
 // A KML plane-to-plane Sitch
 // No video
 
+
 export const SitAA2292 = {
     include_kml: true,
     name: "aa2292",
@@ -40,7 +41,7 @@ export const SitAA2292 = {
     focusTracks: {},
     ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
 
-    include_KMLTracks: true,
+    include_TrackAndCameraLabeled: true,
     targetSizedSphere: { size:100 },
 
 

@@ -17,7 +17,7 @@ export const commonTargetTrack = {
     targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
 }
 
-export const commonKMLCamera = {
+export const commonTrackedCamera = {
     cameraTrack: {},
     followTrack: {},
     cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
@@ -38,17 +38,17 @@ export const commonJetLabels = {
     distanceLabel:      { kind: "MeasureAB",A: "jetTrack", B: "LOSTraverseSelect", defer: true},
 }
 
-export const commonKMLTracks = {
+export const commonTrackAndCameraLabeled = {
     ...commonTargetTrack,
-    ...commonKMLCamera,
+    ...commonTrackedCamera,
 //    displayLOS: {kind: "DisplayTrackToTrack"},
     //   targetObject: {file: "TargetObjectFile",},
     DisplayCameraFrustum: {targetTrack: "targetTrack"},
     ...commonLabels,
 }
 
-export const commonKMLTrackToTrack = {
-    ...commonKMLTracks,
+export const commonTrackToTrack = {
+    ...commonTrackAndCameraLabeled,
     lookAtTrack: {},  // and look at targetTrack
 }
 

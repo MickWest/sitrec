@@ -28,7 +28,7 @@ export const SitLakeMichigan = {
 
     mainView:{left:0.0, top:0, width:0.50,height:1},
 
-    include_KMLTrackToTrack: true,
+    include_TrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
 
 }

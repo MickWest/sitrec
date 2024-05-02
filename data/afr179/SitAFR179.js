@@ -37,7 +37,7 @@ export const SitAFR179 = {
 
     skyColor: '#AFBDD1',  // grey from the video
 
-    include_KMLTracks: true,
+    include_TrackAndCameraLabeled: true,
     targetObject: {file: "TargetObjectFile",},
     ptz: {az: -36.2, el: 1.98, fov: 62, showGUI: true},
 

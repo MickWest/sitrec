@@ -43,7 +43,7 @@ export const SitChilean = {
     mainView: { left:0.0, top:0,   width:0.625,    height: 1},
 
     // setup of common tracks, cameras, labels, etc
-    include_KMLTrackToTrack: true,
+    include_TrackToTrack: true,
 
     // // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},

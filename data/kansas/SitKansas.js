@@ -29,7 +29,7 @@ export const SitKansas = {
     mainView:{left:0.0, top:0, width:0.50,height:1},
     tilt: 4.63,
 
-    include_KMLTrackToTrack: true,
+    include_TrackToTrack: true,
     targetSizedSphere: { size:200 },
 
 

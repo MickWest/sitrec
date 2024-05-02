@@ -32,7 +32,7 @@ export const SitITY621 = {
     videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
     mainView:{left:0.0, top:0, width:1,height:1},
 
-    include_KMLTrackToTrack: true,
+    include_TrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
 
     tilt: 1.24,

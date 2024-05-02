@@ -30,7 +30,7 @@ export const SitN14AQ = {
     mainView:{left:0.0, top:0, width:0.50,height:1},
     tilt: 2.6,
 
-    include_KMLTrackToTrack: true,
+    include_TrackToTrack: true,
     targetObject: {file: "TargetObjectFile"},
     targetSizedSphere: { size:200 },
 }
