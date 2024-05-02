@@ -12,7 +12,7 @@ export const SitLakeMichigan = {
     terrain: {lat: 42.933424, lon: -86.129730, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'lakemichigan/FlightAware_UAL267_KBOS_KDEN_20211017.kml',
-        KMLTarget: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml",
+        TargetTrack: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml",
         TargetObjectFile: './models/737_MAX_8_White.glb',
     },
     startTime: "2021-10-17T15:50:27.766Z",

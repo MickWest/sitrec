@@ -175,7 +175,7 @@ export const SitKansas = {
     frames: 569,
     files: {
         cameraFile:'N615UX-track-EGM96.kml',
-        KMLTarget: 'N121DZ-track-EGM96.kml'
+        TargetTrack: 'N121DZ-track-EGM96.kml'
     },
     startTime: "2022-09-01T20:07:32.3Z",
 }
@@ -190,7 +190,7 @@ export const SitKansas = {
     frames: 569,
     files: {
         cameraFile:'N615UX-track-EGM96.kml',
-        KMLTarget: 'N121DZ-track-EGM96.kml'
+        TargetTrack: 'N121DZ-track-EGM96.kml'
     },
     startTime: "2022-09-01T20:07:32.3Z",
     targetObject: null,
@@ -223,7 +223,7 @@ export const SitKansas = {
     frames: 569,
     files: {
         cameraFile:'N615UX-track-EGM96.kml',
-        KMLTarget: 'N121DZ-track-EGM96.kml'
+        TargetTrack: 'N121DZ-track-EGM96.kml'
     },
     startTime: "2022-09-01T20:07:32.3Z",
     targetObject: null,

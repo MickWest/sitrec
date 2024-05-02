@@ -11,7 +11,7 @@ export const SitITY621 = {
     terrain: {lat: 47.812613, lon: -4.260180, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'ity621/FlightAware_ITY621_KLAX_LIRF_20221014.kml',
-        KMLTarget: "ity621/FlightAware_SAS7487_ENCN_GCLP_20221015.kml",
+        TargetTrack: "ity621/FlightAware_SAS7487_ENCN_GCLP_20221015.kml",
         KMLOther: "ity621/FlightAware_RYR5580_EGPH_LEAL_20221015.kml",
         TargetObjectFile: './models/737_MAX_8_White.glb',
     },

@@ -10,7 +10,7 @@ export const SitN14AQ = {
     terrain: {lat: 32.226890, lon: -82.940488, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
-        KMLTarget: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml",
+        TargetTrack: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml",
         TargetObjectFile: './models/737_MAX_8_White.glb',
     },
     startTime: "2022-08-08T12:16:15.800Z",

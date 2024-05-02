@@ -12,7 +12,7 @@ export const SitChilean = {
     // e.g. a .csv file will be loaded by FileMan.loadCSV
     files: {
         cameraFile: 'chilean/Chile Chopper Track from video GPSTime.kml',
-        KMLTarget: "chilean/IB6830 - Incorporating Radar Positions.kml",
+        TargetTrack: "chilean/IB6830 - Incorporating Radar Positions.kml",
 //        TargetObjectFile: 'models/A340-600-F18Engine.glb',
         TargetObjectFile: 'models/A340-600.glb',
         DataFile: 'chilean/Chilean Navy Extracted Data 720.csv', // 720p version as videos have slight differences

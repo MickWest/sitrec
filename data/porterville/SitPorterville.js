@@ -16,7 +16,7 @@ export const SitPorterville = {
     files: {
 //        cameraFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
         cameraFile: 'porterville/DJI_20231217152755_0007_D.SRT',
-      //  KMLTarget: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml"
+      //  TargetTrack: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml"
     },
     startTime: "2023-12-17 15:27:55.258",
 

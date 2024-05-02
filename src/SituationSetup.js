@@ -94,7 +94,7 @@ export function expandSitData(sitData, into = {}) {
 // usually there will just be one
 let fileIDMap = {
     "cameraTrack": ["file"],
-    "KMLTargetData": ["file"],
+    "TargetTrackData": ["file"],
     "nightSky": ["starLink"],
     "addTracks": ["tracks"], // this will be an array
 }

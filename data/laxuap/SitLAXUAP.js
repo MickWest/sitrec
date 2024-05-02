@@ -14,7 +14,7 @@ export const SitLAXUAP = {
     venusArrow: true,
 
     files: {
-        KMLTarget: "laxuap/82-0193-track-press_alt_uncorrected.kml", // this is the one that goes overhead at 19:08
+        TargetTrack: "laxuap/82-0193-track-press_alt_uncorrected.kml", // this is the one that goes overhead at 19:08
         TargetObjectFile: "./models/DC-10.glb",
     },
 
@@ -36,7 +36,7 @@ export const SitLAXUAP = {
     lookCamera:{ fov: 1.61},
     cameraTrack: {LLA: [33.953748, -118.412243, 36]},
 
-    include_KMLTarget: true,
+    include_TargetTrack: true,
 
     followTrack:{},
     lookAtTrack:{},

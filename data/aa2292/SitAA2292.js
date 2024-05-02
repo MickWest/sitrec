@@ -15,7 +15,7 @@ export const SitAA2292 = {
     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'aa2292/FlightAware_AAL2292_KCVG_KPHX_20210221.kml',
-        KMLTarget: "aa2292/FlightAware_N738RJ_KSLC_KBCT_20210221.kml"
+        TargetTrack: "aa2292/FlightAware_N738RJ_KSLC_KBCT_20210221.kml"
     },
     videoFile: null,
     videoView: null,

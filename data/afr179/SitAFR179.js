@@ -19,7 +19,7 @@ export const SitAFR179 = {
     terrain: {lat: 37.897411, lon: -84.402051, zoom: 9, nTiles: 8},
     files: {
         cameraFile: 'afr179/FlightAware_AFR179_MMMX_LFPG_20221108.kml',
-        KMLTarget: "afr179/FlightAware_FDX1273_KBOS_KMEM_20221108.kml",
+        TargetTrack: "afr179/FlightAware_FDX1273_KBOS_KMEM_20221108.kml",
         TargetObjectFile: './models/737_MAX_8_White.glb',
     },
     videoFile: "../sitrec-videos/private/001 - passenger_films_unknown_object.mp4",

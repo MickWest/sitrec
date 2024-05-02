@@ -256,7 +256,7 @@ Let's call the new stitch "Springfield" (just an example name), and assume you h
 - Add the two KML files to data/springfield
 - Edit the `files` structure with the new files:
   - cameraFile = KML or SRT of where the video was filmed from
-  - KMLTarget = KML file of the target plane (i.e. the suspected UAP)
+  - TargetTrack = KML file of the target plane (i.e. the suspected UAP)
 - Add the video to /sitrec-videos/private/
 - update the "videoFile" to point to this.
 - Adjust the "startTime" to be the start time of the video. Note this is in Zulu time (UTC/GMT)

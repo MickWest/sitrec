@@ -24,9 +24,9 @@ export const Sit29Palms = {
     files: {
 //        threePlanes: "29palms/210420-M-ET234-1036-bright.jpg",
         threePlanes: "29palms/210420-M-ET234-1036-Pink.jpg",
-        KMLTarget1: "29palms/N891UA-track-EGM96.kml",
-        KMLTarget2: "29palms/N8564Z-track-EGM96.kml",
-        KMLTarget3: "29palms/N279SY-track-EGM96.kml",
+        TargetTrack1: "29palms/N891UA-track-EGM96.kml",
+        TargetTrack2: "29palms/N8564Z-track-EGM96.kml",
+        TargetTrack3: "29palms/N279SY-track-EGM96.kml",
     },
 
     starScale: 0.69,        // to match the visiblity of stars in the photo
@@ -82,19 +82,19 @@ export const Sit29Palms = {
     // labelView defaults to adding an overlay to lookView, and adds the time and date
     labelView: {},
 
-    addTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD", sphereColor: [1,1,0]},
+    addTracks: { tracks: ["TargetTrack1", "TargetTrack2", "TargetTrack3"], sphereMask:"WORLD", sphereColor: [1,1,0]},
 //     addTracks: { tracks: [ "29palms/N891UA-track-EGM96.kml",
 //             "29palms/N8564Z-track-EGM96.kml",
 //             "29palms/N279SY-track-EGM96.kml",], sphereMask:"WORLD"},
 
     // a bit of a patch to get all three tracks labeled
-    altLabel1: {kind: "MeasureAltitude", position: "Track_KMLTarget1"},
-    altLabel2: {kind: "MeasureAltitude", position: "Track_KMLTarget2"},
-    altLabel3: {kind: "MeasureAltitude", position: "Track_KMLTarget3"},
+    altLabel1: {kind: "MeasureAltitude", position: "Track_TargetTrack1"},
+    altLabel2: {kind: "MeasureAltitude", position: "Track_TargetTrack2"},
+    altLabel3: {kind: "MeasureAltitude", position: "Track_TargetTrack3"},
 
-    distLabel1: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget1"},
-    distLabel2: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget2"},
-    distLabel3: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget3"},
+    distLabel1: {kind: "MeasureAB", A:"cameraTrack", B: "Track_TargetTrack1"},
+    distLabel2: {kind: "MeasureAB", A:"cameraTrack", B: "Track_TargetTrack2"},
+    distLabel3: {kind: "MeasureAB", A:"cameraTrack", B: "Track_TargetTrack3"},
 
     DisplayCameraFrustum: {radius:100000},
 

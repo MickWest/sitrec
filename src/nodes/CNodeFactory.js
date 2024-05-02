@@ -171,8 +171,8 @@ export class CNodeFactory extends CManager{
     //     [
     //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
     //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"cameraTrackData"},
-    //         {"new":"KMLDataTrack",  "id":"TrackData_",   "KMLFile":"KMLTarget"},
-    //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
+    //         {"new":"KMLDataTrack",  "id":"TrackData_",   "KMLFile":"TargetTrack"},
+    //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"TargetTrackData"},
     //     ]`);
 
     createNodesJSON(nodeJSON) {

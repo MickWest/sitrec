@@ -18,7 +18,7 @@ export const SitHulsey = {
 
     files: {
         cameraFile: 'hulsey/N67WV-track-EGM96.kml',
-        KMLTarget: "hulsey/FlightAware_N702GH_KSJC_KLAX_20220818.kml",
+        TargetTrack: "hulsey/FlightAware_N702GH_KSJC_KLAX_20220818.kml",
         starLink: "hulsey/Starlink-2022-08-16 to 17 Hulsey.txt"
     },
     videoFile: "../sitrec-videos/private/19min clip showing land - 01.mp4",
