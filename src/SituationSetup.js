@@ -485,11 +485,13 @@ export function SetupFromKeyAndData(key, _data) {
             // but we now use Sit.files.videoFile
             // to keep the files consistent for rehosting
             let videoFile = Sit.videoFile;
-            if (videoFile === undefined) {
+            if (videoFile === undefined && Sit.files !== undefined) {
                 videoFile = Sit.files.videoFile
             }
 
-            assert(videoFile !== undefined, "videoView needs a video file")
+            // we allow no video file, we just want somewhere to drop a new video
+            //    assert(videoFile !== undefined, "videoView needs a video file")
+
             if (!NodeMan.exists("videoZoom")) {
                 new CNodeGUIValue({
                     id: "videoZoom",

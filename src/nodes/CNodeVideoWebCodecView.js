@@ -10,8 +10,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         super(v);
         //this.checkInputs(["zoom"])
 
-
-
         this.input("zoom", true); // zoom input is optional
 
         // if it's an overlay view then we don't need to add the overlay UI view
@@ -22,15 +20,20 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         }
 
         v.id = v.id + "_data"
-        this.Video = new CVideoWebCodecData(v,
-            this.loadedCallback.bind(this), this.errorCallback.bind(this))
 
+        if (v.file === undefined) {
+            this.addNoVideoMessage()
+        } else {
+            this.addLoadingMessage();
+            this.Video = new CVideoWebCodecData(v,
+                this.loadedCallback.bind(this), this.errorCallback.bind(this))
+        }
         this.fileName = v.file;
 
         this.handlerFunction = this.handlerFunction.bind(this);
         this.onDropBound = this.onDrop.bind(this); // Bind and store the reference for removal later
 
-        this.addLoadingMessage()
+
 
    //     if (v.dragDropVideo)
             this.addEventListeners();
@@ -56,11 +59,17 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
             this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
     }
 
+    addNoVideoMessage() {
+        if (this.overlay)
+            this.overlay.addText("videoNo", "DROP VIDEO HERE", 50, 50, 5, "#f0f000")
+    }
+
     removeText() {
         if (this.overlay) {
             this.overlay.removeText("videoLoading")
             this.overlay.removeText("videoError")
             this.overlay.removeText("videoErrorName")
+            this.overlay.removeText("videoNo")
         }
     }
 
@@ -74,8 +83,11 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.removeText()
         par.frame = 0
         par.paused = false;
-        this.Video.killWorkers()
-        this.Video.flushEntireCache()
+        if (this.Video) {
+            this.Video.killWorkers()
+            this.Video.flushEntireCache()
+            this.Video = undefined;
+        }
         Sit.frames = 0
         this.positioned = false;
     }

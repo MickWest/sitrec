@@ -4,7 +4,8 @@ import {par} from "../par";
 import {quickToggle} from "../KeyBoardHandler";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 import {guiTweaks} from "../Globals";
-import {versionString} from "../utils";
+import {versionString, assert} from "../utils";
+
 
 
 export class CVideoData {
@@ -316,7 +317,11 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
 
     render(frame = 0) {
         super.render(frame); // needed for setting window size
+
         if (!this.visible) return;
+
+        // if no video file, this is just a drop target for now
+        if (!this.Video) return;
         this.Video.update()
         const image = this.Video.getImage(frame);
         if (image) {
