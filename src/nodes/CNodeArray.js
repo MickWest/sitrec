@@ -69,14 +69,14 @@ export class CNodeManualData extends CNodeEmptyArray {
 export class CNodeSmoothedArray extends CNodeEmptyArray {
     constructor(v) {
         super(v)
-        this.input("source") // source arrau node
-        this.input("smooth") // amount to smooth (rolling average window size)
-        v.frames = v.array.length;
+        this.input("source") // source array node
+        this.input("window") // amount to smooth (rolling average window size)
+        this.frames = this.in.source.frames;
         this.recalculate();
     }
 
     recalculate() {
-        this.array = RollingAverage(this.in.source.array, this.in.smooth.v0)
+        this.array = RollingAverage(this.in.source.array, this.in.window.v0)
     }
 }
 

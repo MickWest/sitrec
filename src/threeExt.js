@@ -311,7 +311,7 @@ export function boxMark(point,  xs = 1, ys=1, zs=1, color = 0xffffff, parent=nul
 
 // Create anywhere debug sphere
 var DebugSpheres = {}
-export function DebugSphere(name, origin, radius = 100, color = 0xffffff, parent = GlobalScene) {
+export function DebugSphere(name, origin, radius = 100, color = 0xffffff, parent = GlobalScene, layers = LAYER.MASK_HELPERS) {
 
     color = new Color(color)  // convert from whatever format, like "green" or "#00ff00" to a THREE.Color(r,g,b)
 
@@ -320,7 +320,7 @@ export function DebugSphere(name, origin, radius = 100, color = 0xffffff, parent
         const material = new MeshBasicMaterial({color: color});
         var sphere = new Mesh(geometry, material);
         DebugSpheres[name] = sphere
-        sphere.layers.mask = LAYER.MASK_HELPERS;
+        sphere.layers.mask = layers;
         parent.add(sphere);
     }
     DebugSpheres[name].position.copy(origin)

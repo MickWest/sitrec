@@ -1,8 +1,6 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {Vector2} from "../../three.js/build/three.module";
 import {mouseToCanvas, mouseToView} from "./CNodeView";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
 import {par} from "../par";
 
 // A DDI is a screen in a fighter jet, F/A-18 or similar

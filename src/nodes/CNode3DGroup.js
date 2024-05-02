@@ -4,7 +4,7 @@ import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"
 import {CNode3D} from "./CNode3D";
 import {Color} from "three";
-import {assert} from "../utils";
+import {assert, normalizeLayerType} from "../utils";
 import * as LAYER from "../LayerMasks";
 
 // a CNode3DGroup encapsulates a THREE.Group one or more 3D objects
@@ -37,11 +37,7 @@ export class CNode3DGroup extends CNode3D {
         // becomes         layers: LAYER.MASK_HELPERS,
 
 
-        if (typeof v.layers === "string") {
-            var layerName = v.layers;
-            v.layers = LAYER["MASK_" + v.layers]
-            assert(v.layers !== undefined, "CNode3DGroup layer name not found: " + layerName)
-        }
+        v.layers = normalizeLayerType(v.layers)
 
         this._object.layers.mask = v.layers ?? 1 // 1 is just the default layer 0 (1<<0)
 

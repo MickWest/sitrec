@@ -41,8 +41,8 @@ export class CNodeLOSTrackAzEl extends CNode {
             var _y = getLocalUpVector(A)
             var _z;
             if (this.absolute) {
-                // absolute mode, so relatice to the local north at the jet
-                _z = getLocalNorthVector(A);
+                // absolute mode, so relative to the local north at the jet
+                _z = getLocalNorthVector(A).negate();
             } else {
                 // otherwise it's relative to the jet's forward vector
                 _z = this.in.jetTrack.v(f).fwd.clone().negate()

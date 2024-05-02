@@ -1,13 +1,23 @@
 import {FileManager, gui, guiTweaks, NodeMan, setSit, Sit, SitchMan} from "./Globals";
 import {CNode, CNodeConstant, makePositionLLA} from "./nodes/CNode";
-import {wgs84} from "./LLA-ECEF-ENU";
+import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {CNodeTrack, makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {abs, assert, ExpandKeyframes, f2m, floor, getArrayValueFromFrame, radians, scaleF2M} from "./utils";
+import {
+    abs,
+    assert,
+    ExpandKeyframes,
+    f2m,
+    floor,
+    getArrayValueFromFrame,
+    normalizeLayerType,
+    radians,
+    scaleF2M
+} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -33,6 +43,7 @@ import {MISB} from "./MISBUtils";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
+import {DebugSphere} from "./threeExt";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -1049,8 +1060,12 @@ export function SetupFromKeyAndData(key, _data) {
                 data.dataCol ?? 1,
                 data.stepped ?? false,
                 data.string ?? false,
-                data.degrees ?? false);
+                data.degrees ?? false,
+                data.frameOffset ?? 0);
             node = new CNodeArray({id: data.id, array: expanded, exportable: data.exportable});
+            if (data.smooth) {
+                node = NodeMan.reinterpret(data.id, "SmoothedArray", {source: data.id, window: data.smooth}, "source")
+            }
             break;
 
             // creates a watch node for a variable in par
@@ -1103,11 +1118,14 @@ export function SetupFromKeyAndData(key, _data) {
                     //  }
                 })
             });
-
-
-
             break;
 
+        case "LLASphere":
+            SSLog();
+            const position = LLAToEUS(data.LLA[0], data.LLA[1], data.LLA[2]);
+            const layers = normalizeLayerType(data.layers ?? LAYER.MASK_HELPERS);
+            new DebugSphere(data.id, position, data.radius, data.color, GlobalScene, layers);
+            break;
 
         default:
 
