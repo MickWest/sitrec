@@ -82,19 +82,19 @@ export const Sit29Palms = {
     // labelView defaults to adding an overlay to lookView, and adds the time and date
     labelView: {},
 
-    addKMLTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD", sphereColor: [1,1,0]},
-//     addKMLTracks: { tracks: [ "29palms/N891UA-track-EGM96.kml",
+    addTracks: { tracks: ["KMLTarget1", "KMLTarget2", "KMLTarget3"], sphereMask:"WORLD", sphereColor: [1,1,0]},
+//     addTracks: { tracks: [ "29palms/N891UA-track-EGM96.kml",
 //             "29palms/N8564Z-track-EGM96.kml",
 //             "29palms/N279SY-track-EGM96.kml",], sphereMask:"WORLD"},
 
     // a bit of a patch to get all three tracks labeled
-    altLabel1: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget1"},
-    altLabel2: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget2"},
-    altLabel3: {kind: "MeasureAltitude", position: "KMLTargetKMLTarget3"},
+    altLabel1: {kind: "MeasureAltitude", position: "Track_KMLTarget1"},
+    altLabel2: {kind: "MeasureAltitude", position: "Track_KMLTarget2"},
+    altLabel3: {kind: "MeasureAltitude", position: "Track_KMLTarget3"},
 
-    distLabel1: {kind: "MeasureAB", A:"cameraTrack", B: "KMLTargetKMLTarget1"},
-    distLabel2: {kind: "MeasureAB", A:"cameraTrack", B: "KMLTargetKMLTarget2"},
-    distLabel3: {kind: "MeasureAB", A:"cameraTrack", B: "KMLTargetKMLTarget3"},
+    distLabel1: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget1"},
+    distLabel2: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget2"},
+    distLabel3: {kind: "MeasureAB", A:"cameraTrack", B: "Track_KMLTarget3"},
 
     DisplayCameraFrustum: {radius:100000},
 

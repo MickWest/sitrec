@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
-import {addKMLTracks} from "./KMLNodeUtils";
+import {addTracks} from "./TrackManager";
 import {FileManager, NodeMan, setNewSitchText} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
@@ -137,7 +137,7 @@ class CDragDropHandler {
                         NodeMan.get("NightSkyNode").replaceTLE(x.parsed)
                     } else if (fileExt === "kml") {
 //                        addKMLMarkers(x.parsed)
-                        addKMLTracks([x.filename], true)
+                        addTracks([x.filename], true)
                     } else if (fileExt === "sitch.js") {
                         // x.parsed is a sitch text def
                         // make a copy of the string (as we might be removing all the files)

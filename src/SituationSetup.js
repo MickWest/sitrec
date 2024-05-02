@@ -32,7 +32,7 @@ import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
-import {addKMLTracks} from "./KMLNodeUtils";
+import {addTracks} from "./TrackManager";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
@@ -96,7 +96,7 @@ let fileIDMap = {
     "cameraTrack": ["file"],
     "KMLTargetData": ["file"],
     "nightSky": ["starLink"],
-    "addKMLTracks": ["tracks"], // this will be an array
+    "addTracks": ["tracks"], // this will be an array
 }
 
 export async function startLoadingInlineAssets(sitData) {
@@ -771,11 +771,11 @@ export function SetupFromKeyAndData(key, _data) {
             addDefaultLights(data.brightness ?? 100);
             break;
 
-        case "addKMLTracks":
+        case "addTracks":
             SSLog();
             const sphereMask = data.sphereMask ?? LAYER.MASK_HELPERS;
             const removeDuplicates = data.removeDuplicates ?? false;
-            addKMLTracks(data.tracks, removeDuplicates, sphereMask);
+            addTracks(data.tracks, removeDuplicates, sphereMask);
             break;
 
         case "targetWind":

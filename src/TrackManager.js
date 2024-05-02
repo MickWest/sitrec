@@ -1,4 +1,5 @@
-// Creaitng timed data and then tracks from pre-parsed KML files
+// Creating timed data and then tracks from pre-parsed track files
+// should be agnostic to the source of the data (KML/ADSB, CSV, KLVS, etc)
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
@@ -14,10 +15,10 @@ import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 
 
-export const KMLTrackManager = new CManager();
+//export const TrackManager = new CManager();
 
 
-export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYER.MASK_HELPERS) {
+export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.MASK_HELPERS) {
 
     if (!NodeMan.exists("sizeTargetScaled")) {
         new CNodeScale("sizeTargetScaled", scaleF2M,
@@ -39,17 +40,17 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
         // so if it exists, we call disposeRemove to free any buffers, and remve it from the manager
         // so then we can just reload it again
         if (removeDuplicates) {
-            NodeMan.disposeRemove("KMLTargetData" + track);
-            NodeMan.disposeRemove("KMLTarget" + track);
-            NodeMan.disposeRemove("KMLDisplayTargetData" + track);
-            NodeMan.disposeRemove("KMLDisplayTarget" + track);
-            NodeMan.disposeRemove("KMSphere" + track);
+            NodeMan.disposeRemove("TrackData_" + track);
+            NodeMan.disposeRemove("Track_" + track);
+            NodeMan.disposeRemove("TrackDisplayData_" + track);
+            NodeMan.disposeRemove("TrackDisplay_" + track);
+            NodeMan.disposeRemove("TrackSphere_" + track);
         }
 
-        const trackDataID = "KMLTargetData"+track;
-        const trackID = "KMLTarget"+track;
+        const trackDataID = "TrackData_"+track;
+        const trackID = "Track_"+track;
 
-        console.log("Creating track with trackID", trackID, "in addKMLTracks")
+        console.log("Creating track with trackID", trackID, "in addTracks")
 
         makeTrackFromDataFile(track, trackDataID, trackID);
 
@@ -71,8 +72,8 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
 
 
         new CNodeDisplayTrack({
-            id: "KMLDisplayTargetData"+track,
-            track: "KMLTargetData"+track,
+            id: "TrackDisplayData_"+track,
+            track: "TrackData_"+track,
             color: new CNodeConstant({value: new Color(1, 0, 0)}),
             dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
             width: 0.5,
@@ -84,8 +85,8 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
 
 
         new CNodeDisplayTrack({
-            id: "KMLDisplayTarget"+track,
-            track: "KMLTarget"+track,
+            id: "TrackDisplay_"+track,
+            track: "Track_"+track,
             color: new CNodeConstant({value: new Color(1, 0, 1)}),
             dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
             width: 3,
@@ -97,9 +98,9 @@ export function addKMLTracks(tracks, removeDuplicates = false, sphereMask = LAYE
 
 
         new CNodeDisplayTargetSphere({
-            id: "KMSphere"+track,
+            id: "TrackSphere_"+track,
             inputs: {
-                track: "KMLTarget"+track,
+                track: "Track_"+track,
                 size: "sizeTargetScaled",
             },
             color: [1, 1, 0],

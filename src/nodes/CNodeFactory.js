@@ -171,7 +171,7 @@ export class CNodeFactory extends CManager{
     //     [
     //         {"new":"KMLDataTrack",  "id":"cameraTrackData",     "KMLFile":"cameraFile"},
     //         {"new":"TrackFromTimed",      "id":"cameraTrack",        "timedData":"cameraTrackData"},
-    //         {"new":"KMLDataTrack",  "id":"KMLTargetData",   "KMLFile":"KMLTarget"},
+    //         {"new":"KMLDataTrack",  "id":"TrackData_",   "KMLFile":"KMLTarget"},
     //         {"new":"TrackFromTimed",      "id":"targetTrack",       "timedData":"KMLTargetData"},
     //     ]`);
 
