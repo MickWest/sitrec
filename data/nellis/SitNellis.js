@@ -98,9 +98,16 @@ export const SitNellis = {
         units: "meters",
     },
 
+    startConstantDistance: {kind:"GUIValue", value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Meters)"},
+
+    LOSTraverseConstantDistance: { kind: "LOSTraverse",
+        LOS: "JetLOS", startDist: "startConstantDistance",
+    },
+
     LOSTraverseSelect: { kind : "traverseNodes",
         menu: {
             "RNG Values": "LOSTraverseRNG",
+            "Constant Distance": "LOSTraverseConstantDistance",
             "Constant Air Speed": "LOSTraverseConstantAirSpeed",
             "Constant Ground Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
