@@ -6,6 +6,11 @@
 // as we use it as in index into the this.inputs object
 // so adding and deleting also has to modify this.inputs (where "this" is a CNodeSwitch
 export function addOption(controller, optionName, optionValue) {
+    const index = controller._names.indexOf(optionName);
+    if (index !== -1) {
+        console.warn("Option "+ optionName +"  already exists in controller, skipping re-add");
+        return;
+    }
     // Update internal arrays
     controller._values.push(optionValue);
     controller._names.push(optionName);

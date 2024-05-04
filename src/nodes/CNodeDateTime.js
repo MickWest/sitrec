@@ -5,6 +5,8 @@ import {calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {forceUpdateUIText} from "./CNodeViewUI";
 import {assert} from "../utils";
+import {addOption, removeOption} from "../lil-gui-extras";
+import {remove} from "../../three.js/examples/jsm/libs/tween.module";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West
@@ -119,6 +121,11 @@ export class CNodeDateTime extends CNode {
         this.populateStartTimeFromUTCString(Sit.startTime);
         this.dateNow = startToNowDateTime(this.dateStart);
 
+        // var for the menu to sync the time to the start time or the now time or a track
+        // not currently used, but the UI needs the variable.
+        this.syncMethod = null;
+        this.addSyncSwitch();
+
         // test the start2now and now2start functions, ensure the go back and forth with no changes
         for (var i = 0; i < 100000; i++) {
             const start = this.dateNow.valueOf() + i;
@@ -197,16 +204,45 @@ export class CNodeDateTime extends CNode {
         return(timeZoneOffsets[this.timeZoneName])
     }
 
+    // add a select node that has the start time
+    addSyncSwitch() {
+
+        this.syncSwitch = this.dateTimeFolder.add(this, "syncMethod", ["Start Time", "Now Time"]).name("Sync Time to")
+            .onChange( v => {
+                if (v === "Start Time") {
+                    this.resetStartTime(); }
+                else if (v === "Now Time") {
+                    this.resetNowTimeToCurrent();
+                } else {
+                    // it the name of a track
+                    console.log(v)
+                    this.syncToTrack(v)
+                }
+                par.renderOne = true
+
+            }
+        );
+    }
+
     addSyncToTrack(timedTrack) {
         if (!this.addedSyncToTrack) {
-            this.dateTimeFolder.add(this, "syncStartTimeTrack").name("Sync Start Time to Track");
+          //  this.dateTimeFolder.add(this, "syncStartTimeTrack").name("Sync to "+timedTrack);
+
+            addOption(this.syncSwitch, timedTrack, timedTrack)
+
         }
         this.syncTrack = timedTrack;
     }
 
+    // meu callback funtion for the sync button (deprecated)
     syncStartTimeTrack() {
+        this.syncToTrack(this.syncTrack)
+    }
+
+    // sync the start time to the start time of a track given by trackID
+    syncToTrack(trackID) {
         par.frame = 0;
-        const timedTrackNode = NodeMan.get(this.syncTrack);
+        const timedTrackNode = NodeMan.get(trackID);
         const startTime = timedTrackNode.getTrackStartTime();
         console.log(">>>"+startTime)
 

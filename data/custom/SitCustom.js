@@ -1,4 +1,4 @@
-// SitTrackWithAngles.js is a sitch that lets the user drop in
+// SitCustom.js is a sitch that lets the user drop in
 // a track file and a video file, and then displays the track
 // the initial location and time are extracted from the track file
 // a track file can be any of the following:
@@ -12,8 +12,8 @@
 
 
 sitch = {
-    name: "trackwithangles",
-    menuName: "Track with Angles",
+    name: "custom",
+    menuName: "Custom (Drag and Drop)",
 
     lat: 40, lon: -100,
 
@@ -29,5 +29,26 @@ sitch = {
 
     dragDropHandler: true,
     useGlobe: true,
+
+    cameraTrack: {kind: "Switch",
+        inputs: {
+     //       "fixedCamera": {kind: "fixedCamera", position: [0, 0, 0], target: [0, 0, 0]},
+        },
+        desc: "Camera Track"
+    },
+
+    targetTrack: {
+        kind: "Switch",
+        inputs: {},
+        desc: "Target Track"
+    },
+
+    // for each type of files that is dropped (e.g. KLV, CSV, video)
+    // specify what switch nodes will be updated with this new option
+    // and what kind of data will be extracted from the file
+    dropTargets: {
+        "track": ["cameraTrack", "targetTrack"],
+    }
+
 
 }

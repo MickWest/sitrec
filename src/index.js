@@ -187,6 +187,7 @@ function checkForTest() {
         toTest = testArray.join(",")
         console.log("Testing " + situation + ", will text next: " + toTest)
 
+
         newSitch(situation)
         setTimeout( checkForTest, 3500);
 
@@ -211,6 +212,11 @@ function checkForNewSitchText() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 async function newSitch(situation, customSetup = false ) {
+
+    var url = SITREC_ROOT+"?sitch=" + situation
+    window.history.pushState({}, null, url);
+
+
     cancelAnimationFrame(animate);
     await waitForParsingToComplete();
     disposeEverything();
@@ -364,7 +370,7 @@ async function initializeOnce() {
             }
             toTest+=situation  // end up back where we started
             checkForTest();
-            url = SITREC_ROOT + "?test="+toTest;
+          //  url = SITREC_ROOT + "?test="+toTest;
         } else {
             newSitch(nextSitch);
         }

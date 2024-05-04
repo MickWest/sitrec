@@ -124,6 +124,7 @@ class CDragDropHandler {
                     fileManagerEntry.dynamicLink = true;
                     fileManagerEntry.filename = x.filename;
                     fileManagerEntry.staticURL = newStaticURL;
+                    fileManagerEntry.dataType = x.dataType;
                     const fileExt = getFileExtension(x.filename);
 
                     // very rough figuring out what to do with it
@@ -135,8 +136,7 @@ class CDragDropHandler {
 
                         fileManagerEntry.isTLE = true;
                         NodeMan.get("NightSkyNode").replaceTLE(x.parsed)
-                    } else if (fileExt === "kml") {
-//                        addKMLMarkers(x.parsed)
+                    } else if (fileExt === "kml" || ext === "srt" || ext === "csv" || ext === "klv") {
                         addTracks([x.filename], true)
                     } else if (fileExt === "sitch.js") {
                         // x.parsed is a sitch text def

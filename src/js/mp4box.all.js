@@ -16,7 +16,7 @@ var Log = (function (){
             else if (level == this.info) log_level = LOG_LEVEL_INFO;
             else if (level == this.warn) log_level = LOG_LEVEL_WARNING;
             else if (level == this.error) log_level = LOG_LEVEL_ERROR;
-            else log_level = LOG_LEVEL_WARNING;
+            else log_level = LOG_LEVEL_ERROR;
         },
         debug : function(module, msg) {
             if (console.debug === undefined) {
@@ -754,7 +754,7 @@ DataStream.memcpy = function(dst, dstOffset, src, srcOffset, byteLength) {
 
  @param {Object} array Typed array to convert.
  @param {boolean} arrayIsLittleEndian True if the data in the array is
- little-endian. Set false for big-endian.
+  little-endian. Set false for big-endian.
  @return {Object} The converted typed array.
  */
 DataStream.arrayToNative = function(array, arrayIsLittleEndian) {
@@ -770,7 +770,7 @@ DataStream.arrayToNative = function(array, arrayIsLittleEndian) {
 
  @param {Object} array Typed array to convert.
  @param {boolean} littleEndian True if the converted array should be
- little-endian. Set false for big-endian.
+  little-endian. Set false for big-endian.
  @return {Object} The converted typed array.
  */
 DataStream.nativeToEndian = function(array, littleEndian) {
@@ -819,7 +819,7 @@ String.fromCharCodeUint8 = function(uint8arr) {
 
  @param {number} length The length of the string to read in bytes.
  @param {?string} encoding The encoding of the string data in the DataStream.
- Defaults to ASCII.
+  Defaults to ASCII.
  @return {string} The read string.
  */
 DataStream.prototype.readString = function(length, encoding) {
@@ -1225,7 +1225,7 @@ DataStream.prototype.writeUCS2String = function(str, endianness, lengthOverride)
 
  @param {string} s The string to write.
  @param {?string} encoding The encoding for the written string data.
- Defaults to ASCII.
+  Defaults to ASCII.
  @param {?number} length The number of characters to write.
  */
 DataStream.prototype.writeString = function(s, encoding, length) {

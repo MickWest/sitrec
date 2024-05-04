@@ -24,6 +24,7 @@ import {isLocal} from "../../config";
 function updateSitFrames() {
     if (Sit.frames === undefined || Sit.frames === 0) {
         console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
+        assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
         Sit.frames = Sit.videoFrames;
     }
     updateGUIFrames();
@@ -71,7 +72,6 @@ export class CVideoWebCodecData extends CVideoData {
                 source.file.appendBuffer(result.parsed)
                 source.file.flush();
                 loadedCallback();
-                updateSitFrames()
 
             })
         } else {
@@ -80,7 +80,6 @@ export class CVideoWebCodecData extends CVideoData {
                 source.loadURI(v.file,
                     () => {
                         loadedCallback();
-                        updateSitFrames()
                     },
                     () => {
                         errorCallback();
@@ -99,7 +98,6 @@ export class CVideoWebCodecData extends CVideoData {
                     source.file.appendBuffer(reader.result)
                     source.file.flush();
                     loadedCallback();
-                    updateSitFrames()
                 }
 
             }
@@ -307,7 +305,9 @@ export class CVideoWebCodecData extends CVideoData {
 
             this.decoder.configure(config);
             demuxer.start((chunk) => {
-
+                // The demuxer will call this for each chunk it demuxes
+                // essentiall it's iterating through the frames
+                // each chunk is either a key frame or a delta frame
                 chunk.frameNumber = this.demuxFrame++
                 this.chunks.push(chunk)
 
@@ -325,9 +325,10 @@ export class CVideoWebCodecData extends CVideoData {
                     assert (chunk.timestamp >= lastGroup.timestamp, "out of group chunk timestamp")
                     lastGroup.length++;
                 }
+
                 // console.log(this.chunks.length - 1 + ": Demuxer got a " + chunk.type + " chunk, timestamp=" + chunk.timestamp +
-                //     ", duration = " + chunk.duration + ", byteLength = " + chunk.byteLength)
-                //
+                //      ", duration = " + chunk.duration + ", byteLength = " + chunk.byteLength)
+
                 this.frames++;
                 Sit.videoFrames = this.frames * this.videoSpeed;
                // Sit.aFrame = 0;
@@ -336,6 +337,17 @@ export class CVideoWebCodecData extends CVideoData {
                 // decoding is now deferred
                 //            decoder.decode(chunk);
             })
+            // at this point demuxing should be done, so we should have an accurate frame count
+            // note, that's only true if we are not loading the video async
+            // (i.e. the entire video is loaded before we start decoding)
+            console.log("Demuxing done (assuming not async loading), frames = " + this.frames + ", Sit.videoFrames = " + Sit.videoFrames)
+            console.log("Demuxer calculated frames as "+demuxer.source.totalFrames)
+            //assert(this.frames === demuxer.source.totalFrames, "Frames mismatch between demuxer and decoder"+this.frames+"!="+demuxer.source.totalFrames)
+
+            // use the demuxer frame count, as it's more accurate
+            Sit.videoFrames = demuxer.source.totalFrames * this.videoSpeed;
+
+            updateSitFrames()
         });
 
     }

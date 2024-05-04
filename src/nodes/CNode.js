@@ -457,6 +457,12 @@ class CNode {
     // will work with either a track that returns a Vector3 or one that returns {position:Vector3, ...}
     p(frameFloat) {
         var pos = this.getValue(frameFloat)
+
+        // if (pos === null) {
+        //     console.log("Node "+this.id+" has null value at frame "+frameFloat)
+        //     pos = this.getValue(frameFloat)
+        //     console.log(pos);
+        // }
         if (pos.position !== undefined)
             pos = pos.position;
         return pos.clone()

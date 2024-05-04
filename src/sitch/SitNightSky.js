@@ -90,6 +90,13 @@ export const SitNightSky = {
     globeScale: 1,  // was defaulting to 0.99
     localLatLon: true,
 
+    dropTargets: {
+        "track": ["cameraSwitch"],
+    },
+
+
+    // so this is the night sky, and there's a Sync Start Time to Track button
+    // we want to make that a switch.
 
     setup2: function () {
 

@@ -350,33 +350,52 @@ export class CFileManager extends CManager {
             var prom;
 
             const decoder = new TextDecoder("utf-8"); // replace "utf-8" with detected encoding
+
+            // might not need this, as we can just use the fileExt
+            let dataType = "unknown";
+
+
             switch (fileExt.toLowerCase()) {
                 case "txt":
+                    parsed = decoder.decode(buffer);
+                    dataType = "text";
+                    break;
                 case "tle":
+                    parsed = decoder.decode(buffer);
+                    dataType = "tle";
+                    break;
                 case "dat": // for bsc5.dat, the bright star catalog
                     parsed = decoder.decode(buffer);
+                    dataType = "dat";
                     break;
                 case "klv":
                     parsed = parseKLVFile(buffer);
+                    dataType = "klv";
                     break;
                 case "jpg":
                 case "jpeg":
                     prom = createImageFromArrayBuffer(buffer, 'image/jpeg')
+                    dataType = "image";
                     break
                 case "gif":
                     prom = createImageFromArrayBuffer(buffer, 'image/gif')
+                    dataType = "image";
                     break
                 case "png":
                     prom = createImageFromArrayBuffer(buffer, 'image/png')
+                    dataType = "image";
                     break
                 case "tif":
                 case "tiff":
                     prom = createImageFromArrayBuffer(buffer, 'image/tiff')
+                    dataType = "image";
                     break
                 case "webp":
                     prom = createImageFromArrayBuffer(buffer, 'image/webp')
+                    dataType = "image";
                     break
                 case "heic":
+                    dataType = "image";
                     prom = createImageFromArrayBuffer(buffer, 'image/heic')
                     break
                 case "csv":
@@ -384,28 +403,35 @@ export class CFileManager extends CManager {
                     var text = decoder.decode(buffer);
 
                     parsed = $.csv.toArrays(text);
-                    const type = detectCSVType(parsed)
-                    if (type === "Unknown") {
+                    dataType = detectCSVType(parsed)
+                    if (dataType === "Unknown") {
                         parsed.shift(); // remove the header, legacy file type handled in specific code
-                    } else if (type === "Airdata") {
+                    } else if (dataType === "Airdata") {
                         parsed = parseAirdataCSV(parsed);
-                    } else if (type === "MISB1") {
+                    } else if (dataType === "MISB1") {
                         parsed = parseMISB1CSV(parsed);
                     }
                     break;
                 case "kml":
                 case "ksv":
                     parsed = parseXml(decoder.decode(buffer));
-
+                    dataType = "klm";
                     break;
                 case "glb":             // 3D models in glTF binary format
+                    dataType = "glb";
+                    parsed = buffer;
+                    break;
                 case "bin":             // for binary files like BSC5 (the Yale Bright Star Catalog)
+                    dataType = "bin";
+                    parsed = buffer;
+                    break;
                 case "sitch.js":        // custom text sitch files
+                    dataType = "sitch";
                     parsed = buffer;
                     break;
                 case "srt": // SRT is a subtitle file, but is used by DJI drones to store per-frame coordinates.
+                    dataType = "srt";
                     parsed = parseSRT(decoder.decode(buffer));
-
                     break;
 
                 default:
@@ -413,7 +439,7 @@ export class CFileManager extends CManager {
                     // but let's trust the extensions
                     //assert(0, "Unhandled extension " + fileExt + " for " + filename)
                     console.warn("Unhandled extension " + fileExt + " for " + filename)
-                    return Promise.resolve({filename: filename, parsed: buffer});
+                    return Promise.resolve({filename: filename, parsed: buffer, dataType: dataType});
             }
 
             console.log("parseAsset: DONE Parse " + filename)

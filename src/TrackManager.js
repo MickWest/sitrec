@@ -54,20 +54,35 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
 
         makeTrackFromDataFile(track, trackDataID, trackID);
 
-        if (NodeMan.exists("cameraSwitch")) {
-            const switchNode = NodeMan.get("cameraSwitch");
-            switchNode.removeOption("KML Track")
-            switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
-                sourceTrack: trackID,
-            }) )
-            // and select it
-            switchNode.selectOption("KML Track")
+        console.log(Sit.dropTargets)
 
-            // add a "Sync to Track" button, if there isn't one.
-            GlobalDateTimeNode.addSyncToTrack(trackDataID);
-            // and call it
-            //GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
+        if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
+            const dropTargets = Sit.dropTargets["track"]
+            for (const dropTargetSwitch of dropTargets) {
+                if (NodeMan.exists(dropTargetSwitch)) {
+                    const switchNode = NodeMan.get(dropTargetSwitch);
 
+                    // switchNode.removeOption("KML Track")
+                    // switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
+                    //     sourceTrack: trackID,
+                    // }))
+
+                    const menuText = "Track "+track
+
+                    switchNode.addOption(menuText, new CNodeControllerTrackPosition({
+                        sourceTrack: trackID,
+                     }))
+
+                    // and select it
+                    switchNode.selectOption(menuText)
+
+                    // add a "Sync to Track" button, if there isn't one.
+                    GlobalDateTimeNode.addSyncToTrack(trackDataID);
+                    // and call it
+                    //GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
+
+                }
+            }
         }
 
 

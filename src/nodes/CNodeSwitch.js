@@ -1,6 +1,7 @@
 import {CNode} from "./CNode";
 import {addOption, removeOption} from "../lil-gui-extras";
 import {assert} from "../utils";
+import {Sit} from "../Globals";
 
 class CNodeSwitch extends CNode {
     constructor(v, _gui) {
@@ -10,17 +11,25 @@ class CNodeSwitch extends CNode {
 
         this.setGUI(v, _gui)
 
-        if (this.choice == undefined) {
-            this.choice = Object.keys(this.inputs)[0]
+        if (this.choice === undefined) {
+            if (Object.keys(this.inputs).length > 0) {
+                this.choice = Object.keys(this.inputs)[0]
+            } else {
+                this.choice = null; // no choices avaialable, so allow a null value until later (for an empty menu)
+            }
         }
 
-        assert(this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
+        assert(this.choice === null || this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
 
         // add the menu if the gui is defined
         if (this.gui !== undefined) {
             this.guiOptions = {}
 
-            this.frames = this.inputs[this.choice].frames
+            if (this.choice === null) {
+                this.frames = Sit.frames
+            } else {
+                this.frames = this.inputs[this.choice].frames
+            }
 
             // build the list of "key","key" pairs for the gui drop-down menu
             Object.keys(this.inputs).forEach(key => {
@@ -100,20 +109,30 @@ class CNodeSwitch extends CNode {
         })
         // show the selected inputs AFTER all the hiding has been done
   //      console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
-        this.inputs[this.choice].show()
-        this.inputs[this.choice].showActiveSources()
+        if (Object.keys(this.inputs).length > 0) {
+            this.inputs[this.choice].show()
+            this.inputs[this.choice].showActiveSources
+        }
     }
 
 
     getValueFrame(f) {
-        return this.inputs[this.choice].getValueFrame(f)
+        if (Object.keys(this.inputs).length > 0) {
+            return this.inputs[this.choice].getValueFrame(f)
+        } else {
+            return null
+        }
     }
 
     // apply is used for controllers (like CNodeController)
     // we want to have a selection of camera controllers
     // so we need to pass though the apply() call to the selected one
     apply(f, cam) {
-        return this.inputs[this.choice].apply(f, cam)
+        if (Object.keys(this.inputs).length > 0) {
+            return this.inputs[this.choice].apply(f, cam)
+        } else {
+            return null
+        }
     }
 
 }

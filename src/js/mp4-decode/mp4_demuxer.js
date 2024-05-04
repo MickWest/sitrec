@@ -1,4 +1,5 @@
 import MP4Box from "../mp4box.all.js";
+//var MP4Box = require('mp4box');  // node.js version
 import {Sit} from "../../Globals";
 
 export class MP4Source {
@@ -55,6 +56,18 @@ export class MP4Source {
   onReady(info) {
     // TODO: Generate configuration changes.
     this.info = info;
+    //console.log("MP4Source onReady info = ", info)
+    var videoTrack = info.tracks.find(track => track.type === 'video');
+    if (videoTrack) {
+      // var duration = videoTrack.movie_duration; // Duration in timescale units
+      // var timescale = videoTrack.movie_timescale; // Timescale (units per second)
+      // var frameRate = videoTrack.video.sample_entries[0].sample_rate || calculateFrameRate(videoTrack);
+      //
+      // var totalFrames = (frameRate * duration) / timescale;
+
+      this.totalFrames = videoTrack.nb_samples;
+      console.log('Estimated Number of Frames: ', this.totalFrames);
+    }
 
     if (this._info_resolver) {
       this._info_resolver(info);
