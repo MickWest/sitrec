@@ -1,6 +1,6 @@
 import {CNodeVideoView} from "./CNodeVideoView";
 import {par} from "../par";
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
 import {Rehoster} from "../CRehoster";

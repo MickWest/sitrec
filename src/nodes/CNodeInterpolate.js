@@ -15,6 +15,7 @@ class CNodeInterpolate extends CNode {
         if (this.frames === 0) {
             console.warn("CNodeInterpolate: frames is zero, setting to Sit.frames")
             this.frames = Sit.frames;
+            this.useSitFrames = true;
         }
 
         this.input("start")

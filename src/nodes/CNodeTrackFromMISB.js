@@ -19,6 +19,8 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
 
         this.columns = v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]
 
+        console.log("CNodeTrackFromMISB:constructor(): columns[2] = ",this.columns[2])
+
         this.input("misb")
 
         this.addInput("startTime",GlobalDateTimeNode)
@@ -53,6 +55,7 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
 
         this.array = [];
         this.frames = Sit.frames;
+        this.useSitFrames = true; // flag to say we need recalculate if Sit.frames changes
 
         assert(this.frames === Math.floor(this.frames),`Frames must be an integer, it's ${this.frames}`)
 
@@ -104,8 +107,8 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
         //    const alt = 2932;
 
             // if (f < 10 ) {
-            //     console.log("now",msNow,"slot",slot,"time",misb.getTime(slot),"next time",misb.getTime(slot+1),"fraction",fraction,"lat",lat,"lon",lon,"alt",alt)
-            //     console.log("misb LLA for slot ",slot,misb.getLat(slot),misb.getLon(slot),misb.getAlt(slot));
+            //      console.log("now",msNow,"slot",slot,"time",misb.getTime(slot),"next time",misb.getTime(slot+1),"fraction",fraction,"lat",lat,"lon",lon,"alt",alt)
+            //      console.log("misb LLA for slot ",slot,misb.getLat(slot),misb.getLon(slot),misb.getAlt(slot));
             // }
 
             const pos = LLAToEUS(lat, lon, alt)

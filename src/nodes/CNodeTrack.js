@@ -380,7 +380,10 @@ export class CNodeTrackFromLLA extends CNodeTrack {
         this.input("lon");
         this.input("alt");
         this.frames = this.in.lat.frames;
-        if (this.frames === 0) this.frames = Sit.frames
+        if (this.frames === 0) {
+            this.frames = Sit.frames
+            this.useSitFrames = true;
+        }
     }
 
     // takes LLA inputs and converts to a position in EUS format

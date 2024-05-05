@@ -13,7 +13,11 @@ export class CNodeLOSConstantCamera extends CNode {
         this.input("camera");
 
 
-        if (this.frames == 0) this.frames = Sit.frames;
+        if (this.frames == 0) {
+            this.frames = Sit.frames;
+            this.useSitFrames = true;
+
+        }
     }
 
     getValueFrame(f) {

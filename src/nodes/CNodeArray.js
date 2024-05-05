@@ -46,6 +46,7 @@ export class CNodeManualData extends CNodeEmptyArray {
     constructor(v) {
         super(v);
         this.frames = Sit.frames;
+        this.useSitFrames = true;
         this.data = v.data;
         this.array = new Array(this.frames);
         let dataIndex = 0;

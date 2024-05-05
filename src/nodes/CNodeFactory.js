@@ -4,7 +4,7 @@ import {CManager} from "../CManager";
 import {assert} from "../utils";
 import {CNode} from "./CNode";
 import {CNodeController} from "./CNodeController";
-import {FileManager} from "../Globals";
+import {FileManager, NodeMan, Sit} from "../Globals";
 
 export class CNodeFactory extends CManager{
     constructor(props) {
@@ -232,6 +232,18 @@ export class CNodeFactory extends CManager{
     disposeAll() {
         console.log("Disposing all nodes")
         super.disposeAll();
+    }
+
+    // if Sit.frames changes, we need to update and recalculate all nodes that use it
+    // which we do by updating those have have the useSitFrames flag set
+    updateSitFramesChanged() {
+        // update them all individually first
+        NodeMan.iterate((key, node) => {
+            if (node.useSitFrames) {
+                node.frames = Sit.frames;
+                node.recalculateCascade();
+            }
+        })
     }
 
 }

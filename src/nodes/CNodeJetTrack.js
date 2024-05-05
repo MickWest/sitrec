@@ -9,8 +9,13 @@ import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeJetTrack extends CNodeTrack {
     constructor(v) {
-        if (v.frames === undefined) v.frames = Sit.frames;
-        super(v);
+        if (v.frames === undefined) {
+            v.frames = Sit.frames;
+            super(v);
+            this.useSitFrames = true;
+        } else {
+            super(v);
+        }
         this.checkInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading", "origin"])
         this.isNumber = false;
         this.recalculate()

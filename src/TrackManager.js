@@ -13,13 +13,16 @@ import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
 import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {MISB} from "./MISBUtils";
 
 
 //export const TrackManager = new CManager();
 
-
+// tracks = array of filenames of files that have been loaded and that
+// we cant to make tracks from
 export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.MASK_HELPERS) {
 
+    // if we are adding tracks, then we need to add a scale for the target sphere
     if (!NodeMan.exists("sizeTargetScaled")) {
         new CNodeScale("sizeTargetScaled", scaleF2M,
             new CNodeGUIValue({
@@ -45,6 +48,8 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
             NodeMan.disposeRemove("TrackDisplayData_" + track);
             NodeMan.disposeRemove("TrackDisplay_" + track);
             NodeMan.disposeRemove("TrackSphere_" + track);
+
+            // WILL NEED TO REMOVE CENTER TRACKS TOO
         }
 
         const trackDataID = "TrackData_"+track;
@@ -52,7 +57,42 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
 
         console.log("Creating track with trackID", trackID, "in addTracks")
 
+        // just use the default MISB Columns, so no columns are specified
         makeTrackFromDataFile(track, trackDataID, trackID);
+
+        // This track will include FOV and angles
+        // but if there's a center track, we make a separate track for that
+        // in data it looks like
+        // targetTrack: {
+        //     kind: "TrackFromMISB",
+        //         misb: "cameraTrackData",
+        //         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
+        // },
+
+        const trackDataNode = NodeMan.get(trackDataID);
+        // this has the original data in common MISB format, regardless of the data type
+        // actual MISB (and possibly other CSV inputs) might have a center track
+        //
+        const misb = trackDataNode.misb;
+        let centerID = null;
+        if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
+
+            const centerDataID = "CenterData_" + track;
+            centerID = "Center_" + track;
+            // const centerTrack = new CNodeTrackFromMISB({
+            //     id: centerTrackID,
+            //     misb: trackDataNode,
+            //     columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"],
+            //     exportable: true,
+            // })
+
+            makeTrackFromDataFile(track, centerDataID, centerID,
+                ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
+
+        }
+
+
+
 
         console.log(Sit.dropTargets)
 
@@ -79,9 +119,18 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
                         // drag and drop default now just adds the data source track, not a controller
                         // this is more flexible, as the user can then add a controller if they want
                         switchNode.addOption(menuText, NodeMan.get(trackID))
+
+                        // if there's a center point track, make that as well
+                        if (centerID !== null) {
+                            switchNode.addOption("Center "+track, NodeMan.get(centerID))
+                        }
+
                     }
                     // and select it
                     switchNode.selectOption(menuText)
+
+
+
 
                     // add a "Sync to Track" button, if there isn't one.
                     GlobalDateTimeNode.addSyncToTrack(trackDataID);
@@ -97,7 +146,6 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
             id: "TrackDisplayData_"+track,
             track: "TrackData_"+track,
             color: new CNodeConstant({value: new Color(1, 0, 0)}),
-            dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
             width: 0.5,
           //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
@@ -105,18 +153,42 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
 
         })
 
-
         new CNodeDisplayTrack({
             id: "TrackDisplay_"+track,
             track: "Track_"+track,
             color: new CNodeConstant({value: new Color(1, 0, 1)}),
-            dropColor: new CNodeConstant({value: new Color(0.8, 0.6, 0)}),
             width: 3,
           //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
             layers: LAYER.MASK_HELPERS,
 
         })
+
+        if (centerID !== null) {
+
+            new CNodeDisplayTrack({
+                id: "CenterDisplayData_" + track,
+                track: "CenterData_" + track,
+                color: new CNodeConstant({value: new Color(0, 1, 0)}),
+                width: 0.5,
+                //  toGround: 1, // spacing for lines to ground
+                ignoreAB: true,
+                layers: LAYER.MASK_HELPERS,
+
+            })
+
+            new CNodeDisplayTrack({
+                id: "CenterDisplay_" + track,
+                track: centerID,
+                color: new CNodeConstant({value: new Color(1, 1, 0)}),
+                width: 3,
+                //  toGround: 1, // spacing for lines to ground
+                ignoreAB: true,
+                layers: LAYER.MASK_HELPERS,
+
+            })
+        }
+
 
 
         new CNodeDisplayTargetSphere({

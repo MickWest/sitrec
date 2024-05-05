@@ -1,6 +1,6 @@
 import {CVideoData} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
-import {FileManager, infoDiv, Sit} from "../Globals";
+import {FileManager, infoDiv, NodeMan, Sit} from "../Globals";
 import {assert, loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
@@ -27,6 +27,7 @@ function updateSitFrames() {
         assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
         Sit.frames = Sit.videoFrames;
     }
+    NodeMan.updateSitFramesChanged();
     updateGUIFrames();
     updateFrameSlider();
 }

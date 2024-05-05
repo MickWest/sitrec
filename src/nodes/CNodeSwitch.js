@@ -27,6 +27,7 @@ class CNodeSwitch extends CNode {
 
             if (this.choice === null) {
                 this.frames = Sit.frames
+                this.useSitFrames = true;
             } else {
                 this.frames = this.inputs[this.choice].frames
             }

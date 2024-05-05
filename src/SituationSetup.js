@@ -351,6 +351,7 @@ export function SetupFromKeyAndData(key, _data) {
             if (data.LLA !== undefined) {
                 node = makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]));
                 node.frames = Sit.frames;
+                node.useSitFrames = Sit.frames;
             } else {
                 const file = data.file ?? "cameraFile";
 

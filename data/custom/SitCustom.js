@@ -15,6 +15,10 @@ sitch = {
     name: "custom",
     menuName: "Custom (Drag and Drop)",
 
+    // temporary hard wired time and terrain for testing MISB truck track
+    startTime: "2012-09-19T20:50:26.970Z",
+    terrain: {lat: 41.0957, lon: -104.8702, zoom: 14, nTiles: 8},
+
     lat: 40, lon: -100,
 
     lookCamera: {fov: 10, near: 1, far: 8000000},

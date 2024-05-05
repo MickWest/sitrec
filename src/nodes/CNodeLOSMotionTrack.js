@@ -23,8 +23,13 @@ example usage:
 
 export class CNodeLOSMotionTrack extends CNodeEmptyArray {
     constructor(v) {
-        v.frames ??= Sit.frames;
-        super(v);
+        if (!v.frames) {
+            v.frames = Sit.frames;
+            super(v);
+            this.useSitFrames = true;
+        } else {
+            super(v);
+        }
         this.input("cameraTrack")
         this.csv = FileManager.get(v.csv)
         // we take the two columns of x and y tracking (which will not be every frame)

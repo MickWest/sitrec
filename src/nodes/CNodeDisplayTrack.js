@@ -40,6 +40,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         assert(this.in.track.p(0) !== undefined, "CNodeDisplayTrackPosition needs input with position")
 
         this.frames = v.frames ?? this.in.track.frames;
+        this.useSitFrames = this.in.track.useSitFrames;
 
         this.trackGeometry = null
         this.trackLine = null
@@ -93,6 +94,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const line_colors = [];
         for (var f = 0; f < this.frames; f++) {
             const trackPoint = this.in.track.v(f)
+            assert(trackPoint != undefined, "CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f)
 
             // we skip over undefined points, so we can display tracks that
             // don't fully have all the data
