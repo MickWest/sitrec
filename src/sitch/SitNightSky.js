@@ -94,6 +94,7 @@ export const SitNightSky = {
         "track": ["cameraSwitch"],
     },
 
+    dropAsController: true,
 
     // so this is the night sky, and there's a Sync Start Time to Track button
     // we want to make that a switch.
@@ -108,6 +109,7 @@ export const SitNightSky = {
                 "Manual Position": new CNodeControllerManualPosition ({
                     id: "manualController"
                 }),
+
                 // "XXX Position": new CNodeControllerManualPosition ({
                 //     id: "manual2Controller"
                 // }),
@@ -115,7 +117,7 @@ export const SitNightSky = {
             }
         }, gui)
 
-        // cameraSwitch.addOption("YYY Position", new CNodeControllerManualPosition ({
+        // cameraSwitch.addOptionToGUIMenu("YYY Position", new CNodeControllerManualPosition ({
         //     id: "manual3Controller"
         // }))
 

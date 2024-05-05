@@ -63,16 +63,23 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
                     const switchNode = NodeMan.get(dropTargetSwitch);
 
                     // switchNode.removeOption("KML Track")
-                    // switchNode.addOption("KML Track", new CNodeControllerTrackPosition({
+                    // switchNode.addOptionToGUIMenu("KML Track", new CNodeControllerTrackPosition({
                     //     sourceTrack: trackID,
                     // }))
 
                     const menuText = "Track "+track
 
-                    switchNode.addOption(menuText, new CNodeControllerTrackPosition({
-                        sourceTrack: trackID,
-                     }))
-
+                    if (Sit.dropAsController) {
+                        // backwards compatibility for SitNightSky
+                        // which expects dropped tracks to create a controller
+                        switchNode.addOption(menuText, new CNodeControllerTrackPosition({
+                            sourceTrack: trackID,
+                        }))
+                    } else {
+                        // drag and drop default now just adds the data source track, not a controller
+                        // this is more flexible, as the user can then add a controller if they want
+                        switchNode.addOption(menuText, NodeMan.get(trackID))
+                    }
                     // and select it
                     switchNode.selectOption(menuText)
 

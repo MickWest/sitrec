@@ -30,25 +30,51 @@ sitch = {
     dragDropHandler: true,
     useGlobe: true,
 
-    cameraTrack: {kind: "Switch",
+
+    cameraTrackSwitch: {kind: "Switch",
         inputs: {
-     //       "fixedCamera": {kind: "fixedCamera", position: [0, 0, 0], target: [0, 0, 0]},
+           "fixedCamera": {kind:"PositionLLA", LLA: [34.399060162,-115.858257450, 1380]},
         },
         desc: "Camera Track"
     },
 
-    targetTrack: {
+    targetTrackSwitch: {
         kind: "Switch",
-        inputs: {},
+        inputs: {
+            "fixedTarget": {kind:"PositionLLA", LLA: [34.5,-115.858257450, 0]},
+        },
         desc: "Target Track"
+    },
+
+    // These are the types of controller for the camera
+    // which will reference the cameraTrackSwitch for source data
+    CameraPositionController: {
+        kind: "Switch",
+        inputs: {
+            "Follow Track": {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
+        },
+        desc: "Camera Position Controller",
+    },
+
+    // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
+    // for source data
+    // can be track-to-track, fixed angles, Az/El/Roll track, etc.
+    CameraAngleController: {kind: "Switch",
+        inputs: {
+            "TrackToTrack": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+        },
+        desc: "Camera LOS Controller"
     },
 
     // for each type of files that is dropped (e.g. KLV, CSV, video)
     // specify what switch nodes will be updated with this new option
     // and what kind of data will be extracted from the file
     dropTargets: {
-        "track": ["cameraTrack", "targetTrack"],
-    }
+        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
+    },
+
+
+    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
 
 }

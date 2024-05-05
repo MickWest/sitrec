@@ -1,5 +1,5 @@
 import {CNode} from "./CNode";
-import {addOption, removeOption} from "../lil-gui-extras";
+import {addOptionToGUIMenu, removeOption} from "../lil-gui-extras";
 import {assert} from "../utils";
 import {Sit} from "../Globals";
 
@@ -70,7 +70,7 @@ class CNodeSwitch extends CNode {
     addOption(option, value) {
         console.log("(adding) this.choice = "+this.choice)
         this.inputs[option] = value;
-        addOption(this.controller, option, option)
+        addOptionToGUIMenu(this.controller, option, option)
         console.log("(adding) this.choice = "+this.choice)
     }
 

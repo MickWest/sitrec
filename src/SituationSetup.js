@@ -203,7 +203,7 @@ export function SetupFromKeyAndData(key, _data) {
                         // so the node system will generate an id for it
                         const anonResult = SetupFromKeyAndData(undefined, data[subKey]);
                         // assert it's a CNode derived object
-                        assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object")
+                        assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object. Kind = "+data[subKey].kind+"\n"+JSON.stringify(data));
                         // replace the object with the id of the newly created node
                         data[subKey] = anonResult.id;
                     }
@@ -349,8 +349,8 @@ export function SetupFromKeyAndData(key, _data) {
 
             const id = data.id ?? "cameraTrack";
             if (data.LLA !== undefined) {
-                node = makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]))
-                    .frames = Sit.frames;
+                node = makePositionLLA(id, data.LLA[0], data.LLA[1], f2m(data.LLA[2]));
+                node.frames = Sit.frames;
             } else {
                 const file = data.file ?? "cameraFile";
 
@@ -1130,8 +1130,6 @@ export function SetupFromKeyAndData(key, _data) {
             break;
 
         default:
-
-
             // what if it's a controller???
             // we have custom setup above, but need a more generic way to do this
             // with nodes. Specifically create the controller and add it to the camera
@@ -1142,7 +1140,8 @@ export function SetupFromKeyAndData(key, _data) {
                 const camera = data.camera ?? "lookCamera";
                 const cameraNode = NodeMan.get(camera);
                 if (cameraNode) {
-                    cameraNode.addController(key, data);
+                    node = NodeMan.create("Controller"+key, data);
+                    cameraNode.addControllerNode(node);
                 } else {
                     console.error("SituationSetup: controller " + key + " needs a camera")
                 }

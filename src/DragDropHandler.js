@@ -136,7 +136,7 @@ class CDragDropHandler {
 
                         fileManagerEntry.isTLE = true;
                         NodeMan.get("NightSkyNode").replaceTLE(x.parsed)
-                    } else if (fileExt === "kml" || ext === "srt" || ext === "csv" || ext === "klv") {
+                    } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
                         addTracks([x.filename], true)
                     } else if (fileExt === "sitch.js") {
                         // x.parsed is a sitch text def

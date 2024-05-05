@@ -5,7 +5,7 @@ import {calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {forceUpdateUIText} from "./CNodeViewUI";
 import {assert} from "../utils";
-import {addOption, removeOption} from "../lil-gui-extras";
+import {addOptionToGUIMenu, removeOption} from "../lil-gui-extras";
 import {remove} from "../../three.js/examples/jsm/libs/tween.module";
 
 const timeZoneOffsets = {
@@ -228,7 +228,7 @@ export class CNodeDateTime extends CNode {
         if (!this.addedSyncToTrack) {
           //  this.dateTimeFolder.add(this, "syncStartTimeTrack").name("Sync to "+timedTrack);
 
-            addOption(this.syncSwitch, timedTrack, timedTrack)
+            addOptionToGUIMenu(this.syncSwitch, timedTrack, timedTrack)
 
         }
         this.syncTrack = timedTrack;
