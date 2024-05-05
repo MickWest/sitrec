@@ -37,7 +37,7 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
 
         // removeDuplicates will be true if it's, for example, loaded via drag-and-drop
         // where the user might drag in the same file(s) twice
-        // so if it exists, we call disposeRemove to free any buffers, and remve it from the manager
+        // so if it exists, we call disposeRemove to free any buffers, and remove it from the manager
         // so then we can just reload it again
         if (removeDuplicates) {
             NodeMan.disposeRemove("TrackData_" + track);
