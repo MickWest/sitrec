@@ -5,7 +5,9 @@ import {Color} from "three";
 var matLines = {} // collection of line materials that need updating on resize
 // we make one entry per unique material
 function makeMatLine(color, linewidth = 2, dashed = false) {
-
+    if(typeof window == 'undefined')
+        return null;
+    
     // if it's not a color object, then make it one
     if (!color.isColor) {
         color = new Color(color);

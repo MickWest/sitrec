@@ -470,7 +470,13 @@ export function closeFullscreen() {
     }
 }
 
-export const versionString = MD5(document.lastModified) // if we want to make version-unique names
+function getVersionString() {
+    if(typeof document !== 'undefined')
+        return MD5(document.lastModified)
+    else
+        return "n/a";
+}
+export const versionString = getVersionString() // if we want to make version-unique names
 
 // difference between two angles, accounting for wrap around and angles <0 and >=360
 export function angleDifferenceDeg(a,b) {
