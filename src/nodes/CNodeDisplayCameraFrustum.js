@@ -4,7 +4,7 @@ import {Line2} from "../../three.js/examples/jsm/lines/Line2";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {DebugArrow, DebugArrowAB, dispose, intersectSphere2} from "../threeExt";
-import {guiShowHide, Label3DMan, NodeMan, Sit} from "../Globals";
+import {guiShowHide, NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "../../three.js/examples/jsm/lines/LineSegmentsGeometry";
 import {Ray, Raycaster, Sphere, Vector3} from "three";

@@ -1,6 +1,6 @@
 // a node that lets you choose a value with a slider/input box
 import {assert} from "../utils";
-import {CNodeConstant, NodeMan} from "./CNode";
+import {CNodeConstant} from "./CNode";
 import {par} from "../par";
 
 
