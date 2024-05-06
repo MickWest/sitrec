@@ -39,7 +39,7 @@ sitch = {
         inputs: {
            "fixedCamera": {kind:"PositionLLA", LLA: [34.399060162,-115.858257450, 1380]},
         },
-        desc: "Camera Track"
+        desc: "Camera Position"
     },
 
     targetTrackSwitch: {
@@ -47,7 +47,22 @@ sitch = {
         inputs: {
             "fixedTarget": {kind:"PositionLLA", LLA: [34.5,-115.858257450, 0]},
         },
-        desc: "Target Track"
+        desc: "Camera Direction"
+    },
+
+    fovSwitch: {
+        kind: "Switch",
+        inputs: {
+            "userFOV": {kind: "GUIValue", value:30, start:0.1,  end: 170,  step: 0.001,  desc:"vFOV"},
+        },
+        desc: "Camera FOV"
+    },
+
+
+    fovController: {
+        kind: "fovController",
+        object: "lookCamera",
+        source: "fovSwitch",
     },
 
     // These are the types of controller for the camera
@@ -75,6 +90,7 @@ sitch = {
     // and what kind of data will be extracted from the file
     dropTargets: {
         "track": ["cameraTrackSwitch", "targetTrackSwitch"],
+        "fov": ["fovSwitch"],
     },
 
 

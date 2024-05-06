@@ -14,6 +14,7 @@ import {CManager} from "./CManager";
 import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {MISB} from "./MISBUtils";
+import {isNumber} from "mathjs";
 
 
 //export const TrackManager = new CManager();
@@ -45,6 +46,9 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
         if (removeDuplicates) {
             NodeMan.disposeRemove("TrackData_" + track);
             NodeMan.disposeRemove("Track_" + track);
+            NodeMan.disposeRemove("CenterData_" + track);
+            NodeMan.disposeRemove("Center_" + track);
+
             NodeMan.disposeRemove("TrackDisplayData_" + track);
             NodeMan.disposeRemove("TrackDisplay_" + track);
             NodeMan.disposeRemove("TrackSphere_" + track);
@@ -69,6 +73,7 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
         //         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
         // },
 
+        const trackNode = NodeMan.get(trackID);
         const trackDataNode = NodeMan.get(trackDataID);
         // this has the original data in common MISB format, regardless of the data type
         // actual MISB (and possibly other CSV inputs) might have a center track
@@ -90,9 +95,6 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
                 ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
 
         }
-
-
-
 
         console.log(Sit.dropTargets)
 
@@ -129,14 +131,35 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
                     // and select it
                     switchNode.selectOption(menuText)
 
-
-
-
                     // add a "Sync to Track" button, if there isn't one.
                     GlobalDateTimeNode.addSyncToTrack(trackDataID);
                     // and call it
                     //GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
 
+                }
+            }
+        }
+
+        // if the track had FOV data, and there's an fov drop target, then add it
+        //
+        let hasFOV = false;
+        const value = trackNode.v(0);
+        if (typeof value === "number") {
+            hasFOV = true;
+        } else if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.SensorVerticalFieldofView])) {
+            hasFOV = true;
+        } else if (value.vFOV !== undefined) {
+            hasFOV = true;
+        }
+
+
+        if (hasFOV && Sit.dropTargets !== undefined && Sit.dropTargets["fov"] !== undefined) {
+            const dropTargets = Sit.dropTargets["fov"]
+            for (const dropTargetSwitch of dropTargets) {
+                if (NodeMan.exists(dropTargetSwitch)) {
+                    const switchNode = NodeMan.get(dropTargetSwitch);
+                    switchNode.addOption(trackID, NodeMan.get(trackID))
+                    switchNode.selectOption(trackID)
                 }
             }
         }

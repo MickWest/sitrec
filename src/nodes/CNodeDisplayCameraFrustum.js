@@ -12,6 +12,7 @@ import {getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeLabel3D, CNodeMeasureAB, CNodeMeasureAltitude} from "./CNodeLabels3D";
 import * as LAYER from "../LayerMasks";
+import {isNaN} from "mathjs";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {
@@ -235,6 +236,11 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     }
 
     update(f) {
+
+        const fov = this.camera.fov
+
+        assert(fov !== undefined,"FOV is undefined for camera controlled by "+this.id)
+        assert(!isNaN(fov),"FOV is NaN for "+this.id)
 
         // if we have a target track, then we can use that to set the radius (distance to the end of the frustum)
         if (this.in.targetTrack !== undefined) {
