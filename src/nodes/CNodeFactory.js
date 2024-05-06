@@ -1,7 +1,7 @@
 // we want a node factory to allow for data-driven node creation
 
 import {CManager} from "../CManager";
-import {assert} from "../utils";
+import {assert,isConsole} from "../utils";
 import {CNode} from "./CNode";
 import {CNodeController} from "./CNodeController";
 import {FileManager, NodeMan, Sit} from "../Globals";
@@ -31,7 +31,8 @@ export class CNodeFactory extends CManager{
 
     add(id, node) {
         super.add(id, node)
-        assert (this.nodeTypes[node.constructor.name.substring(5)] !== undefined,
+        // todo: for now we're not registering all of the nodes when running as a console app
+        assert (isConsole() || this.nodeTypes[node.constructor.name.substring(5)] !== undefined,
             "Node type <" + node.constructor.name + "> not registered with node factory")
     }
 

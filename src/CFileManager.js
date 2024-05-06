@@ -1,11 +1,11 @@
 import {
     areArrayBuffersEqual, arrayBufferToString,
     assert,
-    cleanCSVTex,
     cleanCSVText,
     getFileExtension,
     isHttpOrHttps, stringToArrayBuffer,
-    versionString
+    versionString,
+    isConsole
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
@@ -16,6 +16,8 @@ import {Globals, gui} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
+// when running as a console app jQuery's $ is not available, so load just the csv plugin separately
+import csv from "./js/jquery.csv.js";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -28,14 +30,16 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
+        if(gui) {
+            this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
 
-        // custom sitches and rehosting only for logged-in users
-        if (Globals.userID > 0) {
-            this.guiFolder.add(this, "importFile").name("Rehost File").perm();
-            this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
+            // custom sitches and rehosting only for logged-in users
+            if (Globals.userID > 0) {
+                this.guiFolder.add(this, "importFile").name("Rehost File").perm();
+                this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
+            }
         }
-
+        
         let textSitches = [];
         fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
             console.log("Local files: " + data)
@@ -234,24 +238,34 @@ export class CFileManager extends CManager {
         // either a dynamic link (like to the current Starlink TLE) or a static link
         // so fetch it and parse it
 
-
-        if (!isHttpOrHttps(filename)) {
+        var isUrl = isHttpOrHttps(filename);
+        if (!isUrl) {
             // if it's not a url, then redirect to the data folder
             //filename = "./data/" + filename;
             filename = SITREC_ROOT + "data/" + filename;
-
         }
 
-        var original = null;
-
         console.log(">>> loadAsset() Loading Started: " + filename);
-        return fetch(filename + "?v=1" + versionString)
+
+        var bufferPromise = null;
+        if(!isUrl && isConsole()) {
+            // read the asset from the local filesystem if this is not running inside a browser
+            bufferPromise = import('node:fs')
+            .then(fs => {
+                return fs.promises.readFile(filename);
+            });
+        } else {
+            bufferPromise = fetch(filename + "?v=1" + versionString)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 return response.arrayBuffer(); // Return the promise for the next then()
             })
+        }
+
+        var original = null;
+        return bufferPromise
             .then(arrayBuffer => {
                 // parseAsset always returns a promise
                 console.log("<<< loadAsset() Loading Finished: " + filename + " id=" + id);
@@ -402,7 +416,7 @@ export class CFileManager extends CManager {
                     const buffer2 = cleanCSVText(buffer)
                     var text = decoder.decode(buffer);
 
-                    parsed = $.csv.toArrays(text);
+                    parsed = csv.toArrays(text);
                     dataType = detectCSVType(parsed)
                     if (dataType === "Unknown") {
                         parsed.shift(); // remove the header, legacy file type handled in specific code

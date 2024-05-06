@@ -27,6 +27,9 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         //   this.hideUnused = true;
 
+        if(!this.gui)
+            return;
+
         this.guiEntry = this.gui.add(this, "value", this.start, this.end, this.step).onChange(
             value => {
                 this.recalculateCascade()
@@ -39,12 +42,16 @@ export class CNodeGUIValue extends CNodeGUIConstant {
     }
 
     show() {
+        if(!this.gui)
+            return this
         super.show()
         this.guiEntry.show()
         return this
     }
 
     hide() {
+        if(!this.gui)
+            return this
         super.hide()
         this.guiEntry.hide()
         return this

@@ -13,7 +13,8 @@ export class CUnits {
         this.units = _units.toLowerCase();
         this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical"};
         this.changeUnits(this.units);
-        guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
+        if(guiTweaks)
+            guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
     }
 
     changeUnits(_units, updateGUI=true) {
