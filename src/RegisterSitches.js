@@ -34,7 +34,7 @@ export function registerSitches(textSitches) {
     if (CAN_REQUIRE_CONTEXT !== undefined && CAN_REQUIRE_CONTEXT === true) {
         sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
     } else {
-        sitchContext = null;
+        sitchContext = {};
     }
 
     // manually add the SitGimbal sitch
