@@ -3,6 +3,8 @@ import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
 import {isConsole} from "./utils";
 
+import {SitGimbal} from "./sitch/SitGimbal";
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Note. This failed once due to what seemed to be a circular dependency
 // the require.context('./sitch', false, /^\.\/.*\.js$/); was not returning the "nightsky" sitch
@@ -28,6 +30,7 @@ import {isConsole} from "./utils";
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
+
 export function registerSitches(textSitches) {
     let sitchContext;
     if (CAN_REQUIRE_CONTEXT !== undefined && CAN_REQUIRE_CONTEXT === true) {
@@ -36,12 +39,15 @@ export function registerSitches(textSitches) {
         sitchContext = null;
     }
 
+    // manually add the SitGimbal sitch
+    SitchMan.add("SitGimbal", SitGimbal);
+
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);
         Object.keys(moduleExports).forEach(exportKey => {
             const exportObject = moduleExports[exportKey];
 //            console.log("Checking key: "+key+ " Which exports = "+exportKey)
-            if(exportKey.startsWith('Sit')) {
+            if(exportKey.startsWith('Sit') && exportKey !== 'SitGimbal' ) {
                 console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
                 SitchMan.add(exportObject.name, exportObject);
                 //const sitchName = exportKey.substring(3);
