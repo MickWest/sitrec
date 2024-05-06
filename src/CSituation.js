@@ -7,7 +7,7 @@ import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {GlobalScene} from "./LocalFrame";
 import {NightSkyFiles} from "./ExtraFiles";
-import {f2m} from "./utils";
+import {f2m, isConsole} from "./utils";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CUnits} from "./CUnits";
@@ -132,16 +132,19 @@ export class CSituation {
         if (this.nightSky) {
             assets = {...assets,...assets2,...NightSkyFiles}
         }
-        infoDiv.innerHTML = "Loading<br>"
+        if(!isConsole())
+            infoDiv.innerHTML = "Loading<br>"
         for (const key in assets) {
 
             // videoFile is a special case, we don't want to load it here
             if (key !== "videoFile") {
-                infoDiv.innerHTML += this.files[key] + "<br>";
+                if(!isConsole())
+                    infoDiv.innerHTML += this.files[key] + "<br>";
                 await FileManager.loadAsset(assets[key], key)
             }
         }
-        infoDiv.innerHTML = "done loading"
+        if(!isConsole())
+            infoDiv.innerHTML = "done loading"
     }
 
     makeCameraTrack()
