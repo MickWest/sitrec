@@ -227,8 +227,8 @@ class CNode {
                 assert(_gui.constructor.name === "GUI", "CNodeSwitch: gui must be a lil-gui object")
                 this.gui = _gui
             }
-        } else if(gui) {
-            // if no gui is specified, then use the main gui (if there is one)
+        } else {
+            // if no gui is specified, then use the main gui
             console.warn("No gui specified for " + this.id + " using main gui")
             this.gui = gui;
         }
