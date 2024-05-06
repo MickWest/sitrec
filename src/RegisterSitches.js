@@ -1,8 +1,6 @@
 // Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
-import {isConsole} from "./utils";
-
 import {SitGimbal} from "./sitch/SitGimbal";
 
 //////////////////////////////////////////////////////////////////////////////////////
