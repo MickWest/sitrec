@@ -47,7 +47,7 @@ sitch = {
         inputs: {
             "fixedTarget": {kind:"PositionLLA", LLA: [34.5,-115.858257450, 0]},
         },
-        desc: "Camera Direction"
+        desc: "Camera Target"
     },
 
     fovSwitch: {
@@ -78,9 +78,9 @@ sitch = {
     // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
     // for source data
     // can be track-to-track, fixed angles, Az/El/Roll track, etc.
-    CameraAngleController: {kind: "Switch",
+    CameraLOSController: {kind: "Switch",
         inputs: {
-            "TrackToTrack": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+            "To Target": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
         },
         desc: "Camera LOS Controller"
     },

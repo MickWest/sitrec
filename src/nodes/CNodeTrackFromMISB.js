@@ -131,7 +131,10 @@ export class CNodeTrackFromMISB extends CNodeEmptyArray {
                 "gRoll",
             ]
 
-            product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
+            // only copy the vFov if it's actually there
+            // need this check for drag-and-drop
+            if (misb.misb[slot][MISB.SensorVerticalFieldofView] !== undefined)
+                product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
 
             // store the interpolated LLA for exporting
             product["lla"] = [lat,lon,alt];

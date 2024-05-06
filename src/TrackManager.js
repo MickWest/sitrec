@@ -131,10 +131,10 @@ export function addTracks(tracks, removeDuplicates = false, sphereMask = LAYER.M
                     // and select it
                     switchNode.selectOption(menuText)
 
-                    // add a "Sync to Track" button, if there isn't one.
+                    // add to the "Sync Time to" menu
                     GlobalDateTimeNode.addSyncToTrack(trackDataID);
                     // and call it
-                    //GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
+                    GlobalDateTimeNode.syncStartTimeTrack(trackDataID);
 
                 }
             }
