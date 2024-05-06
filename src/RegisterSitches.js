@@ -27,14 +27,7 @@ import {parseJavascriptObject} from "./Serialize";
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
-function getSitchContext() {
-    if(typeof require.context !== 'undefined')
-        return require.context('./sitch', false, /^\.\/.*\.js$/);
-    else
-        return null;
-}
-const sitchContext = getSitchContext();
-
+const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 export function registerSitches(textSitches) {
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);

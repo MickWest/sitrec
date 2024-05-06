@@ -1,6 +1,6 @@
 import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOption} from "../lil-gui-extras";
-import {assert, isConsole} from "../utils";
+import {assert} from "../utils";
 import {Sit} from "../Globals";
 
 class CNodeSwitch extends CNode {
@@ -21,17 +21,16 @@ class CNodeSwitch extends CNode {
 
         assert(this.choice === null || this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
 
-        // in console mode the gui is not defined but we stil use 'frames'
-        if (this.choice === null) {
-            this.frames = Sit.frames
-            this.useSitFrames = true;
-        } else {
-            this.frames = this.inputs[this.choice].frames
-        }
-
         // add the menu if the gui is defined
         if (this.gui !== undefined) {
             this.guiOptions = {}
+
+            if (this.choice === null) {
+                this.frames = Sit.frames
+                this.useSitFrames = true;
+            } else {
+                this.frames = this.inputs[this.choice].frames
+            }
 
             // build the list of "key","key" pairs for the gui drop-down menu
             Object.keys(this.inputs).forEach(key => {
@@ -51,7 +50,7 @@ class CNodeSwitch extends CNode {
                     }
 
                 })
-        } else if(!isConsole()) {
+        } else {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()

@@ -98,7 +98,7 @@ const GimbalDefaults = {
     },
 
 
-    include_JetLabels: (gui != null),
+    include_JetLabels: true,
 
     setup: function () {
         setupOpts();
@@ -118,15 +118,9 @@ const GimbalDefaults = {
         this.glareAngleOriginal = (arrayColumn(this.CSV, 1));
         this.glareAngleSmooth = RollingAverage(this.glareAngleOriginal, 6)
 
-        if(gui)
-            SetupJetGUI()
-
+        SetupJetGUI()
         SetupCommon()
         SetupGimbal();
-
-        if(!gui) // the rest is unsupported for now in console mode
-            return;
-
         SetupTraverseNodes("LOSTraverseSelect",{
             "Straight Line": "LOSTraverseStraightLine",
             "Const Ground Spd": "LOSTraverseConstantSpeed",
@@ -568,15 +562,8 @@ export const SitGimbalNear = {
 
 }
 
-function SetupAzInputs() {
-    new CNodeArray({id: "azMarkus", array: Sit.CSV.map(row => -row[5])})
 
-    var azSourceInputs = {
-        'Az Markus Smoothed': "azMarkus"
-    }
-
-    if(!gui) // the rest is unsupported for now in console mode
-        return azSourceInputs;
+export function SetupGimbal() {
 
     console.log("+++ azEditor Node")
     var azEditorNode = new CNodeCurveEditor({
@@ -595,28 +582,23 @@ function SetupAzInputs() {
     )
     azEditorNode.editorView.visible = false;
 
-    azSourceInputs = {
-        ...azSourceInputs,
-        'Az Editor': "azEditor",
-        'Az Unsmoothed': new CNodeArray({array: Sit.CSV.map(row => -row[4])}),
-        //    'Cue Dot smoothed': new CNodeArray({array: Sit.CSV_Pip}),
-        'Linear': new CNodeInterpolate({
-            start: -54, startFrame: 18,
-            end: 7, endFrame: 1023,
-            frames: Sit.frames,
-        })
-    }
 
-    return azSourceInputs;
-}
-
-export function SetupGimbal() {
-    var azSourceInputs = SetupAzInputs();
+    new CNodeArray({id: "azMarkus", array: Sit.CSV.map(row => -row[5])})
 
     console.log("+++ azSources Node")
     new CNodeSwitch({
         id: "azSources",
-        inputs: azSourceInputs,
+        inputs: {
+            'Az Markus Smoothed': "azMarkus",
+            'Az Editor': "azEditor",
+            'Az Unsmoothed': new CNodeArray({array: Sit.CSV.map(row => -row[4])}),
+            //    'Cue Dot smoothed': new CNodeArray({array: Sit.CSV_Pip}),
+            'Linear': new CNodeInterpolate({
+                start: -54, startFrame: 18,
+                end: 7, endFrame: 1023,
+                frames: Sit.frames,
+            })
+        },
         onChange: function () {
             calculateGlareStartAngle()
             curveChanged()
@@ -672,12 +654,9 @@ export function SetupGimbal() {
     }, guiJetTweaks)
 
 
-    new CNodeNegate({id: "recordedCueAz", node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[9]))})})
+    new CNodeNegate({id: "recordedCueAz", node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[9]))})}),
 
-    if(!gui) // the rest is unsupported for now in console mode
-        return;
-
-    console.log("+++ turnRateBS Node")
+        console.log("+++ turnRateBS Node")
     new CNodeTurnRateBS({
         id: "turnRateBS",
         inputs: {
