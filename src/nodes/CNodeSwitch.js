@@ -117,6 +117,17 @@ class CNodeSwitch extends CNode {
     }
 
 
+    // For a switch, we override both getValue and getValueFrame
+    // to pass through to the selected input
+    // so that input can handle the number of frames
+    getValue(frameFloat) {
+        if (Object.keys(this.inputs).length > 0) {
+            return this.inputs[this.choice].getValue(frameFloat)
+        } else {
+            return null
+        }
+    }
+
     getValueFrame(f) {
         if (Object.keys(this.inputs).length > 0) {
             return this.inputs[this.choice].getValueFrame(f)
