@@ -37,6 +37,14 @@ module.exports = {
         index: './src/index.js',
     },
 
+    ///////////////////////////////////////////////////////////////////////////
+    //  fix for error: Module build failed: UnhandledSchemeError: Reading from "node:fs" is not handled by plugins (Unhandled scheme).
+    target: 'web',
+    externals: {
+        'node:fs': 'commonjs2 fs',
+    },
+    ///////////////////////////////////////////////////////////////////////////
+
 //    devtool: 'eval',
     module: {
 
@@ -105,7 +113,8 @@ module.exports = {
             ],
         }),
         new webpack.DefinePlugin({
-            'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime())
+            'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime()),
+            'CAN_REQUIRE_CONTEXT': JSON.stringify(true)
         }),
 ],
 

@@ -1,7 +1,6 @@
 import {Group, REVISION, Scene,} from "../three.js/build/three.module.js";
 import "./js/uPlot/uPlot.css"
 import "./extra.css"
-import "./js/jquery.csv.js?v=2"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {

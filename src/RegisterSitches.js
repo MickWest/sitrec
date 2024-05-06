@@ -1,6 +1,7 @@
 // Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
+import {isConsole} from "./utils";
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Note. This failed once due to what seemed to be a circular dependency
@@ -18,7 +19,7 @@ import {parseJavascriptObject} from "./Serialize";
 // 1. the sitches
 // 2. the common sitch snippets
 // the common sitch snippets are short snippets of setup data that are used in multiple sitches
-// but the fiull sitches can also be used as a parent to create new sitches
+// but the full sitches can also be used as a parent to create new sitches
 // by overriding some fields, and adding new fields.
 // The common sitches are named with a "common" prefix
 // The full sitches are named with a "Sit" prefix
@@ -27,8 +28,14 @@ import {parseJavascriptObject} from "./Serialize";
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
-const sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
 export function registerSitches(textSitches) {
+    let sitchContext;
+    if (CAN_REQUIRE_CONTEXT !== undefined && CAN_REQUIRE_CONTEXT === true) {
+        sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
+    } else {
+        sitchContext = null;
+    }
+
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);
         Object.keys(moduleExports).forEach(exportKey => {
