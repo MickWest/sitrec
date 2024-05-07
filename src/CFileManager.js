@@ -30,7 +30,7 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        if(gui) {
+        if(!isConsole()) {
             this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
 
             // custom sitches and rehosting only for logged-in users
@@ -38,13 +38,13 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "importFile").name("Rehost File").perm();
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
             }
+
+            let textSitches = [];
+            fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+                console.log("Local files: " + data)
+                let localfiles = JSON.parse(data) // will give an array of local files
+            })
         }
-        
-        let textSitches = [];
-        fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-            console.log("Local files: " + data)
-            let localfiles = JSON.parse(data) // will give an array of local files
-        })
     }
 
     makeExportButton(object, functionName, name) {
