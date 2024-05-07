@@ -25,19 +25,18 @@ export function customUpdate(f) {
         TrackManager.iterate((id, trackObject) => {
             if (trackObject.trackNode.id === currentTrack.id) {
                 trackObject.displayTargetSphere.changeLayerMask(LAYER.MASK_HELPERS);
-                console.log("Setting layer mask to MASK_HELPERS for node:" + trackObject.trackNode.id)
+                //console.log("Setting layer mask to MASK_HELPERS for node:" + trackObject.trackNode.id)
             } else {
                 trackObject.displayTargetSphere.changeLayerMask(LAYER.MASK_LOOKRENDER);
-                console.log("Setting layer mask to MASK_LOOKRENDER for node:" + trackObject.trackNode.id)
-
+                //console.log("Setting layer mask to MASK_LOOKRENDER for node:" + trackObject.trackNode.id)
             }
             if (trackObject.centerNode !== undefined) {
                 if (trackObject.centerNode.id == currentTrack.id) {
                     trackObject.displayCenterSphere.changeLayerMask(LAYER.MASK_HELPERS);
-                    console.log("Setting layer mask to MASK_HELPERS for node:" + trackObject.centerNode.id)
+                //    console.log("Setting layer mask to MASK_HELPERS for node:" + trackObject.centerNode.id)
                 } else {
                     trackObject.displayCenterSphere.changeLayerMask(LAYER.MASK_LOOKRENDER);
-                    console.log("Setting layer mask to MASK_LOOKRENDER ("+LAYER.MASK_LOOKRENDER+") for node:" + trackObject.centerNode.id)
+                //    console.log("Setting layer mask to MASK_LOOKRENDER ("+LAYER.MASK_LOOKRENDER+") for node:" + trackObject.centerNode.id)
                 }
             }
         })
