@@ -10,7 +10,7 @@ import {GlobalScene} from "../LocalFrame";
 example usage:
     motionTrackLOS: {
         id:"motionTrackLOS",
-        cameraTrack:new CNodeLOSConstantCamera({id:"cameraTrack", camera:"lookCamera"}),
+        cameraTrack:new CNodeLOSFromCamera({id:"cameraTrack", camera:"lookCamera"}),
         csv:"hayleCSV",
         width:1280,
         height:714,

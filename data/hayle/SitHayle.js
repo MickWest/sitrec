@@ -33,8 +33,7 @@ export const SitHayle = {
     lookPosition: { fromLat: 50.197944, fromLon: -5.428180, fromAltFeet: 64, fromAltFeetMin: 0, fromAltFeetMax: 100,},
 //    lookTarget: { toLat: 50.222085, toLon: -5.468553, toAlt: 0, }, // not needed with ptz
 
-
-    LOSConstantCamera: {id: "cameraTrack", camera: "lookCamera"},
+    LOSFromCamera: {id: "cameraTrack", cameraNode: "lookCamera"},
 
     motionTrackLOS: { kind: "LOSMotionTrack",
         cameraTrack: "cameraTrack",

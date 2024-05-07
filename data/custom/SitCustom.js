@@ -92,6 +92,14 @@ sitch = {
         desc: "Camera Angles/LOS"
     },
 
+    // Since we are controlling the camera with the LOS controller, we can extract the LOS
+    // for other uses, such as a target track generated for LOS traversal
+
+    JetLos: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
+
+
+    displayLOS: {kind: "DisplayLOS", LOS: "JetLos", color: "red", width: 1.0},
+
 
     focusTracks:{},
 
