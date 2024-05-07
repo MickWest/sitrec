@@ -480,6 +480,15 @@ export class CNodeMirrorVideoView extends CNodeVideoView {
 
         this.Video = this.in.mirror.Video;
     }
+
+    // update just checks to see if the video has changed
+    // use the new video if it has
+    update() {
+        if (this.in.mirror.Video !== this.Video) {
+            this.Video = this.in.mirror.Video;
+        }
+    }
+
 }
 
 
