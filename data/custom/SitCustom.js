@@ -95,10 +95,33 @@ sitch = {
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
     // for other uses, such as a target track generated for LOS traversal
 
-    JetLos: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
+    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
 
+    // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
+    targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
 
-    displayLOS: {kind: "DisplayLOS", LOS: "JetLos", color: "red", width: 1.0},
+    // The "Track" traverse node uses the ground track
+    LOSTraverseSelectTrack: {
+        kind: "traverseNodes",
+        idExtra: "Track",
+        los: "JetLOS",
+        menu: {
+            "Constant Speed": "LOSTraverseConstantSpeed",
+            "Constant Altitude": "LOSTraverseConstantAltitude",
+            "Straight Line": "LOSTraverseStraightLine",
+        },
+        default: "Constant Altitude"
+    },
+
+    // display the traverse track (Track)
+    traverseDisplayTrack: {
+        kind: "DisplayTrack",
+        track: "LOSTraverseSelectTrack",
+        color: [0,0,1],
+        width: 1,
+    },
+
+    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
 
 
     focusTracks:{},
