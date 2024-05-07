@@ -28,6 +28,24 @@ import {SitGimbal} from "./sitch/SitGimbal";
 // e.g. SitKML is added as "kml" but SitAguadilla is added as "agua"
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
+export function registerSitchModule(key, moduleExports) {
+    Object.keys(moduleExports).forEach(exportKey => {
+        const exportObject = moduleExports[exportKey];
+//            console.log("Checking key: "+key+ " Which exports = "+exportKey)
+        if(exportKey.startsWith('Sit')) {
+            console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
+            SitchMan.add(exportObject.name, exportObject);
+            //const sitchName = exportKey.substring(3);
+            //SitchMan.add(sitchName, exportObject);
+
+        } else if (exportKey.startsWith('common')) {
+            console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
+            // remove the common prefix
+            const commonName = exportKey.substring(6);
+            SitchMan.add(commonName, exportObject);
+        }
+    });
+}
 
 export function registerSitches(textSitches) {
     let sitchContext;
@@ -37,27 +55,9 @@ export function registerSitches(textSitches) {
         sitchContext = {};
     }
 
-    // manually add the SitGimbal sitch
-    SitchMan.add("SitGimbal", SitGimbal);
-
     sitchContext.keys().forEach(key => {
         const moduleExports = sitchContext(key);
-        Object.keys(moduleExports).forEach(exportKey => {
-            const exportObject = moduleExports[exportKey];
-//            console.log("Checking key: "+key+ " Which exports = "+exportKey)
-            if(exportKey.startsWith('Sit') && exportKey !== 'SitGimbal' ) {
-                console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
-                SitchMan.add(exportObject.name, exportObject);
-                //const sitchName = exportKey.substring(3);
-                //SitchMan.add(sitchName, exportObject);
-
-            } else if (exportKey.startsWith('common')) {
-                console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
-                // remove the common prefix
-                const commonName = exportKey.substring(6);
-                SitchMan.add(commonName, exportObject);
-            }
-        });
+        registerSitchModule(key, moduleExports)
     });
 
     console.log("Starting Text Sitches")
@@ -69,8 +69,6 @@ export function registerSitches(textSitches) {
         const obj = textSitchToObject(text);
         SitchMan.add(key, obj);
     }
-
-
 }
 
 export function textSitchToObject(text) {

@@ -74,9 +74,10 @@ import {CNodeMath} from "./nodes/CNodeMath";
 import {CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 
-// This is the main entry point for the sitrec application
+// This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
 // before this code is executed.
+// Building sitrec as a console application uses indexCommon instead.
 
 // We default to nightsky on the public version
 // as it's now the most popular usage.
