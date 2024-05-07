@@ -25,12 +25,18 @@ class CManager {
 
 
     remove(id) {
+        if (typeof id === "object") {
+            id = id.id;
+        }
         if (this.exists(id)) {
             delete this.list[id];
         }
     }
 
     disposeRemove(id) {
+        if (typeof id === "object") {
+            id = id.id;
+        }
         if (this.exists(id)) {
             if (this.list[id].data.dispose !== undefined) {
                 this.list[id].data.dispose()
