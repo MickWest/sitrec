@@ -1259,8 +1259,16 @@ class OptionController extends Controller {
 
     options( options ) {
 
-        this._values = Array.isArray( options ) ? options : Object.values( options );
-        this._names = Array.isArray( options ) ? options : Object.keys( options );
+        // MICK: patch to create two arrays if an array is passed in
+        // this normalizes the process of adding and removing options
+        // see addOptionToGUIMenu in lil-gui-extras
+        // (Original)
+        // this._values = Array.isArray( options ) ? options : Object.values( options );
+        // this._names = Array.isArray( options ) ? options : Object.keys( options );
+        // (new)
+        this._values = Array.isArray( options ) ? [...options] : Object.values( options );
+        this._names = Array.isArray( options ) ? [...options] : Object.keys( options );
+        // END MICK
 
         this.$select.replaceChildren();
 
