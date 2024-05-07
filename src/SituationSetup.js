@@ -188,7 +188,8 @@ export function SetupFromKeyAndData(key, _data) {
         //  data = {..._data}; // old way, but this is a shallow copy
         // make a deep copy of the object, as there are sub=objects, like "inputs"
         // and the anonymous objects
-        data = JSON.parse(JSON.stringify(_data));
+//        data = JSON.parse(JSON.stringify(_data));
+        data = structuredClone(_data);
 
         function resolveAnonObjects(data) {
             // iterate over the keys in data
