@@ -29,6 +29,8 @@ class CSitrecTrack {
     dispose() {
         NodeMan.disposeRemove(this.trackNode);
         NodeMan.disposeRemove(this.trackDataNode);
+        NodeMan.disposeRemove(this.centerNode);
+        NodeMan.disposeRemove(this.centerDataNode);
         NodeMan.disposeRemove(this.trackDisplayDataNode);
         NodeMan.disposeRemove(this.trackDisplayNode);
         NodeMan.disposeRemove(this.displayCenterDataNode);
