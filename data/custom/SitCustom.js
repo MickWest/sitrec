@@ -14,12 +14,19 @@
 sitch = {
     name: "custom",
     menuName: "Custom (Drag and Drop)",
+    isCustom: true,
 
     // temporary hard wired time and terrain for testing MISB truck track
     startTime: "2012-09-19T20:50:26.970Z",
     terrain: {lat: 41.0957, lon: -104.8702, zoom: 14, nTiles: 8},
 
+    // default to 30 seconds. Loading a video will change this (also need manual, eventually)
+    frames: 900,
+    fps: 30,
+
     lat: 40, lon: -100,
+
+    targetSize: 100,
 
     lookCamera: {fov: 10, near: 1, far: 8000000},
     mainCamera: {fov: 30, near: 1, far: 60000000,
@@ -39,7 +46,7 @@ sitch = {
         inputs: {
            "fixedCamera": {kind:"PositionLLA", LLA: [34.399060162,-115.858257450, 1380]},
         },
-        desc: "Camera Position"
+        desc: "Camera Track"
     },
 
     targetTrackSwitch: {
@@ -47,7 +54,7 @@ sitch = {
         inputs: {
             "fixedTarget": {kind:"PositionLLA", LLA: [34.5,-115.858257450, 0]},
         },
-        desc: "Camera Target"
+        desc: "Target Track"
     },
 
     fovSwitch: {
@@ -72,7 +79,7 @@ sitch = {
         inputs: {
             "Follow Track": {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
         },
-        desc: "Camera Position Controller",
+        desc: "Camera Position",
     },
 
     // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
@@ -82,19 +89,24 @@ sitch = {
         inputs: {
             "To Target": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
         },
-        desc: "Camera LOS Controller"
+        desc: "Camera Angles/LOS"
     },
+
+
+    focusTracks:{},
 
     // for each type of files that is dropped (e.g. KLV, CSV, video)
     // specify what switch nodes will be updated with this new option
     // and what kind of data will be extracted from the file
+    // TODO: add support for focus tracks, which are currently using
+    // a direct GUI, and should be a CNodeSwitch
     dropTargets: {
         "track": ["cameraTrackSwitch", "targetTrackSwitch"],
         "fov": ["fovSwitch"],
     },
 
 
-    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
+    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
 }

@@ -73,6 +73,7 @@ import {disposeGimbalChart} from "./JetChart";
 import {CNodeMath} from "./nodes/CNodeMath";
 import {CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
+import {customUpdate} from "./CustomSupport";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -620,6 +621,10 @@ function renderMain() {
 
     if (Sit.update) {
         Sit.update(par.frame)
+    }
+
+    if (Sit.isCustom) {
+        customUpdate()
     }
 
     NodeMan.iterate((key, node) => {

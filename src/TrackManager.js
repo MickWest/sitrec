@@ -34,6 +34,7 @@ class CSitrecTrack {
         NodeMan.disposeRemove(this.displayCenterDataNode);
         NodeMan.disposeRemove(this.displayCenterNode);
         NodeMan.disposeRemove(this.displayTargetSphere);
+        NodeMan.disposeRemove(this.displayCenterSphere);
 
 
         // NodeMan.disposeRemove("TrackData_" + trackFileName);
@@ -83,13 +84,13 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             // NodeMan.disposeRemove("TrackDisplay_" + trackFileName);
             // NodeMan.disposeRemove("TrackSphere_" + trackFileName);
             // WILL NEED TO REMOVE CENTER TRACKS TOO
-            if (TrackManager.exists("Track_"+trackFileName)) {
-                TrackManager.disposeRemove("Track_"+trackFileName);
+            if (TrackManager.exists("Track_" + trackFileName)) {
+                TrackManager.disposeRemove("Track_" + trackFileName);
             }
         }
 
-        const trackDataID = "TrackData_"+trackFileName;
-        const trackID = "Track_"+trackFileName;
+        const trackDataID = "TrackData_" + trackFileName;
+        const trackID = "Track_" + trackFileName;
 
         console.log("Creating track with trackID", trackID, "in addTracks")
 
@@ -107,7 +108,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         const trackNode = NodeMan.get(trackID);
         const trackDataNode = NodeMan.get(trackDataID);
-        const trackOb  = TrackManager.add(trackID, new CSitrecTrack(trackFileName, trackDataNode, trackNode));
+        const trackOb = TrackManager.add(trackID, new CSitrecTrack(trackFileName, trackDataNode, trackNode));
         // this has the original data in common MISB format, regardless of the data type
         // actual MISB (and possibly other CSV inputs) might have a center track
         //
@@ -128,8 +129,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
 
             trackOb.centerDataNode = NodeMan.get(centerDataID);
-            trackOb.centerID = NodeMan.get(centerID);
-
+            trackOb.centerNode = NodeMan.get(centerID);
 
 
         }
@@ -147,7 +147,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     //     sourceTrack: trackID,
                     // }))
 
-                    const menuText = "Track "+trackFileName
+                    const menuText = "Track " + trackFileName
 
                     if (Sit.dropAsController) {
                         // backwards compatibility for SitNightSky
@@ -155,21 +155,29 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         switchNode.addOption(menuText, new CNodeControllerTrackPosition({
                             sourceTrack: trackID,
                         }))
+                        // and select it
+                        switchNode.selectOption(menuText)
                     } else {
                         // drag and drop default now just adds the data source track, not a controller
                         // this is more flexible, as the user can then add a controller if they want
                         switchNode.removeOption(menuText)
                         switchNode.addOption(menuText, NodeMan.get(trackID))
+                        // and select it
+                        switchNode.selectOption(menuText)
 
                         // if there's a center point track, make that as well
                         if (centerID !== null) {
-                            switchNode.removeOption("Center "+trackFileName)
-                            switchNode.addOption("Center "+trackFileName, NodeMan.get(centerID))
+                            const menuTextCenter = "Center " + trackFileName;
+                            switchNode.removeOption(menuTextCenter)
+                            switchNode.addOption(menuTextCenter, NodeMan.get(centerID))
+                            // if it's being added to targetTrackSwitch then select it
+                            if (switchNode.id === "targetTrackSwitch") {
+                                switchNode.selectOption(menuTextCenter)
+                            }
                         }
 
                     }
-                    // and select it
-                    switchNode.selectOption(menuText)
+
 
                     // add to the "Sync Time to" menu
                     GlobalDateTimeNode.addSyncToTrack(trackDataID);
@@ -225,25 +233,36 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
         trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
-            id: "TrackDisplayData_"+trackFileName,
-            track: "TrackData_"+trackFileName,
+            id: "TrackDisplayData_" + trackFileName,
+            track: "TrackData_" + trackFileName,
             color: new CNodeConstant({value: new Color(1, 0, 0)}),
             width: 0.5,
-          //  toGround: 1, // spacing for lines to ground
+            //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
             layers: LAYER.MASK_HELPERS,
 
         })
 
         trackOb.trackDisplayNode = new CNodeDisplayTrack({
-            id: "TrackDisplay_"+trackFileName,
-            track: "Track_"+trackFileName,
+            id: "TrackDisplay_" + trackFileName,
+            track: "Track_" + trackFileName,
             color: new CNodeConstant({value: new Color(1, 0, 1)}),
             width: 3,
-          //  toGround: 1, // spacing for lines to ground
+            //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
             layers: LAYER.MASK_HELPERS,
 
+        })
+
+
+        trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
+            id: "TrackSphere_" + trackFileName,
+            inputs: {
+                track: trackOb.trackNode,
+                size: "sizeTargetScaled",
+            },
+            color: [1, 0, 1],
+            layers:sphereMask
         })
 
         if (centerID !== null) {
@@ -269,24 +288,20 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 layers: LAYER.MASK_HELPERS,
 
             })
+
+
+            trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
+                id: "CenterSphere_" + trackFileName,
+                inputs: {
+                    track: trackOb.centerNode,
+                    size: "sizeTargetScaled",
+                },
+                color: [1, 1, 0],
+                layers: sphereMask,
+            })
+
         }
-
-
-
-        trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
-            id: "TrackSphere_"+trackFileName,
-            inputs: {
-                track: "Track_"+trackFileName,
-                size: "sizeTargetScaled",
-            },
-            color: [1, 1, 0],
-            layers: sphereMask,
-        })
-
-
-
     }
-
 }
 
 

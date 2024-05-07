@@ -85,6 +85,13 @@ export class CNode3DGroup extends CNode3D {
         // copy group layers bitmask into all children
         propagateLayerMaskObject(this.group)
     }
+
+    changeLayerMask(mask) {
+        if (this.group.layers.mask !== mask) {
+            this.group.layers.mask = mask;
+            this.propagateLayerMask()
+        }
+    }
 }
 
 

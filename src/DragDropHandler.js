@@ -6,6 +6,7 @@ import {SITREC_DEV_DOMAIN, SITREC_DOMAIN, SITREC_SERVER} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
 import {textSitchToObject} from "./RegisterSitches";
+import * as LAYER from "./LayerMasks";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
