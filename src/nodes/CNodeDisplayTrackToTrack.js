@@ -35,7 +35,7 @@ export class CNodeDisplayTrackToTrack extends CNode3DGroup {
 
 
         var width = 1
-        if (this.in.width != undefined)
+        if (this.in.width !== undefined)
             width = this.in.width.v0
 
         this.matLineTrack = new LineMaterial({
@@ -55,12 +55,6 @@ export class CNodeDisplayTrackToTrack extends CNode3DGroup {
 
 
     update(f) {
-        this.recalculate(f)
-    }
-
-
-    // LOT OF DUPLICATION HERE - REFACTOR LATER
-    recalculate(f) {
         this.group.remove(this.trackLine)
         // White Jet of view point line
         const line_points = [];
@@ -98,6 +92,10 @@ export class CNodeDisplayTrackToTrack extends CNode3DGroup {
         this.group.add(this.trackLine);
 
         this.propagateLayerMask()
+    }
+
+
+    recalculate() {
     }
 }
 

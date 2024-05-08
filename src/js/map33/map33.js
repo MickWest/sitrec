@@ -5,6 +5,7 @@ import {drop} from '../../SphericalMath'
 import * as LAYER from "../../LayerMasks";
 import {SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";
+import {wgs84} from "../../LLA-ECEF-ENU";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
@@ -244,6 +245,9 @@ class Tile {
   //    console.log("Recalculating First Geometry"+geometry)
     }
 
+    assert(geometry !== undefined, 'Geometry not defined in map33.js')
+
+
     const nPosition = Math.sqrt(geometry.attributes.position.count) // size of mesh in points
     const nElevation = Math.sqrt(this.elevation.length) // size of elevation map (probably 512)
     const ratio = nElevation / (nPosition - 1)
@@ -455,8 +459,9 @@ class Map {
     this.nTiles = this.options.nTiles
     this.zoom = this.options.zoom
     this.tileSize = this.options.tileSize
-    this.radius = options.radius ?? 6378137  // defaults to WGS84 radius
+    this.radius = options.radius ?? wgs84.RADIUS// 6378137  // defaults to WGS84 radius
     this.loadedCallback = options.loadedCallback; // function to call when map is all loaded
+    this.loaded = false; // mick flag to indicate loading is finished
 
     this.tileCache = {};
 
@@ -511,6 +516,7 @@ class Map {
         tile.resolveSeams(this.tileCache)
       })
       if (this.loadedCallback) this.loadedCallback();
+      this.loaded = true; // mick flag loading is finished
     })
 
     // To abort the loading of tiles, call controller.abort()
@@ -518,6 +524,16 @@ class Map {
   }
 
   recalculateCurveMap(radius) {
+
+    if (radius == this.radius) {
+      console.log('map33 recalculateCurveMap Radius is the same - no need to recalculate, radius = '+radius);
+      return;
+    }
+
+    if (!this.loaded) {
+      console.warn('Map not loaded yet - only call recalculateCurveMap after loadedCallback')
+      return;
+    }
     this.radius = radius
     Object.values(this.tileCache).forEach(tile => {
       tile.recalculateCurve(radius)
@@ -551,7 +567,7 @@ class Map {
       console.log("Adding "+posX+","+posY)
     }).then(() => {
       Object.values(this.tileCache).forEach(tile => {
-        tile.recalculateCurve(6371000)
+        tile.recalculateCurve(this.radius)
         tile.resolveSeams(this.tileCache)
       })
     })

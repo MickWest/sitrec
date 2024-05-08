@@ -4,7 +4,7 @@ import { Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject, V3} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
 import {Sit} from "../Globals";
-import {ECEF2ENU, RLLAToECEFV_Sphere, LLAToEUS, getN} from "../LLA-ECEF-ENU";
+import {ECEF2ENU, RLLAToECEFV_Sphere, LLAToEUS, getN, wgs84} from "../LLA-ECEF-ENU";
 import {Group} from "../../three.js/build/three.module";
 import {gui} from "../Globals";
 
@@ -22,7 +22,10 @@ export class CNodeTerrain extends CNode {
 
         this.loaded = false;
 
-        this.input("radiusMiles")
+        // terrain radius is deprecated
+     //   this.input("radiusMiles")
+        this.radius = wgs84.RADIUS;
+
         this.input("flattening", true) //optional
 
         // attempt to load it from mapBox.
@@ -81,7 +84,8 @@ export class CNodeTerrain extends CNode {
         Sit.lat = lat0
         Sit.lon = lon0
         var enu;
-        const radius = metersFromMiles(this.in.radiusMiles.v0)
+//        const radius = metersFromMiles(this.in.radiusMiles.v0)
+        const radius = metersFromMiles(this.radius)
 
         this.mapTypes = ["mapbox","osm","eox","wireframe"]
 
@@ -135,9 +139,10 @@ export class CNodeTerrain extends CNode {
                 tileSize: this.tileSize,
                 tileSegments: this.tileSegments,   // this can go up to 256, with no NETWORK bandwidth.
                 zScale: 1,
-                radius: metersFromMiles(this.in.radiusMiles.v0),
+//                radius: metersFromMiles(this.in.radiusMiles.v0),
+                radius: this.radius,
                 loadedCallback:  ()=> {
-                    // Once map has finished lading, we can recalculate anything that depends on it
+                    // Once map has finished loading, we can recalculate anything that depends on it
                     // like things that use the terrain height
                     this.outputs.forEach( o => {
                         o.recalculateCascade()
@@ -148,9 +153,10 @@ export class CNodeTerrain extends CNode {
         }
     }
 
-    recalculate(f) {
+    recalculate() {
         console.log("recalcualting terrain")
-        var radius = metersFromMiles(this.in.radiusMiles.v0)
+        //var radius = metersFromMiles(this.in.radiusMiles.v0)
+        var radius = this.radius;
         // flattening is 0 to 1, whenre 0=no flattening, 1=flat
         // so scale radius by (1/(1-flattening)
         if (this.in.flattening != undefined) {

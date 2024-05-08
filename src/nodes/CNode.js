@@ -431,8 +431,8 @@ class CNode {
                     const value0 = this.getValueFrame(frameInt)
                     const value1 = this.getValueFrame(frameInt+1)
 
-                    if (value0 === undefined)
-                        debugger;
+                    assert(value0 !== undefined, "Node "+this.id+" has undefined value0 at frame "+frameInt)
+                    assert(value1 !== undefined, "Node "+this.id+" has undefined value1 at frame "+(frameInt+1))
 
                     if (value0.position === undefined)
                         value = value0 + (value1-value0) * (frameFloat - frameInt)
@@ -555,7 +555,7 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
     let children = []
     for (let node of list) {
 //        console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
-        node.recalculate(f);
+        node.recalculate();
 
         // Controllers are a bit of a special case
         // they adjust a CNode3D's object, and that might depend on the value of that object

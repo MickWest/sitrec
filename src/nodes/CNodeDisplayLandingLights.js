@@ -15,8 +15,7 @@ export class CNodeDisplayLandingLights extends CNodeDisplayTargetSphere {
         this.minSize = v.minSize ?? 150 // varies from size to minSize
     }
 
-    recalculate(f=0) {
-        this.update(f)
+    recalculate() {
     }
 
     update(f) {
