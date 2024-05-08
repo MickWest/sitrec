@@ -1,9 +1,10 @@
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager, NodeMan} from "../Globals";
 import {MISB, MISBFields} from "../MISBUtils";
-import {CNodeEmptyArray} from "./CNodeArray";
-import {f2m} from "../utils";
+import {CNodeEmptyArray, makeArrayNodeFromMISBColumn} from "./CNodeArray";
+import {assert, f2m} from "../utils";
 import {saveAs} from "../js/FileSaver";
+import {CNodeLOSTrackMISB} from "./CNodeLOSTrackAzEl";
 
 //export const MISBFields = Object.keys(MISB).length;
 
@@ -112,3 +113,37 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         this.makeArrayForTrackDisplay()
     }
 }
+
+
+
+export function makeLOSNodeFromTrack(trackID, data) {
+    const cameraTrackAngles = NodeMan.get(trackID);
+
+    // first check if there's a sourceArray, if not, use the array
+    // sourceArray is the original array in a smoothed node
+    let arrayAngles = cameraTrackAngles.sourceArray
+
+    if (arrayAngles === undefined) {
+        arrayAngles = cameraTrackAngles.array;
+    }
+
+    assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
+
+    const smooth = data.smooth ?? 0;
+
+    makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
+    makeArrayNodeFromMISBColumn("platformPitch", arrayAngles, data.platformPitch ?? MISB.PlatformPitchAngle, smooth, true)
+    makeArrayNodeFromMISBColumn("platformRoll", arrayAngles, data.platformRoll ?? MISB.PlatformRollAngle, smooth, true)
+    makeArrayNodeFromMISBColumn("sensorAz", arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+    makeArrayNodeFromMISBColumn("sensorEl", arrayAngles, data.sensorEl ?? MISB.SensorRelativeElevationAngle, smooth, true)
+    makeArrayNodeFromMISBColumn("sensorRoll", arrayAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
+
+    const node = new CNodeLOSTrackMISB({
+        id: data.id ?? "losTrackMISB", cameraTrack: trackID,
+        platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
+        sensorAz: "sensorAz", sensorEl: "sensorEl", sensorRoll: "sensorRoll"
+    })
+
+    return node;
+}
+

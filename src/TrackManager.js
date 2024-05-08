@@ -10,10 +10,11 @@ import {Sit, gui, NodeMan, GlobalDateTimeNode} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
-import {CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
+import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {MISB} from "./MISBUtils";
 import {isNumber} from "mathjs";
+import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 
 
 export const TrackManager = new CManager();
@@ -233,6 +234,37 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             }
         }
 
+        // same type of thing for heading angles
+        let hasAngles = false;
+        if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.SensorVerticalFieldofView])) {
+            hasAngles = true;
+        }
+
+        //
+        if (hasAngles && Sit.dropTargets !== undefined && Sit.dropTargets["angles"] !== undefined) {
+            let data = {
+                smooth: 120, // maybe GUI this?
+            }
+            let anglesNode = makeLOSNodeFromTrack(trackID, data);
+            let anglesID = "Angles_" + trackFileName;
+            let anglesController = new CNodeControllerMatrix({
+                id: anglesID,
+                source: anglesNode,
+            })
+
+            const lookCamera = NodeMan.get("lookCamera");
+            lookCamera.addControllerNode(anglesController)
+
+            const dropTargets = Sit.dropTargets["angles"]
+            for (const dropTargetSwitch of dropTargets) {
+                if (NodeMan.exists(dropTargetSwitch)) {
+                    const switchNode = NodeMan.get(dropTargetSwitch);
+                    switchNode.removeOption(anglesID)
+                    switchNode.addOption(anglesID, NodeMan.get(anglesID))
+                    switchNode.selectOption(anglesID)
+                }
+            }
+        }
 
         trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
             id: "TrackDisplayData_" + trackFileName,

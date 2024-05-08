@@ -95,6 +95,19 @@ class CNodeSwitch extends CNode {
 
     recalculate() {
 //        console.log("CNodeSwitch:recalculate "+this.id)
+
+        // turn controller on or off
+        Object.keys(this.inputs).forEach(key => {
+            const node = this.inputs[key];
+            if (node.isController) {
+                if (key !== this.choice) {
+                    node.enabled = false;
+                } else {
+                    node.enabled = true;
+                }
+            }
+        })
+
         // turn on or off gui for all gui sources
         // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {

@@ -67,7 +67,7 @@ export class CNode3D extends CNode {
         // see https://www.stefanjudis.com/today-i-learned/property-order-is-predictable-in-javascript-objects-since-es2015/
         for (const inputID in this.inputs) {
             const input = this.inputs[inputID]
-            if (input.isController) {
+            if (input.isController && input.enabled) {
 
                 if (par.paused) {
                     //if (depth === 0) {

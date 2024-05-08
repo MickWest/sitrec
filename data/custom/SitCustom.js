@@ -62,6 +62,18 @@ sitch = {
         desc: "Target Track"
     },
 
+    // angels controllers
+    angelsSwitch: {
+        kind: "Switch",
+        inputs: {
+            "Manual PTZ": {kind: "PTZUI", az: 0, el: 0, roll: 0, showGUI: true}
+            // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
+            // then a matrixController
+        },
+        desc: "Angles Source"
+    },
+
+
     fovSwitch: {
         kind: "Switch",
         inputs: {
@@ -93,8 +105,9 @@ sitch = {
     CameraLOSController: {kind: "Switch",
         inputs: {
             "To Target": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+            "Use Angles": "angelsSwitch",
         },
-        desc: "Camera Angles/LOS"
+        desc: "Camera Heading"
     },
 
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
@@ -139,6 +152,7 @@ sitch = {
     dropTargets: {
         "track": ["cameraTrackSwitch", "targetTrackSwitch"],
         "fov": ["fovSwitch"],
+        "angles": ["angelsSwitch"],
     },
 
 
