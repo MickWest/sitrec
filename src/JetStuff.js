@@ -888,13 +888,17 @@ export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra
         traverseInputs2[inputID] = traverseInputs[inputID]+idExtra
     }
 
-    new CNodeSwitch({
+    let nodeMenu = new CNodeSwitch({
         id: id,
         inputs: traverseInputs2,
         desc: "LOS Traverse " + idExtra,
         default: defaultTraverse,
 
     }, gui)
+
+    // bit of a patch
+    nodeMenu.frames = Sit.frames;
+    nodeMenu.useSitFrames = true;
 
 }
 

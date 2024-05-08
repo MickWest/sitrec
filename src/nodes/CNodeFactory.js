@@ -242,9 +242,61 @@ export class CNodeFactory extends CManager{
         NodeMan.iterate((key, node) => {
             if (node.useSitFrames) {
                 node.frames = Sit.frames;
-                node.recalculateCascade();
+                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
             }
         })
+
+        // NodeMan.iterate((key, node) => {
+        //     if (node.useSitFrames) {
+        //         console.log("Calling recalculateCascade on "+node.id)
+        //         node.recalculateCascade();
+        //     }
+        // })
+
+        // ensure we recalculate all nodes in the correct order
+        this.recalculateAllRootFirst()
+
     }
+
+    nodeDepth(node) {
+        let depth = 0;
+        let inputs = node.inputs;
+        if (Object.keys(inputs).length > 0) {
+            depth=1;
+            for (let key in inputs) {
+                depth = Math.max(depth, this.nodeDepth(inputs[key])+1);
+            }
+        }
+        return depth;
+    }
+
+    recalculateAllRootFirst() {
+        // we will creat an array indexed by how deep the node is in the tree
+        // a node with no inputs is at depth 0
+        // a node with inputs that are all at depth 0 is at depth 1, etc
+        // we will process the nodes in order of increasing depth
+        // so we can recalculate all the nodes in the correct order
+        let depthMap = []
+        let maxDepth = 0;
+        this.iterate((key, node) => {
+            let depth = this.nodeDepth(node);
+            if (depthMap[depth] === undefined) {
+                depthMap[depth] = [];
+            }
+            depthMap[depth].push(node);
+            maxDepth = Math.max(maxDepth, depth);
+        })
+        //console.log("Max depth = "+maxDepth)
+        for (let i=0; i<=maxDepth; i++) {
+            let nodes = depthMap[i];
+            if (nodes !== undefined) {
+                for (let node of nodes) {
+               //    console.log("Recalculating "+node.id+" at depth "+i)
+                    node.recalculate();
+                }
+            }
+        }
+    }
+
 
 }

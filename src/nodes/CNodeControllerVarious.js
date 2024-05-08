@@ -214,6 +214,8 @@ export class CNodeControllerFOV extends CNodeController {
         const camera = objectNode.camera
         const value = this.in.source.v(f);
 
+        assert(value !== undefined, "CNodeControllerFOV: source.v(f) is undefined, id = "+this.id+ " f="+f);
+
         // if it's a number then use that directly as the FOV
         if (typeof value === "number") {
             camera.fov = value;

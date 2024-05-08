@@ -22,7 +22,7 @@ class CNodeSwitch extends CNode {
         assert(this.choice === null || this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
 
         // in console mode the gui is not defined but we stil use 'frames'
-        if (this.choice === null) {
+        if (this.choice === null || this.inputs[this.choice].frames === 0) {
             this.frames = Sit.frames
             this.useSitFrames = true;
         } else {

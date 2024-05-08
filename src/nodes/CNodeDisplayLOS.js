@@ -84,6 +84,9 @@ export class CNodeDisplayLOS extends CNode3DGroup {
 
     recalculate() {
 
+        // console.log("recalculate LOS, this.in.LOS.frames = "+this.in.LOS.frames+
+        // "this.in.LOS.id = "+this.in.LOS.id+ " Sit.frames = "+Sit.frames);
+
         // Jet_LOS is an array of structures of line + geometry
         // for all the radiating LOS (like LOSX)
         this.Jet_LOS3D.forEach((item, index) => {
