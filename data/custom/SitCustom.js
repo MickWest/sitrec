@@ -16,6 +16,11 @@ sitch = {
     menuName: "Custom (Drag and Drop)",
     isCustom: true,
 
+
+    startDistance: 1,
+    startDistanceMin: 0.01,
+    startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
+
     // temporary hard wired time and terrain for testing MISB truck track
     startTime: "2012-09-19T20:50:26.970Z",
     terrain: {lat: 41.0957, lon: -104.8702, zoom: 14, nTiles: 8},

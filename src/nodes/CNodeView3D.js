@@ -153,6 +153,8 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     }
 
+    // todo - change to nodes, so we can add and remove them
+    // for the custom sitch
     addFocusTracks(focusTracks) {
         this.focusTrackName = "default"
         this.lockTrackName = "default"

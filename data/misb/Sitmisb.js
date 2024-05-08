@@ -58,9 +58,8 @@ sitch = {
     frames: 4438,  // from video
 
     startDistance: 1,
-    startDistanceMin: 0,
-    startDistanceMax: 2.5,
-
+    startDistanceMin: 0.01,
+    startDistanceMax: 25,
 
     // terrain is the smaller 3D map
     //  lan/lon is the center of the map
