@@ -1,0 +1,79 @@
+# the workflow syntax is described at:
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+
+name: CI
+
+on:   # when this workflow should be triggered
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+defaults:
+  run:
+    shell: bash    # scripts should use bash on all OS-es 
+
+jobs:
+  build_web:
+    if: true  # the job can be disable from here
+    strategy:
+      matrix:   # run a separate jub for all combinations of the following variables
+        node-version: [22]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false   # don't stop all of the jobs when one of them fails
+      
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # webpack.common.js uses 'git describe --tags --abbrev=0' to get the latest tag
+        # but checkout only does a shallow clone by default and the tags are not available
+        # fetch-tags: true is supposed to fetch the tags without a full clone, but doesn't work ?
+        fetch-depth: 0    # do a full clone instead. for now it doesn't seem to be any slower
+    - name: use node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        # cache the downloaded node version and the package dependencies
+        # it doesn't seem to make it faster for now, disabled
+        #cache: npm
+        #cache-dependency-path: package-lock.json
+    - name: config script setup
+      run: |
+        cp config.js.example config.js
+        cp config-install.js.example config-install.js
+        mkdir ../dev ../prod
+        # webpack's schema requires absolute paths for the output paths
+        # macOS uses BSD sed instead of GNU sed on linux/windows. this works for both:
+        sed -i'.bak' -e "s#dev_path:.*#dev_path: '$(realpath ../dev)',#" config-install.js
+        sed -i'.bak' -e "s#prod_path:.*#prod_path: '$(realpath ../prod)',#" config-install.js
+        cat config-install.js
+    - name: install deps
+      run: npm install
+    - name: build dev
+      run: npm run build
+      if: github.event_name != 'push'
+    - name: build prod
+      run: npm run deploy
+      
+  build_console:
+    if: true  # the job can be disable from here
+    strategy:
+      matrix:   # run a separate jub for all combinations of the following variables
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false   # don't stop all of the jobs when one of them fails
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: install deps
+      run: npm install
+    - name: config script setup
+      run: |
+        cp config.js.example config.js
+        # custom console tools will often be run from outside the source tree
+        # so by default the config assumes that sitrec's root is "./sitrec/"
+        mv ./test/console/test.js ../
+    - name: install bun
+      run: npm install -g bun
+    - name: run console test
+      run: cd ../ && bun test.js
