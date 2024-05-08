@@ -649,7 +649,3 @@ export function normalizeLayerType(layers) {
     }
     return layers;
 }
-
-export function isConsole() {
-    return (typeof document == 'undefined');
-}

@@ -1,6 +1,7 @@
 import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
-import {assert, isConsole} from "../utils";
+import {assert} from "../utils";
+import {isConsole} from "../../config";
 import {Sit} from "../Globals";
 
 class CNodeSwitch extends CNode {
@@ -51,7 +52,7 @@ class CNodeSwitch extends CNode {
                     }
 
                 })
-        } else if(!isConsole()) {
+        } else if(!isConsole) {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()

@@ -4,12 +4,11 @@ import {
     cleanCSVText,
     getFileExtension,
     isHttpOrHttps, stringToArrayBuffer,
-    versionString,
-    isConsole
+    versionString
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
-import {SITREC_ROOT, SITREC_SERVER} from "../config";
+import {SITREC_ROOT, SITREC_SERVER, isConsole} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {Globals, gui} from "./Globals";
@@ -30,7 +29,7 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        if(!isConsole()) {
+        if(!isConsole) {
             this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
 
             // custom sitches and rehosting only for logged-in users
@@ -248,7 +247,7 @@ export class CFileManager extends CManager {
         console.log(">>> loadAsset() Loading Started: " + filename);
 
         var bufferPromise = null;
-        if(!isUrl && isConsole()) {
+        if(!isUrl && isConsole) {
             // read the asset from the local filesystem if this is not running inside a browser
             bufferPromise = import('node:fs')
             .then(fs => {

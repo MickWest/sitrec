@@ -3,13 +3,17 @@
 // LOCAL = My dev machine, for development and debugging
 // note my local is in dist, one level deeper than the HOST because I run directly from the dev build
 
+export const isConsole = (typeof window == 'undefined');
+
 // While we can automatically detect the host, there are situations when we want/need to run
 // the sitrecServer tools on the remote host, not on the local dev machine
 // so we need to hardwire it below.
 //export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
-export const SITREC_DOMAIN = window.location.hostname
-const SITREC_HOST = window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.hostname)
+const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
 const SITREC_LOCAL = "http://localhost/sitrec/"
+// console applications are often run from just outside the source tree 
+const SITREC_CONSOLE_ROOT = "./sitrec/"
 
 // regular expression that allows us to detect if we are local
 // for http://localhost, or https://localhost
@@ -41,12 +45,17 @@ var checked = false;
 
 export function checkLocal() {
     if (!checked) {
-        console.log("Running on " + window.location.href)
-        if (re_localhost.test(window.location.href)) {
-            console.log("Running on localhost")
+        if(isConsole) {
+            console.log("Running as a console application")
             isLocal = true;
         } else {
-            console.log("Not running on localhost");
+            console.log("Running on " + window.location.href)
+            if (re_localhost.test(window.location.href)) {
+                console.log("Running on localhost")
+                isLocal = true;
+            } else {
+                console.log("Not running on localhost");
+            }
         }
         checked = true;
     }
@@ -57,7 +66,7 @@ export function checkLocal() {
 // force a call before that. Do we still need to call it again?
 checkLocal();
 
-export const SITREC_ROOT = isLocal? SITREC_LOCAL : SITREC_HOST
+export const SITREC_ROOT = (isConsole ? SITREC_CONSOLE_ROOT : (isLocal ? SITREC_LOCAL : SITREC_HOST))
 export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
     (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
 
