@@ -18,7 +18,6 @@
 import {assert, degrees, scaleF2M, vdump} from '../utils.js'
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
-import {CNodeFactory} from "./CNodeFactory";
 import {gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
