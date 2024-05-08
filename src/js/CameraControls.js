@@ -211,7 +211,12 @@ class CameraMapControls {
 
 
 	handleMouseUp(event) {
-		NodeMan.disposeRemove("cursorLLA");
+
+		// if not paused, then removed the cursor's LLA label
+		if (!par.paused) {
+			NodeMan.disposeRemove("cursorLLA");
+		}
+		this.view.cursorSprite.visible = false;
 		this.state = STATE.NONE
 		if (!this.enabled) return;
 		this.canvas.releasePointerCapture(event.pointerId)
@@ -231,7 +236,7 @@ class CameraMapControls {
 		console.log( "startCameraPositionLLA:"+ vdump(posLLA,6,'[',']')+","
 			+ "\nstartCameraTargetLLA:"+vdump(atLLA,6,'[',']')+",")
 
-		this.view.cursorSprite.visible = false;
+
 
 	}
 
