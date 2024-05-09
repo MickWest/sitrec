@@ -257,7 +257,7 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
     // fill up any remaining with the last frame
     // will be at least one, as the last fencepost possible is outLen-1
     // and the above always stops short of the last fencepost
-    for (var i = aFrame; i < outLen; i++) {
+    for (var i = aFrame; i < outLen-1; i++) {
         out.push(aValue)
     }
     return out;
