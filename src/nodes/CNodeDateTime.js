@@ -340,6 +340,14 @@ export class CNodeDateTime extends CNode {
         this.updateDateTime()
     }
 
+
+// given a frame number then return the time in ms since the start of the epoch
+    frameToMS(frame) {
+        const startMS = this.dateStart.valueOf();
+        const MS = (Math.round(startMS + frame * 1000 * (Sit.simSpeed??1)/ Sit.fps))
+        return MS;
+    }
+
     update(frame) {
         this.frame = frame
         this.dateNow = startToNowDateTime(this.dateStart);

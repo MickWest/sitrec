@@ -9,11 +9,11 @@ import {GlobalScene} from "./LocalFrame";
 import {NightSkyFiles} from "./ExtraFiles";
 import {f2m} from "./utils";
 import {isConsole} from "../config";
-import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CUnits} from "./CUnits";
 import {expandSitData} from "./SituationSetup";
 import stringify from "json-stringify-pretty-compact";
+import {makeTrackFromDataFile} from "./TrackManager";
 
 
 // These are some parameters used as defaults for a situation

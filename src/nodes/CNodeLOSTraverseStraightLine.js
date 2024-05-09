@@ -5,8 +5,9 @@ import {metersFromMiles, radians, assert} from "../utils";
 import {Color, Plane, Ray} from "../../three.js/build/three.module";
 import {V3} from "../threeExt";
 import {wgs84} from "../LLA-ECEF-ENU";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeLOSTraverseStraightLine extends CNode {
+export class CNodeLOSTraverseStraightLine extends CNodeTrack {
     constructor(v) {
         super(v);
         this.requireInputs(["LOS", "startDist", "lineHeading"])
@@ -123,7 +124,7 @@ export class CNodeLOSTraverseStraightLine extends CNode {
 }
 
 
-export class CNodeLOSTraverseStraightLineFixed extends CNode {
+export class CNodeLOSTraverseStraightLineFixed extends CNodeTrack {
     constructor(v) {
         super(v);
         this.requireInputs(["LOS", "speed", "startDist", "lineHeading", "radius"])

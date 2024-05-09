@@ -4,7 +4,8 @@ import {MISB, MISBFields} from "../MISBUtils";
 import {CNodeEmptyArray, makeArrayNodeFromMISBColumn} from "./CNodeArray";
 import {assert, f2m} from "../utils";
 import {saveAs} from "../js/FileSaver";
-import {CNodeLOSTrackMISB} from "./CNodeLOSTrackAzEl";
+
+import {CNodeLOSTrackMISB} from "./CNodeLOSTrackMISB";
 
 //export const MISBFields = Object.keys(MISB).length;
 

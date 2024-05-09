@@ -6,8 +6,9 @@ import {Color, Ray, Sphere} from "../../three.js/build/three.module";
 import {DebugArrowAB, intersectSphere2, V3} from "../threeExt";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {GlobalScene} from "../LocalFrame";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeLOSTraverseConstantSpeed extends CNode {
+export class CNodeLOSTraverseConstantSpeed extends CNodeTrack {
     constructor(v) {
         super(v);
         this.checkInputs(["LOS", "startDist", "speed", "wind"])

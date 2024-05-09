@@ -5,7 +5,7 @@ import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
-import {CNodeTrack, makeTrackFromDataFile} from "./nodes/CNodeTrack";
+import {CNodeTrack} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {
     abs,
@@ -25,26 +25,27 @@ import {CNodeSplineEditor} from "./nodes/CNodeSplineEdit";
 import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
-import {CNodeDisplayTargetSphere, CNodeLOSTargetAtDistance} from "./nodes/CNodeDisplayTargetSphere";
+import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CNodeArray, makeArrayNodeFromMISBColumn} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
-import {addTracks} from "./TrackManager";
+import {addTracks, makeTrackFromDataFile} from "./TrackManager";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
 import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
-import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackAzEl";
 import {MISB} from "./MISBUtils";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
 import {DebugSphere} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
+import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
+import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackMISB";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -936,7 +937,7 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "traverseNodes":
             SSLog();
-            SetupTraverseNodes(data.id ?? "LOSTraverseSelect", data.menu, data.default, data.los ?? "JetLOS", data.idExtra ?? "");
+            SetupTraverseNodes(data.id ?? "LOSTraverseSelect", data.menu, data.default, data.los ?? "JetLOS", data.idExtra ?? "", data.exportable ?? true);
             break;
 
         case "speedGraph":

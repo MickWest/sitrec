@@ -1,14 +1,12 @@
 // given a LOS node and a radius
 // we either have an "altitude" node for constant altitude
 // or "startDist" to start at a particular distance along the first line
-import {NodeMan} from "../Globals";
-import {CNode} from "./CNode";
 import {metersFromMiles} from "../utils";
 import {Color, Ray, Sphere} from "../../three.js/build/three.module";
 import {intersectSphere2, V3} from "../threeExt";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeLOSTraverseConstantAltitude extends CNode {
+export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
     constructor(v) {
         super(v);
         this.checkInputs(["LOS", "radius"])

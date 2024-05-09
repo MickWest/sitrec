@@ -76,8 +76,8 @@ import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
 import {Group} from "three";
-import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeTrack";
 import {CNodeHeading} from "./nodes/CNodeHeading";
+import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeInterpolateTwoFramesTrack";
 
 
 var matLineWhite = makeMatLine(0xffffff);
@@ -721,9 +721,9 @@ export function SetupTrackLOSNodes() {
 }
 
 
-export function SetupTraverseNodes(id, traverseInputs,defaultTraverse,los = "JetLOS", idExtra="") {
+export function SetupTraverseNodes(id, traverseInputs,defaultTraverse,los = "JetLOS", idExtra="", exportable=true) {
     CreateTraverseNodes(idExtra, los);
-    MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse, idExtra)
+    return MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse, idExtra, exportable)
 }
 
 
@@ -880,7 +880,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
 // The LOSTraverseSelect node is the selected LOS traversal method
 // We pass in which ones of the above we want, plue any extra ones
 // (For example in Agua we add the ufoSplineEditor node)
-export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra="") {
+export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra="", exportable=true) {
 
 
     let traverseInputs2 = {}
@@ -893,12 +893,14 @@ export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra
         inputs: traverseInputs2,
         desc: "LOS Traverse " + idExtra,
         default: defaultTraverse,
+        exportable: exportable,
 
     }, gui)
 
     // bit of a patch
     nodeMenu.frames = Sit.frames;
     nodeMenu.useSitFrames = true;
+    return nodeMenu;
 
 }
 

@@ -128,7 +128,8 @@ sitch = {
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Straight Line": "LOSTraverseStraightLine",
         },
-        default: "Constant Altitude"
+        default: "Constant Altitude",
+        exportable: true,
     },
 
     // display the traverse track (Track)

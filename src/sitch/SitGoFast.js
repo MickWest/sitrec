@@ -42,13 +42,13 @@ import {GlobalScene} from "../LocalFrame";
 import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
 import {GridHelperWorld, MV3, V3} from "../threeExt";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
-import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeTrack";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {CNodeLOSTrackTarget} from "../nodes/CNodeLOSTrackTarget";
 import {Color, MeshStandardMaterial, TextureLoader} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
 import {commonJetLabels} from "./CommonSitch";
+import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeInterpolateTwoFramesTrack";
 
 export var SitGoFast = {
     name: "gofast",

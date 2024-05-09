@@ -5,16 +5,17 @@ import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "../three.js/build/three.module";
-import {scaleF2M} from "./utils";
-import {Sit, gui, NodeMan, GlobalDateTimeNode} from "./Globals";
+import {assert, getFileExtension, scaleF2M} from "./utils";
+import {FileManager, GlobalDateTimeNode, gui, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
 import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
-import {makeTrackFromDataFile} from "./nodes/CNodeTrack";
 import {MISB} from "./MISBUtils";
 import {isNumber} from "mathjs";
-import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
+import {CNodeMISBDataTrack, makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
+import {KMLToMISB} from "./KMLUtils";
+import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 
 
 export const TrackManager = new CManager();
@@ -50,6 +51,59 @@ class CSitrecTrack {
         // NodeMan.disposeRemove("TrackSphere_" + trackFileName);
 
     }
+
+}
+
+// given a source file id:
+// first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
+// the create a track node from that
+// Note, the track node might be recalculated, as it depends on the global start time
+//
+// sourceFile = the input, either a KLM file, or one already in MISB array format
+// if it's a kml file we will first make a MISB array
+// dataID = the id of the intermediate CNodeMISBDataTrack
+export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns) {
+
+    // determine what type of track it is
+    const fileInfo = FileManager.getInfo(sourceFile);
+    const ext = getFileExtension(fileInfo.filename)
+
+    let misb = null;
+
+    if (ext === "kml") {
+        // new CNodeKMLDataTrack({
+        //     id: dataID,
+        //     KMLFile: sourceFile,
+        // })
+        misb = KMLToMISB(FileManager.get(sourceFile));
+    } else if (ext === "srt" || ext === "csv" || ext === "klv") {
+        misb = FileManager.get(sourceFile)
+    } else {
+        assert(0, "Unknown file type: " + fileInfo.filename)
+    }
+
+    // first make a data track with id = dataID
+    // from the misb array source
+    // This will be an array of :
+    // {
+    // position: V3,
+    // time: ms,
+    // vFov: degrees, (optional)
+    // misbRow: object reference to the original row in the MISB array
+
+    new CNodeMISBDataTrack({
+        id: dataID,
+        misb: misb,
+        exportable: true,
+    })
+
+    // then use that to make the per-frame track, which might just be a portion of the original data
+    return new CNodeTrackFromMISB({
+        id: trackID,
+        misb: dataID,
+        columns: columns,
+        exportable: true,
+    })
 
 }
 

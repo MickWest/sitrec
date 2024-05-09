@@ -1,12 +1,10 @@
 // Simple LOS Traversal for EITHER of:
 // VcMPH (Closing Velocity in MPH, not really useful
 // range (distance from the plane - i.e. a fixed distance.
-import {NodeMan} from "../Globals";
-import {CNode} from "./CNode";
-import {metersFromMiles, metersFromNM, unitsToMeters} from "../utils";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {metersFromMiles, unitsToMeters} from "../utils";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeLOSTraverse extends CNode {
+export class CNodeLOSTraverse extends CNodeTrack {
     constructor(v) {
         super(v);
         this.requireInputs(["LOS"])

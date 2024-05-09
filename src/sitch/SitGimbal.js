@@ -31,13 +31,13 @@ import {SetupCloudNodes} from "../Clouds";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant, CNodeOrigin} from "../nodes/CNode";
 import {AddGenericNodeGraph} from "../JetGraphs";
-import {CNodeTrackAir} from "../nodes/CNodeTrack";
 import {CNodeLOSTraverseConstantSpeed} from "../nodes/CNodeLOSTraverseConstantSpeed";
 import {CNodeDisplayTargetModel} from "../nodes/CNodeDisplayTargetModel";
 import {CNodeScale} from "../nodes/CNodeScale";
 import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {setupOpts} from "../JetChart";
 import {commonJetLabels} from "./CommonSitch";
+import {CNodeTrackAir} from "../nodes/CNodeTrackAir";
 
 const GimbalDefaults = {
     name:"gimbal",

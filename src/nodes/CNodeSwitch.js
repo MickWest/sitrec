@@ -2,7 +2,7 @@ import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {assert} from "../utils";
 import {isConsole} from "../../config";
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 
 class CNodeSwitch extends CNode {
     constructor(v, _gui) {
@@ -56,7 +56,23 @@ class CNodeSwitch extends CNode {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()
+
+        this.exportable = v.exportable
+        if (this.exportable) {
+            NodeMan.addExportButton(this, "exportTrackCSV", "Export Traverse")
+        }
+
     }
+
+    exportTrackCSV() {
+        // get the selected node
+        // if it has and export function then call it.
+        const choiceNode = this.inputs[this.choice];
+        if (choiceNode.exportTrackCSV !== undefined) {
+            choiceNode.exportTrackCSV()
+        }
+    }
+
 
     hide() {
         super.hide()
