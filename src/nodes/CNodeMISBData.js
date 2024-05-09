@@ -132,19 +132,29 @@ export function makeLOSNodeFromTrack(trackID, data) {
 
     const smooth = data.smooth ?? 0;
 
-    makeArrayNodeFromMISBColumn("platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
-    makeArrayNodeFromMISBColumn("platformPitch", arrayAngles, data.platformPitch ?? MISB.PlatformPitchAngle, smooth, true)
-    makeArrayNodeFromMISBColumn("platformRoll", arrayAngles, data.platformRoll ?? MISB.PlatformRollAngle, smooth, true)
-    makeArrayNodeFromMISBColumn("sensorAz", arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
-    makeArrayNodeFromMISBColumn("sensorEl", arrayAngles, data.sensorEl ?? MISB.SensorRelativeElevationAngle, smooth, true)
-    makeArrayNodeFromMISBColumn("sensorRoll", arrayAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformPitch", arrayAngles, data.platformPitch ?? MISB.PlatformPitchAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformRoll", arrayAngles, data.platformRoll ?? MISB.PlatformRollAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorAz", arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorEl", arrayAngles, data.sensorEl ?? MISB.SensorRelativeElevationAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorRoll", arrayAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
 
     const node = new CNodeLOSTrackMISB({
         id: data.id ?? "losTrackMISB", cameraTrack: trackID,
-        platformHeading: "platformHeading", platformPitch: "platformPitch", platformRoll: "platformRoll",
-        sensorAz: "sensorAz", sensorEl: "sensorEl", sensorRoll: "sensorRoll"
+        platformHeading: trackID+"platformHeading", platformPitch: trackID+"platformPitch", platformRoll: trackID+"platformRoll",
+        sensorAz: trackID+"sensorAz", sensorEl: trackID+"sensorEl", sensorRoll: trackID+"sensorRoll"
     })
 
     return node;
+}
+
+export function removeLOSNodeColumnNodes(trackID) {
+    console.log("removeLOSNodeColumnNodes: trackID="+trackID);
+    NodeMan.disposeRemove(trackID+"platformHeading")
+    NodeMan.disposeRemove(trackID+"platformPitch")
+    NodeMan.disposeRemove(trackID+"platformRoll")
+    NodeMan.disposeRemove(trackID+"sensorAz")
+    NodeMan.disposeRemove(trackID+"sensorEl")
+    NodeMan.disposeRemove(trackID+"sensorRoll")
 }
 

@@ -32,6 +32,13 @@ export class CNodeDisplayTargetSphere extends CNode3DTarget {
 
     }
 
+    dispose() {
+        this.targetObject.geometry.dispose();
+        this.targetObject.material.dispose();
+        this.group.remove(this.targetObject);
+        super.dispose();
+    }
+
     recalculate() {
         // with a 1 meter diameter sphere, the "size" input is the diameter in meters.
         const scale = this.in.size.v0

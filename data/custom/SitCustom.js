@@ -140,6 +140,13 @@ sitch = {
         width: 1,
     },
 
+    sphereTraverse: { kind: "DisplayTargetSphere",
+        track: "LOSTraverseSelectTrack",
+        size: 5,
+        layers: "MAINRENDER",
+        color: [0,0,1],
+    },
+
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
 
 
@@ -163,6 +170,7 @@ sitch = {
     DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
+    altitudeLabel2: {kind: "MeasureAltitude", position: "LOSTraverseSelectTrack"},
     distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitch", B: "targetTrackSwitch", defer: true},
 
 

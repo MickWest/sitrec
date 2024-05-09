@@ -48,6 +48,11 @@ export class CNode3DGroup extends CNode3D {
 
     }
 
+    dispose() {
+        this.container.remove(this._object);
+        super.dispose();
+    }
+
     convertColorInput(v, name) {
         if (v[name] !== undefined && !(v[name] instanceof CNodeConstant)) {
             var colorObject = v[name];

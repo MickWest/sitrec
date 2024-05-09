@@ -13,7 +13,7 @@ import {CManager} from "./CManager";
 import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {MISB} from "./MISBUtils";
 import {isNumber} from "mathjs";
-import {CNodeMISBDataTrack, makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
+import {CNodeMISBDataTrack, makeLOSNodeFromTrack, removeLOSNodeColumnNodes} from "./nodes/CNodeMISBData";
 import {KMLToMISB} from "./KMLUtils";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 
@@ -27,7 +27,7 @@ class CSitrecTrack {
         this.trackFileName = trackFileName;
     }
 
-
+    // TODO - call this when switching levels
     dispose() {
         NodeMan.disposeRemove(this.trackNode);
         NodeMan.disposeRemove(this.trackDataNode);
@@ -40,16 +40,9 @@ class CSitrecTrack {
         NodeMan.disposeRemove(this.displayTargetSphere);
         NodeMan.disposeRemove(this.displayCenterSphere);
 
-
-        // NodeMan.disposeRemove("TrackData_" + trackFileName);
-        // NodeMan.disposeRemove("Track_" + trackFileName);
-        // NodeMan.disposeRemove("CenterData_" + trackFileName);
-        // NodeMan.disposeRemove("Center_" + trackFileName);
-        //
-        // NodeMan.disposeRemove("TrackDisplayData_" + trackFileName);
-        // NodeMan.disposeRemove("TrackDisplay_" + trackFileName);
-        // NodeMan.disposeRemove("TrackSphere_" + trackFileName);
-
+        NodeMan.disposeRemove(this.anglesNode);
+        NodeMan.disposeRemove(this.anglesController);
+        removeLOSNodeColumnNodes(this.trackID);
     }
 
 }
@@ -166,6 +159,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         const trackNode = NodeMan.get(trackID);
         const trackDataNode = NodeMan.get(trackDataID);
         const trackOb = TrackManager.add(trackID, new CSitrecTrack(trackFileName, trackDataNode, trackNode));
+        trackOb.trackID = trackID;
         // this has the original data in common MISB format, regardless of the data type
         // actual MISB (and possibly other CSV inputs) might have a center track
         //
@@ -300,11 +294,13 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 smooth: 120, // maybe GUI this?
             }
             let anglesNode = makeLOSNodeFromTrack(trackID, data);
+            trackOb.anglesNode = anglesNode;
             let anglesID = "Angles_" + trackFileName;
             let anglesController = new CNodeControllerMatrix({
                 id: anglesID,
                 source: anglesNode,
             })
+            trackOb.anglesController = anglesController;
 
             const lookCamera = NodeMan.get("lookCamera");
             lookCamera.addControllerNode(anglesController)
