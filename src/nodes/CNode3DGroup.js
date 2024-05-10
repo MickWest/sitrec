@@ -49,6 +49,7 @@ export class CNode3DGroup extends CNode3D {
     }
 
     dispose() {
+        assert(this.container !== undefined, "CNode3DGroup container is undefined")
         this.container.remove(this._object);
         super.dispose();
     }

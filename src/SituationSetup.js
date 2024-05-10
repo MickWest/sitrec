@@ -5,7 +5,6 @@ import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
-import {CNodeTrack} from "./nodes/CNodeTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {
     abs,
@@ -26,7 +25,7 @@ import {GlobalScene} from "./LocalFrame";
 import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeDisplayTargetModel} from "./nodes/CNodeDisplayTargetModel";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
-import {CNodeArray, makeArrayNodeFromMISBColumn} from "./nodes/CNodeArray";
+import {CNodeArray} from "./nodes/CNodeArray";
 import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
@@ -38,14 +37,13 @@ import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes,
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
 import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
-import {MISB} from "./MISBUtils";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
 import {DebugSphere} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
-import {CNodeLOSTrackMISB} from "./nodes/CNodeLOSTrackMISB";
+import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -692,10 +690,8 @@ export function SetupFromKeyAndData(key, _data) {
         case "arrayDataPTZ":
             SSLog();
             const cameraTrack = NodeMan.get(data.arrayNode ?? "cameraTrack");
-            const array = cameraTrack.array
-            assert(array !== undefined, "arrayDataPTZ missing array object")
-            makeArrayNodeFromMISBColumn("headingCol", array, data.heading, 30, true)
-            makeArrayNodeFromMISBColumn("pitchCol", array, data.pitch, 30, true)
+            makeArrayNodeFromMISBColumn("headingCol", cameraTrack, data.heading, 30, true)
+            makeArrayNodeFromMISBColumn("pitchCol", cameraTrack, data.pitch, 30, true)
             NodeMan.get(data.camera ?? "lookCamera").addController(
                 "AbsolutePitchHeading",
                 {pitch: "pitchCol", heading: "headingCol"}

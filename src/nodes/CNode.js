@@ -364,7 +364,7 @@ class CNode {
       // TODO: better check like this
         if (!this.isNumber && this.getValueFrame(0).position === undefined) {
             var frameInt = Math.floor(frameFloat);
-            assert (frameInt >= 0 && frameInt < this.frames, "out of range index on non-number")
+            assert (frameInt >= 0 && frameInt < this.frames, "out of range index on non-number/non-position")
             return this.getValueFrame(frameInt)
         }
 

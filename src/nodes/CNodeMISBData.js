@@ -1,11 +1,12 @@
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager, NodeMan} from "../Globals";
 import {MISB, MISBFields} from "../MISBUtils";
-import {CNodeEmptyArray, makeArrayNodeFromMISBColumn} from "./CNodeArray";
+import {CNodeEmptyArray} from "./CNodeArray";
 import {assert, f2m} from "../utils";
 import {saveAs} from "../js/FileSaver";
 
 import {CNodeLOSTrackMISB} from "./CNodeLOSTrackMISB";
+import {makeArrayNodeFromMISBColumn} from "./CNodeArrayFromMISBColumn";
 
 //export const MISBFields = Object.keys(MISB).length;
 
@@ -119,25 +120,14 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
 export function makeLOSNodeFromTrack(trackID, data) {
     const cameraTrackAngles = NodeMan.get(trackID);
-
-    // first check if there's a sourceArray, if not, use the array
-    // sourceArray is the original array in a smoothed node
-    let arrayAngles = cameraTrackAngles.sourceArray
-
-    if (arrayAngles === undefined) {
-        arrayAngles = cameraTrackAngles.array;
-    }
-
-    assert(arrayAngles !== undefined, "arrayDataMISBAngles missing array object")
-
     const smooth = data.smooth ?? 0;
 
-    makeArrayNodeFromMISBColumn(trackID+"platformHeading", arrayAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
-    makeArrayNodeFromMISBColumn(trackID+"platformPitch", arrayAngles, data.platformPitch ?? MISB.PlatformPitchAngle, smooth, true)
-    makeArrayNodeFromMISBColumn(trackID+"platformRoll", arrayAngles, data.platformRoll ?? MISB.PlatformRollAngle, smooth, true)
-    makeArrayNodeFromMISBColumn(trackID+"sensorAz", arrayAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
-    makeArrayNodeFromMISBColumn(trackID+"sensorEl", arrayAngles, data.sensorEl ?? MISB.SensorRelativeElevationAngle, smooth, true)
-    makeArrayNodeFromMISBColumn(trackID+"sensorRoll", arrayAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformHeading", cameraTrackAngles, data.platformHeading ?? MISB.PlatformHeadingAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformPitch", cameraTrackAngles, data.platformPitch ?? MISB.PlatformPitchAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"platformRoll", cameraTrackAngles, data.platformRoll ?? MISB.PlatformRollAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorAz", cameraTrackAngles, data.sensorAz ?? MISB.SensorRelativeAzimuthAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorEl", cameraTrackAngles, data.sensorEl ?? MISB.SensorRelativeElevationAngle, smooth, true)
+    makeArrayNodeFromMISBColumn(trackID+"sensorRoll", cameraTrackAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
 
     const node = new CNodeLOSTrackMISB({
         id: data.id ?? "losTrackMISB", cameraTrack: trackID,

@@ -148,6 +148,9 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         this.propagateLayerMask();
         this.recalculate();
 
+        assert(this.container !== undefined, "CNodeDisplayATFLIR container is undefined")
+
+
     }
 
     makeTrackLine() {
@@ -194,7 +197,6 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
     dispose() {
 
-
         disposeScene(PodFrame);
 
         Pod = undefined;
@@ -205,9 +207,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         PodFrame = undefined;
         FA18 = undefined;
 
-        this._object = undefined;
         this.SphericalGrid = undefined;
-        this.container = undefined;
         this.AzElGrid = undefined;
         if (this.TrackLineGeometry) this.TrackLineGeometry.dispose();
         this.TrackLineGeometry = undefined;

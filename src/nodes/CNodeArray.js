@@ -1,7 +1,6 @@
-import {assert, ExpandMISBKeyframes, RollingAverage, RollingAverageDegrees} from "../utils";
+import {assert} from "../utils";
 import {CNode} from "./CNode";
-import {MISB} from "../MISBUtils";
-import {FileManager, NodeMan, Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 
 export class CNodeArray extends CNode {
     constructor(v) {
@@ -64,85 +63,6 @@ export class CNodeManualData extends CNodeEmptyArray {
 
 
 
-}
-
-
-export class CNodeSmoothedArray extends CNodeEmptyArray {
-    constructor(v) {
-        super(v)
-        this.input("source") // source array node
-        this.input("window") // amount to smooth (rolling average window size)
-        this.frames = this.in.source.frames;
-        this.recalculate();
-    }
-
-    recalculate() {
-        this.array = RollingAverage(this.in.source.array, this.in.window.v0)
-    }
-}
-
-
-// export function makeArrayNodeFromColumn(id, array, columnIndex, smooth=0, degrees=false) {
-//     assert(0,"makeArrayNodeFromColumn is deprecated")
-//     const extractedArray = array.map(x => x[columnIndex])
-//     let smoothedArray;
-//     if (smooth !== 0) {
-//         if (degrees)
-//             smoothedArray = RollingAverageDegrees(extractedArray, smooth);
-//         else
-//             smoothedArray = RollingAverage(extractedArray, smooth);
-//     } else {
-//         smoothedArray = extractedArray
-//     }
-//
-//     return new CNodeArray({
-//         id: id,
-//         array: smoothedArray,
-//     })
-// }
-
-export function makeArrayNodeFromMISBColumn(id, array, columnIndex, smooth=0, degrees=false) {
-
-    // if columnINdex is a string, we need to convert it to a number
-    if (typeof columnIndex === "string") {
-        // strip off the initial "MISB." if it exists
-        if (columnIndex.startsWith("MISB.")) {
-            columnIndex = columnIndex.slice(5);
-        }
-        columnIndex = MISB[columnIndex];
-//        console.log("makeArrayNodeFromMISBColumn: converted columnIndex to number = "+columnIndex)
-    }
-
-    assert(array.length > 0, "makeArrayNodeFromMISBColumn: array is empty");
-
-    // TODO: difference between smooth (angles) and discreet (FOV?) misb values
-    //const extractedArray = array.map(x => x[columnIndex])
-    // here the requested column is in the MISB data
-    // the "array" is a per-frame array of position and misbRow;
-    // const extractedArray = new Array(array.length);
-    // for (let i = 0; i < array.length; i++) {
-    //     const value = array[i].misbRow[columnIndex];
-    //     extractedArray[i] = value;
-    //     assert(!isNaN(value), "makeArrayNodeFromMISBColumn: NaN value in column "+columnIndex+" at frame "+i);
-    // }
-
-    const extractedArray = ExpandMISBKeyframes(array, columnIndex);
-
-    let smoothedArray;
-    if (smooth !== 0) {
-        if (degrees)
-            smoothedArray = RollingAverageDegrees(extractedArray, smooth);
-        else
-            smoothedArray = RollingAverage(extractedArray, smooth);
-    } else {
-        smoothedArray = extractedArray
-    }
-
-    return new CNodeArray({
-        id: id,
-        array: smoothedArray,
-        exportable: true,
-    })
 }
 
 

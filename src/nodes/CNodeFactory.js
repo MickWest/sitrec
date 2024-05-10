@@ -292,8 +292,8 @@ export class CNodeFactory extends CManager{
             let nodes = depthMap[i];
             if (nodes !== undefined) {
                 for (let node of nodes) {
-               //    console.log("Recalculating "+node.id+" at depth "+i)
                     node.recalculate();
+                    console.log("Recalculated " + node.constructor.name + ":" + node.id + " at depth " + i + ", node.frames = " + node.frames + (node.frameless?" (frameless)":""));
                 }
             }
         }
