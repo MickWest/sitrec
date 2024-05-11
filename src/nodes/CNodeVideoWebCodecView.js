@@ -33,8 +33,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.handlerFunction = this.handlerFunction.bind(this);
         this.onDropBound = this.onDrop.bind(this); // Bind and store the reference for removal later
 
-
-
     }
 
     addLoadingMessage() {
@@ -141,10 +139,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     }
 
     dispose() {
-
-        // remove the event listeners, otherwise they stop the object being garbage collected
-        this.removeEventListeners();
-
         super.dispose()
     }
 
