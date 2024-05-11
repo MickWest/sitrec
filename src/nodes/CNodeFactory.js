@@ -243,7 +243,7 @@ export class CNodeFactory extends CManager{
         NodeMan.iterate((key, node) => {
             if (node.useSitFrames) {
                 node.frames = Sit.frames;
-                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
+//                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
             }
         })
 
@@ -293,7 +293,7 @@ export class CNodeFactory extends CManager{
             if (nodes !== undefined) {
                 for (let node of nodes) {
                     node.recalculate();
-                    console.log("Recalculated " + node.constructor.name + ":" + node.id + " at depth " + i + ", node.frames = " + node.frames + (node.frameless?" (frameless)":""));
+//                    console.log("Recalculated " + node.constructor.name + ":" + node.id + " at depth " + i + ", node.frames = " + node.frames + (node.frameless?" (frameless)":""));
                 }
             }
         }

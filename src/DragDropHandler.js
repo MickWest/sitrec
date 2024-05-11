@@ -13,13 +13,64 @@ class CDragDropHandler {
 
     constructor() {
         this.dropAreas = [];
+        this.dropQueue = []; // Queue for dropped files that need parsing
     }
 
-    addDropArea(dropArea) {
-        dropArea.addEventListener('dragenter', this.handlerFunction, false)
-        dropArea.addEventListener('dragleave', this.handlerFunction, false)
-        dropArea.addEventListener('dragover', this.handlerFunction, false)
-        dropArea.addEventListener('drop', e => this.onDrop(e), false)
+    addDropArea() {
+        if (this.dropZone !== undefined) {
+            console.warn("DropZone already exists");
+            return;
+        }
+        this.dropZone = document.createElement('div');
+        const dropZone = this.dropZone;
+        dropZone.style.position = 'fixed';
+        dropZone.style.top = '0';
+        dropZone.style.left = '0';
+        dropZone.style.width = '100vw';
+        dropZone.style.height = '100vh';
+        dropZone.style.display = 'flex';
+        dropZone.style.justifyContent = 'center';
+        dropZone.style.alignItems = 'center';
+        dropZone.style.fontSize = '24px';
+        dropZone.style.color = '#fff';
+        dropZone.style.transition = 'background-color 0.2s';
+        dropZone.style.pointerEvents = 'none';
+        dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
+        dropZone.innerHTML = 'DROP FILES HERE';
+        dropZone.style.visibility = 'hidden'; // Initially hidden
+
+        document.body.appendChild(dropZone);
+
+        function handleDragOver(event) {
+            event.preventDefault(); // Necessary to allow a drop
+        }
+
+        document.body.addEventListener('dragenter', (event) => {
+            this.showDropZone();
+        });
+
+        document.body.addEventListener('dragover', handleDragOver);
+
+        document.body.addEventListener('dragleave', (event) => {
+            // Hide only if the cursor leaves the document
+            if (event.relatedTarget === null) {
+                this.hideDropZone();
+            }
+        });
+
+        document.body.addEventListener('drop', this.onDrop.bind(this));
+    }
+
+    showDropZone() {
+        this.dropZone.style.visibility = 'visible';
+        this.dropZone.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        this.dropZone.style.pointerEvents = 'all'; // Enable pointer events when showing
+    }
+
+    hideDropZone() {
+        this.dropZone.style.visibility = 'hidden';
+        this.dropZone.style.backgroundColor = 'transparent';
+        this.dropZone.style.pointerEvents = 'none'; // Disable pointer events when hidden
     }
 
     handlerFunction(event) {
@@ -27,8 +78,12 @@ class CDragDropHandler {
     }
 
     onDrop(e) {
+        this.dropQueue = [];
         e.preventDefault();
-        let dt = e.dataTransfer;
+        this.hideDropZone();
+        // we defer the checkDrop to a check in the main loop
+        // to simplify debugging.
+        const dt = e.dataTransfer;
 
         // If files were dragged and dropped
         if (dt.files && dt.files.length > 0) {
@@ -37,7 +92,7 @@ class CDragDropHandler {
                 this.uploadDroppedFile(file, file.name);
             }
         }
-        // If a URL was dragged and dropped
+// If a URL was dragged and dropped
         else {
             let url = dt.getData('text/plain');
             if (url) {
@@ -48,7 +103,34 @@ class CDragDropHandler {
         }
     }
 
+
+    // If there are loaded files in the queue, then parse them
+    checkDropQueue() {
+        while (this.dropQueue.length > 0) {
+            const drop = this.dropQueue.shift();
+            this.parseResult(drop.filename, drop.result, drop.newStaticURL);
+        }
+    }
+
     uploadDroppedFile(file) {
+
+        // if it's a video file, that's handled differently
+        // as we might (in the future) want to stream it
+        if (file.type.startsWith("video")) {
+            console.log("Loading dropped video file: " + file.name);
+            if (!NodeMan.exists("video")) {
+                console.warn("No video node found to load video file");
+                return;
+            }
+            NodeMan.get("video").uploadFile(file);
+            return;
+        }
+
+        console.log("### Uploading dropped file: " + file.name)
+
+        // otherwise we load and then parse the file with the FileManager
+        // and then decide what to do with it based on the file extension
+
         let promise = new Promise((resolve, reject) => {
             let reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -64,7 +146,7 @@ class CDragDropHandler {
                //  //console.log("Started PARSE of dropped file"+file.name)
 
                 // parsing the result will happen BEFORE the rehost
-                this.parseResult(file.name, reader.result, null);
+                this.queueResult(file.name, reader.result, null);
             };
         });
 
@@ -92,13 +174,17 @@ class CDragDropHandler {
                 return response.arrayBuffer();
             })
             .then(buffer => {
-                this.parseResult(url, buffer, url)
+                this.queueResult(url, buffer, url)
             })
             .catch(error => {
                 console.log('There was a problem with the fetch operation:', error.message);
             });
     }
 
+
+    queueResult(filename, result, newStaticURL) {
+        this.dropQueue.push({filename: filename, result: result, newStaticURL: newStaticURL});
+    }
 
     // a raw arraybuffer (result) has been loaded
     // parse the asset

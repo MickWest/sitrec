@@ -460,6 +460,7 @@ class CNode {
     // will work with either a track that returns a Vector3 or one that returns {position:Vector3, ...}
     p(frameFloat) {
         var pos = this.getValue(frameFloat)
+        assert(pos !== undefined, "Node "+this.id+" has undefined value at frameFloat "+frameFloat)
 
         // if (pos === null) {
         //     console.log("Node "+this.id+" has null value at frame "+frameFloat)
@@ -525,12 +526,15 @@ class CNode {
     // need to cull child nodes that can be reached by other paths
     // so they don't get prematurely recalculated
     // the "depth" patameter here is just used for indenting.
-    recalculateCascade(f, noControllers = false, depth = 0) {
+    recalculateCascade(f, noControllers = false, depth = 0, debug = false) {
 
         if (f === undefined) f = par.frame;
 
+        if (debug)
+            console.log("|---".repeat(depth) + " Recalculating:  " + this.id + " frame " + f)
+
         let listOfOne = [this]
-        recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth)
+        recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth, debug)
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
         par.renderOne = true;
@@ -551,10 +555,11 @@ class CNode {
 // run recalculate on each one
 // maintain a list of output nodes, with no duplicates
 // then run recalculate on this list, if not empty
-function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
+function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = false) {
     let children = []
     for (let node of list) {
-//        console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
+        if (debug)
+            console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
         node.recalculate();
 
         // Controllers are a bit of a special case
@@ -564,7 +569,8 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
         // but before the children are recalculated (as they might depend on the effect of the controller on this node)
 
         if (!noControllers && node.applyControllers !== undefined) {
-//            console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
+            if (debug && node.id === "lookCamera")
+                console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
             node.applyControllers(f, depth)
         }
 
@@ -598,7 +604,7 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
 
     // if anything in the list, then recurse
     if (children.length > 0) {
-        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1)
+        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1, debug)
     }
 }
 

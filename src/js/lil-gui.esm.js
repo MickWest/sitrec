@@ -349,6 +349,7 @@ class Controller {
         return this;
     }
 
+
     /**
      * Calls `updateDisplay()` every animation frame. Pass `false` to stop listening.
      * @param {boolean} listen
@@ -363,14 +364,19 @@ class Controller {
          */
         this._listening = listen;
 
-        if ( this._listenCallbackID !== undefined ) {
-            cancelAnimationFrame( this._listenCallbackID );
-            this._listenCallbackID = undefined;
-        }
-
-        if ( this._listening ) {
-            this._listenCallback();
-        }
+        // MICK: removed the callbacks, as the check is now explict in the main
+        // rendering loop calling the new function updateListeners
+        // which you call on each root GUI object
+        // (i.e. just on "gui" in Sitrec/index.js)
+        //
+        // if ( this._listenCallbackID !== undefined ) {
+        //     cancelAnimationFrame( this._listenCallbackID );
+        //     this._listenCallbackID = undefined;
+        // }
+        //
+        // if ( this._listening ) {
+        //     this._listenCallback();
+        // }
 
         return this;
 
@@ -2417,6 +2423,28 @@ class GUI {
             folders = folders.concat( f.foldersRecursive() );
         } );
         return folders;
+    }
+
+
+    // MICK: Added this method
+    // Iterates over all controllers in the GUI and calls the updateDisplay method
+    // if the listener is not set to false.
+    // to is to avoid having the requestAnimationFrame loop in the controllers
+    // which is making code difficult to debug.
+    // this makes it part of the main loop
+    updateListeners() {
+        const controllerList = this.controllersRecursive()
+        for (const controller of controllerList) {
+            if (controller._listening) {
+                const curValue = controller.save();
+
+                if (curValue !== controller._listenPrevValue) {
+                    controller.updateDisplay();
+                }
+
+                controller._listenPrevValue = curValue;
+            }
+        }
     }
 
 }

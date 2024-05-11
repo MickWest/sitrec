@@ -35,23 +35,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
 
 
-   //     if (v.dragDropVideo)
-            this.addEventListeners();
-
-    }
-
-    addEventListeners() {
-        this.div.addEventListener('dragenter', this.handlerFunction, false);
-        this.div.addEventListener('dragleave', this.handlerFunction, false);
-        this.div.addEventListener('dragover', this.handlerFunction, false);
-        this.div.addEventListener('drop', this.onDropBound, false); // Use the bound reference
-    }
-
-    removeEventListeners() {
-        this.div.removeEventListener('dragenter', this.handlerFunction, false);
-        this.div.removeEventListener('dragleave', this.handlerFunction, false);
-        this.div.removeEventListener('dragover', this.handlerFunction, false);
-        this.div.removeEventListener('drop', this.onDropBound, false); // Remove using the same reference
     }
 
     addLoadingMessage() {
@@ -88,7 +71,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
             this.Video.flushEntireCache()
             this.Video = undefined;
         }
-        Sit.frames = 0
         this.positioned = false;
     }
 
@@ -107,7 +89,6 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     // for import or drag and drop files.
     uploadFile(file) {
 
-        Sit.frames = undefined; // need to recalculate this
         this.fileName = file.name;
 
         this.stopStreaming()

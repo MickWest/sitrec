@@ -603,6 +603,7 @@ function renderMain() {
 
     incrementMainLoopCount();
 
+
     if (Sit.animated) {
         var lastFrame = par.frame
         updateFrame()
@@ -610,10 +611,14 @@ function renderMain() {
             par.renderOne = true;
     }
 
+    DragDropHandler.checkDropQueue();
+
     if (par.paused && !par.renderOne) return;
 
     // par.renderOne is a flag set whenever something is done that forces an update.
     par.renderOne = false;
+
+    gui.updateListeners();
 
     if (Sit.updateFunction) {
         Sit.updateFunction(par.frame)

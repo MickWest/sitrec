@@ -4,6 +4,7 @@
 import {NodeMan} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
+import {assert} from "./utils";
 
 export function customUpdate(f) {
 
@@ -24,6 +25,7 @@ export function customUpdate(f) {
         const currentTrack = trackSelectNode.inputs[trackSelectNode.choice]
         TrackManager.iterate((id, trackObject) => {
             if (trackObject.trackNode.id === currentTrack.id) {
+                assert(trackObject.displayTargetSphere !== undefined, "displayTargetSphere is undefined for trackObject:" + trackObject.trackNode.id);
                 trackObject.displayTargetSphere.changeLayerMask(LAYER.MASK_HELPERS);
                 //console.log("Setting layer mask to MASK_HELPERS for node:" + trackObject.trackNode.id)
             } else {

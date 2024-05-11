@@ -46,7 +46,10 @@ class CNodeSwitch extends CNode {
 //                    console.log("Changed to "+newValue)
 //                    console.log("(changing) this.choice = "+this.choice)
 
-                    this.recalculateCascade()
+                    //this.recalculateCascade()
+                    this.recalculateCascade(undefined, false, 0, true)
+
+
                     if (this.onChange !== undefined) {
                         this.onChange()
                     }

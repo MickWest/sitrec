@@ -22,7 +22,7 @@ import {isLocal} from "../../config";
 
 
 function updateSitFrames() {
-    if (Sit.frames === undefined || Sit.frames === 0) {
+    if (Sit.framesFromVideo) {
         console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
         assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
         Sit.frames = Sit.videoFrames;

@@ -69,6 +69,7 @@ export class CNodeControllerTrackPosition extends CNodeController {
 
     apply(f, objectNode) {
         const camera = objectNode.camera
+        assert(this.in.sourceTrack !== undefined, "CNodeControllerTrackPosition: sourceTrack is undefined, id="+this.id)
         var camPos = this.in.sourceTrack.p(f)
         assert(!Number.isNaN(camPos.x),"CNodeControllerTrackPosition: camera.position.x NaN")
 

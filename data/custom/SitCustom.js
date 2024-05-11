@@ -29,6 +29,9 @@ sitch = {
     frames: 900,
     fps: 30,
 
+    // if we are loading a video, then we want to extract frames from it
+    framesFromVideo: true,
+
     lat: 40, lon: -100,
 
     targetSize: 100,
