@@ -2,12 +2,43 @@ import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "../../../three.js/build/three.module";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {drop} from '../../SphericalMath'
-import * as LAYER from "../../LayerMasks";
 import {SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";
-import {wgs84} from "../../LLA-ECEF-ENU";
+import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
+import {DebugSphere} from "../../threeExt";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
+
+
+//////////////////////////////////////////////////////////////////////////////
+// MICK utils
+
+// convert a tile x position to longitude
+// x is the horizontal tile position
+// it can be floating point which indicates a position inside the tile
+// if no fraction, then it's the left edge of the tile. If 0.5, then the middle.
+// 1.0 the right edge, coincident with the next tile
+function getLeftLongitude(x, z) {
+  // Calculate the number of horizontal tiles at zoom level z
+  let numTiles = Math.pow(2, z);
+
+  // Calculate the left longitude (west edge)
+  let leftLongitude = (x / numTiles) * 360 - 180;
+  return leftLongitude;
+}
+
+// convert a tile y position to latitude
+function getNorthLatitude(y, z) {
+  // Calculate the number of vertical tiles at zoom level z
+  let numTiles = Math.pow(2, z);
+
+  // Calculate the latitude of the northern edge of the tile
+  let latNorthRad = Math.atan(Math.sinh(Math.PI * (1 - 2 * y / numTiles)));
+  let latNorth = latNorthRad * 180 / Math.PI;
+  return latNorth;
+}
+
+
 
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
@@ -234,91 +265,96 @@ class Tile {
     this.geometry = geometry
   }
 
-  // recalculate the Z values for a tile
+
+  // recalculate the X,Y, Z values for all the verticles of a tile
   // at this point we are Z-up
   recalculateCurve(radius) {
+
+    if (radius !== wgs84.RADIUS) {
+      console.warn('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
+      console.warn('Flat earth simulation will need a different calculation')
+    }
+
+
     var geometry = this.geometry;
     if (this.mesh !== undefined){
       geometry = this.mesh.geometry;
-  //    console.log("Recalculating Mesh Geometry"+geometry)
+      //    console.log("Recalculating Mesh Geometry"+geometry)
     } else {
-  //    console.log("Recalculating First Geometry"+geometry)
+      //    console.log("Recalculating First Geometry"+geometry)
     }
 
     assert(geometry !== undefined, 'Geometry not defined in map33.js')
 
+    // we will be calculating the tile vertext positions in EUS
+    // but they will be relative to the tileCenter
+    //
+    const tileCenter = this.mesh.position;
 
-    const nPosition = Math.sqrt(geometry.attributes.position.count) // size of mesh in points
-    const nElevation = Math.sqrt(this.elevation.length) // size of elevation map (probably 512)
-    const ratio = nElevation / (nPosition - 1)
+    // for a 100x100 mesh, that's 100 squares on a side
+    // but an extra row and column of vertices
+    // so 101x101 points = 10201 points
+    //
+    // the elevation map is 256x256 points = 65536 points
 
-    let x, y, z
-    for (
-        let i = 0;
-        i < geometry.attributes.position.count;
-        i++
-    ) {
+    const nPosition = Math.sqrt(geometry.attributes.position.count) // size of side of mesh in points
 
+    const nElevation = Math.sqrt(this.elevation.length) // size of side of elevation map (probably 256)
 
-      x = Math.floor(i / nPosition)
+    // we need to calculate the ratio of the elevation map to the mesh
+    // 0 maps to 0, 100 maps to 255, so we are multiplying by 2.55 (255/100), or (256-1)/100
+    const ratio = (nElevation - 1) / (nPosition)
 
-      // y = i % nPosition
-      // geometry.attributes.position.setZ(
-      //     i,
-      //     this.elevation[
-      //         Math.round(Math.round(x * ratio) * nElevation + y * ratio)
-      //         ] * this.map.options.zScale + Math.random() * 100
-      // )
+    const xTile = this.x;
+    const yTile = this.y;
+    const zoomTile = this.z;
 
-      z = i % nPosition
-      // x,z here is the offset in the mesh, in the range 0..1
-      // so we can calculate what that is in meters
-      // note x and z indices are swapped from the mesh position
-      // note 0,0 is in the middle of the center tile ???
-      const xm = this.size * (z / (nPosition-1) - 0.5) + this.mesh.position.x
-      const zm = this.size * (x / (nPosition-1) - 0.5) + this.mesh.position.z
+    for (let i = 0; i < geometry.attributes.position.count;i++) {
 
-      const rm = radius // rm = radius of earth in meters
+      const xIndex = i % nPosition
+      const yIndex = Math.floor(i / nPosition)
 
+      // calculate the fraction of the tile that the vertext is in
+      const yTileFraction = yIndex / (nPosition - 1)
+      const xTileFraction = xIndex / (nPosition - 1)
 
-      // we set the edges here to simply the same as the preciosu row/columm
-      // this get overwritten when the seams are fixed, except for the edge tiles
-      //
-      if (i % nPosition === nPosition - 1) {
-        var other = geometry.attributes.position.getY(i-1);
-      //  if (other > 0 ) other = 0
-        geometry.attributes.position.setY(i, other)
-      }  else if (i>= geometry.attributes.position.count  - nPosition) {
-        var other = geometry.attributes.position.getY(i-nPosition)
-      //  if (other > 0 ) other = 0
-        geometry.attributes.position.setY(i,other)
-      } else {
+      // get that in world tile coordinates
+      const xWorld = xTile + xTileFraction;
+      const yWorld = yTile + yTileFraction;
 
+      // convert that to lat/lon
+      const lat = getNorthLatitude(yWorld, zoomTile);
+      const lon = getLeftLongitude(xWorld, zoomTile);
 
-        geometry.attributes.position.setY(
-            i,
-            // -drop(xm, zm, rm) + 1000000000/Math.sqrt(xm*xm + zm*zm)
+      // get elevation
+      const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
 
-            this.elevation[
-                Math.round(Math.round(x * ratio) * nElevation + z * ratio)
-                ] * this.map.options.zScale  -  drop(xm,zm,rm)
-        )
-      }
+      const elevation = this.elevation[elevationIndex] * this.map.options.zScale;
 
-   //   var yy = geometry.attributes.position.getY(i)
-   //   console.log(yy)
+      // convert that to EUS
+      const vertexESU = LLAToEUS(lat,lon,elevation)
 
+      // subtract the center of the tile
+      const vertex = vertexESU.sub(tileCenter)
 
+      assert(!isNaN(vertex.x), 'vertex.x is NaN in map33.js i='+i)
+      assert(!isNaN(vertex.y), 'vertex.y is NaN in map33.js')
+      assert(!isNaN(vertex.z), 'vertex.z is NaN in map33.js')
+
+      // set the vertex position in tile space
+        geometry.attributes.position.setXYZ(i, vertex.x, vertex.y, vertex.z);
     }
 
-    // Removed this as it's expensive. And seems mot needed for just curve flattenog.
-   // geometry.computeVertexNormals()
+    // Removed this as it's expensive. And seems not needed for just curve flattenog.
+    // geometry.computeVertexNormals()
 
     geometry.computeBoundingBox()
     geometry.computeBoundingSphere()
 
+
     geometry.attributes.position.needsUpdate = true;
   }
+
 
   childrens() {
     return [
@@ -377,7 +413,12 @@ class Tile {
   //  console.log ("Tile position ZXY = "+position.z+","+position.x+","+position.y)
   //  this.mesh.position.set(...Object.values(position))
 
-    this.mesh.position.set(position.x, position.z,-position.y) // MICK
+    const correctPosition = new Vector3(position.x, position.z,-position.y) // MICK
+
+    this.mesh.position.set(correctPosition.x, correctPosition.y,correctPosition.z) // MICK
+
+    // this is in the center of the tile
+    // DebugSphere("Tile"+this.x+","+this.y,correctPosition,100)
 
     // we need to update the matrices, otherwise collision will not work until rendered
     // which can lead to odd asynchronous bugs where the last tiles loaded
@@ -538,11 +579,11 @@ class Map {
     Object.values(this.tileCache).forEach(tile => {
       tile.recalculateCurve(radius)
     })
-    Object.values(this.tileCache).reverse().forEach(tile => {
-      tile.seamY = false
-      tile.seamX = false
-      tile.resolveSeams(this.tileCache, false) // fix seams, but normals are fine
-    })
+    // Object.values(this.tileCache).reverse().forEach(tile => {
+    //   tile.seamY = false
+    //   tile.seamX = false
+    //   tile.resolveSeams(this.tileCache, false) // fix seams, but normals are fine
+    // })
   }
 
 
