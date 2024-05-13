@@ -17,6 +17,12 @@ function getUserID() {
     }
 }
 
+// return a directory unique to the user, OR an empty string if the user is not logged in
+// does NOT create the directory, which you can do with:
+//     if (!file_exists($userDir)) {
+//        mkdir($userDir, 0777, true);
+//    }
+//
 function getUserDir($user_id)
 {
     if ($user_id == 0) {
@@ -26,13 +32,8 @@ function getUserDir($user_id)
 // Directory to store rehosted files
     $storageDir = '../../sitrec-upload/';
 
-// Create a directory for the user if it doesn't exist
     $userDir = $storageDir . $user_id . '/';
 
-
-    if (!file_exists($userDir)) {
-        mkdir($userDir, 0777, true);
-    }
     return $userDir;
 }
 

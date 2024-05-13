@@ -140,8 +140,13 @@ if (file_exists($s3_config_path)) {
 $userFilePath = $userDir . $newFileName;
 
 
-
 if (!file_exists($userFilePath)) {
+
+    // Create a directory for the user if it doesn't exist
+    if (!file_exists($userDir)) {
+        mkdir($userDir, 0777, true);
+    }
+
     move_uploaded_file($_FILES['fileContent']['tmp_name'], $userFilePath);
 }
 
