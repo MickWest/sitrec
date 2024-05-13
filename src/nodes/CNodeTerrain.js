@@ -4,17 +4,14 @@ import { Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject, V3} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
 import {Sit} from "../Globals";
-import {ECEF2ENU, RLLAToECEFV_Sphere, LLAToEUS, getN, wgs84} from "../LLA-ECEF-ENU";
+import { RLLAToECEFV_Sphere, wgs84, EUSToLLA} from "../LLA-ECEF-ENU";
 import {Group} from "../../three.js/build/three.module";
 import {gui} from "../Globals";
 
 // note for map33.js to not give errors, had to  add
 // const process = require('process');
 // to path.js
-import * as LAYER from "../LayerMasks.js"
 import {GlobalScene} from "../LocalFrame";
-import {altitudeAboveSphere, getLocalDownVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
-import {Raycaster} from "three";
 
 export class CNodeTerrain extends CNode {
     constructor(v) {
@@ -193,7 +190,7 @@ export class CNodeTerrain extends CNode {
         // and finding the intersection with the terrain
 
         // TODO - altitude above ground is very slow
-        // redo it useing the tiles, not the geometry
+        // redo it using the tiles, not the geometry
 
         // const down = getLocalDownVector(A)
         // const rayCaster = new Raycaster(A, down);
@@ -205,8 +202,18 @@ export class CNodeTerrain extends CNode {
         //         return intersect.point;
         // }
 
+        // we use LLA to get the data from the terrain maps
+        const LLA = EUSToLLA(A)
+        // elevation is the height above the wgs84 sphere
+        let elevation = this.maps[this.mapType].map.getElevation(LLA.x, LLA.y)
 
-        return pointOnSphereBelow(A)
+        // then
+        const earthCenterENU = V3(0,-wgs84.RADIUS,0)
+        const centerToA = A.clone().sub(earthCenterENU)
+        const scale = (wgs84.RADIUS + elevation) / centerToA.length()
+        return earthCenterENU.add(centerToA.multiplyScalar(scale))
+
+
     }
 }
 
