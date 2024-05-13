@@ -1,4 +1,4 @@
-import {getPixels} from '../get-pixels-mick.js'
+ import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "../../../three.js/build/three.module";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {drop} from '../../SphericalMath'
@@ -112,50 +112,6 @@ class Utils {
   }
 }
 
-class MapPicker {
-  constructor(camera, map, domElement, controls) {
-    this.vec = new Vector3(); // create once and reuse
-    this.position = new Vector3(); // create once and reuse
-    this.camera = camera
-    this.map = map
-    this.domElement = domElement
-    this.controls = controls
-
-    this.domElement.addEventListener('mousemove', this.onMouseMove.bind(this))
-    this.domElement.addEventListener('dblclick', this.onMouseClick.bind(this))
-  }
-
-  computeWorldPosition(event) {
-    // cf. https://stackoverflow.com/a/13091694/343834
-    this.vec.set(
-      (event.clientX / window.innerWidth) * 2 - 1,
-      -(event.clientY / window.innerHeight) * 2 + 1,
-      0.5);
-
-    this.vec.unproject(this.camera);
-
-    this.vec.sub(this.camera.position).normalize();
-
-    var distance = -this.camera.position.z / this.vec.z;
-
-    this.position.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
-  }
-
-  onMouseMove(event) {
-    // this.computeWorldPosition(event)
-  }
-
-  onMouseClick(event) {
-    this.computeWorldPosition(event)
-    this.map.addFromPosition(this.position.x, this.position.y)
-  }
-
-  go(lat, lon) {
-    this.map.clean()
-    this.map.geoLocation = [lat, lon]
-    this.map.init()
-  }
-}
 
 class Source {
   constructor(api, token, options) {
@@ -661,4 +617,4 @@ class Map {
   }
 }
 
-export {Map, Source, MapPicker}
+export {Map, Source}
