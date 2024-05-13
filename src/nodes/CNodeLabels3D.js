@@ -5,7 +5,7 @@
 import SpriteText from '../js/three-spritetext';
 import * as LAYER from "../LayerMasks";
 import {DebugArrowAB, removeDebugArrow, V2, V3} from "../threeExt";
-import {pointOnSphereBelow} from "../SphericalMath";
+import {altitudeAboveSphere, pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
 import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
@@ -194,7 +194,14 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         DebugArrowAB(this.id+"end", this.D, this.B, 0x00ff00, true, measureArrowGroupNode.group);
 
         const length = this.A.distanceTo(this.B);
-        const text = Units.withUnits(length,this.decimals,this.unitSize);
+        let text;
+        if (this.altitude) {
+            text = Units.withUnits(length, this.decimals, this.unitSize) + " agl";
+            var alt = altitudeAboveSphere(this.A)
+            text += "\n "+Units.withUnits(alt, this.decimals, this.unitSize)+ " msl";
+        } else {
+            text = Units.withUnits(length, this.decimals, this.unitSize);
+        }
         this.changeText(text);
 
     }
@@ -228,10 +235,16 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
         })
         v.B = B;
 
+        // patch to make it double size with two lines
+        // should handle this better
+        v.size = 24;
+
         v.unitSize ??= "small";
         v.decimals ??= 0;
 
         super(v);
+
+        this.altitude = true;
     }
 }
 
