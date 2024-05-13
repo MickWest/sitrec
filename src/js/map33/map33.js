@@ -218,9 +218,16 @@ class Tile {
     this.seamY = false
   }
 
+
+  // The "key" is portion of the URL that identifies the tile
+  // in the form of "z/x/y"
+  // where z is the zoom level, and x and y are the horizontal
+  // (E->W) and vertical (N->S) tile positions
+  // it's used here as a key to the tileCache
   key() {
     return `${this.z}/${this.x}/${this.y}`
   }
+  // Neighbouring tiles are used to resolve seams between tiles
   keyNeighX() {
     return `${this.z}/${this.x + 1}/${this.y}`
   }
@@ -236,6 +243,8 @@ class Tile {
     return this.map.source.mapUrl(this.z, this.x, this.y)
   }
 
+  // takes a 2D array of pixel RBGA and computes the elevation
+  // note the A value is not used, as the source data is a PNG with no alpha.
   computeElevation(pixels) {
     this.shape = pixels.shape
     const elevation = new Float32Array(pixels.shape[0] * pixels.shape[1])
@@ -261,7 +270,6 @@ class Tile {
       this.map.options.tileSegments
     )
 
-    geometry.rotateX(-Math.PI * 0.5);  // MICK
     this.geometry = geometry
   }
 
@@ -299,7 +307,9 @@ class Tile {
 
     const nPosition = Math.sqrt(geometry.attributes.position.count) // size of side of mesh in points
 
-    const nElevation = Math.sqrt(this.elevation.length) // size of side of elevation map (probably 256)
+    const elevationMap = this.elevation ?? new Float32Array(16) // elevation map
+    
+    const nElevation = Math.sqrt(elevationMap.length) // size of side of elevation map (probably 256)
 
     // we need to calculate the ratio of the elevation map to the mesh
     // 0 maps to 0, 100 maps to 255, so we are multiplying by 2.55 (255/100), or (256-1)/100
@@ -329,7 +339,7 @@ class Tile {
       // get elevation
       const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
 
-      const elevation = this.elevation[elevationIndex] * this.map.options.zScale;
+      const elevation = elevationMap[elevationIndex] * this.map.options.zScale;
 
       // convert that to EUS
       const vertexESU = LLAToEUS(lat,lon,elevation)
@@ -543,6 +553,12 @@ class Map {
             return Promise.resolve('Aborted');
           }
           tile.setPosition(this.center)
+
+          // do an initial setting of the vertex positions
+          // to accurate EGS84 positions
+          // the hight map should be loaded by now.
+          tile.recalculateCurve(wgs84.RADIUS)
+
           this.scene.add(tile.mesh)
           return tile
         })
