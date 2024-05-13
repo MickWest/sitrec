@@ -61,6 +61,14 @@ class Utils {
     }
   }
 
+  static geo2tileFraction (geoLocation, zoom) {
+    const maxTile = Math.pow(2, zoom);
+    return {
+      x: Math.abs(Utils.long2tile(geoLocation[1], zoom) % maxTile),
+      y: Math.abs(Utils.lat2tile(geoLocation[0], zoom) % maxTile)
+    }
+  }
+
   // Calculate the world position of a tile.
   static tile2position(z, x, y, center, tileSize) {
 
@@ -295,7 +303,10 @@ class Tile {
       // get elevation
       const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
 
-      const elevation = elevationMap[elevationIndex] * this.map.options.zScale;
+      let elevation = elevationMap[elevationIndex] * this.map.options.zScale;
+
+      // clamp to sea level to avoid z-fighting with ocean tiles
+      if (elevation < 0 ) elevation = 0;
 
       // convert that to EUS
       const vertexESU = LLAToEUS(lat,lon,elevation)
@@ -615,6 +626,23 @@ class Map {
     this.tileCache = {}
     this.scene = null; // MICK - added to help with memory management
   }
+
+  // MICK - added to get elevation at a lat/lon
+  getElevation(lat, lon) {
+    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
+    const intX = Math.floor(x)
+    const intY = Math.floor(y)
+    const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
+    if (tile && tile.elevation) {
+      const nElevation = Math.sqrt(tile.elevation.length)
+      const xIndex = Math.floor((x - tile.x) * nElevation)
+      const yIndex = Math.floor((y - tile.y) * nElevation)
+      const elevation = tile.elevation[yIndex * nElevation + xIndex]
+      return elevation
+    }
+    return 0  // default to sea level if elevation data not loaded
+  }
+
 }
 
 export {Map, Source}
