@@ -23,7 +23,9 @@ sitch = {
 
     // temporary hard wired time and terrain for testing MISB truck track
     startTime: "2012-09-19T20:50:26.970Z",
-    terrain: {lat: 41.0957, lon: -104.8702, zoom: 14, nTiles: 8},
+    terrain: {id: "terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 4},
+
+    terrainUI: {kind: "TerrainUI", terrain: "terrain"},
 
     // default to 30 seconds. Loading a video will change this (also need manual, eventually)
     frames: 900,
@@ -38,8 +40,12 @@ sitch = {
 
     lookCamera: {fov: 10, near: 1, far: 8000000},
     mainCamera: {fov: 30, near: 1, far: 60000000,
-        startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
-        startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
+        // startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
+        // startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
+
+        // close to truck terrain for testing
+         startCameraPositionLLA:[40.767657,-105.215694,15862.255512],
+         startCameraTargetLLA:[40.774329,-105.208906,15520.851507],
     },
 
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
@@ -161,7 +167,8 @@ sitch = {
     // TODO: add support for focus tracks, which are currently using
     // a direct GUI, and should be a CNodeSwitch
     dropTargets: {
-        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
+        "track": ["cameraTrackSwitch", "targetTrackSwitch", "zoomToTrack"],
+//        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
         "fov": ["fovSwitch"],
         "angles": ["angelsSwitch"],
     },

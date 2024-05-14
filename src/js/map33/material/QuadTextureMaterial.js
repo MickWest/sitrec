@@ -7,6 +7,7 @@ import {
 //import fragmentShader from './quadtexture_frag.glsl'
 import vertexShader from './micktexture_vert.glsl'
 import fragmentShader from './micktexture_frag.glsl'
+import {CanvasTexture, Color, MeshBasicMaterial, MeshStandardMaterial, SRGBColorSpace} from "three";
 
 const loader = new TextureLoader()
 
@@ -74,55 +75,67 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
 }
 
 
-// // Function to load a texture with retries and delay on error
-// function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt = 0) {
-//   return new Promise((resolve, reject) => {
-//     loader.load(url,
-//         // On load
-//         resolve,
-//         // On progress (unused)
-//         undefined,
-//         // On error
-//         (err) => {
-//           if (currentAttempt < maxRetries) {
-//             console.log(`Retry ${currentAttempt + 1}/${maxRetries} for ${url} after delay`);
-//             setTimeout(() => {
-//               loadTextureWithRetries(url, maxRetries, delay, currentAttempt + 1)
-//                   .then(resolve)
-//                   .catch(reject);
-//             }, delay);
-//           } else {
-//             console.log(`Failed to load ${url} after ${maxRetries} attempts`);
-//             reject(err);
-//           }
-//         });
-//   });
-// }
-
 
 const QuadTextureMaterial = (urls) => {
   return Promise.all(urls.map(url => loadTextureWithRetries(url))).then(maps => {
-    return new ShaderMaterial({
-      uniforms: {
+//       return new ShaderMaterial({
+//         uniforms: {
+//
+//           mapNW: {value: maps[0]},
+//           mapSW: {value: maps[1]},
+//           mapNE: {value: maps[2]},
+//           mapSE: {value: maps[3]},
+//           ...sharedUniforms,
+//           ...UniformsLib.common,
+//           ...UniformsLib.lights,
+//           ...UniformsLib.fog,
+//         },
+//         vertexShader,
+//         fragmentShader,
+//         defines: {
+//           USE_MAP: true,
+//           USE_UV: true,
+//         },
+//         lights: true,
+//         fog: true,
+//       })
+//   })
+// }
 
-        mapNW: {value: maps[0]},
-        mapSW: {value: maps[1]},
-        mapNE: {value: maps[2]},
-        mapSE: {value: maps[3]},
-        ...sharedUniforms,
-        ...UniformsLib.common,
-        ...UniformsLib.lights,
-        ...UniformsLib.fog,
-      },
-      vertexShader,
-      fragmentShader,
-      defines: {
-        USE_MAP: true,
-        USE_UV: true,
-      },
-      lights: true,
-      fog: true,
-    })
+    // set       texture.colorSpace = SRGBColorSpace; on each map
+    // to avoid gamma correction
+    maps.forEach(map => map.colorSpace = SRGBColorSpace)
+
+
+    // intead of a custom material, use the built-in MeshBasicMaterial
+    // and make a new single texture from the 4 textures
+    // so creating a single double resolution texture
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = maps[0].image.width * 2
+    canvas.height = maps[0].image.height * 2
+    ctx.drawImage(maps[0].image, 0, 0)
+    ctx.drawImage(maps[1].image, 0, maps[0].image.height)
+    ctx.drawImage(maps[2].image, maps[0].image.width, 0)
+    ctx.drawImage(maps[3].image, maps[0].image.width, maps[0].image.height)
+    const texture = new CanvasTexture(canvas)
+    texture.colorSpace = SRGBColorSpace;
+
+    texture.needsUpdate = true
+    // destroy the canvas and original textures
+    canvas.remove()
+    maps.forEach(map => map.dispose())
+
+    return new MeshStandardMaterial({map: texture,
+      emissive: new Color(0xffffff),  // Set emissive color to white
+      emissiveMap: texture,                 // Use the same texture for emissive map
+      emissiveIntensity: 1.0                // Full intensity for emissive
+       })
+
+    // basic material for no lighting, just render the original colors.
+//    return new MeshBasicMaterial({map: texture})
+
+
   })
 }
 

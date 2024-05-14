@@ -1,11 +1,11 @@
  import {getPixels} from '../get-pixels-mick.js'
-import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "../../../three.js/build/three.module";
+import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "../../../three.js/build/three.module";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
-import {drop} from '../../SphericalMath'
 import {SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {DebugSphere} from "../../threeExt";
+ import {MeshBasicMaterial, RepeatWrapping, sRGBEncoding, TextureLoader} from "three";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
@@ -170,6 +170,12 @@ class Source {
 
 class Tile {
   constructor(map, z, x, y, size) {
+    // check values are within range
+    assert(z >= 0 && z <= 16, 'z is out of range, z='+z)
+ //   assert(x >= 0 && x < Math.pow(2, z), 'x is out of range, x='+x)
+    assert(y >= 0 && y < Math.pow(2, z), 'y is out of range, y='+y)
+
+
     this.map = map
     this.z = z
     this.x = x
@@ -333,6 +339,10 @@ class Tile {
   }
 
 
+  // returns the four children tiles of this tile
+  // this is used to build the QuadTextureMaterial
+  // and all we do is get the four URLs of the children's textures
+  // and then combine them in
   childrens() {
     return [
       new Tile(this.map, this.z + 1, this.x * 2, this.y * 2),
@@ -342,23 +352,43 @@ class Tile {
     ]
   }
 
-  // QuadTextureMaterial uses four textures
+  // QuadTextureMaterial uses four textures from the children tiles
+  // (which are not actually loaded, but we have the URLs)
+  // there's a custom shader to combine them together
+  //
   buildMaterial() {
     const urls = this.childrens().map(tile => tile.mapUrl())
-//    console.log(urls)
     return QuadTextureMaterial(urls)
+
+
+
+
+
+//     // instead of that, just make one texture from this tile
+//     const url = this.mapUrl()
+//     return new Promise((resolve, reject) => {
+//       const texture = new TextureLoader().load(url, resolve, undefined, reject)
+//       texture.colorSpace = SRGBColorSpace;
+// //      const material = new MeshBasicMaterial({map: texture})
+//       const material = new MeshBasicMaterial({map: texture, fog: false})
+//
+//
+//       resolve(material)
+//     })
+
+
   }
 
-  buildmesh() {
+  applyMaterial() {
     if (this.mapUrl(0,0,0) != null) {
       this.buildMaterial().then((material) => {
         this.mesh.material = material
-
       })
     }
+  }
+
+  buildmesh() {
     this.mesh = new Mesh(this.geometry, tileMaterial)
-
-
   }
 
   fetch(signal) {
@@ -371,8 +401,9 @@ class Tile {
       getPixels(url, (err, pixels) => {
         if (err) console.error("fetch() -> "+ err)
         this.computeElevation(pixels)
-        this.buildGeometry()
-        this.buildmesh()
+        // this.buildGeometry()
+        // this.buildmesh()
+        this.applyMaterial()
         resolve(this)
       })
     })
@@ -387,7 +418,7 @@ class Tile {
       center,
       this.size
     )
-  //  console.log ("Tile position ZXY = "+position.z+","+position.x+","+position.y)
+//    console.log ("Tile position ZXY = "+position.z+","+position.x+","+position.y)
   //  this.mesh.position.set(...Object.values(position))
 
     const correctPosition = new Vector3(position.x, position.z,-position.y) // MICK
@@ -484,7 +515,7 @@ class Map {
     this.tileCache = {};
 
 
-    this.init()
+    this.init(this.options.deferLoad)
   }
 
   defaultOptions = {
@@ -501,34 +532,61 @@ class Map {
     return options
   }
 
-  init() {
+  init(deferLoad=false) {
     this.center = Utils.geo2tile(this.geoLocation, this.zoom)
     const tileOffset = Math.floor(this.nTiles / 2)
     this.controller = new AbortController();
 
     for (let i = 0; i < this.nTiles; i++) {
       for (let j = 0; j < this.nTiles; j++) {
-        const tile = new Tile(this, this.zoom, this.center.x + i - tileOffset, this.center.y + j - tileOffset)
-        this.tileCache[tile.key()] = tile
+        const x = this.center.x + i - tileOffset;
+        const y = this.center.y + j - tileOffset;
+        // only add tiles that are within the bounds of the map
+        // we allow the x values out of range
+        // because longitude wraps around
+        if (y>0 && y<Math.pow(2,this.zoom)) {
+          const tile = new Tile(this, this.zoom, x, y)
+          this.tileCache[tile.key()] = tile
+          // make the meshes immediately instead of when the tile is loaded
+          // because we want to display something while waiting
+          tile.buildGeometry()
+          tile.buildmesh()
+          tile.setPosition(this.center)
+          tile.recalculateCurve(wgs84.RADIUS)
+          this.scene.add(tile.mesh)
+        }
       }
     }
 
-    const promises = Object.values(this.tileCache).map(tile =>
-        tile.fetch(this.controller.signal).then(tile => {
-          if (this.controller.signal.aborted) {
-            // flag that it's aborted, so we can filter it out later
-            return Promise.resolve('Aborted');
-          }
-          tile.setPosition(this.center)
+    // we might want to defer this to a later time
+    // so we can move the mesh around
+    // like, allow the user to drag it, or change the UI values
+    if (!deferLoad) {
+      this.startLoadingTiles()
+    }
 
-          // do an initial setting of the vertex positions
-          // to accurate EGS84 positions
-          // the hight map should be loaded by now.
-          tile.recalculateCurve(wgs84.RADIUS)
+    // To abort the loading of tiles, call controller.abort()
+    // controller.abort();
+  }
 
-          this.scene.add(tile.mesh)
-          return tile
-        })
+  startLoadingTiles() {
+    const promises = Object.values(this.tileCache).map(tile => {
+
+          return tile.fetch(this.controller.signal).then(tile => {
+            if (this.controller.signal.aborted) {
+              // flag that it's aborted, so we can filter it out later
+              return Promise.resolve('Aborted');
+            }
+
+            // do an initial setting of the vertex positions
+            // to accurate EGS84 positions
+            // the height map should be loaded by now.
+            tile.recalculateCurve(wgs84.RADIUS)
+
+            return tile
+          })
+
+        }
     )
 
     Promise.all(promises).then(tiles => {
@@ -542,9 +600,6 @@ class Map {
       if (this.loadedCallback) this.loadedCallback();
       this.loaded = true; // mick flag loading is finished
     })
-
-    // To abort the loading of tiles, call controller.abort()
-    // controller.abort();
   }
 
   recalculateCurveMap(radius) {

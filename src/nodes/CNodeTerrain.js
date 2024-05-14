@@ -3,7 +3,7 @@ import {CNode} from "./CNode";
 import { Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject, V3} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import { RLLAToECEFV_Sphere, wgs84, EUSToLLA} from "../LLA-ECEF-ENU";
 import {Group} from "../../three.js/build/three.module";
 import {gui} from "../Globals";
@@ -12,10 +12,152 @@ import {gui} from "../Globals";
 // const process = require('process');
 // to path.js
 import {GlobalScene} from "../LocalFrame";
+import {CNodeSwitch} from "./CNodeSwitch";
+
+let terrainGUI;
+let madeMapTypeMenu = false;
+let local = {}
+const mapTypes = ["mapbox","osm","eox","wireframe"]
+let mapTypeMenu;
+
+function makeMapTypeMenu() {
+    if (terrainGUI === undefined) {
+        terrainGUI = gui.addFolder("Terrain")
+    }
+    if (mapTypeMenu === undefined) {
+        local.mapType = "mapbox";
+        mapTypeMenu = terrainGUI.add(local, "mapType", mapTypes)
+    }
+}
+
+export class CNodeTerrainUI extends CNode {
+    constructor(v) {
+        super(v);
+        
+        this.lat = 40;
+        this.lon = -110;
+        this.zoom = 10;
+        this.nTiles = 4;
+        this.refresh = false;
+
+        if (v.terrain) {
+            this.terrainNode = NodeMan.get(v.terrain);
+            this.lat = this.terrainNode.lat;
+            this.lon = this.terrainNode.lon;
+            this.zoom = this.terrainNode.zoom;
+            this.nTiles = this.terrainNode.nTiles;
+        } else {
+            this.gui.add(this, "addTerrain")
+        }
+
+        this.oldLat = this.lat;
+        this.oldLon = this.lon;
+        this.oldZoom = this.zoom;
+        this.oldNTiles = this.nTiles;
+
+        // for debugging convenience
+        this.gui = terrainGUI;
+
+        this.latController = terrainGUI.add(this, "lat", -85, 85,.001).onChange( v => {
+            this.flagForRecalculation()
+        }).onFinishChange( v => {this.startLoading = true})
+        this.lonController = terrainGUI.add(this, "lon", -180, 180,.001).onChange( v => {
+            this.flagForRecalculation()
+        }).onFinishChange( v => {this.startLoading = true})
+        this.zoomController = terrainGUI.add(this, "zoom", 0, 15,1).onChange( v => {
+            this.flagForRecalculation()
+        }).onFinishChange( v => {this.startLoading = true})
+        this.nTilesController = terrainGUI.add(this, "nTiles", 1, 8, 1).onChange( v => {
+            this.flagForRecalculation()
+        }).onFinishChange( v => {this.startLoading = true})
+
+        // adds a button to refresh the terrain
+        terrainGUI.add(this, "doRefresh").name("Refresh");
+
+        const zoomToTrackSwitch = new CNodeSwitch({id: "zoomToTrack", kind: "Switch",
+            inputs: {}, desc: "Zoom to track"}, terrainGUI).onChange( track => {this.zoomToTrack(track)})
+
+        makeMapTypeMenu();
+    }
+
+    zoomToTrack(v) {
+        const trackNode = NodeMan.get(v);
+        const {minLat, maxLat, minLon, maxLon, minAlt, maxAlt} = trackNode.getLLAExtents();
+        this.lat = (minLat + maxLat)/2;
+        this.lon = (minLon + maxLon)/2;
+
+        // find the zoom level that fits the track, ignore altitude
+        const latDiff = maxLat - minLat;
+        const lonDiff = maxLon - minLon;
+        const latZoom = Math.log2(360/latDiff);
+        const lonZoom = Math.log2(180/lonDiff);
+        this.zoom = Math.floor(Math.min(latZoom, lonZoom));
+
+        this.latController.updateDisplay();
+        this.lonController.updateDisplay();
+        this.zoomController.updateDisplay();
+        this.nTilesController.updateDisplay();
+
+        this.doRefresh();
+    }
+
+    doRefresh() {
+        this.startLoading = true;
+        this.flagForRecalculation();
+    }
+
+    flagForRecalculation() {
+        this.recalculateSoon = true;
+    }
+
+    update() {
+        if (this.recalculateSoon) {
+            this.recalculate();
+            this.recalculateSoon = false;
+        }
+
+        if (this.startLoading) {
+            this.startLoading = false;
+            this.terrainNode.maps[local.mapType].map.startLoadingTiles();
+        }
+    }
+
+    recalculate() {
+        // if the values have changed, then we need to make a new terrain node
+        if (this.lat === this.oldLat && this.lon === this.oldLon && this.zoom === this.oldZoom && this.nTiles === this.oldNTiles && !this.refresh) {
+            return;
+        }
+        this.oldLat = this.lat;
+        this.oldLon = this.lon;
+        this.oldZoom = this.zoom;
+        this.oldNTiles = this.nTiles;
+        this.refresh = false;
+
+
+        // remove the old terrain
+        if (this.terrainNode) {
+            NodeMan.disposeRemove(this.terrainNode)
+        }
+        // and make a new one
+        this.terrainNode = new CNodeTerrain({id: "terrain", lat: this.lat, lon: this.lon, zoom: this.zoom, nTiles: this.nTiles, deferLoad:true})
+    }
+
+    // one time button to add a terrain node
+    addTerrain() {
+        this.recalculate();
+        this.gui.remove(this.addTerrain)
+    }
+
+}
+
 
 export class CNodeTerrain extends CNode {
     constructor(v) {
         super(v);
+
+        if (terrainGUI === undefined) {
+            terrainGUI = gui.addFolder("Terrain")
+        }
 
         this.loaded = false;
 
@@ -49,7 +191,7 @@ export class CNodeTerrain extends CNode {
         // so we need to find the latitude and longitude of this tile center
         // this is all a bit dodgy
 
-        function long2tile (lon, zoom) {
+        function lon2tile (lon, zoom) {
             return (lon + 180) / 360 * Math.pow(2, zoom)
         }
 
@@ -71,23 +213,29 @@ export class CNodeTerrain extends CNode {
             return r2d * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
         }
 
-        var tilex = Math.floor(long2tile(this.position[1],this.zoom))+0.5 // this is probably correct
+        var tilex = Math.floor(lon2tile(this.position[1],this.zoom))+0.5 // this is probably correct
         var tiley = Math.floor(lat2tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
         var lon0 = tile2lon(tilex,this.zoom)
         var lat0 = tile2lat(tiley,this.zoom)
         console.log("LL Tile"+tilex+","+tiley+" = (Lat,Lon)"+lat0+","+lon0)
 
         // we need to adjust the LL origin to match the 3D map
-        Sit.lat = lat0
-        Sit.lon = lon0
+        // but only if it's not already set
+        if (Sit.lat === undefined) {
+            Sit.lat = lat0
+            Sit.lon = lon0
+        }
+
+
+
         var enu;
 //        const radius = metersFromMiles(this.in.radiusMiles.v0)
         const radius = metersFromMiles(this.radius)
 
-        this.mapTypes = ["mapbox","osm","eox","wireframe"]
+
 
         this.maps = []
-        this.mapTypes.forEach(m => {
+        mapTypes.forEach(m => {
             this.maps[m] = {
                 group: new Group(),
                 source: new Source(m, ''), // << Todo - allow the user to access it directly with their own token
@@ -95,14 +243,14 @@ export class CNodeTerrain extends CNode {
             GlobalScene.add(this.maps[m].group)
         })
 
-        this.mapType = "mapbox"
-        this.loadMap(this.mapType)
+        local.mapType = "mapbox"
+        this.loadMap(local.mapType, v.deferLoad ?? false)
 
-        gui.add(this,"mapType",this.mapTypes).onChange( v => {
+        makeMapTypeMenu();
+        mapTypeMenu.onChange( v => {
             // set it visible
             for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === v);
             this.loadMap(v)
-
         })
 
         // NOTE
@@ -128,7 +276,7 @@ export class CNodeTerrain extends CNode {
     }
 
 
-    loadMap(id) {
+    loadMap(id, deferLoad) {
         if (this.maps[id].map == undefined) {
             this.maps[id].map = new Map(this.maps[id].group, this.maps[id].source, this.position, {
                 nTiles: this.nTiles,
@@ -145,13 +293,15 @@ export class CNodeTerrain extends CNode {
                         o.recalculateCascade()
                     })
                     propagateLayerMaskObject(this.maps[id].group)
-                }
+                },
+                deferLoad: deferLoad,
             })
         }
     }
 
     recalculate() {
-        console.log("recalcualting terrain")
+
+        console.log("recalculting terrain")
         //var radius = metersFromMiles(this.in.radiusMiles.v0)
         var radius = this.radius;
         // flattening is 0 to 1, whenre 0=no flattening, 1=flat
@@ -163,15 +313,15 @@ export class CNodeTerrain extends CNode {
 
         }
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,radius)
-        this.maps[this.mapType].map.recalculateCurveMap(radius)
+        this.maps[local.mapType].map.recalculateCurveMap(radius)
 
-        propagateLayerMaskObject(this.maps[this.mapType].group)
+        propagateLayerMaskObject(this.maps[local.mapType].group)
 
     }
 
     // return current group, for collision detection, etc
     getGroup() {
-        return this.maps[this.mapType].group;
+        return this.maps[local.mapType].group;
     }
 
     getIntersects(raycaster) {
@@ -205,7 +355,7 @@ export class CNodeTerrain extends CNode {
         // we use LLA to get the data from the terrain maps
         const LLA = EUSToLLA(A)
         // elevation is the height above the wgs84 sphere
-        let elevation = this.maps[this.mapType].map.getElevation(LLA.x, LLA.y)
+        let elevation = this.maps[local.mapType].map.getElevation(LLA.x, LLA.y)
 
         // then
         const earthCenterENU = V3(0,-wgs84.RADIUS,0)
