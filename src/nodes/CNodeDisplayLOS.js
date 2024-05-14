@@ -1,7 +1,7 @@
 //var matLineWhiteThin = makeMatLine(0xFFFFFF, 0.75);
 import {makeMatLine} from "../MatLines";
 import {Sit} from "../Globals";
-import {DebugSphere, dispose} from "../threeExt";
+import {DebugSphere, dispose, intersectMSL} from "../threeExt";
 import {par} from "../par";
 import {assert, metersFromMiles} from "../utils";
 import {CNode3DGroup} from "./CNode3DGroup";
@@ -106,15 +106,22 @@ export class CNodeDisplayLOS extends CNode3DGroup {
                 var B = A.clone()
 
 
-                var scale;
-
-                if (this.clipSeaLevel && fwd.y < 0)
-                    scale = -A.y / fwd.y // flat earth, close enough as when used will only be a few miles
-                else
-                    scale = metersFromMiles(this.LOSLengthMiles)
-
+                const scale = metersFromMiles(this.LOSLengthMiles)
                 fwd.multiplyScalar(scale)
                 B.add(fwd)
+
+                if (this.clipSeaLevel && fwd.y < 0) {
+                    // intersecting with a plane is no good with larger scales
+                    // especially when a sitch is setup with large tiles
+                    // as the "level" plane diverges significantly from the globe
+                    // so we get intersection with the globe
+                    const seaLevelPoint = intersectMSL(A, fwd)
+                    if (seaLevelPoint) {
+                        B = seaLevelPoint
+                    }
+                }
+
+
                 var points = [A.x, A.y, A.z, B.x, B.y, B.z]
                 var lineOb = {}
                 lineOb.geometry = new LineGeometry()
