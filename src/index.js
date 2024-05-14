@@ -14,7 +14,7 @@ import {
     setGlobalDateTimeNode,
     setGlobalURLParams,
     setInfoDiv, setNewSitchText,
-    setNodeMan,
+    setNodeMan, setNullNode,
     setSit,
     setSitchMan,
     setUnits,
@@ -71,7 +71,7 @@ import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
 import {imageQueueManager} from "./js/get-pixels-mick";
 import {disposeGimbalChart} from "./JetChart";
 import {CNodeMath} from "./nodes/CNodeMath";
-import {CNodeConstant} from "./nodes/CNode";
+import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {customUpdate} from "./CustomSupport";
 
@@ -250,6 +250,7 @@ async function initializeOnce() {
     // Some metacode to find the node types and sitches (and common setup fragments)
 
     registerNodes();
+    setNullNode(new CNode({id: "null"}))
 
 
 

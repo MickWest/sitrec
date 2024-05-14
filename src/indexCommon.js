@@ -1,14 +1,15 @@
 import { CNodeFactory } from "./nodes/CNodeFactory"
 import { CSitchFactory } from "./CSitchFactory"
 import { CFileManager } from "./CFileManager"
-import { 
+import {
     setFileManager, setNodeMan, setSitchMan, setUnits, setSit,
-    SitchMan, Sit
+    SitchMan, Sit, setNullNode
 } from "./Globals"
 import { registerSitchModule } from "./RegisterSitches"
 import { CUnits } from "./CUnits"
 import { CSituation } from "./CSituation"
 import { resetPar } from "./par"
+import {CNode} from "./nodes/CNode";
 
 // When building Sitrec as a console application 
 // use functions defined here to initialize a sitch.
@@ -19,6 +20,7 @@ export function initGlobals() {
     setSitchMan(new CSitchFactory())
     setFileManager(new CFileManager())
     setNodeMan(new CNodeFactory())
+    setNullNode(new CNode({id: "null"}))
     setUnits(new CUnits("Nautical"))
 }
 
