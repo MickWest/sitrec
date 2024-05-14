@@ -134,12 +134,14 @@ export class CNodeTerrainUI extends CNode {
         this.refresh = false;
 
 
+        let terrainID = "TerrainModel"
         // remove the old terrain
         if (this.terrainNode) {
+            terrainID = this.terrainNode.id;
             NodeMan.disposeRemove(this.terrainNode)
         }
         // and make a new one
-        this.terrainNode = new CNodeTerrain({id: "terrain", lat: this.lat, lon: this.lon, zoom: this.zoom, nTiles: this.nTiles, deferLoad:true})
+        this.terrainNode = new CNodeTerrain({id: terrainID, lat: this.lat, lon: this.lon, zoom: this.zoom, nTiles: this.nTiles, deferLoad:true})
     }
 
     // one time button to add a terrain node

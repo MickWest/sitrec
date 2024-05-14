@@ -23,9 +23,9 @@ sitch = {
 
     // temporary hard wired time and terrain for testing MISB truck track
     startTime: "2012-09-19T20:50:26.970Z",
-    terrain: {id: "terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 4},
+    terrain: {id: "TerrainModel", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 4},
 
-    terrainUI: {kind: "TerrainUI", terrain: "terrain"},
+    terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
     // default to 30 seconds. Loading a video will change this (also need manual, eventually)
     frames: 900,
