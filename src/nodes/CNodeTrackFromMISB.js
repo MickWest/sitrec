@@ -1,14 +1,13 @@
-import {CNodeEmptyArray} from "./CNodeArray";
-import {f2m, interpolate, vdump} from "../utils";
+import {f2m, interpolate} from "../utils";
 import {Sit, GlobalDateTimeNode, FileManager, NodeMan} from "../Globals";
 import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {V3} from "../threeExt";
 
 import {MISB} from "../MISBUtils";
 import {saveAs} from "../js/FileSaver";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeTrackFromMISB extends CNodeEmptyArray {
+export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {
 
         const exportable = v.exportable ?? false;
