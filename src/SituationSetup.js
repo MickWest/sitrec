@@ -262,7 +262,7 @@ export function SetupFromKeyAndData(key, _data) {
             SSLog();
             //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
             node = new CNodeTerrain({
-                id: "TerrainModel",
+                id: data.id ?? "TerrainModel",
                 radiusMiles: "radiusMiles", // constant
                 lat: data.lat,
                 lon: data.lon,
