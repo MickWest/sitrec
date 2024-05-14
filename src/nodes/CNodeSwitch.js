@@ -8,7 +8,7 @@ class CNodeSwitch extends CNode {
     constructor(v, _gui) {
         super(v);
         this.choice = v.default; // this is the key of the entry in choices
-        this.onChange = v.onChange; // function to call when choice changes
+        this.onChangeCallback= v.onChange; // function to call when choice changes
 
         this.setGUI(v, _gui)
 
@@ -49,9 +49,10 @@ class CNodeSwitch extends CNode {
                     //this.recalculateCascade()
                     this.recalculateCascade(undefined, false, 0, true)
 
-
-                    if (this.onChange !== undefined) {
-                        this.onChange()
+                    // this is a bit odd, as it's calling the callback with the selected object
+                    // I think nothing uses it except form the Zoom To Track button
+                    if (this.onChangeCallback !== undefined) {
+                        this.onChangeCallback(this.getObject())
                     }
 
                 })
@@ -163,6 +164,14 @@ class CNodeSwitch extends CNode {
     getValueFrame(f) {
         if (Object.keys(this.inputs).length > 0) {
             return this.inputs[this.choice].getValueFrame(f)
+        } else {
+            return null
+        }
+    }
+
+    getObject() {
+        if (Object.keys(this.inputs).length > 0) {
+            return this.inputs[this.choice]
         } else {
             return null
         }
