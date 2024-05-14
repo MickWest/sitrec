@@ -28,6 +28,33 @@ export class CNodeTrack extends CNodeEmptyArray {
         saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
     }
 
+    // calculate min and max LLA extents of the track
+    // from the ESU positions
+    getLLAExtents() {
+        let pos = this.v(0)
+        if (pos === undefined || pos.position === undefined) {
+            console.error("No position data to find extents of track");
+            return
+        }
+        let minLat = 90
+        let maxLat = -90
+        let minLon = 180
+        let maxLon = -180
+        let minAlt = 1000000
+        let maxAlt = -1000000
+        for (let f=0;f<this.frames;f++) {
+            pos=this.v(f)
+            const LLA = EUSToLLA(pos.position)
+            minLat = Math.min(minLat, LLA.x)
+            maxLat = Math.max(maxLat, LLA.x)
+            minLon = Math.min(minLon, LLA.y)
+            maxLon = Math.max(maxLon, LLA.y)
+            minAlt = Math.min(minAlt, LLA.z)
+            maxAlt = Math.max(maxAlt, LLA.z)
+        }
+        return {minLat, maxLat, minLon, maxLon, minAlt, maxAlt}
+    }
+
 
 }
 
