@@ -19,7 +19,8 @@ import {drop3} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
-import {Group} from "three";
+import {Group, Ray, Sphere} from "three";
+import {wgs84} from "./LLA-ECEF-ENU";
 
 
 // Wrapper for calling dispose function on object, allowing undefined
@@ -651,3 +652,15 @@ export class DEBUGGroup extends Group {
         super();
     }
 }
+
+// get intersection of a point/heading ray with the Mean Sea Level
+
+export function intersectMSL(point, heading) {
+    const globe = new Sphere(new Vector3(0, -wgs84.RADIUS, 0), wgs84.RADIUS);
+    const ray = new Ray(point, heading.clone().normalize());
+    const sphereCollision = new Vector3();
+    if (intersectSphere2(ray, globe, sphereCollision))
+        return sphereCollision;
+    return null;
+}
+
