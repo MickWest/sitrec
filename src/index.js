@@ -250,7 +250,7 @@ async function initializeOnce() {
     // Some metacode to find the node types and sitches (and common setup fragments)
 
     registerNodes();
-    setNullNode(new CNode({id: "null"}))
+
 
 
 
@@ -435,6 +435,8 @@ function legacySetup() {
     setGlobalDateTimeNode(new CNodeDateTime({
         id:"dateTimeStart",
     }))
+
+    setNullNode(new CNode({id: "null"}))
 
 // check if Sit.name is all lower case
     assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")

@@ -5,6 +5,9 @@ import {NodeMan} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
 import {assert} from "./utils";
+import {isKeyHeld} from "./KeyBoardHandler";
+import {ViewMan} from "./nodes/CNodeView";
+import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
 
 export function customUpdate(f) {
 
@@ -42,6 +45,33 @@ export function customUpdate(f) {
                 }
             }
         })
+    }
+
+
+    // handle hold down the t key to move the terrain square around
+    if (NodeMan.exists("terrainUI")) {
+        const terrainUI = NodeMan.get("terrainUI")
+        if (isKeyHeld('t')) {
+            const mainView = ViewMan.get("mainView")
+            const cursorPos = mainView.cursorSprite.position.clone();
+            // convert to LLA
+            const ecef = EUSToECEF(cursorPos)
+            const LLA = ECEFToLLAVD_Sphere(ecef)
+
+            // only if different
+            if (terrainUI.lat !== LLA.x || terrainUI.lon !== LLA.y) {
+
+                terrainUI.lat = LLA.x
+                terrainUI.lon = LLA.y
+                terrainUI.flagForRecalculation();
+                terrainUI.tHeld = true;
+            }
+        } else {
+            if (terrainUI.tHeld) {
+                terrainUI.tHeld = false;
+                terrainUI.startLoading = true;
+            }
+        }
     }
 
 }

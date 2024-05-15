@@ -102,11 +102,25 @@ class CNodeSwitch extends CNode {
         }
     }
 
-    selectOption(option) {
+    selectOption(option, quiet=false) {
         this.choice = option
-        this.controller.setValue(option)
-        this.recalculateCascade()
+        if (!quiet) {
+            this.controller.setValue(option)
+            this.recalculateCascade()
+        } else {
+            this.choice = option
+            this.controller.updateDisplay();
+        }
     }
+
+    selectOptionQuietly(option) {
+        this.selectOption(option, true)
+    }
+
+    selectFirstOptionQuietly() {
+        this.selectOption(Object.keys(this.inputs)[0], true)
+    }
+
 
     onChange(f) {
         this.onChangeCallback = f;

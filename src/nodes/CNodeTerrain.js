@@ -74,11 +74,12 @@ export class CNodeTerrainUI extends CNode {
         // adds a button to refresh the terrain
         terrainGUI.add(this, "doRefresh").name("Refresh");
 
-        const zoomToTrackSwitch = new CNodeSwitch({id: "zoomToTrack", kind: "Switch",
-            inputs: {}, desc: "Zoom to track"}, terrainGUI).onChange( track => {this.zoomToTrack(track)})
+        this.zoomToTrackSwitchObject = new CNodeSwitch({id: "zoomToTrack", kind: "Switch",
+            inputs: {"-":"null"}, desc: "Zoom to track"}, terrainGUI).onChange( track => {this.zoomToTrack(track)})
 
         makeMapTypeMenu();
     }
+
 
     zoomToTrack(v) {
         const trackNode = NodeMan.get(v);
@@ -86,17 +87,27 @@ export class CNodeTerrainUI extends CNode {
         this.lat = (minLat + maxLat)/2;
         this.lon = (minLon + maxLon)/2;
 
+        const maxZoom = 15
+
         // find the zoom level that fits the track, ignore altitude
+        // clamp to maxZoom
         const latDiff = maxLat - minLat;
         const lonDiff = maxLon - minLon;
-        const latZoom = Math.log2(360/latDiff);
-        const lonZoom = Math.log2(180/lonDiff);
-        this.zoom = Math.floor(Math.min(latZoom, lonZoom));
-
+        if (latDiff < 0.0001 || lonDiff < 0.0001) {
+            this.zoom = maxZoom;
+        } else {
+            const latZoom = Math.log2(360 / latDiff);
+            const lonZoom = Math.log2(180 / lonDiff);
+            this.zoom = Math.min(maxZoom,Math.floor(Math.min(latZoom, lonZoom)));
+        }
         this.latController.updateDisplay();
         this.lonController.updateDisplay();
         this.zoomController.updateDisplay();
         this.nTilesController.updateDisplay();
+
+        // reset the switch
+        this.zoomToTrackSwitchObject.selectFirstOptionQuietly();
+
 
         this.doRefresh();
     }

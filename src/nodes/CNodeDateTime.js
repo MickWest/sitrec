@@ -207,7 +207,7 @@ export class CNodeDateTime extends CNode {
     // add a select node that has the start time
     addSyncSwitch() {
 
-        this.syncSwitch = this.dateTimeFolder.add(this, "syncMethod", ["Start Time", "Now Time"]).name("Sync Time to")
+        this.syncSwitch = this.dateTimeFolder.add(this, "syncMethod", ["-","Start Time", "Now Time"]).name("Sync Time to")
             .onChange( v => {
                 if (v === "Start Time") {
                     this.resetStartTime(); }
@@ -219,6 +219,12 @@ export class CNodeDateTime extends CNode {
                     this.syncToTrack(v)
                 }
                 par.renderOne = true
+
+                // reset it back to the default
+                // so we can select the same thing again
+                this.syncMethod = "-";
+                this.syncSwitch.updateDisplay();
+
 
             }
         );
