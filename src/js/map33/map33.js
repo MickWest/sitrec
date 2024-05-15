@@ -5,7 +5,7 @@ import {SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {DebugSphere} from "../../threeExt";
- import {MeshBasicMaterial, RepeatWrapping, sRGBEncoding, TextureLoader} from "three";
+ import {MeshBasicMaterial, RepeatWrapping, TextureLoader} from "three";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
