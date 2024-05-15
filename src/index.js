@@ -589,10 +589,12 @@ function animate(newtime) {
     } else {
         // It is not yet time for a new frame
         // so just render - which will allow smooth 60 fps motion moving the camera
-        const oldPaused = par.paused
-        par.paused = true;
+       // const oldPaused = par.paused
+        //par.paused = true;
+        par.noLogic = true;
         renderMain();
-        par.paused = oldPaused;
+        par.noLogic = false;
+        //par.paused = oldPaused;
     }
     animationFrameId = requestAnimationFrame( animate );
 
@@ -616,7 +618,7 @@ function renderMain() {
 
     DragDropHandler.checkDropQueue();
 
-    if (par.paused && !par.renderOne) return;
+    if (par.paused && !par.renderOne  && !par.noLogic) return;
 
     // par.renderOne is a flag set whenever something is done that forces an update.
     par.renderOne = false;

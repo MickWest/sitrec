@@ -23,7 +23,7 @@ export function updateFrame() {
     } else if (isKeyHeld('arrowright')) {
         par.frame = Math.round(par.frame + 1);
         par.paused = true;
-    } else if (!par.paused) {
+    } else if (!par.paused && !par.noLogic) {
         // Frame advance with no controls (i.e. just playing)
         // time is advanced based on frames in the video
         // Sit.simSpeed is how much the is speeded up from reality
