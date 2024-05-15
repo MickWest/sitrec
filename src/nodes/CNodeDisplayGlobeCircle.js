@@ -33,13 +33,17 @@ export class CNodeDisplayGlobeCircle extends CNode3DGroup {
     }
 
     dispose() {
-        this.group.remove(this.circleLine)
-        dispose(this.circleGeometry)
+        this.removeCircle();
         super.dispose();
     }
 
+    removeCircle() {
+        this.group.remove(this.circleLine);
+        dispose(this.circleGeometry)
+    }
+
     rebuild() {
-        this.dispose()
+        this.removeCircle()
         const line_points = [];
 
         const perpendicular = perpendicularVector(this.normal).normalize();
