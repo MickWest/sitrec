@@ -73,7 +73,7 @@ import {disposeGimbalChart} from "./JetChart";
 import {CNodeMath} from "./nodes/CNodeMath";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
-import {customUpdate} from "./CustomSupport";
+import {CustomManager} from "./CustomSupport";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -503,6 +503,11 @@ async function setupFunctions() {
         initJetStuff()
     }
 
+
+    if (Sit.isCustom) {
+        CustomManager.setup()
+    }
+
 // Each sitch can have a setup() and setup2() function
 // however only Gimbal actually used setup2() as gimbal and gimabalfar have different setup2() functions
 
@@ -634,7 +639,7 @@ function renderMain() {
     }
 
     if (Sit.isCustom) {
-        customUpdate()
+        CustomManager.update()
     }
 
     NodeMan.iterate((key, node) => {

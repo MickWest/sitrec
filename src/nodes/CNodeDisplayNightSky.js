@@ -177,6 +177,98 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
      }
 }
 
+// TLE Data is in fixed positions in a 69 character string, which is how the satellite.js library expects it
+// but sometimes we get it with spaces removed, as it's copied from a web page
+// so we need to fix that
+// 1 48274U 21035A 21295.90862762 .00005009 00000-0 62585-4 0 9999
+// 2 48274 41.4697 224.1728 0006726 240.5427 202.4055 15.60684462 27671
+// becomes
+// 0000000001111111111222222222233333333334444444444555555555566666666667777777777
+// 1234567890123456789012345678901234567890123456789012345678901234567890123456789
+// 1 48274U 21035A   21295.90862762  .00005009  00000-0  62585-4 0  9999
+// 2 48274  41.4697 224.1728 0006726 240.5427 202.4055 15.60684462 27671
+
+
+// 0000000001111111111222222222233333333334444444444555555555566666666667777777777
+// 1234567890123456789012345678901234567890123456789012345678901234567890123456789
+// 1 48274U 21035A 21296.86547910 .00025288 00000-0 29815-3 0 9999
+// 1 48274U 21035A   21296.86547910  .00025288  00000-0  29815-3 0  9999
+// 2 48274 41.4699 218.3498 0006788 245.5794 180.5604 15.60749710 27823
+// 2 48274  41.4699 218.3498 0006788 245.5794 180.5604 15.60749710 27823
+
+// 0 STARLINK-1007
+// 1 44713U 19074A   23216.03168702  .00031895  00000-0  21481-2 0  9995
+// 2 44713  53.0546 125.3135 0001151  98.9698 261.1421 15.06441263205939
+
+// from the TLE spec, line 1 has 9 combined fields seprated by a single space
+// but some might have leading spaces and some might have trailing spaces
+// here's the END index of each combo field:
+// note these are 1-indexed, so we need to subtract 1 to get the actual index
+// we use 1-indexed because that's how the TLE spec is written
+// see: https://en.wikipedia.org/wiki/Two-line_element_set
+// we actually use this as the length of the string ending with this field
+const tleComboFieldEnds1=[1, 8, 17, 32, 43, 52, 61, 63, 69]
+const tleComboFieldEnds2=[1, 7, 16, 25, 33, 42, 51, 69]
+
+function fixTLELine(line, ends) {
+
+    const expectedFields = ends.length;
+
+    assert(line !== undefined, "TLE line is undefined");
+
+    // chop any trailing whitespace from the line
+    line = line.trimEnd()
+
+    // split the line into the 9 fields
+    // separating by whitespace
+    const fields = line.split(/\s+/)
+    // if we have expectedFields, we are good
+    if (expectedFields === 9) {
+        // line 1
+        // pad field 2 (the third) with spaces to 8 characters
+        fields[2] = fields[2].padEnd(8, " ")
+    } else {
+        // line 2 should have 8 fields
+        // however there might be a space in the last one which would make it 9
+        // if so, we need to combine the last two fields
+        // including enough spaces to make it the last field 6 charters
+        if (fields.length > 8) {
+            // only one extra allowed, so assert before we pop it
+            assert(fields.length === 9, "TLE line 2 has too many fields: "+line+" "+fields.length+" "+expectedFields);
+            fields[7] = fields[7]+fields[8].padStart(6, " ");
+            fields.pop() // remove the last field
+        }
+    }
+
+    assert(fields.length === expectedFields, "TLE line does not have the right number of fields: "+line+" "+fields.length+" "+expectedFields)
+
+
+    // make a new line so the ENDS of the fields are on the 1-indexed boundaries we want
+    let newLine = ""
+    for (let i = 0; i < expectedFields; i++) {
+        // this is how long we want it to be
+        let expectedLength = ends[i]
+        let field = fields[i]
+        // this is how long it would be if we just added this string
+        let actualLength = newLine.length+field.length
+        // if it's too short, pad the start of it with spaces
+        if (actualLength < expectedLength) {
+            // add expectedLength-actualLength spaces to the start of the field
+            field = " ".repeat(expectedLength-actualLength)+field
+        }
+        // if it's too long, that's an error
+        if (actualLength > expectedLength) {
+            console.error("TLE field "+i+" is too long: "+field)
+        }
+        newLine += field
+        assert(newLine.length === expectedLength, "TLE field "+i+" is not the right length: "+newLine)
+    }
+//   console.log(line);
+//   console.log(newLine);
+    return newLine
+}
+
+
 class CTLEData {
     // constructor is passed in a string that contains the TLE file as \n seperated lines
     // extracts in into
@@ -199,9 +291,13 @@ class CTLEData {
             }
         }   else {
             for (let i = 0; i < lines.length; i += 3) {
-                const tleLine1 = lines[i + 1];
-                const tleLine2 = lines[i + 2];
-                if (tleLine1 !== undefined && tleLine2 !== undefined) {
+                // const tleLine1 = lines[i + 1];
+                // const tleLine2 = lines[i + 2];
+
+                if (lines[i + 1] !== undefined && lines[i + 2] !== undefined) {
+                    const tleLine1 = fixTLELine(lines[i + 1], tleComboFieldEnds1);
+                    const tleLine2 = fixTLELine(lines[i + 2], tleComboFieldEnds2);
+
                     const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
                     satrec.name = lines[i]
                     // for duolicate entires, now it's just overwritin earlier ones
@@ -513,7 +609,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
     updateSatelliteScales(camera) {
 
-        // for optimization we are not updateing every scale on every frame
+        // for optimization we are not updating every scale on every frame
         if (camera.satTimeStep === undefined) {
             camera.satTimeStep = 5
             camera.satStartTime = 0;
@@ -631,7 +727,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             const glintScale = 1 + fade * glintSize * (spread - glintAngle) * (spread - glintAngle) / (spread * spread)
                             scale *= glintScale
 
-                            // dark grey arrow if below horizon
+                            // arrows from camera to sat, and from sat to sun
                             var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
                             var arrowHelper2 = DebugArrowAB(sat.name + "sun", satPosition,
                                 satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
@@ -1277,6 +1373,13 @@ void main() {
 
         // Create point cloud for satellites
         this.satellites = new Points(this.satelliteGeometry, this.satelliteMaterial);
+
+        // using frustrumCulling causes problems with a point cloud if there's just one point
+        // as that's a zero volume object, but the rendered object (a billboard) is much bigger
+        // so we turn it off
+        // this is not an issue for stars and planets, as there's several of them
+        // the issue here arises when we have a single satellite (like the TLE for the ISS)
+        this.satellites.frustumCulled = false;
 
         // Add to scene
         scene.add(this.satellites);

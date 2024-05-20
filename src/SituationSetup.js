@@ -44,6 +44,7 @@ import {DebugSphere} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
+import {isLocal} from "../config";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -171,7 +172,82 @@ export function SituationSetupFromData(sitData, runDeferred) {
             continue;
         }
 
-        SetupFromKeyAndData(key, _data);
+        let runTests = true;
+
+        // for backwards compatibility, some note types were previously setup up with commands
+        // like "terrain" and "mainCamera" - and we are transitioning to them being nodes
+        // but old sitches will still have the old commands
+        // so we rename them with the correct node type
+        // this all is needed for serialization testing and usage
+        // we also don't expect to serialize these, so we don't run tests on them
+        if (key === "terrain") {
+            key = "Terrain";
+            runTests = false;
+        }
+
+        let node = SetupFromKeyAndData(key, _data);
+        if (runTests && node !== null && node.canSerialize && isLocal) {
+
+            // remember how many nodes there are, as these tests should not alter that
+            const nodeCount = NodeMan.size();
+
+
+            // we now do some quick tests to ensure round-trip compatibility
+            // get the node as text
+            const nodeAsText = JSON.stringify(node, null, 2);
+            // remove it
+            NodeMan.disposeRemove(node.id);
+            // create it again
+            node = SetupFromKeyAndData(key, _data);
+            // and get text from that
+            const nodeAsText2 = JSON.stringify(node, null, 2);
+            // and assert they are the same
+            // assert(nodeAsText === nodeAsText2, "SituationSetup: node serialization round-trip failed for node: " + key +
+            //     "\n"+nodeAsText +"\n" + nodeAsText2);
+
+            function compareTwoNodeTexts(nodeAsText, nodeAsText2, info) {
+                if (nodeAsText !== nodeAsText2) {
+                    console.log("SituationSetup: node serialization round-trip failed for node: " + key);
+                    console.log(nodeAsText);
+                    console.log(nodeAsText2);
+                    // convert both to arrays of lines and print out the first line that is different
+                    const lines1 = nodeAsText.split("\n");
+                    const lines2 = nodeAsText2.split("\n");
+                    for (let i = 0; i < lines1.length; i++) {
+                        if (lines1[i] !== lines2[i]) {
+                            console.log("First difference at line: " + i);
+                            console.log("1: " + lines1[i]);
+                            console.log("2: " + lines2[i]);
+                            break;
+                        }
+                    }
+
+                    assert(0, "SituationSetup: node serialization round-trip failed for node: " + key +" "+info);
+                }
+            }
+            compareTwoNodeTexts(nodeAsText, nodeAsText2, "second setup with same data");
+
+            // check the number of nodes has not changed
+            assert(NodeMan.size() === nodeCount, "Node serialization test 1, node count changed from " + nodeCount + " to " + NodeMan.size());
+
+
+
+            // the above test is to ensure this type of test (deleting and re-creating the node) is valid, and has no side effects
+            // we now repeat the test by serializing the node to a string, and then re-creating it
+            const serialized = node.serialize();
+            // remove the node
+            NodeMan.disposeRemove(node.id);
+            // and re-create it from the serialized data
+            node = SetupFromKeyAndData(key, serialized);
+            // get that as text
+            const nodeAsText3 = JSON.stringify(node, null, 2);
+            // and compare it to the original text
+            compareTwoNodeTexts(nodeAsText, nodeAsText3, "Serialized Node");
+            // if we didn't get any asserts, then serialization is good for this node
+
+            assert(NodeMan.size() === nodeCount, "Node serialization test 2, node count changed from " + nodeCount + " to " + NodeMan.size());
+
+        }
 
     }
 }
@@ -246,6 +322,8 @@ export function SetupFromKeyAndData(key, _data) {
 
     let node = null;
 
+
+
     switch (key) {
 
         case "frames":
@@ -258,20 +336,20 @@ export function SetupFromKeyAndData(key, _data) {
             node = new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
             break
 
-        case "terrain":
-            SSLog();
-            //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
-            node = new CNodeTerrain({
-                id: data.id ?? "TerrainModel",
-                radiusMiles: "radiusMiles", // constant
-                lat: data.lat,
-                lon: data.lon,
-                zoom: data.zoom,
-                nTiles: data.nTiles,
-                flattening: Sit.flattening ? "flattening" : undefined,
-                tileSegments: data.tileSegments ?? 100,
-            })
-            break;
+        // case "terrain":
+        //     SSLog();
+        //     //     terrain: {lat: 37.001324, lon: -102.717053, zoom: 9, nTiles: 8},
+        //     node = new CNodeTerrain({
+        //         id: data.id ?? "TerrainModel",
+        //         radiusMiles: "radiusMiles", // constant
+        //         lat: data.lat,
+        //         lon: data.lon,
+        //         zoom: data.zoom,
+        //         nTiles: data.nTiles,
+        //         flattening: Sit.flattening ? "flattening" : undefined,
+        //         tileSegments: data.tileSegments ?? 100,
+        //     })
+        //     break;
 
         case "mainCamera":
             SSLog();

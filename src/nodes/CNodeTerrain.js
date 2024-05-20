@@ -166,7 +166,16 @@ export class CNodeTerrainUI extends CNode {
 
 export class CNodeTerrain extends CNode {
     constructor(v) {
+
+        // for bac reasons, we need to set the id to TerrainModel
+        // unless another is specified
+        if (v.id === undefined) {
+            v.id = "TerrainModel"
+        }
+
         super(v);
+
+        this.canSerialize = true;
 
         if (terrainGUI === undefined) {
             terrainGUI = gui.addFolder("Terrain")
@@ -257,7 +266,8 @@ export class CNodeTerrain extends CNode {
         })
 
         local.mapType = "mapbox"
-        this.loadMap(local.mapType, v.deferLoad ?? false)
+        this.deferLoad = v.deferLoad;
+        this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
 
         makeMapTypeMenu();
         mapTypeMenu.onChange( v => {
@@ -271,6 +281,29 @@ export class CNodeTerrain extends CNode {
         // which seemed to create a extra references to them
         // and caused a memory leak
         // console.table(GlobalScene.children)
+    }
+
+    serialize() {
+        let out = super.serialize();
+        out = {
+            ...out, ...{
+                lat: this.lat,
+                lon: this.lon,
+                zoom: this.zoom,
+                nTiles: this.nTiles,
+            }
+        }
+        // when serializing, we don't want to include optional parameters that were
+        // not there in the original setup data
+        if (this.deferLoad !== undefined) {
+            out.deferLoad = this.deferLoad
+        }
+
+        if (this.in.flattening !== undefined) {
+            out.flattening = this.in.flattening.v0
+        }
+
+        return out;
     }
 
     dispose() {

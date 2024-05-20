@@ -1,16 +1,10 @@
 import {Color} from "../three.js/build/three.module.js";
 import {FileManager, guiTweaks, infoDiv, Sit, Units} from "./Globals";
-import {LLAToEUS} from "./LLA-ECEF-ENU";
-import {boxMark, V3} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";
-import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {GlobalScene} from "./LocalFrame";
 import {NightSkyFiles} from "./ExtraFiles";
-import {f2m} from "./utils";
 import {isConsole} from "../config";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {CUnits} from "./CUnits";
 import {expandSitData} from "./SituationSetup";
 import stringify from "json-stringify-pretty-compact";
 import {makeTrackFromDataFile} from "./TrackManager";

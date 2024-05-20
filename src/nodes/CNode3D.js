@@ -2,7 +2,7 @@ import {CNode} from "./CNode";
 import {guiShowHide, NodeMan} from "../Globals";
 import {par} from "../par";
 
-import {assert, stripParentheses} from "../utils";
+import {assert} from "../utils";
 import {mainLoopCount} from "../Globals";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
@@ -41,7 +41,6 @@ export class CNode3D extends CNode {
             }
             if (this.applyControllersCount > 100) {
                 console.warn("Infinite loop detected in controllers for " + this.id + " at mainLoop " + mainLoopCount);
-                console.warn("Constructor Call Stack: " + stripParentheses(this.callStack))
                 for (const inputID in this.inputs) {
                     const input = this.inputs[inputID]
                     if (input.isController) {

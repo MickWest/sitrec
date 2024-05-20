@@ -66,10 +66,10 @@ class CNode {
             this.id = this.constructor.name + UniqueNodeNumber++;
         }
 
-        this.debugNodeNumber = debugNodeNumber++;
+    //    this.debugNodeNumber = debugNodeNumber++;
 
         // Add call stack property
-        this.callStack = (new Error()).stack;
+        // this.callStack = (new Error()).stack;
 
         NodeMan.add(this.id, this)
     }
@@ -93,6 +93,20 @@ class CNode {
 
 
     }  // any garbage collection
+
+    // the default serialize function
+    // this is overridden by derived classes
+    // to add their own properties
+    // the default is just the kind
+    // it should be something that, when used in a sitch statement, will recreate the node
+    serialize() {
+        const classType = this.constructor.name;
+        // strip off the CNode part
+        const kind = classType.slice(5);
+        return {
+            kind: kind,
+        }
+    }
 
     // v0 = shorthand accessor for the value at 0,
     // usually for nodes that are not frame dependent
