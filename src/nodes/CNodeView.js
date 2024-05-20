@@ -318,12 +318,15 @@ class CNodeView extends CNode {
                         this.height *= 2;
                     }
                 } else {
-                    if (this.width > 0) {
-                        this.width = 1;
-                    }
-                    if (this.height > 0) {
-                        this.height = 1;
-                    }
+                    // if (this.width > 0) {
+                    //     this.width = 1;
+                    // }
+                    // if (this.height > 0) {
+                    //     this.height = 1;
+                    // }
+
+                    this.width = 1;
+                    this.height = 1;
 
                 }
 
@@ -335,7 +338,7 @@ class CNodeView extends CNode {
 
                 if (this.doubleClickFullScreen) {
                     ViewMan.iterate((id,v) => {
-                        if (v !== this) {
+                        if (v !== this && v.overlayView !== this) {
                             v.preFullScreenVisible = v.visible;
                             v.setVisible(false);
                         }
@@ -352,7 +355,7 @@ class CNodeView extends CNode {
                 this.updateWH()
                 if (this.doubleClickFullScreen) {
                     ViewMan.iterate((id, v) => {
-                        if (v !== this) {
+                        if (v !== this && v.overlayView !== this) {
                             v.setVisible(v.preFullScreenVisible);
                         }
                     })

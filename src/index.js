@@ -74,6 +74,7 @@ import {CNodeMath} from "./nodes/CNodeMath";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
+import {preventDoubleClicks} from "./lil-gui-extras";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -337,6 +338,7 @@ async function initializeOnce() {
 // to
 //  --name-width: 36%;
     var _gui = new GUI().perm()
+    preventDoubleClicks(_gui);
 
     var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
     var _guiTweaks = _gui.addFolder('Tweaks').close().perm();

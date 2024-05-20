@@ -105,8 +105,8 @@ export function onDocumentMouseUp(event) {
 }
 
 export function onDocumentDoubleClick(event) {
-    mouseX = (event.clientX);
-    mouseY = (window.innerHeight - event.clientY);
+    mouseX = event.clientX;
+    mouseY = event.clientY;
 
     ViewMan.iterate((key, view) => {
         if (view.visible) {

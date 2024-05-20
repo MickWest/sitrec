@@ -64,3 +64,9 @@ export function dumpGUIMenu(controller) {
         console.log(controller.$select)
     }
 }
+
+export function preventDoubleClicks(gui) {
+    gui.domElement.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+    });
+}
