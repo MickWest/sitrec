@@ -21,9 +21,9 @@ sitch = {
     startDistanceMin: 0.01,
     startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
 
-    // temporary hard wired time and terrain for testing MISB truck track
     startTime: "2012-09-19T20:50:26.970Z",
-    TerrainModel: {kind: "Terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 4},
+    // default terrain covers North America
+    TerrainModel: {kind: "Terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 6},
     terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
     // default to 30 seconds. Loading a video will change this (also need manual, eventually)
@@ -55,37 +55,44 @@ sitch = {
     useGlobe: true,
 
 
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.767657,-105.215694,15862.255512]},
+
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
-           "fixedCamera": {kind:"PositionLLA", LLA: [34.399060162,-115.858257450, 1380]},
+           "fixedCamera": "fixedCameraPosition",
         },
         desc: "Camera Track"
     },
 
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [34.5,-115.858257450, 0]},
+
     targetTrackSwitch: {
         kind: "Switch",
         inputs: {
-            "fixedTarget": {kind:"PositionLLA", LLA: [34.5,-115.858257450, 0]},
+            "fixedTarget": "fixedTargetPosition",
         },
         desc: "Target Track"
     },
+
+    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, showGUI: true},
 
     // angels controllers
     angelsSwitch: {
         kind: "Switch",
         inputs: {
-            "Manual PTZ": {kind: "PTZUI", az: 0, el: 0, roll: 0, showGUI: true}
+            "Manual PTZ": "ptzAngles",
             // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
             // then a matrixController
         },
         desc: "Angles Source"
     },
 
+    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV"},
 
     fovSwitch: {
         kind: "Switch",
         inputs: {
-            "userFOV": {kind: "GUIValue", value:30, start:0.1,  end: 170,  step: 0.001,  desc:"vFOV"},
+            "userFOV": "fovUI",
         },
         desc: "Camera FOV"
     },
@@ -97,22 +104,27 @@ sitch = {
         source: "fovSwitch",
     },
 
+    trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
+
     // These are the types of controller for the camera
     // which will reference the cameraTrackSwitch for source data
     CameraPositionController: {
         kind: "Switch",
         inputs: {
-            "Follow Track": {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
+            "Follow Track": "trackPositionController",
         },
         desc: "Camera Position",
     },
+
+
+    trackToTrackController: {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
 
     // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
     // for source data
     // can be track-to-track, fixed angles, Az/El/Roll track, etc.
     CameraLOSController: {kind: "Switch",
         inputs: {
-            "To Target": {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+            "To Target": "trackToTrackController",
             "Use Angles": "angelsSwitch",
         },
         desc: "Camera Heading"

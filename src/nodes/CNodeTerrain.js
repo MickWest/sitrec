@@ -324,6 +324,7 @@ export class CNodeTerrain extends CNode {
 
     loadMap(id, deferLoad) {
         if (this.maps[id].map == undefined) {
+            console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
             this.maps[id].map = new Map(this.maps[id].group, this.maps[id].source, this.position, {
                 nTiles: this.nTiles,
                 zoom: this.zoom,
@@ -338,6 +339,7 @@ export class CNodeTerrain extends CNode {
                     this.outputs.forEach( o => {
                         o.recalculateCascade()
                     })
+                    console.log("CNodeTerrain: id = "+id+" map loaded");
                     propagateLayerMaskObject(this.maps[id].group)
                 },
                 deferLoad: deferLoad,

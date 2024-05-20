@@ -185,6 +185,12 @@ export function SituationSetupFromData(sitData, runDeferred) {
             runTests = false;
         }
 
+        // we generally don't want to run the test on the Terrain node
+        // as it requires loading the terrain
+        if (key === "Terrain" || _data.kind === "Terrain") {
+            runTests = false;
+        }
+
         let node = SetupFromKeyAndData(key, _data);
         if (runTests && node !== null && node.canSerialize && isLocal) {
 
