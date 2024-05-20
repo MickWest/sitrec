@@ -430,6 +430,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.satelliteGroup.visible = this.showSatellites;
         }).name("Satellites")
 
+
+
+        this.showSatelliteTracks = Sit.showSatelliteTracks ?? false;
+        guiShowHide.add(this, "showSatelliteTracks").listen().onChange(()=>{
+            par.renderOne=true;
+            this.satelliteTrackGroup.visible = this.showSatelliteTracks;
+        }).name("Satellite Arrows")
+
         this.showSatelliteNames = false;
 
         guiShowHide.add(this,"showSatelliteNames" ).listen().onChange(()=>{
@@ -439,7 +447,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         gui.add(Sit,"starScale",0,3,0.01).name("Star Brightness")
-        gui.add(Sit,"satScale",0,3,0.01).name("Sat Brightness")
+        gui.add(Sit,"satScale",0,6,0.01).name("Sat Brightness")
         gui.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off")
 
 
@@ -456,6 +464,10 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.satelliteGroup = new Group();
         GlobalScene.add(this.satelliteGroup)
+
+        // a sub-group for the satellite tracks
+        this.satelliteTrackGroup = new Group();
+        this.satelliteGroup.add(this.satelliteTrackGroup)
 
 
         this.satelliteTextGroup = new Group();
@@ -1424,6 +1436,13 @@ void main() {
         this.timeStep = 2000
         const numSats = this.TLEData.satrecs.length;
 
+        // if there's only a few satellites, use a smaller time step
+        if (numSats < 100) {
+            this.timeStep = 100;
+        } else {
+            this.timeStep = numSats; // scale it by the number of satellites
+        }
+
         // Get the position attribute from the geometry
         const positions = this.satelliteGeometry.attributes.position.array;
         const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
@@ -1486,6 +1505,15 @@ void main() {
                     positions[i * 3 + 1] = sat.eus.y;
                     positions[i * 3 + 2] = sat.eus.z;
                     sat.invalidPosition = false;
+
+                    // draw an arrow from the satellite in the direction of its velocity
+                    if (this.showSatelliteTracks) {
+                        let A = sat.eusA.clone()
+                        let dir = sat.eusB.clone().sub(sat.eusA).normalize()
+                        DebugArrow(sat.name+"_t", dir, A, 500000, "#FF0000", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
+                    }
+
+
                 }
             } else {
                 // if the new position is invalid, then we make it invisible
