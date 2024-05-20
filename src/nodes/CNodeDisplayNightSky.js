@@ -1510,7 +1510,7 @@ void main() {
                     if (this.showSatelliteTracks) {
                         let A = sat.eusA.clone()
                         let dir = sat.eusB.clone().sub(sat.eusA).normalize()
-                        DebugArrow(sat.name+"_t", dir, A, 500000, "#FF0000", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
+                        DebugArrow(sat.name+"_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
                     }
 
 
