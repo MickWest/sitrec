@@ -5,9 +5,8 @@ name: CI
 
 on:   # when this workflow should be triggered
   push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:    # allows triggering a more exhaustive battery of tests manually
 
 defaults:
   run:
@@ -15,13 +14,15 @@ defaults:
 
 jobs:
   build_web:
-    if: true  # the job can be disable from here
+    if: true  # the job can be disabled from here
     strategy:
       matrix:   # run a separate jub for all combinations of the following variables
         node-version: [22]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # it should typically be enough to build the web app on macOS
+        # but allow building it on three platforms if the workflow is triggered manually
+        os: ${{ fromJSON(github.event_name != 'workflow_dispatch' && '["macos-latest"]' ||
+          '["ubuntu-latest","windows-latest","macos-latest"]') }}
       fail-fast: false   # don't stop all of the jobs when one of them fails
-      
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
@@ -31,7 +32,7 @@ jobs:
         # fetch-tags: true is supposed to fetch the tags without a full clone, but doesn't work ?
         fetch-depth: 0    # do a full clone instead. for now it doesn't seem to be any slower
     - name: use node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         # cache the downloaded node version and the package dependencies
@@ -49,6 +50,7 @@ jobs:
         sed -i'.bak' -e "s#prod_path:.*#prod_path: '$(realpath ../prod)',#" config-install.js
         cat config-install.js
     - name: install deps
+      # could use npm ci instead, but this is more consistent with the build instructions in the README
       run: npm install
     - name: build dev
       run: npm run build
@@ -57,23 +59,27 @@ jobs:
       run: npm run deploy
       
   build_console:
-    if: true  # the job can be disable from here
+    if: true  # the job can be disabled from here
     strategy:
       matrix:   # run a separate jub for all combinations of the following variables
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # it should typically be enough to run the console tests on macOS
+        # but allow them to run on three platforms if the workflow is triggered manually
+        os: ${{ fromJSON(github.event_name != 'workflow_dispatch' && '["macos-latest"]' ||
+          '["ubuntu-latest","windows-latest","macos-latest"]') }}
       fail-fast: false   # don't stop all of the jobs when one of them fails
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
+    - name: install bun
+      uses: oven-sh/setup-bun@v1
     - name: install deps
-      run: npm install
+      run: bun install  # a bit faster than npm i/ci, except on windows
     - name: config script setup
       run: |
         cp config.js.example config.js
         # custom console tools will often be run from outside the source tree
         # so by default the config assumes that sitrec's root is "./sitrec/"
         mv ./test/console/test.js ../
-    - name: install bun
-      run: npm install -g bun
+        # note: by default, without remapping imports, bun uses the three.js version from package-lock.json 
     - name: run console test
       run: cd ../ && bun test.js
