@@ -325,6 +325,8 @@ class CNodeView extends CNode {
                     //     this.height = 1;
                     // }
 
+                    this.left = 0;
+                    this.top = 0;
                     this.width = 1;
                     this.height = 1;
 
@@ -332,6 +334,7 @@ class CNodeView extends CNode {
 
                 if (this.width > 1) this.width=1;
                 if (this.height > 1) this.height=1;
+
 
                 this.updateWH()
                 this.snapInsidePx(0,0,this.containerWidth(),this.containerHeight())
