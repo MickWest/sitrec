@@ -698,6 +698,33 @@ class Map {
     return 0  // default to sea level if elevation data not loaded
   }
 
+  // interpolate the elevation at a lat/lon
+  // does not handle interpolating between tiles.
+  getElevationInterpolated(lat, lon) {
+    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
+    const intX = Math.floor(x)
+    const intY = Math.floor(y)
+    const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
+    if (tile && tile.elevation) {
+      const nElevation = Math.sqrt(tile.elevation.length)
+      const xIndex = (x - tile.x) * nElevation
+      const yIndex = (y - tile.y) * nElevation
+      const x0 = Math.floor(xIndex)
+      const x1 = Math.ceil(xIndex)
+      const y0 = Math.floor(yIndex)
+      const y1 = Math.ceil(yIndex)
+      const f00 = tile.elevation[y0 * nElevation + x0]
+      const f01 = tile.elevation[y0 * nElevation + x1]
+      const f10 = tile.elevation[y1 * nElevation + x0]
+      const f11 = tile.elevation[y1 * nElevation + x1]
+      const f0 = f00 + (f01 - f00) * (xIndex - x0)
+      const f1 = f10 + (f11 - f10) * (xIndex - x0)
+      const elevation = f0 + (f1 - f0) * (yIndex - y0)
+      return elevation
+    }
+    return 0  // default to sea level if elevation data not loaded
+  }
+
 }
 
 export {Map, Source}

@@ -341,6 +341,15 @@ export class CNodeTerrain extends CNode {
                     })
                     console.log("CNodeTerrain: id = "+id+" map loaded");
                     propagateLayerMaskObject(this.maps[id].group)
+
+                    // call the terrainLoadedCallback on any node that has it
+                    NodeMan.iterate( (id, n) => {
+                        if (n.terrainLoadedCallback !== undefined) {
+                            n.terrainLoadedCallback()
+                        }
+                    })
+
+
                 },
                 deferLoad: deferLoad,
             })

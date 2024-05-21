@@ -108,6 +108,15 @@ class CNode {
         }
     }
 
+    // serialize the inputs of an object,as key, id pairs
+    serializeInputs() {
+        let inputs = {}
+        Object.keys(this.inputs).forEach(key => {
+            inputs[key] = this.inputs[key].id;
+        })
+        return {inputs: inputs}
+    }
+
     // v0 = shorthand accessor for the value at 0,
     // usually for nodes that are not frame dependent
     get v0() {return this.v(0)}
@@ -129,6 +138,11 @@ class CNode {
     hide() {
         this.visible = false;
     }
+
+    onTerrainLoaded(callback)  {
+        this.terrainLoadedCallback = callback
+    }
+
 
     countVisibleOutputs(depth = 0) {
         // recursively count the number of visible outputs

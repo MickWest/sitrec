@@ -1,19 +1,8 @@
-import {gui, guiShowHide, NodeMan, Sit} from "./Globals";
+import {gui, guiShowHide, keyCodeHeld, keyHeld, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
-import {UIChangedFrame} from "./JetStuff";
 import {closeFullscreen, openFullscreen} from "./utils";
 import {Vector3} from "../three.js/build/three.module";
 
-export var keyHeld = {}
-export var keyCodeHeld = {}
-export var keyInfo = {}
-// keyInfo hold a structure of per-key info
-// {
-//    held:       if held
-//    heldTime:   how long it has been held
-//    triggered:  if it has been triggered, and is still held. Can be cleared by handling code
-//    released:   if it has been released
-//
 
 class CKeyInfo {
     constructor(props) {
@@ -330,8 +319,13 @@ export function initKeyboard() {
     }
 
     window.onfocus = () => {
-        keyHeld = {}
-        keyCodeHeld = {}
+        //keyHeld = {}
+        //keyCodeHeld = {}
+
+        // clear them without making a new object
+        for (var k in keyHeld) delete keyHeld[k];
+        for (var k in keyCodeHeld) delete keyCodeHeld[k];
+
     }
 
 

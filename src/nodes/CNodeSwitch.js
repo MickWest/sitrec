@@ -10,6 +10,8 @@ class CNodeSwitch extends CNode {
         this.choice = v.default; // this is the key of the entry in choices
         this.onChangeCallback= v.onChange; // function to call when choice changes
 
+        this.canSerialize = true;
+
         this.setGUI(v, _gui)
 
         if (this.choice === undefined) {
@@ -66,6 +68,15 @@ class CNodeSwitch extends CNode {
             NodeMan.addExportButton(this, "exportTrackCSV", "Export Traverse")
         }
 
+    }
+
+
+    serialize() {
+        return {
+            ...super.serialize(),
+            ...this.serializeInputs(),
+            choice: this.choice,
+        }
     }
 
     exportTrackCSV() {

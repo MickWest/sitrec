@@ -130,10 +130,12 @@ export const SitFlir1 = {
 
     initialHeading: { kind: "Heading", heading: 227, name: "Initial", jetOrigin: "jetOrigin", arrowColor: "green" },
 
+    userTurnRate: { kind: "GUIValue", value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001},
+
     turnRate: {kind: "Switch",
         inputs: {
             //        "Curve Editor": turnRateEditorNode,
-            "User Constant": { kind: "GUIValue", value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001},
+            "User Constant": "userTurnRate",
             "From Bank and Speed": "turnRateBS",
         },
         desc: "Turn Rate Type"

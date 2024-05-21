@@ -65,3 +65,6 @@ export function setUnits(u) {Units = u;}
 
 export var FileManager;
 export function setFileManager(f) {FileManager = f;}
+
+export var keyHeld = {}
+export var keyCodeHeld = {}

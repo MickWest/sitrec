@@ -5,6 +5,7 @@ import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
 import {gui, guiTweaks, Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
+import {isKeyHeld} from "../KeyBoardHandler";
 
 export class CNodeControllerPTZUI extends CNodeController {
     constructor(v) {
@@ -34,6 +35,29 @@ export class CNodeControllerPTZUI extends CNodeController {
     }
 
     apply(f, objectNode ) {
+
+        // would be good, but arrow keys are already used for frame advance, etc. 4565421
+        // let rotationKeySpeed = 1;
+        // if (isKeyHeld('Shift')) {
+        //     rotationKeySpeed = 10;
+        // }
+        //
+        // // rotate the camera with left and right arrow keys
+        // if (isKeyHeld('ArrowLeft')) {
+        //     this.az -= rotationKeySpeed;
+        // }
+        // if (isKeyHeld('ArrowRight')) {
+        //     this.az += rotationKeySpeed;
+        // }
+        //
+        // // rotate the camera with up and down arrow keys
+        // // note we are using inverted Y, as it's like WASD game controllers
+        // if (isKeyHeld('ArrowUp')) {
+        //     this.el -= rotationKeySpeed;
+        // }
+        // if (isKeyHeld('ArrowDown')) {
+        //     this.el += rotationKeySpeed;
+        // }
 
         // Since we are in EUS, and the origin is at some arbritary point
         // we need to get the LOCAL up

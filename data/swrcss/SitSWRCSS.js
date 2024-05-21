@@ -22,11 +22,28 @@ export const SitSWRCSC = {
     // tileSegments is optional in the range 1..256 and is the resolution of the height map
     terrain: {lat: 40.2572028, lon: -109.893759, zoom: 14, nTiles: 4, tileSegments: 256},
 
+    laser1: {kind: "LaserMarker", lat:  40.257024, lon: -109.893159, // center of triangle
+        height: {kind:"GUIValue", value:50000, start:1, end: 200000, step:100, desc: "Laser Height"},
+        color: "#C0FFFF",
+        weight: 2,
+        radius: {kind:"GUIValue", value:38, start:0, end: 100, step:0.1, desc: "Laser Radius"},
+        angle: {kind:"GUIValue", value:-27, start:-180, end: 180, step:1, desc: "Laser Angle"},
+        sides: {kind:"GUIValue", value:3, start:0, end: 20, step:1, desc: "Number of Lasers"},
+
+    },
+
+
     // a single camera, with the position and heading define by two LLA points
     mainCamera: {
         far:    80000000,
-        startCameraPositionLLA:[40.044026,-111.703724,7951172.784585],
-        startCameraTargetLLA:[40.043969,-111.703807,7950173.014630],
+
+        // hight up
+        // startCameraPositionLLA:[40.044026,-111.703724,7951172.784585],
+        // startCameraTargetLLA:[40.043969,-111.703807,7950173.014630],
+
+        // close to triangle
+        startCameraPositionLLA:[40.239084,-109.880595,1982.141336],
+        startCameraTargetLLA:[40.247203,-109.885505,1889.827698],
     },
 
     // a full screen view. The size and position are fractions of the window size
@@ -35,7 +52,9 @@ export const SitSWRCSC = {
 
     lookCamera: {fov: 10, far: 80000000, },
     lookView: {left:0.5, top:0.5, width:-1.792,height:0.5,background:'#132d44', doubleClickFullScreen: true,},
-    lookPosition: { fromLat: 40.2567, fromLon: -109.8930, fromAltFeet: 4932, fromAltMin: 4900, framAltMax: 5500,},
+    lookPosition: { fromLat: 40.2576896691347, fromLon: -109.88881130294267, fromAltFeet: 4932, fromAltMin: 4900, framAltMax: 5500,},
+
+    manualPositionController: {kind:"ManualPosition", object: "lookCamera", aboveGround: 3},
 
     labelView: {id:"labelVideo", overlay: "lookView"},
     DisplayCameraFrustum: {radius:100000},

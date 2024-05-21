@@ -4,7 +4,7 @@ import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {gui, NodeMan, Sit} from "../Globals";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
-import {DebugArrow} from "../threeExt";
+import {adjustHeightAboveGround, DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
 
 import {MISB} from "../MISBUtils";
@@ -112,6 +112,8 @@ export class CNodeControllerManualPosition extends CNodeController {
     constructor(v) {
         super(v);
 
+        this.aboveGround = v.aboveGround;
+
         // bit of a patch to only apply this once in an update cycle
         // the problem being that recalculateCastcade() will make the camera node call apply() again
         // this.applying = false;
@@ -137,6 +139,43 @@ export class CNodeControllerManualPosition extends CNodeController {
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
         }
+
+        // get the camera position, and forward and right vectors
+        const camera = objectNode.camera
+        let camPos = camera.position.clone()
+        const fwd = camera.getWorldDirection(new Vector3())
+        const right = new Vector3().crossVectors(fwd, camera.up)
+
+        let speed = 0.1;  // meters per frame
+        if (isKeyHeld('Shift')) {
+            speed *= 10;
+        }
+        if (isKeyHeld('w')) {
+            camPos.add(fwd.multiplyScalar(speed))
+        }
+        if (isKeyHeld('s')) {
+            camPos.sub(fwd.multiplyScalar(speed))
+        }
+        if (isKeyHeld('a')) {
+            camPos.sub(right.multiplyScalar(speed))
+        }
+        if (isKeyHeld('d')) {
+            camPos.add(right.multiplyScalar(speed))
+        }
+        if (isKeyHeld('q')) {
+            camPos.y += speed
+        }
+        if (isKeyHeld('e')) {
+            camPos.y -= speed
+        }
+
+        if (this.aboveGround !== undefined) {
+            camPos = adjustHeightAboveGround(camPos, this.aboveGround)
+        }
+
+        updateCameraAndUI(camPos, camera, objectNode);
+
+
     }
 
 }

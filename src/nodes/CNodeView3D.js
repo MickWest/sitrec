@@ -2,7 +2,7 @@ import {CNodeView, mouseInViewOnly, ViewMan} from "./CNodeView";
 import {par} from "../par";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {GlobalComposer, gui, NodeMan, Sit} from "../Globals";
+import {GlobalComposer, gui, keyHeld, NodeMan, Sit} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {} from "../Globals"
 import {makeMouseRay} from "../mouseMoveView";
@@ -16,7 +16,6 @@ import {
     WebGLRenderer, Camera
 } from "../../three.js/build/three.module";
 import {DebugArrowAB, V3} from "../threeExt";
-import {keyHeld} from "../KeyBoardHandler";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
 
 import { EffectComposer } from '../../three.js/examples/jsm/postprocessing/EffectComposer.js';
