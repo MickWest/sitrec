@@ -15,7 +15,7 @@ import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
     DebugSphere, DebugWireframeSphere,
-    intersectSphere2,
+    intersectSphere2, pointOnGround,
     propagateLayerMaskObject,
     removeDebugArrow, setLayerMaskRecursive,
     V3
@@ -438,6 +438,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.satelliteTrackGroup.visible = this.showSatelliteTracks;
         }).name("Satellite Arrows")
 
+        this.showSatelliteGround = Sit.showSatelliteGround ?? false;
+        guiShowHide.add(this, "showSatelliteGround").listen().onChange(()=>{
+            par.renderOne=true;
+            this.satelliteGroundGroup.visible = this.showSatelliteGround;
+        }).name("Satellite Ground Arrows")
+
         this.showSatelliteNames = false;
 
         guiShowHide.add(this,"showSatelliteNames" ).listen().onChange(()=>{
@@ -468,6 +474,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // a sub-group for the satellite tracks
         this.satelliteTrackGroup = new Group();
         this.satelliteGroup.add(this.satelliteTrackGroup)
+        this.satelliteGroundGroup = new Group();
+        this.satelliteGroup.add(this.satelliteGroundGroup)
 
 
         this.satelliteTextGroup = new Group();
@@ -1506,11 +1514,18 @@ void main() {
                     positions[i * 3 + 2] = sat.eus.z;
                     sat.invalidPosition = false;
 
-                    // draw an arrow from the satellite in the direction of its velocity
+                    // draw an arrow from the satellite in the direction of its velocity (yellow)
                     if (this.showSatelliteTracks) {
                         let A = sat.eusA.clone()
                         let dir = sat.eusB.clone().sub(sat.eusA).normalize()
                         DebugArrow(sat.name+"_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
+                    }
+
+                    // Arrow from satellite to ground (red)
+                    if (this.showSatelliteGround) {
+                        let A = sat.eusA.clone()
+                        let B = pointOnGround(A)
+                        DebugArrowAB(sat.name+"_g", A, B, "#00FF00", true, this.satelliteGroundGroup, 20, LAYER.MASK_LOOKRENDER)
                     }
 
 
