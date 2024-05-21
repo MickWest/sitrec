@@ -150,35 +150,12 @@ export const SitNightSky = {
             this.permaButton = gui.add(this, "makeNightSkyURL").name("Permalink")
         else {
             this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
-
         }
     },
 
 
     loginAttempt: function() {
-        asyncCheckLogin().then(() => {
-            if (Globals.userID > 0) {
-                this.permaButton.name("Permalink")
-                return this.makeNightSkyURL();
-            }
-
-            // open the login URL in a new window
-            // the redirect takes that tab to the main page
-            window.open("https://www.metabunk.org/login?_xfRedirect=https://www.metabunk.org/sitrec/sitrecServer/successfullyLoggedIn.html  ", "_blank");
-
-            // When the current window regains focus, we'll check if we are logged in
-            // and if we are, we'll make the permalink
-            window.addEventListener('focus', () => {
-                asyncCheckLogin().then(() => {
-                    if (Globals.userID > 0) {
-                        // just change the button text
-                        this.permaButton.name("Permalink")
-               //         return this.makeNightSkyURL();
-                    }
-                });
-            });
-
-        })
+        FileManager.loginAttempt(this.makeNightSkyURL);
     },
 
     makeNightSkyURL: function () {

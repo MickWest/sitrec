@@ -17,6 +17,7 @@ import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
 // when running as a console app jQuery's $ is not available, so load just the csv plugin separately
 import csv from "./js/jquery.csv.js";
+import {asyncCheckLogin} from "./login";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -29,8 +30,8 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
-        if(!isConsole) {
-            this.guiFolder = gui.addFolder("FileManager (User:"+Globals.userID+")").perm().close();
+        if (!isConsole) {
+            this.guiFolder = gui.addFolder("FileManager (User:" + Globals.userID + ")").perm().close();
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
@@ -39,12 +40,53 @@ export class CFileManager extends CManager {
             }
 
             let textSitches = [];
-            fetch((SITREC_SERVER+"getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+            fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
                 console.log("Local files: " + data)
                 let localfiles = JSON.parse(data) // will give an array of local files
             })
+
+            if (Globals.userID > 0)
+                this.permaButton = gui.add(this, "exportSitch").name("Export Custom Sitch").perm()
+            else {
+                this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
+            }
+
         }
     }
+
+    exportSitch() {
+        //
+    }
+
+    loginAttempt(callback) {
+        asyncCheckLogin().then(() => {
+            if (Globals.userID > 0) {
+                this.permaButton.name("Permalink")
+                if (callback !== undefined)
+                    callback();
+                return ;
+            }
+
+// open the login URL in a new window
+// the redirect takes that tab to the main page
+            window.open("https://www.metabunk.org/login?_xfRedirect=https://www.metabunk.org/sitrec/sitrecServer/successfullyLoggedIn.html  ", "_blank");
+
+// When the current window regains focus, we'll check if we are logged in
+// and if we are, we'll make the permalink
+            window.addEventListener('focus', () => {
+                asyncCheckLogin().then(() => {
+                    if (Globals.userID > 0) {
+                        // just change the button text
+                        this.permaButton.name("Permalink")
+                        //         return this.makeNightSkyURL();
+                    }
+                });
+            });
+
+        })
+    }
+
+
 
     makeExportButton(object, functionName, name) {
         if (this.exportFolder === undefined)
