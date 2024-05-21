@@ -15,12 +15,16 @@ import {
     WireframeGeometry
 } from '../three.js/build/three.module.js';
 
-import {drop3} from "./SphericalMath"
+import {drop3, pointOnSphereBelow} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
 import {Group, Ray, Sphere} from "three";
-import {wgs84} from "./LLA-ECEF-ENU";
+import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
+import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
+import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
+import {Line2} from "../three.js/examples/jsm/lines/Line2";
+import {NodeMan} from "./Globals";
 
 
 // Wrapper for calling dispose function on object, allowing undefined
@@ -94,6 +98,12 @@ export class ColoredLine extends LineSegments {
         super (geometry, material)
         this.type = 'ColoredLine';
     }
+
+    dispose() {
+        this.geometry.dispose()
+        this.material.dispose()
+    }
+
 }
 
 
@@ -664,3 +674,75 @@ export function intersectMSL(point, heading) {
     return null;
 }
 
+export class CDisplayLine {
+    constructor(v) {
+        this.color = v.color ?? [1, 0, 1];
+        this.width = v.width ?? 1;
+        this.A = v.A;
+        this.B = v.B;
+        this.group = v.group;
+        this.layers = v.layers ?? LAYER.MASK_HELPERS;
+
+        this.material = new LineMaterial({
+
+            color: this.color,
+            linewidth: this.width, // in world units with size attenuation, pixels otherwise
+            vertexColors: true,
+            dashed: false,
+            alphaToCoverage: true,
+        });
+
+        this.geometry = null;
+
+        const line_points = [];
+        const line_colors = [];
+
+        line_points.push(this.A.x, this.A.y, this.A.z);
+        line_points.push(this.B.x, this.B.y, this.B.z);
+        line_colors.push(this.color.r, this.color.g, this.color.b)
+        line_colors.push(this.color.r, this.color.g, this.color.b)
+
+        this.geometry = new LineGeometry();
+        this.geometry.setPositions(line_points);
+        this.geometry.setColors(line_colors);
+
+        this.material.resolution.set(window.innerWidth, window.innerHeight)
+        this.line = new Line2(this.geometry, this.material);
+        this.line.computeLineDistances();
+        this.line.scale.set(1, 1, 1);
+        this.line.layers.mask = this.layers;
+        this.group.add(this.line);
+
+    }
+
+    dispose() {
+        this.group.remove(this.line)
+        this.material.dispose();
+        this.geometry.dispose();
+    }
+}
+
+export function pointOnGround(A) {
+    if (NodeMan.exists("TerrainModel")) {
+        let terrainNode = NodeMan.get("TerrainModel")
+        return terrainNode.getPointBelow(A)
+    } else {
+        return pointOnSphereBelow(A);
+    }
+}
+
+export function pointOnGroundLL(lat, lon) {
+    const A = LLAToEUS(lat, lon, 100000);
+    return pointOnGround(A)
+}
+
+export function pointAbove(point, height) {
+    const center = V3(0,-wgs84.RADIUS,0);
+    const toPoint = point.clone().sub(center).normalize();
+    return point.clone().add(toPoint.multiplyScalar(height));
+}
+
+export function adjustHeightAboveGround (point, height) {
+    const ground = pointOnGround(point);
+    return pointAbove(ground, height);
+}

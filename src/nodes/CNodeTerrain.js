@@ -403,7 +403,7 @@ export class CNodeTerrain extends CNode {
         // we use LLA to get the data from the terrain maps
         const LLA = EUSToLLA(A)
         // elevation is the height above the wgs84 sphere
-        let elevation = this.maps[local.mapType].map.getElevation(LLA.x, LLA.y)
+        let elevation = this.maps[local.mapType].map.getElevationInterpolated(LLA.x, LLA.y)
 
         // then
         const earthCenterENU = V3(0,-wgs84.RADIUS,0)
