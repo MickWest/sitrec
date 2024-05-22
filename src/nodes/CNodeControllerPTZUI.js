@@ -10,6 +10,7 @@ import {isKeyHeld} from "../KeyBoardHandler";
 export class CNodeControllerPTZUI extends CNodeController {
     constructor(v) {
         super(v);
+        this.canSerialize = true;
         this.az = v.az;
         this.el = v.el
         this.fov = v.fov
@@ -28,6 +29,22 @@ export class CNodeControllerPTZUI extends CNodeController {
             }
         }
        // this.refresh()
+    }
+
+    modSerialize() {
+        return {
+            az: this.az,
+            el: this.el,
+            fov: this.fov,
+            roll: this.roll,
+        }
+    }
+
+    modDeserialize(v) {
+        this.az = v.az;
+        this.el = v.el;
+        this.fov = v.fov;
+        this.roll = v.roll;
     }
 
     refresh(v) {

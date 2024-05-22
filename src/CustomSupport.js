@@ -138,6 +138,14 @@ export class CCustomManager {
                     }
                 }
             }
+
+            // recalculate everything after the mods
+            // in case there's some missing dependency
+            // like the CSwitches turning off if they are not used
+            // which they don't know immediately
+            NodeMan.recalculateAllRootFirst()
+
+
         })
 
     }
