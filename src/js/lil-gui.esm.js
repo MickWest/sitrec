@@ -445,8 +445,11 @@ class Controller {
     destroy(all = false) {
         if (all || !this.permanent) {
             this.listen(false);
-            this.parent.children.splice(this.parent.children.indexOf(this), 1);
-            this.parent.controllers.splice(this.parent.controllers.indexOf(this), 1);
+            const childIndex = this.parent.children.indexOf(this);
+            const controllerIndex = this.parent.controllers.indexOf(this);
+            console.log("destroying controller, childIndex: " + childIndex + " controllerIndex: " + controllerIndex);
+            this.parent.children.splice(childIndex, 1);
+            this.parent.controllers.splice(controllerIndex, 1);
             this.parent.$children.removeChild(this.domElement);
         }
     }
