@@ -220,8 +220,10 @@ async function newSitch(situation, customSetup = false ) {
 
 
     cancelAnimationFrame(animate);
+    console.log("%%%%% BEFORE the two AWAITS %%%%%%%%")
     await waitForParsingToComplete();
     await waitForTerrainToLoad();
+    console.log("%%%%% AFTER the two AWAITS %%%%%%%%")
     disposeEverything();
     if (!customSetup) {
         // if it's not custom, then "situation" is a name of a default sitch
@@ -492,6 +494,9 @@ async function setupFunctions() {
 
     console.log("FINISHED Load Assets")
 
+    // parsing can be async, so we need to wait for it to complete
+    // before we do setup
+    await waitForParsingToComplete();
 
 
 //

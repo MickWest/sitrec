@@ -289,7 +289,8 @@ export class CFileManager extends CManager {
             filename = SITREC_ROOT + "data/" + filename;
         }
 
-        console.log(">>> loadAsset() Loading Started: " + filename);
+        Globals.parsing++;
+        console.log(">>> loadAsset() Loading Started: " + filename+ " GlobPars=" + Globals.parsing + " id=" + id);
 
 
         var bufferPromise = null;
@@ -300,10 +301,8 @@ export class CFileManager extends CManager {
                 return fs.promises.readFile(filename);
             });
         } else {
-            Globals.parsing++;
             bufferPromise = fetch(filename + "?v=1" + versionString)
             .then(response => {
-                Globals.parsing--;
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -353,9 +352,12 @@ export class CFileManager extends CManager {
                     this.list[id].isTLE = true;
                 }
 
+                Globals.parsing--;
+                console.log("<<< loadAsset() parsing Finished: " + filename + " GlobPars=" + Globals.parsing + " id=" + id);
                 return parsedAsset; // Return the asset for further chaining if necessary
             })
             .catch(error => {
+                Globals.parsing--;
                 console.log('There was a problem with the fetch operation: ', error.message);
                 throw error;
             });

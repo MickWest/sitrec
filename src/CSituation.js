@@ -76,7 +76,7 @@ const situationDefaults = {
 export class CSituation {
     constructor(props) {
         Object.assign(this,situationDefaults);
-        console.log("Setting units to: ",this.units)
+//        console.log("Setting units to: ",this.units)
         this.change(props)
     }
 
@@ -120,6 +120,7 @@ export class CSituation {
     }
 
     async loadAssets() {
+        console.log("++++++++++++++++++++ Loading assets")
         // There's a per-sitch set of files
         // then other flags can cause files to be added, like the night sky
         var assets = this.files ?? {};
@@ -130,6 +131,7 @@ export class CSituation {
         if(!isConsole)
             infoDiv.innerHTML = "Loading<br>"
         for (const key in assets) {
+            console.log("++++ Loading asset ", key, " from ", assets[key])
 
             // videoFile is a special case, we don't want to load it here
             if (key !== "videoFile") {
