@@ -1412,7 +1412,80 @@ void main() {
 
             var gmst = satellite.gstime(date);
             var ecefK = satellite.eciToEcf(positionEci, gmst);
-            const ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000);
+            let ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000);
+
+            // adjust ecef to account for wgs84 ellipsoid
+            // rendering uses a sphere, so we need to adjust the position to account for the ellipsoid
+            // so the viewpoint is correct
+
+            // simple approximation
+            //    ecef.z = ecef.z / (1-wgs84.FLATTENING)
+
+            // const a = 6378137.0; // semi-major axis (equatorial radius)
+            // const b = 6356752.314245; // semi-minor axis (polar radius)
+            //
+            // const scale_factor = b / a;
+            // ecef.z = ecef.z / scale_factor;
+
+            // // more complex
+            // // convert ellipsoidal to spherical ECEF
+            // function ecefToLLA(x, y, z) {
+            //     const a = 6378137.0; // semi-major axis
+            //     const e = 0.081819190842622; // first eccentricity
+            //
+            //     const b = Math.sqrt(a * a * (1 - e * e));
+            //     const ep = Math.sqrt((a * a - b * b) / (b * b));
+            //     const p = Math.sqrt(x * x + y * y);
+            //     const th = Math.atan2(a * z, b * p);
+            //     const lon = Math.atan2(y, x);
+            //     const lat = Math.atan2((z + ep * ep * b * Math.sin(th) * Math.sin(th) * Math.sin(th)), (p - e * e * a * Math.cos(th) * Math.cos(th) * Math.cos(th)));
+            //     const N = a / Math.sqrt(1 - e * e * Math.sin(lat) * Math.sin(lat));
+            //     const alt = p / Math.cos(lat) - N;
+            //
+            //     return { lat: lat, lon: lon, alt: alt };
+            // }
+
+
+            // optimized version with precalculated values
+            const a = 6378137.0; // semi-major axis (equatorial radius)
+            const e = 0.081819190842622; // first eccentricity
+            const e2 = 0.00669437999014; // e squared
+            const b = 6356752.314245; // semi-minor axis
+            const ep2 = 0.00673949674227; // ep squared
+
+            function ecefToLLA(x, y, z) {
+                const p = Math.sqrt(x * x + y * y);
+                const th = Math.atan2(a * z, b * p);
+                const lon = Math.atan2(y, x);
+                const sinTh = Math.sin(th);
+                const cosTh = Math.cos(th);
+                const lat = Math.atan2(z + ep2 * b * sinTh * sinTh * sinTh, p - e2 * a * cosTh * cosTh * cosTh);
+                const sinLat = Math.sin(lat);
+                const N = a / Math.sqrt(1 - e2 * sinLat * sinLat);
+                const alt = p / Math.cos(lat) - N;
+
+                return { lat: lat, lon: lon, alt: alt };
+            }
+
+
+            function llaToSphericalECEF(lat, lon, alt) {
+                const R = 6378137.0; // Mean radius of the Earth (WGS84 Sphere)
+
+                const X = (R + alt) * Math.cos(lat) * Math.cos(lon);
+                const Y = (R + alt) * Math.cos(lat) * Math.sin(lon);
+                const Z = (R + alt) * Math.sin(lat);
+
+                return { x: X, y: Y, z: Z };
+            }
+
+            const llaPos = ecefToLLA(ecef.x, ecef.y, ecef.z);
+            const sphericalECEF = llaToSphericalECEF(llaPos.lat, llaPos.lon, llaPos.alt);
+
+
+            ecef = V3(sphericalECEF.x, sphericalECEF.y, sphericalECEF.z);
+
+
+
 
             // get the altitude
             const altitude = ecef.length() - wgs84.RADIUS;
