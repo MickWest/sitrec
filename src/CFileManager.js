@@ -45,11 +45,11 @@ export class CFileManager extends CManager {
                 let localfiles = JSON.parse(data) // will give an array of local files
             })
 
-            if (Globals.userID > 0)
-                this.permaButton = gui.add(this, "exportSitch").name("Export Custom Sitch").perm()
-            else {
-                this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
-            }
+            // if (Globals.userID > 0)
+            //     this.permaButton = gui.add(this, "exportSitch").name("Export Custom Sitch").perm()
+            // else {
+            //     this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
+            // }
 
         }
     }
@@ -255,6 +255,9 @@ export class CFileManager extends CManager {
             id = filename; // Fallback to use filename as id if id is undefined
         }
 
+        // if we are going to try to load it,
+        assert(!this.exists(id), "Asset " + id + " already exists");
+
         // If it has no forward slash, then it's a local file
         // and will be in the this.directoryHandle folder
         if (!filename.includes("/")) {
@@ -288,6 +291,7 @@ export class CFileManager extends CManager {
 
         console.log(">>> loadAsset() Loading Started: " + filename);
 
+
         var bufferPromise = null;
         if(!isUrl && isConsole) {
             // read the asset from the local filesystem if this is not running inside a browser
@@ -296,8 +300,10 @@ export class CFileManager extends CManager {
                 return fs.promises.readFile(filename);
             });
         } else {
+            Globals.parsing++;
             bufferPromise = fetch(filename + "?v=1" + versionString)
             .then(response => {
+                Globals.parsing--;
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
