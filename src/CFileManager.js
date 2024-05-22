@@ -113,6 +113,7 @@ export class CFileManager extends CManager {
 
                     this.localSitchEntry = entry;
                     this.checkForNewLocalSitch();
+                    break;
                 }
             }
 
