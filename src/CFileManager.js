@@ -11,7 +11,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {SITREC_ROOT, SITREC_SERVER, isConsole} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {Globals, gui} from "./Globals";
+import {FileManager, Globals, gui, NodeMan} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -532,9 +532,31 @@ export class CFileManager extends CManager {
         return fileExt
     }
 
-    rehostDynamicLinks() {
+    rehostDynamicLinks(rehostVideo = false) {
         const rehostPromises = [];
         const todayDateStr = new Date().toISOString().split('T')[0];
+
+        // first check for video reshosting
+        if (rehostVideo) {
+            // is there a video? if so we add it directly, so, like terrain, it starts loading normally
+            if (NodeMan.exists("video")) {
+                const videoNode = NodeMan.get("video")
+                const rehostFilename = videoNode.fileName;
+                const videoDroppedData = videoNode.Video.videoDroppedData;
+
+                if (videoDroppedData !== undefined) {
+                    // do we also needs something similar for URLs?
+
+                    // // start rehosting
+                    rehostPromises.push(Rehoster.rehostFile(rehostFilename, videoDroppedData).then((staticURL) => {
+                        console.log("VIDEO REHOSTED AS PROMISED: " + staticURL)
+                        videoNode.staticURL = staticURL;
+                    }))
+                }
+            }
+        }
+
+
         Object.keys(this.list).forEach(key => {
             const f = this.list[key];
             if (f.dynamicLink && !f.staticURL) {

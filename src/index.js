@@ -569,6 +569,12 @@ async function setupFunctions() {
             Sit.parseURLDataAfterSetup(urlData)
         }
     }
+
+// now everything that is normally done is done, we can do any custom stuff that's included
+// i.e. load files, apply mods, etc.
+        CustomManager.deserialize(Sit);
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 }
 

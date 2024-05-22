@@ -192,8 +192,7 @@ class CDragDropHandler {
         console.log("Parsing result of dropped file: " + filename)
         FileManager.parseAsset(filename, filename, result)
             .then(parsedResult => {
-
-
+                
                 // Rehosting would be complicated with multiple results. Ignored for now.
                 // Maybe we need a FILE manager and an ASSET manager
                 // we'll rehost files, not assets
@@ -212,37 +211,51 @@ class CDragDropHandler {
                     fileManagerEntry.filename = x.filename;
                     fileManagerEntry.staticURL = newStaticURL;
                     fileManagerEntry.dataType = x.dataType;
-                    const fileExt = getFileExtension(x.filename);
 
-                    // very rough figuring out what to do with it
-                    // TODO: multiple TLEs, Videos, images.
-                    if (FileManager.detectTLE(filename)) {
+                    const parsedFile = x.parsed;
+                    const filename = x.filename;
 
-                        // remove any existing TLE (most likely the current Starlink, bout could be the last drag and drop file)
-                        FileManager.deleteIf(file => file.isTLE);
+                    this.handleParsedFile(filename, parsedFile);
 
-                        fileManagerEntry.isTLE = true;
-                        NodeMan.get("NightSkyNode").replaceTLE(x.parsed)
-                    } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
-                        addTracks([x.filename], true)
-                    } else if (fileExt === "sitch.js") {
-                        // x.parsed is a sitch text def
-                        // make a copy of the string (as we might be removing all the files)
-                        // and set it as the new sitch text
-                        let copy = x.parsed.slice();
-                        // if it's an arraybuffer, convert it to a sitch object
-                        if (copy instanceof ArrayBuffer) {
-                            const decoder = new TextDecoder('utf-8');
-                            const decodedString = decoder.decode(copy);
-                            copy = textSitchToObject(decodedString);
-                        }
-                        setNewSitchText(copy)
-                    }
                 }
                 console.log("parseResult: DONE Parse " + filename)
                 par.renderOne = true;
             })
     }
+
+    handleParsedFile(filename, parsedFile) {
+
+        const fileManagerEntry = FileManager.list[filename];
+
+        const fileExt = getFileExtension(filename);
+        // very rough figuring out what to do with it
+        // TODO: multiple TLEs, Videos, images.
+        if (FileManager.detectTLE(filename)) {
+
+            // remove any existing TLE (most likely the current Starlink, bout could be the last drag and drop file)
+            FileManager.deleteIf(file => file.isTLE);
+
+            fileManagerEntry.isTLE = true;
+            NodeMan.get("NightSkyNode").replaceTLE(parsedFile)
+        } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
+            addTracks([filename], true)
+        } else if (fileExt === "sitch.js") {
+            // parsedFile is a sitch text def
+            // make a copy of the string (as we might be removing all the files)
+            // and set it as the new sitch text
+            let copy = parsedFile.slice();
+            // if it's an arraybuffer, convert it to a sitch object
+            if (copy instanceof ArrayBuffer) {
+                const decoder = new TextDecoder('utf-8');
+                const decodedString = decoder.decode(copy);
+                copy = textSitchToObject(decodedString);
+            }
+            setNewSitchText(copy)
+        }
+    }
+
+
+
 }
 
 export const DragDropHandler = new CDragDropHandler();

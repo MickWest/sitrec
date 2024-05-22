@@ -7,6 +7,10 @@ import {assert} from "./utils";
 import {isKeyHeld} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
+import {Rehoster} from "./CRehoster";
+import {SITREC_ROOT} from "../config";
+import {createCustomModalWithCopy} from "./CFileManager";
+import {DragDropHandler} from "./DragDropHandler";
 
 
 export class CCustomManager {
@@ -23,10 +27,7 @@ export class CCustomManager {
     serialize() {
         console.log("Serializing custom sitch")
 
-        FileManager.rehostDynamicLinks().then(() => {
-
-
-
+        FileManager.rehostDynamicLinks(true).then(() => {
 
             let out = {}
 
@@ -34,6 +35,15 @@ export class CCustomManager {
             // which might have some changes?
 
             out = {...Sit}
+
+            // if there's a dropped video url
+            const videoNode = NodeMan.get("video")
+            if (videoNode !== undefined) {
+                if (videoNode.staticURL) {
+                    out.videoFile = videoNode.staticURL;
+                }
+            }
+
 
             // modify the terrain model directly, as we don't want to load terrain twice
             if (out.TerrainModel !== undefined) {
@@ -60,8 +70,7 @@ export class CCustomManager {
             }
             out.loadedFiles = files;
 
-// the video file is special, it is not in the files object
-//             ......
+
 // we also need to modSialize the controllers, and the camera position controller
 //             and the camera itself. Maybe also the lookView and mainView and video windows?
 //                 and focus track etc - so WE NEED A PER-NODE flag set in SitCustom saying what needs modSerializing
@@ -77,8 +86,57 @@ export class CCustomManager {
 
             // convert to a string
             let str = JSON.stringify(out, null, 2)
+
             console.log(str)
+
+            // and rehost it, showing a link
+            Rehoster.rehostFile("Custom.js", str).then((staticURL) => {
+                console.log("Sitch rehosted as " + staticURL);
+
+                // and make a URL that points to the new sitch
+                let customLink = SITREC_ROOT + "?custom=" + staticURL;
+
+                createCustomModalWithCopy(customLink)();
+            })
+
+
         })
+    }
+
+    // after setting up a custom scene, call this to perform the mods
+    // i.e. load the files, and then apply the mods
+    deserialize(sitchData) {
+        console.log("Deserializing custom sitch")
+        const loadingPromises = [];
+        if (sitchData.loadedFiles) {
+            // load the files as if they have been drag-and-dropped in
+            for (let id in sitchData.loadedFiles) {
+                loadingPromises.push(FileManager.loadAsset(Sit.loadedFiles[id], id).then(
+                    (result) => {
+                        console.log("Loaded " + id)
+                        DragDropHandler.handleParsedFile(id, FileManager.list[id].data)
+                    }
+                ))
+            }
+        }
+
+        // wait for the files to load
+        Promise.all(loadingPromises).then(() => {
+
+            // now
+
+            console.log("Promised files loaded in Custom Manager deserialize")
+            if (sitchData.mods) {
+                // apply the mods
+                for (let id in sitchData.mods) {
+                    const node = NodeMan.get(id)
+                    if (node.modDeserialize !== undefined) {
+                        node.modDeserialize(Sit.mods[id])
+                    }
+                }
+            }
+        })
+
     }
 
 
