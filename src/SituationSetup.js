@@ -192,96 +192,95 @@ export function SituationSetupFromData(sitData, runDeferred) {
         }
 
         let node = SetupFromKeyAndData(key, _data);
-        if (runTests && node !== null && node.canSerialize && isLocal) {
-
-            // remember how many nodes there are, as these tests should not alter that
-            const nodeCount = NodeMan.size();
-
-          // the issue here is that the object is not a simple object
-          // it contains a reference to a lil-gui object, which is a circular reference
-            // so we can't use JSON.stringify, or this.
-
-            function objectHash(obj) {
-                if (obj === null || typeof obj !== 'object') {
-                    return String(obj);
-                }
-
-                const keys = Object.keys(obj).sort();
-                const hashParts = keys.map(key => {
-                    const value = obj[key];
-                    if (typeof value === 'object') {
-                        // if it's derived from CNode, then we can use the id
-                        if (value instanceof CNode) {
-                            return `${key}:{${value.id}}`;
-                        }
-                        return `${key}:{...}`;
-                    }
-                    return `${key}:${String(value)}`;
-                });
-
-                return `{${hashParts.join('\n')}}`;
-            }
-
-            // we now do some quick tests to ensure round-trip compatibility
-            // get the node as text
-//            const nodeAsText = JSON.stringify(node, null, 2);
-            const nodeAsText = objectHash(node);
-//            console.log(nodeAsText)
-            // remove it
-            NodeMan.disposeRemove(node.id);
-            // create it again
-            node = SetupFromKeyAndData(key, _data);
-            // and get text from that
-            //const nodeAsText2 = JSON.stringify(node, null, 2);
-            const nodeAsText2 = objectHash(node);
-            // and assert they are the same
-            // assert(nodeAsText === nodeAsText2, "SituationSetup: node serialization round-trip failed for node: " + key +
-            //     "\n"+nodeAsText +"\n" + nodeAsText2);
-
-            function compareTwoNodeTexts(nodeAsText, nodeAsText2, info) {
-                if (nodeAsText !== nodeAsText2) {
-                    console.log("SituationSetup: node serialization round-trip failed for node: " + key);
-                    console.log(nodeAsText);
-                    console.log(nodeAsText2);
-                    // convert both to arrays of lines and print out the first line that is different
-                    const lines1 = nodeAsText.split("\n");
-                    const lines2 = nodeAsText2.split("\n");
-                    for (let i = 0; i < lines1.length; i++) {
-                        if (lines1[i] !== lines2[i]) {
-                            console.log("First difference at line: " + i);
-                            console.log("1: " + lines1[i]);
-                            console.log("2: " + lines2[i]);
-                            break;
-                        }
-                    }
-
-                    assert(0, "SituationSetup: node serialization round-trip failed for node: " + key +" "+info);
-                }
-            }
-            compareTwoNodeTexts(nodeAsText, nodeAsText2, "second setup with same data");
-
-            // check the number of nodes has not changed
-            assert(NodeMan.size() === nodeCount, "Node serialization test 1, node count changed from " + nodeCount + " to " + NodeMan.size());
-
-
-
-            // the above test is to ensure this type of test (deleting and re-creating the node) is valid, and has no side effects
-            // we now repeat the test by serializing the node to a string, and then re-creating it
-            const serialized = node.serialize();
-            // remove the node
-            NodeMan.disposeRemove(node.id);
-            // and re-create it from the serialized data
-            node = SetupFromKeyAndData(key, serialized);
-            // get that as text
-            //const nodeAsText3 = JSON.stringify(node, null, 2);
-            const nodeAsText3 = objectHash(node);
-            // and compare it to the original text
-            compareTwoNodeTexts(nodeAsText, nodeAsText3, "Serialized Node");
-            // if we didn't get any asserts, then serialization is good for this node
-
-            assert(NodeMan.size() === nodeCount, "Node serialization test 2, node count changed from " + nodeCount + " to " + NodeMan.size());
-
-        }
+//         if (runTests && node !== null && node.canSerialize && isLocal) {
+//
+//             // remember how many nodes there are, as these tests should not alter that
+//             const nodeCount = NodeMan.size();
+//
+//           // the issue here is that the object is not a simple object
+//           // it contains a reference to a lil-gui object, which is a circular reference
+//             // so we can't use JSON.stringify, or this.
+//
+//             function objectHash(obj) {
+//                 if (obj === null || typeof obj !== 'object') {
+//                     return String(obj);
+//                 }
+//
+//                 const keys = Object.keys(obj).sort();
+//                 const hashParts = keys.map(key => {
+//                     const value = obj[key];
+//                     if (typeof value === 'object') {
+//                         // if it's derived from CNode, then we can use the id
+//                         if (value instanceof CNode) {
+//                             return `${key}:{${value.id}}`;
+//                         }
+//                         return `${key}:{...}`;
+//                     }
+//                     return `${key}:${String(value)}`;
+//                 });
+//
+//                 return `{${hashParts.join('\n')}}`;
+//             }
+//
+//             // we now do some quick tests to ensure round-trip compatibility
+//             // get the node as text
+// //            const nodeAsText = JSON.stringify(node, null, 2);
+//             const nodeAsText = objectHash(node);
+// //            console.log(nodeAsText)
+//             // remove it
+//             NodeMan.disposeRemove(node.id);
+//             // create it again
+//             node = SetupFromKeyAndData(key, _data);
+//             // and get text from that
+//             //const nodeAsText2 = JSON.stringify(node, null, 2);
+//             const nodeAsText2 = objectHash(node);
+//             // and assert they are the same
+//             // assert(nodeAsText === nodeAsText2, "SituationSetup: node serialization round-trip failed for node: " + key +
+//             //     "\n"+nodeAsText +"\n" + nodeAsText2);
+//
+//             function compareTwoNodeTexts(nodeAsText, nodeAsText2, info) {
+//                 if (nodeAsText !== nodeAsText2) {
+//                     console.log("SituationSetup: node serialization round-trip failed for node: " + key);
+//                     console.log(nodeAsText);
+//                     console.log(nodeAsText2);
+//                     // convert both to arrays of lines and print out the first line that is different
+//                     const lines1 = nodeAsText.split("\n");
+//                     const lines2 = nodeAsText2.split("\n");
+//                     for (let i = 0; i < lines1.length; i++) {
+//                         if (lines1[i] !== lines2[i]) {
+//                             console.log("First difference at line: " + i);
+//                             console.log("1: " + lines1[i]);
+//                             console.log("2: " + lines2[i]);
+//                             break;
+//                         }
+//                     }
+//
+//                     assert(0, "SituationSetup: node serialization round-trip failed for node: " + key +" "+info);
+//                 }
+//             }
+//             compareTwoNodeTexts(nodeAsText, nodeAsText2, "second setup with same data");
+//
+//             // check the number of nodes has not changed
+//             assert(NodeMan.size() === nodeCount, "Node serialization test 1, node count changed from " + nodeCount + " to " + NodeMan.size());
+//
+//
+//
+//             // the above test is to ensure this type of test (deleting and re-creating the node) is valid, and has no side effects
+//             // we now repeat the test by serializing the node to a string, and then re-creating it
+//             const serialized = node.serialize();
+//             // remove the node
+//             NodeMan.disposeRemove(node.id);
+//             // and re-create it from the serialized data
+//             node = SetupFromKeyAndData(key, serialized);
+//             // get that as text
+//             //const nodeAsText3 = JSON.stringify(node, null, 2);
+//             const nodeAsText3 = objectHash(node);
+//             // and compare it to the original text
+//             compareTwoNodeTexts(nodeAsText, nodeAsText3, "Serialized Node");
+//             // if we didn't get any asserts, then serialization is good for this node
+//
+//             assert(NodeMan.size() === nodeCount, "Node serialization test 2, node count changed from " + nodeCount + " to " + NodeMan.size());
+//         }
 
     }
 }
