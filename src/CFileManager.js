@@ -541,17 +541,19 @@ export class CFileManager extends CManager {
             // is there a video? if so we add it directly, so, like terrain, it starts loading normally
             if (NodeMan.exists("video")) {
                 const videoNode = NodeMan.get("video")
-                const rehostFilename = videoNode.fileName;
-                const videoDroppedData = videoNode.Video.videoDroppedData;
+                if (videoNode.Video !== undefined) {
+                    const rehostFilename = videoNode.fileName;
+                    const videoDroppedData = videoNode.Video.videoDroppedData;
 
-                if (videoDroppedData !== undefined) {
-                    // do we also needs something similar for URLs?
+                    if (videoDroppedData !== undefined) {
+                        // do we also needs something similar for URLs?
 
-                    // // start rehosting
-                    rehostPromises.push(Rehoster.rehostFile(rehostFilename, videoDroppedData).then((staticURL) => {
-                        console.log("VIDEO REHOSTED AS PROMISED: " + staticURL)
-                        videoNode.staticURL = staticURL;
-                    }))
+                        // // start rehosting
+                        rehostPromises.push(Rehoster.rehostFile(rehostFilename, videoDroppedData).then((staticURL) => {
+                            console.log("VIDEO REHOSTED AS PROMISED: " + staticURL)
+                            videoNode.staticURL = staticURL;
+                        }))
+                    }
                 }
             }
         }
