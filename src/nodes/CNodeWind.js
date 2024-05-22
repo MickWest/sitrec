@@ -10,7 +10,7 @@ export class CNodeWind extends CNode {
     constructor(v, _guiMenu) {
         super(v);
 
-
+        this.canSerialize = true;
 
         this.setGUI(v, _guiMenu)
 
@@ -39,6 +39,26 @@ export class CNodeWind extends CNode {
         this.lock = v.lock;
 
         this.recalculate()
+    }
+
+    modSerialize() {
+        return {
+            from: this.from,
+            knots: this.knots,
+            name: this.name,
+            max: this.max,
+            lock: this.lock,
+        }
+    }
+
+    modDeserialize(v) {
+        this.from = v.from;
+        this.knots = v.knots;
+        this.name = v.name;
+        this.max = v.max;
+        this.lock = v.lock;
+        this.guiFrom.updateDisplay()
+        this.guiKnots.updateDisplay()
     }
 
     // hide and show will be called from a switch node

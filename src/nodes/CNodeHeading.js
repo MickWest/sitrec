@@ -8,6 +8,8 @@ export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {
         super(v);
 
+        this.canSerialize = true;
+
         // if no jetOrigin specificed, then we use the global origin
         // which is traditionally what was used for Gimbal and Gofast
         this.input("jetOrigin",true)
@@ -21,9 +23,22 @@ export class CNodeHeading extends CNode {
         this.name = v.name ?? ""
         this.arrowColor = v.arrowColor ?? "white"
 
-        this.gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
+        this.headingController = this.gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
 
         this.recalculate()
+    }
+
+    modSerialize() {
+        return {
+            heading: this.heading,
+            name: this.name,
+        }
+    }
+
+    modDeserialize(v) {
+        this.heading = v.heading;
+        this.name = v.name;
+        this.headingController.updateDisplay()
     }
 
     getValueFrame(f) {
