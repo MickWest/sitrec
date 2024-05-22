@@ -3,7 +3,7 @@ import {CNode} from "./CNode";
 import { Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject, V3} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
-import {NodeMan, Sit} from "../Globals";
+import {Globals, NodeMan, Sit} from "../Globals";
 import { RLLAToECEFV_Sphere, wgs84, EUSToLLA} from "../LLA-ECEF-ENU";
 import {Group} from "../../three.js/build/three.module";
 import {gui} from "../Globals";
@@ -324,6 +324,7 @@ export class CNodeTerrain extends CNode {
 
     loadMap(id, deferLoad) {
         if (this.maps[id].map == undefined) {
+            Globals.loadingTerrain = true;
             console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
             this.maps[id].map = new Map(this.maps[id].group, this.maps[id].source, this.position, {
                 nTiles: this.nTiles,
@@ -349,6 +350,7 @@ export class CNodeTerrain extends CNode {
                         }
                     })
 
+                    Globals.loadingTerrain = false;
 
                 },
                 deferLoad: deferLoad,

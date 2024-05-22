@@ -221,6 +221,7 @@ async function newSitch(situation, customSetup = false ) {
 
     cancelAnimationFrame(animate);
     await waitForParsingToComplete();
+    await waitForTerrainToLoad();
     disposeEverything();
     if (!customSetup) {
         // if it's not custom, then "situation" is a name of a default sitch
@@ -547,8 +548,8 @@ async function setupFunctions() {
         // if a globe scale is set, then use that
         // otherwise, if terrain is set, then use 0.9999 (to avoid z-fighting)
         // otherwise use 1.0, so we get a perfect match with collisions.
-        Sit.globe = addAlignedGlobe(Sit.globeScale ?? (Sit.terrain !== undefined ? 0.9999 : 1.0))
-        showHider(Sit.globe,"[G]lobe", true, "g")
+        par.globe = addAlignedGlobe(Sit.globeScale ?? (Sit.terrain !== undefined ? 0.9999 : 1.0))
+        showHider(par.globe,"[G]lobe", true, "g")
     }
 
     // if (Sit.nightSky) {
@@ -865,16 +866,16 @@ function disposeEverything() {
     // stop loading terrain
     imageQueueManager.dispose();
 
-    // dispose of the GUI, except for the permanent folders and items
-    gui.destroy(false);
-
     // The measurement UI is a group node that holds all the measurement arrows
     // it's created as needed, but will get destroyed with the scene
     // so we need to make sure it knows it's been destroyed
     removeMeasurementUI();
 
-    // delete all the nodes
+    // delete all the nodes (which should remove their GUI elements, but might not have implement that all. CNodeSwitch destroys)
     NodeMan.disposeAll();
+
+    // dispose of any remaining GUI, except for the permanent folders and items
+    gui.destroy(false);
 
     disposeDebugArrows();
     disposeDebugSpheres();
@@ -916,10 +917,12 @@ async function waitForParsingToComplete() {
         // Function to check the value of Globals.parsing
         function checkParsing() {
             if (Globals.parsing === 0) {
+                console.log("DONE: Globals.parsing = " + Globals.parsing);
                 resolve(); // Resolve the promise if Globals.parsing is 0
             } else {
                 // If not 0, wait a bit and then check again
                 setTimeout(checkParsing, 100); // Check every 100ms, adjust as needed
+                console.log("Still Checking, Globals.parsing = " + Globals.parsing)
             }
         }
 
@@ -928,3 +931,32 @@ async function waitForParsingToComplete() {
     });
     console.log("Parsing complete!");
 }
+
+/**
+ * Waits until all terrain images are loaded.
+ * same as above, maybe refactor at some point
+ * except this is a flag, and that is a counter
+ * but a truthy test works for both
+ */
+async function waitForTerrainToLoad() {
+    console.log("Waiting for terrain loading to complete... Globals.loadingTerrain = " + Globals.loadingTerrain);
+    // Use a Promise to wait
+    await new Promise((resolve, reject) => {
+        // Function to check the value of Globals.parsing
+        function checkloadingTerrain() {
+            if (!Globals.loadingTerrain) {
+                console.log("DONE: Globals.loadingTerrain = " + Globals.loadingTerrain)
+                resolve(); // Resolve the promise if Globals.parsing is 0 (or false)
+            } else {
+                // If not 0, wait a bit and then check again
+                setTimeout(checkloadingTerrain, 100); // Check every 100ms, adjust as needed
+                console.log("Still Checking, Globals.loadingTerrain = " + Globals.loadingTerrain)
+            }
+        }
+
+        // Start checking
+        checkloadingTerrain();
+    });
+    console.log("loadingTerrain complete!");
+}
+
