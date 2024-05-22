@@ -104,6 +104,8 @@ export class CNodeDateTime extends CNode {
 
         super (v)
 
+        this.canSerialize = true;
+
         this.refreshingUI = false;
 
         this.dateTimeFolder = gui.addFolder("Date/Time");
@@ -191,6 +193,23 @@ export class CNodeDateTime extends CNode {
         this.update(0);
 
     }
+
+    modSerialize() {
+        return {
+            startDateTime: this.getStartTimeString(),
+            timeZoneName: this.timeZoneName,
+            simSpeed: Sit.simSpeed
+        }
+    }
+
+    modDeserialize(v) {
+        this.populateStartTimeFromUTCString(v.startDateTime);
+        this.timeZoneName = v.timeZoneName;
+        Sit.simSpeed = v.simSpeed;
+        this.dateTimeFolder.updateDisplay();
+        this.update(0);
+    }
+
 
     get date() {
         assert(0, "CNodeDateTime - date is deprecated")
