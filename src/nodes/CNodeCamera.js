@@ -1,14 +1,16 @@
-import {Camera, PerspectiveCamera} from "../../three.js/build/three.module";
+import {Camera, PerspectiveCamera, Vector3} from "../../three.js/build/three.module";
 import {MV3} from "../threeExt";
-import {assert, f2m, m2f} from "../utils";
+import {assert, f2m, m2f, vdump} from "../utils";
 import {NodeMan} from "../Globals";
-import {ECEFToLLAVD_Sphere, EUSToECEF, LLAVToEUS} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAVToEUS} from "../LLA-ECEF-ENU";
 import {raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
 
 export class CNodeCamera extends CNode3D {
     constructor(v, camera = null) {
         super(v);
+
+        this.canSerialize = true;
 
         this.addInput("altAdjust", "altAdjust", true);
 
@@ -30,6 +32,33 @@ export class CNodeCamera extends CNode3D {
         this.resetCamera()
 
 
+    }
+
+    modSerialize() {
+    // calculate the current position and lookAt in LLA format
+        // dump a camera location to the console
+        const p = this.camera.position.clone()
+        const v = new Vector3();
+        v.setFromMatrixColumn(this.camera.matrixWorld,2);
+        v.multiplyScalar(-1000)
+        v.add(p)
+        const posLLA = EUSToLLA(this.camera.position)
+        const atLLA = EUSToLLA(v)
+
+        return {
+            startPosLLA: [posLLA.x, posLLA.y, posLLA.z],
+            lookAtLLA: [atLLA.x, atLLA.y, atLLA.z],
+            fov: this.camera.fov,
+        }
+    }
+
+    // cameras with controllers can overwrite this
+    // but it's useful for cameras like the main camera
+    modDeserialize(v) {
+        this.startPosLLA = v.startPosLLA;
+        this.lookAtLLA = v.lookAtLLA;
+        this.camera.fov = v.fov;
+        this.resetCamera()
     }
 
     // when a camera object is treated like a track

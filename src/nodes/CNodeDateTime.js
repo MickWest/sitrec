@@ -206,7 +206,7 @@ export class CNodeDateTime extends CNode {
         this.populateStartTimeFromUTCString(v.startDateTime);
         this.timeZoneName = v.timeZoneName;
         Sit.simSpeed = v.simSpeed;
-        this.dateTimeFolder.updateDisplay();
+        this.populate();
         this.update(0);
     }
 

@@ -17,6 +17,10 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         super(v);
 
+        v.desc = "*"+v.desc;
+
+        this.canSerialize = true;
+
         this.setGUI(v, _guiMenu)
 
         this.start = v.start ?? 0
@@ -39,6 +43,16 @@ export class CNodeGUIValue extends CNodeGUIConstant {
                 par.renderOne = true;
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
+    }
+
+    modSerialize() {
+        return {value: this.value}
+    }
+
+    modDeserialize(v) {
+        this.value = v.value
+        this.guiEntry.setValue(this.value)
+        this.recalculateCascade()
     }
 
     show() {

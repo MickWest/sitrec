@@ -133,6 +133,7 @@ export class CCustomManager {
                 for (let id in sitchData.mods) {
                     const node = NodeMan.get(id)
                     if (node.modDeserialize !== undefined) {
+                        console.log("Applying mod to node:" + id+ " with data:"+sitchData.mods[id]  )
                         node.modDeserialize(Sit.mods[id])
                     }
                 }

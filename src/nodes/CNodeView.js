@@ -34,6 +34,8 @@ class CNodeView extends CNode {
         assert(v.id !== undefined,"View Node Requires ID")
         super(v)
 
+        this.canSerialize = true;
+
         // if (isLocal) {
         //     // local debugging, make a (ref) copy of v for later checks
         //     this.v_for_debug = v;
@@ -141,6 +143,24 @@ class CNodeView extends CNode {
     //     }
     // }
 
+    modSerialize() {
+        return {
+            left: this.left,
+            top: this.top,
+            width: this.width,
+            height: this.height,
+            visible: this.visible
+        }
+    }
+
+    modDeserialize(v) {
+        this.left = v.left
+        this.top = v.top
+        this.width = v.width
+        this.height = v.height
+        this.visible = v.visible
+        this.updateWH()
+    }
 
     dispose() {
         console.log("Disposing CNodeView: "+this.id)
