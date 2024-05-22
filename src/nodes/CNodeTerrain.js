@@ -82,6 +82,7 @@ export class CNodeTerrainUI extends CNode {
 
 
     zoomToTrack(v) {
+        if (Globals.dontAutoZoom) return;
         const trackNode = NodeMan.get(v);
         const {minLat, maxLat, minLon, maxLon, minAlt, maxAlt} = trackNode.getLLAExtents();
         this.lat = (minLat + maxLat)/2;

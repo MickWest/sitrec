@@ -1,6 +1,6 @@
 // Support functions for the custom sitches
 
-import {FileManager, gui, NodeMan, Sit} from "./Globals";
+import {FileManager, Globals, gui, NodeMan, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
 import {assert} from "./utils";
@@ -114,7 +114,9 @@ export class CCustomManager {
                 loadingPromises.push(FileManager.loadAsset(Sit.loadedFiles[id], id).then(
                     (result) => {
                         console.log("Loaded " + id)
+                        Globals.dontAutoZoom = true;
                         DragDropHandler.handleParsedFile(id, FileManager.list[id].data)
+                        Globals.dontAutoZoom = false;
                     }
                 ))
             }

@@ -26,6 +26,8 @@ function updateSitFrames() {
         console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
         assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
         Sit.frames = Sit.videoFrames;
+        Sit.aFrame = 0;
+        Sit.bFrame = Sit.frames - 1;
     }
     NodeMan.updateSitFramesChanged();
     updateGUIFrames();
@@ -335,7 +337,7 @@ export class CVideoWebCodecData extends CVideoData {
                 this.frames++;
                 Sit.videoFrames = this.frames * this.videoSpeed;
                // Sit.aFrame = 0;
-                Sit.bFrame = Sit.videoFrames-1;
+               // Sit.bFrame = Sit.videoFrames-1;
 
                 // decoding is now deferred
                 //            decoder.decode(chunk);
