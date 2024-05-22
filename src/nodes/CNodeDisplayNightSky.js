@@ -1429,6 +1429,8 @@ void main() {
 
             // // more complex
             // // convert ellipsoidal to spherical ECEF
+            // see discussion: https://www.metabunk.org/threads/the-secret-of-skinwalker-ranch-s03e09-uap-disappearing-into-thin-air-satellite-going-behind-cloud-entering-earths-shadow.13469/post-316283
+
             // function ecefToLLA(x, y, z) {
             //     const a = 6378137.0; // semi-major axis
             //     const e = 0.081819190842622; // first eccentricity
