@@ -1,6 +1,6 @@
 // Support functions for the custom sitches
 
-import {FileManager, gui, NodeMan} from "./Globals";
+import {FileManager, gui, NodeMan, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
 import {assert} from "./utils";
@@ -22,19 +22,63 @@ export class CCustomManager {
 
     serialize() {
         console.log("Serializing custom sitch")
-        let out = {}
-        // iterate over all the nodes
-        // and add and serialization data to the out object
-        NodeMan.iterate((id, node) => {
-            if (node.serialize !== undefined && node.canSerialize) {
-                out[id] = node.serialize()
+
+        FileManager.rehostDynamicLinks().then(() => {
+
+
+
+
+            let out = {}
+
+            // merge in the current Sit object
+            // which might have some changes?
+
+            out = {...Sit}
+
+            // modify the terrain model directly, as we don't want to load terrain twice
+            if (out.TerrainModel !== undefined) {
+                const terrainModel = NodeMan.get("TerrainModel");
+                out.TerrainModel = {
+                    ...out.TerrainModel,
+                    lat: terrainModel.lat,
+                    lon: terrainModel.lon,
+                    zoom: terrainModel.zoom,
+                    nTiles: terrainModel.nTiles,
+                    tileSegments: terrainModel.tileSegments,
+                }
             }
+
+            // the files object is the rehosted files
+            // files will be reference in switches using their original file names
+            // we have rehosted them, so we need to create a new "files" object
+            // that uses the rehosted file names
+            // maybe special case for the video file ?
+            let files = {}
+            for (let id in FileManager.list) {
+                const file = FileManager.list[id]
+                files[id] = file.staticURL
+            }
+            out.loadedFiles = files;
+
+// the video file is special, it is not in the files object
+//             ......
+// we also need to modSialize the controllers, and the camera position controller
+//             and the camera itself. Maybe also the lookView and mainView and video windows?
+//                 and focus track etc - so WE NEED A PER-NODE flag set in SitCustom saying what needs modSerializing
+
+            // calculate the modifications to be applied to nodes AFTER the files are loaded
+            let mods = {}
+            NodeMan.iterate((id, node) => {
+                if (node.modSerialize !== undefined && node.canSerialize) {
+                    mods[node.id] = node.modSerialize()
+                }
+            })
+            out.mods = mods;
+
+            // convert to a string
+            let str = JSON.stringify(out, null, 2)
+            console.log(str)
         })
-
-        // convert to a string
-        let str = JSON.stringify(out, null, 2)
-        console.log(str)
-
     }
 
 

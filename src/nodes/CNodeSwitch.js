@@ -11,6 +11,10 @@ class CNodeSwitch extends CNode {
         this.onChangeCallback= v.onChange; // function to call when choice changes
 
         this.canSerialize = true;
+        this.desc = v.desc;
+
+//        console.log("CNodeSwitch:constructor "+this.id)
+//        console.log(JSON.stringify(v, null, 2))
 
         this.setGUI(v, _gui)
 
@@ -72,11 +76,30 @@ class CNodeSwitch extends CNode {
 
 
     serialize() {
+
+    }
+
+    // different approach to serialization
+    // we assume the object is going to be set up as before
+    // then we just serialize the changes we need to make to the object
+    modSerialize() {
         return {
-            ...super.serialize(),
-            ...this.serializeInputs(),
             choice: this.choice,
         }
+    }
+
+    // then when loading, we just deserialize the changes to an existing node
+    // in this case the switch options will be set up as a result of loading the files
+    // so we just need to set the choice (the selected option)
+    modDeserialize(v) {
+        this.selectOptionQuietly(v.choice);
+    }
+
+    dispose() {
+        if (this.controller !== undefined) {
+            this.controller.destroy()
+        }
+        super.dispose()
     }
 
     exportTrackCSV() {
