@@ -130,8 +130,16 @@ export class CSituation {
         }
         if(!isConsole)
             infoDiv.innerHTML = "Loading<br>"
-        for (const key in assets) {
+        for (let key in assets) {
             console.log("++++ Loading asset ", key, " from ", assets[key])
+
+            if (key === "KMLTarget")   {
+                console.warn("KMLTarget is deprecated, patching to TargetTrack")
+                // modify the object so that it uses TargetTrack instead of KMLTarget
+                assets["TargetTrack"] = assets[key]
+                delete assets[key]
+                key = "TargetTrack";
+            }
 
             // videoFile is a special case, we don't want to load it here
             if (key !== "videoFile") {
