@@ -11,6 +11,7 @@ import {Rehoster} from "./CRehoster";
 import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
+import {par} from "./par";
 
 
 export class CCustomManager {
@@ -84,6 +85,20 @@ export class CCustomManager {
             })
             out.mods = mods;
 
+            // now the "par" values, which are deprecated, but still used in some places
+            // so we need to serialize some of them
+            const parNeeded = [
+                "frame",
+                "paused",
+                "mainFOV",
+            ]
+            let pars = {}
+            for (let key of parNeeded) {
+                pars[key] = par[key]
+            }
+            out.pars = pars;
+
+
             // convert to a string
             let str = JSON.stringify(out, null, 2)
 
@@ -136,6 +151,13 @@ export class CCustomManager {
                         console.log("Applying mod to node:" + id+ " with data:"+sitchData.mods[id]  )
                         node.modDeserialize(Sit.mods[id])
                     }
+                }
+            }
+
+            // apply the pars
+            if (sitchData.pars) {
+                for (let key in sitchData.pars) {
+                    par[key] = sitchData.pars[key]
                 }
             }
 
