@@ -28,11 +28,12 @@ if ($user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
     exit("Internal Server Error");
 }
 
-
+$isLocal = false;
 
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
     // for local testing
     $storagePath = "http://localhost/sitrec-upload/";
+    $isLocal = true;
 } else {
     // This code is specific to the metabunk.org implementation.
     // if you want to use this code on your own site, you'll need to modify it.
@@ -87,7 +88,7 @@ $newFileName = $baseName . '-' . $md5Checksum . '.' . $extension;
 // putObject was giving odd timeout errors.
 $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
 
-if (file_exists($s3_config_path)) {
+if (!$isLocal && file_exists($s3_config_path)) {
     require 'vendor/autoload.php';
     require $s3_config_path;
 
