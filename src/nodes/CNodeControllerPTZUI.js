@@ -7,6 +7,8 @@ import {gui, guiTweaks, Sit} from "../Globals";
 import {CNodeController} from "./CNodeController";
 import {isKeyHeld} from "../KeyBoardHandler";
 
+const pszUIColor = "#C0C0FF";
+
 export class CNodeControllerPTZUI extends CNodeController {
     constructor(v) {
         super(v);
@@ -19,13 +21,13 @@ export class CNodeControllerPTZUI extends CNodeController {
         if (v.showGUI) {
             const guiPTZ = v.gui ?? gui;
 
-            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v))
-            guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v))
+            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
+            guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             if (this.fov !== undefined) {
-                guiPTZ.add(this, "fov", 0.1, 120, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh(v))
+                guiPTZ.add(this, "fov", 0.1, 120, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             }
             if (this.roll !== undefined ) {
-                guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh(v))
+                guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             }
         }
        // this.refresh()

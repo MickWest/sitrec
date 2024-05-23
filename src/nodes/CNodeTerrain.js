@@ -14,6 +14,8 @@ import {gui} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 
+const terrainGUIColor = "#c0ffc0";
+
 let terrainGUI;
 let madeMapTypeMenu = false;
 let local = {}
@@ -22,11 +24,11 @@ let mapTypeMenu;
 
 function makeMapTypeMenu() {
     if (terrainGUI === undefined) {
-        terrainGUI = gui.addFolder("Terrain")
+        terrainGUI = gui.addFolder("Terrain").setLabelColor(terrainGUIColor)
     }
     if (mapTypeMenu === undefined) {
         local.mapType = "mapbox";
-        mapTypeMenu = terrainGUI.add(local, "mapType", mapTypes)
+        mapTypeMenu = terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor)
     }
 }
 
@@ -60,19 +62,19 @@ export class CNodeTerrainUI extends CNode {
 
         this.latController = terrainGUI.add(this, "lat", -85, 85,.001).onChange( v => {
             this.flagForRecalculation()
-        }).onFinishChange( v => {this.startLoading = true})
+        }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
         this.lonController = terrainGUI.add(this, "lon", -180, 180,.001).onChange( v => {
             this.flagForRecalculation()
-        }).onFinishChange( v => {this.startLoading = true})
+        }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
         this.zoomController = terrainGUI.add(this, "zoom", 0, 15,1).onChange( v => {
             this.flagForRecalculation()
-        }).onFinishChange( v => {this.startLoading = true})
+        }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
         this.nTilesController = terrainGUI.add(this, "nTiles", 1, 8, 1).onChange( v => {
             this.flagForRecalculation()
-        }).onFinishChange( v => {this.startLoading = true})
+        }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
 
         // adds a button to refresh the terrain
-        terrainGUI.add(this, "doRefresh").name("Refresh");
+        terrainGUI.add(this, "doRefresh").name("Refresh").setLabelColor(terrainGUIColor);
 
         this.zoomToTrackSwitchObject = new CNodeSwitch({id: "zoomToTrack", kind: "Switch",
             inputs: {"-":"null"}, desc: "Zoom to track"}, terrainGUI).onChange( track => {this.zoomToTrack(track)})

@@ -1,5 +1,5 @@
 // Helper functions for lil-gui
-
+import {GUI, Controller} from "./js/lil-gui.esm";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
@@ -70,3 +70,30 @@ export function preventDoubleClicks(gui) {
         e.stopPropagation();
     });
 }
+
+// Extend the lil-gui Controller prototype
+Controller.prototype.setLabelColor = function(color) {
+    // Find the label element within the controller's DOM
+    const label = this.$name;
+    if (label) {
+        // Add a general class to the controller
+        this.domElement.classList.add('custom-controller-label');
+
+        // Create a unique class name for this controller
+        const uniqueClass = `controller-label-${Math.random().toString(36).substr(2, 9)}`;
+
+        // Add the unique class to the controller's DOM element
+        this.domElement.classList.add(uniqueClass);
+
+        // Add a style element to the head to apply the custom color
+        const style = document.createElement('style');
+        style.innerHTML = `
+                .${uniqueClass} .name {
+                    color: ${color} !important;
+                }
+            `;
+        document.head.appendChild(style);
+    }
+
+    return this; // Return the controller to allow method chaining
+};

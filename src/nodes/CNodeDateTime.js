@@ -228,7 +228,9 @@ export class CNodeDateTime extends CNode {
 
         this.syncSwitch = this.dateTimeFolder.add(this, "syncMethod", ["-","Start Time", "Now Time"]).name("Sync Time to")
             .onChange( v => {
-                if (v === "Start Time") {
+                if (v === "-") {
+                    // do nothing
+                } else if (v === "Start Time") {
                     this.resetStartTime(); }
                 else if (v === "Now Time") {
                     this.resetNowTimeToCurrent();

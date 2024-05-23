@@ -17,7 +17,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         super(v);
 
-        v.desc = "*"+v.desc;
+        //v.desc = "*"+v.desc;
 
         this.canSerialize = true;
 
@@ -26,6 +26,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         this.start = v.start ?? 0
         this.end = v.end ?? v.value * 2
         this.step = v.step ?? 0
+
 
         this.onChange = v.onChange;
 
@@ -43,6 +44,10 @@ export class CNodeGUIValue extends CNodeGUIConstant {
                 par.renderOne = true;
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
+
+        if (v.color !== undefined) {
+            this.guiEntry.setLabelColor(v.color)
+        }
     }
 
     modSerialize() {

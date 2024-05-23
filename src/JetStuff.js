@@ -741,7 +741,8 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             start: Sit.startDistanceMin,
             end: Sit.startDistanceMax,
             step: 0.01,
-            desc: "Tgt Start Dist " + Units.bigUnitsAbbrev
+            desc: "Tgt Start Dist " + Units.bigUnitsAbbrev,
+            color: "#FFC0C0"
         }, gui))
     }
 
