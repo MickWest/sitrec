@@ -432,7 +432,16 @@ export function UpdateHUD() {
 // so are assuming that podRoll and jetRoll are correc
 export function ChangedPR() {
 
-    if (Ball == undefined) return; // async bug patch nasty
+    if (Ball == undefined) {
+        // waiting for the model to load, so set a flag saying we need to do this again
+        // this is a patch, as we really should seperate the the rendered model from the calculations
+        // of the gimbal orientation (plane->EOSU->Ball)
+        // this is legacy code
+        par.needsGimbalBallPatch = true;
+        return;
+    }
+
+    par.needsGimbalBallPatch = false;
 
     // calculate the global roll (total roll needed)
     // this is used elsewhere

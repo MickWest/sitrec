@@ -62,7 +62,9 @@ export function updateFrame() {
         const oldEl = par.el;
         par.az = Frame2Az(par.frame)
         par.el = Frame2El(par.frame)
-        if (par.az != oldAz || par.el != oldEl)
+        if (par.az != oldAz || par.el != oldEl || par.needsGimbalBallPatch) {
             UpdatePRFromEA()
+        }
+
     }
 }
