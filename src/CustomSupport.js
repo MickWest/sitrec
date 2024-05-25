@@ -1,6 +1,6 @@
-// Support functions for the custom sitches
+// Support functions for the custom sitches and mods
 
-import {FileManager, Globals, gui, NodeMan, Sit} from "./Globals";
+import {FileManager, Globals, gui, NodeMan, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
 import {assert} from "./utils";
@@ -130,6 +130,10 @@ export class CCustomManager {
             }
             out.pars = pars;
 
+            // MORE STUFF HERE.......
+
+            out.modUnits = Units.modSerialize()
+
 
             // convert to a string
             let str = JSON.stringify(out, null, 2)
@@ -142,6 +146,8 @@ export class CCustomManager {
                 name = "Mod_" + Sit.name + ".js"
                 paramName = "mod"
             }
+
+
             // and rehost it, showing a link
             Rehoster.rehostFile("Custom.js", str).then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
@@ -197,6 +203,11 @@ export class CCustomManager {
                 for (let key in sitchData.pars) {
                     par[key] = sitchData.pars[key]
                 }
+            }
+
+            // apply the units, etc
+            if (sitchData.modUnits) {
+                Units.modDeserialize(sitchData.modUnits)
             }
 
             // recalculate everything after the mods

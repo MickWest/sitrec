@@ -17,6 +17,14 @@ export class CUnits {
             guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
     }
 
+    modSerialize() {
+        return {units: this.units};
+    }
+
+    modDeserialize(v) {
+        this.changeUnits(v.units);
+    }
+
     changeUnits(_units, updateGUI=true) {
         console.log("CUnits: changeUnits: " + _units);
         this.units = _units.toLowerCase();
