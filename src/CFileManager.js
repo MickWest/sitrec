@@ -45,12 +45,6 @@ export class CFileManager extends CManager {
                 let localfiles = JSON.parse(data) // will give an array of local files
             })
 
-            // if (Globals.userID > 0)
-            //     this.permaButton = gui.add(this, "exportSitch").name("Export Custom Sitch").perm()
-            // else {
-            //     this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
-            // }
-
         }
     }
 
@@ -58,10 +52,10 @@ export class CFileManager extends CManager {
         //
     }
 
-    loginAttempt(callback) {
+    loginAttempt(callback, button = this.permaButton, rename = "Permalink") {
         asyncCheckLogin().then(() => {
             if (Globals.userID > 0) {
-                this.permaButton.name("Permalink")
+                button.name(rename)
                 if (callback !== undefined)
                     callback();
                 return ;
@@ -77,7 +71,7 @@ export class CFileManager extends CManager {
                 asyncCheckLogin().then(() => {
                     if (Globals.userID > 0) {
                         // just change the button text
-                        this.permaButton.name("Permalink")
+                        button.name(rename)
                         //         return this.makeNightSkyURL();
                     }
                 });

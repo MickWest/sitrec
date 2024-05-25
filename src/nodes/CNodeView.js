@@ -8,8 +8,9 @@ import {CameraMapControls} from "../js/CameraControls";
 import {assert} from '../utils.js'
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
-import {NodeMan, Sit} from "../Globals";
+import {guiShowHide, guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {isLocal} from "../../config";
+import {par} from "../par";
 
 const defaultCViewParams = {
     visible: true,
@@ -24,7 +25,7 @@ const defaultCViewParams = {
     draggable: false,
     resizable: false,
     doubleClickResizes: false,
-    doubleClickFullScreen: false,
+    doubleClickFullScreen: true,
 
 }
 
@@ -61,7 +62,7 @@ class CNodeView extends CNode {
         this.draggable = v.draggable;
         this.resizable = v.resizable;
         this.doubleClickResizes = v.doubleClickResizes;
-        this.doubleClickFullScreen = v.doubleClickFullScreen;
+        if (v.doubleClickFullScreen !== undefined) this.doubleClickFullScreen = v.doubleClickFullScreen;
         this.shiftDrag = v.shiftDrag;
         this.freeAspect = v.freeAspect;
         //
@@ -128,6 +129,14 @@ class CNodeView extends CNode {
 
         assert(!ViewMan.exists(v.id),"Adding "+v.id+" to ViewMan twice")
         ViewMan.add(v.id,this)
+
+        if (!this.overlayView) {
+            // menu entry to show/hide this view
+            guiShowHideViews.add(this, 'visible').listen().name(this.id).onChange(value => {
+                this.setVisible(value);
+            })
+        }
+
     }
 
     // debug_v() {
@@ -143,23 +152,31 @@ class CNodeView extends CNode {
     //     }
     // }
 
-    modSerialize() {
-        return {
-            left: this.left,
-            top: this.top,
-            width: this.width,
-            height: this.height,
-            visible: this.visible
+    toSerial = ["left","top","width","height","visible","preFullScreenVisible","doubled","preDoubledLeft","preDoubledTop","preDoubledWidth","preDoubledHeight"];
+
+    simpleSerialize() {
+        let result = {}
+        for (let key of this.toSerial) {
+            result[key] = this[key]
+        }
+        return result;
+    }
+
+    simpleDeserialize(v) {
+        for (let key of this.toSerial) {
+            this[key] = v[key]
         }
     }
 
+    modSerialize() {
+        return this.simpleSerialize();
+    }
+
+    // need to also handle full screen state....
     modDeserialize(v) {
-        this.left = v.left
-        this.top = v.top
-        this.width = v.width
-        this.height = v.height
-        this.visible = v.visible
-        this.updateWH()
+        this.simpleDeserialize(v)
+        this.updateWH();
+        this.setVisible(v.visible)
     }
 
     dispose() {
@@ -321,7 +338,9 @@ class CNodeView extends CNode {
     }
 
     doubleClick() {
-        if (this.doubleClickResizes || this.doubleClickFullScreen) {
+        if (this.visible && (this.doubleClickResizes || this.doubleClickFullScreen)) {
+            console.log("")
+            console.log("DOUBLE CLICK on id = "+this.id);
             if (!this.doubled) {
                 this.doubled = true;
                 this.preDoubledLeft = this.left;
@@ -337,20 +356,22 @@ class CNodeView extends CNode {
                     if (this.height > 0) {
                         this.height *= 2;
                     }
+                    console.log("Doubling: "+this.id+" to "+this.width+","+this.height)
                 } else {
-                    // if (this.width > 0) {
-                    //     this.width = 1;
-                    // }
-                    // if (this.height > 0) {
-                    //     this.height = 1;
-                    // }
+                    if (this.width > 0) {
+                        this.width = 1;
+                    }
+                    if (this.height > 0) {
+                        this.height = 1;
+                    }
 
                     this.left = 0;
                     this.top = 0;
-                    this.width = 1;
-                    this.height = 1;
-
+                    // this.width = 1;
+                    // this.height = 1;
+                    console.log("Full Screen: "+this.id+" to "+this.width+","+this.height)
                 }
+
 
                 if (this.width > 1) this.width=1;
                 if (this.height > 1) this.height=1;
@@ -363,6 +384,7 @@ class CNodeView extends CNode {
                     ViewMan.iterate((id,v) => {
                         if (v !== this && v.overlayView !== this) {
                             v.preFullScreenVisible = v.visible;
+                            console.log("Hiding: "+v.id+" for full screen")
                             v.setVisible(false);
                         }
                     })
@@ -375,10 +397,12 @@ class CNodeView extends CNode {
                 this.top = this.preDoubledTop
                 if (this.width > 0) this.width = this.preDoubledWidth;
                 if (this.height > 0) this.height = this.preDoubledHeight;
+                console.log("Restoring: "+this.id+" to "+this.width+","+this.height);
                 this.updateWH()
                 if (this.doubleClickFullScreen) {
                     ViewMan.iterate((id, v) => {
                         if (v !== this && v.overlayView !== this) {
+                            console.log("Restoring visible: "+v.id+" to "+v.preFullScreenVisible)
                             v.setVisible(v.preFullScreenVisible);
                         }
                     })
@@ -394,6 +418,9 @@ class CNodeView extends CNode {
                 this.div.style.display = 'block'
             else
                 this.div.style.display = 'none'
+        if (this.overlayView) {
+            this.overlayView.setVisible(visible);
+        }
     }
 
     show() {

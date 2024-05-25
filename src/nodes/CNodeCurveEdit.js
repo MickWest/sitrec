@@ -65,6 +65,9 @@ export class CNodeCurveEditor extends CNode {
 
         v.id = v.id + "View"; // they can't share the same id, so add "view" to it
 
+        this.canSerialize = true;
+
+
         // bit of a patch here, FLIR1, etc use graphs  set to the number of frames in the sitch
         // but that means we can't textualize it, so just pass a string and check here
         if (v.editorConfig.maxX === "Sit.frames")
@@ -84,6 +87,17 @@ export class CNodeCurveEditor extends CNode {
             })
         }
 
+    }
+
+    modSerialize() {
+        return {
+            editorConfig: this.editor.getProfile(),
+        }
+    }
+
+    modDeserialize(v) {
+        this.editor.setPointsFromFlatArray(v.editorConfig)
+        this.editorView.recalculate()
     }
 
 

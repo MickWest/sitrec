@@ -108,11 +108,13 @@ export function onDocumentDoubleClick(event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
 
+    let done=false;
     ViewMan.iterate((key, view) => {
-        if (view.visible) {
-            if (mouseInView(view, mouseX, mouseY)) {
+        if (!done && view.visible && !view.overlayView) {
+            if (mouseInViewOnly(view, mouseX, mouseY)) {
                 //  console.log("Dbl " + key)
                 view.doubleClick();
+                done = true;
             } else {
                 //  console.log("NOT " + key)
             }

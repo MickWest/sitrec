@@ -17,16 +17,38 @@ import {par} from "./par";
 export class CCustomManager {
     constructor() {
 
+
     }
 
 
     setup() {
+
+        if (Sit.canMod)
+            this.buttonText = "Export Sitch Mod"
+        else
+            this.buttonText = "Export Custom Sitch"
+
+
         // add a lil-gui button linked ot the serialize function
-        FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
+        //FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
+
+        if (Globals.userID > 0)
+            this.serializeButton = FileManager.guiFolder.add(this, "serialize").name(this.buttonText)
+        else
+            this.serializeButton = FileManager.guiFolder.add(this, "loginAttempt").name("Export Disabled (click to log in)");
+
     }
+
+    loginAttempt() {
+        FileManager.loginAttempt(this.serialize, this.serializeButton, this.buttonText);
+    };
 
     serialize() {
         console.log("Serializing custom sitch")
+
+        assert (Sit.canMod || Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be true to serialize a sitch")
+        assert (!Sit.canMod || !Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be false to serialize a sitch")
+
 
         FileManager.rehostDynamicLinks(true).then(() => {
 
@@ -35,46 +57,56 @@ export class CCustomManager {
             // merge in the current Sit object
             // which might have some changes?
 
-            out = {...Sit}
+            if (Sit.canMod) {
+                // for a modded sitch, we just need to store the name of the sitch we are modding
+                // TODO: are there some things in the Sit object that we need to store?????
+                out = {modding: Sit.name }
+            }
+            else
+            {
+                // but for a custom sitch, we need to store the whole Sit object (which automatically stores changes)
+                out = {...Sit}
+            }
 
-            // if there's a dropped video url
-            const videoNode = NodeMan.get("video")
-            if (videoNode !== undefined) {
-                if (videoNode.staticURL) {
-                    out.videoFile = videoNode.staticURL;
+            // the custom sitch is a special case
+            // and allows dropped videos and other files
+            // (we might want to allow this for modded sitches too, later)
+            if (Sit.isCustom) {
+                // if there's a dropped video url
+                if (NodeMan.exists("video")) {
+                    const videoNode = NodeMan.get("video")
+                    if (videoNode.staticURL) {
+                        out.videoFile = videoNode.staticURL;
+                    }
                 }
-            }
 
 
-            // modify the terrain model directly, as we don't want to load terrain twice
-            if (out.TerrainModel !== undefined) {
-                const terrainModel = NodeMan.get("TerrainModel");
-                out.TerrainModel = {
-                    ...out.TerrainModel,
-                    lat: terrainModel.lat,
-                    lon: terrainModel.lon,
-                    zoom: terrainModel.zoom,
-                    nTiles: terrainModel.nTiles,
-                    tileSegments: terrainModel.tileSegments,
+                // modify the terrain model directly, as we don't want to load terrain twice
+                // For a modded sitch this has probably not changed
+                if (out.TerrainModel !== undefined) {
+                    const terrainModel = NodeMan.get("TerrainModel");
+                    out.TerrainModel = {
+                        ...out.TerrainModel,
+                        lat: terrainModel.lat,
+                        lon: terrainModel.lon,
+                        zoom: terrainModel.zoom,
+                        nTiles: terrainModel.nTiles,
+                        tileSegments: terrainModel.tileSegments,
+                    }
                 }
+
+                // the files object is the rehosted files
+                // files will be reference in switches using their original file names
+                // we have rehosted them, so we need to create a new "files" object
+                // that uses the rehosted file names
+                // maybe special case for the video file ?
+                let files = {}
+                for (let id in FileManager.list) {
+                    const file = FileManager.list[id]
+                    files[id] = file.staticURL
+                }
+                out.loadedFiles = files;
             }
-
-            // the files object is the rehosted files
-            // files will be reference in switches using their original file names
-            // we have rehosted them, so we need to create a new "files" object
-            // that uses the rehosted file names
-            // maybe special case for the video file ?
-            let files = {}
-            for (let id in FileManager.list) {
-                const file = FileManager.list[id]
-                files[id] = file.staticURL
-            }
-            out.loadedFiles = files;
-
-
-// we also need to modSialize the controllers, and the camera position controller
-//             and the camera itself. Maybe also the lookView and mainView and video windows?
-//                 and focus track etc - so WE NEED A PER-NODE flag set in SitCustom saying what needs modSerializing
 
             // calculate the modifications to be applied to nodes AFTER the files are loaded
             let mods = {}
@@ -104,12 +136,18 @@ export class CCustomManager {
 
             console.log(str)
 
+            let name = "Custom.js"
+            let paramName = "custom"
+            if (Sit.canMod) {
+                name = "Mod_" + Sit.name + ".js"
+                paramName = "mod"
+            }
             // and rehost it, showing a link
             Rehoster.rehostFile("Custom.js", str).then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
 
                 // and make a URL that points to the new sitch
-                let customLink = SITREC_ROOT + "?custom=" + staticURL;
+                let customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
 
                 createCustomModalWithCopy(customLink)();
             })
@@ -166,9 +204,10 @@ export class CCustomManager {
             // like the CSwitches turning off if they are not used
             // which they don't know immediately
             NodeMan.recalculateAllRootFirst()
-
+            par.renderOne = true;
 
         })
+
 
     }
 

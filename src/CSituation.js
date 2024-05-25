@@ -18,6 +18,10 @@ const situationDefaults = {
     name: "gimbal",
     isTextable: false,
 
+    // most everything should be moddable
+    canMod: true,                  // true if we can made a modded version of this sitch
+
+
     fps: 30,
     frames:1031,
     aFrame:0,

@@ -2,6 +2,7 @@
 import {assert} from "../utils";
 import {CNodeConstant} from "./CNode";
 import {par} from "../par";
+import {isLocal} from "../../config";
 
 
 export class CNodeGUIConstant extends CNodeConstant {
@@ -17,7 +18,8 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         super(v);
 
-        //v.desc = "*"+v.desc;
+        if (isLocal)
+            v.desc = "*"+v.desc;
 
         this.canSerialize = true;
 

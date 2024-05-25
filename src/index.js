@@ -114,6 +114,36 @@ if (urlParams.get("custom")) {
 
 
     });
+} else if (urlParams.get("mod")) {
+    // a mod has a "modding" parameter which is the name of a legacy sitch
+    // so we get the object for that sitch and then add the mod
+    // removing the "modding" parameter
+    const modSitch = urlParams.get("mod")
+    // customSitch is the URL of a sitch definition file
+    // fetch it, and then use that as the sitch
+    await fetch(modSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
+        console.log("Mod sitch = "+modSitch)
+        console.log("Result = "+data)
+
+        const modObject = textSitchToObject(data);
+      //  let sitchObject = selectableSitches[modObject.modding]
+
+
+        let sitchObject = SitchMan.findFirstData(s => {return s.data.name === modObject.modding;})
+
+        assert(sitchObject !== undefined, "Modding sitch not found: "+modObject.modding)
+
+        // merge the two objects into a new one
+        sitchObject = {...sitchObject, ...modObject}
+
+        // remove the modding parameter to be tidy
+        delete sitchObject.modding
+
+        // and that's it
+        setSit(new CSituation(sitchObject))
+
+    });
+
 } else {
     selectInitialSitch();
 }
@@ -344,10 +374,11 @@ async function initializeOnce() {
     preventDoubleClicks(_gui);
 
     var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
+    var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
     var _guiTweaks = _gui.addFolder('Tweaks').close().perm();
 
 
-    setupGUIGlobals(_gui,_guiShowHide,_guiTweaks)
+    setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews)
     setUnits(new CUnits("Nautical"));
     setFileManager(new CFileManager())
 
@@ -512,7 +543,7 @@ async function setupFunctions() {
     }
 
 
-    if (Sit.isCustom) {
+    if (Sit.isCustom || Sit.canMod) {
         CustomManager.setup()
     }
 
@@ -637,10 +668,20 @@ function renderMain() {
 
     DragDropHandler.checkDropQueue();
 
-    if (par.paused && !par.renderOne  && !par.noLogic) return;
+    if (par.paused && !par.renderOne && !par.noLogic) return;
+
+//    console.log(par.renderOne)
 
     // par.renderOne is a flag set whenever something is done that forces an update.
-    par.renderOne = false;
+    //par.renderOne = false;
+    if (par.renderOne === true) {
+        par.renderOne = 1;
+    }
+    // allow it to be a number if we want to force more than one frame render
+    if (par.renderOne > 0) {
+//        console.log("Render One = "+par.renderOne)
+        par.renderOne--;
+    }
 
     gui.updateListeners();
 
@@ -684,6 +725,12 @@ function renderMain() {
 
     // render each viewport
     ViewMan.iterate((key, view) => {
+
+        // if this is an overlay view, then inherit the "visible" flag from the parent view (this this view overlays)
+        if (view.overlayView) {
+            view.setVisible(view.overlayView.visible);
+        }
+
         if (view.visible) {
             view.setFromDiv(view.div)
             view.updateWH()

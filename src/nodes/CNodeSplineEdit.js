@@ -13,6 +13,7 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
         this.frames = v.frames ?? Sit.frames
         assert(this.frames >0, "CNodeSplineEditor has frames=0")
 
+        this.canSerialize = true;
 
         assert(v.view !== undefined, "CNodeSplineEditor needs a view");
         const view = NodeMan.get(v.view) // convert id to node, if needed
@@ -62,6 +63,18 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
         this.recalculate()
         this.splineEditor.updatePointEditorGraphics()
     }
+
+    modSerialize() {
+        return {
+            initialPoints: this.splineEditor.points,
+        }
+    }
+
+    modDeserialize(v) {
+        this.splineEditor.load(v.initialPoints)
+    }
+
+
 
     exportSpline() {
         this.splineEditor.exportSpline()
