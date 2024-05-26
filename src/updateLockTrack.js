@@ -15,7 +15,7 @@ export function updateLockTrack(view, f) {
         // get the current position and heading from the track
         const lockPos = lockTrack.p(f);
         const lockHeading = trackHeading(lockTrack, f)
-        if (view.lastLockPos !== null) {
+        if (view.lastLockPos !== null && view.lastLockPos !== undefined) {
             const mainCam = view.camera;
             // TODO: this is a about the Y axis, should it not be local up?
             // TODO: that would require that trackHeading() use the same up vector
