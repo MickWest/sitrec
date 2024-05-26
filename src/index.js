@@ -304,6 +304,7 @@ async function initializeOnce() {
     new CNodeConstant({id: "nodeB", value: 17})
 
     const test2 = new CNodeMath({
+        id:"test2",  // test nodes MUST have an ID
         math: `X = $nodeA;
                 // comment line
                Y = X + $nodeB + 100; // something
@@ -490,6 +491,9 @@ function legacySetup() {
 async function setupFunctions() {
     resetPar();
 
+    Globals.showMeasurements = true;
+
+
 // Parse the URL parameters, if any
 // setting up stuff like the local coordinate system
 // this will override things like Sit.lat and Sit.lon
@@ -600,6 +604,8 @@ async function setupFunctions() {
             Sit.parseURLDataAfterSetup(urlData)
         }
     }
+
+
 
 // now everything that is normally done is done, we can do any custom stuff that's included
 // i.e. load files, apply mods, etc.

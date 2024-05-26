@@ -19,21 +19,32 @@ let measureArrowGroupNode = null;
 function setupMeasurementUI() {
     if (measurementUIDdone) return;
     measurementUIDdone = true;
-    Globals.showMeasurements = true;
 
     // We create a group node to hold all the measurement arrows
     measureArrowGroupNode = new CNode3DGroup({id: "MeasurementsGroupNode"});
     measureArrowGroupNode.isMeasurement = true
 
-    guiShowHide.add(Globals, "showMeasurements").name("Measurements").onChange( (value) => {
+
+    console.warn("%%%%%%% setupMeasurementUI: Globals.showMeasurements = " + Globals.showMeasurements)
+
+    function refreshMeasurementVisibility() {
         NodeMan.iterate((key, node) => {
             if (node.isMeasurement) {
-                console.log ("Setting visibility of " + key + " to " + value)
-                node.group.visible = value;
+                console.log ("Setting visibility of " + key + " to " + Globals.showMeasurements)
+                node.group.visible = Globals.showMeasurements;
             }
         })
+    }
+
+    refreshMeasurementVisibility();
+
+    guiShowHide.add(Globals, "showMeasurements").name("Measurements").listen().onChange( (value) => {
+        console.warn("%%%%%%% showMeasurements changed to " + value)
+        refreshMeasurementVisibility();
         par.renderOne = true;
     })
+
+
 }
 
 export function removeMeasurementUI() {

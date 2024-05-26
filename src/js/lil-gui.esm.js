@@ -2442,10 +2442,12 @@ class GUI {
                 const curValue = controller.save();
 
                 if (curValue !== controller._listenPrevValue) {
+                    controller._listenPrevValue = curValue;
                     controller.updateDisplay();
+                 //   controller._callOnChange();
                 }
 
-                controller._listenPrevValue = curValue;
+
             }
         }
     }

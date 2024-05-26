@@ -172,9 +172,12 @@ export class CCustomManager {
                 "jetOffset",
                 "TAS",
                 "integrate",
-
-
             ]
+
+            const globalsNeeded = [
+                "showMeasurements"
+            ]
+
             let pars = {}
             for (let key of parNeeded) {
                 if (par[key] !== undefined) {
@@ -198,12 +201,16 @@ export class CCustomManager {
             }
 
             traverse(GlobalScene);
-
-
-
-
-
             out.pars = pars;
+
+            let globals = {}
+            for (let key of globalsNeeded) {
+                if (Globals[key] !== undefined) {
+                    globals[key] = Globals[key]
+                }
+            }
+            out.globals = globals;
+
 
             // MORE STUFF HERE.......
 
@@ -277,6 +284,14 @@ export class CCustomManager {
             if (sitchData.pars) {
                 for (let key in sitchData.pars) {
                     par[key] = sitchData.pars[key]
+                }
+            }
+
+            // and the globals
+            if (sitchData.globals) {
+                for (let key in sitchData.globals) {
+                    console.warn("Applying global "+key+" with value "+sitchData.globals[key])
+                    Globals[key] = sitchData.globals[key]
                 }
             }
 

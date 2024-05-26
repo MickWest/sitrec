@@ -14,6 +14,8 @@ export class CNodeFactory extends CManager{
 
         this.nodeTypes = {}
 
+        this.UniqueNodeNumber = 0;
+
         console.log("Instantiating CNodeManager")
     }
 
@@ -234,6 +236,10 @@ export class CNodeFactory extends CManager{
     disposeAll() {
         console.log("Disposing all nodes")
         super.disposeAll();
+        // a clean slate so we reset the UniqueNodeNumber
+        // this is needed for modding, as the node names must be consistent.
+        // still issues if the legacy sitch changes the number or order of nodes....
+        this.UniqueNodeNumber = 0;
     }
 
     // if Sit.frames changes, we need to update and recalculate all nodes that use it

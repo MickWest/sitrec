@@ -23,7 +23,6 @@ import {V3} from "../threeExt";
 
 
 
-var UniqueNodeNumber = 0;
 var debugNodeNumber = 0;
 
 
@@ -63,7 +62,8 @@ class CNode {
             this.id = v.id
         } else {
             // if no node id is given, then make a unique one
-            this.id = this.constructor.name + UniqueNodeNumber++;
+            this.id = this.constructor.name + NodeMan.UniqueNodeNumber++;
+            console.log("Node with unique ID: " + this.id + " created, class = " + this.constructor.name);
         }
 
     //    this.debugNodeNumber = debugNodeNumber++;
