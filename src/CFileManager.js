@@ -4,7 +4,7 @@ import {
     cleanCSVText,
     getFileExtension,
     isHttpOrHttps, stringToArrayBuffer,
-    versionString
+    versionString, writeToClipboard
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
@@ -18,6 +18,7 @@ import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
 // when running as a console app jQuery's $ is not available, so load just the csv plugin separately
 import csv from "./js/jquery.csv.js";
 import {asyncCheckLogin} from "./login";
+import {par} from "./par";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -52,10 +53,10 @@ export class CFileManager extends CManager {
         //
     }
 
-    loginAttempt(callback, button = this.permaButton, rename = "Permalink") {
+    loginAttempt(callback, button = this.permaButton, rename = "Permalink", color="#FFFFFF") {
         asyncCheckLogin().then(() => {
             if (Globals.userID > 0) {
-                button.name(rename)
+                button.name(rename).setLabelColor(color)
                 if (callback !== undefined)
                     callback();
                 return ;
@@ -71,7 +72,7 @@ export class CFileManager extends CManager {
                 asyncCheckLogin().then(() => {
                     if (Globals.userID > 0) {
                         // just change the button text
-                        button.name(rename)
+                        button.name(rename).setLabelColor(color)
                         //         return this.makeNightSkyURL();
                     }
                 });
@@ -664,14 +665,17 @@ export function createCustomModalWithCopy(url) {
     closeButton.style.fontWeight = 'bold';
     closeButton.style.cursor = 'pointer';
 
-    // Close modal event and cleanup
-    closeButton.onclick = function() {
+    function closeModal() {
         modal.style.display = 'none';
         // remove it from the DOM
         document.body.removeChild(modal);
         // remove the event listener
         closeButton.onclick = null;
+    }
 
+    // Close modal event and cleanup
+    closeButton.onclick = function() {
+        closeModal();
     };
 
     // Append the close button to the modal content
@@ -682,18 +686,31 @@ export function createCustomModalWithCopy(url) {
     urlText.textContent = url;
     modalContent.appendChild(urlText);
 
-    // Create and append the Copy button
-    const copyButton = document.createElement('button');
-    copyButton.textContent = 'Copy URL';
-    copyButton.onclick = function() {
-        navigator.clipboard.writeText(url).then(() => {
-            console.log('URL copied to clipboard');
-        }).catch(err => {
-            console.error('Failed to copy: ', err);
-        });
-    };
+    function addModalButton(text, onClick) {
+        // Create and append the Copy button
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.onclick = onClick;
+        button.style.margin = '5px';
+        modalContent.appendChild(button);
+    }
 
-    modalContent.appendChild(copyButton);
+
+    addModalButton('Copy URL', function() {
+        writeToClipboard(url)
+        closeModal()
+    });
+
+    addModalButton('Copy & Open', function() {
+        writeToClipboard(url)
+        closeModal();
+        par.paused = true;
+        // Open this url in a new tab
+        window.open(url, '_blank');
+    });
+
+
+
 
     // Append the modal content to the modal
     modal.appendChild(modalContent);

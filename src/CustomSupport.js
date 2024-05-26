@@ -12,6 +12,8 @@ import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
+import {resolveObjectURL} from "buffer";
+import {GlobalScene, LocalFrame} from "./LocalFrame";
 
 
 export class CCustomManager {
@@ -24,23 +26,30 @@ export class CCustomManager {
     setup() {
 
         if (Sit.canMod)
-            this.buttonText = "Export Sitch Mod"
+            this.buttonText = "SAVE MOD"
         else
-            this.buttonText = "Export Custom Sitch"
+            this.buttonText = "SAVE CUSTOM"
 
 
         // add a lil-gui button linked ot the serialize function
         //FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
 
+        //const theGUI = FileManager.guiFolder;
+        const theGUI = gui;
+
+        this.buttonColor = "#80ff80"
+
         if (Globals.userID > 0)
-            this.serializeButton = FileManager.guiFolder.add(this, "serialize").name(this.buttonText)
+            this.serializeButton = theGUI.add(this, "serialize").name(this.buttonText).setLabelColor(this.buttonColor)
         else
-            this.serializeButton = FileManager.guiFolder.add(this, "loginAttempt").name("Export Disabled (click to log in)");
+            this.serializeButton = theGUI.add(this, "loginAttempt").name("Export Disabled (click to log in)").setLabelColor("#FF8080");
+
+        this.serializeButton.moveToFirst();
 
     }
 
     loginAttempt() {
-        FileManager.loginAttempt(this.serialize, this.serializeButton, this.buttonText);
+        FileManager.loginAttempt(this.serialize, this.serializeButton, this.buttonText, this.buttonColor);
     };
 
     serialize() {
@@ -172,6 +181,28 @@ export class CCustomManager {
                     pars[key] = par[key]
                 }
             }
+
+            // add any "showHider" par toggles
+            // see KeyBoardHandler.js, function showHider
+            // these are three.js objects that can be toggled on and off
+            // so iterate over all the objects in the scene, and if they have a showHiderID
+            // then store the visible state using that ID (which is what the variable in pars will be)
+            // traverse GlobalScene.children recursively to do the above
+            const traverse = (object) => {
+                if (object.showHiderID !== undefined) {
+                    pars[object.showHiderID] = object.visible;
+                }
+                for (let child of object.children) {
+                    traverse(child);
+                }
+            }
+
+            traverse(GlobalScene);
+
+
+
+
+
             out.pars = pars;
 
             // MORE STUFF HERE.......

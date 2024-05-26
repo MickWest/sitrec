@@ -142,10 +142,15 @@ export function quickToggle(key, start = false, toggleGui = gui) {
 export function showHider(_ob, id, visible, key) {
     const ob = _ob;
     if (visible === undefined) visible = false;
-   // if (par[id] === undefined) {
+    if (par[id] !== undefined && toggles[key] === undefined) {
+        // the flag already exists, but no gui controller set up yet
+        // so we use what is set up in there (e.g. it was serialized)
+        visible = par[id]
+    } else {
         par[id] = visible
-        ob.visible = visible
-   // }
+    }
+    ob.visible = visible
+    ob.showHiderID = id;
     const con = toggles[key] ?? guiShowHide.add(par, id).listen();
 
     con.onChange(value => {

@@ -97,3 +97,12 @@ Controller.prototype.setLabelColor = function(color) {
 
     return this; // Return the controller to allow method chaining
 };
+
+// Move a controller to the of its parent
+Controller.prototype.moveToFirst = function() {
+    const parentElement = this.domElement.parentElement;
+    if (parentElement) {
+        parentElement.insertBefore(this.domElement, parentElement.firstChild);
+    }
+};
+

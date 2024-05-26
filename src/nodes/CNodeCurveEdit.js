@@ -12,6 +12,7 @@ import {CNodeGraphLine} from "./CNodeGraphLine";
 
 export class CNodeCurveEditorView extends CNodeViewCanvas2D {
     constructor(v) {
+        v.menuName = v.menuName ?? v.editorConfig.yLabel
         super(v);
         v.editorConfig.canvas = this.canvas
         this.addInputs(v.displayInputs)

@@ -130,8 +130,9 @@ class CNodeView extends CNode {
         ViewMan.add(v.id,this)
 
         if (!this.overlayView) {
+            const name = v.menuName ?? this.id;
             // menu entry to show/hide this view
-            guiShowHideViews.add(this, 'visible').listen().name(this.id).onChange(value => {
+            guiShowHideViews.add(this, 'visible').listen().name(name).onChange(value => {
                 this.setVisible(value);
             })
         }
