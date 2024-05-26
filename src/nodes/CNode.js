@@ -94,6 +94,17 @@ class CNode {
 
     }  // any garbage collection
 
+    modSerialize() {
+        // essentially an abstract function, derived classes override to implement serialization
+        // but we need to return an object to expand, so we just return an empty object
+        return {}
+    }
+
+    modDeserialize(v) {
+        // abstract function, derived classes override to implement deserialization
+    }
+
+
     // the default serialize function
     // this is overridden by derived classes
     // to add their own properties

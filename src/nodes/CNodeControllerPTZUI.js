@@ -12,8 +12,7 @@ const pszUIColor = "#C0C0FF";
 export class CNodeControllerPTZUI extends CNodeController {
     constructor(v) {
         super(v);
-        this.canSerialize = true;
-        this.az = v.az;
+                this.az = v.az;
         this.el = v.el
         this.fov = v.fov
         this.roll = v.roll

@@ -21,8 +21,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         if (isLocal)
             v.desc = "*"+v.desc;
 
-        this.canSerialize = true;
-
+        
         this.setGUI(v, _guiMenu)
 
         this.start = v.start ?? 0

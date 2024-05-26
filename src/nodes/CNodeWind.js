@@ -10,8 +10,7 @@ export class CNodeWind extends CNode {
     constructor(v, _guiMenu) {
         super(v);
 
-        this.canSerialize = true;
-
+        
         this.setGUI(v, _guiMenu)
 
         this.from = v.from;  // true heading of the wind soruce. North = 0

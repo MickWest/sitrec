@@ -8,8 +8,7 @@ export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {
         super(v);
 
-        this.canSerialize = true;
-
+        
         // if no jetOrigin specificed, then we use the global origin
         // which is traditionally what was used for Gimbal and Gofast
         this.input("jetOrigin",true)

@@ -35,8 +35,7 @@ class CNodeView extends CNode {
         assert(v.id !== undefined,"View Node Requires ID")
         super(v)
 
-        this.canSerialize = true;
-
+        
         // if (isLocal) {
         //     // local debugging, make a (ref) copy of v for later checks
         //     this.v_for_debug = v;

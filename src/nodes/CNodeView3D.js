@@ -143,6 +143,21 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     }
 
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            focusTrackName: this.focusTrackName,
+            lockTrackName: this.lockTrackName
+        }
+
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        if (v.focusTrackName !== undefined) this.focusTrackName = v.focusTrackName
+        if (v.lockTrackName  !== undefined) this.lockTrackName  = v.lockTrackName
+    }
+
     dispose() {
         super.dispose();
         this.renderer.dispose();
@@ -159,11 +174,11 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.lockTrackName = "default"
         gui.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
             //
-        }).name("Focus Track")
+        }).name("Focus Track").listen()
         gui.add(this, "lockTrackName", focusTracks).onChange(lockTrackName => {
             //
             console.log(this.lockTrackName)
-        }).name("Lock Track")
+        }).name("Lock Track").listen()
     }
 
     get camera() {

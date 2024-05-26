@@ -178,8 +178,7 @@ export class CNodeTerrain extends CNode {
 
         super(v);
 
-        this.canSerialize = true;
-
+        
         if (terrainGUI === undefined) {
             terrainGUI = gui.addFolder("Terrain")
         }

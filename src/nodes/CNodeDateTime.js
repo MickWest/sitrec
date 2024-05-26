@@ -104,8 +104,7 @@ export class CNodeDateTime extends CNode {
 
         super (v)
 
-        this.canSerialize = true;
-
+        
         this.refreshingUI = false;
 
         this.dateTimeFolder = gui.addFolder("Date/Time");

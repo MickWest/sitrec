@@ -109,9 +109,11 @@ export class CCustomManager {
             }
 
             // calculate the modifications to be applied to nodes AFTER the files are loaded
+            // anything with a modSerialize function will be serialized
             let mods = {}
             NodeMan.iterate((id, node) => {
-                if (node.modSerialize !== undefined && node.canSerialize) {
+
+                if (node.modSerialize !== undefined) {
                     mods[node.id] = node.modSerialize()
                 }
             })
@@ -123,10 +125,41 @@ export class CCustomManager {
                 "frame",
                 "paused",
                 "mainFOV",
+
+
+                // these are JetGUI.js specific, form SetupJetGUI
+                // VERY legacy stuff which most sitching will not have
+                "pingPong",
+
+                "podPitchPhysical",
+                "podRollPhysical",
+                "deroFromGlare",
+                "jetPitch",
+
+                "el",
+                "glareStartAngle",
+                "initialGlareRotation",
+                "scaleJetPitch",
+                "speed",  // this is the video speed
+                "podWireframe",
+                "showVideo",
+                "showChart",
+                "showKeyboardShortcuts",
+                "showPodHead",
+                "showPodsEye",
+                "showCueData",
+
+                "jetOffset",
+                "TAS",
+                "integrate",
+
+
             ]
             let pars = {}
             for (let key of parNeeded) {
-                pars[key] = par[key]
+                if (par.key !== undefined) {
+                    pars[key] = par[key]
+                }
             }
             out.pars = pars;
 

@@ -1,7 +1,7 @@
 import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {assert} from "../utils";
-import {isConsole} from "../../config";
+import {isConsole, isLocal} from "../../config";
 import {NodeMan, Sit} from "../Globals";
 
 class CNodeSwitch extends CNode {
@@ -10,8 +10,7 @@ class CNodeSwitch extends CNode {
         this.choice = v.default; // this is the key of the entry in choices
         this.onChangeCallback= v.onChange; // function to call when choice changes
 
-        this.canSerialize = true;
-        this.desc = v.desc;
+                this.desc = v.desc;
 
 //        console.log("CNodeSwitch:constructor "+this.id)
 //        console.log(JSON.stringify(v, null, 2))
@@ -36,6 +35,8 @@ class CNodeSwitch extends CNode {
             this.frames = this.inputs[this.choice].frames
         }
 
+
+
         // add the menu if the gui is defined
         if (this.gui !== undefined) {
             this.guiOptions = {}
@@ -47,7 +48,7 @@ class CNodeSwitch extends CNode {
                 //              this.frames + key + this.choiceList[key].frames)
             })
             this.controller = this.gui.add(this, "choice", this.guiOptions)
-                .name(v.desc)
+                .name((isLocal?"*":"") + v.desc)
                 .onChange((newValue) => {   // using ()=> preserves this
 //                    console.log("Changed to "+newValue)
 //                    console.log("(changing) this.choice = "+this.choice)

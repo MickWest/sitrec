@@ -10,8 +10,7 @@ export class CNodeCamera extends CNode3D {
     constructor(v, camera = null) {
         super(v);
 
-        this.canSerialize = true;
-
+        
         this.addInput("altAdjust", "altAdjust", true);
 
         this.startPos = v.startPos;

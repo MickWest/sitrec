@@ -52,6 +52,18 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
     }
 
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            tiltType: this.tiltType,
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        this.tiltType = v.tiltType
+    }
+
     update(f) {
         super.update(f)
         if (this.model != undefined) {
