@@ -85,6 +85,7 @@ class CNodeSwitch extends CNode {
     // then we just serialize the changes we need to make to the object
     modSerialize() {
         return {
+            ...super.modSerialize(),
             choice: this.choice,
         }
     }
@@ -93,6 +94,7 @@ class CNodeSwitch extends CNode {
     // in this case the switch options will be set up as a result of loading the files
     // so we just need to set the choice (the selected option)
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.selectOptionQuietly(v.choice);
     }
 

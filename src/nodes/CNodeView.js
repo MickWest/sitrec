@@ -168,11 +168,15 @@ class CNodeView extends CNode {
     }
 
     modSerialize() {
-        return this.simpleSerialize();
+        return {
+            ...super.modSerialize(),
+            ...this.simpleSerialize()
+        };
     }
 
     // need to also handle full screen state....
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.simpleDeserialize(v)
         this.updateWH();
         this.setVisible(v.visible)

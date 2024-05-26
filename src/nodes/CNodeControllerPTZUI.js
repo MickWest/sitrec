@@ -34,6 +34,7 @@ export class CNodeControllerPTZUI extends CNodeController {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             az: this.az,
             el: this.el,
             fov: this.fov,
@@ -42,6 +43,7 @@ export class CNodeControllerPTZUI extends CNodeController {
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.az = v.az;
         this.el = v.el;
         this.fov = v.fov;

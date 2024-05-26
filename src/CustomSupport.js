@@ -115,6 +115,13 @@ export class CCustomManager {
 
                 if (node.modSerialize !== undefined) {
                     const nodeMod = node.modSerialize()
+
+                    // check it has rootTestRemove, and remove it if it's empty
+                    // this is a test to ensure serialization of an object incorporates he parents in the hierarchy
+                    assert(nodeMod.rootTestRemove !== undefined, "Not incorporating ...super.modSerialzie.  rootTestRemove is not defined for node:" + id+ "Class name "+node.constructor.name)
+                    // remove it
+                    delete nodeMod.rootTestRemove
+
                     // check if empty {} object, don't need to store that
                     if (Object.keys(nodeMod).length > 0) {
                         mods[node.id] = nodeMod;

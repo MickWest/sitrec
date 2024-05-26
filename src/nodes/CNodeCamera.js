@@ -45,6 +45,7 @@ export class CNodeCamera extends CNode3D {
         const atLLA = EUSToLLA(v)
 
         return {
+            ...super.modSerialize(),
             startPosLLA: [posLLA.x, posLLA.y, posLLA.z],
             lookAtLLA: [atLLA.x, atLLA.y, atLLA.z],
             fov: this.camera.fov,
@@ -54,6 +55,7 @@ export class CNodeCamera extends CNode3D {
     // cameras with controllers can overwrite this
     // but it's useful for cameras like the main camera
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.startPosLLA = v.startPosLLA;
         this.lookAtLLA = v.lookAtLLA;
         this.camera.fov = v.fov;

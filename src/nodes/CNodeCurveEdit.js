@@ -90,11 +90,13 @@ export class CNodeCurveEditor extends CNode {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             editorConfig: this.editor.getProfile(),
         }
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.editor.setPointsFromFlatArray(v.editorConfig)
         this.editorView.recalculate()
     }

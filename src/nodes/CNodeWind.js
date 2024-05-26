@@ -42,6 +42,7 @@ export class CNodeWind extends CNode {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             from: this.from,
             knots: this.knots,
             name: this.name,
@@ -51,6 +52,7 @@ export class CNodeWind extends CNode {
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.from = v.from;
         this.knots = v.knots;
         this.name = v.name;

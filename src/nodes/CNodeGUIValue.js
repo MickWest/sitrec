@@ -52,10 +52,14 @@ export class CNodeGUIValue extends CNodeGUIConstant {
     }
 
     modSerialize() {
-        return {value: this.value}
+        return {
+            ...super.modSerialize(),
+            value: this.value
+        }
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.value = v.value
         this.guiEntry.setValue(this.value)
         this.recalculateCascade()

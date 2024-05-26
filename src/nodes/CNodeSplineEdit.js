@@ -65,11 +65,13 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             initialPoints: this.splineEditor.points,
         }
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.splineEditor.load(v.initialPoints)
     }
 

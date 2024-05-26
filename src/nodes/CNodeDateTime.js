@@ -195,6 +195,7 @@ export class CNodeDateTime extends CNode {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             startDateTime: this.getStartTimeString(),
             timeZoneName: this.timeZoneName,
             simSpeed: Sit.simSpeed
@@ -202,6 +203,7 @@ export class CNodeDateTime extends CNode {
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.populateStartTimeFromUTCString(v.startDateTime);
         this.timeZoneName = v.timeZoneName;
         Sit.simSpeed = v.simSpeed;

@@ -29,12 +29,14 @@ export class CNodeHeading extends CNode {
 
     modSerialize() {
         return {
+            ...super.modSerialize(),
             heading: this.heading,
             name: this.name,
         }
     }
 
     modDeserialize(v) {
+        super.modDeserialize(v);
         this.heading = v.heading;
         this.name = v.name;
         this.headingController.updateDisplay()

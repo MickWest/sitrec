@@ -97,7 +97,7 @@ class CNode {
     modSerialize() {
         // essentially an abstract function, derived classes override to implement serialization
         // but we need to return an object to expand, so we just return an empty object
-        return {}
+        return {rootTestRemove:true}
     }
 
     modDeserialize(v) {
