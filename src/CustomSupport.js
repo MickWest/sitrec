@@ -157,7 +157,7 @@ export class CCustomManager {
             ]
             let pars = {}
             for (let key of parNeeded) {
-                if (par.key !== undefined) {
+                if (par[key] !== undefined) {
                     pars[key] = par[key]
                 }
             }
