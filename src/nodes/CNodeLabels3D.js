@@ -13,6 +13,9 @@ import {par} from "../par";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 
+export const measurementUIVars = {
+}
+
 // a global flag to show/hide all measurements
 let measurementUIDdone = false;
 let measureArrowGroupNode = null;
@@ -38,7 +41,7 @@ function setupMeasurementUI() {
 
     refreshMeasurementVisibility();
 
-    guiShowHide.add(Globals, "showMeasurements").name("Measurements").listen().onChange( (value) => {
+    measurementUIVars.controller =  guiShowHide.add(Globals, "showMeasurements").name("Measurements").listen().onChange( (value) => {
         console.warn("%%%%%%% showMeasurements changed to " + value)
         refreshMeasurementVisibility();
         par.renderOne = true;

@@ -14,6 +14,7 @@ import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
 import {resolveObjectURL} from "buffer";
 import {GlobalScene, LocalFrame} from "./LocalFrame";
+import {measurementUIVars} from "./nodes/CNodeLabels3D";
 
 
 export class CCustomManager {
@@ -294,6 +295,8 @@ export class CCustomManager {
                     Globals[key] = sitchData.globals[key]
                 }
             }
+
+            measurementUIVars.controller._callOnChange(); // PATCH: call the onChange function to update the UI for the visibility of the measurements
 
             // apply the units, etc
             if (sitchData.modUnits) {
