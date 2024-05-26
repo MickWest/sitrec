@@ -114,7 +114,11 @@ export class CCustomManager {
             NodeMan.iterate((id, node) => {
 
                 if (node.modSerialize !== undefined) {
-                    mods[node.id] = node.modSerialize()
+                    const nodeMod = node.modSerialize()
+                    // check if empty {} object, don't need to store that
+                    if (Object.keys(nodeMod).length > 0) {
+                        mods[node.id] = nodeMod;
+                    }
                 }
             })
             out.mods = mods;
