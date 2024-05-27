@@ -12,7 +12,6 @@ import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
-import {resolveObjectURL} from "buffer";
 import {GlobalScene, LocalFrame} from "./LocalFrame";
 import {measurementUIVars} from "./nodes/CNodeLabels3D";
 
@@ -177,6 +176,9 @@ export class CCustomManager {
 
             const SitNeeded = [
                 "file",
+                "starScale",
+                "satScale",
+                "satCutOff",
             ]
 
             const globalsNeeded = [
@@ -242,13 +244,13 @@ export class CCustomManager {
             let name = "Custom.js"
             let paramName = "custom"
             if (Sit.canMod) {
-                name = "Mod_" + Sit.name + ".js"
+                name = Sit.name + "_mod.js"
                 paramName = "mod"
             }
 
 
             // and rehost it, showing a link
-            Rehoster.rehostFile("Custom.js", str).then((staticURL) => {
+            Rehoster.rehostFile(name, str).then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
 
                 // and make a URL that points to the new sitch
