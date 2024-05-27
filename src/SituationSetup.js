@@ -289,7 +289,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 // this is often a node, but can be a GUI element, or some other setup
 // setup commands start with lower case and are handled in the switch statement
 // nodes start with upper case and that's handled in the default case
-export function SetupFromKeyAndData(key, _data) {
+export function SetupFromKeyAndData(key, _data, depth=0) {
     let data;
     // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
     if (typeof _data === "object") {
@@ -311,7 +311,7 @@ export function SetupFromKeyAndData(key, _data) {
                         // so we can't use it as a node id
                         // so instead we pass in undefined,
                         // so the node system will generate an id for it
-                        const anonResult = SetupFromKeyAndData(undefined, data[subKey]);
+                        const anonResult = SetupFromKeyAndData(undefined, data[subKey], depth+1);
                         // assert it's a CNode derived object
                         assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object. Kind = "+data[subKey].kind+"\n"+JSON.stringify(data));
                         // replace the object with the id of the newly created node
@@ -347,8 +347,29 @@ export function SetupFromKeyAndData(key, _data) {
     if (data.kind !== undefined) {
         // new way of doing it, the "kind" is the kind of thing we want to setup
         // which means the key is the id of the node OR the id of some setup code in the switch statement below
-        assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
-        data.id = key;
+        // the depth check means we can allow a data.id AND a data.kind in the same object
+        // but only for sub-objects, which were previously anonymous objects
+        // we need the have an id for serialization
+        // example:
+        // turnRateBS: {kind: "TurnRateBS",
+        //     id: "turnRateBS",
+        //     inputs: {
+        //     speed: { id: "watchTAS", kind: "parWatch", watchID: "TAS"},
+        //     bank: "bank"
+        // }
+        // the id will be turnRateBS, and the kind will be TurnRateBS
+        // but we can't use "speed" as an id, as it's a parameter name
+        // so we have another id for that, which is watchTAS
+
+        if (depth === 0)
+        {
+            assert(data.id === undefined, "SituationSetup: data.id is deprecated, use key as id");
+            // for top level objects, the key is the id
+            // but not for sub-objects, as the key is usally a parameter name
+            // and not a unique object
+            data.id = key;
+        }
+
         key = data.kind;
     }
 
@@ -692,10 +713,11 @@ export function SetupFromKeyAndData(key, _data) {
 
             const camera = data.camera ?? "lookCamera";
             //data.id ??= camera + "PTZ"; // i.e. lookCameraPTZ
-            const addID = data.id ?? camera + "PTZ";
+            const addID = data.id ?? camera.id + "_PTZUI";
             const idObject = {id: addID};
             const showGUI = data.showGUI ?? true;
-            NodeMan.get(camera).addController("PTZUI", {gui: gui, ...data, ...idObject, showGUI: showGUI});
+            NodeMan.get(camera).addController("PTZUI", {
+                gui: gui, ...data, ...idObject, showGUI: showGUI});
 
             break;
 
@@ -736,6 +758,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "followTrack":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition", {
+                id:data.id,
                 sourceTrack: data.sourceTrack ?? "cameraTrack",
             })
             break;
@@ -743,6 +766,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "lookAt":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("LookAtLLA", {
+                id:data.id,
                 toLat: data.toLat,
                 toLon: data.toLon,
                 toAlt: data.toAlt,
@@ -752,6 +776,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "lookAtTrack":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("LookAtTrack", {
+                id:data.id,
                 targetTrack: data.track ?? "targetTrack",
             })
             break;
@@ -759,6 +784,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "trackToTrack":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("TrackToTrack", {
+                id:data.id,
                 sourceTrack: data.target ?? "cameraTrack",
                 targetTrack: data.target ?? "targetTrack",
             })
@@ -775,6 +801,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "targetObject":
             SSLog();
             node = new CNodeDisplayTargetModel({
+                id: data.id ?? "targetObjectModel",
                 track: data.track ?? "targetTrack",
                 TargetObjectFile: data.file,
                 wind: data.wind ?? undefined,
@@ -785,15 +812,18 @@ export function SetupFromKeyAndData(key, _data) {
 
         case "targetSizedSphere":
             SSLog();
+            data.id = data.id ?? "targetSizedSphere";
             node = new CNodeDisplayTargetSphere({
+                id: data.id,
                 track: data.track ?? "targetTrack",
                 size: new CNodeScale("sizeScaledLOS" + data.id, scaleF2M,
                     new CNodeGUIValue({
+                        id: data.id+"Size",
                         value: data.size ?? 3,
                         start: 0,
                         end: 200,
                         step: 0.01,
-                        desc: "Target    Sphere size ft"
+                        desc: "Target Sphere size ft"
                     }, gui)
                 ),
                 layers: LAYER.MASK_LOOK,
@@ -809,7 +839,7 @@ export function SetupFromKeyAndData(key, _data) {
             makeArrayNodeFromMISBColumn("pitchCol", cameraTrack, data.pitch, 30, true)
             NodeMan.get(data.camera ?? "lookCamera").addController(
                 "AbsolutePitchHeading",
-                {pitch: "pitchCol", heading: "headingCol"}
+                { id:data.id, pitch: "pitchCol", heading: "headingCol"}
             )
             if (data.labelView !== undefined) {
                 const labelView = NodeMan.get(data.labelView)
@@ -846,6 +876,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "tilt":
             SSLog();
             NodeMan.get("lookCamera").addController("Tilt", {
+                id:data.id,
                 tilt: makeCNodeGUIValue("tilt", data, -30, 30, 0.01, "Tilt", gui),
             })
             break;
@@ -1223,6 +1254,7 @@ export function SetupFromKeyAndData(key, _data) {
             if (NodeMan.isController("Controller" + key)) {
                 const camera = data.camera ?? "lookCamera";
                 const cameraNode = NodeMan.get(camera);
+                data.id = data.id ?? (cameraNode.id+"_Controller" + key);
                 if (cameraNode) {
                     node = NodeMan.create("Controller"+key, data);
                     cameraNode.addControllerNode(node);

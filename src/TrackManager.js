@@ -319,7 +319,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
             id: "TrackDisplayData_" + trackFileName,
             track: "TrackData_" + trackFileName,
-            color: new CNodeConstant({value: new Color(1, 0, 0)}),
+            color: new CNodeConstant({id: "colorData_"+trackFileName, value: new Color(1, 0, 0)}),
             width: 0.5,
             //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
@@ -330,7 +330,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         trackOb.trackDisplayNode = new CNodeDisplayTrack({
             id: "TrackDisplay_" + trackFileName,
             track: "Track_" + trackFileName,
-            color: new CNodeConstant({value: new Color(1, 0, 1)}),
+            color: new CNodeConstant({id: "colorTrack_"+trackFileName, value: new Color(1, 0, 1)}),
             width: 3,
             //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
@@ -354,7 +354,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             trackOb.displayCenterDataNode = new CNodeDisplayTrack({
                 id: "CenterDisplayData_" + trackFileName,
                 track: "CenterData_" + trackFileName,
-                color: new CNodeConstant({value: new Color(0, 1, 0)}),
+                color: new CNodeConstant({id: "colorCenterData_"+trackFileName, value: new Color(0, 1, 0)}),
                 width: 0.5,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
@@ -365,7 +365,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             trackOb.displayCenterNode = new CNodeDisplayTrack({
                 id: "CenterDisplay_" + trackFileName,
                 track: centerID,
-                color: new CNodeConstant({value: new Color(1, 1, 0)}),
+                color: new CNodeConstant({id: "colorCenter_"+trackFileName, value: new Color(1, 1, 0)}),
                 width: 3,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,

@@ -317,7 +317,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplay",
             track: "jetTrack",
-            color: new CNodeConstant({value:new Color(0.5,0.5,0.5)}),
+            color: [0.5,0.5,0.5],
             width: 0.5,
             autoSphere: 10,
         })
@@ -326,7 +326,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplayOLD",
             track: "jetTrackOLD",
-            color: new CNodeConstant({value:new Color(1,0.5,0.5)}),
+            color: [1,0.5,0.5],
             width: 0.5,
             autoSphere: 10,
         })
@@ -335,7 +335,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplaySpline",
             track: "jetTrackSpline",
-            color: new CNodeConstant({value:new Color(0.8,0,0.8)}),
+            color: [0.8,0,0.8],
             width: 0.5,
             autoSphere: 10,
         })
@@ -346,7 +346,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackDisplayAverage",
             track: "jetTrackAverage",
-            color: new CNodeConstant({value:new Color(1,1,0)}),
+            color: [1,1,0],
             width: 0.5,
             autoSphere: 10,
         })
@@ -356,7 +356,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "jetTrackSmoothDisplay",
             track: "jetTrackSmooth",
-            color: new CNodeConstant({value:new Color(0,1,1)}),
+            color: [0,1,1],
             width: 1,
             autoSphere: 10,
 
@@ -364,9 +364,10 @@ export const SitAguadilla = {
 
         // debug short line  from final jet track to smoothed moving average
         new CNodeDisplayTrackToTrack({
+            id: "jetTrackToTrackDisplay",
             cameraTrack: "jetTrackSmooth",
             targetTrack: "jetTrackAverage",
-            color: new CNodeConstant({value:new Color(1,1,0)}),
+            color: [1,1,0],
             width: 2,
 
         })
@@ -395,7 +396,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "targetTrackSmoothRaisedDisplay",
             track: "targetTrackSmoothRaised",
-            color: new CNodeConstant({value:new Color(0,1,0)}),
+            color: [0,1,0],
             width: 3,
             
         })
@@ -472,7 +473,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "groundSplineEditorDisplay",
             track: "groundSplineEditor",
-            color: new CNodeConstant({value:new Color(0,1,1)}),
+            color: [0,1,1],
             width: 3,
         })
 
@@ -551,7 +552,7 @@ export const SitAguadilla = {
         const uapSplineDisplay = new CNodeDisplayTrack({
             id: "uapSplineEditorDisplay",
             track: "uapSplineEditor",
-            color: new CNodeConstant({value:new Color(1,0,0)}),
+            color: [1,0,0],
             width: 3,
         })
 
@@ -597,7 +598,7 @@ export const SitAguadilla = {
         const lanternSplineDisplay = new CNodeDisplayTrack({
             id: "lanternSplineEditorDisplay",
             track: "lanternSplineEditor",
-            color: new CNodeConstant({value:new Color(1,1,0)}),
+            color: [1,1,0],
             width: 3,
         })
 
@@ -611,7 +612,7 @@ export const SitAguadilla = {
         // new CNodeDisplayTrackToTrack({
         //     cameraTrack: "jetTrackSmooth",
         //     targetTrack: "groundSplineEditor",
-        //     color: new CNodeConstant({value:new Color(1,0,1)}),
+        //     color: [1,0,1],
         //     width: 2,
         //
         // })
@@ -713,9 +714,9 @@ export const SitAguadilla = {
             id: "DisplayLOS1",
             cameraTrack: "jetTrackSmooth",
             targetTrack: "LOSTraverseSelectSmoothed",
-            color: new CNodeConstant({value:new Color(1,1,1)}),
+            color: [1,1,1],
             width: 2,
-            extensionColor: new CNodeConstant({value:new Color(0,1,0)}),
+            extensioncolor: [0,1,0],
 
         })
 
@@ -727,7 +728,7 @@ export const SitAguadilla = {
             id: "DisplayLOS2",
             cameraTrack: "LOSTraverseSelectSmoothed",
             targetTrack: "LOSTargetTrack",  // this was terrain track, should be a camera ground track
-            color: new CNodeConstant({value:new Color(0,1,0)}),
+            color: [0,1,0],
             width: 2,
 
         })
@@ -739,6 +740,7 @@ export const SitAguadilla = {
 
 
         new CNodeDisplayTargetSphere({
+            id: "TargetSphereLantern",
             inputs: {
                 //track: "lanternSplineEditor",
                 track: "LOSTraverseSelect",
@@ -755,6 +757,7 @@ export const SitAguadilla = {
 
         // The lines of sight with smoothed traversal points
         var JetLOSDisplayNode = new CNodeDisplayLOS({
+            id: "JetLOSDisplayNode",
             LOS:"JetLOS",
             traverse:"LOSTraverseSelectSmoothed",
             container:GlobalScene,
@@ -776,7 +779,7 @@ export const SitAguadilla = {
         new CNodeDisplayTrack({
             id: "TraversePathDisplay",
             track: "LOSTraverseSelectSmoothed",
-            color: new CNodeConstant({value:new Color(0.3,1,0.3)}),
+            color: [0.3,1,0.3],
             width: 4,
             depthFunc:AlwaysDepth,
 
@@ -788,8 +791,8 @@ export const SitAguadilla = {
 
 
         const lookCamera = NodeMan.get("lookCamera").camera;
-        // FOV in Three.js is vertical, wjhich was not an issue with the square videos
-        // but you need to be aware of it in things like thig
+        // FOV in Three.js is vertical, which was not an issue with the square videos
+        // but you need to be aware of it in things like thi
         gui.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
             lookCamera.fov = value
             lookCamera.updateProjectionMatrix()

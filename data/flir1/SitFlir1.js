@@ -87,12 +87,9 @@ export const SitFlir1 = {
         desc: "Bank Angle Type"
     },
 
-    // Note, using an anonymous node definition for the speed parameter
-    // this will automatically create a node with the given parameters
-    // and give it a unique ID.
     turnRateBS: {kind: "TurnRateBS",
         inputs: {
-            speed: { kind: "parWatch", watchID: "TAS"},
+            speed: { id: "watchTAS", kind: "parWatch", watchID: "TAS"},
             bank: "bank"
         }
     },
@@ -109,7 +106,7 @@ export const SitFlir1 = {
     // blue stepped line is the final value, but rounded to the nearest integer
     // so it's the value displayed as Az in the ATFLIR UI
     azStepsSeries:{kind:"addGraphSeries", graph: "azEditor", color: "#008080", source:
-            {kind: "Math", math: "round($azSources)"},
+            {id: "roundAZ", kind: "Math", math: "round($azSources)"},
     },
 
 

@@ -85,6 +85,10 @@ export class CNode3D extends CNode {
     addController(type, def) {
         console.log("Adding CONTROLLER " + type + " to " + this.id)
         assert(def.camera === undefined, "Adding a controller with a camera defined, should be object!")
+        if (def.id === undefined) {
+            def.id = this.id + "_Controller" + type;
+            console.warn("Controller added without id, using " + def.id)
+        }
         this.addControllerNode(NodeMan.create("Controller"+type, def))
         return this;
     }

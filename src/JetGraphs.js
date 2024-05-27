@@ -90,9 +90,11 @@ function addGenericJetGraph(id, yLabel, mungeInputs, windowParams, editorParams,
 
         displayInputs: {
             compare: new CNodeGraphSeries({
-                id: id+"_GenericJetGraph_Munge",
+                id: id+"_GenericJetGraph_compare",
                 inputs: {
                     source: new CNodeMunge({
+                        id: id+"_GenericJetGraph_Munge",
+
                         inputs: mungeInputs,
                         munge: mungeFunction,
                     })
@@ -208,8 +210,10 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
         inputs: {
 
             compare3: new CNodeGraphSeries({
+                id: "graphHorizontalAirSpeed"+source,
                 // Munge node to convert a traverse track to speed
                 source: new CNodeMunge({
+                    id: "mungeHorizontalAirSpeed"+source,
                     inputs: {source: source, wind: "targetWind"},
                     munge: function (f) {
                         if (f === 0) f = 1;
@@ -227,8 +231,10 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
 
             // Ground speed
             compare1: new CNodeGraphSeries({
+                id: "graphHorizontalGroundSpeed"+source,
                 // Munge node to convert a traverse track to speed
                 source: new CNodeMunge({
+                    id: "mungeHorizontalGroundSpeed"+source,
                     inputs: {source: source},
                     munge: function (f) {
                         if (f === 0) f = 1;
@@ -243,8 +249,10 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             }),
 
             compare: new CNodeGraphSeries({
+                id: "graphObjectSpeed"+source,
                 // Munge node to convert a traverse track to speed
                 source: new CNodeMunge({
+                    id: "mungeObjectSpeed"+source,
                     inputs: {source: source},
                     munge: function (f) {
                         if (f === 0) f = 1;
@@ -259,8 +267,10 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
 
             // RED = vertical speed
             compare2: new CNodeGraphSeries({
+                id: "graphVerticalSpeed"+source,
                 // Munge node to convert a traverse track to speed
                 source: new CNodeMunge({
+                    id: "mungeVerticalSpeed"+source,
                     inputs: {source: source},
                     munge: function (f) {
                         if (f === 0) f = 1;
@@ -365,6 +375,7 @@ export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  =
             compare: new CNodeGraphSeries({
                 // Munge node to convert a traverse track to altitude
                 source: new CNodeMunge({
+                    id: "altitudeGraphMunge",
                     inputs: {source: source, radius: "radiusMiles",},
                     munge: function (f) {
                         const pos = this.in.source.p(f)

@@ -184,7 +184,7 @@ const GimbalDefaults = {
         })
 
         const fleetDisplayDefaults = {
-           // color: new CNodeConstant({value:new Color(0.5,0.5,0.5)}),
+           // [0.5,0.5,0.5]),
             width: 1,
             autoSphere: 100,
             color: 0xc0c000

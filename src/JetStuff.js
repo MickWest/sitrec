@@ -981,6 +981,7 @@ export function initViews() {
         GlobalScene.add(gridHelperGround);
 
         setATFLIR(new CNodeDisplayATFLIR({
+            id: "displayATFLIR",
             inputs: {},
             layers: LAYER.MASK_MAIN, // ATFLIR pod would obscure the camera in look view
         }))
