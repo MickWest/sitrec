@@ -64,15 +64,29 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
     }
 
     modSerialize() {
+
+
+        assert(this.splineEditor.frameNumbers !== undefined, "CNodeSplineEditor has no frameNumbers")
+        // check same length
+        assert(this.splineEditor.frameNumbers.length === this.splineEditor.positions.length, "CNodeSplineEditor frameNumbers and positions length mismatch")
+
+
+        let positions = [];
+        for (let i=0;i<this.splineEditor.positions.length;i++) {
+            const p = this.splineEditor.positions[i];
+            positions.push([this.splineEditor.frameNumbers[i], p.x, p.y, p.z])
+        }
         return {
             ...super.modSerialize(),
-            initialPoints: this.splineEditor.points,
+            positions: positions,
         }
     }
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.splineEditor.load(v.initialPoints)
+        if (v.positions !== undefined) {
+            this.splineEditor.load(v.positions)
+        }
     }
 
 
