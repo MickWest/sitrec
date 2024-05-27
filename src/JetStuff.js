@@ -763,7 +763,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         id: "LOSTraverse1"+idExtra,
         LOS: los,
         startDist: "startDistance",
-        VcMPH: new CNodeGUIValue({value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"}, gui),
+        VcMPH: new CNodeGUIValue({id: "targetVCGUI", value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"}, gui),
     })
 
 
@@ -771,6 +771,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
     if (!NodeMan.exists("speedScaled")) {
         new CNodeScale("speedScaled", 1 / Units.m2Speed,
             new CNodeGUIValue({
+                id: "targetSpeedGUI",
                 value: Sit.targetSpeed,
                 start: Sit.targetSpeedMin,
                 end: Sit.targetSpeedMax,

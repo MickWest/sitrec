@@ -245,10 +245,15 @@ export class CCustomManager {
         })
     }
 
+
+
     // after setting up a custom scene, call this to perform the mods
     // i.e. load the files, and then apply the mods
     deserialize(sitchData) {
         console.log("Deserializing custom sitch")
+
+
+
         const loadingPromises = [];
         if (sitchData.loadedFiles) {
             // load the files as if they have been drag-and-dropped in

@@ -58,12 +58,13 @@ class CNode {
         this.visible = true;            // some nodes are display nodes
         this.enabled = true;            // some nodes are switchable, but most ignore this flag
         this.addInputs(v.inputs)
-        if (v.id != undefined) {
+        if (v.id !== undefined) {
             this.id = v.id
         } else {
             // if no node id is given, then make a unique one
             this.id = this.constructor.name + NodeMan.UniqueNodeNumber++;
             console.log("Node with unique ID: " + this.id + " created, class = " + this.constructor.name);
+            assert(0, "anonymous nodes not supported!")
         }
 
     //    this.debugNodeNumber = debugNodeNumber++;

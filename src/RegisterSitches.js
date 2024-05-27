@@ -71,6 +71,20 @@ export function registerSitches(textSitches) {
     }
 }
 
+
+// legacy support, should be able to load this:
+// http://localhost/sitrec/?custom=http://localhost/sitrec-upload/99999999/Custom-e1a4054f13b50b451d3da6558d83b413.js
+
+const legacyReplacements = [
+    "CNodeGUIValue2", "startDistanceGUI",
+    "CNodeGUIValue3", "targetVCGUI",
+    "CNodeGUIValue4", "targetSpeedGUI",
+    "CNodeGUIValue13", "videoBrightness",
+    "CNodeGUIValue14", "videoContrast",
+    "CNodeGUIValue15", "videoBlur",
+]
+
+
 export function textSitchToObject(text) {
 // we have a text sitch, which starts with something like:
     // sitch = {
@@ -80,7 +94,15 @@ export function textSitchToObject(text) {
     // so we first convert it into a JSON comatible format
     // then parse it as JSON
 
-    const data = text;
+    let data = text;
+
+    // replace any legacy names
+    for (let i = 0; i < legacyReplacements.length; i += 2) {
+        const legacyName = legacyReplacements[i];
+        const newName = legacyReplacements[i+1];
+        data = data.replace(new RegExp(legacyName, 'g'), newName);
+    }
+
 
     try {
         const obj = parseJavascriptObject(data)
