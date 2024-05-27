@@ -179,6 +179,7 @@ export class CCustomManager {
                 "starScale",
                 "satScale",
                 "satCutOff",
+                "markerIndex",
             ]
 
             const globalsNeeded = [

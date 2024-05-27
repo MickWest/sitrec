@@ -49,6 +49,10 @@ export const SitFAA2023 = {
         this.markerIndex = 0;
         this.numMarkers = 0;
 
+        if (this.Sit !== undefined && this.Sit.markerIndex !== undefined) {
+            this.markerIndex = this.Sit.markerIndex;
+        }
+
         // for each row, get time, lat, lon, alt
         for (let i = 0; i < csv.length; i++) {
             const row = csv[i]
