@@ -67,7 +67,7 @@ import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
 import {CFileManager} from "./CFileManager";
 import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
-import {removeMeasurementUI} from "./nodes/CNodeLabels3D";
+import {removeMeasurementUI, setupMeasurementUI} from "./nodes/CNodeLabels3D";
 import {imageQueueManager} from "./js/get-pixels-mick";
 import {disposeGimbalChart} from "./JetChart";
 import {CNodeMath} from "./nodes/CNodeMath";
@@ -533,6 +533,7 @@ async function setupFunctions() {
     // before we do setup
     await waitForParsingToComplete();
 
+    setupMeasurementUI(); // bit of an odd one - setting up the measurement measure ment grounp and UI
 
 //
 // Now that the assets are loaded, we can setup the situation

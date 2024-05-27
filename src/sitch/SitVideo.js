@@ -7,6 +7,7 @@ export const SitVideo = {
     menuName: "Video Viewer",
     isTextable: false,
 
+    framesFromVideo: true,
 
     fps: 30,
     frames: 0,

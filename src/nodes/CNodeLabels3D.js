@@ -20,7 +20,9 @@ export const measurementUIVars = {
 // a global flag to show/hide all measurements
 let measurementUIDdone = false;
 let measureArrowGroupNode = null;
-function setupMeasurementUI() {
+
+// adds a new group for measurements, and a GUI controller to toggle it.
+export function setupMeasurementUI() {
     if (measurementUIDdone) return;
     measurementUIDdone = true;
 
@@ -81,7 +83,7 @@ export class CNodeLabel3D extends CNode3DGroup {
         this.sprite.center = V2(v.centerX ?? 0.5, v.centerY ?? 0.5);
         this.offset = V2(v.offsetX ?? 0, v.offsetY ?? 0);
 
-        setupMeasurementUI();
+//        setupMeasurementUI();
 
     }
 

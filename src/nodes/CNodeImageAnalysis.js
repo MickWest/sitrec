@@ -157,19 +157,23 @@ export class CNodeImageAnalysis extends CNodeImageView {
             inputs: {
 
                 compare: new CNodeGraphSeries({
-                    source: new CNodeArray({array:this.columns,}),
+                    id: "rgbGraph",
+                    source: new CNodeArray({id: "rgbGraphArray", array:this.columns,}),
                     color: "#800000",
                 }),
                 compare1: new CNodeGraphSeries({
-                    source: new CNodeArray({array:[],}),
+                    id: "gGraph",
+                    source: new CNodeArray({id: "gGraphArray", array:[],}),
                     color: "#008000",
                 }),
                 compare2: new CNodeGraphSeries({
-                    source: new CNodeArray({array:[],}),
+                    id: "bGraph",
+                    source: new CNodeArray({id: "bGraphArray", array:[],}),
                     color: "#000080",
                 }),
                 compare3: new CNodeGraphSeries({
-                    source: new CNodeArray({array:[],}),
+                    id: "rGraph",
+                    source: new CNodeArray({id: "rGraphArray", array:[],}),
                     color: "#000000",
                 }),
             },
