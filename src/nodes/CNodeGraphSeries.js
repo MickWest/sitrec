@@ -5,6 +5,9 @@ import {CNodeCloudData} from "./CNodeCloudData";
 
 export class CNodeGraphSeries extends CNode {
     constructor(v) {
+        if (v.id === undefined && v.name !== undefined) {
+            v.id = v.name;
+        }
         super(v);
         this.name = v.name ?? "??"
         this.color = v.color ?? "#00FF00"  // default to green line

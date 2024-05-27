@@ -11,6 +11,7 @@ import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {par} from "../par";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
+import {assert} from "../utils";
 
 
 export const measurementUIVars = {
@@ -230,9 +231,11 @@ export class CNodeMeasureAB extends CNodeLabel3D {
 export class CNodeMeasureAltitude extends CNodeMeasureAB {
     constructor(v) {
 
+        assert(v.id !== undefined, "CNodeMeasureAltitude id is undefined")
         v.A = v.position; // we are going to add an AB measure, so we need A
 // we are going to munge the position to get the altitude
         const B = new CNodeMunge({
+            id: v.id + "_Below",
             inputs: {source: v.A},
             munge: (f) => {
                 let B;

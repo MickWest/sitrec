@@ -154,6 +154,7 @@ export function makeMunge(node, index1, index2, scale=1) {
     var localScale = scale;
     node = NodeMan.get(node)
     return new CNodeMunge({
+        id:node.id+"_munge",
         inputs:{n:node},
         name: "generic",
         munge: function (f){

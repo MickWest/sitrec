@@ -69,7 +69,7 @@ export class CNode3DGroup extends CNode3D {
                 }
             }
 
-            v[name] = new CNodeConstant({value: colorObject})
+            v[name] = new CNodeConstant({id:this.id+"_colorInput", value: colorObject})
         }
 
     }

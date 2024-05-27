@@ -140,7 +140,7 @@ export class CNodeDisplayWindArrow extends CNode {
         this.input("source")
         this.input("displayOrigin",true)
         if (!this.in.displayOrigin) {
-            this.addInput("displayOrigin", new CNodeOrigin({}))
+            this.addInput("displayOrigin", new CNodeOrigin({id:"displayOrigin"}))
         }
         this.arrowColor = v.arrowColor ?? "white"
         this.recalculate();

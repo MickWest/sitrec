@@ -704,22 +704,24 @@ export function SetupTrackLOSNodes() {
     }
 
     console.log("+++ JetTrackDisplayNode")
-    var JetTrackDisplayNode = new CNodeDisplayTrack({
+    new CNodeDisplayTrack({
+        id: "jetTrackDisplayNode",
         track: "jetTrack",
-        color: new CNodeConstant({value: new Color(0, 1, 1)}),
-        secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0.75)}),
+        color: new CNodeConstant({id: "jetTrackColor", value: new Color(0, 1, 1)}),
+        secondColor:    new CNodeConstant({id: "jetTrackColor2", value: new Color(0, 0.75, 0.75)}),
         width: 3,
         depthFunc:AlwaysDepth,
         toGround:60,
     })
 
     console.log("+++ LOSTraverseDisplayNode")
-    var LOSTraverseDisplayNode = new CNodeDisplayTrack({
+    new CNodeDisplayTrack({
+        id: "LOSTraverseDisplayNode",
         inputs: {
             track: "LOSTraverseSelect",
-            color:          new CNodeConstant({value: new Color(0, 1, 0)}),
-            secondColor:    new CNodeConstant({value: new Color(0, 0.75, 0)}),
-            width:          new CNodeConstant({value: 3}),
+            color:          new CNodeConstant({id: "losTraverseColor", value: new Color(0, 1, 0)}),
+            secondColor:    new CNodeConstant({id: "losTraverseColor2",value: new Color(0, 0.75, 0)}),
+            width:          new CNodeConstant({id: "losTraverseWidth",value: 3}),
         },
         frames: Sit.frames,
         depthFunc:AlwaysDepth,
@@ -746,6 +748,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
     // It's the distance of the start of the traverse along the first LOS
     if (!NodeMan.exists("startDistance")) {
         new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
+            id: "startDistanceGUI",
             value: Sit.startDistance,
             start: Sit.startDistanceMin,
             end: Sit.startDistanceMax,
@@ -1092,6 +1095,7 @@ export function SetupCommon(altitude=25000) {
 
     console.log("+++ cloudAltitude Node")
     scaleNodeF2M("cloudAltitude", new CNodeGUIValue({
+        id: "cloudAltitudeGUI",
         value: 11740,           // Was 9500 when we had refraction adjusted Earth radius, not it's all wgs84.RADIUS
         start: 0,
         end: 26000,

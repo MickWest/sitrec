@@ -493,6 +493,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "focalLenController":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
+                id:data.id,
                 focalLength: data.source,
                 referenceFocalLength: data.len,
                 referenceFOV: data.fov,
@@ -502,6 +503,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "fovController":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("FOV", {
+                id:data.id,
                 source: data.source,
             })
             break;
@@ -509,6 +511,7 @@ export function SetupFromKeyAndData(key, _data) {
         case "matrixController":
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("Matrix", {
+                id:data.id,
                 source: data.source,
             })
             break;
@@ -535,6 +538,7 @@ export function SetupFromKeyAndData(key, _data) {
 
             // and add a focal length controller based on this.
             NodeMan.get(data.object ?? "lookCamera").addController("FocalLength", {
+                id:data.id,
                 focalLength: "focalLengthsNode",
                 referenceFocalLength: data.len,
                 referenceFOV: data.fov,

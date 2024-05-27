@@ -313,7 +313,9 @@ class CNode {
             }
             else {
                 // it's a number, so wrap it in a CNodeConstant
-                node = new CNodeConstant({value: nodeID})
+                node = new CNodeConstant({
+                    id: this.id+"_"+key,  // give it a unique id from node id plus input key
+                    value: nodeID})
             }
         }
 

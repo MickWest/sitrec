@@ -189,6 +189,7 @@ export var SitGoFast = {
                 'Az Editor': "azEditor",
                 'Az Gimbal Video': "azCSVGoFast",
                 'Linear': new CNodeInterpolate({
+                    id: "interpolateAzLinear",
                     start: -43, startFrame: 383,
                     end: -57, endFrame: 982,
                     frames: Sit.frames,
@@ -206,8 +207,9 @@ export var SitGoFast = {
         new CNodeSwitch({
                 id: "bank",
                 inputs: {
-                    "Recorded Angle": new CNodeArray({array: this.GoFastBank}),
+                    "Recorded Angle": new CNodeArray({id: "GoFastBankArray", array: this.GoFastBank}),
                     "User Bank Angle": new CNodeGUIValue({
+                        id: "UserBankAngleGUI",
                         value: -11,
                         desc: "User Bank Angle",
                         start: -20,
@@ -224,7 +226,7 @@ export var SitGoFast = {
         new CNodeTurnRateBS({
             id: "turnRateBS",
             inputs: {
-                speed: new CNodeWatch({ob: par, watchID: "TAS"}),
+                speed: new CNodeWatch({id: "watch_TAS", ob: par, watchID: "TAS"}),
                 bank: "bank"
             }
         })
@@ -237,6 +239,7 @@ export var SitGoFast = {
                 //        "Curve Editor": turnRateEditorNode,
                 "From Bank and Speed": "turnRateBS",
                 "User Constant": new CNodeGUIValue({
+                    id: "UserTurnRateGUI",
                     value: -1.6,
                     desc: "User Turn Rate",
                     start: -3,
@@ -306,7 +309,7 @@ export var SitGoFast = {
 
         new CNodeMunge({
             id: "GoFastRNG",
-            inputs: {NM: new CNodeArray({array: this.GoFastRNG})},
+            inputs: {NM: new CNodeArray({id:"gofastRNGArray",  array: this.GoFastRNG})},
             munge: function (f) {
                 return this.in.NM.v(f)
             }
@@ -323,8 +326,8 @@ export var SitGoFast = {
         new CNodeInterpolateTwoFramesTrack({
             id: "LOSTwoPoint",
             source: "LOSTraverseRNG",
-            start: new CNodeConstant({value:Sit.aFrame}),
-            end: new CNodeConstant({value:Sit.bFrame}),
+            start: new CNodeConstant({id:"twoPointStart", value:Sit.aFrame}),
+            end: new CNodeConstant({id: "twoPointEnd", value:Sit.bFrame}),
         })
 
         SetupTraverseNodes("LOSTraverseSelect",{
@@ -351,6 +354,7 @@ export var SitGoFast = {
         // TODO: Az and El in the display will need updating..
 
         new CNodeDisplayLOS({
+            id: "DisplayJetLOS2",
             inputs: {
                 LOS: "JetLOS2",
             },
@@ -419,15 +423,16 @@ export var SitGoFast = {
             inputs: {
                 //     OceanData: OceanDataNode,
                 radius: "radiusMiles",
-                material: new CNodeConstant({value: waterMaterial})
+                material: new CNodeConstant({id: "oceanMaterial", value: waterMaterial})
             },
         })
 
         console.log("+++ LOSGroundTrackDisplayNode")
-        var LOSGroundTrackDisplayNode = new CNodeDisplayTrack({
+        new CNodeDisplayTrack({
+            id: "LOSGroundTrackDisplayNode",
             inputs: {
                 track: "LOSGroundTrack",
-                color: new CNodeConstant({value: new Color(1, 0, 1)}),
+                color: new CNodeConstant({id: "GroundTrackColor", value: new Color(1, 0, 1)}),
                 //   width: new CNodeConstant({value: 3}),
                 width: "groundTrackWidth",
             },
@@ -438,6 +443,7 @@ export var SitGoFast = {
 // look view is the view from the ATFLIR
 
         addControllerTo("lookCamera", "TrackToTrack", {
+            id: "lookTrackToTrack",
             sourceTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
         })
@@ -462,7 +468,7 @@ export var SitGoFast = {
             id: "DisplayLOStoGround",
             cameraTrack: "JetLOS",
             targetTrack: "LOSGroundTrack",
-            color: new CNodeConstant({value: new Color(1, 1, 1)}),
+            color: new CNodeConstant({id: "DisplayLOStoGround_color", value: new Color(1, 1, 1)}),
             width: 0.5,
 
         })
@@ -472,16 +478,17 @@ export var SitGoFast = {
             id: "DisplayLOS",
             cameraTrack: "JetLOS",
             targetTrack: "LOSTraverseSelect",
-            color: new CNodeConstant({value: new Color(1, 1, 1)}),
+            color: new CNodeConstant({id: "DisplayLOSColor", value: new Color(1, 1, 1)}),
             width: 2,
 
         })
 
         new CNodeDisplayTargetSphere({
+            id: "DisplayTargetSphere",
             inputs: {
                 track: "LOSTraverseSelect",
                 size: new CNodeScale("sizeScaled", scaleF2M,
-                    new CNodeGUIValue({value: Sit.targetSize, start: 1, end: 50, step: 0.1, desc: "Target size ft"}, gui)
+                    new CNodeGUIValue({id: "DisplayTargetSphere_size",value: Sit.targetSize, start: 1, end: 50, step: 0.1, desc: "Target size ft"}, gui)
                 )
             },
             

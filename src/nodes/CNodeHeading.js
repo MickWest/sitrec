@@ -13,7 +13,7 @@ export class CNodeHeading extends CNode {
         // which is traditionally what was used for Gimbal and Gofast
         this.input("jetOrigin",true)
         if (!this.in.jetOrigin) {
-            this.addInput("jetOrigin", new CNodeOrigin({}))
+            this.addInput("jetOrigin", new CNodeOrigin({id: "jetOrigin"}))
         }
 
         this.setGUI(v, guiMenu)

@@ -16,6 +16,10 @@ export class CNodeGUIConstant extends CNodeConstant {
 export class CNodeGUIValue extends CNodeGUIConstant {
     constructor(v, _guiMenu) {
 
+        if (v.id === undefined && v.desc !== undefined) {
+            v.id = v.desc;
+        }
+
         super(v);
 
         if (isLocal)

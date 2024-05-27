@@ -53,13 +53,19 @@ export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
 
 export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     constructor(v) {
+
+        const cameraNode = NodeMan.get(v.camera ?? "lookCamera")
+        if (v.id === undefined) {
+            v.id = cameraNode.id+"_Frustum";
+        }
+
         v.color ??= "white";
         v.layers ??= LAYER.MASK_HELPERS;
        // v.container = v.camera;
         super(v);
         this.radius = v.radius ?? 100
         this.input("targetTrack",true)
-        this.cameraNode = NodeMan.get(v.camera ?? "lookCamera")
+        this.cameraNode = cameraNode;
         this.camera = this.cameraNode.camera;
 
         this.color = v.color.v();
