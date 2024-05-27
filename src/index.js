@@ -109,7 +109,6 @@ if (urlParams.get("custom")) {
         console.log("Result = "+data)
 
         const sitchObject = textSitchToObject(data);
-        par.name = "CUSTOM";
         setSit(new CSituation(sitchObject))
 
 
@@ -141,6 +140,7 @@ if (urlParams.get("custom")) {
 
         // and that's it
         setSit(new CSituation(sitchObject))
+        par.name = Sit.menuName;
 
     });
 
@@ -261,9 +261,13 @@ async function newSitch(situation, customSetup = false ) {
     } else {
         // if it's custom, then "situation" is a sitch data file
         // i.e. the text of a text based sitch
-        par.name = "CUSTOM";
         setSit(new CSituation(situation))
     }
+
+    console.log("Setting up new sitch: "+situation+ " Sit.menuName = "+Sit.menuName+ " Sit.name = "+Sit.name);
+
+    par.name = Sit.menuName;
+
     legacySetup();
     await setupFunctions();
     startAnimating(Sit.fps);
