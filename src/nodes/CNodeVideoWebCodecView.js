@@ -35,6 +35,25 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
     }
 
+    toSerializeCNodeVideoCodecView = ["fileName"]
+
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            ...this.simpleSerialize(this.toSerializeCNodeVideoCodecView)
+
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        this.simpleDeserialize(v, this.toSerializeCNodeVideoCodecView)
+        this.positioned = true;
+    }
+
+
+
+
     addLoadingMessage() {
         if (this.overlay)
             this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
@@ -99,6 +118,14 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
     loadedCallback() {
         this.removeText();
+        // if we loaded from a mod or custom
+        // then we might want to set the frame nubmer
+
+        if (Sit.pars !== undefined && Sit.pars.frame !== undefined) {
+            par.frame = Sit.pars.frame;
+        }
+
+
     }
 
     errorCallback() {

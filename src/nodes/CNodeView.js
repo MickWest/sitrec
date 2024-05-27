@@ -152,18 +152,18 @@ class CNodeView extends CNode {
     //     }
     // }
 
-    toSerial = ["left","top","width","height","visible","preFullScreenVisible","doubled","preDoubledLeft","preDoubledTop","preDoubledWidth","preDoubledHeight"];
+    toSerialCNodeView = ["left","top","width","height","visible","preFullScreenVisible","doubled","preDoubledLeft","preDoubledTop","preDoubledWidth","preDoubledHeight"];
 
-    simpleSerialize() {
+    simpleSerialize(list) {
         let result = {}
-        for (let key of this.toSerial) {
+        for (let key of list) {
             result[key] = this[key]
         }
         return result;
     }
 
-    simpleDeserialize(v) {
-        for (let key of this.toSerial) {
+    simpleDeserialize(v, list) {
+        for (let key of list) {
             this[key] = v[key]
         }
     }
@@ -171,14 +171,14 @@ class CNodeView extends CNode {
     modSerialize() {
         return {
             ...super.modSerialize(),
-            ...this.simpleSerialize()
+            ...this.simpleSerialize(this.toSerialCNodeView)
         };
     }
 
     // need to also handle full screen state....
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.simpleDeserialize(v)
+        this.simpleDeserialize(v,this.toSerialCNodeView)
         this.updateWH();
         this.setVisible(v.visible)
     }

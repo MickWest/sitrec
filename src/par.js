@@ -12,7 +12,19 @@ export function resetPar() {
         jetRoll: 0,
 
         time: 0,
-        frame: 0,
+
+        _frame: 0,
+
+        // settor and gettor for frame
+        get frame() {
+            return this._frame;
+        },
+        set frame(value) {
+            this._frame = value;
+            this.renderOne = true;
+        },
+
+
         glareStartAngle: 90 - 32.3,  // 26.6, (32.3 for keyframes, 26.6 for auto)
         initialGlareRotation: 6,
         paused: false,

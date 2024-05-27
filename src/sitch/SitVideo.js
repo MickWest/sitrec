@@ -29,6 +29,11 @@ export const SitVideo = {
         // the first one to load
         this.file ="Aguadilla"
 
+        // patch in any modded video, to avaoid loading twice.
+        if (Sit.Sit !== undefined && Sit.Sit.file !== undefined) {
+            this.file = Sit.Sit.file;
+        }
+
         let maybeVideo =  GlobalURLParams.get("video")
         if (maybeVideo) {
             maybeVideo = maybeVideo.toLowerCase()

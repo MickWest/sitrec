@@ -271,7 +271,6 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
                 var scale = 0.90;
                 if (e.deltaY > 0) {
 //                    this.in.zoom.value *= 0.6666
-                    scale
                 } else {
 //                    this.in.zoom.value *= 1 / 0.6666
                     scale = 1 / scale
@@ -315,6 +314,22 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         })
     }
 
+    toSerializeCNodeVideoView = ["posLeft", "posRight", "posTop", "posBot"]
+
+    modSerialize() {
+            return {
+                ...super.modSerialize(),
+                ...this.simpleSerialize(this.toSerializeCNodeVideoView)
+
+            }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        this.simpleDeserialize(v, this.toSerializeCNodeVideoView)
+        this.positioned = true;
+    }
+
     render(frame = 0) {
         super.render(frame); // needed for setting window size
 
@@ -332,10 +347,13 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
            //  ctx.fillRect(0, 0, this.canvas.width/3, this.canvas.height);
 
             // image width might change, for example, with the tiny images used by the old Gimbal video
-            if (!this.positioned || this.imageWidth !== image.width) {
-                console.log("Image width changed from "+this.imageWidth+" to "+image.width)
+            if (this.imageWidth !== image.width) {
+                console.log("Image width changed from " + this.imageWidth + " to " + image.width)
                 this.imageWidth = image.width;
                 this.imageHeight = image.height;
+            }
+
+            if (!this.positioned) {
                 this.defaultPosition()
             }
             // positions are a PERCENTAGE OF THE WIDTH

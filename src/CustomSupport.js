@@ -175,6 +175,10 @@ export class CCustomManager {
                 "integrate",
             ]
 
+            const SitNeeded = [
+                "file",
+            ]
+
             const globalsNeeded = [
                 "showMeasurements"
             ]
@@ -211,6 +215,18 @@ export class CCustomManager {
                 }
             }
             out.globals = globals;
+
+            // this will be accessible in Sit.Sit, eg. Sit.Sit.file
+            let SitVars = {}
+            for (let key of SitNeeded) {
+                if (Sit[key] !== undefined) {
+                    SitVars[key] = Sit[key]
+                }
+            }
+            out.Sit = SitVars;
+
+
+
 
 
             // MORE STUFF HERE.......
@@ -298,6 +314,14 @@ export class CCustomManager {
                 for (let key in sitchData.globals) {
                     console.warn("Applying global "+key+" with value "+sitchData.globals[key])
                     Globals[key] = sitchData.globals[key]
+                }
+            }
+
+            // and Sit
+            if (sitchData.Sit) {
+                for (let key in sitchData.Sit) {
+                    console.warn("Applying Sit "+key+" with value "+sitchData.Sit[key])
+                    Sit[key] = sitchData.Sit[key]
                 }
             }
 
