@@ -1184,6 +1184,10 @@ export function initJetStuff() {
     podCamera.position.set(-20, LocalFrame.position.y + 20, -40)
     podCamera.lookAt(new Vector3(0, LocalFrame.position.y, 0));
 
+
+    // wrap these other cameras in nodes
+    var podCameraNode = new CNodeCamera({id:"podCamera", camera: podCamera})
+
 // 0 - podhead
     const viewPod = new CNodeView3D({
         id: "podBackView",
@@ -1195,7 +1199,7 @@ export function initJetStuff() {
         draggable: true,
         resizable: true,
         freeAspect: true,
-        camera: podCamera,
+        camera: podCameraNode,
         renderFunction: function () {
             if (PODBack) {
                 //   PODBack.visible = false;
@@ -1223,6 +1227,8 @@ export function initJetStuff() {
     podsEyeCamera.layers.disable(LAYER.HELPERS)
     podsEyeCamera.layers.enable(LAYER.podsEye)
 
+    let podsEyeCameraNode = new CNodeCamera({id:"podsEyeCamera", camera: podsEyeCamera})
+
     new CNodeView3D({
         id: "podsEyeView",
 
@@ -1234,7 +1240,7 @@ export function initJetStuff() {
         fov: 1,
         draggable: true,
         resizable: true,
-        camera: podsEyeCamera,
+        camera: podsEyeCameraNode,
         renderFunction: function () {
             if (!Ball) return;
             // we want the camera to be based on the ball orientation
@@ -1269,6 +1275,8 @@ export function initJetStuff() {
     podsEyeDeroCamera.layers.enable(LAYER.podsEye)
     podsEyeDeroCamera.lookAt(new Vector3(0, 0, -1));
 
+    let podsEyeDeroCameraNode = new CNodeCamera({id:"podsEyeDeroCamera", camera: podsEyeDeroCamera})
+
     new CNodeView3D({
         id: "podsEyeViewDero",
         visible: false,
@@ -1278,7 +1286,7 @@ export function initJetStuff() {
         fov: 10,
         draggable: true,
         resizable: true,
-        camera: podsEyeDeroCamera,
+        camera: podsEyeDeroCameraNode,
         renderFunction: function () {
             if (!Ball) return;
             if (this.camera.parent == null) {
