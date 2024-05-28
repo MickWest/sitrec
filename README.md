@@ -66,7 +66,9 @@ https://nodejs.org/en/download
 Node.js is used both for build tools (i.e. webpack) and for packages used by the app. It is not used server-side. 
 
 ## Create Source file and folder structure
-Sitrec is built from the sitrec folder. Clone it from Github, or download a release archive. This will give you sitrec with these sub-folders:
+Sitrec is built from the "sitrec" project folder. Note this is NOT the same "sitrec" server folder you deploy to.  
+
+Clone Sitrec from Github, or download a release archive. This will give you the sitrec project folder with these sub-folders:
 - `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
 - `readmeImages` - Documenation images used by this .md file, and maybe others
 - `sitrecServer` - The server-side PHP files, like cachemaps.php
