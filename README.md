@@ -65,7 +65,7 @@ https://nodejs.org/en/download
 
 Node.js is used both for build tools (i.e. webpack) and for packages used by the app. It is not used server-side. 
 
-## Create Source file and folder structure
+## Create Source file and sitrec project folder structure
 Sitrec is built from the "sitrec" project folder. Note this is NOT the same "sitrec" server folder you deploy to.  
 
 Clone Sitrec from Github, or download a release archive. This will give you the sitrec project folder with these sub-folders:
@@ -159,6 +159,7 @@ This will create the folder node_modules, which will (currently) have 218 folder
 
 ## Build the dev app with node.js and Webpack
 
+In the sitrec _project_ folder, run 
 ```bash
 npm run build
 ```
