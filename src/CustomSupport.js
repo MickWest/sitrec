@@ -3,7 +3,7 @@
 import {FileManager, Globals, gui, NodeMan, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
-import {assert} from "./utils";
+import {assert, getShortURL} from "./utils";
 import {isKeyHeld} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
@@ -257,7 +257,9 @@ export class CCustomManager {
                 // and make a URL that points to the new sitch
                 let customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
 
-                createCustomModalWithCopy(customLink)();
+                getShortURL(customLink).then((shortURL) => {
+                    createCustomModalWithCopy("https://"+shortURL)();
+                })
             })
 
 

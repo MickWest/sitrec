@@ -2,7 +2,7 @@ import {
     areArrayBuffersEqual, arrayBufferToString,
     assert,
     cleanCSVText,
-    getFileExtension,
+    getFileExtension, getShortURL,
     isHttpOrHttps, stringToArrayBuffer,
     versionString, writeToClipboard
 } from "./utils";
