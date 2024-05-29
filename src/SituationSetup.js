@@ -975,6 +975,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             })
 
             new CNodeDisplayTargetSphere({
+                id: "LOSTargetDisplayGroundRelative",
                 track: "LOSTargetTrack",
                 size: new CNodeScale("sizeScaledLOS", scaleF2M,
                     new CNodeGUIValue({
@@ -990,6 +991,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             })
 
             new CNodeDisplayTargetSphere({
+                id: "LOSTargetDisplayWindRelative",
                 track: "LOSTargetWithWindTrack",
                 size: "sizeScaledLOS",
                 layers: LAYER.MASK_LOOK,
