@@ -60,7 +60,7 @@ export class CNodeDerivative extends CNode {
 export class CNodeGForce extends CNode{
     constructor(node,components=[1,1,1],windNode) {
         node = NodeMan.get(node)
-        super({})
+        super({id:node.id+"_gForce"+components.join("")})
         this.addInput("source", node);
         if (windNode) this.addInput("wind", windNode)
         this.frames = node.frames;

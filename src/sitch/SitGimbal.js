@@ -154,32 +154,32 @@ const GimbalDefaults = {
 
         new CNodeFleeter({id:"fleeter01",
             ...fleetDefaults,
-            turnFrame: new CNodeMunge({inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)+2.1)}}),   // when do we start to turn
+            turnFrame: new CNodeMunge({id: "tf1", inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)+2.1)}}),   // when do we start to turn
             offX: -2, offY:0, offZ: -1, // offset in NM
         })
 
 
         new CNodeFleeter({id:"fleeter02",
             ...fleetDefaults,
-            turnFrame: new CNodeMunge({inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)+1.2)}}),   // when do we start to turn
+            turnFrame: new CNodeMunge({id: "tf2", inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)+1.2)}}),   // when do we start to turn
             offX: -1, offY:0, offZ: -2, // offset in NM
         })
 
         new CNodeFleeter({id:"fleeter03",
             ...fleetDefaults,
-            turnFrame: new CNodeMunge({inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)-1.2)}}),   // when do we start to turn
+            turnFrame: new CNodeMunge({id: "tf3", inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)-1.2)}}),   // when do we start to turn
             offX: 0, offY:0, offZ: -3, // offset in NM
         })
 
         new CNodeFleeter({id:"fleeter04",
             ...fleetDefaults,
-            turnFrame: new CNodeMunge({inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)-2.1)}}),   // when do we start to turn
+            turnFrame: new CNodeMunge({id: "tf4", inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0)-2.1)}}),   // when do we start to turn
             offX: 1, offY:0, offZ: -2, // offset in NM
         })
 
         new CNodeFleeter({id:"fleeter05",
             ...fleetDefaults,
-            turnFrame: new CNodeMunge({inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0))}}),   // when do we start to turn
+            turnFrame: new CNodeMunge({id: "tf5", inputs: {t:"fleetTurnStart"}, frames:0, munge: function(f) {return 30*(this.in.t.v(0))}}),   // when do we start to turn
             offX: 2, offY:0, offZ: -1, // offset in NM
         })
 
@@ -237,6 +237,7 @@ const GimbalDefaults = {
             new CNodeGraphSeries({
                 inputs: {
                     source: new CNodeTraverseAngularSpeed({
+                        id: "transverseAngularSpeed",
                         inputs: {
                             track: "jetTrack",
                             traverse: "LOSHorizonTrack",
@@ -256,6 +257,7 @@ const GimbalDefaults = {
         // blue = actual turn rate
         NodeMan.get("cloudSpeedEditor").editorView.addInput("compare1",
             new CNodeGraphSeries({
+                id: "SimTurnRate",
                 inputs: {source: "turnRate"},
                 name: "Sim Turn Rate",
                 color: "#8080F0",
@@ -270,8 +272,10 @@ const GimbalDefaults = {
 
         azEditorNode.editorView.addInput("compare",
             new CNodeGraphSeries({
+                id: "azGraphSources",
                 inputs: {
                     source: new CNodeMunge({
+                        id: "azSourcesMarkus",
                         inputs: {az: "azMarkus"}, munge: function (f) {
                             return this.in.az.getValueFrame(f)
                         }
@@ -284,6 +288,7 @@ const GimbalDefaults = {
 
         azEditorNode.editorView.addInput("compare1",
             new CNodeGraphSeries({
+                id: "azSources1",
                 inputs: { source: "azSources"},
                 name: "Selected Az",
                 color: "#8080F0",
@@ -293,8 +298,10 @@ const GimbalDefaults = {
 
         azEditorNode.editorView.addInput("compare2",
             new CNodeGraphSeries({
+                id:"azSources2",
                 inputs: {
                     source: new CNodeMunge({
+                        id: "azSourcesMunge",
                         inputs: {az: "azSources"}, munge: function (f) {
                             if (f==0) f=1;
                             return (this.in.az.v(f)-this.in.az.getValue(f-1))*10
@@ -343,8 +350,7 @@ const GimbalDefaults = {
         new CNodeDisplayTrack({
             id:"AirTrackDisplay",
             track: "airTrack",
-            color: new CNodeConstant({value: new Color(0, 0.5, 1)}),
-       //     secondColor:    new CNodeConstant({value: new Color(0, 0, 0.75)}),
+            color: [0, 0.5, 1],
 
             width: 1,
             visibleCheck: (()=> {return ViewMan.get("SAPage").buttonBoxed(16)}),
@@ -407,6 +413,7 @@ export const SitGimbal = {
     setup2: function () {
 
         new CNodeDisplayTargetModel({
+            id: "targetModel",
             inputs: {
                 track: "LOSTraverseSelect",
                 // the size node has the UI in feet, but returns meters
@@ -430,6 +437,7 @@ export const SitGimbal = {
         })
 
         new CNodeDisplayTargetSphere({
+            id: "targetSphere",
             inputs: {
                 track: "LOSTraverseSelect",
                 size: "sizeScaled",
@@ -598,9 +606,10 @@ function SetupAzInputs() {
     azSourceInputs = {
         ...azSourceInputs,
         'Az Editor': "azEditor",
-        'Az Unsmoothed': new CNodeArray({array: Sit.CSV.map(row => -row[4])}),
+        'Az Unsmoothed': new CNodeArray({id:"AzArray", array: Sit.CSV.map(row => -row[4])}),
         //    'Cue Dot smoothed': new CNodeArray({array: Sit.CSV_Pip}),
         'Linear': new CNodeInterpolate({
+            id: "azLinearInterpolate",
             start: -54, startFrame: 18,
             end: 7, endFrame: 1023,
             frames: Sit.frames,
@@ -643,7 +652,7 @@ export function SetupGimbal() {
     new CNodeSwitch({
             id: "bank",
             inputs: {
-                "Recorded Angle": new CNodeArray({array: Sit.CSV.map(row => -parseFloat(row[3]))}),
+                "Recorded Angle": new CNodeArray({id:"recordedAngle", array: Sit.CSV.map(row => -parseFloat(row[3]))}),
                 "User Bank Angle": new CNodeGUIValue({ id: "userBankAngle",
                     value: -35, desc: "User Bank Angle", start: -40, end: -20, step: 0.1
                 }, guiJetTweaks),
@@ -657,11 +666,11 @@ export function SetupGimbal() {
     new CNodeSwitch({
         id: "glareAngle",
         inputs: {
-            "Unsmoothed": new CNodeNegate({node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[1]))})}),
-            "Moving Average": new CNodeNegate({node: new CNodeArray({array: Sit.glareAngleSmooth})}),
-            "Markus Smoothed": new CNodeNegate({node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[6]))})}),
-            "MickKeyframe": new CNodeArray({array: Sit.CSV2}),
-            "Markus Keyframe": new CNodeNegate({node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[13]))})}),
+            "Unsmoothed": new CNodeNegate({id: "Unsmoothed", node: new CNodeArray({id: "unsmoothedArray", array: Sit.CSV.map(row => parseFloat(row[1]))})}),
+            "Moving Average": new CNodeNegate({id: "movingAverage", node: new CNodeArray({id: "movingAverageArray", array: Sit.glareAngleSmooth})}),
+            "Markus Smoothed": new CNodeNegate({id: "markusSmoothed", node: new CNodeArray({id: "markusSmoothedArray", array: Sit.CSV.map(row => parseFloat(row[6]))})}),
+            "MickKeyframe": new CNodeArray({id: "MickKeyframe", array: Sit.CSV2}),
+            "Markus Keyframe": new CNodeNegate({id: "markusKeyframe", node: new CNodeArray({id: "markusKeyFrameArray", array: Sit.CSV.map(row => parseFloat(row[13]))})}),
         },
         desc: "NEW Glare Angle",
         default: "Markus Keyframe",
@@ -672,7 +681,7 @@ export function SetupGimbal() {
     }, guiJetTweaks)
 
 
-    new CNodeNegate({id: "recordedCueAz", node: new CNodeArray({array: Sit.CSV.map(row => parseFloat(row[9]))})})
+    new CNodeNegate({id: "recordedCueAz", node: new CNodeArray({id: "recordedCueAzArray", array: Sit.CSV.map(row => parseFloat(row[9]))})})
 
     if(!gui) // the rest is unsupported for now in console mode
         return;
@@ -681,7 +690,7 @@ export function SetupGimbal() {
     new CNodeTurnRateBS({
         id: "turnRateBS",
         inputs: {
-            speed: new CNodeWatch({ob: par, watchID: "TAS"}),
+            speed: new CNodeWatch({id: "watchTAS", ob: par, watchID: "TAS"}),
             bank: "bank"
         }
     })
@@ -707,6 +716,7 @@ export function SetupGimbal() {
     )
 
     var turnRateFromCloudsNode = new CNodeTurnRateFromClouds({
+        id: "turnRateFromClouds",
         inputs: {
             cloudAlt: "cloudAltitude",
             speed: "jetTAS",
@@ -725,6 +735,7 @@ export function SetupGimbal() {
             //      "Curve Editor": turnRateEditorNode,
             "From Bank and Speed": "turnRateBS",
             "User (fine)": new CNodeGUIValue({
+                id: "userTurnRateFine",
                 value: -1.6,
                 desc: "User Turn Rate",
                 start: -2,
@@ -732,6 +743,7 @@ export function SetupGimbal() {
                 step: 0.001
             }, guiJetTweaks),
             "User (large)": new CNodeGUIValue({
+                id: "userTurnRateLarge",
                 value: -1.6,
                 desc: "User Turn Rate",
                 start: -3,

@@ -137,6 +137,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
         if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
             this.cameraFrustum = new CNodeDisplayCameraFrustumATFLIR({
+                id: "cameraFrustumATFLIR",
                 container: LocalFrame,
                 radius: vizRadius,
                 fov: ViewMan.list.podsEyeView.data.camera.fov / 2,

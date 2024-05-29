@@ -34,7 +34,7 @@ export function SetupCloudNodes() {
         inputs: {
             cloudData: "cloudData",
             radius: "radiusMiles",
-            material: new CNodeConstant({value: cloudMaterial}),
+            material: new CNodeConstant({id: "cloudMaterial", value: cloudMaterial}),
             wind: "cloudWind",
             heading: "initialHeading",
         },
@@ -56,7 +56,7 @@ export function SetupCloudNodes() {
     new CNodeDisplayTrack({
         id: "LOSHorizonDisplay",
         track: "LOSHorizonTrack",
-        color: new CNodeConstant({value: new Color(0, 0, 1)}),
+        color: [0, 0, 1],
 
         width: 3,
     })

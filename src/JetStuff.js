@@ -78,6 +78,7 @@ import {CNodeChartView} from "./nodes/CNodeChartView";
 import {Group} from "three";
 import {CNodeHeading} from "./nodes/CNodeHeading";
 import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeInterpolateTwoFramesTrack";
+import {CNodeCamera} from "./nodes/CNodeCamera";
 
 
 var matLineWhite = makeMatLine(0xffffff);
@@ -681,6 +682,7 @@ export function SetupTrackLOSNodes() {
 
     if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
         new CNodeDisplayLOS({
+            id: "JetLOSDisplayNode",
             inputs: {
                 LOS: "JetLOS",
             },

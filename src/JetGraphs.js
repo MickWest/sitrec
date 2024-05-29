@@ -28,8 +28,10 @@ export function AddSizePercentageGraph() {
         },
         displayInputs: {
             compare: new CNodeGraphSeries({
+                id: "sizePercentGraphSeries",
                 inputs: {
                     source: new CNodeMunge({
+                        id: "sizePercentGraphMunge",
                         inputs: {targetTrack: "LOSTraverseSelect", cameraTrack: "jetTrack",},
                         munge: function (f) {
                             let d0 = this.in.targetTrack.p(0)
@@ -161,6 +163,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             compare4: new CNodeGraphSeries({
                 // Munge node to convert a traverse track to speed
                 source: new CNodeMunge({
+                    id: "mungeGlareAngle"+source,
                     inputs: {source: source},
                     munge: function (f) {
                         return getGlareAngleFromFrame(f)
@@ -171,7 +174,9 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             }),
 
             compare5: new CNodeGraphSeries({
+                id: "graphScreenAngle"+source,
                 source: new CNodeTrackScreenAngle({
+                    id: "screenAngle"+source,
                     targetTrack: source,
                     cameraTrack: "jetTrack",
                 }),
@@ -330,8 +335,10 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             inputs: {
 
                 compare1: new CNodeGraphSeries({
+                    id: "graphHorizontalGroundSpeedFleet",
                     // Munge node to convert a traverse track to speed
                     source: new CNodeMunge({
+                        id: "mungeHorizontalGroundSpeedFleet",
                         inputs: {source: "fleeter01"},
                         munge: function (f) {
                             if (f === 0) f = 1;
@@ -447,8 +454,9 @@ export function AddGenericNodeGraph(title, yAxis, nodes, params={}, lines=[]) {
     var inputs = {}
     var compareNumber = 1;
     for (var j=0;j<nodes.length;j++) {
+
         inputs["compare"+compareNumber++] = new CNodeGraphSeries({
-                id: "genericGraph_"+nodes[j].id,
+                id: "genericGraph_"+nodes[j][0],
                 source: munges[j],
                 name: "?????",
                 //     min: 20000, max: 26000,

@@ -91,7 +91,7 @@ export const SitPVS14 = {
         new CNodeDisplayTrack({
             id:"KMLDisplay",
             track: "cameraTrack",
-            color: new CNodeConstant({value: new Color(1, 1, 0)}),
+            color: [1, 1, 0],
             width: 2,
             layers: LAYER.MASK_HELPERS,
         })
@@ -99,8 +99,8 @@ export const SitPVS14 = {
         new CNodeDisplayTrack({
             id:"KMLDisplayMainData",
             track: "cameraTrackData",
-            color: new CNodeConstant({value: new Color(0.7, 0.7, 0)}),
-            dropColor: new CNodeConstant({value: new Color(0.6, 0.6, 0)}),
+            color: [0.7, 0.7, 0],
+            dropColor: [0.6, 0.6, 0],
             width: 1,
             ignoreAB:true,
             layers: LAYER.MASK_HELPERS,
