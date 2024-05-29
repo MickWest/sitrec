@@ -87,7 +87,7 @@ export const SitNellis = {
         absolute: true, // absolute is relative to north, not a jet's boresight
     },
 
-    DisplayLOS: { LOS: "JetLOS", width: 0.5, spacing:120, color: [0, 0.1, 0] },
+    DisplayLOS: {id: "displayJetLOS", LOS: "JetLOS", width: 0.5, spacing:120, color: [0, 0.1, 0] },
 
     targetWind: { kind: "Wind",from: 0, knots: 0, name: "Target", arrowColor: "cyan"},
 
@@ -100,7 +100,8 @@ export const SitNellis = {
 
     startConstantDistance: {kind:"GUIValue", value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Meters)"},
 
-    LOSTraverseConstantDistance: { kind: "LOSTraverse",
+    LOSTraverseConstantDistance: {
+        kind: "LOSTraverse",
         LOS: "JetLOS", startDist: "startConstantDistance",
     },
 
