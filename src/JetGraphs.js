@@ -456,7 +456,7 @@ export function AddGenericNodeGraph(title, yAxis, nodes, params={}, lines=[]) {
     for (var j=0;j<nodes.length;j++) {
 
         inputs["compare"+compareNumber++] = new CNodeGraphSeries({
-                id: "genericGraph_"+nodes[j][0],
+                id: "genericGraph_"+(nodes[j][2].id !== undefined?nodes[j][2].id:nodes[j][2]),
                 source: munges[j],
                 name: "?????",
                 //     min: 20000, max: 26000,

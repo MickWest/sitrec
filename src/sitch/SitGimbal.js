@@ -513,7 +513,7 @@ export const SitGimbalNear = {
             id: "FARLOSTraverseConstantSpeed",
             inputs: {
                 LOS: "JetLOS",
-                startDist: new CNodeConstant({value: 55560}),
+                startDist: new CNodeConstant({id:"startDist", value: 55560}),
                 speed: "speedScaled",
                 wind: "targetWind"
             },
@@ -523,9 +523,10 @@ export const SitGimbalNear = {
 
 
         new CNodeDisplayTrack({
+            id: "FARLOSTraverseConstantSpeedDisplay",
             track: "FARLOSTraverseConstantSpeed",
-            color: new CNodeConstant({value: new Color(1, 1, 0)}),
-            secondColor:    new CNodeConstant({value: new Color(0.75, 0.75, 0)}),
+            color: [1, 1, 0],
+            secondColor: [0.75, 0.75, 0],
             width: 3,
             depthFunc:AlwaysDepth,
             toGround:60,
@@ -533,11 +534,13 @@ export const SitGimbalNear = {
 
 
         new CNodeDisplayTargetModel({
+            id: "targetModel",
             inputs: {
                 track: "LOSTraverseSelect",
                 airTrack: "airTrack",
                 size: new CNodeScale("sizeScaled", scaleF2M,
                     new CNodeGUIValue({
+                        id:"targetSize",
                         value: Sit.targetSize,
                         start: 1,
                         end: 2000,
@@ -554,6 +557,7 @@ export const SitGimbalNear = {
 
 
         new CNodeDisplayTargetSphere({
+            id: "targetSphere",
             inputs: {
                 track: "LOSTraverseSelect",
                 size: "sizeScaled",
