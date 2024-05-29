@@ -165,7 +165,7 @@ class CNodeSwitch extends CNode {
     }
 
     recalculate() {
-//        console.log("CNodeSwitch:recalculate "+this.id)
+        console.log("CNodeSwitch:recalculate "+this.id)
 
         // turn controller on or off
         Object.keys(this.inputs).forEach(key => {
@@ -183,7 +183,7 @@ class CNodeSwitch extends CNode {
         // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {
             if (key !== this.choice) {
-//                console.log("CNode:recalculate HIDE "+this.inputs[key].id)
+                console.log("CNode:recalculate HIDE "+this.inputs[key].id)
                 if (this.inputs[key].outputs.length === 1) {
                 // if the input is only connected to this switch, then hide it
                      this.inputs[key].hide()
@@ -193,10 +193,10 @@ class CNodeSwitch extends CNode {
             }
         })
         // show the selected inputs AFTER all the hiding has been done
-  //      console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
+        console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
         if (Object.keys(this.inputs).length > 0) {
             this.inputs[this.choice].show()
-            this.inputs[this.choice].showActiveSources
+            this.inputs[this.choice].showActiveSources()
         }
     }
 
