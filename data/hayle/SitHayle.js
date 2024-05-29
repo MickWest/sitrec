@@ -35,7 +35,8 @@ export const SitHayle = {
 
     LOSFromCamera: {id: "cameraTrack", cameraNode: "lookCamera"},
 
-    motionTrackLOS: { kind: "LOSMotionTrack",
+    motionTrackLOS: {
+        kind: "LOSMotionTrack",
         cameraTrack: "cameraTrack",
         csv: "hayleCSV",
 
@@ -53,7 +54,7 @@ export const SitHayle = {
         window: 30,
     },
 
-    DisplayLOS: { LOS: "motionTrackLOS", width: 3},
+    DisplayLOS: { id: "displayMotionTrackLOS", LOS: "motionTrackLOS", width: 3},
 
     startDistanceFeet: {value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Ft)"},
 
@@ -69,9 +70,10 @@ export const SitHayle = {
 
     targetSizedSphere: { track: "LOSTraverseConstantDistance", size: 3},
 
-    DisplayTargetSphere: {track: "LOSTraverseConstantDistance", size: 10, },
+    DisplayTargetSphere: {id: "targetSphere", track: "LOSTraverseConstantDistance", size: 10, },
 
     DisplayTrack: {
+        id: "DisplayLOSTraverse",
         track: "LOSTraverseConstantDistance",
         color: [0,1,1],
         width: 1,
