@@ -1266,82 +1266,55 @@ void main() {
         // Define geometry for satellites
         this.satelliteGeometry = new BufferGeometry();
 
-        // Allocate arrays for positions
+        // Allocate arrays for positions and colors
         let positions = new Float32Array(this.TLEData.satrecs.length * 3); // x, y, z for each satellite
-        let magnitudes = new Float32Array(this.TLEData.satrecs.length); // magnitude for each star
+        let colors = new Float32Array(this.TLEData.satrecs.length * 3); // r, g, b for each satellite
+        let magnitudes = new Float32Array(this.TLEData.satrecs.length); // magnitude for each satellite
 
         // Custom shaders
         const customVertexShader = `
-        // Vertex Shader
-varying vec3 vColor;
+    varying vec3 vColor;
+    uniform float maxMagnitude;
+    uniform float minSize;
+    uniform float maxSize;
+    uniform float cameraFOV;
+    uniform float satScale;
+    attribute float magnitude;
+    attribute vec3 color;
+    varying float vDepth;
 
-uniform float maxMagnitude;
-uniform float minSize;
-uniform float maxSize;
-uniform float cameraFOV; // Uniform for camera's field of view
-uniform float satScale;
+    void main() {
+        vColor = color;
 
-uniform float nearPlane;
-uniform float farPlane;
+        float size = mix(minSize, maxSize, magnitude);
+        size *= 3.0 * (30.0 / cameraFOV) * satScale;
 
-attribute float magnitude;
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * mvPosition;
+        gl_PointSize = size;
+        vDepth = gl_Position.w;
+    }`;
 
-uniform vec3 baseColor; // Example uniform for base color
+        const customFragmentShader = `
+    varying vec3 vColor;
+    uniform float nearPlane;
+    uniform float farPlane;
+    varying float vDepth;
+    uniform sampler2D starTexture;
 
+    void main() {
+        vec2 uv = gl_PointCoord.xy * 2.0 - 1.0;
+        float alpha = 1.0 - dot(uv, uv);
+        if (alpha < 0.0) discard;
 
-varying float vDepth;
+        vec4 textureColor = texture2D(starTexture, gl_PointCoord);
+        gl_FragColor = vec4(vColor, 1.0) * textureColor * alpha;
 
-void main() {
-    vColor = vec3(1.0); // White color, modify as needed
+        float z = (log2(max(nearPlane, 1.0 + vDepth)) / log2(1.0 + farPlane)) * 2.0 - 1.0;
+        gl_FragDepthEXT = z * 0.5 + 0.5;
+    }`;
 
-    // Adjust size based on magnitude
-//    float size = mix(maxSize, minSize, (magnitude / maxMagnitude));
-    float size = mix(minSize, maxSize, magnitude);
-    
-    // Adjust size based on camera FOV
-    size *= 3.0 * (30.0 / cameraFOV) * satScale;
-   
-    
-    // Set the color
-    vColor = baseColor; // Set vColor based on some logic or input
-    
-    // Billboard transformation (make the sprite always face the camera)
-    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * mvPosition;
-    gl_PointSize = size; // * (300.0 / -mvPosition.z); // Adjust size based on distance
-    vDepth = gl_Position.w;
-}`; // Vertex shader code
-
-
-        const customFragmentShader = `// Fragment Shader
-varying vec3 vColor;
-
-uniform float nearPlane;
-uniform float farPlane;
-
-varying float vDepth;
-
-uniform sampler2D starTexture;
-
-void main() {
-    // Basic circular billboard
-    vec2 uv = gl_PointCoord.xy * 2.0 - 1.0;
-    float alpha = 1.0 - dot(uv, uv);
-    if (alpha < 0.0) discard; // Gives a circular shape
-
-    // Apply texture
-    vec4 textureColor = texture2D(starTexture, gl_PointCoord);
-    gl_FragColor = vec4(vColor, 1.0) * textureColor * alpha;
-    
-  // Logarithmic depth calculation
-  float z = (log2(max(nearPlane, 1.0 + vDepth)) / log2(1.0 + farPlane)) * 2.0 - 1.0;
-
-  // Write the depth value
-   gl_FragDepthEXT = z * 0.5 + 0.5;
-    
-}`; // Your fragment shader code
-
-// Material with shaders
+        // Material with shaders
         this.satelliteMaterial = new ShaderMaterial({
             vertexShader: customVertexShader,
             fragmentShader: customFragmentShader,
@@ -1350,25 +1323,18 @@ void main() {
                 minSize: { value: 1.0 },
                 maxSize: { value: 20.0 },
                 starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
-                cameraFOV: { value: 30},
-                satScale: { value: Sit.satScale},
-                baseColor: { value: new Color(0xffff00) },
+                cameraFOV: { value: 30 },
+                satScale: { value: Sit.satScale },
                 ...sharedUniforms,
             },
-             transparent: true,
-             depthTest: true,
-            // depthWrite: true,
+            transparent: true,
+            depthTest: true,
         });
-
-
 
         for (let i = 0; i < this.TLEData.satrecs.length; i++) {
             const sat = this.TLEData.satrecs[i];
 
-            // TODO: Calculate satellite position here
-            // const position = calculateSatellitePosition(sat, date);
-
-            // dummy for now
+            // Calculate satellite position
             const position = V3();
 
             positions[i * 3] = position.x;
@@ -1377,33 +1343,51 @@ void main() {
 
             magnitudes[i] = 0.1;
 
+
+
             sat.eus = V3();
 
             // Manage sprite text separately
             var name = sat.name.replace("0 STARLINK", "SL").replace("STARLINK", "SL");
+            // strip whitespae off the end
+            name = name.replace(/\s+$/, '');
             const spriteText = new SpriteText(name, 5);
             spriteText.layers.mask = LAYER.MASK_LOOK;
             sat.spriteText = spriteText;
             textGroup.add(spriteText);
+
+            // Assign a color to each satellite (example: random color)
+
+
+        // SL-0000 names have are yellow, SL-00000 are orange
+            // use the length of the name 7 or 8 to determine the color
+            let color = new Color(0xFFFFC0);
+            let length = name.length;
+            if (length > 7) {
+                color = new Color(0xFFA080);
+            }
+
+            colors[i * 3] = color.r;
+            colors[i * 3 + 1] = color.g;
+            colors[i * 3 + 2] = color.b;
+
         }
 
         // Attach data to geometry
         this.satelliteGeometry.setAttribute('position', new BufferAttribute(positions, 3));
+        this.satelliteGeometry.setAttribute('color', new BufferAttribute(colors, 3));
         this.satelliteGeometry.setAttribute('magnitude', new BufferAttribute(magnitudes, 1));
 
         // Create point cloud for satellites
         this.satellites = new Points(this.satelliteGeometry, this.satelliteMaterial);
 
-        // using frustrumCulling causes problems with a point cloud if there's just one point
-        // as that's a zero volume object, but the rendered object (a billboard) is much bigger
-        // so we turn it off
-        // this is not an issue for stars and planets, as there's several of them
-        // the issue here arises when we have a single satellite (like the TLE for the ISS)
+        // Disable frustum culling for satellites
         this.satellites.frustumCulled = false;
 
         // Add to scene
         scene.add(this.satellites);
     }
+
 
     calcSatUES(sat, date) {
         const positionAndVelocity = satellite.propagate(sat, date);
