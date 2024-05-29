@@ -1009,6 +1009,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                         method: data.method,
                         copyData: true,
                         window: new CNodeGUIValue({
+                            id: data.track+"smoothingWindow",
                             value: data.window ?? 20,
                             start: 1,
                             end: 200,
@@ -1024,6 +1025,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                         //   source: data.track,
                         method: "catmull",
                         intervals: new CNodeGUIValue({
+                            id: data.track+"catmullInterval",
                             value: 20,
                             start: 1,
                             end: 200,
@@ -1031,6 +1033,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                             desc: "Catmull Intervals"
                         }, gui),
                         tension: new CNodeGUIValue({
+                            id: data.track+"catmullTension",
                             value: 0.5,
                             start: 0,
                             end: 5,

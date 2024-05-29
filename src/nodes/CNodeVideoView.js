@@ -513,9 +513,9 @@ export class CNodeMirrorVideoView extends CNodeVideoView {
 
 export function addFiltersToVideoNode(videoNode) {
     videoNode.addMoreInputs({
-        brightness: new CNodeGUIValue({id: "videoBrightness", value: 1, start: 0, end: 5, step: 0.01, desc: "Brightness"}, guiTweaks),
-        contrast: new CNodeGUIValue({id: "videoContrast", value: 1, start: 0, end: 5, step: 0.01, desc: "Contrast"}, guiTweaks),
-        blur: new CNodeGUIValue({id: "videoBlur", value: 0, start: 0, end: 20, step: 1, desc: "Blur Px"}, guiTweaks),
+        brightness: new CNodeGUIValue({id: videoNode.id+"videoBrightness", value: 1, start: 0, end: 5, step: 0.01, desc: "Brightness"}, guiTweaks),
+        contrast: new CNodeGUIValue({id: videoNode.id+"videoContrast", value: 1, start: 0, end: 5, step: 0.01, desc: "Contrast"}, guiTweaks),
+        blur: new CNodeGUIValue({id: videoNode.id+"videoBlur", value: 0, start: 0, end: 20, step: 1, desc: "Blur Px"}, guiTweaks),
     });
 
     const reset = {

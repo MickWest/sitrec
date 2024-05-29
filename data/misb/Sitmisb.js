@@ -158,7 +158,7 @@ sitch = {
     },
 
     // will need a displayOrigin
-    DisplayWindArrow: {source: "targetWind"},
+    DisplayWindArrow: {id: "windArrow", source: "targetWind"},
 
 
     JetLOS: {kind: "LOSTrackTarget", cameraTrack: "cameraTrack", targetTrack: "targetTrack"},
