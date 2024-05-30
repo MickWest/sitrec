@@ -29,6 +29,22 @@ export class CNodeMath extends CNode {
         super(v);
         this.frameless = true; // set to indicate that this node does not need a frame number, but will pass the frame number to inputs
         this.math = v.math
+
+        // find any node values and add them to the inputs
+        // this ensures that the node is recalculated when the input nodes change
+        // and hence other nodes that depend on this node will also be recalculated
+
+        let expression = this.math.slice()
+        expression = expression.replace(/\/\/.*\n/g, "\n")
+        expression = expression.replace(/\/\*.*\*\//g, "")
+        let re = /\$\w+/g
+        let matchs = expression.match(re)
+        for (let match of matchs) {
+            let id = match.slice(1)
+            assert(NodeMan.exists(id), "CNodeMath: node does not exist, id: " + id)
+            let node = NodeMan.get(id);
+            this.addInput(node.id, node.id)
+        }
     }
 
     getValueFrame(f) {
