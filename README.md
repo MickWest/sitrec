@@ -199,7 +199,7 @@ Returns a segment of a street map
 - [EOX Test](http://localhost/s/sitrec/sitrecServer/cachemaps.php?url=https%3A%2F%2Ftiles.maps.eox.at%2Fwmts%3Flayer%3Ds2cloudless_3857%26style%3Ddefault%26tilematrixset%3Dg%26Service%3DWMTS%26Request%3DGetTile%26Version%3D1.0.0%26Format%3Dimage%252Fjpeg%26TileMatrix%3D15%26TileCol%3D6383%26TileRow%3D12373)
 Test of EOX landscape server - returns a brown aerial landscape tile
 
-- [Landscope Test](http://localhost/s/sitrec/dist/?sitch=swr)
+- [Landscope Test](http://localhost/s/sitrec/?sitch=swr)
 A simple landscape, shows that the landscape proxy server is working
 
 - [Default Sitch](http://localhost/s/sitrec/)
