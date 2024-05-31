@@ -286,7 +286,7 @@ A sitch will generally have multiple views, each view has an id, specifically:
 - **videoView** - The view that has the actual video
 
 
-This is the preferred naming convention, but some older bits of code might refer to lookView as the NAR view (as it was NAR mode on the ATFLIR system in the original "Gimbal" sitch)
+This is the preferred naming convention, but some older bits of code or comments might refer to lookView as the NAR view (as it was NAR mode on the ATFLIR system in the original "Gimbal" sitch)
 
 The camera position is specified by two lines:
 ```javascript
@@ -296,9 +296,11 @@ startCameraTargetLLA:[42.653377,-86.670554,23235.005817],
 
 These are LLA (Latitude, Longitude, Altitude in meters) positions. Note some sitches have the position specified as EUS local coordinates. LLA is preferred as the EUS coordinate system can change if you do things like adjust the resolution of the terrain.
 
+Some legacy sitches specify the camera position in EUS coordinates (i.e. local x,y,z being East, Up, and South). This is not recommended, as it can change if you adjust the terrain resolution.
+
 To get the camera position, just move it to where you want and then copy-and-paste the LLA lines from the debugger console output.  
 
-To adjust the views, you can add a view rectangle specifier for each one. For example:
+To adjust the "views" (the on-screen rectangles that show something like a 3D view of the world, a video, an image, a graph, etc), you can add a view rectangle specifier for each one. For example:
 ```javascript
 lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
 videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
@@ -306,11 +308,13 @@ mainView: { left: 0.0, top: 0, width: 1, height: 1},
 ```
 
 Positions and size are specified as a fraction of the screen's width and height
-If one component (width or height) is negative, then that means it is a multiple of the other one. In the example above, we use a height of 0.65 of the window height, and then 0.75ths of that for the width. This ratio comes from the width and height of the video. 
+If one component (width or height) is negative, then that means it is a multiple of the other one. In the example above, we use a height of 0.65 of the window height, and then 0.75ths of that for the width. This ratio comes from the width and height of the video.  
 
-Note in the above, mainView covers the entire screen, but it's also typical to limit it to half the screen. 
+Note in the above, mainView covers the entire screen (width:1), but it's also typical to limit it to half the screen (width:0.5). 
 
 ## EXAMPLE NEW SITCH: WestJet
+
+Note: This was originally a sitch specified in code, but the same format is used for the dynamically loaded files that are parsed as text. This was in src/sitch/SitWestJet.js (as a code module), but is now in data/sitWestJet.js (as a text file)
 
 ![WestJet Screenshot](readmeImages/westjet.jpg)
 
