@@ -28,63 +28,56 @@ export class CNodeMath extends CNode {
     constructor(v) {
         super(v);
         this.frameless = true; // set to indicate that this node does not need a frame number, but will pass the frame number to inputs
-        this.math = v.math
+        this.mathOriginal = v.math
+        this.math = this.stripComments(this.mathOriginal)
 
-        // find any node values and add them to the inputs
+        // find any node variable and add them to the inputs
         // this ensures that the node is recalculated when the input nodes change
         // and hence other nodes that depend on this node will also be recalculated
-
-        let expression = this.math.slice()
-        expression = expression.replace(/\/\/.*\n/g, "\n")
-        expression = expression.replace(/\/\*.*\*\//g, "")
-        let re = /\$\w+/g
-        let matchs = expression.match(re)
-        for (let match of matchs) {
-            let id = match.slice(1)
-            assert(NodeMan.exists(id), "CNodeMath: node does not exist, id: " + id)
+        let matches = this.getNodeVariables(this.math)
+        for (let match of matches) {
+            let id = match.slice(1); // remove the leading $
+            assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
             let node = NodeMan.get(id);
             this.addInput(node.id, node.id)
+            console.log("CNodeMath: adding input: "+ node.id+" to "+this.id);
         }
     }
 
-    getValueFrame(f) {
 
-        // make a copy of the math expression
-        let expression = this.math.slice()
-
-    //    console.log("expression before : ", expression)
-
+    stripComments(expression) {
         // strip comments from the string
         // anything from a // to a newline
         expression = expression.replace(/\/\/.*\n/g, "\n")
-
         // and strip out any comments in the form /* ... */
         expression = expression.replace(/\/\*.*\*\//g, "")
+        return expression
+    }
 
-    //    console.log("Comments stripped : ", expression)
-
-
-        // find any string of the form $example, where "example" is id of a node
-//        let re = /node:\w+/g
+    getNodeVariables(expression) {
         let re = /\$\w+/g
-        let matchs = expression.match(re)
-        for (let match of matchs) {
+        return expression.match(re)
+    }
+
+    getValueFrame(f) {
+        let expression = this.math;
+        let matches = this.getNodeVariables(this.math)
+        for (let match of matches) {
             let id = match.slice(1)
             assert(NodeMan.exists(id), "CNodeMath: node does not exist, id: " + id)
             let node = NodeMan.get(id);
-            // and replace it with the value of the node at frame f
+            // and replace it in the string with the value of the node at frame f
             let value = node.getValueFrame(f)
             // if it's not a number, need more parsing
             if (typeof value !== "number") {
                 if (value.position !== undefined) {
+                    // adding a vector value as [x,y,z]
                     value = '[' + value.position.x + ',' + value.position.y + ',' + value.position.z + ']'
                 }
             }
-
-
             expression = expression.replace(match, value)
         }
-  //      console.log("expression after : ", expression)
+       // console.log("expression after : ", expression)
 
         //
         // // get the input values and add them to a structure that math.js can use
@@ -94,8 +87,6 @@ export class CNodeMath extends CNode {
         // }
         // // evaluate the math expression
         // return math.evaluate(expression, scope)
-
-
 
         let result;
         const context = math.parser();
