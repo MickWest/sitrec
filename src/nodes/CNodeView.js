@@ -245,12 +245,29 @@ class CNodeView extends CNode {
 
         // Sync the zoom on this camera to the video zoom
         // check if it's flagged, and we actually have a videoZoom UI control
-        if (this.syncVideoZoom && NodeMan.exists("videoZoom")) {
-            var videoZoom = NodeMan.get("videoZoom")
-            if (videoZoom != undefined) {
+        if (NodeMan.exists("videoZoom")) {
+            if (this.effectsEnabled && this.syncPixelZoomWithVideo) {
+                this.camera.zoom = 1;
+                var videoZoom = NodeMan.get("videoZoom")
+                var pixelZoom = NodeMan.get("pixelZoom");
+
+                pixelZoom.value = videoZoom.v0;
+
+                //
+
+
+            }
+            else if (this.syncVideoZoom) {
+                var videoZoom = NodeMan.get("videoZoom")
                 this.camera.zoom = videoZoom.v0 / 100;
             }
+
+
+
         }
+
+
+
     }
 
     render(frame) {
@@ -337,8 +354,18 @@ class CNodeView extends CNode {
 
     changedSize() {
         if (this.renderer) {
-            if (this.canvas.width !== this.widthPx * window.devicePixelRatio
-                && this.canvas.height !== this.heightPx * window.devicePixelRatio) {
+            if (this.in.canvasWidth) {
+                // if it's a fixed size canvas, ensure it's the right size
+                // and the renderer knows about it
+                let width = this.in.canvasWidth.v0;
+                let height = this.in.canvasHeight.v0;
+                if (this.canvas.width !== width
+                    || this.canvas.height !== height) {
+                    this.renderer.setSize(width, height, false);
+                 //   this.canvas.style.imageRendering ="pixelated"
+                }
+            } else if (this.canvas.width !== this.widthPx * window.devicePixelRatio
+                || this.canvas.height !== this.heightPx * window.devicePixelRatio) {
                 this.renderer.setSize(this.widthPx, this.heightPx);
             }
         } else {

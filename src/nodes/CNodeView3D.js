@@ -48,6 +48,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         super(v);
 
         this.syncVideoZoom = v.syncVideoZoom ?? false;  // by default, don't sync the zoom with the video view, as we might not have a zoom controlelr
+        this.syncPixelZoomWithVideo = v.syncPixelZoomWithVideo ?? false;
         this.background = v.background ?? new Color(0x000000);
 
         // check if this.background is an array, and if so, convert to a color
@@ -207,7 +208,15 @@ export class CNodeView3D extends CNodeViewCanvas {
                         aPass.material.needsUpdate = true;
                         break;
                     case "zoom":
-                        aPass.uniforms['magnifyFactor'].value = this.in.zoom.v0;
+                        let zoom = this.in.zoom.v0
+
+                        // check for digital zoom, like from CNodeControllerATFLIRCamera
+                        if (this.in.zoom.digitalZoom !== undefined) {
+                            // will probably be 1 or 2
+                            zoom *= this.in.zoom.digitalZoom;
+                        }
+
+                        aPass.uniforms['magnifyFactor'].value = zoom/100;
                         aPass.material.needsUpdate = true;
                         break
                     default:

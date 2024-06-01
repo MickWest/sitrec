@@ -35,17 +35,21 @@ export const SitFlir1 = {
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
-        lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
+    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
             canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
 //        effects: ["FLIRShader", "hBlur", "vBlur"],
-        effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
+        effects: ["hBlur", "vBlur", "zoom"],
         inputs: {
             hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
             vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-            zoom: {kind: "GUIValue", value: 0.5, start: 0, end: 30.0, step: 0.01, desc: "Pixel Zoom"},
+            zoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %"},
         },
+        syncPixelZoomWithVideo: true,
     },
+
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+
+
 
     focusTracks:{
         "Ground (no track)": "default",
@@ -215,18 +219,18 @@ export const SitFlir1 = {
     ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
 
 
-    // ATFLIRUIOverlay: { kind: "ATFLIRUI",
-    //     jetAltitude: "jetAltitude",
-    //     overlayView: "lookView",
-    //     defaultFontSize: 3.5,
-    //     defaultFontColor: '#E0E0E0',
-    //     defaultFont: 'sans-serif',
-    //     timeStartMin: 41,
-    //     timeStartSec: 35,
-    //     altitude: 20000,
-    //     syncVideoZoom: true,
-    //
-    // },
+    ATFLIRUIOverlay: { kind: "ATFLIRUI",
+        jetAltitude: "jetAltitude",
+        overlayView: "lookView",
+        defaultFontSize: 3.5,
+        defaultFontColor: '#E0E0E0',
+        defaultFont: 'sans-serif',
+        timeStartMin: 41,
+        timeStartSec: 35,
+        altitude: 20000,
+        syncVideoZoom: true,
+
+    },
 
     TargetObjectModel: { kind: "DisplayTargetModel",
         track: "LOSTraverseSelect",

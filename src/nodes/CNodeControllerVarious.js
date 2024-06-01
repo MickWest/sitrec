@@ -368,8 +368,19 @@ export class CNodeControllerATFLIRCamera extends CNodeController {
             vFOV = 3;
         if (focalMode === "WFOV")
             vFOV = 6
-        if (zoom === 2)
-            vFOV /= 2
+
+        // check if there's a pixelZoom effect
+        // and if so, flag that to do the doubling
+        // so we get the same base resolution
+        // first get the look view
+        const lookView = NodeMan.get("lookView")
+        if (lookView.effectsEnabled && lookView.in.zoom !== undefined) {
+            lookView.in.zoom.digitalZoom = zoom; // bit of a patch, decorating the zoom GUIValue
+        } else {
+            if (zoom === 2) {
+                vFOV /= 2
+            }
+        }
 
         const camera = objectNode.camera
 

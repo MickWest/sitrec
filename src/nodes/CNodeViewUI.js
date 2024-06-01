@@ -33,6 +33,7 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
 
         this.zoom = 1;
         this.syncVideoZoom = v.syncVideoZoom;
+        this.syncPixelZoomWithVideo = v.syncPixelZoomWithVideo;
 
     }
 

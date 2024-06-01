@@ -15,18 +15,18 @@ export const SitSWR = {
         startCameraTargetLLA:[40.257957,-109.891099,1439.697690],
     },
 
-    canvasResolution: {kind: "GUIValue", value: 100, start: 10, end: 1000, step: 1, desc: "Resolution"},
+    canvasResolution: {kind: "GUIValue", value: 100, start: 10, end: 2000, step: 1, desc: "Resolution"},
 
     // a full screen view. The size and position are fractions of the window size
     // background is the color of the sky.
     mainView: {left:0.0, top:0, width:1,height:1, background: [0.53, 0.81, 0.92],
-     //   canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
-        // effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
-        // inputs: {
-        //     hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
-        //     vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-        //     zoom: {kind: "GUIValue", value: 0.5, start: 0, end: 30.0, step: 0.01, desc: "Pixel Zoom"},
-        // },
+        canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
+        effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
+        inputs: {
+            hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
+            vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
+            zoom: {kind: "GUIValue", value: 1, start: 1, end: 30.0, step: 0.01, desc: "Pixel Zoom"},
+        },
 
     },
 }
