@@ -744,8 +744,10 @@ function renderMain() {
 
         if (view.visible) {
 
-            // we don't do setFromDiv as the div is updated by updateWH
-            //view.setFromDiv(view.div)
+            // we set from div, as that's the jQueryUI moving arond
+            // which we really should get rid of, and just do it directly with mouse events
+            // dragging, etc.
+            view.setFromDiv(view.div)
 
             view.updateWH()
             if (view.camera) {
