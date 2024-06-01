@@ -743,7 +743,10 @@ function renderMain() {
         }
 
         if (view.visible) {
-            view.setFromDiv(view.div)
+
+            // we don't do setFromDiv as the div is updated by updateWH
+            //view.setFromDiv(view.div)
+
             view.updateWH()
             if (view.camera) {
                 // Label3DMan.updateScale(view.camera)

@@ -84,7 +84,7 @@ export const SitAguadilla = {
 
     lookView: {
         left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
-        effects: {FLIRShader: {},},
+        effects: ["FLIRShader"],
     },
 
 

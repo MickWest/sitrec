@@ -171,6 +171,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
         this.TRACK_line.computeLineDistances();
         this.TRACK_line.scale.set(1, 1, 1);
+        this.TRACK_line.layers.mask = LAYER.MASK_HELPERS;
         LocalFrame.add(this.TRACK_line);
         showHider(this.TRACK_line, "[T]rack line", true, 't');
 

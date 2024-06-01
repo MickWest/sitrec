@@ -299,6 +299,9 @@ class CNodeView extends CNode {
         this.leftPx = Math.floor(this.containerWidth() * this.left);
         this.topPx = Math.floor(this.containerHeight() * this.top);
 
+        let oldWidth = this.widthPx;
+        let oldHeight = this.heightPx;
+
         var widthFraction = this.width
         var heightFraction = this.height
 
@@ -324,7 +327,35 @@ class CNodeView extends CNode {
             this.div.style.width = this.widthPx + 'px'
             this.div.style.height = this.heightPx + 'px'
         }
+
+       // if (oldHeight !== this.heightPx || oldWidth !== this.widthPx) {
+            this.changedSize();
+       // }
+
+
     }
+
+    changedSize() {
+        if (this.renderer) {
+            if (this.canvas.width !== this.widthPx * window.devicePixelRatio
+                && this.canvas.height !== this.heightPx * window.devicePixelRatio) {
+                this.renderer.setSize(this.widthPx, this.heightPx);
+            }
+        } else {
+            if (this.canvas) {
+                if (this.canvas.width !== this.widthPx
+                    && this.canvas.height !== this.heightPx) {
+                    // this.canvas.width = this.widthPx * window.devicePixelRatio;
+                    // this.canvas.height = this.heightPx * window.devicePixelRatio;
+                    this.canvas.width = this.widthPx;
+                    this.canvas.height = this.heightPx;
+                    this.recalculate();
+                }
+            }
+        }
+    }
+
+
 
     snapInsidePx(l,t,w,h) {
         //  debugger

@@ -221,6 +221,7 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     // so we simply make all the values undefined and then call checkListener()
     // which will force a recalculation of the text, which will then be displayed later by render()
     recalculate() {
+        if (this.textElements === undefined) return;
         Object.keys(this.textElements).forEach(key => {
             const t = this.textElements[key]
             if (t.object != undefined) {

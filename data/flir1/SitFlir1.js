@@ -31,9 +31,20 @@ export const SitFlir1 = {
 
     lookCamera: {},
 
+    canvasResolution: {kind: "GUIValue", value: 100, start: 10, end: 1000, step: 1, desc: "Resolution"},
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
-    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,},
+//    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
+        lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
+            canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
+//        effects: ["FLIRShader", "hBlur", "vBlur"],
+        effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
+        inputs: {
+            hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
+            vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
+            zoom: {kind: "GUIValue", value: 0.5, start: 0, end: 30.0, step: 0.01, desc: "Pixel Zoom"},
+        },
+    },
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
 
     focusTracks:{
@@ -204,18 +215,18 @@ export const SitFlir1 = {
     ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
 
 
-    ATFLIRUIOverlay: { kind: "ATFLIRUI",
-        jetAltitude: "jetAltitude",
-        overlayView: "lookView",
-        defaultFontSize: 3.5,
-        defaultFontColor: '#E0E0E0',
-        defaultFont: 'sans-serif',
-        timeStartMin: 41,
-        timeStartSec: 35,
-        altitude: 20000,
-        syncVideoZoom: true,
-
-    },
+    // ATFLIRUIOverlay: { kind: "ATFLIRUI",
+    //     jetAltitude: "jetAltitude",
+    //     overlayView: "lookView",
+    //     defaultFontSize: 3.5,
+    //     defaultFontColor: '#E0E0E0',
+    //     defaultFont: 'sans-serif',
+    //     timeStartMin: 41,
+    //     timeStartSec: 35,
+    //     altitude: 20000,
+    //     syncVideoZoom: true,
+    //
+    // },
 
     TargetObjectModel: { kind: "DisplayTargetModel",
         track: "LOSTraverseSelect",
@@ -227,7 +238,7 @@ export const SitFlir1 = {
     targetSphere: { kind: "DisplayTargetSphere",
         inputs: {
             track: "LOSTraverseSelect",
-            size: {kind:"sizeFeet", value: 1, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
+            size: {kind:"sizeFeet", value: 0, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
         },
         layers: "LOOK",
     },

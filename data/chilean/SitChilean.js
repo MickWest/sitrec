@@ -33,8 +33,10 @@ export const SitChilean = {
     // The three views are the main view, the look view, and the video view
     // The look view is the view from the camera to the target
     // note it has an effect of FLIRShader to make it look like an IR camera
-    lookView: { left:0.5, top:0.5, width: -1.77777, height: 0.5,
-        effects: {FLIRShader: {},},},
+    lookView: {
+        left: 0.5, top: 0.5, width: -1.77777, height: 0.5,
+        effects: ["FLIRShader"],
+    },
 
     // The video view is the view of the original video
     videoView:{ left:0.5, top:0,   width:-1.77777, height: 0.5,},

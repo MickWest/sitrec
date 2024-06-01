@@ -31,6 +31,9 @@ import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {Color, Sphere} from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
+import {HorizontalBlurShader} from "../../three.js/examples/jsm/shaders/HorizontalBlurShader";
+import {VerticalBlurShader} from "../../three.js/examples/jsm/shaders/VerticalBlurShader";
+import {ZoomShader} from "../shaders/ZoomShader";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
@@ -69,12 +72,27 @@ export class CNodeView3D extends CNodeViewCanvas {
         // When using a logorithmic depth buffer (or any really)
         // need to ensure the near/far clip distances are propogated to custom shaders
 
+        console.log(" devicePixelRatio = "+window.devicePixelRatio+" canvas.width = "+this.canvas.width+" canvas.height = "+this.canvas.height)
+
+        console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
+
         this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true})
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+
+        if (this.in.canvasWidth) {
+            // if a fixed pixel size canvas, then we ignore the devicePixelRatio
+            this.renderer.setPixelRatio(1);
+        } else {
+            this.renderer.setPixelRatio(window.devicePixelRatio);
+        }
+
         // this is different with custom canvas
         // setPixelRatio will also set the size of the canvas to twice what it was
         // so I'm dividing here. Not sure exactly what the deal is.
-        this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
+     //   this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
+     //   this.renderer.setSize(this.canvas.width, this.canvas.height);
+
+        this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
+
 
         this.composer = new EffectComposer(this.renderer)
         const renderPass = new RenderPass( GlobalScene, this.camera );
@@ -83,16 +101,32 @@ export class CNodeView3D extends CNodeViewCanvas {
 //        this.composer.addPass( aPass );
 
         if (v.effects) {
-            for (var effect in v.effects) {
+            this.effects = v.effects;
+
+            this.effectPasses = []
+            for (var effect of this.effects) {
                 var aPass;
                 switch (effect) {
                     case "FLIRShader":
-                        aPass = new ShaderPass(FLIRShader);
+                        this.addEffectPass(effect, new ShaderPass(FLIRShader))
                         break;
+
+                    case "hBlur":
+                         aPass = new ShaderPass(HorizontalBlurShader)
+                         this.addEffectPass(effect, aPass)
+                        break;
+
+                    case "vBlur":
+                        this.addEffectPass(effect, new ShaderPass(VerticalBlurShader))
+                        break
+
+                    case "zoom":
+                        this.addEffectPass(effect, new ShaderPass(ZoomShader))
+                        break
+
                     default:
                         assert(0,"Effect "+effect+" not found for "+this.id)
                 }
-                this.composer.addPass(aPass);
             }
             this.effectsEnabled = true;
             gui.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
@@ -141,7 +175,48 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
         }
 
+        this.recalculate(); // to set the effect pass uniforms
     }
+
+    addEffectPass(effectName, effect) {
+        this.effectPasses[effectName] = effect;
+        this.composer.addPass(effect);
+        return effect;
+    }
+
+    updateWH() {
+        super.updateWH();
+        this.recalculate()
+    }
+
+    recalculate() {
+        super.recalculate();
+        // got through the effect passes and update their uniforms and anything else needed
+        if (this.effects) {
+            for (var effect of this.effects) {
+                var aPass = this.effectPasses[effect];
+                switch (effect) {
+                    case "FLIRShader":
+                        break;
+                    case "hBlur":
+                        aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
+                        aPass.material.needsUpdate = true;
+                        break;
+                    case "vBlur":
+                        aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
+                        aPass.material.needsUpdate = true;
+                        break;
+                    case "zoom":
+                        aPass.uniforms['magnifyFactor'].value = this.in.zoom.v0;
+                        aPass.material.needsUpdate = true;
+                        break
+                    default:
+                        assert(0, "Effect " + effect + " not found for " + this.id)
+                }
+            }
+        }
+    }
+
 
     modSerialize() {
         return {
@@ -194,19 +269,27 @@ export class CNodeView3D extends CNodeViewCanvas {
         const windowWidth  = window.innerWidth;
         const windowHeight = window.innerHeight;
 
-//        this.adjustSize()
+    //    this.adjustSize()
 
         // the adjustSize used by a 2D canvas does not work, so we multiply by window.devicePixelRatio
         // perhaps we need to do something different with this.renderer.setSize ??????
-        this.canvas.width = this.div.clientWidth*window.devicePixelRatio
-        this.canvas.height = this.div.clientHeight*window.devicePixelRatio
+  //      this.canvas.width = this.div.clientWidth*window.devicePixelRatio
+  //      this.canvas.height = this.div.clientHeight*window.devicePixelRatio
 
 
         var divW = this.div.clientWidth;
         var divH = this.div.clientHeight;
   //      console.log("div: "+divW+","+divH+" Canvas: "+this.canvas.width+","+this.canvas.height)
 
-        this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
+
+        // Note that renderer.setSize will set the rendering size
+        // to the input multiplied by the devicePixelRatio
+        // we generally specify the size of things in nominal pixels (not device pixels)
+        // if we were to use 1920x1080, then the renderer would be 3840x2160
+        // which is normally fine, but we need to make sure the camera aspect is correct
+        // BUT, in the past, we halved the value here
+
+//        this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
 
         this.camera.aspect = this.canvas.width/this.canvas.height;
         this.camera.updateProjectionMatrix();
