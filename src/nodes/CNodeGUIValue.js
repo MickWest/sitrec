@@ -50,6 +50,11 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
 
+        // set it invisible
+        if (v.hidden) {
+            this.guiEntry.domElement.style.display = "none";
+        }
+
         if (v.color !== undefined) {
             this.guiEntry.setLabelColor(v.color)
         }

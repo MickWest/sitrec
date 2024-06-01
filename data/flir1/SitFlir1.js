@@ -42,7 +42,7 @@ export const SitFlir1 = {
         inputs: {
             hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
             vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-            zoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %"},
+            zoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %", hidden:true},
         },
         syncPixelZoomWithVideo: true,
     },
