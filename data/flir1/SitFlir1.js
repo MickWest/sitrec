@@ -31,23 +31,30 @@ export const SitFlir1 = {
 
     lookCamera: {},
 
-    canvasResolution: {kind: "GUIValue", value: 100, start: 10, end: 1000, step: 1, desc: "Resolution"},
+    canvasResolution: {kind: "GUIValue", value: 480, start: 10, end: 1000, step: 1, desc: "Resolution"},
+
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
-    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
+      lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
             canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
 //        effects: ["FLIRShader", "hBlur", "vBlur"],
-        effects: ["hBlur", "vBlur", "zoom"],
+//           effects: ["PixelateNxN", "hBlur", "vBlur", "zoom"],
+//          effects: ["hBlur", "vBlur", "zoom", "PixelateNxN"],
+//          effects: ["zoom", "PixelateNxN"],
+          effects: ["PixelateNxN","zoom"],
+//          effects: ["Pixelate2x2"],
         inputs: {
-            hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
-            vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-            zoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %", hidden:true},
+            hBlur: {kind: "GUIValue", value: 0.5, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
+            vBlur: {kind: "GUIValue", value: 0.4, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
+            zoom: {id: "pixelZoom", kind: "GUIValue", value: 1500, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %", hidden:true},
+            blockSize: {kind: "GUIValue", value: 2, start: 1, end: 10, step: 1, desc: "Block Size"},
         },
-        syncPixelZoomWithVideo: true,
+      //  syncPixelZoomWithVideo: true,
     },
 
-    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
+    videoView: {left: 0.653, top: 0.25, width: -1, height: 0.375,},
+//    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
 
 
 

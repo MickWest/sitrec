@@ -20,20 +20,16 @@ import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
 
 import { EffectComposer } from '../../three.js/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../../three.js/examples/jsm/postprocessing/RenderPass.js';
-import { FilmPass} from '../../three.js/examples/jsm/postprocessing/FilmPass.js';
-import { GlitchPass} from '../../three.js/examples/jsm/postprocessing/GlitchPass.js';
 import { ShaderPass} from '../../three.js/examples/jsm/postprocessing/ShaderPass.js';
-import { HalftonePass} from '../../three.js/examples/jsm/postprocessing/HalftonePass.js';
-import { CopyShader } from '../shaders/CopyShader'
-import { NVGShader } from '../shaders/NVGShader'
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {Color, Sphere} from "three";
+import {Color, Sphere, Vector2} from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {HorizontalBlurShader} from "../../three.js/examples/jsm/shaders/HorizontalBlurShader";
 import {VerticalBlurShader} from "../../three.js/examples/jsm/shaders/VerticalBlurShader";
 import {ZoomShader} from "../shaders/ZoomShader";
+import {Pixelate2x2Shader, PixelateNxNShader} from "../shaders/Pixelate2x2Shader";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
@@ -85,19 +81,11 @@ export class CNodeView3D extends CNodeViewCanvas {
         } else {
             this.renderer.setPixelRatio(window.devicePixelRatio);
         }
-
-        // this is different with custom canvas
-        // setPixelRatio will also set the size of the canvas to twice what it was
-        // so I'm dividing here. Not sure exactly what the deal is.
-     //   this.renderer.setSize(this.canvas.width/window.devicePixelRatio, this.canvas.height/window.devicePixelRatio);
-     //   this.renderer.setSize(this.canvas.width, this.canvas.height);
-
         this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
-
-
         this.composer = new EffectComposer(this.renderer)
         const renderPass = new RenderPass( GlobalScene, this.camera );
         this.composer.addPass( renderPass );
+
 //        const aPass = new FilmPass();
 //        this.composer.addPass( aPass );
 
@@ -124,6 +112,14 @@ export class CNodeView3D extends CNodeViewCanvas {
                     case "zoom":
                         this.addEffectPass(effect, new ShaderPass(ZoomShader))
                         break
+
+                    case "Pixelate2x2":
+                        this.addEffectPass(effect, new ShaderPass(Pixelate2x2Shader))
+                        break;
+
+                    case "PixelateNxN":
+                        this.addEffectPass(effect, new ShaderPass(PixelateNxNShader))
+                        break;
 
                     default:
                         assert(0,"Effect "+effect+" not found for "+this.id)
@@ -177,6 +173,14 @@ export class CNodeView3D extends CNodeViewCanvas {
         }
 
         this.recalculate(); // to set the effect pass uniforms
+
+        // // set style for div and canvas to have square pixels
+        // (does not work)
+        // this.div.style.imageRendering = "pixelated";
+        // this.canvas.style.imageRendering = "pixelated";
+
+
+
     }
 
     addEffectPass(effectName, effect) {
@@ -192,35 +196,65 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     recalculate() {
         super.recalculate();
-        // got through the effect passes and update their uniforms and anything else needed
+        this.needUpdate = true;
+    }
+
+
+    updateEffects() {
+        // Go through the effect passes and update their uniforms and anything else needed
         if (this.effects) {
             for (var effect of this.effects) {
                 var aPass = this.effectPasses[effect];
                 switch (effect) {
-                    case "FLIRShader":
-                        break;
                     case "hBlur":
-                        aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
-                        aPass.material.needsUpdate = true;
+                        if (aPass.uniforms['h'].value !== (this.in.hBlur.v0) / this.heightPx) {
+                            aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
+                            aPass.material.needsUpdate = true;
+                        }
                         break;
                     case "vBlur":
-                        aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
-                        aPass.material.needsUpdate = true;
+                        if (aPass.uniforms['v'].value !== (this.in.vBlur.v0) / this.widthPx) {
+                            aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
+                            aPass.material.needsUpdate = true;
+                        }
                         break;
                     case "zoom":
-                        let zoom = this.in.zoom.v0
+                        let zoom = this.in.zoom.v0;
 
-                        // check for digital zoom, like from CNodeControllerATFLIRCamera
+                        // Check for digital zoom, like from CNodeControllerATFLIRCamera
                         if (this.in.zoom.digitalZoom !== undefined) {
-                            // will probably be 1 or 2
+                            // Will probably be 1 or 2
                             zoom *= this.in.zoom.digitalZoom;
                         }
 
-                        aPass.uniforms['magnifyFactor'].value = zoom/100;
-                        aPass.material.needsUpdate = true;
-                        break
+                        let magnifyFactor = zoom / 100;
+                        if (aPass.uniforms['magnifyFactor'].value !== magnifyFactor) {
+                            aPass.uniforms['magnifyFactor'].value = magnifyFactor;
+                            aPass.material.needsUpdate = true;
+                        }
+                        break;
+                    case "Pixelate2x2":
+                        let resolution = new Vector2(this.widthPx, this.heightPx);
+                        if (!aPass.uniforms['resolution'].value.equals(resolution)) {
+                            aPass.uniforms['resolution'].value.copy(resolution);
+                            aPass.material.needsUpdate = true;
+                        }
+                        break;
+                    case "PixelateNxN":
+                        let resolutionN = new Vector2(this.widthPx, this.heightPx);
+                        if (!aPass.uniforms['resolution'].value.equals(resolutionN)) {
+                            aPass.uniforms['resolution'].value.copy(resolutionN);
+                            aPass.material.needsUpdate = true;
+                        }
+                        if (aPass.uniforms['blockSize'].value !== this.in.blockSize.v0) {
+                            aPass.uniforms['blockSize'].value = this.in.blockSize.v0;
+                            aPass.material.needsUpdate = true;
+                        }
+                        break;
                     default:
-                        assert(0, "Effect " + effect + " not found for " + this.id)
+                        // They don't all need uniforms
+                        // assert(0, "Effect " + effect + " not found for " + this.id)
+                        break;
                 }
             }
         }
@@ -271,6 +305,10 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     render(frame) {
 
+        if (this.needUpdate) {
+            this.updateEffects();
+            this.needUpdate = false;
+        }
 
         sharedUniforms.nearPlane.value = this.camera.near;
         sharedUniforms.farPlane.value = this.camera.far;
