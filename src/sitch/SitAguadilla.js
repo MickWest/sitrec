@@ -137,41 +137,9 @@ export const SitAguadilla = {
             lookCam.fov = lookFOV
             lookCam.updateProjectionMatrix()
 
-            // if (par.lockCameraToJet) {
-            //     const f = par.frame
-            //     const track = NodeMan.get("jetTrackSmooth")
-            //
-            //     var pos = track.p(f)
-            //     const heading = trackHeading(track, f)
-            //
-            //     if (this.lastPlanePos === undefined) {
-            //         this.lastPlanePos = pos
-            //         this.lastHeading = heading
-            //     }
-            //
-            //     var headingChange = heading - this.lastHeading;
-            //     if (headingChange < -180) headingChange += 360;
-            //
-            //     var offset = pos.clone().sub(this.lastPlanePos)
-            //     this.lastPlanePos = pos;
-            //     this.lastHeading = heading;
-            //     const mainCam = NodeMan.get("mainCamera").camera;
-            //
-            //     mainCam.position.add(offset)
-            //
-            //     // rotate camera about the jet position
-            //     mainCam.position.sub(pos)
-            //     mainCam.position.applyAxisAngle(V3(0, 1, 0), -radians(headingChange))
-            //     mainCam.position.add(pos)
-            //
-            //     mainCam.rotateOnAxis(V3(0, 1, 0), -radians(headingChange))
-            //
-            //     mainCam.updateMatrix()
-            //     mainCam.updateMatrixWorld()
-            // }
-
             // composer is used for effects.
-            this.composer.render();
+            //this.composer.render();
+            this.defaultRenderFunction()
         }
 
 

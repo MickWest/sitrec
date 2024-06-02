@@ -36,7 +36,7 @@ export function setupMeasurementUI() {
     function refreshMeasurementVisibility() {
         NodeMan.iterate((key, node) => {
             if (node.isMeasurement) {
-                console.log ("Setting visibility of " + key + " to " + Globals.showMeasurements)
+//                console.log ("Setting visibility of " + key + " to " + Globals.showMeasurements)
                 node.group.visible = Globals.showMeasurements;
             }
         })

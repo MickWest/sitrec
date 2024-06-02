@@ -309,6 +309,10 @@ class CNodeView extends CNode {
             this.left = this.leftPx / this.containerWidth()
             this.top = this.topPx / this.containerHeight()
         }
+
+        this.widthDiv = div.clientWidth
+        this.heightDiv = div.clientHeight
+
     }
 
     // Updates the Pixel and Div values from the fractional and window values

@@ -32,15 +32,25 @@ export const ZoomShader = {
 		varying vec2 vUv;
 
 		void main() {
+		    // early out with the most common case for performance reasons
+		    if (magnifyFactor == 1.0) {
+                gl_FragColor = texture2D(tDiffuse, vUv);
+                return;
+            }
+				
 			vec2 center = vec2(0.5, 0.5);
 			float scale = 1.0 / magnifyFactor;
 
 			// Calculate the scaled coordinates
 			vec2 scaledUv = (vUv - center) * scale + center;
 
-			vec4 color = texture2D(tDiffuse, scaledUv);
-
-			gl_FragColor = vec4(color.rgb, opacity);
+			// Check if the scaled UV coordinates are out of bounds
+			if (scaledUv.x < 0.0 || scaledUv.x > 1.0 || scaledUv.y < 0.0 || scaledUv.y > 1.0) {
+				gl_FragColor = vec4(0.0, 0.0, 0.0, opacity);  // Set to black
+			} else {
+				vec4 color = texture2D(tDiffuse, scaledUv);
+				gl_FragColor = vec4(color.rgb, opacity);
+			}
 		}`
 
 };

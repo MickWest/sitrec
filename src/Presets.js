@@ -44,7 +44,8 @@ export function DumpPreset() {
 
 function UpdateViewsAfterPreset() {
     ViewMan.iterate((key, view) => {
-        view.updateWH();                // turn fractions into pixels
+        view.
+        updateWH();                // turn fractions into pixels
         view.setVisible(view.visible);   // set the div visibility
     })
 

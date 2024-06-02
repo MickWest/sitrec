@@ -193,7 +193,7 @@ class CNodeSwitch extends CNode {
             }
         })
         // show the selected inputs AFTER all the hiding has been done
-        console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
+//        console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
         if (Object.keys(this.inputs).length > 0) {
             this.inputs[this.choice].show()
             this.inputs[this.choice].showActiveSources()

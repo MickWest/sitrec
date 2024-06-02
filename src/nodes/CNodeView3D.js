@@ -23,7 +23,17 @@ import { RenderPass } from '../../three.js/examples/jsm/postprocessing/RenderPas
 import { ShaderPass} from '../../three.js/examples/jsm/postprocessing/ShaderPass.js';
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {Color, Sphere, Vector2} from "three";
+import {
+    BoxGeometry,
+    Color, Mesh, MeshBasicMaterial,
+    NearestFilter,
+    PerspectiveCamera, PlaneGeometry,
+    RGBAFormat,
+    Scene, ShaderMaterial,
+    Sphere,
+    Vector2,
+    WebGLRenderTarget
+} from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {HorizontalBlurShader} from "../../three.js/examples/jsm/shaders/HorizontalBlurShader";
@@ -59,38 +69,205 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.cameraNode = getCameraNode(v_camera)
 
-//        this.input("camera")
-//        assert(this.camera !== undefined, "CNodeView3D ("+this.id+") needs a camera in the constructor")
+        assert(this.cameraNode !== undefined, "CNodeView3D needs a camera Node")
+        assert(this.camera !== undefined, "CNodeView3D needs a camera")
 
         this.canDisplayNightSky = true;
-
         this.mouseEnabled = true; // by defualt
 
         // When using a logorithmic depth buffer (or any really)
         // need to ensure the near/far clip distances are propogated to custom shaders
 
         console.log(" devicePixelRatio = "+window.devicePixelRatio+" canvas.width = "+this.canvas.width+" canvas.height = "+this.canvas.height)
-
         console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
 
-        this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true})
+        // this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true})
+        //
+        // if (this.in.canvasWidth) {
+        //     // if a fixed pixel size canvas, then we ignore the devicePixelRatio
+        //     this.renderer.setPixelRatio(1);
+        // } else {
+        //     this.renderer.setPixelRatio(window.devicePixelRatio);
+        // }
 
-        if (this.in.canvasWidth) {
-            // if a fixed pixel size canvas, then we ignore the devicePixelRatio
-            this.renderer.setPixelRatio(1);
+        // this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
+        // this.composer = new EffectComposer(this.renderer)
+        // const renderPass = new RenderPass( GlobalScene, this.camera );
+        // this.composer.addPass( renderPass );
+
+        this.setupRenderPipeline(v);
+
+
+        this.addEffects(v.effects)
+        this.otherSetup(v);
+
+
+        this.recalculate(); // to set the effect pass uniforms
+
+    }
+
+
+    setupRenderPipeline(v) {
+        this.setFromDiv(this.div); // This will set the widthDiv, heightDiv
+
+        // Determine canvas dimensions
+        if (this.in.canvasWidth !== undefined) {
+            this.widthPx = this.in.canvasWidth.v0;
+            this.heightPx = this.in.canvasHeight.v0;
         } else {
-            this.renderer.setPixelRatio(window.devicePixelRatio);
+            this.widthPx = this.widthDiv * window.devicePixelRatio;
+            this.heightPx = this.heightDiv * window.devicePixelRatio;
         }
-        this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
-        this.composer = new EffectComposer(this.renderer)
-        const renderPass = new RenderPass( GlobalScene, this.camera );
-        this.composer.addPass( renderPass );
+        this.canvas.width = this.widthPx;
+        this.canvas.height = this.heightPx;
 
-//        const aPass = new FilmPass();
-//        this.composer.addPass( aPass );
+        // Create the renderer
+        this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true });
+        this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
+        this.renderer.setSize(this.widthDiv, this.heightDiv, false);
 
-        if (v.effects) {
-            this.effects = v.effects;
+        // Create the primary render target with the desired size
+        this.renderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
+            minFilter: NearestFilter,
+            magFilter: NearestFilter,
+            format: RGBAFormat
+        });
+
+        // Create the temporary render target with the desired size
+        this.tempRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
+            minFilter: NearestFilter,
+            magFilter: NearestFilter,
+            format: RGBAFormat
+        });
+
+        // Ensure GlobalScene and this.camera are defined
+        if (!GlobalScene || !this.camera) {
+            console.error("GlobalScene or this.camera is not defined.");
+            return;
+        }
+
+        // Shader material for copying texture
+        this.copyMaterial = new ShaderMaterial({
+            uniforms: {
+                'tDiffuse': { value: null }
+            },
+            vertexShader: /* glsl */`
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `,
+            fragmentShader: /* glsl */`
+            uniform sampler2D tDiffuse;
+            varying vec2 vUv;
+            void main() {
+                gl_FragColor = texture2D(tDiffuse, vUv);
+            }
+        `
+        });
+
+        // Fullscreen quad for rendering shaders
+        const geometry = new PlaneGeometry(2, 2);
+        this.fullscreenQuad = new Mesh(geometry, this.copyMaterial);
+
+        this.effectPasses = {};
+
+        // Default render function if none provided
+        // other functions will still call this, but might do something before and after
+        // as well as coming from v, some old sitches directly override this, eg agua
+        if (v.renderFunction === undefined) {
+            this.renderFunction = () => {
+                this.defaultRenderFunction();
+            }
+        }
+    }
+
+
+    defaultRenderFunction() {
+    {
+
+
+
+        if (this.visible) {
+
+            if (!this.effectsEnabled) {
+                this.renderer.setRenderTarget(null);
+                this.renderer.clear(true, true, true);
+                this.renderer.render(GlobalScene, this.camera);
+                return;
+            }
+
+
+            // Clear the primary render target
+            this.renderer.setRenderTarget(this.renderTarget);
+            this.renderer.clear(true, true, true);
+
+            // Render the scene to the off-screen render target
+            this.renderer.render(GlobalScene, this.camera);
+            this.renderer.setRenderTarget(null);
+
+            // Apply each effect pass sequentially
+            let currentRenderTarget = this.renderTarget;
+            for (let effectName in this.effectPasses) {
+                let effectPass = this.effectPasses[effectName];
+                effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                // flip the render targets
+                this.renderer.setRenderTarget(currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget);
+                this.renderer.clear(true, true, true);
+                this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
+                this.renderer.render(this.fullscreenQuad, new Camera());
+                currentRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+            }
+
+            // Render the final texture to the screen
+            this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+            this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
+            this.renderer.setRenderTarget(null);
+            this.renderer.render(this.fullscreenQuad, new Camera());
+        }
+    }
+}
+
+
+
+
+    otherSetup(v)
+    {
+        this.raycaster = new Raycaster();
+        assert(this.scene, "CNodeView3D needs global GlobalScene")
+
+        const spriteCrosshairMaterial = new SpriteMaterial({
+            map: new TextureLoader().load('data/images/crosshairs.png'),
+            color: 0xffffff, sizeAttenuation: false,
+            depthTest: false, // no depth buffer, so it's always on top
+            depthWrite: false,
+        });
+        this.cursorSprite = new Sprite(spriteCrosshairMaterial)
+        this.cursorSprite.position.set(0, 25000, -50)
+        this.cursorSprite.scale.setScalar(0.02)
+        this.cursorSprite.visible = false;
+        GlobalScene.add(this.cursorSprite)
+        this.mouseDown = false;
+        this.dragMode = 0;
+
+        this.showLOSArrow = v.showLOSArrow;
+        this.showCursor = v.showCursor;
+
+        this.defaultTargetHeight = v.defaultTargetHeight ?? 0
+
+        this.focusTrackName = "default"
+        this.lockTrackName = "default"
+        if (v.focusTracks) {
+            this.addFocusTracks(v.focusTracks);
+        }
+    }
+
+
+    addEffects(effects)
+    {
+        if (effects) {
+            this.effects = effects;
 
             this.effectPasses = []
             for (var effect of this.effects) {
@@ -101,15 +278,16 @@ export class CNodeView3D extends CNodeViewCanvas {
                         break;
 
                     case "hBlur":
-                         aPass = new ShaderPass(HorizontalBlurShader)
-                         this.addEffectPass(effect, aPass)
+                        aPass = new ShaderPass(HorizontalBlurShader)
+                        this.addEffectPass(effect, aPass)
                         break;
 
                     case "vBlur":
                         this.addEffectPass(effect, new ShaderPass(VerticalBlurShader))
                         break
 
-                    case "zoom":
+                    case "pixelZoom":
+                    case "digitalZoom":
                         this.addEffectPass(effect, new ShaderPass(ZoomShader))
                         break
 
@@ -128,64 +306,12 @@ export class CNodeView3D extends CNodeViewCanvas {
             this.effectsEnabled = true;
             gui.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
         }
-
-        this.raycaster = new Raycaster();
-        assert(this.scene, "CNodeView3D needs global GlobalScene")
-
-        const spriteCrosshairMaterial = new SpriteMaterial( {
-            map: new TextureLoader().load( 'data/images/crosshairs.png' ),
-            color: 0xffffff, sizeAttenuation: false,
-            depthTest: false, // no depth buffer, so it's always on top
-            depthWrite: false,
-        } );
-        this.cursorSprite = new Sprite(spriteCrosshairMaterial)
-        this.cursorSprite.position.set(0,25000,-50)
-        this.cursorSprite.scale.setScalar(0.02)
-        this.cursorSprite.visible = false;
-        GlobalScene.add(this.cursorSprite)
-        this.mouseDown = false;
-        this.dragMode = 0;
-
-        this.showLOSArrow = v.showLOSArrow;
-        this.showCursor = v.showCursor;
-
-        this.defaultTargetHeight = v.defaultTargetHeight ?? 0
-
-
-        this.focusTrackName = "default"
-        this.lockTrackName = "default"
-        if (v.focusTracks) {
-            this.addFocusTracks(v.focusTracks);
-        }
-
-        if (v.renderFunction === undefined) {
-            this.renderFunction = function() {
-                if (this.visible) {
-                    if (this.effectsEnabled)
-                        this.composer.render();
-                    else {
-                        assert(this.camera !== undefined, "undefined camera in CNodeView3D id = "+this.id);
-                        assert(this.camera instanceof Camera, "bad camera in CNodeView3D id = "+this.id);
-                        this.renderer.render(GlobalScene, this.camera);
-                    }
-                }
-            }
-        }
-
-        this.recalculate(); // to set the effect pass uniforms
-
-        // // set style for div and canvas to have square pixels
-        // (does not work)
-        // this.div.style.imageRendering = "pixelated";
-        // this.canvas.style.imageRendering = "pixelated";
-
-
-
     }
+
 
     addEffectPass(effectName, effect) {
         this.effectPasses[effectName] = effect;
-        this.composer.addPass(effect);
+//        this.composer.addPass(effect);
         return effect;
     }
 
@@ -218,21 +344,41 @@ export class CNodeView3D extends CNodeViewCanvas {
                             aPass.material.needsUpdate = true;
                         }
                         break;
-                    case "zoom":
-                        let zoom = this.in.zoom.v0;
+                    case "pixelZoom":
+                        let pixelZoom = this.in.pixelZoom.v0;
 
-                        // Check for digital zoom, like from CNodeControllerATFLIRCamera
-                        if (this.in.zoom.digitalZoom !== undefined) {
-                            // Will probably be 1 or 2
-                            zoom *= this.in.zoom.digitalZoom;
-                        }
-
-                        let magnifyFactor = zoom / 100;
+                        let magnifyFactor = pixelZoom / 100;
                         if (aPass.uniforms['magnifyFactor'].value !== magnifyFactor) {
                             aPass.uniforms['magnifyFactor'].value = magnifyFactor;
                             aPass.material.needsUpdate = true;
                         }
                         break;
+
+                        // digitalZoom is something the camera can control
+                        // it's seperate from pixelZoom as it's intended
+                        // to simulate a digital zoom, on the internal camera data
+                        // before other effects are applied
+                        // the pixelZoom is for scaling the end result
+                    case "digitalZoom":
+
+                        let digitalZoom = this.in.digitalZoom.v0;
+
+                        // Check for digital zoom, like from CNodeControllerATFLIRCamera
+                        if (this.in.digitalZoom.digitalZoom !== undefined) {
+                            // Will probably be 1 or 2
+                            digitalZoom *= this.in.digitalZoom.digitalZoom;
+                        }
+
+                        let magnifyFactorDigital = digitalZoom / 100;
+                        if (aPass.uniforms['magnifyFactor'].value !== magnifyFactorDigital) {
+                            aPass.uniforms['magnifyFactor'].value = magnifyFactorDigital;
+                            aPass.material.needsUpdate = true;
+                        }
+                        break;
+
+
+
+
                     case "Pixelate2x2":
                         let resolution = new Vector2(this.widthPx, this.heightPx);
                         if (!aPass.uniforms['resolution'].value.equals(resolution)) {
@@ -280,7 +426,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         super.dispose();
         this.renderer.dispose();
         this.renderer = null;
-        this.composer.dispose();
+        if (this.composer !== undefined) this.composer.dispose();
         this.composer = null;
 
     }

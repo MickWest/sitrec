@@ -249,7 +249,7 @@ export class CNodeFactory extends CManager{
         NodeMan.iterate((key, node) => {
             if (node.useSitFrames) {
                 node.frames = Sit.frames;
-                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
+//                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
             }
         })
 

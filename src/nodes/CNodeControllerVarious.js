@@ -375,7 +375,7 @@ export class CNodeControllerATFLIRCamera extends CNodeController {
         // first get the look view
         const lookView = NodeMan.get("lookView")
         if (lookView.effectsEnabled && lookView.in.zoom !== undefined) {
-            lookView.in.zoom.digitalZoom = zoom; // bit of a patch, decorating the zoom GUIValue
+            lookView.in.digitalZoom.digitalZoom = zoom; // bit of a patch, decorating the zoom GUIValue
         } else {
             if (zoom === 2) {
                 vFOV /= 2
