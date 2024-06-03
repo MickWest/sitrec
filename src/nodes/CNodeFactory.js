@@ -52,7 +52,7 @@ export class CNodeFactory extends CManager{
     create(type, def) {
         assert(this.nodeTypes[type] !== undefined, "Node type " + type + " undefined in node factory")
         const result =  new this.nodeTypes[type] (def)
-        console.log("FACTORY Making a "+type+" id= " + def.id)
+//        console.log("FACTORY Making a "+type+" id= " + def.id)
         return result;
     }
 

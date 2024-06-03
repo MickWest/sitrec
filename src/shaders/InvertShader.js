@@ -2,13 +2,11 @@
  * Full-screen textured quad shader
  */
 
-export const CopyShader = {
+export const InvertShader = {
 
     uniforms: {
 
         'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-
 
     },
 
@@ -34,8 +32,11 @@ export const CopyShader = {
 		void main() {
 
 			gl_FragColor = texture2D( tDiffuse, vUv );
-//			gl_FragColor.a *= opacity;
-			gl_FragColor.g = 0.0;
+            // invert it
+            gl_FragColor.r = 1.0 - gl_FragColor.r;
+            gl_FragColor.g = 1.0 - gl_FragColor.g;
+            gl_FragColor.b = 1.0 - gl_FragColor.b;
+            
 
 		}`
 

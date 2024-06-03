@@ -35,7 +35,9 @@ export const SitChilean = {
     // note it has an effect of FLIRShader to make it look like an IR camera
     lookView: {
         left: 0.5, top: 0.5, width: -1.77777, height: 0.5,
-        effects: ["FLIRShader"],
+        effects: {
+            FLIRShader: {},
+        }
     },
 
     // The video view is the view of the original video

@@ -380,7 +380,7 @@ async function initializeOnce() {
 
     var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
-    var _guiTweaks = _gui.addFolder('Tweaks').close().perm();
+    var _guiTweaks = _gui.addFolder('Tweaks & Effects').close().perm();
 
 
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews)

@@ -18,7 +18,7 @@
 import {assert, degrees, scaleF2M, vdump} from '../utils.js'
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
-import {gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
 
@@ -269,8 +269,12 @@ class CNode {
             }
         } else if(gui) {
             // if no gui is specified, then use the main gui (if there is one)
-            console.warn("No gui specified for " + this.id + " using main gui")
-            this.gui = gui;
+//            console.warn("No gui specified for " + this.id + " using main gui")
+
+            if (Globals.defaultGui !== undefined && Globals.defaultGui !== null)
+                this.gui = Globals.defaultGui;
+            else
+                this.gui = gui;
         }
 
     }

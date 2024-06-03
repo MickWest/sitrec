@@ -248,6 +248,8 @@ class CNodeView extends CNode {
         if (NodeMan.exists("videoZoom")) {
             if (this.effectsEnabled && this.syncPixelZoomWithVideo) {
                 this.camera.zoom = 1;
+                // these are CNodeGUI objects
+                // that we need to sync
                 var videoZoom = NodeMan.get("videoZoom")
                 var pixelZoom = NodeMan.get("pixelZoom");
 

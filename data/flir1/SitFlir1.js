@@ -9,7 +9,7 @@ export const SitFlir1 = {
     frames: 2289,
     aFrame: 0,
     bFrame: 2288,
-    startDistance:15,
+    startDistance:10,
     azSlider:{defer:true},
 
     mainCamera: {
@@ -31,23 +31,120 @@ export const SitFlir1 = {
 
     lookCamera: {},
 
-    canvasResolution: {kind: "GUIValue", value: 480, start: 10, end: 1000, step: 1, desc: "Resolution"},
+    canvasResolution: {kind: "GUIValue", value: 484, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
+
+    focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Focus", gui:"tweaks"},
 
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
       lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
         canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
-        effects: [ "hBlur", "vBlur", "digitalZoom", "PixelateNxN", "pixelZoom"],
-        inputs: {
-            hBlur: {kind: "GUIValue", value: 0.5, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
-            vBlur: {kind: "GUIValue", value: 0.4, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-            pixelZoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %", hidden:true},
-            //blockSize: {kind: "GUIValue", value: 2, start: 0, end: 10, step: 1, desc: "Block Size"},
-            digitalZoom: 100,
-            blockSize: 2,
+        // effects: [ "StaticNoise", "hBlur", "vBlur", "digitalZoom", "PixelateNxN", "pixelZoom"],
+        // inputs: {
+        //     hBlur: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Horizontal"},
+        //     vBlur: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Vertical"},
+        //     pixelZoom: {id: "pixelZoom", kind: "GUIValue", value: 100, start: 10, end: 2000, step: 0.01, desc: "Pixel Zoom %", hidden:true},
+        //     //blockSize: {kind: "GUIValue", value: 2, start: 0, end: 10, step: 1, desc: "Block Size"},
+        //     digitalZoom: 100,
+        //     blockSize: 2,
+        //
+        // },
+
+          // effects are nodes
+          // they are specified per view
+          // and have their auto ids prependend with the view
+          // or you can specify the id in the normal way
+        effects: {
+
+          // initial blurs are for focus
+            hBlur: { inputs: {
+                 h: "focus",
+            }},
+            vBlur: {inputs:{
+                v: "focus",
+            }},
+            // Noise comes AFTER focus, becuase it's on the sensor
+            StaticNoise: {inputs:{
+                amount: {kind: "GUIValue", value: 0.06, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
+                }},
+            Greyscale:{},
+            Invert: {id:"FLIR1_Invert"},
+
+            // Compress: {inputs:{
+            //     lower: {kind: "GUIValue", value: 0.1, start: 0.0, end: 1.0, step: 0.01, desc: "Compress Lower"},
+            //     upper: {kind: "GUIValue", value: 0.9, start: 0.0, end: 1.0, step: 0.01, desc: "Compress Upper"},
+            //
+            //     }},
+
+            IRW_Levels: {
+                id: "FLIR1_IRW_Levels",
+                kind: "Levels",
+                inputs: {
+                    inputBlack: {kind: "GUIValue", value: 0.21, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
+                    inputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
+                    gamma: {kind: "GUIValue", value: 2.27, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
+                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black"},
+                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White"},
+
+                }},
+
+            TV_Levels: {
+                id: "FLIR1_TV_Levels",
+                kind: "Levels",
+                inputs: {
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
+                    inputWhite:  {kind: "GUIValue", value: 0.68, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
+                    gamma:       {kind: "GUIValue", value: 2.75, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
+                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
+                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
+
+                }},
+
+            digitalZoom: {inputs:{
+                magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
+            }},
+            // these blurs are for the video conversion
+            hBlur2: { kind: "hBlur", inputs: {
+                    h: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Horizontal"},
+                }},
+            vBlur2: {kind: "vBlur", inputs:{
+                    v: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Vertical"},
+                }},
+
+
+            JPEGArtifacts: {
+                inputs: {
+                    size: 16,
+                    amount: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+                }
+            },
+
+            // 2x2 pixelation is for the video being later resized to 242 size from 484
+            Pixelate2x2: {inputs:{
+                //blockSize: 2,
+            }},
+
+
+
+
+            pixelZoom: {
+                inputs: {
+                magnifyFactor: {
+                    id: "pixelZoom",
+                    kind: "GUIValue",
+                    value: 100,
+                    start: 10,
+                    end: 2000,
+                    step: 0.01,
+                    desc: "Pixel Zoom %",
+                    hidden: true
+                },
+            }},
         },
-        syncPixelZoomWithVideo: true,
+
+          syncPixelZoomWithVideo: true,
+          background: "#78747a",
     },
 
     videoView: {left: 0.653, top: 0.25, width: -1, height: 0.375,},

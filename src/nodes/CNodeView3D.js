@@ -17,30 +17,21 @@ import {
 } from "../../three.js/build/three.module";
 import {DebugArrowAB, V3} from "../threeExt";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
-
-import { EffectComposer } from '../../three.js/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from '../../three.js/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass} from '../../three.js/examples/jsm/postprocessing/ShaderPass.js';
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {
-    BoxGeometry,
-    Color, Mesh, MeshBasicMaterial,
+    Color, Mesh,
     NearestFilter,
-    PerspectiveCamera, PlaneGeometry,
+    PlaneGeometry,
     RGBAFormat,
-    Scene, ShaderMaterial,
+    ShaderMaterial,
     Sphere,
-    Vector2,
     WebGLRenderTarget
 } from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
-import {HorizontalBlurShader} from "../../three.js/examples/jsm/shaders/HorizontalBlurShader";
-import {VerticalBlurShader} from "../../three.js/examples/jsm/shaders/VerticalBlurShader";
-import {ZoomShader} from "../shaders/ZoomShader";
-import {Pixelate2x2Shader, PixelateNxNShader} from "../shaders/Pixelate2x2Shader";
-import {StaticNoiseShader} from "../shaders/StaticNoiseShader";
+import {CNodeEffect} from "./CNodeEffect";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
@@ -197,8 +188,12 @@ export class CNodeView3D extends CNodeViewCanvas {
                 return;
             }
 
+            if (this.in.canvasWidth !== undefined) {
+                this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+            } else {
+                this.renderTarget.setSize(this.widthPx, this.heightPx);
+            }
 
-            this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
             // Clear the primary render target
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.clear(true, true, true);
@@ -210,7 +205,9 @@ export class CNodeView3D extends CNodeViewCanvas {
             // Apply each effect pass sequentially
             let currentRenderTarget = this.renderTarget;
             for (let effectName in this.effectPasses) {
-                let effectPass = this.effectPasses[effectName];
+                const effectNode = this.effectPasses[effectName];
+                if (!effectNode.enabled) continue;
+                let effectPass = effectNode.pass;
                 effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
                 // flip the render targets
                 this.renderer.setRenderTarget(currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget);
@@ -264,48 +261,39 @@ export class CNodeView3D extends CNodeViewCanvas {
     }
 
 
+
+
     addEffects(effects)
     {
         if (effects) {
             this.effects = effects;
 
-            this.effectPasses = []
-            for (var effect of this.effects) {
-                var aPass;
-                switch (effect) {
-                    case "FLIRShader":
-                        this.addEffectPass(effect, new ShaderPass(FLIRShader))
-                        break;
+            // we are createing an array of CNodeEffect objects
+            this.effectPasses = [];
 
-                    case "hBlur":
-                        aPass = new ShaderPass(HorizontalBlurShader)
-                        this.addEffectPass(effect, aPass)
-                        break;
-
-                    case "vBlur":
-                        this.addEffectPass(effect, new ShaderPass(VerticalBlurShader))
-                        break
-
-                    case "pixelZoom":
-                    case "digitalZoom":
-                        this.addEffectPass(effect, new ShaderPass(ZoomShader))
-                        break
-
-                    case "Pixelate2x2":
-                        this.addEffectPass(effect, new ShaderPass(Pixelate2x2Shader))
-                        break;
-
-                    case "PixelateNxN":
-                        this.addEffectPass(effect, new ShaderPass(PixelateNxNShader))
-                        break;
-
-                    case "StaticNoise":
-                         this.addEffectPass(effect, new ShaderPass(StaticNoiseShader))
-                        break;
-
-                    default:
-                        assert(0,"Effect "+effect+" not found for "+this.id)
+            // as defined by the "effects" object in the sitch
+            for (var effectKey in this.effects) {
+                let def = this.effects[effectKey];
+                let effectID = effectKey;
+                let effectKind = effectKey;
+                // if there's a "kind" in the def then we use that as the effect kind
+                // and the effect `effect` is the name of the shader
+                if (def.kind !== undefined) {
+                    effectKind = def.kind;
                 }
+
+                // if there's an "id" in the def then we use that as the effect id
+                // otherwise we generate one from the node id and the effect id
+                effectID = def.id ?? (this.id + "_" + effectID);
+
+                console.log("Adding effect kind" + effectKind+" id="+effectID+"  to "+this.id)
+
+                // create the node, which will wrap a .pass member which is the ShaderPass
+                this.effectPasses.push(new CNodeEffect({
+                    id: effectID,
+                    effectName: effectKind,
+                    ...def,
+                }))
             }
             this.effectsEnabled = true;
             gui.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
@@ -330,92 +318,93 @@ export class CNodeView3D extends CNodeViewCanvas {
     }
 
 
-    updateEffects() {
+    updateEffects(f) {
         // Go through the effect passes and update their uniforms and anything else needed
-        if (this.effects) {
-            for (var effect of this.effects) {
-                var aPass = this.effectPasses[effect];
-                switch (effect) {
-                    case "hBlur":
-                        if (aPass.uniforms['h'].value !== (this.in.hBlur.v0) / this.heightPx) {
-                            aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-                    case "vBlur":
-                        if (aPass.uniforms['v'].value !== (this.in.vBlur.v0) / this.widthPx) {
-                            aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-                    case "pixelZoom":
-                        let pixelZoom = this.in.pixelZoom.v0;
+        for (let effectName in this.effectPasses) {
+            let effectNode = this.effectPasses[effectName];
+            effectNode.updateUniforms(f, this)
 
-                        let magnifyFactor = pixelZoom / 100;
-                        if (aPass.uniforms['magnifyFactor'].value !== magnifyFactor) {
-                            aPass.uniforms['magnifyFactor'].value = magnifyFactor;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-
-                        // digitalZoom is something the camera can control
-                        // it's seperate from pixelZoom as it's intended
-                        // to simulate a digital zoom, on the internal camera data
-                        // before other effects are applied
-                        // the pixelZoom is for scaling the end result
-                    case "digitalZoom":
-
-                        let digitalZoom = this.in.digitalZoom.v0;
-
-                        // Check for digital zoom, like from CNodeControllerATFLIRCamera
-                        if (this.in.digitalZoom.digitalZoom !== undefined) {
-                            // Will probably be 1 or 2
-                            digitalZoom *= this.in.digitalZoom.digitalZoom;
-                        }
-
-                        let magnifyFactorDigital = digitalZoom / 100;
-                        if (aPass.uniforms['magnifyFactor'].value !== magnifyFactorDigital) {
-                            aPass.uniforms['magnifyFactor'].value = magnifyFactorDigital;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-
-
-
-
-                    case "Pixelate2x2":
-                        let resolution = new Vector2(this.widthPx, this.heightPx);
-                        if (!aPass.uniforms['resolution'].value.equals(resolution)) {
-                            aPass.uniforms['resolution'].value.copy(resolution);
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-                    case "PixelateNxN":
-                        let resolutionN = new Vector2(this.widthPx, this.heightPx);
-                        if (!aPass.uniforms['resolution'].value.equals(resolutionN)) {
-                            aPass.uniforms['resolution'].value.copy(resolutionN);
-                            aPass.material.needsUpdate = true;
-                        }
-                        if (aPass.uniforms['blockSize'].value !== this.in.blockSize.v0) {
-                            aPass.uniforms['blockSize'].value = this.in.blockSize.v0;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-
-                    case "StaticNoise":
-                        if (aPass.uniforms['time'].value !== par.frame) {
-                            aPass.uniforms['time'].value = par.frame;
-                            aPass.material.needsUpdate = true;
-                        }
-                        break;
-
-
-                    default:
-                        // They don't all need uniforms
-                        // assert(0, "Effect " + effect + " not found for " + this.id)
-                        break;
-                }
-            }
+            // var aPass = this.effectPasses[effect];
+            // switch (effect) {
+            //     case "hBlur":
+            //         if (aPass.uniforms['h'].value !== (this.in.hBlur.v0) / this.heightPx) {
+            //             aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //     case "vBlur":
+            //         if (aPass.uniforms['v'].value !== (this.in.vBlur.v0) / this.widthPx) {
+            //             aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //     case "pixelZoom":
+            //         let pixelZoom = this.in.pixelZoom.v0;
+            //
+            //         let magnifyFactor = pixelZoom / 100;
+            //         if (aPass.uniforms['magnifyFactor'].value !== magnifyFactor) {
+            //             aPass.uniforms['magnifyFactor'].value = magnifyFactor;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //
+            //         // digitalZoom is something the camera can control
+            //         // it's seperate from pixelZoom as it's intended
+            //         // to simulate a digital zoom, on the internal camera data
+            //         // before other effects are applied
+            //         // the pixelZoom is for scaling the end result
+            //     case "digitalZoom":
+            //
+            //         let digitalZoom = this.in.digitalZoom.v0;
+            //
+            //         // Check for digital zoom, like from CNodeControllerATFLIRCamera
+            //         if (this.in.digitalZoom.digitalZoom !== undefined) {
+            //             // Will probably be 1 or 2
+            //             digitalZoom *= this.in.digitalZoom.digitalZoom;
+            //         }
+            //
+            //         let magnifyFactorDigital = digitalZoom / 100;
+            //         if (aPass.uniforms['magnifyFactor'].value !== magnifyFactorDigital) {
+            //             aPass.uniforms['magnifyFactor'].value = magnifyFactorDigital;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //
+            //
+            //
+            //
+            //     case "Pixelate2x2":
+            //         let resolution = new Vector2(this.widthPx, this.heightPx);
+            //         if (!aPass.uniforms['resolution'].value.equals(resolution)) {
+            //             aPass.uniforms['resolution'].value.copy(resolution);
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //     case "PixelateNxN":
+            //         let resolutionN = new Vector2(this.widthPx, this.heightPx);
+            //         if (!aPass.uniforms['resolution'].value.equals(resolutionN)) {
+            //             aPass.uniforms['resolution'].value.copy(resolutionN);
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         if (aPass.uniforms['blockSize'].value !== this.in.blockSize.v0) {
+            //             aPass.uniforms['blockSize'].value = this.in.blockSize.v0;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //
+            //     case "StaticNoise":
+            //         if (aPass.uniforms['time'].value !== par.frame) {
+            //             aPass.uniforms['time'].value = par.frame;
+            //             aPass.material.needsUpdate = true;
+            //         }
+            //         break;
+            //
+            //
+            //     default:
+            //         // They don't all need uniforms
+            //         // assert(0, "Effect " + effect + " not found for " + this.id)
+            //         break;
+            // }
         }
     }
 
@@ -465,7 +454,7 @@ export class CNodeView3D extends CNodeViewCanvas {
     render(frame) {
 
         if (this.needUpdate) {
-            this.updateEffects();
+            this.updateEffects(frame);
             this.needUpdate = false;
         }
 

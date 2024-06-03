@@ -21,13 +21,25 @@ export const SitSWR = {
     // background is the color of the sky.
     mainView: {left:0.0, top:0, width:1,height:1, background: [0.53, 0.81, 0.92],
         canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
-        effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
-      //   effects: ["FLIRShader", "hBlur"],
-         inputs: {
-            hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
-            vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
-            zoom: {kind: "GUIValue", value: 100, start: 20, end: 2000.0, step: 0.01, desc: "Pixel Zoom"},
+      //   effects: ["FLIRShader", "hBlur", "vBlur", "zoom"],
+      // //   effects: ["FLIRShader", "hBlur"],
+      //    inputs: {
+      //       hBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"},
+      //       vBlur: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Vertical"},
+      //       zoom: {kind: "GUIValue", value: 100, start: 20, end: 2000.0, step: 0.01, desc: "Pixel Zoom"},
+      //   },
+    effects: {
+        // these are nodes, but simplifed setup
+        // so we have the shader name, and the uniforms
+        // note some shaders nodes require extra calculations, like for resolution
+        "FLIRShader": {},
+        "hBlur": {
+            inputs: {
+                h: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"}
+            }
         },
+    }
+
 
     },
 }

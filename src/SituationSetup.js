@@ -167,8 +167,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
         assert(typeof runDeferred === "boolean", "SituationSetup: runDeferred must be a boolean")
 
         if (dataDeferred !== runDeferred) {
-            if (!runDeferred)
-                console.log("SituationSetup: skipping deferred data: " + key)
+            // if (!runDeferred) console.log("SituationSetup: skipping deferred data: " + key)
             continue;
         }
 
@@ -285,6 +284,28 @@ export function SituationSetupFromData(sitData, runDeferred) {
     }
 }
 
+export function resolveAnonObjects(data, depth=0) {
+    // iterate over the keys in data
+    // if the value for that key is an object
+    // and that object has a "kind" key, then recursively call SetupFromKeyAndData
+    for (let subKey in data) {
+        if (typeof data[subKey] === "object") {
+            if (data[subKey].kind !== undefined) {
+                // here the key will be the name of a variable
+                // so we can't use it as a node id
+                // so instead we pass in undefined,
+                // so the node system will generate an id for it
+                const anonResult = SetupFromKeyAndData(undefined, data[subKey], depth+1);
+                // assert it's a CNode derived object
+                assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object. Kind = "+data[subKey].kind+"\n"+JSON.stringify(data));
+                // replace the object with the id of the newly created node
+                data[subKey] = anonResult.id;
+            }
+        }
+    }
+}
+
+
 // given a key and some data, execute the appropiate setup
 // this is often a node, but can be a GUI element, or some other setup
 // setup commands start with lower case and are handled in the switch statement
@@ -300,31 +321,12 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 //        data = JSON.parse(JSON.stringify(_data));
         data = structuredClone(_data);
 
-        function resolveAnonObjects(data) {
-            // iterate over the keys in data
-            // if the value for that key is an object
-            // and that object has a "kind" key, then recursively call SetupFromKeyAndData
-            for (let subKey in data) {
-                if (typeof data[subKey] === "object") {
-                    if (data[subKey].kind !== undefined) {
-                        // here the key will be the name of a variable
-                        // so we can't use it as a node id
-                        // so instead we pass in undefined,
-                        // so the node system will generate an id for it
-                        const anonResult = SetupFromKeyAndData(undefined, data[subKey], depth+1);
-                        // assert it's a CNode derived object
-                        assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object. Kind = "+data[subKey].kind+"\n"+JSON.stringify(data));
-                        // replace the object with the id of the newly created node
-                        data[subKey] = anonResult.id;
-                    }
-                }
-            }
-        }
+
 
         // resolve any anonymous objects at the top level
         // which will recursively call SetupFromKeyAndData as needed
         // so you can nest anonymous objects as deep as you like
-        resolveAnonObjects(data);
+        resolveAnonObjects(data, depth);
 
         // if it has an "inputs" object then do the same with that
         // inputs (as a parameter) is largely legacy, but still required for a couple of things
@@ -341,7 +343,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 //        console.log("SituationSetup iterating: key = " + key );
 
     function SSLog() {
-//        console.log("SSLog SituationSetup: " + key + " " + JSON.stringify(data))
+        console.log("..... SSLOG SituationSetup: " + key + " " + JSON.stringify(data))
     }
 
     if (data.kind !== undefined) {
@@ -1221,6 +1223,21 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 // calculateGlareStartAngle();
                 par.renderOne = true;
             }).listen().name('Jet Pitch')
+            Sit.update = function(f) {
+                let IRW = true;
+                if (f>=536 && f<1236) {
+                    IRW = false;
+                }
+
+                if (!NodeMan.get("FLIR1_Invert").guiHasDisabled)
+                    NodeMan.get("FLIR1_Invert").enabled = IRW;
+
+                if (!NodeMan.get("FLIR1_IRW_Levels").guiHasDisabled)
+                    NodeMan.get("FLIR1_IRW_Levels").enabled = IRW;
+
+                if (!NodeMan.get("FLIR1_TV_Levels").guiHasDisabled)
+                    NodeMan.get("FLIR1_TV_Levels").enabled = !IRW;
+            }
             break;
 
         case "segmentSelect":

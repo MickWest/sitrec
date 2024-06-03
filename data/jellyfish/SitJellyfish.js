@@ -34,7 +34,9 @@ export const SitJellyfish    = {
     mainView:{ left:0.0, top:0, width:0.50,height:1,background:'#000000'},
 
     lookView:{ left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
-        effects: ["FLIRShader"],
+        effects: {
+            FLIRShader: {},
+        }
     },
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5,},
 

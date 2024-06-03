@@ -967,8 +967,8 @@ export function initViews() {
 
     if (1 || !isLocal) {
         var labelMainView = new CNodeViewUI({id: "labelMainView", overlayView: ViewMan.list.mainView.data});
-        labelMainView.addText("videolabel1", "WORK IN PROGRESS", 20, 90, 3, "#f0f00040")
-        labelMainView.addText("videolabel2", "RESULTS MAY VARY", 20, 95, 3, "#f0f00040")
+        labelMainView.addText("videolabel1", "WORK IN PROGRESS", 45, 90, 3, "#f0f00020")
+        labelMainView.addText("videolabel2", "RESULTS MAY VARY", 45, 95, 3, "#f0f00020")
         labelMainView.setVisible(true)
     }
     var farClipLook = metersFromMiles(500)
