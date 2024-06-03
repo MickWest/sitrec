@@ -40,6 +40,7 @@ import {HorizontalBlurShader} from "../../three.js/examples/jsm/shaders/Horizont
 import {VerticalBlurShader} from "../../three.js/examples/jsm/shaders/VerticalBlurShader";
 import {ZoomShader} from "../shaders/ZoomShader";
 import {Pixelate2x2Shader, PixelateNxNShader} from "../shaders/Pixelate2x2Shader";
+import {StaticNoiseShader} from "../shaders/StaticNoiseShader";
 
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
@@ -187,8 +188,6 @@ export class CNodeView3D extends CNodeViewCanvas {
     defaultRenderFunction() {
     {
 
-
-
         if (this.visible) {
 
             if (!this.effectsEnabled) {
@@ -199,6 +198,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
 
 
+            this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
             // Clear the primary render target
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.clear(true, true, true);
@@ -299,6 +299,10 @@ export class CNodeView3D extends CNodeViewCanvas {
                         this.addEffectPass(effect, new ShaderPass(PixelateNxNShader))
                         break;
 
+                    case "StaticNoise":
+                         this.addEffectPass(effect, new ShaderPass(StaticNoiseShader))
+                        break;
+
                     default:
                         assert(0,"Effect "+effect+" not found for "+this.id)
                 }
@@ -397,6 +401,15 @@ export class CNodeView3D extends CNodeViewCanvas {
                             aPass.material.needsUpdate = true;
                         }
                         break;
+
+                    case "StaticNoise":
+                        if (aPass.uniforms['time'].value !== par.frame) {
+                            aPass.uniforms['time'].value = par.frame;
+                            aPass.material.needsUpdate = true;
+                        }
+                        break;
+
+
                     default:
                         // They don't all need uniforms
                         // assert(0, "Effect " + effect + " not found for " + this.id)
