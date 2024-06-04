@@ -42,6 +42,9 @@ export const SitChilean = {
         canvasWidth: 720, canvasHeight: 405,
         effects: {
             FLIRShader: {},
+            StaticNoise: {inputs:{
+                    amount: {kind: "GUIValue", value: 0.06, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
+                }},
             // final zoom to match the video zoom (scaling up pixels)
             pixelZoom: {
                 id: "pixelZoomNode",
@@ -57,6 +60,8 @@ export const SitChilean = {
                         hidden: true
                     },
                 }},
+
+
         },
         syncPixelZoomWithVideo: true,
     },
@@ -98,5 +103,14 @@ export const SitChilean = {
 
     // Adds a sphere of selectable size at the target's position
     targetSizedSphere: { track: "targetTrack", size: 3, color: "#000000",},
+
+
+    shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
+        frequency: {kind: "GUIValue", value: 0.276, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
+        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
+        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
+        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
+        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
+    },
 
 }
