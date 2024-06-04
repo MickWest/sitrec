@@ -15,6 +15,7 @@ import {LevelsShader} from "../shaders/LevelsShader";
 import {GreyscaleShader} from "../shaders/GreyscaleShader";
 import {JPEGArtifactsShader} from "../shaders/JPEGArtifactsShader";
 import {Globals, guiTweaks} from "../Globals";
+import {CopyShader} from "../shaders/CopyShader";
 
 let guiOnOffFolder = null;
 
@@ -36,6 +37,7 @@ export class CNodeEffect extends CNode {
         "Levels": LevelsShader,
         "Greyscale": GreyscaleShader,
         "JPEGArtifacts": JPEGArtifactsShader,
+        "Copy": CopyShader,
     }
 
 

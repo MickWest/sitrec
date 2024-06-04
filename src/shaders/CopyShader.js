@@ -33,9 +33,13 @@ export const CopyShader = {
 
 		void main() {
 
-			gl_FragColor = texture2D( tDiffuse, vUv );
-//			gl_FragColor.a *= opacity;
-			gl_FragColor.g = 0.0;
+ 			gl_FragColor = texture2D( tDiffuse, vUv );
+// //			gl_FragColor.a *= opacity;
+
+            // vec4 texel = texture2D(tDiffuse, vUv);
+            // // Apply gamma correction to match sRGB encoding
+            // texel.rgb = pow(texel.rgb, vec3(2.2));
+            // gl_FragColor = opacity * texel;
 
 		}`
 

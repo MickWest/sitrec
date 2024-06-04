@@ -26,7 +26,7 @@ import {
     PlaneGeometry,
     RGBAFormat,
     ShaderMaterial,
-    Sphere, UnsignedByteType,
+    Sphere, sRGBEncoding, UnsignedByteType,
     WebGLRenderTarget
 } from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
@@ -117,12 +117,14 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true });
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
+        this.renderer.outputEncoding = sRGBEncoding;
 
         // intial rendering is done to the sceneRenderTarget
         // which is anti-aliased with MSAA
         this.sceneRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
             format: RGBAFormat,
             type: UnsignedByteType,
+            encoding: sRGBEncoding,
             minFilter: LinearFilter,
             magFilter: LinearFilter,
             samples: 4 // Number of samples for MSAA, usually 4 or 8
@@ -132,14 +134,18 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
             minFilter: NearestFilter,
             magFilter: NearestFilter,
-            format: RGBAFormat
+            format: RGBAFormat,
+            encoding: sRGBEncoding,
+
         });
 
         // Create the temporary render target with the desired size
         this.tempRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
             minFilter: NearestFilter,
             magFilter: NearestFilter,
-            format: RGBAFormat
+            format: RGBAFormat,
+            encoding: sRGBEncoding,
+
         });
 
         // Ensure GlobalScene and this.camera are defined
@@ -165,6 +171,10 @@ export class CNodeView3D extends CNodeViewCanvas {
             varying vec2 vUv;
             void main() {
                 gl_FragColor = texture2D(tDiffuse, vUv);
+                
+                // Apply correction to match sRGB encoding
+                // https://discourse.threejs.org/t/different-color-output-when-rendering-to-webglrendertarget/57494
+                gl_FragColor = sRGBTransferOETF( gl_FragColor );
             }
         `
         });
