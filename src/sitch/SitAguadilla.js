@@ -82,11 +82,54 @@ export const SitAguadilla = {
     },
     mainView: {left: 0.0, top: 0, width: 1, height: 1, fov:50, background: '#005000'},
 
+
+    canvasResolution: {kind: "GUIValue", value: 720, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
+
     lookView: {
         left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
+        canvasWidth: "canvasResolution",
+        canvasHeight: {id: "canvasHeight", kind: "Math", math: "$canvasResolution/1.5"},
         effects: {
             FLIRShader: {},
-        }
+
+            Agua_Levels: {
+                kind: "Levels",
+                inputs: {
+                    inputBlack: {kind: "GUIValue", value: 0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
+                    inputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
+                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
+                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black"},
+                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White"},
+
+                }},
+
+            StaticNoise: {inputs:{
+                    amount: {kind: "GUIValue", value: 0.02, start: 0.0, end: .2, step: 0.001, desc: "Noise Amount"},
+                }},
+
+            // digital zoom for the 3x with 2024 focal length
+            digitalZoom: {inputs:{
+                    magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
+                }},
+
+            // final zoom to match the video zoom (scaling up pixels)
+            pixelZoom: {
+                id: "pixelZoomNode",
+                inputs: {
+                    magnifyFactor: {
+                        id: "pixelZoom",
+                        kind: "GUIValue",
+                        value: 100,
+                        start: 10,
+                        end: 2000,
+                        step: 0.01,
+                        desc: "Pixel Zoom %",
+                        hidden: true
+                    },
+                }},
+
+        },
+        syncPixelZoomWithVideo: true,
     },
 
 
@@ -134,6 +177,17 @@ export const SitAguadilla = {
 
             var csv = FileManager.get("aguaCSV")
             var lookFOV = parseFloat(csv[par.frame][15])
+
+            let zoom = 1;
+            // special cose where zoom displays as 2024
+            // that means it's actually 675 with 3x digital zoom
+            if (lookFOV === 2024) {
+                lookFOV = 675;
+                zoom = 3
+            }
+            NodeMan.get("digitalZoomGUI").value = 100 * zoom;
+
+
             lookFOV = 4 * 135 / lookFOV
             const lookCam = NodeMan.get("lookCamera").camera;
             lookCam.fov = lookFOV
@@ -717,6 +771,7 @@ export const SitAguadilla = {
                 size: "sizeScaled",
             },
             color:"white",
+            layers:LAYER.MASK_LOOK,
         })
 
             addControllerTo("lookCamera", "TrackToTrack", {
