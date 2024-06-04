@@ -21,12 +21,12 @@ import { ShaderPass} from '../../three.js/examples/jsm/postprocessing/ShaderPass
 import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {
-    Color, Mesh,
+    Color, LinearFilter, Mesh,
     NearestFilter,
     PlaneGeometry,
     RGBAFormat,
     ShaderMaterial,
-    Sphere,
+    Sphere, UnsignedByteType,
     WebGLRenderTarget
 } from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
@@ -118,6 +118,16 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
 
+        // intial rendering is done to the sceneRenderTarget
+        // which is anti-aliased with MSAA
+        this.sceneRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
+            format: RGBAFormat,
+            type: UnsignedByteType,
+            minFilter: LinearFilter,
+            magFilter: LinearFilter,
+            samples: 4 // Number of samples for MSAA, usually 4 or 8
+        });
+
         // Create the primary render target with the desired size
         this.renderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
             minFilter: NearestFilter,
@@ -189,13 +199,18 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
 
             if (this.in.canvasWidth !== undefined) {
+                this.sceneRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
                 this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                this.tempRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
             } else {
+                this.sceneRenderTarget.setSize(this.widthPx, this.heightPx);
                 this.renderTarget.setSize(this.widthPx, this.heightPx);
+                this.tempRenderTarget.setSize(this.widthPx, this.heightPx);
             }
 
+            let currentRenderTarget = this.sceneRenderTarget;
             // Clear the primary render target
-            this.renderer.setRenderTarget(this.renderTarget);
+            this.renderer.setRenderTarget(currentRenderTarget);
             this.renderer.clear(true, true, true);
 
             // Render the scene to the off-screen render target
@@ -203,14 +218,31 @@ export class CNodeView3D extends CNodeViewCanvas {
             this.renderer.setRenderTarget(null);
 
             // Apply each effect pass sequentially
-            let currentRenderTarget = this.renderTarget;
             for (let effectName in this.effectPasses) {
                 const effectNode = this.effectPasses[effectName];
                 if (!effectNode.enabled) continue;
                 let effectPass = effectNode.pass;
+
+                // the efferctNode has an optional filter type for the source texture
+                switch (effectNode.filter.toLowerCase()) {
+                    case "linear":
+                        currentRenderTarget.texture.minFilter = LinearFilter;
+                        currentRenderTarget.texture.magFilter = LinearFilter;
+                        break;
+                    case "nearest":
+                    default:
+                        currentRenderTarget.texture.minFilter = NearestFilter;
+                        currentRenderTarget.texture.magFilter = NearestFilter;
+                        break;
+                }
+
                 effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
                 // flip the render targets
-                this.renderer.setRenderTarget(currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget);
+                const useRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+
+
+
+                this.renderer.setRenderTarget(useRenderTarget);
                 this.renderer.clear(true, true, true);
                 this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
                 this.renderer.render(this.fullscreenQuad, new Camera());
@@ -305,7 +337,6 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     addEffectPass(effectName, effect) {
         this.effectPasses[effectName] = effect;
-//        this.composer.addPass(effect);
         return effect;
     }
 
@@ -325,88 +356,6 @@ export class CNodeView3D extends CNodeViewCanvas {
         for (let effectName in this.effectPasses) {
             let effectNode = this.effectPasses[effectName];
             effectNode.updateUniforms(f, this)
-
-            // var aPass = this.effectPasses[effect];
-            // switch (effect) {
-            //     case "hBlur":
-            //         if (aPass.uniforms['h'].value !== (this.in.hBlur.v0) / this.heightPx) {
-            //             aPass.uniforms['h'].value = (this.in.hBlur.v0) / this.heightPx;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //     case "vBlur":
-            //         if (aPass.uniforms['v'].value !== (this.in.vBlur.v0) / this.widthPx) {
-            //             aPass.uniforms['v'].value = (this.in.vBlur.v0) / this.widthPx;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //     case "pixelZoom":
-            //         let pixelZoom = this.in.pixelZoom.v0;
-            //
-            //         let magnifyFactor = pixelZoom / 100;
-            //         if (aPass.uniforms['magnifyFactor'].value !== magnifyFactor) {
-            //             aPass.uniforms['magnifyFactor'].value = magnifyFactor;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //
-            //         // digitalZoom is something the camera can control
-            //         // it's seperate from pixelZoom as it's intended
-            //         // to simulate a digital zoom, on the internal camera data
-            //         // before other effects are applied
-            //         // the pixelZoom is for scaling the end result
-            //     case "digitalZoom":
-            //
-            //         let digitalZoom = this.in.digitalZoom.v0;
-            //
-            //         // Check for digital zoom, like from CNodeControllerATFLIRCamera
-            //         if (this.in.digitalZoom.digitalZoom !== undefined) {
-            //             // Will probably be 1 or 2
-            //             digitalZoom *= this.in.digitalZoom.digitalZoom;
-            //         }
-            //
-            //         let magnifyFactorDigital = digitalZoom / 100;
-            //         if (aPass.uniforms['magnifyFactor'].value !== magnifyFactorDigital) {
-            //             aPass.uniforms['magnifyFactor'].value = magnifyFactorDigital;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //
-            //
-            //
-            //
-            //     case "Pixelate2x2":
-            //         let resolution = new Vector2(this.widthPx, this.heightPx);
-            //         if (!aPass.uniforms['resolution'].value.equals(resolution)) {
-            //             aPass.uniforms['resolution'].value.copy(resolution);
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //     case "PixelateNxN":
-            //         let resolutionN = new Vector2(this.widthPx, this.heightPx);
-            //         if (!aPass.uniforms['resolution'].value.equals(resolutionN)) {
-            //             aPass.uniforms['resolution'].value.copy(resolutionN);
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         if (aPass.uniforms['blockSize'].value !== this.in.blockSize.v0) {
-            //             aPass.uniforms['blockSize'].value = this.in.blockSize.v0;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //
-            //     case "StaticNoise":
-            //         if (aPass.uniforms['time'].value !== par.frame) {
-            //             aPass.uniforms['time'].value = par.frame;
-            //             aPass.material.needsUpdate = true;
-            //         }
-            //         break;
-            //
-            //
-            //     default:
-            //         // They don't all need uniforms
-            //         // assert(0, "Effect " + effect + " not found for " + this.id)
-            //         break;
-            // }
         }
     }
 

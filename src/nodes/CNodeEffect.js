@@ -58,13 +58,13 @@ export class CNodeEffect extends CNode {
         // the call to super will handle setting up the inputs
         // which can be other nodes, or values
         super(v);
-
         this.effectName = v.effectName;
         // look up the shader and create it as this.pass
         assert(this.effectLookup[this.effectName] !== undefined, "Unknown effect " + this.effectName)
         this.pass = new ShaderPass(this.effectLookup[this.effectName]);
 
         this.enabled = v.enabled ?? true;
+        this.filter  = v.filter  ?? "Nearest"; // filter for the source RenderBuffer texture
 
         guiOnOffFolder.add(this, "enabled").name(this.id).listen().onChange((v)=>{
             if (!v) {

@@ -33,7 +33,7 @@ export const SitFlir1 = {
 
     canvasResolution: {kind: "GUIValue", value: 484, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
 
-    focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Focus", gui:"tweaks"},
+    focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
 
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
@@ -71,12 +71,6 @@ export const SitFlir1 = {
             Greyscale:{},
             Invert: {id:"FLIR1_Invert"},
 
-            // Compress: {inputs:{
-            //     lower: {kind: "GUIValue", value: 0.1, start: 0.0, end: 1.0, step: 0.01, desc: "Compress Lower"},
-            //     upper: {kind: "GUIValue", value: 0.9, start: 0.0, end: 1.0, step: 0.01, desc: "Compress Upper"},
-            //
-            //     }},
-
             IRW_Levels: {
                 id: "FLIR1_IRW_Levels",
                 kind: "Levels",
@@ -101,19 +95,21 @@ export const SitFlir1 = {
 
                 }},
 
+
             digitalZoom: {inputs:{
                 magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
             }},
             // these blurs are for the video conversion
             hBlur2: { kind: "hBlur", inputs: {
-                    h: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Horizontal"},
+                    h: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur H"},
                 }},
             vBlur2: {kind: "vBlur", inputs:{
-                    v: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Blur Vertical"},
+                    v: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur V"},
                 }},
 
 
             JPEGArtifacts: {
+                filter: "Linear",
                 inputs: {
                     size: 16,
                     amount: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
@@ -124,8 +120,6 @@ export const SitFlir1 = {
             Pixelate2x2: {inputs:{
                 //blockSize: 2,
             }},
-
-
 
 
             pixelZoom: {
