@@ -1,4 +1,4 @@
-import {CNodeView, mouseInViewOnly, ViewMan} from "./CNodeView";
+import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
@@ -13,12 +13,10 @@ import {
     TextureLoader,
     Plane,
     Vector3,
-    WebGLRenderer, Camera
+    WebGLRenderer, Camera, SRGBColorSpace
 } from "../../three.js/build/three.module";
 import {DebugArrowAB, V3} from "../threeExt";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
-import { ShaderPass} from '../../three.js/examples/jsm/postprocessing/ShaderPass.js';
-import { FLIRShader } from '../shaders/FLIRShader'
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {
     Color, LinearFilter, Mesh,
@@ -26,7 +24,7 @@ import {
     PlaneGeometry,
     RGBAFormat,
     ShaderMaterial,
-    Sphere, sRGBEncoding, UnsignedByteType,
+    Sphere, UnsignedByteType,
     WebGLRenderTarget
 } from "three";
 import {wgs84} from "../LLA-ECEF-ENU";
@@ -117,14 +115,14 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true });
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
-        this.renderer.outputEncoding = sRGBEncoding;
+        this.renderer.colorSpace = SRGBColorSpace;
 
         // intial rendering is done to the sceneRenderTarget
         // which is anti-aliased with MSAA
         this.sceneRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
             format: RGBAFormat,
             type: UnsignedByteType,
-            encoding: sRGBEncoding,
+            colorSpace: SRGBColorSpace,
             minFilter: LinearFilter,
             magFilter: LinearFilter,
             samples: 4 // Number of samples for MSAA, usually 4 or 8
@@ -135,8 +133,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             minFilter: NearestFilter,
             magFilter: NearestFilter,
             format: RGBAFormat,
-            encoding: sRGBEncoding,
-
+            colorSpace: SRGBColorSpace,
         });
 
         // Create the temporary render target with the desired size
@@ -144,7 +141,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             minFilter: NearestFilter,
             magFilter: NearestFilter,
             format: RGBAFormat,
-            encoding: sRGBEncoding,
+            colorSpace: SRGBColorSpace,
 
         });
 
@@ -172,7 +169,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             void main() {
                 gl_FragColor = texture2D(tDiffuse, vUv);
                 
-                // Apply correction to match sRGB encoding
+                // Apply gamma correction to match sRGB encoding
                 // https://discourse.threejs.org/t/different-color-output-when-rendering-to-webglrendertarget/57494
                 gl_FragColor = sRGBTransferOETF( gl_FragColor );
             }
