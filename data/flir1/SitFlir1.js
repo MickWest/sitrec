@@ -121,7 +121,7 @@ export const SitFlir1 = {
                 //blockSize: 2,
             }},
 
-
+            // final zoom to match the video zoom (scaling up pixels)
             pixelZoom: {
                 id: "pixelZoomNode",
                 inputs: {
@@ -313,6 +313,14 @@ export const SitFlir1 = {
     zoomMode:  {kind: "arrayFromKeyframes", file: "DataFile", dataCol: 3, stepped: true},
 
     ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
+
+    shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
+        frequency: {kind: "GUIValue", value: 0.276, start: 0.0, end: 1, step: 0.001, desc: "Frequency", gui:"tweaks"},
+        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Decay", gui:"tweaks"},
+        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "X Scale", gui:"tweaks"},
+        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Y Scale", gui:"tweaks"},
+        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Spring", gui:"tweaks"},
+    },
 
 
     ATFLIRUIOverlay: { kind: "ATFLIRUI",

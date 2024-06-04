@@ -8,7 +8,8 @@ import {adjustHeightAboveGround, DebugArrow} from "../threeExt";
 import {CNodeController} from "./CNodeController";
 
 import {MISB} from "../MISBUtils";
-import {Quaternion, Vector3} from "three";
+import {Quaternion, Vector2, Vector3} from "three";
+import {par} from "../par";
 
 
 // Position the camera on the source track
@@ -386,6 +387,49 @@ export class CNodeControllerATFLIRCamera extends CNodeController {
 
         camera.fov = vFOV;
         camera.updateProjectionMatrix()
+    }
+}
+
+export class CNodeControllerCameraShake extends CNodeController {
+    constructor(v) {
+        super(v);
+        //this.input("shake")
+        this.offset = new Vector2()
+        this.velocity = new Vector2()
+
+        this.input("frequency");
+        this.input("decay");
+        this.input("xScale");
+        this.input("yScale");
+        this.input("spring");
+
+    }
+
+    apply(f, objectNode) {
+        if (par.paused) return;
+        if (Math.random() < this.in.frequency.v(f)) {
+            this.velocity.x = 1/10000*this.in.xScale.v(f) * (Math.random() - 0.5);
+            this.velocity.y = 1/10000*this.in.yScale.v(f) * (Math.random() - 0.5);
+        }
+        // apply the velocity to the offset
+        this.offset.add(this.velocity);
+
+        // adjsut the velocity based on the offset
+        // so it returns to center
+        this.velocity.x -= this.offset.x * this.in.spring.v(f);
+        this.velocity.y -= this.offset.y * this.in.spring.v(f);
+
+        // decay the velocity
+        this.velocity.multiplyScalar((1.0 - this.in.decay.v(f)));
+
+        // rotate the camera about the up axis by the Y offset
+        // and the right axis by the X offset
+        const camera = objectNode.camera;
+        camera.rotateX(this.offset.y);
+        camera.rotateY(this.offset.x);
+        camera.updateMatrixWorld();
+
+
     }
 }
 
