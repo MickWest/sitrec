@@ -30,14 +30,35 @@ export const SitChilean = {
     // single sold color of the sky.
     skyColor: 'skyblue',
 
+    //canvasResolution: {kind: "GUIValue", value: 720, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
+
     // The three views are the main view, the look view, and the video view
     // The look view is the view from the camera to the target
     // note it has an effect of FLIRShader to make it look like an IR camera
     lookView: {
         left: 0.5, top: 0.5, width: -1.77777, height: 0.5,
+        //canvasWidth: "canvasResolution",
+        //canvasHeight: {id: "canvasHeight", kind: "Math", math: "$canvasResolution/1.77777"},
+        canvasWidth: 720, canvasHeight: 405,
         effects: {
             FLIRShader: {},
-        }
+            // final zoom to match the video zoom (scaling up pixels)
+            pixelZoom: {
+                id: "pixelZoomNode",
+                inputs: {
+                    magnifyFactor: {
+                        id: "pixelZoom",
+                        kind: "GUIValue",
+                        value: 100,
+                        start: 10,
+                        end: 2000,
+                        step: 0.01,
+                        desc: "Pixel Zoom %",
+                        hidden: true
+                    },
+                }},
+        },
+        syncPixelZoomWithVideo: true,
     },
 
     // The video view is the view of the original video
