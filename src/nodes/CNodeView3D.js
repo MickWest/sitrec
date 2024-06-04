@@ -200,7 +200,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
             if (!this.effectsEnabled) {
                 this.renderer.setRenderTarget(null);
-                this.renderer.clear(true, true, true);
+                // this.renderer.clear(true, true, true);
                 this.renderer.render(GlobalScene, this.camera);
                 return;
             }
@@ -467,7 +467,6 @@ export class CNodeView3D extends CNodeViewCanvas {
             // // scale the sprites one for each viewport
             const nightSkyNode = NodeMan.get("NightSkyNode")
             nightSkyNode.updateSatelliteScales(this.camera)
-
 
             var tempPos = this.camera.position.clone();
             this.camera.position.set(0, 0, 0)
