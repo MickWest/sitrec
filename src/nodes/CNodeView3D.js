@@ -2,7 +2,7 @@ import {CNodeView, mouseInViewOnly, ViewMan} from "./CNodeView";
 import {par} from "../par";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {GlobalComposer, gui, keyHeld, NodeMan, Sit} from "../Globals";
+import {GlobalComposer, gui, guiTweaks, keyHeld, NodeMan, Sit} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {} from "../Globals"
 import {makeMouseRay} from "../mouseMoveView";
@@ -266,6 +266,10 @@ export class CNodeView3D extends CNodeViewCanvas {
     addEffects(effects)
     {
         if (effects) {
+
+            this.effectsEnabled = true;
+            guiTweaks.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
+
             this.effects = effects;
 
             // we are createing an array of CNodeEffect objects
@@ -295,8 +299,6 @@ export class CNodeView3D extends CNodeViewCanvas {
                     ...def,
                 }))
             }
-            this.effectsEnabled = true;
-            gui.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
         }
     }
 

@@ -129,6 +129,7 @@ export const SitFlir1 = {
 
 
             pixelZoom: {
+                id: "pixelZoomNode",
                 inputs: {
                 magnifyFactor: {
                     id: "pixelZoom",

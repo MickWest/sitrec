@@ -468,7 +468,7 @@ function legacySetup() {
         _guiJetTweaks = guiTweaks.addFolder('Jet Tweaks').close();
     }
     setupGUIjetTweaks(_guiJetTweaks)
-    guiTweaks.add(par,"effects")
+    // guiTweaks.add(par,"effects")
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // At this point Sit is set up.
