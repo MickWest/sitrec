@@ -49,7 +49,78 @@ sitch = {
 
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#200000'},
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000020'},
+
+    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
+
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000020',
+
+        effects: {
+
+            // initial blurs are for focus
+            hBlur: { inputs: {
+                    h: "focus",
+                }},
+            vBlur: {inputs:{
+                    v: "focus",
+                }},
+            // Noise comes AFTER focus, becuase it's on the sensor
+            StaticNoise: {inputs:{
+                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
+                }},
+            Greyscale:{id:"Custom_GreyScale", enabled: false},
+            Invert: {id:"Custom_Invert", enabled: false},
+
+            Custom_Levels: {
+                kind: "Levels",
+                inputs: {
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
+                    inputWhite:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
+                    gamma:       {kind: "GUIValue", value: 1.50, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
+                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
+                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
+
+                },
+                enabled: false
+                },
+
+
+            // digitalZoom: {inputs:{
+            //         magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
+            //     }},
+            //
+            // these blurs are for the video conversion
+
+
+            // JPEGArtifacts: {
+            //     filter: "Linear",
+            //     inputs: {
+            //         size: 16,
+            //         amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+            //     }
+            // },
+
+            // 2x2 pixelation is for the video being later resized to 242 size from 484
+
+
+            // final zoom to match the video zoom (scaling up pixels)
+            pixelZoom: {
+                id: "pixelZoomNode",
+                inputs: {
+                    magnifyFactor: {
+                        id: "pixelZoom",
+                        kind: "GUIValue",
+                        value: 100,
+                        start: 10,
+                        end: 2000,
+                        step: 0.01,
+                        desc: "Pixel Zoom %",
+                        hidden: true
+                    },
+                }},
+        },
+
+        syncPixelZoomWithVideo: true,
+    },
 
     dragDropHandler: true,
     useGlobe: true,
@@ -193,6 +264,15 @@ sitch = {
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
     altitudeLabel2: {kind: "MeasureAltitude", position: "LOSTraverseSelectTrack"},
     distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitch", B: "targetTrackSwitch", defer: true},
+
+
+    shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
+        frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
+        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
+        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
+        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
+        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
+    },
 
 
 }
