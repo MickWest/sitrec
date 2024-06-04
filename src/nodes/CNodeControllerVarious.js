@@ -393,40 +393,50 @@ export class CNodeControllerATFLIRCamera extends CNodeController {
 export class CNodeControllerCameraShake extends CNodeController {
     constructor(v) {
         super(v);
-        //this.input("shake")
-        this.offset = new Vector2()
-        this.velocity = new Vector2()
-
         this.input("frequency");
         this.input("decay");
         this.input("xScale");
         this.input("yScale");
         this.input("spring");
+        this.recalculate();
+    }
 
+    // we want the same offset each frame
+    // so we calculate them all whenever the inputs change
+    recalculate() {
+        this.frames = Sit.frames;
+        this.offsets = []
+        this.offset = new Vector2()
+        this.velocity = new Vector2()
+        for (let f = 0; f<this.frames;f++){
+            if (Math.random() < this.in.frequency.v(f)) {
+                this.velocity.x = 1/10000*this.in.xScale.v(f) * (Math.random() - 0.5);
+                this.velocity.y = 1/10000*this.in.yScale.v(f) * (Math.random() - 0.5);
+            }
+            // apply the velocity to the offset
+            this.offset.add(this.velocity);
+
+            // adjsut the velocity based on the offset
+            // so it returns to center
+            this.velocity.x -= this.offset.x * this.in.spring.v(f);
+            this.velocity.y -= this.offset.y * this.in.spring.v(f);
+
+            // decay the velocity
+            this.velocity.multiplyScalar((1.0 - this.in.decay.v(f)));
+            this.offsets.push(this.offset.clone())
+        }
     }
 
     apply(f, objectNode) {
-        if (par.paused) return;
-        if (Math.random() < this.in.frequency.v(f)) {
-            this.velocity.x = 1/10000*this.in.xScale.v(f) * (Math.random() - 0.5);
-            this.velocity.y = 1/10000*this.in.yScale.v(f) * (Math.random() - 0.5);
-        }
-        // apply the velocity to the offset
-        this.offset.add(this.velocity);
-
-        // adjsut the velocity based on the offset
-        // so it returns to center
-        this.velocity.x -= this.offset.x * this.in.spring.v(f);
-        this.velocity.y -= this.offset.y * this.in.spring.v(f);
-
-        // decay the velocity
-        this.velocity.multiplyScalar((1.0 - this.in.decay.v(f)));
-
         // rotate the camera about the up axis by the Y offset
         // and the right axis by the X offset
         const camera = objectNode.camera;
-        camera.rotateX(this.offset.y);
-        camera.rotateY(this.offset.x);
+        if (this.offsets[f] === undefined) {
+            console.warn("CNodeControllerCameraShake: offset is undefined, f="+f)
+            return;
+        }
+        camera.rotateX(this.offsets[f].y);
+        camera.rotateY(this.offsets[f].x);
         camera.updateMatrixWorld();
 
 

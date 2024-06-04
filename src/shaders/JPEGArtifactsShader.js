@@ -44,7 +44,7 @@ export const JPEGArtifactsShader = {
             vec2 offset = vUv - blockCenter;
 
            // offset will be in the range -blockSize/2 to blockSize/2
-           // let's calculate an new offsetY that has offset.x added to it
+           // let's calculate a new offsetY that has offset.x added to it, scaled by the amount
             float offsetY = vUv.y + offset.x * amount;
             float offsetX = vUv.x + offset.y * amount;
 
