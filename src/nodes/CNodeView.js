@@ -89,6 +89,8 @@ class CNodeView extends CNode {
             this.div.style.width = this.widthPx + 'px'
             this.div.style.height = this.heightPx + 'px'
 
+            console.log("For node "+this.id+" INITIAL setting widthPx,heightPx and div.style to "+this.widthPx+","+this.heightPx)
+
             // setting border style of divs also needs a color setting
             //this.div.style.borderStyle = 'solid'
             //this.div.style.color = '#404040';

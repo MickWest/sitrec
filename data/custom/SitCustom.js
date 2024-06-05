@@ -258,7 +258,7 @@ sitch = {
 
 // Standard useful things, eventually have them more configurable
 
-    mirrorVideo: { transparency: 0.15, autoClear:false},
+    mirrorVideo: { transparency: 0.0, autoClear:false},
     DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},

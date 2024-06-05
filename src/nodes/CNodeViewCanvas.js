@@ -25,7 +25,7 @@ export class CNodeViewCanvas extends CNodeView {
 
         this.optionalInputs(["canvasWidth", "canvasHeight"])
 
-        if (v.transparency) {
+        if (v.transparency !== undefined) {
             this.transparency = v.transparency;
             this.canvas.style.opacity = this.transparency;
             new CNodeGUIValue({
@@ -109,8 +109,8 @@ export class CNodeViewCanvas extends CNodeView {
             // this.canvas.style.width =  ((this.div.clientWidth/width)*100)+'%'; // Stretch to fill the parent div
             // this.canvas.style.height =  ((this.div.clientHeight/height)*100)+'%'; // Stretch to fill the parent div
 
-            console.log("this.div.clientWidth,Height", this.div.clientWidth +","+this.div.clientHeight)
-            console.log("Canvas resized to ", width, height, this.canvas.style.width, this.canvas.style.height + "from " + oldWidth + "," + oldHeight);
+            // console.log("this.div.clientWidth,Height", this.div.clientWidth +","+this.div.clientHeight)
+            // console.log("Canvas resized to ", width, height, this.canvas.style.width, this.canvas.style.height + "from " + oldWidth + "," + oldHeight);
 
             // bit of a patch to redraw the editor/graph, as resizing clears
             if (this.editor) {
