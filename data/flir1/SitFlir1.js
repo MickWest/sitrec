@@ -139,7 +139,12 @@ export const SitFlir1 = {
         },
 
           syncPixelZoomWithVideo: true,
-          background: "#78747a",
+//          background: "#78747a",
+          background: "#B8B8B8",
+
+          // TODO - have different bg for TV and IR
+          backgroundTV: "#000000",
+          backgroundIR: "#000000",
     },
 
     videoView: {left: 0.653, top: 0.25, width: -1, height: 0.375,},
