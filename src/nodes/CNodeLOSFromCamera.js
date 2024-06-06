@@ -14,6 +14,8 @@ export class CNodeLOSFromCamera extends CNodeEmptyArray {
         super(v);
         this.input("cameraNode");
 
+        this.useRecorded = v.useRecorded ?? false;
+
         if (this.frames == 0) {
             this.frames = Sit.frames;
             this.useSitFrames = true;
@@ -42,6 +44,10 @@ export class CNodeLOSFromCamera extends CNodeEmptyArray {
 
         // restore the original camera
         cameraNode._object = oldCamera;
+
+        if (this.useRecorded) {
+            return cameraNode.recordedLOS;
+        }
 
         // then extract the position and heading from the dummy camera
         camera.updateMatrixWorld()

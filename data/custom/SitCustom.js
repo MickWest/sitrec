@@ -207,7 +207,9 @@ sitch = {
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
     // for other uses, such as a target track generated for LOS traversal
 
-    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
+    recordLos: {kind: "RecordLOS"},
+    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+//    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
 
     // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
@@ -269,9 +271,11 @@ sitch = {
     distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitch", B: "targetTrackSwitch", defer: true},
 
 
+
     shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
         frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
         decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
+        multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"tweaks"},
         xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
         yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},

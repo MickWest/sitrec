@@ -398,6 +398,7 @@ export class CNodeControllerCameraShake extends CNodeController {
         this.input("xScale");
         this.input("yScale");
         this.input("spring");
+        this.optionalInputs(["multiply"]);
         this.recalculate();
     }
 
@@ -406,24 +407,40 @@ export class CNodeControllerCameraShake extends CNodeController {
     recalculate() {
         this.frames = Sit.frames;
         this.offsets = []
-        this.offset = new Vector2()
-        this.velocity = new Vector2()
+        let offset = new Vector2()
+        let velocity = new Vector2()
+        console.log("CNodeControllerCameraShake: recalculate")
+        console.log("frames="+this.frames)
+        console.log("frequency="+this.in.frequency.v0)
+        console.log("decay="+this.in.decay.v0)
+        console.log("xScale="+this.in.xScale.v0)
+        console.log("yScale="+this.in.yScale.v0)
+        console.log("spring="+this.in.spring.v0)
+
+
+
         for (let f = 0; f<this.frames;f++){
+
             if (Math.random() < this.in.frequency.v(f)) {
-                this.velocity.x = 1/10000*this.in.xScale.v(f) * (Math.random() - 0.5);
-                this.velocity.y = 1/10000*this.in.yScale.v(f) * (Math.random() - 0.5);
+
+                const multiply = this.in.multiply !== undefined ? this.in.multiply.v(f) : 1;
+
+                velocity.x += 1/10000*this.in.xScale.v(f) * multiply * (Math.random() - 0.5);
+                velocity.y += 1/10000*this.in.yScale.v(f) * multiply * (Math.random() - 0.5);
             }
             // apply the velocity to the offset
-            this.offset.add(this.velocity);
+            offset.add(velocity);
+//            console.log("offset="+offset.x+","+offset.y)
 
             // adjsut the velocity based on the offset
             // so it returns to center
-            this.velocity.x -= this.offset.x * this.in.spring.v(f);
-            this.velocity.y -= this.offset.y * this.in.spring.v(f);
+            let spring = this.in.spring.v(f);
+            velocity.x -= offset.x * spring;
+            velocity.y -= offset.y * spring;
 
             // decay the velocity
-            this.velocity.multiplyScalar((1.0 - this.in.decay.v(f)));
-            this.offsets.push(this.offset.clone())
+            velocity.multiplyScalar((1.0 - this.in.decay.v(f)));
+            this.offsets.push(offset.clone())
         }
     }
 
@@ -435,11 +452,47 @@ export class CNodeControllerCameraShake extends CNodeController {
             console.warn("CNodeControllerCameraShake: offset is undefined, f="+f)
             return;
         }
-        camera.rotateX(this.offsets[f].y);
-        camera.rotateY(this.offsets[f].x);
-        camera.updateMatrixWorld();
+        const offset = this.offsets[f];
+        camera.rotateX(offset.y);
+        camera.rotateY(offset.x);
+     //   camera.updateMatrix();
+     //   camera.updateMatrixWorld();
+
+        // const fwd = camera.getWorldDirection(new Vector3())
+        // const up = camera.up.clone()
+        // const right = new Vector3().crossVectors(fwd, up)
+        //
+        // // rotate the fwd vector by the offset
+        // fwd.applyAxisAngle(up, offset.x)
+        // fwd.applyAxisAngle(right, offset.y)
+        // fwd.add(camera.position)
+        // camera.lookAt(fwd)
 
 
+
+    }
+}
+
+// record the current position and heading of the camera
+// we insert this controller into the the chain of controllers
+// before "noise" controllers, so we cna get the pointing position
+// without the noise
+// we can then use this to calculate the LOS for example
+// JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+//
+export class CNodeControllerRecordLOS extends CNodeController {
+    constructor(v) {
+        super(v);
+    }
+
+    apply(f, objectNode) {
+        const camera = objectNode.camera
+        camera.updateMatrixWorld()
+        var position = camera.position.clone()
+        var fwd = new Vector3();
+        fwd.setFromMatrixColumn(camera.matrixWorld, 2);
+        fwd.multiplyScalar(-1)
+        objectNode.recordedLOS = {position: position, heading: fwd}
     }
 }
 

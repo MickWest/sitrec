@@ -320,6 +320,7 @@ export const SitFlir1 = {
         xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
         yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
+        multiply: {kind: "GUIValue",  value: 1, start: 1, end: 10, step: 1, desc: "Shake Multiply", gui:"tweaks"},
     },
 
 
