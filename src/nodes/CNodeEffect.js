@@ -46,7 +46,7 @@ export class CNodeEffect extends CNode {
         Globals.defaultGui = guiTweaks;
 
         if (guiOnOffFolder === null) {
-            guiOnOffFolder = Globals.defaultGui.addFolder("On/Off").close();
+            guiOnOffFolder = Globals.defaultGui.addFolder("Tweaks On/Off").close().perm();
         }
 
         // if there are inputs that CNode definitions we need to resolve them
