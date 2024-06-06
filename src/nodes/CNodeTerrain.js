@@ -16,21 +16,20 @@ import {CNodeSwitch} from "./CNodeSwitch";
 
 const terrainGUIColor = "#c0ffc0";
 
-let terrainGUI;
-let madeMapTypeMenu = false;
+// let terrainGUI;
+// let mapTypeMenu;
 let local = {}
 const mapTypes = ["mapbox","osm","eox","wireframe"]
-let mapTypeMenu;
 
-function makeMapTypeMenu() {
-    if (terrainGUI === undefined) {
-        terrainGUI = gui.addFolder("Terrain").setLabelColor(terrainGUIColor)
-    }
-    if (mapTypeMenu === undefined) {
-        local.mapType = "mapbox";
-        mapTypeMenu = terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor)
-    }
-}
+// function makeMapTypeMenu() {
+//     if (terrainGUI === undefined) {
+//         terrainGUI = gui.addFolder("Terrain").setLabelColor(terrainGUIColor)
+//     }
+//     if (mapTypeMenu === undefined) {
+//         local.mapType = "mapbox";
+//         mapTypeMenu = terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor)
+//     }
+// }
 
 export class CNodeTerrainUI extends CNode {
     constructor(v) {
@@ -49,7 +48,7 @@ export class CNodeTerrainUI extends CNode {
             this.zoom = this.terrainNode.zoom;
             this.nTiles = this.terrainNode.nTiles;
         } else {
-            this.gui.add(this, "addTerrain")
+            gui.add(this, "addTerrain")
         }
 
         this.oldLat = this.lat;
@@ -57,29 +56,36 @@ export class CNodeTerrainUI extends CNode {
         this.oldZoom = this.zoom;
         this.oldNTiles = this.nTiles;
 
-        // for debugging convenience
-        this.gui = terrainGUI;
 
-        this.latController = terrainGUI.add(this, "lat", -85, 85,.001).onChange( v => {
+        this.gui = this.terrainNode.terrainGUI;
+
+        this.latController = this.gui.add(this, "lat", -85, 85,.001).onChange( v => {
             this.flagForRecalculation()
         }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
-        this.lonController = terrainGUI.add(this, "lon", -180, 180,.001).onChange( v => {
+        this.lonController = this.gui.add(this, "lon", -180, 180,.001).onChange( v => {
             this.flagForRecalculation()
         }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
-        this.zoomController = terrainGUI.add(this, "zoom", 0, 15,1).onChange( v => {
+        this.zoomController = this.gui.add(this, "zoom", 0, 15,1).onChange( v => {
             this.flagForRecalculation()
         }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
-        this.nTilesController = terrainGUI.add(this, "nTiles", 1, 8, 1).onChange( v => {
+        this.nTilesController = this.gui.add(this, "nTiles", 1, 8, 1).onChange( v => {
             this.flagForRecalculation()
         }).onFinishChange( v => {this.startLoading = true}).setLabelColor(terrainGUIColor)
 
         // adds a button to refresh the terrain
-        terrainGUI.add(this, "doRefresh").name("Refresh").setLabelColor(terrainGUIColor);
+        this.gui.add(this, "doRefresh").name("Refresh").setLabelColor(terrainGUIColor);
 
         this.zoomToTrackSwitchObject = new CNodeSwitch({id: "zoomToTrack", kind: "Switch",
-            inputs: {"-":"null"}, desc: "Zoom to track"}, terrainGUI).onChange( track => {this.zoomToTrack(track)})
+            inputs: {"-":"null"}, desc: "Zoom to track"}, this.gui).onChange( track => {this.zoomToTrack(track)})
 
-        makeMapTypeMenu();
+  //      makeMapTypeMenu();
+    }
+
+    // note this is not the most elegant way to do this
+    // but if the terrain is being removed, then we assume the GUI is too
+    // this might not be the case, in the future
+    dispose() {
+        super.dispose();
     }
 
 
@@ -179,9 +185,14 @@ export class CNodeTerrain extends CNode {
         super(v);
 
         
-        if (terrainGUI === undefined) {
-            terrainGUI = gui.addFolder("Terrain")
-        }
+        // if (terrainGUI === undefined) {
+        //     terrainGUI = gui.addFolder("Terrain")
+        // }
+
+
+       this.terrainGUI = gui.addFolder("Terrain")
+       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor)
+
 
         this.loaded = false;
 
@@ -271,8 +282,8 @@ export class CNodeTerrain extends CNode {
         this.deferLoad = v.deferLoad;
         this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
 
-        makeMapTypeMenu();
-        mapTypeMenu.onChange( v => {
+//        makeMapTypeMenu();
+        this.mapTypeMenu.onChange( v => {
             // set it visible
             for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === v);
             this.loadMap(v)
