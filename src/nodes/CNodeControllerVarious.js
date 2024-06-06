@@ -409,15 +409,13 @@ export class CNodeControllerCameraShake extends CNodeController {
         this.offsets = []
         let offset = new Vector2()
         let velocity = new Vector2()
-        console.log("CNodeControllerCameraShake: recalculate")
-        console.log("frames="+this.frames)
-        console.log("frequency="+this.in.frequency.v0)
-        console.log("decay="+this.in.decay.v0)
-        console.log("xScale="+this.in.xScale.v0)
-        console.log("yScale="+this.in.yScale.v0)
-        console.log("spring="+this.in.spring.v0)
-
-
+        // console.log("CNodeControllerCameraShake: recalculate")
+        // console.log("frames="+this.frames)
+        // console.log("frequency="+this.in.frequency.v0)
+        // console.log("decay="+this.in.decay.v0)
+        // console.log("xScale="+this.in.xScale.v0)
+        // console.log("yScale="+this.in.yScale.v0)
+        // console.log("spring="+this.in.spring.v0)
 
         for (let f = 0; f<this.frames;f++){
 
