@@ -43,7 +43,6 @@ export function initSky(scene, renderer) {
         uniforms['sunPosition'].value.copy(sun);
 
         renderer.toneMappingExposure = effectController.exposure;
-//        this.renderer.render( GlobalScene, camera );
 
     }
 

@@ -764,7 +764,7 @@ function renderMain() {
 
             }
             updateLockTrack(view, par.frame)
-            view.render(par.frame)
+            view.renderCanvas(par.frame)
         }
     })
 

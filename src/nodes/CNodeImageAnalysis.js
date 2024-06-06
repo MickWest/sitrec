@@ -2,7 +2,7 @@ import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
 import {FileManager, NodeMan, Sit} from "../Globals";
-import {RollingAverage} from "../utils";
+import {assert, RollingAverage} from "../utils";
 import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
 import {CNodeGraphSeries} from "./CNodeGraphSeries";
@@ -24,6 +24,7 @@ export class CNodeImageView extends CNodeViewUI {
         super(v);
 
         this.stretchToFit = v.stretchToFit ?? false
+        this.recalculateOnChange = true;
 
         if (v.mirror) {
             this.image = NodeMan.get(v.mirror).image
@@ -33,8 +34,8 @@ export class CNodeImageView extends CNodeViewUI {
         }
     }
 
-    render() {
-        super.render(0)
+    renderCanvas() {
+        super.renderCanvas(0)
         if (this.stretchToFit) {
             this.ctx.drawImage(this.image, 0, 0, this.widthPx, this.heightPx)
         } else {
@@ -126,7 +127,7 @@ export class CNodeImageAnalysis extends CNodeImageView {
         // setting height to the negative ration of height to width
         // will keep the apsect ratio,
         this.height = -this.image.height/this.image.width
-        this.updateWH()
+
 
         this.columns = Array(1000).fill(0)
 
@@ -215,7 +216,8 @@ export class CNodeImageAnalysis extends CNodeImageView {
         guiLook.title("Metabunk Sitrec [U]I")
         guiLook.add (this, 'test',-54,8,0.2).onChange( ).listen().name("test")
 */
-        this.recalculate()
+        this.updateWH()
+        //this.recalculate()
     }
 
     handlerFunction(event) {
@@ -260,6 +262,8 @@ export class CNodeImageAnalysis extends CNodeImageView {
         // if we have a region, then step alone the top and and bottom edges
         // in this.resolution steps
         // and sum the pixels in the columns that joins the points
+
+        assert (this.region, "No region defined in CNodeImageAnalysis:recalculate()");
 
         if (this.region.active) {
 
@@ -558,10 +562,10 @@ export class CNodeImageAnalysis extends CNodeImageView {
     }
 
 
-    render () {
+    renderCanvas () {
       //  this.recalculate()
 
-        super.render(0)
+        super.renderCanvas(0)
 
 
 

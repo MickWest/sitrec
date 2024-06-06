@@ -17,8 +17,8 @@ export class CNodeGraphLine extends CNodeViewUI {
         this.visible = this.overlayView.visible
     }
 
-    render(f) {
-        super.render(f)
+    renderCanvas(f) {
+        super.renderCanvas(f)
         var e = this.overlayView.editor
         var c = this.ctx
 

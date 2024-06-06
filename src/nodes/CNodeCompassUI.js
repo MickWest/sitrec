@@ -17,7 +17,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
     }
 
 
-    render(frame) {
+    renderCanvas(frame) {
         if (this.overlayView && !this.overlayView.visible) return;
 
         // get the three.js camera from the camera node
@@ -36,7 +36,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
         this.text.text = headingRound + "°";
 
         // after updating the text, render the text
-        super.render(frame)
+        super.renderCanvas(frame)
 
         // now draw a centered arrow rotated by the heading
 

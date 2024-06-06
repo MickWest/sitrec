@@ -82,9 +82,9 @@ export class   CNodeATFLIRUI extends CNodeViewUI {
     }
 
     // Render for CNodeATFLIRUI
-    render(frame) {
+    renderCanvas(frame) {
         if (this.overlayView && !this.overlayView.visible) return;
-        super.render(frame)
+        super.renderCanvas(frame)
 
         // const a = -radians(this.horizonAngle)
         const a = radians(NodeMan.get("bank").v(par.frame))

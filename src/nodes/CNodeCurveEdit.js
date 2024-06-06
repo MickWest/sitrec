@@ -20,8 +20,8 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
         this.recalculate()
     }
 
-    render(frame) {
-        super.render(frame)
+    renderCanvas(frame) {
+        super.renderCanvas(frame)
         this.editor.update();
     }
 

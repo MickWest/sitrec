@@ -330,8 +330,8 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         this.positioned = true;
     }
 
-    render(frame = 0) {
-        super.render(frame); // needed for setting window size
+    renderCanvas(frame = 0) {
+        super.renderCanvas(frame); // needed for setting window size
 
         if (!this.visible) return;
 

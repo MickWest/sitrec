@@ -222,8 +222,8 @@ export class CNodeSAPage extends CNodeDDI {
 
 
     // render for CNodeSAPage
-    render(frame) {
-        super.render(frame)
+    renderCanvas(frame) {
+        super.renderCanvas(frame)
 
 
         const camPos = this.in.jetTrack.p(frame)

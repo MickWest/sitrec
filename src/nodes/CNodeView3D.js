@@ -31,6 +31,17 @@ import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
 
+function linearToSrgb(color) {
+    function toSrgbComponent(c) {
+        return (c <= 0.0031308) ? 12.92 * c : 1.055 * Math.pow(c, 1.0 / 2.4) - 0.055;
+    }
+    return new Color(
+        toSrgbComponent(color.r),
+        toSrgbComponent(color.g),
+        toSrgbComponent(color.b)
+    );
+}
+
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
 
@@ -182,85 +193,115 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.effectPasses = {};
 
-        // Default render function if none provided
-        // other functions will still call this, but might do something before and after
-        // as well as coming from v, some old sitches directly override this, eg agua
-        if (v.renderFunction === undefined) {
-            this.renderFunction = () => {
-                this.defaultRenderFunction();
-            }
-        }
+        this.preRenderFunction = v.preRenderFunction ?? (() => {});
+        this.postRenderFunction = v.postRenderFunction ?? (() => {});
+
     }
 
 
-    defaultRenderFunction() {
+    renderTargetAndEffects() {
     {
 
         if (this.visible) {
+            let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
-            if (!this.effectsEnabled) {
-                this.renderer.setRenderTarget(null);
-                // this.renderer.clear(true, true, true);
-                this.renderer.render(GlobalScene, this.camera);
-                return;
+            if (this.effectsEnabled) {
+                if (this.in.canvasWidth !== undefined) {
+                    this.sceneRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                    this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                    this.tempRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                } else {
+                    this.sceneRenderTarget.setSize(this.widthPx, this.heightPx);
+                    this.renderTarget.setSize(this.widthPx, this.heightPx);
+                    this.tempRenderTarget.setSize(this.widthPx, this.heightPx);
+                }
+                currentRenderTarget = this.sceneRenderTarget;
+                // Clear the primary render target
+                this.renderer.setRenderTarget(currentRenderTarget);
             }
 
-            if (this.in.canvasWidth !== undefined) {
-                this.sceneRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
-                this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
-                this.tempRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
-            } else {
-                this.sceneRenderTarget.setSize(this.widthPx, this.heightPx);
-                this.renderTarget.setSize(this.widthPx, this.heightPx);
-                this.tempRenderTarget.setSize(this.widthPx, this.heightPx);
-            }
+            // if (!this.effectsEnabled) {
+            //     this.renderer.setRenderTarget(null);
+            //     //this.renderer.clear(true, true, true);
+            //     this.renderer.render(GlobalScene, this.camera);
+            //     return;
+            // }
 
-            let currentRenderTarget = this.sceneRenderTarget;
-            // Clear the primary render target
-            this.renderer.setRenderTarget(currentRenderTarget);
+            // clear the render target (or canvas) with the background color
+            let rgb = new Color(this.background)
+            let srgb = linearToSrgb(rgb);
+
+            this.renderer.setClearColor(this.background);
             this.renderer.clear(true, true, true);
 
-            // Render the scene to the off-screen render target
-            this.renderer.render(GlobalScene, this.camera);
-            this.renderer.setRenderTarget(null);
+            // Render the celestial sphere
+            if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
 
-            // Apply each effect pass sequentially
-            for (let effectName in this.effectPasses) {
-                const effectNode = this.effectPasses[effectName];
-                if (!effectNode.enabled) continue;
-                let effectPass = effectNode.pass;
+                // we need to call this twice (once again in the super's render)
+                // so the camera is correct for the celestial sphere
+                // which is rendered before the main scene
+                // but uses the same camera
+                this.preRenderCameraUpdate()
 
-                // the efferctNode has an optional filter type for the source texture
-                switch (effectNode.filter.toLowerCase()) {
-                    case "linear":
-                        currentRenderTarget.texture.minFilter = LinearFilter;
-                        currentRenderTarget.texture.magFilter = LinearFilter;
-                        break;
-                    case "nearest":
-                    default:
-                        currentRenderTarget.texture.minFilter = NearestFilter;
-                        currentRenderTarget.texture.magFilter = NearestFilter;
-                        break;
-                }
+                // // scale the sprites one for each viewport
+                const nightSkyNode = NodeMan.get("NightSkyNode")
+                nightSkyNode.updateSatelliteScales(this.camera)
 
-                effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-                // flip the render targets
-                const useRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
-
-
-
-                this.renderer.setRenderTarget(useRenderTarget);
-                this.renderer.clear(true, true, true);
-                this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
-                this.renderer.render(this.fullscreenQuad, new Camera());
-                currentRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+                var tempPos = this.camera.position.clone();
+                this.camera.position.set(0, 0, 0)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
+                this.renderer.render(GlobalNightSkyScene, this.camera);
+                this.renderer.clearDepth()
+                this.camera.position.copy(tempPos)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
             }
 
-            // Render the final texture to the screen
-            this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-            this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
-            this.renderer.setRenderTarget(null);
-            this.renderer.render(this.fullscreenQuad, new Camera());
+            // Render the scene to the off-screen canvas or render target
+            this.renderer.render(GlobalScene, this.camera);
+
+            if (this.effectsEnabled) {
+
+                this.renderer.setRenderTarget(null);
+
+                // Apply each effect pass sequentially
+                for (let effectName in this.effectPasses) {
+                    const effectNode = this.effectPasses[effectName];
+                    if (!effectNode.enabled) continue;
+                    let effectPass = effectNode.pass;
+
+                    // the efferctNode has an optional filter type for the source texture
+                    switch (effectNode.filter.toLowerCase()) {
+                        case "linear":
+                            currentRenderTarget.texture.minFilter = LinearFilter;
+                            currentRenderTarget.texture.magFilter = LinearFilter;
+                            break;
+                        case "nearest":
+                        default:
+                            currentRenderTarget.texture.minFilter = NearestFilter;
+                            currentRenderTarget.texture.magFilter = NearestFilter;
+                            break;
+                    }
+
+                    effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                    // flip the render targets
+                    const useRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+
+
+                    this.renderer.setRenderTarget(useRenderTarget);
+                    this.renderer.clear(true, true, true);
+                    this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
+                    this.renderer.render(this.fullscreenQuad, new Camera());
+                    currentRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+                }
+
+                // Render the final texture to the screen
+                this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
+                this.renderer.setRenderTarget(null);
+                this.renderer.render(this.fullscreenQuad, new Camera());
+            }
         }
     }
 }
@@ -409,7 +450,9 @@ export class CNodeView3D extends CNodeViewCanvas {
         return this.cameraNode.camera;
     }
 
-    render(frame) {
+    renderCanvas(frame) {
+
+        super.renderCanvas(frame)
 
         if (this.needUpdate) {
             this.updateEffects(frame);
@@ -419,66 +462,38 @@ export class CNodeView3D extends CNodeViewCanvas {
         sharedUniforms.nearPlane.value = this.camera.near;
         sharedUniforms.farPlane.value = this.camera.far;
 
-        const windowWidth  = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-    //    this.adjustSize()
-
-        // the adjustSize used by a 2D canvas does not work, so we multiply by window.devicePixelRatio
-        // perhaps we need to do something different with this.renderer.setSize ??????
-  //      this.canvas.width = this.div.clientWidth*window.devicePixelRatio
-  //      this.canvas.height = this.div.clientHeight*window.devicePixelRatio
-
-
-        var divW = this.div.clientWidth;
-        var divH = this.div.clientHeight;
-  //      console.log("div: "+divW+","+divH+" Canvas: "+this.canvas.width+","+this.canvas.height)
-
-
-        // Note that renderer.setSize will set the rendering size
-        // to the input multiplied by the devicePixelRatio
-        // we generally specify the size of things in nominal pixels (not device pixels)
-        // if we were to use 1920x1080, then the renderer would be 3840x2160
-        // which is normally fine, but we need to make sure the camera aspect is correct
-        // BUT, in the past, we halved the value here
-
-//        this.renderer.setSize(this.widthPx, this.heightPx, false); // false means don't update the style
+        // const windowWidth  = window.innerWidth;
+        // const windowHeight = window.innerHeight;
+        //
+        //
+        // var divW = this.div.clientWidth;
+        // var divH = this.div.clientHeight;
 
         this.camera.aspect = this.canvas.width/this.canvas.height;
         this.camera.updateProjectionMatrix();
 
-        this.renderer.setClearColor(this.background);
+        if (this.controls) this.controls.update(1);
+        this.preRenderCameraUpdate()
+
+//      this.renderer.setClearColor(this.background);
+
+        let rgb = new Color(this.background)
+        let srgb = linearToSrgb(rgb);
+//        console.log("this.background = "+this.background);
+//        console.log("Background = "+rgb.r+","+rgb.g+","+rgb.b+" sRGB = "+srgb.r+","+srgb.g+","+srgb.b)
+
+//        this.renderer.setClearColor(linearToSrgb(new Color(this.background)));
+//         this.renderer.setClearColor(rgb);
+
         // Clear manually, otherwise the second render will clear the background.
         // note: old code used pixelratio to handle retina displays, no longer needed.
          this.renderer.autoClear = false;
+         //this.renderer.clear();
 
-         if (this.background) this.renderer.clear();
 
-        // test hook up render the world twice, but from a different position
-
-        if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
-
-            // we need to call this twice (once again in the super's render)
-            // so the camera is correct for the celestial sphere
-            // which is rendered before the main scene
-            // but uses the same camera
-            this.preRenderCameraUpdate()
-
-            // // scale the sprites one for each viewport
-            const nightSkyNode = NodeMan.get("NightSkyNode")
-            nightSkyNode.updateSatelliteScales(this.camera)
-
-            var tempPos = this.camera.position.clone();
-            this.camera.position.set(0, 0, 0)
-            this.camera.updateMatrix();
-            this.camera.updateMatrixWorld();
-            this.renderer.render(GlobalNightSkyScene, this.camera);
-            this.renderer.clearDepth()
-            this.camera.position.copy(tempPos)
-            this.camera.updateMatrix();
-            this.camera.updateMatrixWorld();
-        }
-        super.render(frame)
+        this.preRenderFunction();
+        this.renderTargetAndEffects()
+        this.postRenderFunction();
 
     }
 

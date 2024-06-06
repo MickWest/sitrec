@@ -152,8 +152,8 @@ class CNodeViewCanvas2D extends CNodeViewCanvas {
         super.dispose()
     }
 
-    render(frame) {
-        super.render(frame)
+    renderCanvas(frame) {
+        super.renderCanvas(frame)
 
         if (this.visible) {
             this.adjustSize()

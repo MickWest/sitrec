@@ -76,8 +76,8 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
     }
 
     //
-     render(frame) {
-         super.render(frame);
+     renderCanvas(frame) {
+         super.renderCanvas(frame);
 
          const camera = this.camera.clone();
          camera.position.set(0,0,0)

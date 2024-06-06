@@ -157,8 +157,8 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     }
 
     // render for CNodeViewUI - extends CNodeViewCanvas2D
-    render(frame) {
-        super.render(frame) // will be CNodeViewCanvas2D
+    renderCanvas(frame) {
+        super.renderCanvas(frame) // will be CNodeViewCanvas2D
 
         this.zoom = 1;
         if (this.syncVideoZoom && NodeMan.exists("videoZoom")) {

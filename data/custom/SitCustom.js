@@ -48,13 +48,16 @@ sitch = {
     },
 
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
-    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#200000'},
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#00FF00'},
 
     focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
 
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000020',
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#008000',
 
         effects: {
+            //Copy:{},
+
+
 
             // initial blurs are for focus
             hBlur: { inputs: {
@@ -74,13 +77,13 @@ sitch = {
                 kind: "Levels",
                 inputs: {
                     inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
-                    inputWhite:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
-                    gamma:       {kind: "GUIValue", value: 1.50, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
+                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
+                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
                     outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
                     outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
 
                 },
-                enabled: false
+                enabled: true,
                 },
 
 

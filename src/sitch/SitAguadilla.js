@@ -173,7 +173,9 @@ export const SitAguadilla = {
 
 
         const view = NodeMan.get("mainView");
-        view.renderFunction = function() {
+        const lookView = NodeMan.get("lookView");
+
+        lookView.preRenderFunction = function() {
 
             var csv = FileManager.get("aguaCSV")
             var lookFOV = parseFloat(csv[par.frame][15])
@@ -193,9 +195,6 @@ export const SitAguadilla = {
             lookCam.fov = lookFOV
             lookCam.updateProjectionMatrix()
 
-            // composer is used for effects.
-            //this.composer.render();
-            this.defaultRenderFunction()
         }
 
 

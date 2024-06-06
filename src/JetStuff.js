@@ -1146,7 +1146,7 @@ export function initJetStuff() {
     mainCam.layers.enable(LAYER.podBack)
 
     const view = NodeMan.get("mainView");
-    view.renderFunction = function () {
+    view.preRenderFunction = function () {
 
         const displayWindArrows = ViewMan.get("SAPage").buttonBoxed(16);  // wind button
 
@@ -1174,9 +1174,6 @@ export function initJetStuff() {
         DebugArrowAB("JET Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
         DebugArrowAB("JET Wind", airVelocityEnd, groundVelocityEnd, "#00ffff", displayWindArrows, GlobalScene) // cyan = wind speed
         DebugArrowAB("JET Air V", jetPosition, airVelocityEnd, "#0000ff", displayWindArrows, GlobalScene) // blue = air speed
-
-        this.renderer.render(GlobalScene, this.camera);
-
     }
 
     var farClipLook = metersFromMiles(500)
@@ -1202,17 +1199,14 @@ export function initJetStuff() {
         resizable: true,
         freeAspect: true,
         camera: podCameraNode,
-        renderFunction: function () {
-            if (PODBack) {
-                //   PODBack.visible = false;
-            }
-            //  this.renderer.render(GlobalScene, this.camera);
-            this.renderer.render(GlobalScene, this.camera);
 
-            if (PODBack) {
-                PODBack.visible = true;
-            }
+        postRenderFunction: function() {
+                if (PODBack) {
+                    PODBack.visible = true;
+                }
         }
+
+
     })
 
     viewPod.addOrbitControls(view.renderer);
@@ -1243,7 +1237,7 @@ export function initJetStuff() {
         draggable: true,
         resizable: true,
         camera: podsEyeCameraNode,
-        renderFunction: function () {
+        preRenderFunction: function () {
             if (!Ball) return;
             // we want the camera to be based on the ball orientation
             // (i.e. what the pod head is looking at)
@@ -1259,8 +1253,11 @@ export function initJetStuff() {
 
             if (Sit.showGlare) {
                 glareSprite.material.rotation = radians(par.glareStartAngle)
-                //this.renderer.render(GlobalScene, this.camera);
-                this.renderer.render(GlobalScene, this.camera);
+            }
+        },
+
+        postRenderFunction: function () {
+            if (Sit.showGlare) {
                 glareSprite.material.rotation = 0
             }
         }
@@ -1289,7 +1286,7 @@ export function initJetStuff() {
         draggable: true,
         resizable: true,
         camera: podsEyeDeroCameraNode,
-        renderFunction: function () {
+        preRenderFunction: function () {
             if (!Ball) return;
             if (this.camera.parent == null) {
                 // PROBLEM, MAYBE - the ball has scale.
@@ -1311,20 +1308,21 @@ export function initJetStuff() {
             this.camera.lookAt(worldTarget)
 
             this.camera.rotateZ(radians(par.podRollPhysical))
-            //this.renderer.render(GlobalScene, this.camera);
-            this.renderer.render(GlobalScene, this.camera);
+        },
+
+        postRenderFunction: function () {
 
             if (Sit.showGlare) {
                 glareSprite.material.rotation = 0
             }
-        }
+        },
     })
 
 
 /////////////////////////////////////////////////////////////////
 // ATRLIR pod CAM
 
-    VG("lookView").renderFunction = function () {
+    VG("lookView").preRenderFunction = function () {
 
         // PATCH for the jet sitches,
         // camera is a child of the ball, and will get the layer mask reset when the model loads
@@ -1356,11 +1354,9 @@ export function initJetStuff() {
             glareSprite.scale.setScalar(0.0005)
             glareSprite.material.rotation = radians(-deroNeeded + par.glareStartAngle)
         }
+    }
 
-        //this.renderer.render(GlobalScene, this.camera);
-        this.renderer.render(GlobalScene, this.camera);
-
-
+    VG("lookView").postRenderFunction = function () {
         if (Sit.showGlare) {
             glareSprite.material.rotation = 0
         }

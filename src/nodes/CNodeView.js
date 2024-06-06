@@ -20,7 +20,6 @@ const defaultCViewParams = {
     height: 1,
     background:null,
     up: [0,1,0],
-    renderFunction: null,
     fov: 45,
     draggable: false,
     resizable: false,
@@ -56,7 +55,6 @@ class CNodeView extends CNode {
             this.visible = v.visible;
         this.background = v.background;
         this.up = v.up;
-        this.renderFunction = v.renderFunction;
         this.fov = v.fov;
         this.draggable = v.draggable;
         this.resizable = v.resizable;
@@ -247,7 +245,7 @@ class CNodeView extends CNode {
 
         // Sync the zoom on this camera to the video zoom
         // check if it's flagged, and we actually have a videoZoom UI control
-        if (NodeMan.exists("videoZoom")) {
+        if (NodeMan.exists("videoZoom") && NodeMan.exists("pixelZoomNode")) {
             if (this.effectsEnabled && this.syncPixelZoomWithVideo && NodeMan.get("pixelZoomNode").enabled) {
                 this.camera.zoom = 1; // i.e. render it noramally, and then zoom up the pixels
                 // these are CNodeGUI objects
@@ -256,41 +254,20 @@ class CNodeView extends CNode {
                 var pixelZoom = NodeMan.get("pixelZoom");
 
                 pixelZoom.value = videoZoom.v0;
-
-                //
-
-
             }
             else if (this.syncVideoZoom) {
                 var videoZoom = NodeMan.get("videoZoom")
                 this.camera.zoom = videoZoom.v0 / 100;
             }
-
-
-
         }
-
-
-
     }
 
-    render(frame) {
+    renderCanvas(frame) {
         assert(frame !== undefined, "Undefined frame in "+this.id)
 
         // if an overlay view, then inherit the parent's size
         this.inheritSize()
 
-        // this should probably be refactored out into a CNodeView3D
-        if (this.camera) {
-
-            if (this.controls) this.controls.update(1);
-
-            this.preRenderCameraUpdate()
-
-            if (this.renderFunction) {
-                this.renderFunction(frame)
-            }
-        }
     }
 
     // given a div, modify the CView's pixel pos/size and the fractional pos/size
@@ -384,7 +361,8 @@ class CNodeView extends CNode {
                     // this.canvas.height = this.heightPx * window.devicePixelRatio;
                     this.canvas.width = this.widthPx;
                     this.canvas.height = this.heightPx;
-                    this.recalculate();
+                    if (this.recalculateOnChange)
+                        this.recalculate();
                 }
             }
         }
