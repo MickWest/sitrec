@@ -15,7 +15,7 @@ import {
     Vector3,
     WebGLRenderer, Camera, SRGBColorSpace
 } from "../../three.js/build/three.module";
-import {DebugArrowAB, V3} from "../threeExt";
+import {DebugArrowAB, forceFilterChange, V3} from "../threeExt";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {
@@ -30,6 +30,7 @@ import {
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
+import {quickToggle} from "../KeyBoardHandler";
 
 function linearToSrgb(color) {
     function toSrgbComponent(c) {
@@ -134,9 +135,9 @@ export class CNodeView3D extends CNodeViewCanvas {
             format: RGBAFormat,
             type: UnsignedByteType,
             colorSpace: SRGBColorSpace,
-            minFilter: LinearFilter,
-            magFilter: LinearFilter,
-            samples: 4 // Number of samples for MSAA, usually 4 or 8
+            minFilter: NearestFilter,
+            magFilter: NearestFilter,
+            samples: 4, // Number of samples for MSAA, usually 4 or 8
         });
 
         // Create the primary render target with the desired size
@@ -182,7 +183,7 @@ export class CNodeView3D extends CNodeViewCanvas {
                 
                 // Apply gamma correction to match sRGB encoding
                 // https://discourse.threejs.org/t/different-color-output-when-rendering-to-webglrendertarget/57494
-                gl_FragColor = sRGBTransferOETF( gl_FragColor );
+                // gl_FragColor = sRGBTransferOETF( gl_FragColor );
             }
         `
         });
@@ -205,7 +206,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         if (this.visible) {
             let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
-            if (this.effectsEnabled) {
+        //    if (this.effectsEnabled) {
                 if (this.in.canvasWidth !== undefined) {
                     this.sceneRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
                     this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
@@ -216,21 +217,10 @@ export class CNodeView3D extends CNodeViewCanvas {
                     this.tempRenderTarget.setSize(this.widthPx, this.heightPx);
                 }
                 currentRenderTarget = this.sceneRenderTarget;
-                // Clear the primary render target
                 this.renderer.setRenderTarget(currentRenderTarget);
-            }
-
-            // if (!this.effectsEnabled) {
-            //     this.renderer.setRenderTarget(null);
-            //     //this.renderer.clear(true, true, true);
-            //     this.renderer.render(GlobalScene, this.camera);
-            //     return;
-            // }
+        //    }
 
             // clear the render target (or canvas) with the background color
-            let rgb = new Color(this.background)
-            let srgb = linearToSrgb(rgb);
-
             this.renderer.setClearColor(this.background);
             this.renderer.clear(true, true, true);
 
@@ -263,7 +253,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
             if (this.effectsEnabled) {
 
-                this.renderer.setRenderTarget(null);
+             //   this.renderer.setRenderTarget(null);
 
                 // Apply each effect pass sequentially
                 for (let effectName in this.effectPasses) {
@@ -272,36 +262,37 @@ export class CNodeView3D extends CNodeViewCanvas {
                     let effectPass = effectNode.pass;
 
                     // the efferctNode has an optional filter type for the source texture
+                    // which will be from the PREVIOUS effect pass's render target
                     switch (effectNode.filter.toLowerCase()) {
                         case "linear":
-                            currentRenderTarget.texture.minFilter = LinearFilter;
-                            currentRenderTarget.texture.magFilter = LinearFilter;
+                            forceFilterChange(currentRenderTarget.texture, LinearFilter, this.renderer);
                             break;
                         case "nearest":
                         default:
-                            currentRenderTarget.texture.minFilter = NearestFilter;
-                            currentRenderTarget.texture.magFilter = NearestFilter;
+                            forceFilterChange(currentRenderTarget.texture, NearestFilter, this.renderer);
                             break;
                     }
+
+                    // Ensure the texture parameters are applied
+                    // currentRenderTarget.texture.needsUpdate = true;
 
                     effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
                     // flip the render targets
                     const useRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
 
-
                     this.renderer.setRenderTarget(useRenderTarget);
-                    this.renderer.clear(true, true, true);
+                    //this.renderer.clear(true, true, true);
                     this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
                     this.renderer.render(this.fullscreenQuad, new Camera());
                     currentRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
                 }
-
-                // Render the final texture to the screen
-                this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-                this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
-                this.renderer.setRenderTarget(null);
-                this.renderer.render(this.fullscreenQuad, new Camera());
             }
+
+            // Render the final texture to the screen
+            this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+            this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
+            this.renderer.setRenderTarget(null);
+            this.renderer.render(this.fullscreenQuad, new Camera());
         }
     }
 }
