@@ -643,7 +643,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // what's this doing here? nneds to be called per camera, but not in a satellite specific function
         this.starMaterial.uniforms.cameraFOV.value = camera.fov;
-        this.starMaterial.uniforms.starScale.value = Sit.starScale;
+        this.starMaterial.uniforms.starScale.value = Sit.starScale/window.devicePixelRatio;
 
 
         var cameraPos = camera.position;
@@ -664,7 +664,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         if ( this.showSatellites && this.TLEData) {
             this.satelliteMaterial.uniforms.cameraFOV.value = camera.fov;
-            this.satelliteMaterial.uniforms.satScale.value = Sit.satScale;
+            this.satelliteMaterial.uniforms.satScale.value = Sit.satScale/window.devicePixelRatio;
 
             const positions = this.satelliteGeometry.attributes.position.array;
             const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
@@ -1059,7 +1059,7 @@ void main() {
                 maxSize: { value: 20.0 },
                 starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30},
-                starScale: { value: Sit.starScale}
+                starScale: { value: Sit.starScale/window.devicePixelRatio}
             },
             transparent: true,
             depthTest: true,
@@ -1324,7 +1324,7 @@ void main() {
                 maxSize: { value: 20.0 },
                 starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30 },
-                satScale: { value: Sit.satScale },
+                satScale: { value: Sit.satScale/window.devicePixelRatio },
                 ...sharedUniforms,
             },
             transparent: true,
