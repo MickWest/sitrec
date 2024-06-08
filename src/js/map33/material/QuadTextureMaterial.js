@@ -78,34 +78,12 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
 
 const QuadTextureMaterial = (urls) => {
   return Promise.all(urls.map(url => loadTextureWithRetries(url))).then(maps => {
-//       return new ShaderMaterial({
-//         uniforms: {
-//
-//           mapNW: {value: maps[0]},
-//           mapSW: {value: maps[1]},
-//           mapNE: {value: maps[2]},
-//           mapSE: {value: maps[3]},
-//           ...sharedUniforms,
-//           ...UniformsLib.common,
-//           ...UniformsLib.lights,
-//           ...UniformsLib.fog,
-//         },
-//         vertexShader,
-//         fragmentShader,
-//         defines: {
-//           USE_MAP: true,
-//           USE_UV: true,
-//         },
-//         lights: true,
-//         fog: true,
-//       })
-//   })
-// }
+
+
 
     // set       texture.colorSpace = SRGBColorSpace; on each map
     // to avoid gamma correction
-    maps.forEach(map => map.colorSpace = SRGBColorSpace)
-
+//    maps.forEach(map => map.colorSpace = SRGBColorSpace)
 
     // intead of a custom material, use the built-in MeshBasicMaterial
     // and make a new single texture from the 4 textures
@@ -119,21 +97,30 @@ const QuadTextureMaterial = (urls) => {
     ctx.drawImage(maps[2].image, maps[0].image.width, 0)
     ctx.drawImage(maps[3].image, maps[0].image.width, maps[0].image.height)
     const texture = new CanvasTexture(canvas)
-    texture.colorSpace = SRGBColorSpace;
+//    texture.colorSpace = SRGBColorSpace;
 
     texture.needsUpdate = true
     // destroy the canvas and original textures
     canvas.remove()
     maps.forEach(map => map.dispose())
 
-    return new MeshStandardMaterial({map: texture,
-      emissive: new Color(0xffffff),  // Set emissive color to white
-      emissiveMap: texture,                 // Use the same texture for emissive map
-      emissiveIntensity: 1.0                // Full intensity for emissive
-       })
 
-    // basic material for no lighting, just render the original colors.
-//    return new MeshBasicMaterial({map: texture})
+    // using a standard material means it gets lighting
+    // Seems to be giving significantly brighter colors in SWR
+    // in Area6 we can adjust the time of day to see this effect
+    // all the lights add together to make it brighter
+
+    // return new MeshStandardMaterial({map: texture,
+    //   emissive: new Color(0xffffff),  // Set emissive color to white
+    //   emissiveMap: texture,                 // Use the same texture for emissive map
+    //   emissiveIntensity: 1.0,                // Full intensity for emissive
+    //   //colorSpace: SRGBColorSpace
+    //    })
+    //
+
+    // for now use this basic material
+    // // basic material for no lighting, just render the original colors.
+     return new MeshBasicMaterial({map: texture})
 
 
   })
