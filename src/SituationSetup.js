@@ -40,7 +40,7 @@ import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
-import {DebugSphere} from "./threeExt";
+import {DebugSphere, MV3, testColorCube, testTextureCube} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
@@ -1264,6 +1264,16 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             const position = LLAToEUS(data.LLA[0], data.LLA[1], data.LLA[2]);
             const layers = normalizeLayerType(data.layers ?? LAYER.MASK_HELPERS);
             new DebugSphere(data.id, position, data.radius, data.color, GlobalScene, layers);
+            break;
+
+        case "textureCube":
+            SSLog
+            testTextureCube(data.url, MV3(data.position), data.size, GlobalScene);
+            break;
+
+        case "colorCube":
+            SSLog
+            testColorCube(data.color, MV3(data.position), data.size, GlobalScene);
             break;
 
         default:

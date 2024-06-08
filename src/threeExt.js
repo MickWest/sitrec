@@ -8,7 +8,7 @@ import {
     LineBasicMaterial,
     LineSegments,
     Mesh,
-    MeshBasicMaterial,
+    MeshBasicMaterial, NearestFilter,
     SphereGeometry,
     Vector2,
     Vector3,
@@ -19,12 +19,13 @@ import {drop3, pointOnSphereBelow} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
-import {Group, Ray, Sphere} from "three";
+import {Group, LinearFilter, Ray, Sphere, sRGBEncoding, TextureLoader} from "three";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
 import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
 import {Line2} from "../three.js/examples/jsm/lines/Line2";
 import {NodeMan} from "./Globals";
+import {isArray} from "mathjs";
 
 
 // Wrapper for calling dispose function on object, allowing undefined
@@ -685,7 +686,8 @@ export class CDisplayLine {
 
         this.material = new LineMaterial({
 
-            color: this.color,
+            // the color here is white, as
+            color: [1.0, 1.0, 1.0], // this.color,
             linewidth: this.width, // in world units with size attenuation, pixels otherwise
             vertexColors: true,
             dashed: false,
@@ -746,3 +748,131 @@ export function adjustHeightAboveGround (point, height) {
     const ground = pointOnGround(point);
     return pointAbove(ground, height);
 }
+
+export function forceFilterChange(texture, filter, renderer) {
+    // Check if the filter is already set
+    if (texture.minFilter === filter && texture.magFilter === filter) {
+        return; // No need to update
+    }
+
+    // Update texture filter properties
+    texture.minFilter = filter;
+    texture.magFilter = filter;
+
+    // Retrieve WebGL properties and texture
+    const textureProperties = renderer.properties.get(texture);
+    const webglTexture = textureProperties.__webglTexture;
+
+    if (webglTexture) {
+        // Get the WebGL context from the renderer
+        const gl = renderer.getContext();
+
+        // Map Three.js filters to WebGL filters
+        let glFilter;
+        switch (filter) {
+            case LinearFilter:
+                glFilter = gl.LINEAR;
+                break;
+            case NearestFilter:
+                glFilter = gl.NEAREST;
+                break;
+            // Add additional cases here for other filters if necessary
+            default:
+                console.warn('Unsupported filter type:', filter);
+                glFilter = gl.NEAREST; // Default to nearest
+                break;
+        }
+
+        // Bind the texture to update it
+        gl.bindTexture(gl.TEXTURE_2D, webglTexture);
+
+        // Update the minFilter and magFilter
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, glFilter);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, glFilter);
+
+        // Unbind the texture
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        // Ensure Three.js is aware of the state change
+        texture.needsUpdate = false;
+    } else {
+        console.error('No WebGL texture handle found for the texture.');
+    }
+}
+
+// given a url to a texture, create a cube that has that texture on all sides
+// at a given position and size.
+export function testTextureCube(url, position, size, scene) {
+
+    console.log("Creating texture cube at "+position.x+","+position.y+","+position.z+" with size "+size+" and texture "+url)
+
+    // first load the texture
+    const loader = new TextureLoader();
+    const texture = loader.load(url);
+//    texture.encoding = sRGBEncoding;
+
+    // create a basic material with that texture
+    const material = new MeshBasicMaterial({map: texture});
+
+    // create a cube geometry
+    const geometry = new BoxGeometry(size, size, size);
+
+    // create the mesh
+    const mesh = new Mesh(geometry, material);
+
+    // set the position
+    mesh.position.copy(position);
+
+    // add it to the scene
+    scene.add(mesh);
+
+}
+
+// as above but a solid color
+export function testColorCube(color, position, size, scene) {
+    let materials = [];
+
+    if (isArray(color)) {
+        color.forEach(c => {
+            c = new Color(c)
+            materials.push(new MeshBasicMaterial({color: c}));
+            materials.push(new MeshBasicMaterial({color: c}));
+        });
+    } else {
+
+        // convert to three.js color
+        color = new Color(color)
+
+        // create a cube that has the color on each face
+        // top and bottom at 100%
+        // front and back at 50%
+        // left and right at 25%
+        const halfColor = color.clone().multiplyScalar(0.5);
+        const quarterColor = color.clone().multiplyScalar(0.25);
+
+        const leftRightMaterial = new MeshBasicMaterial({color: color});
+        const frontBackMaterial = new MeshBasicMaterial({color: halfColor});
+        const topBotMaterial = new MeshBasicMaterial({color: quarterColor});
+
+        materials = [leftRightMaterial, leftRightMaterial, frontBackMaterial, frontBackMaterial, topBotMaterial, topBotMaterial]
+    }
+
+    // create a cube geometry
+    const geometry = new BoxGeometry(size, size, size);
+
+    // create the mesh with a different material for each face
+    const mesh = new Mesh(geometry, materials);
+
+    // add to scene
+    mesh.position.copy(position);
+    scene.add(mesh);
+
+
+
+
+
+
+
+
+}
+
