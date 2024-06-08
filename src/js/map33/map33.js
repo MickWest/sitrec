@@ -1,7 +1,7 @@
  import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "../../../three.js/build/three.module";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
-import {SITREC_SERVER} from "../../../config";
+import {SITREC_ROOT, SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {DebugSphere} from "../../threeExt";
@@ -129,6 +129,7 @@ class Source {
       'eox': this.mapUrlSentinel2Cloudless.bind(this),
       'maptiler': this.mapUrlmapTiler.bind(this),
       'wireframe': this.mapUrlmapWireframe.bind(this),
+      'RGBTest': this.mapUrlmapRGBTest.bind(this),
     }
     if (!(api in this.supportedApis)) {
       throw new Error('Unknown source api');
@@ -136,6 +137,11 @@ class Source {
     this.api = api
     this.token = token
     this.options = options
+  }
+
+  // returns a single image for testing color consistency
+  mapUrlmapRGBTest(z, x, y) {
+    return SITREC_ROOT+"data/images/colour_bars_srgb-255-128-64.png?v=1";
   }
 
   mapUrlOSM(z, x, y) {

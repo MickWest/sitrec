@@ -19,7 +19,7 @@ const terrainGUIColor = "#c0ffc0";
 // let terrainGUI;
 // let mapTypeMenu;
 let local = {}
-const mapTypes = ["mapbox","osm","eox","wireframe"]
+const mapTypes = ["mapbox","osm","eox","wireframe","RGBTest"];
 
 // function makeMapTypeMenu() {
 //     if (terrainGUI === undefined) {
@@ -191,7 +191,7 @@ export class CNodeTerrain extends CNode {
 
 
        this.terrainGUI = gui.addFolder("Terrain")
-       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor)
+       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen()
 
 
         this.loaded = false;
@@ -278,7 +278,7 @@ export class CNodeTerrain extends CNode {
             GlobalScene.add(this.maps[m].group)
         })
 
-        local.mapType = "mapbox"
+        local.mapType = v.mapType ?? "mapbox"
         this.deferLoad = v.deferLoad;
         this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
 
