@@ -49,6 +49,7 @@ export class CNodeLaserMarker extends CNode3DGroup {
         this.input("radius");
         this.input("angle");
         this.input("sides")
+        this.halveColors = v.halveColors ?? false;
         this.lines = null
         this.recalculate();
         // initial calculation will not have terrain heights, so add a callback
@@ -93,6 +94,11 @@ export class CNodeLaserMarker extends CNode3DGroup {
                 group: this.group,
                 layers: LAYER.MASK_LOOKRENDER
             });
+            if (this.halveColors) {
+                color.r /= 2;
+                color.g /= 2;
+                color.b /= 2;
+            }
             heading.applyAxisAngle(up, angleStep);
         }
 
