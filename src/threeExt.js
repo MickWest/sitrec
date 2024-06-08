@@ -19,7 +19,7 @@ import {drop3, pointOnSphereBelow} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
 import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
-import {Group, LinearFilter, Ray, Sphere, sRGBEncoding, TextureLoader} from "three";
+import {Group, LinearFilter, Ray, Sphere, TextureLoader} from "three";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
 import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
