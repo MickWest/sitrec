@@ -75,6 +75,7 @@ import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
 import {preventDoubleClicks} from "./lil-gui-extras";
+import {ColorManagement} from "three";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -276,6 +277,8 @@ async function newSitch(situation, customSetup = false ) {
 async function initializeOnce() {
 
     Globals.parsing = 0;
+
+    ColorManagement.enabled = false;
 
 // Check to see if we are running in a local environment
     checkLocal()
