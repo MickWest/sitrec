@@ -2,7 +2,7 @@ import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {GlobalComposer, gui, guiTweaks, keyHeld, NodeMan, Sit} from "../Globals";
+import {GlobalComposer, Globals, gui, guiTweaks, keyHeld, NodeMan, Sit} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {} from "../Globals"
 import {makeMouseRay} from "../mouseMoveView";
@@ -129,33 +129,35 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
         this.renderer.colorSpace = SRGBColorSpace;
 
-        // intial rendering is done to the sceneRenderTarget
-        // which is anti-aliased with MSAA
-        this.sceneRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
-            format: RGBAFormat,
-            type: UnsignedByteType,
-            colorSpace: SRGBColorSpace,
-            minFilter: NearestFilter,
-            magFilter: NearestFilter,
-            samples: 4, // Number of samples for MSAA, usually 4 or 8
-        });
+        if (!Globals.renderTargetAntiAliased) {
+            // intial rendering is done to the renderTargetAntiAliased
+            // which is anti-aliased with MSAA
+            Globals.renderTargetAntiAliased = new WebGLRenderTarget(256, 256, {
+                format: RGBAFormat,
+                type: UnsignedByteType,
+                colorSpace: SRGBColorSpace,
+                minFilter: NearestFilter,
+                magFilter: NearestFilter,
+                samples: 4, // Number of samples for MSAA, usually 4 or 8
+            });
 
-        // Create the primary render target with the desired size
-        this.renderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
-            minFilter: NearestFilter,
-            magFilter: NearestFilter,
-            format: RGBAFormat,
-            colorSpace: SRGBColorSpace,
-        });
+            // Create the primary render target with the desired size
+            Globals.renderTargetA = new WebGLRenderTarget(256, 256, {
+                minFilter: NearestFilter,
+                magFilter: NearestFilter,
+                format: RGBAFormat,
+                colorSpace: SRGBColorSpace,
+            });
 
-        // Create the temporary render target with the desired size
-        this.tempRenderTarget = new WebGLRenderTarget(this.widthPx, this.heightPx, {
-            minFilter: NearestFilter,
-            magFilter: NearestFilter,
-            format: RGBAFormat,
-            colorSpace: SRGBColorSpace,
+            // Create the temporary render target with the desired size
+            Globals.renderTargetB = new WebGLRenderTarget(256, 256, {
+                minFilter: NearestFilter,
+                magFilter: NearestFilter,
+                format: RGBAFormat,
+                colorSpace: SRGBColorSpace,
 
-        });
+            });
+        }
 
         // Ensure GlobalScene and this.camera are defined
         if (!GlobalScene || !this.camera) {
@@ -204,21 +206,29 @@ export class CNodeView3D extends CNodeViewCanvas {
     {
 
         if (this.visible) {
+
+
             let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
-        //    if (this.effectsEnabled) {
+            //if (this.effectsEnabled) {
                 if (this.in.canvasWidth !== undefined) {
-                    this.sceneRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
-                    this.renderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
-                    this.tempRenderTarget.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                    Globals.renderTargetAntiAliased.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                    if (this.effectsEnabled) {
+                        // often don't have effects on the main view
+                        // so we don't need to create/resize these render targets
+                        Globals.renderTargetA.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                        Globals.renderTargetB.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
+                    }
                 } else {
-                    this.sceneRenderTarget.setSize(this.widthPx, this.heightPx);
-                    this.renderTarget.setSize(this.widthPx, this.heightPx);
-                    this.tempRenderTarget.setSize(this.widthPx, this.heightPx);
+                    Globals.renderTargetAntiAliased.setSize(this.widthPx, this.heightPx);
+                    if (this.effectsEnabled) {
+                        Globals.renderTargetA.setSize(this.widthPx, this.heightPx);
+                        Globals.renderTargetB.setSize(this.widthPx, this.heightPx);
+                    }
                 }
-                currentRenderTarget = this.sceneRenderTarget;
+                currentRenderTarget = Globals.renderTargetAntiAliased;
                 this.renderer.setRenderTarget(currentRenderTarget);
-        //    }
+            //}
 
             // clear the render target (or canvas) with the background color
             this.renderer.setClearColor(this.background);
@@ -278,21 +288,33 @@ export class CNodeView3D extends CNodeViewCanvas {
 
                     effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
                     // flip the render targets
-                    const useRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+                    const useRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
 
                     this.renderer.setRenderTarget(useRenderTarget);
                     //this.renderer.clear(true, true, true);
                     this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
                     this.renderer.render(this.fullscreenQuad, new Camera());
-                    currentRenderTarget = currentRenderTarget === this.renderTarget ? this.tempRenderTarget : this.renderTarget;
+                    currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
                 }
             }
 
-            // Render the final texture to the screen
-            this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-            this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
-            this.renderer.setRenderTarget(null);
-            this.renderer.render(this.fullscreenQuad, new Camera());
+            // Render the final texture to the screen, id we were using a render target.
+            if (currentRenderTarget !== null) {
+                this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
+                this.renderer.setRenderTarget(null);
+                this.renderer.render(this.fullscreenQuad, new Camera());
+            }
+
+            // Globals.renderTargetAntiAliased.dispose();
+            // Globals.renderTargetA.dispose();
+            // Globals.renderTargetB.dispose();
+            // Globals.renderTargetAntiAliased = null;
+            // Globals.renderTargetA = null;
+            // Globals.renderTargetB = null;
+
+
+
         }
     }
 }

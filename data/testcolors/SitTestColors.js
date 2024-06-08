@@ -44,12 +44,10 @@ export const SitSWRCSC = {
     // a full screen view. The size and position are fractions of the window size
     // background is the color of the sky.
     mainView: {left:0.0, top:0, width:0.5,height:1, background:'#132d44',
-    effects:{
-        Copy:{},
-        // StaticNoise: {inputs:{
-        //          amount: {kind: "GUIValue", value: 0.06, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
-        //      }},
-    }},
+        // effects:{
+        //     Copy:{},
+        // }
+    },
 
     lookCamera: {fov: 10, far: 80000000, },
     lookView: {left:0.5, top:0.5, width:-1.792,height:0.5,background:'#132d44', doubleClickFullScreen: true,},
