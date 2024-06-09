@@ -70,13 +70,19 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         var msEnd = msStart+msNeeded
         var frameTime = 0 // keep count for time for this frame in seconds
 
+
+
+
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
             // advance the slot if needed
             while (slot < points-1) {
-                const nextDataTime = misb.getTime(slot+1);
-                if ( nextDataTime > msNow) {
-                    break
+                // we need at least two good consecutive slots
+                if (misb.isValid(slot) && misb.isValid(slot+1)) {
+                    const nextDataTime = misb.getTime(slot + 1);
+                    if (nextDataTime > msNow) {
+                        break
+                    }
                 }
                 slot++;
             }
@@ -90,11 +96,22 @@ export class CNodeTrackFromMISB extends CNodeTrack {
               } else {
                   // use the last two slots and interpolate (extrapolate) the position
                   slot = points - 2
+
               }
+
+
+            // is either is invalid, then go back until we find a valid pair
+            // this should only kick in at the end of the track
+            while ((!misb.isValid(slot) || !misb.isValid(slot+1)) && slot > 0) {
+                slot--
+            }
 
             // note the extrapolation will work for slot <0 as well as slot > points-1
             // however we might want to do something different for out or range
             // as the first and last pairs of data points might not be good
+
+            assert(misb.isValid(slot), "slot " + slot + " is not valid, id=" + this.id)
+            assert(misb.isValid(slot+1), "slot+1 " + (slot+1) + " is not valid, id=" + this.id)
 
 
            // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
@@ -102,13 +119,6 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             const lat = interpolate(misb.getLat(slot), misb.getLat(slot + 1), fraction);
             const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
             const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
-
-        //    const alt = 2932;
-
-            // if (f < 10 ) {
-            //      console.log("now",msNow,"slot",slot,"time",misb.getTime(slot),"next time",misb.getTime(slot+1),"fraction",fraction,"lat",lat,"lon",lon,"alt",alt)
-            //      console.log("misb LLA for slot ",slot,misb.getLat(slot),misb.getLon(slot),misb.getAlt(slot));
-            // }
 
             const pos = LLAToEUS(lat, lon, alt)
             // end product, a per-frame array of positions
@@ -141,18 +151,10 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             // we store a reference to the misb row for later use
             // so we can extract other data from it as needed
             product["misbRow"] = misb.misb[slot];
-//                if (f<10) console.log("vFOV",product["vFOV"])
 
-//                 // optional additional data
-//                 for (let field of extraFields) {
-//                     if (data[slot][field] !== undefined) {
-//                         product[field] = data[slot][field]
-//
-// //                        if (field == "heading") console.log(product[field])
-//                     }
-//                 }
 
             this.array.push(product)
+
             frameTime += Sit.simSpeed/Sit.fps
         }
 

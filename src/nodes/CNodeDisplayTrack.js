@@ -94,15 +94,17 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const line_colors = [];
         for (var f = 0; f < this.frames; f++) {
             const trackPoint = this.in.track.v(f)
-            assert(trackPoint != undefined, "CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f)
+            assert(trackPoint !== undefined, "CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f)
 
             // we skip over undefined points, so we can display tracks that
             // don't fully have all the data
             // like if we got a track from ADSBX, but stopped it in the middle of the video segments
             // instead of playing it past the end.
-            if (trackPoint.position != undefined) {
+            if (trackPoint.position !== undefined) {
 
                 var A = trackPoint.position
+                assert(!isNaN(A.x) && !isNaN(A.y) && !isNaN(A.z), "CNodeDisplayTrack: trackPoint has NaNs in position, id=" + this.id + " frame=" + f);
+
                 line_points.push(A.x, A.y, A.z);
                 var color = trackPoint.color // the track itself can override the color defaults
                 if (color === undefined) {

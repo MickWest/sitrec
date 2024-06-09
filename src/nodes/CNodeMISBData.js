@@ -58,7 +58,7 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
                 csv = csv + this.misb[f][i] + (i<MISBFields-1?",":"\n");
             }
         }
-        saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
+        saveAs(new Blob([csv]), "MISB-DATA"+this.id+".csv")
     }
 
     // given an array of the MISB column names for lat,lon,alt
@@ -70,6 +70,8 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         this.altCol = MISB[columns[2]]
     }
 
+
+
     // to display the full length track of original source data, (like, for a KML)
     // we need to make an array of EUS positions for each point in the track
     // NOTE: this is a DATA track, not a camera/position
@@ -78,9 +80,15 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         this.array = [];
         var points = this.misb.length
         for (var f = 0; f < points; f++) {
-//            var pos = LLAToEUS(this.coord[f].lat, this.coord[f].lon, this.coord[f].alt)
-            var pos = LLAToEUS(this.getLat(f), this.getLon(f), this.getAlt(f));
-            this.array.push({position: pos})
+            // we only handle rows that have valid data
+            if (this.isValid(f)) {
+                var pos = LLAToEUS(this.getLat(f), this.getLon(f), this.getAlt(f));
+                this.array.push({position: pos})
+            } else {
+                // otherwise, just give it an empty structure
+                this.array.push({})
+            }
+
         }
         this.frames = points;
 
@@ -110,6 +118,36 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         }
         return time
     }
+
+
+    // a slot is valid if it has a valid timestamp
+    // and the lat/lon/alt are not NaN
+    isValid(slotNumber) {
+        let lat = this.getLat(slotNumber)
+        let lon = this.getLon(slotNumber)
+        let alt = this.getAlt(slotNumber)
+        let time = this.getTime(slotNumber)
+
+        // time is in unix time, check its a number and from 1970 to 2100
+        if (isNaN(time) || time < 0 || time > 4102444800000) return false
+        // lat, lon, alt are floats, check they are not NaN
+        if (isNaN(lat) || isNaN(lon) || isNaN(alt)) return false
+        // check lat is -90 to 90
+        if (lat < -90 || lat > 90) return false
+        // and lon is -180 to 180, but allow to 360 as some data might be 0..360, or even (unlikely) -360..0
+        // basically jsut checking they are reasonable numbers
+        if (lon < -360 || lon > 360) return false
+        // and alt is a positive number, allowing a little leeway for the ground
+        if (alt < -1000) return false
+        // nothing beyond geostationary orbit
+        // not expecting anything out of the atmosphere, but just in case.
+        // again just checking for reasonable numbers
+        if (alt > 36000000) return false
+
+        return true;
+
+    }
+
 
     recalculate() {
         this.makeArrayForTrackDisplay()
