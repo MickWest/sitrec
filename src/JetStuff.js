@@ -14,8 +14,8 @@ import {
     V3
 } from "./threeExt";
 import * as LAYER from "./LayerMasks";
-import {Line2} from "three/addons/lines/Line2.js";
-import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {Line2} from "three/examples/jsm/lines/Line2.js";
+import {LineGeometry} from "three/examples/jsm/lines/LineGeometry.js";
 import {showHider, toggles} from "./KeyBoardHandler";
 import {VG, ViewMan} from "./nodes/CNodeView";
 import {

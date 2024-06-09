@@ -6,9 +6,8 @@ import {par} from "../par";
 import {assert, metersFromMiles} from "../utils";
 import {CNode3DGroup} from "./CNode3DGroup";
 
-import {LineGeometry}               from "three/addons/lines/LineGeometry";
-import {LineMaterial}               from "three/addons/lines/LineMaterial";
-import {Line2}                      from "three/addons/lines/Line2";
+import {LineGeometry}               from "three/examples/jsm/lines/LineGeometry.js";
+import {Line2}                      from "three/examples/jsm/lines/Line2.js";
 import * as LAYER from "../LayerMasks";
 
 var matLineGreyThin = makeMatLine(0x404040, 0.50);

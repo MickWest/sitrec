@@ -1,4 +1,4 @@
-import {TransformControls} from "three/addons/controls/TransformControls";
+import {TransformControls} from "three/examples/jsm/controls/TransformControls.js";
 import {
     BoxGeometry,
     Line3,

@@ -1,6 +1,6 @@
 // (Unused) Wrapper for Three.js Sky object
 
-import {Sky} from "three/addons/objects/Sky";
+import {Sky} from "three/examples/jsm/objects/Sky.js";
 import {MathUtils, Vector3} from "three";
 import GUI from "./js/lil-gui.esm";
 

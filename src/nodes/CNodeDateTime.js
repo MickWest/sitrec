@@ -6,7 +6,6 @@ import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {forceUpdateUIText} from "./CNodeViewUI";
 import {assert} from "../utils";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
-import {remove} from "three/addons/libs/tween.module";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West
