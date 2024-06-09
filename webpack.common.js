@@ -80,8 +80,8 @@ module.exports = {
 
         // Mick, this is to ensure one common three.js module when using things like the jsm line examples.
         alias: {
-            'three/addons': path.resolve(__dirname, 'three.js/examples/jsm/'),
-            'three': path.resolve(__dirname, 'three.js/build/three.module.js'),
+        //   'three/addons': path.resolve(__dirname, 'three.js/examples/jsm/'),
+        //    'three': path.resolve(__dirname, 'three.js/build/three.module.js'),
         },
     },
     plugins: [
