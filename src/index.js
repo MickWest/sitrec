@@ -1,4 +1,4 @@
-import {Group, REVISION, Scene,} from "../three.js/build/three.module.js";
+import {Group, REVISION, Scene, WebGLRenderer,} from "../three.js/build/three.module.js";
 import "./js/uPlot/uPlot.css"
 import "./extra.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
@@ -98,7 +98,14 @@ let animationFrameId;
 
 resetPar();
 await initializeOnce();
-initRendering();
+if (!initRendering()) {
+    // we failed to create a renderer, so we can't continue
+    // terminate the program
+    // but we can't just return, as we are in an async function
+    // so we need to throw an error
+    throw new Error("Failed to create a renderer");
+
+}
 
 
 if (urlParams.get("custom")) {
@@ -148,6 +155,9 @@ if (urlParams.get("custom")) {
 } else {
     selectInitialSitch();
 }
+
+
+
 legacySetup();
 await setupFunctions();
 
@@ -453,6 +463,21 @@ function initRendering() {
     infoDiv.style.display = 'block';
     document.body.appendChild(infoDiv);
 
+
+    // attept to create a renderer to catch issues early and do a graceful exit
+    try {
+        const renderer = new WebGLRenderer({});
+        renderer.dispose();
+    } catch (e) {
+        console.error("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer: "+e)
+        // show an alert
+        alert("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer:\n "+e)
+
+
+        return false;
+    }
+
+
     setupScene(new Scene())
     setupLocalFrame(new Group())
 
@@ -462,6 +487,7 @@ function initRendering() {
     SetupMouseHandler();
     window.addEventListener( 'resize', windowChanged, false );
 
+    return true;
 }
 
 // some sitch specific stuff that needs to be done before the main setup

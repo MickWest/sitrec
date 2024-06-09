@@ -124,7 +124,18 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.canvas.height = this.heightPx;
 
         // Create the renderer
-        this.renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true });
+
+        try {
+            this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true});
+        } catch (e) {
+            console.error("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer: "+e)
+            // show an alert
+            alert("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer:\n "+e)
+
+
+            return;
+        }
+
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
         this.renderer.colorSpace = SRGBColorSpace;
