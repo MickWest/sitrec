@@ -16,12 +16,12 @@ import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
 import {dispose, disposeScene, propagateLayerMaskObject, V3} from "../threeExt";
 import {} from "../Globals";
 
-import {GLTFLoader} from '../../three.js/examples/jsm/loaders/GLTFLoader.js';
-import {Line2} from '../../three.js/examples/jsm/lines/Line2.js';
-import {LineGeometry} from '../../three.js/examples/jsm/lines/LineGeometry.js';
-import {LocalFrame, GlobalScene} from "../LocalFrame";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {Line2} from "three/addons/lines/Line2.js";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {LocalFrame} from "../LocalFrame";
 import {makeMatLine} from "../MatLines";
-import {GridHelper, Group, PMREMGenerator, TextureLoader} from "three";
+import {GridHelper, Group} from "three";
 import * as LAYER from "../LayerMasks";
 
 

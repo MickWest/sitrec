@@ -1,5 +1,5 @@
 // Factory for line materials, which need to be updated on resize.
-import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
+import {LineMaterial} from "three/addons/lines/LineMaterial";
 import {Color} from "three";
 
 var matLines = {} // collection of line materials that need updating on resize

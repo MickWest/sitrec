@@ -1,5 +1,5 @@
 // fiddly temporary class to handle the jet target
-import {GLTFLoader} from "../../three.js/examples/jsm/loaders/GLTFLoader";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 import {CNode3DTarget} from "./CNode3DTarget";
 import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";

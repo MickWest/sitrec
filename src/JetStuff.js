@@ -16,8 +16,8 @@ import {
     V3
 } from "./threeExt";
 import * as LAYER from "./LayerMasks";
-import {Line2} from '../three.js/examples/jsm/lines/Line2.js';
-import {LineGeometry} from '../three.js/examples/jsm/lines/LineGeometry.js';
+import {Line2} from "three/addons/lines/Line2.js";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {showHider, toggles} from "./KeyBoardHandler";
 import {VG, ViewMan} from "./nodes/CNodeView";
 import {
@@ -43,7 +43,7 @@ import {CNodeLOSTraverseConstantAltitude} from "./nodes/CNodeLOSTraverseConstant
 import {CNodeSwitch} from "./nodes/CNodeSwitch";
 import {makeMatLine, updateMatLineResolution} from "./MatLines";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
-import {GLTFLoader} from "../three.js/examples/jsm/loaders/GLTFLoader";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 import {
     AddAltitudeGraph,
     AddSizePercentageGraph,

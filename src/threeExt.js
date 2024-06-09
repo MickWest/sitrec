@@ -21,9 +21,9 @@ import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
 import {Group, LinearFilter, Ray, Sphere, TextureLoader} from "three";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
-import {LineMaterial} from "../three.js/examples/jsm/lines/LineMaterial";
-import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
-import {Line2} from "../three.js/examples/jsm/lines/Line2";
+import {LineMaterial} from "three/addons/lines/LineMaterial";
+import {LineGeometry} from "three/addons/lines/LineGeometry";
+import {Line2} from "three/addons/lines/Line2";
 import {NodeMan} from "./Globals";
 import {isArray} from "mathjs";
 

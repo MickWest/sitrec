@@ -2,10 +2,10 @@
 import {assert}           from "../utils";
 import {gui, Sit}                   from "../Globals";
 import {dispose}                    from "../threeExt";
-import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
-import {LineMaterial}               from "../../three.js/examples/jsm/lines/LineMaterial";
+import {LineGeometry}               from "three/addons/lines/LineGeometry";
+import {LineMaterial}               from "three/addons/lines/LineMaterial";
 
-import {Line2}                      from "../../three.js/examples/jsm/lines/Line2";
+import {Line2}                      from "three/addons/lines/Line2";
 import {CNode3DGroup}                    from "./CNode3DGroup";
 import {wgs84}                      from "../LLA-ECEF-ENU";
 import {drop}                       from "../SphericalMath";
