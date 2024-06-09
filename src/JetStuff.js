@@ -7,10 +7,8 @@ import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
 import {
     DebugArrowAB,
-    DEBUGGroup,
     dispose,
     GridHelperWorld,
-    MV3,
     propagateLayerMaskObject,
     sphereMark,
     V3
@@ -43,7 +41,6 @@ import {CNodeLOSTraverseConstantAltitude} from "./nodes/CNodeLOSTraverseConstant
 import {CNodeSwitch} from "./nodes/CNodeSwitch";
 import {makeMatLine, updateMatLineResolution} from "./MatLines";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader";
 import {
     AddAltitudeGraph,
     AddSizePercentageGraph,
@@ -55,10 +52,8 @@ import {
     AlwaysDepth,
     BufferGeometry,
     Color,
-    DirectionalLight,
     DoubleSide,
     Float32BufferAttribute,
-    HemisphereLight,
     LineBasicMaterial,
     Matrix4,
     Mesh,
@@ -75,7 +70,6 @@ import {isLocal} from "../config";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
-import {Group} from "three";
 import {CNodeHeading} from "./nodes/CNodeHeading";
 import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeInterpolateTwoFramesTrack";
 import {CNodeCamera} from "./nodes/CNodeCamera";
