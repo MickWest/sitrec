@@ -1,9 +1,9 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
 import {DebugArrowAB, dispose, perpendicularVector, V3} from "../threeExt";
-import {LineGeometry}               from "three/examples/jsm/lines/LineGeometry.js";
+import {LineGeometry}               from "three/addons/lines/LineGeometry.js";
 import {wgs84} from "../LLA-ECEF-ENU";
-import {Line2} from "three/examples/jsm/lines/Line2.js";
+import {Line2} from "three/addons/lines/Line2.js";
 import {makeMatLine} from "../MatLines";
 
 

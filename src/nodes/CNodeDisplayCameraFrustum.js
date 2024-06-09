@@ -1,12 +1,12 @@
 import {radians, tan, unitsToMeters} from "../utils";
-import {LineGeometry} from "three/examples/jsm/lines/LineGeometry.js";
-import {Line2} from "three/examples/jsm/lines/Line2.js";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {assert} from "../utils"
 import {DebugArrow, DebugArrowAB, dispose, intersectSphere2} from "../threeExt";
 import {guiShowHide, NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
-import {LineSegmentsGeometry} from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
 import {Ray, Raycaster, Sphere, Vector3} from "three";
 import {getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";

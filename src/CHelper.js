@@ -1,8 +1,8 @@
 import {EA2XYZ, PRJ2XYZ} from "./SphericalMath";
-// import {LineGeometry} from "three/examples/jsm/lines/LineGeometry.js";
-// import {Line2} from "three/examples/jsm/lines/Line2.js";
-import {LineGeometry} from "three/examples/jsm/lines/LineGeometry.js";
-import {Line2} from "three/examples/jsm/lines/Line2.js";
+// import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+// import {Line2} from "three/addons/lines/Line2.js";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {Line2} from "three/addons/lines/Line2.js";
 
 import {Group} from "three";
 import {makeMatLine} from "./MatLines";
