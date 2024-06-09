@@ -1,5 +1,5 @@
 
-import {AlwaysDepth, Color, Vector3} from "../../three.js/build/three.module";
+import {AlwaysDepth, Color, Vector3} from "three";
 import {par} from "../par";
 import {arrayColumn, ExpandKeyframes, RollingAverage, scaleF2M} from "../utils";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";

@@ -1,7 +1,7 @@
 // A variety of functions for converting between LLA (lat, lon, alt) and ECEF (earth centered earth fixed) and ENU (east, north, up)
 // as well as some other useful related functions
 
-import {Matrix3, Vector3} from "../three.js/build/three.module";
+import {Matrix3, Vector3} from "three";
 import {assert, cos, degrees, radians, sin} from "./utils";
 import {Sit} from "./Globals";
 import {drop} from "./SphericalMath"

@@ -7,7 +7,7 @@ import {
     Raycaster,
     Vector2,
     Vector3
-} from "../three.js/build/three.module";
+} from "three";
 import {assert, vdump} from "./utils"
 import {par} from "./par";
 import {MV3, V3} from "./threeExt";

@@ -1,6 +1,6 @@
 import {
     Color,
-} from "../../three.js/build/three.module";
+} from "three";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
 
 import {par} from "../par";

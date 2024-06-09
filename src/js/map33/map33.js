@@ -1,5 +1,5 @@
  import {getPixels} from '../get-pixels-mick.js'
-import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "../../../three.js/build/three.module";
+import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_ROOT, SITREC_SERVER} from "../../../config";
 import {assert} from "../../utils";

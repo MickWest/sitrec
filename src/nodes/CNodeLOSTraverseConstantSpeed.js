@@ -2,7 +2,7 @@
 import {NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {abs, angleDifferenceDeg, atan2, degrees, f2m, metersPerSecondFromKnots, radians} from "../utils";
-import {Color, Ray, Sphere} from "../../three.js/build/three.module";
+import {Color, Ray, Sphere} from "three";
 import {DebugArrowAB, intersectSphere2, V3} from "../threeExt";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {GlobalScene} from "../LocalFrame";

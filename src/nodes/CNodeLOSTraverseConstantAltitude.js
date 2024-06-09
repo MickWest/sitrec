@@ -2,7 +2,7 @@
 // we either have an "altitude" node for constant altitude
 // or "startDist" to start at a particular distance along the first line
 import {metersFromMiles} from "../utils";
-import {Color, Ray, Sphere} from "../../three.js/build/three.module";
+import {Color, Ray, Sphere} from "three";
 import {intersectSphere2, V3} from "../threeExt";
 import {CNodeTrack} from "./CNodeTrack";
 

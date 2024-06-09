@@ -1,5 +1,5 @@
 import {mouseToCanvas} from "./nodes/CNodeView";
-import {Vector2} from "../three.js/build/three.module";
+import {Vector2} from "three";
 import {clockwiseXY, makeBRight} from "./utils";
 
 const DRAG_NONE         = 0   // not doing anything

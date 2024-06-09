@@ -4,7 +4,7 @@ import {CNode3DTarget} from "./CNode3DTarget";
 import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
 
-import {Matrix4} from "../../three.js/build/three.module";
+import {Matrix4} from "three";
 
 import {trackAcceleration, trackDirection, trackVelocity} from "./CNode";
 import {degrees, radians, tan} from "../utils";

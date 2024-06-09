@@ -1,7 +1,10 @@
 import {EA2XYZ, PRJ2XYZ} from "./SphericalMath";
-import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
-import {Line2} from "../three.js/examples/jsm/lines/Line2";
-import {Group} from "../three.js/build/three.module";
+// import {LineGeometry} from "../three.js/examples/jsm/lines/LineGeometry";
+// import {Line2} from "../three.js/examples/jsm/lines/Line2";
+import {LineGeometry} from "three/addons/lines/LineGeometry";
+import {Line2} from "three/addons/lines/Line2";
+
+import {Group} from "three";
 import {makeMatLine} from "./MatLines";
 
 var matLineHorizon = makeMatLine(0x0000ff,2.5);

@@ -5,7 +5,7 @@ import {propagateLayerMaskObject, V3} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
 import {Globals, NodeMan, Sit} from "../Globals";
 import { RLLAToECEFV_Sphere, wgs84, EUSToLLA} from "../LLA-ECEF-ENU";
-import {Group} from "../../three.js/build/three.module";
+import {Group} from "three";
 import {gui} from "../Globals";
 
 // note for map33.js to not give errors, had to  add

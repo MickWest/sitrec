@@ -1,4 +1,4 @@
-import {Camera, PerspectiveCamera, Vector3} from "../../three.js/build/three.module";
+import {Camera, PerspectiveCamera, Vector3} from "three";
 import {MV3} from "../threeExt";
 import {assert, f2m, m2f, vdump} from "../utils";
 import {NodeMan} from "../Globals";

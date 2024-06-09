@@ -6,7 +6,7 @@ import {
     SphereGeometry,
     TextureLoader,
     Vector3
-} from "../three.js/build/three.module";
+} from "three";
 import {GlobalScene} from "./LocalFrame";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {radians} from "./utils";

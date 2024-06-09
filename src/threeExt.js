@@ -13,7 +13,7 @@ import {
     Vector2,
     Vector3,
     WireframeGeometry
-} from '../three.js/build/three.module.js';
+} from "three";
 
 import {drop3, pointOnSphereBelow} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";

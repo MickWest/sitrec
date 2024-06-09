@@ -4,7 +4,7 @@ import {CNodeScale} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
-import {Color} from "../three.js/build/three.module";
+import {Color} from "three";
 import {assert, getFileExtension, scaleF2M} from "./utils";
 import {FileManager, GlobalDateTimeNode, gui, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";

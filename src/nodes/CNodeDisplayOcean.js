@@ -1,4 +1,4 @@
-import {BufferGeometry, Float32BufferAttribute, Mesh, Vector3} from "../../three.js/build/three.module";
+import {BufferGeometry, Float32BufferAttribute, Mesh, Vector3} from "three";
 import seedrandom from "seedrandom";
 import {assert, metersFromMiles} from "../utils";
 import {drop} from "../SphericalMath";

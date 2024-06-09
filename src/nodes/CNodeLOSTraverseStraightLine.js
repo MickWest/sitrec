@@ -2,7 +2,7 @@
 // given start distance and a heading track
 import {CNode} from "./CNode";
 import {metersFromMiles, radians, assert} from "../utils";
-import {Color, Plane, Ray} from "../../three.js/build/three.module";
+import {Color, Plane, Ray} from "three";
 import {V3} from "../threeExt";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTrack} from "./CNodeTrack";

@@ -4,7 +4,7 @@ import {DebugArrowAB, dispose, perpendicularVector, V3} from "../threeExt";
 import {LineGeometry}               from "../../three.js/examples/jsm/lines/LineGeometry";
 import {LineMaterial}               from "../../three.js/examples/jsm/lines/LineMaterial";
 import {wgs84} from "../LLA-ECEF-ENU";
-import {Line, LineBasicMaterial} from "../../three.js/build/three.module";
+import {Line, LineBasicMaterial} from "three";
 import {vdump} from "../utils";
 import {GlobalScene} from "../LocalFrame";
 import {Line2} from "../../three.js/examples/jsm/lines/Line2";

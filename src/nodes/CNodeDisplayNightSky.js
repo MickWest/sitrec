@@ -8,7 +8,7 @@ import {
     Scene, Sprite, SpriteMaterial,
     TextureLoader,
     Vector3
-} from "../../three.js/build/three.module";
+} from "three";
 import {radians, assert, sin, cos, degrees} from "../utils";
 import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
 import {

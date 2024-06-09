@@ -1,4 +1,4 @@
-import { Vector3} from "../../three.js/build/three.module";
+import { Vector3} from "three";
 import {gui, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";

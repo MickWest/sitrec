@@ -1,4 +1,4 @@
-import {Plane, Vector3} from '../three.js/build/three.module.js';
+import {Plane, Vector3} from "three";
 import {assert, atan2, cos, degrees, radians, sin} from "./utils.js";
 import {V3} from "./threeExt";
 import {ECEF2EUS, wgs84} from "./LLA-ECEF-ENU";

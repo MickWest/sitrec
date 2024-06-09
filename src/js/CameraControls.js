@@ -7,7 +7,7 @@ import {
 	Plane,
 	Raycaster
 
-} from '../../three.js/build/three.module.js';
+} from "three";
 import {degrees, f2m, radians, vdump} from "../utils";
 import {DebugArrow, DebugArrowAB, intersectSphere2, V3} from "../threeExt";
 import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNodeView";

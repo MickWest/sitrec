@@ -1,4 +1,4 @@
-import {Group, REVISION, Scene, WebGLRenderer,} from "../three.js/build/three.module.js";
+import {Group, REVISION, Scene, WebGLRenderer,} from "three";
 import "./js/uPlot/uPlot.css"
 import "./extra.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"

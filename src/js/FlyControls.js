@@ -2,7 +2,7 @@ import {
 	EventDispatcher,
 	Quaternion,
 	Vector3
-} from '../../three.js/build/three.module.js';
+} from "three";
 
 const _changeEvent = { type: 'change' };
 

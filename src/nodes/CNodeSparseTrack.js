@@ -6,7 +6,7 @@
 
 import {getKMLTrackWhenCoord} from "../KMLUtils";
 import {CNodeEmptyArray} from "./CNodeArray";
-import * as THREE from "../../three.js/build/three.module";
+import * as THREE from "three";
 import {CNode} from "./CNode";
 
 class CNodeSparseTrack extends CNode {

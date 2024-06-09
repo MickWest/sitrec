@@ -1,7 +1,7 @@
 // Track of LOS intersection with the cloud horizon
 // i.e. the point on on the LOS closes to the horizon viewed from the LOS start point in the direction of the LOS
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {Raycaster} from "../../three.js/build/three.module";
+import {Raycaster} from "three";
 import {vdump} from "../utils";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";

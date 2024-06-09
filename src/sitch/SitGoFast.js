@@ -2,7 +2,7 @@ import {
     AlwaysDepth,
     DirectionalLight,
     HemisphereLight,
-} from "../../three.js/build/three.module";
+} from "three";
 import {EarthRadiusMiles, FileManager, guiJetTweaks, Sit} from "../Globals";
 import * as LAYER from "../LayerMasks";
 import {

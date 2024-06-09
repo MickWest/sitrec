@@ -69,7 +69,7 @@ import {
     SpriteMaterial,
     TextureLoader,
     Vector3
-} from "../three.js/build/three.module";
+} from "three";
 import {CNodeDisplayLOS} from "./nodes/CNodeDisplayLOS";
 import {isLocal} from "../config";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";

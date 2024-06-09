@@ -1,6 +1,6 @@
 import {abs, assert, f2m, metersFromMiles, radians} from "../utils";
 import {dispose, V3} from "../threeExt";
-import {BufferGeometry, Float32BufferAttribute, Mesh} from "../../three.js/build/three.module";
+import {BufferGeometry, Float32BufferAttribute, Mesh} from "three";
 import seedrandom from "seedrandom";
 import {drop} from "../SphericalMath";
 import {CNode3DGroup} from "./CNode3DGroup";

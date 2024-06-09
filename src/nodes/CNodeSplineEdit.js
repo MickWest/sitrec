@@ -1,6 +1,6 @@
 import {SplineEditor} from "../SplineEditor";
 import {gui, NodeMan, Sit} from "../Globals";
-import {Vector3} from "../../three.js/build/three.module";
+import {Vector3} from "three";
 import {assert} from "../utils";
 import {PointEditor} from "../PointEditor";
 import {CNodeEmptyArray} from "./CNodeArray";

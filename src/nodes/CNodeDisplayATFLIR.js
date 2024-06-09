@@ -21,7 +21,7 @@ import {Line2} from '../../three.js/examples/jsm/lines/Line2.js';
 import {LineGeometry} from '../../three.js/examples/jsm/lines/LineGeometry.js';
 import {LocalFrame, GlobalScene} from "../LocalFrame";
 import {makeMatLine} from "../MatLines";
-import {GridHelper, Group, PMREMGenerator, TextureLoader} from "../../three.js/build/three.module";
+import {GridHelper, Group, PMREMGenerator, TextureLoader} from "three";
 import * as LAYER from "../LayerMasks";
 
 

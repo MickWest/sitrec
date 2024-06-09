@@ -13,7 +13,7 @@ import {
 } from "./JetStuff";
 import {par} from "./par";
 import {Sit} from "./Globals";
-import {Object3D} from "../three.js/build/three.module";
+import {Object3D} from "three";
 
 // keeping these as globals speeds up getPodHorizonFromJetAndPod
 // as creating objects is expensive

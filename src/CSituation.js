@@ -1,4 +1,4 @@
-import {Color} from "../three.js/build/three.module.js";
+import {Color} from "three";
 import {FileManager, guiTweaks, infoDiv, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant, makePositionLLA} from "./nodes/CNode";

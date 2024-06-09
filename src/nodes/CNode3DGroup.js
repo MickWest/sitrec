@@ -1,4 +1,4 @@
-import {Group} from '../../three.js/build/three.module.js'
+import {Group} from "three"
 import {CNodeConstant} from "./CNode";
 import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"

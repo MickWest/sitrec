@@ -1,5 +1,5 @@
 // Lighting. Could be improved
-import {AmbientLight, DirectionalLight, DirectionalLightHelper, HemisphereLight} from "../three.js/build/three.module";
+import {AmbientLight, DirectionalLight, DirectionalLightHelper, HemisphereLight} from "three";
 import {Globals, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {GlobalScene} from "./LocalFrame";

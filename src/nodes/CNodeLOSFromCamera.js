@@ -4,7 +4,7 @@
 // but will update based on changed to the camera node
 import {CNode} from "./CNode";
 import {assert} from "../utils";
-import {Vector3} from "../../three.js/build/three.module";
+import {Vector3} from "three";
 import {NodeMan, Sit} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {PerspectiveCamera} from "three";

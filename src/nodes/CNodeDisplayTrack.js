@@ -9,7 +9,7 @@ import {Line2}                      from "../../three.js/examples/jsm/lines/Line
 import {CNode3DGroup}                    from "./CNode3DGroup";
 import {wgs84}                      from "../LLA-ECEF-ENU";
 import {drop}                       from "../SphericalMath";
-import {LessDepth, Color,  LineSegments} from "../../three.js/build/three.module";
+import {LessDepth, Color,  LineSegments} from "three";
 import {CNodeDisplayTargetSphere}   from "./CNodeDisplayTargetSphere";
 import * as LAYER                   from "../LayerMasks";
 import {par} from "../par";

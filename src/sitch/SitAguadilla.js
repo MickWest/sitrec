@@ -5,7 +5,7 @@ import {
     DirectionalLight,
     HemisphereLight,
     AlwaysDepth
-} from "../../three.js/build/three.module";
+} from "three";
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
 import {VG, ViewMan} from "../nodes/CNodeView";
 import {assert} from "../utils"

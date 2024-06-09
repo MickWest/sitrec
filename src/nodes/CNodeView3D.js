@@ -14,7 +14,7 @@ import {
     Plane,
     Vector3,
     WebGLRenderer, Camera, SRGBColorSpace
-} from "../../three.js/build/three.module";
+} from "three";
 import {DebugArrowAB, forceFilterChange, V3} from "../threeExt";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";

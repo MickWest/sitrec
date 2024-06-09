@@ -1,6 +1,6 @@
 import {assert, radians} from "../utils";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
-import {Matrix4} from "../../three.js/build/three.module";
+import {Matrix4} from "three";
 import {V3} from "../threeExt";
 import {CNodeTrack} from "./CNodeTrack";
 

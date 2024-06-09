@@ -2,7 +2,7 @@ import {
   ShaderMaterial,
   TextureLoader,
   UniformsLib,
-} from "../../../../three.js/build/three.module";
+} from "three";
 //import vertexShader from './quadtexture_vert.glsl'
 //import fragmentShader from './quadtexture_frag.glsl'
 import vertexShader from './micktexture_vert.glsl'

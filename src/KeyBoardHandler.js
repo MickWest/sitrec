@@ -1,7 +1,7 @@
 import {gui, guiShowHide, keyCodeHeld, keyHeld, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
 import {closeFullscreen, openFullscreen} from "./utils";
-import {Vector3} from "../three.js/build/three.module";
+import {Vector3} from "three";
 
 
 class CKeyInfo {

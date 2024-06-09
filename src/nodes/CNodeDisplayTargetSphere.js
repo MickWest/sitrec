@@ -1,5 +1,5 @@
 import {CNode3DTarget} from "./CNode3DTarget";
-import {Color, LineSegments, SphereGeometry, WireframeGeometry} from "../../three.js/build/three.module";
+import {Color, LineSegments, SphereGeometry, WireframeGeometry} from "three";
 import * as LAYER from "../LayerMasks";
 
 export class CNodeDisplayTargetSphere extends CNode3DTarget {
