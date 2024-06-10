@@ -1,4 +1,5 @@
 import {assert} from "./utils.js";
+import {CNodeConstant} from "./nodes/CNode";
 
 // A CManager is a simple class that manages a list of objects
 class CManager {
@@ -42,6 +43,24 @@ class CManager {
                 this.list[id].data.dispose()
             }
             this.remove(id);
+        }
+    }
+
+    pruneUnusedConstants() {
+        for (let key in this.list) {
+            if (this.list.hasOwnProperty(key)) {
+                const node = this.list[key].data;
+                // is it CNodeConstant class object?
+                if (node instanceof CNodeConstant) {
+                    // is it not connected to anything?
+                    if (node.outputs.length === 0) {
+                        // remove it
+                        console.log("Removing unused constant " + key);
+                        this.disposeRemove(key)
+                    }
+
+                }
+            }
         }
     }
 
