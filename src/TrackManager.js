@@ -263,10 +263,14 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         // if the track had FOV data, and there's an fov drop target, then add it
         //
         let hasFOV = false;
-        const value = trackNode.v(0);
-        if (typeof value === "number") {
+        let value = trackNode.v(0);
+        if (typeof value === "string") {
+            value = Number(value);
+        }
+
+        if (isNumber(value)) {
             hasFOV = true;
-        } else if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.SensorVerticalFieldofView])) {
+        } else if (value.misbRow !== undefined && isNumber(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
             hasFOV = true;
         } else if (value.vFOV !== undefined) {
             hasFOV = true;

@@ -71,6 +71,47 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         var frameTime = 0 // keep count for time for this frame in seconds
 
 
+        // patch the fov values in the misb column, overwriting any ilegal or missing values
+
+        // first find the first valid FOV value
+        let validFOV
+        for (let slot=0;slot<points;slot++) {
+            const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
+            if ( misbFOV !== undefined) {
+                const misbFOVNumber = Number(misbFOV)
+                // use only valid FOV values
+                if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
+                    validFOV = misbFOV
+                    console.log("CNodeTrackFromMISB:recalculate(): FIRST validFOV = " + validFOV);
+                    break
+                }
+            }
+        }
+
+        // // now go over all the slots, if invalid, the patch with validFOV
+        // // if valid, then update validFOV
+        for (let slot=0;slot<points;slot++) {
+            const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
+            if ( misbFOV !== undefined) {
+                const misbFOVNumber = Number(misbFOV)
+                // use only valid FOV values, so if this is valid, we'll use it for subsequent invald rows
+                if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
+                    validFOV = misbFOV
+                }
+                else {
+                    console.log("Replacing invalid FOV value: " + misbFOV + " with validFOV = " + validFOV)
+                    misb.misb[slot][MISB.SensorVerticalFieldofView] = validFOV;
+                }
+            }
+            else {
+                misb.misb[slot][MISB.SensorVerticalFieldofView] = validFOV;
+            }
+            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb[SensorVerticalFieldofView] = " + misb.misb[slot][MISB.SensorVerticalFieldofView] + " validFOV = " + validFOV);
+        }
+
+        // later if validFOV is still undefined, just skip over all the FOV stuff
+
+
 
 
         for (var f=0;f<Sit.frames;f++) {
@@ -142,8 +183,19 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
             // only copy the vFov if it's actually there
             // need this check for drag-and-drop
-            if (misb.misb[slot][MISB.SensorVerticalFieldofView] !== undefined)
-                product["vFOV"] = Number(misb.misb[slot][MISB.SensorVerticalFieldofView]);
+            if (!validFOV) {
+                const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
+                if (misbFOV !== undefined) {
+                    const misbFOVNumber = Number(misbFOV)
+                    // use only valid FOV values
+                    if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
+                        product["vFOV"] = misbFOVNumber;
+                        console.log("CNodeTrackFromMISB:recalculate(): product[\"vFOV\"] = ", product["vFOV"])
+                    } else {
+                        assert(0, "CNodeTrackFromMISB:recalculate(): invalid FOV value: " + misbFOV)
+                    }
+                }
+            }
 
             // store the interpolated LLA for exporting
             product["lla"] = [lat,lon,alt];
