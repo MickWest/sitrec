@@ -43,6 +43,7 @@ class CSitrecTrack {
         NodeMan.disposeRemove(this.anglesNode);
         NodeMan.disposeRemove(this.anglesController);
         removeLOSNodeColumnNodes(this.trackID);
+        NodeMan.pruneUnusedConstants();
     }
 
 }
@@ -136,6 +137,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             // WILL NEED TO REMOVE CENTER TRACKS TOO
             if (TrackManager.exists("Track_" + trackFileName)) {
                 TrackManager.disposeRemove("Track_" + trackFileName);
+                // note that will also call         NodeMan.pruneUnusedConstants();
+                // which will remove any unused constants (CNodeConstants with no outputs)
             }
         }
 
@@ -315,6 +318,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 }
             }
         }
+
+
+
+
 
         trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
             id: "TrackDisplayData_" + trackFileName,
