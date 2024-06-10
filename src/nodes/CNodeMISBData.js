@@ -144,6 +144,33 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         // again just checking for reasonable numbers
         if (alt > 36000000) return false
 
+        // check for zeros, as they are likely to be invalid
+        if (lat ===0 ) {
+            // check if the last valid slot's lat was near zero, if so we allow this
+            if (this.lastValidSlot === undefined || Math.abs(this.getLat(this.lastValidSlot)) > 1.0) {
+                return false;
+            }
+        }
+
+        if (lon ===0 ) {
+            // check if the last valid slot's lon was near zero, if so we allow this
+            if (this.lastValidSlot === undefined || Math.abs(this.getLon(this.lastValidSlot)) > 1.0) {
+                return false;
+            }
+        }
+
+        if (alt ===0 ) {
+            // check if the last valid slot's alt was near zero, if so we allow this
+            if (this.lastValidSlot === undefined || Math.abs(this.getAlt(this.lastValidSlot)) > 1000) {
+                return false;
+            }
+        }
+
+
+
+        this.lastValidSlot = slotNumber;
+
+
         return true;
 
     }
