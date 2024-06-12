@@ -4,8 +4,8 @@ import {par} from "../par";
 import {calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {forceUpdateUIText} from "./CNodeViewUI";
-import {assert} from "../utils";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
+import {assert} from "../assert.js";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West

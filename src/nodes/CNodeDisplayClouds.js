@@ -1,4 +1,4 @@
-import {abs, assert, f2m, metersFromMiles, radians} from "../utils";
+import {abs, f2m, metersFromMiles, radians} from "../utils";
 import {dispose, V3} from "../threeExt";
 import {BufferGeometry, Float32BufferAttribute, Mesh} from "three";
 import seedrandom from "seedrandom";
@@ -7,6 +7,7 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
 import {par} from "../par";
+import {assert} from "../assert.js";
 
 var rng;
 

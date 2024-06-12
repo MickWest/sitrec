@@ -9,7 +9,7 @@ import {
     TextureLoader,
     Vector3
 } from "three";
-import {radians, assert, sin, cos, degrees} from "../utils";
+import {radians, sin, cos, degrees} from "../utils";
 import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
 import {
     DebugArrow, DebugArrowAB,
@@ -50,6 +50,7 @@ import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMat
 import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
+import {assert} from "../assert.js";
 
 
 // other source of stars, if we need more (for zoomed-in pics)

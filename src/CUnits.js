@@ -5,8 +5,8 @@
 // 2. Imperial / Statute
 // 3. Nautical
 
-import {assert} from "./utils";
 import {guiTweaks} from "./Globals";
+import {assert} from "./assert.js";
 
 export class CUnits {
     constructor(_units = "metric", gui) {

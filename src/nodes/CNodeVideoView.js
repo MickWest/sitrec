@@ -4,7 +4,8 @@ import {par} from "../par";
 import {quickToggle} from "../KeyBoardHandler";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 import {guiTweaks} from "../Globals";
-import {versionString, assert} from "../utils";
+import {versionString} from "../utils";
+import {assert} from "../assert.js";
 
 
 

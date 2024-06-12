@@ -2,7 +2,8 @@
 // Bezier code editor and utilites by Mick West
 // regression module: https://github.com/Tom-Alexander/regression-js (MIT license)
 import regression from './js/regression'
-import {assert} from "./utils"
+
+import {assert} from "./assert.js";
 
 //const result = regression.polynomial([[0, 1], [32, 67], [12, 79]], {order:2});
 //const gradient = result.equation[0];

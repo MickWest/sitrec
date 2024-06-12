@@ -17,7 +17,6 @@ import {
 
 import {drop3, pointOnSphereBelow} from "./SphericalMath"
 import {GlobalScene} from "./LocalFrame";
-import {assert} from "./utils"
 import * as LAYER from "./LayerMasks";
 import {Group, LinearFilter, Ray, Sphere, TextureLoader} from "three";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
@@ -26,6 +25,7 @@ import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {NodeMan} from "./Globals";
 import {isArray} from "mathjs";
+import {assert} from "./assert.js";
 
 
 // Wrapper for calling dispose function on object, allowing undefined

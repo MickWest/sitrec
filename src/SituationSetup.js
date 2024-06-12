@@ -8,7 +8,6 @@ import * as LAYER from "./LayerMasks";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {
     abs,
-    assert,
     ExpandKeyframes,
     f2m,
     floor,
@@ -45,6 +44,7 @@ import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 import {isLocal} from "../config";
+import {assert} from "./assert.js";
 
 
 export function SituationSetup(runDeferred = false) {

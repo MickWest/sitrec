@@ -1,11 +1,11 @@
 import {f2m, interpolate} from "../utils";
 import {Sit, GlobalDateTimeNode, FileManager, NodeMan} from "../Globals";
-import {assert} from "../utils.js";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 import {MISB} from "../MISBUtils";
 import {saveAs} from "../js/FileSaver";
 import {CNodeTrack} from "./CNodeTrack";
+import {assert} from "../assert.js";
 
 export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {

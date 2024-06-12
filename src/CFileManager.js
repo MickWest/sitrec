@@ -1,10 +1,8 @@
 import {
     areArrayBuffersEqual, arrayBufferToString,
-    assert,
     cleanCSVText,
-    getFileExtension, getShortURL,
-    isHttpOrHttps, stringToArrayBuffer,
-    versionString, writeToClipboard
+    getFileExtension, isHttpOrHttps, stringToArrayBuffer,
+    versionString
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
@@ -19,6 +17,8 @@ import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
 import csv from "./js/jquery.csv.js";
 import {asyncCheckLogin} from "./login";
 import {par} from "./par";
+import {assert} from "./assert.js";
+import {getShortURL, writeToClipboard} from "./urlUtils";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects

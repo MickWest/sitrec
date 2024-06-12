@@ -1,5 +1,6 @@
 import {CNode} from "./CNode";
-import {assert} from "../utils";
+
+import {assert} from "../assert.js";
 
 
 // usage like this:

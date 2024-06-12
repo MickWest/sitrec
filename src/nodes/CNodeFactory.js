@@ -1,11 +1,11 @@
 // we want a node factory to allow for data-driven node creation
 
 import {CManager} from "../CManager";
-import {assert} from "../utils";
 import {isConsole} from "../../config";
 import {CNode} from "./CNode";
 import {CNodeController} from "./CNodeController";
 import {FileManager, NodeMan, Sit} from "../Globals";
+import {assert} from "../assert.js";
 
 export class CNodeFactory extends CManager{
     constructor(props) {

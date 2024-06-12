@@ -1,8 +1,9 @@
-import {cos, assert, metersFromNM, radians, sin} from "../utils";
+import {cos, metersFromNM, radians, sin} from "../utils";
 import {CNodeDDI} from "./CNodeDDI";
 import {Sit} from "../Globals";
 import {par} from "../par";
 import {trackVelocity} from "./CNode";
+import {assert} from "../assert.js";
 
 const pipText = ['N', '⦁', '⦁', '3', '⦁', '⦁', '6', '⦁', '⦁',
     'E', '⦁', '⦁','12', '⦁', '⦁','15', '⦁', '⦁',

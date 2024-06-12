@@ -1,5 +1,5 @@
 import {CNode3DGroup} from "./CNode3DGroup";
-import {assert, radians} from "../utils";
+import {radians} from "../utils";
 import {
     getGlareAngleFromFrame,
     jetPitchFromFrame,
@@ -23,6 +23,7 @@ import {LocalFrame} from "../LocalFrame";
 import {makeMatLine} from "../MatLines";
 import {GridHelper, Group} from "three";
 import * as LAYER from "../LayerMasks";
+import {assert} from "../assert.js";
 
 
 export var Pod;

@@ -2,11 +2,12 @@ import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
 import {FileManager, NodeMan, Sit} from "../Globals";
-import {assert, RollingAverage} from "../utils";
+import {RollingAverage} from "../utils";
 import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
 import {CNodeGraphSeries} from "./CNodeGraphSeries";
 import {par} from "../par";
+import {assert} from "../assert.js";
 
 
 function getPixelData(image) {

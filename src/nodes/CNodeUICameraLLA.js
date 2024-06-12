@@ -1,8 +1,9 @@
 import {LLAToEUSMAP, LLAToEUSMAPGlobe, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
-import {radians, assert, vdump, f2m} from "../utils";
+import {radians, vdump, f2m} from "../utils";
 import {Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
+import {assert} from "../assert.js";
 
 
 // Controller to position the camera at a specified LLA point

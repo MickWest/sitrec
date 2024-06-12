@@ -1,8 +1,8 @@
 import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
-import {assert} from "../utils";
 import {isConsole, isLocal} from "../../config";
 import {NodeMan, Sit} from "../Globals";
+import {assert} from "../assert.js";
 
 class CNodeSwitch extends CNode {
     constructor(v, _gui) {

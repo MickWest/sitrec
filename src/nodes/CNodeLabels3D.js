@@ -11,7 +11,8 @@ import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {par} from "../par";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
-import {assert} from "../utils";
+
+import {assert} from "../assert.js";
 
 
 export const measurementUIVars = {

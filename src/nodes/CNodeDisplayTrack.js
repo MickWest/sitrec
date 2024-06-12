@@ -1,5 +1,4 @@
 //
-import {assert}           from "../utils";
 import {gui, Sit}                   from "../Globals";
 import {dispose}                    from "../threeExt";
 import {LineGeometry}               from "three/addons/lines/LineGeometry.js";
@@ -14,6 +13,7 @@ import {CNodeDisplayTargetSphere}   from "./CNodeDisplayTargetSphere";
 import * as LAYER                   from "../LayerMasks";
 import {par} from "../par";
 import {AlwaysDepth} from "three";
+import {assert} from "../assert.js";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {

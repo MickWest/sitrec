@@ -2,10 +2,11 @@
 // as well as some other useful related functions
 
 import {Matrix3, Vector3} from "three";
-import {assert, cos, degrees, radians, sin} from "./utils";
+import {cos, degrees, radians, sin} from "./utils";
 import {Sit} from "./Globals";
 import {drop} from "./SphericalMath"
 import {V3} from "./threeExt";
+import {assert} from "./assert.js";
 
 
 // This is the distance in KM between two lat/long locations

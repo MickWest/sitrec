@@ -15,11 +15,12 @@
 // display node - displays the result on screen (like a graph or HUD) or in the 3D world (like a line or marker)
 // a display node might also be an input, like something you can drag with the mouse
 
-import {assert, degrees, scaleF2M, vdump} from '../utils.js'
+import {degrees} from '../utils.js'
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
 import {Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {V3} from "../threeExt";
+import {assert} from "../assert.js";
 
 
 

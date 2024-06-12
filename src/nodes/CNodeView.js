@@ -5,12 +5,12 @@
 // take their size from the div.
 //
 import {CameraMapControls} from "../js/CameraControls";
-import {assert} from '../utils.js'
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
 import {guiShowHide, guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {isLocal} from "../../config";
 import {par} from "../par";
+import {assert} from "../assert.js";
 
 const defaultCViewParams = {
     visible: true,

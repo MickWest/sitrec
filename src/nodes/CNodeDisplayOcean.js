@@ -1,9 +1,10 @@
 import {BufferGeometry, Float32BufferAttribute, Mesh, Vector3} from "three";
 import seedrandom from "seedrandom";
-import {assert, metersFromMiles} from "../utils";
+import {metersFromMiles} from "../utils";
 import {drop} from "../SphericalMath";
 import {dispose} from "../threeExt";
 import {CNode3DGroup} from "./CNode3DGroup";
+import {assert} from "../assert.js";
 
 
 class SimpleOceanGeometry extends BufferGeometry {

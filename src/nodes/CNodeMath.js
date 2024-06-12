@@ -20,7 +20,8 @@
 
 import {CNode} from "./CNode";
 import {NodeMan, Sit} from "../Globals";
-import {assert} from "../utils";
+
+import {assert} from "../assert.js";
 const math = require('mathjs')
 
 

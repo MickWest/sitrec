@@ -1,7 +1,8 @@
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {MISB} from "../MISBUtils";
-import {assert, ExpandMISBKeyframes, RollingAverage, RollingAverageDegrees} from "../utils";
+import {ExpandMISBKeyframes, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";
+import {assert} from "../assert.js";
 
 // These nodes replace the manually created CNodeArrays
 // in makeArrayNodeFromMISBColumn in CNodeArray.js

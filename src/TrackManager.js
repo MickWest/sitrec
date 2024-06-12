@@ -5,7 +5,7 @@ import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "three";
-import {assert, getFileExtension, scaleF2M} from "./utils";
+import {getFileExtension, scaleF2M} from "./utils";
 import {FileManager, GlobalDateTimeNode, gui, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
@@ -16,6 +16,7 @@ import {isNumber} from "mathjs";
 import {CNodeMISBDataTrack, makeLOSNodeFromTrack, removeLOSNodeColumnNodes} from "./nodes/CNodeMISBData";
 import {KMLToMISB} from "./KMLUtils";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
+import {assert} from "./assert.js";
 
 
 export const TrackManager = new CManager();

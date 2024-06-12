@@ -1,6 +1,7 @@
 // parseXML from https://stackoverflow.com/questions/4200913/xml-to-javascript-object
-import {assert, atan, degrees, radians, tan} from "./utils";
+import {atan, degrees, radians, tan} from "./utils";
 import {MISB, MISBFields} from "./MISBUtils";
+import {assert} from "./assert.js";
 
 export function parseXml(xml, arrayTags)
 {

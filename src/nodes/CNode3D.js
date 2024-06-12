@@ -2,8 +2,8 @@ import {CNode} from "./CNode";
 import {guiShowHide, NodeMan} from "../Globals";
 import {par} from "../par";
 
-import {assert} from "../utils";
 import {mainLoopCount} from "../Globals";
+import {assert} from "../assert.js";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
 // Mostly to allow hooking up of controllers, which previous were camera-only

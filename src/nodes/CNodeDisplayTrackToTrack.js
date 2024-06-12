@@ -1,7 +1,7 @@
-import {assert} from "../utils";
 import {CDisplayLine} from "../threeExt";
 import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
+import {assert} from "../assert.js";
 
 // displays a SINGLE LINE from comeraTrack to targetTrack, optionally extending to ground level
 

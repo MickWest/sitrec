@@ -8,7 +8,6 @@ import {
 } from "three";
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
 import {VG, ViewMan} from "../nodes/CNodeView";
-import {assert} from "../utils"
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
@@ -39,6 +38,7 @@ import {addControllerTo} from "../nodes/CNodeController";
 import {CNodeTransferSpeed} from "../nodes/CNodeTransferSpeed";
 import {CNodeSmoothedPositionTrack} from "../nodes/CNodeSmoothedPositionTrack";
 import {CNodeTrackClosest} from "../nodes/CNodeTrackClosest";
+import {assert} from "../assert.js";
 
 export const SitAguadilla = {
     name: "agua",

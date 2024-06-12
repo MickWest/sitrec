@@ -3,11 +3,11 @@
 // assumes the camera does not move per frame
 // but will update based on changed to the camera node
 import {CNode} from "./CNode";
-import {assert} from "../utils";
 import {Vector3} from "three";
 import {NodeMan, Sit} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {PerspectiveCamera} from "three";
+import {assert} from "../assert.js";
 
 export class CNodeLOSFromCamera extends CNodeEmptyArray {
     constructor(v) {

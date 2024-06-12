@@ -1,6 +1,6 @@
 import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
-import {assert, f2m, m2f, vdump} from "../utils";
+import {f2m, m2f, vdump} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
 import {GlobalComposer, Globals, gui, guiTweaks, keyHeld, NodeMan, Sit} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
@@ -31,6 +31,7 @@ import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
 import {quickToggle} from "../KeyBoardHandler";
+import {assert} from "../assert.js";
 
 function linearToSrgb(color) {
     function toSrgbComponent(c) {

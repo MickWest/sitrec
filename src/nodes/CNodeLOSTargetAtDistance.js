@@ -3,8 +3,8 @@
 // can be used to put an object inbetween the camera and the track
 import {CNodeTrack} from "./CNodeTrack";
 import {V3} from "../threeExt";
-import {assert} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
+import {assert} from "../assert.js";
 
 export class CNodeLOSTargetAtDistance extends CNodeTrack {
     constructor(v) {

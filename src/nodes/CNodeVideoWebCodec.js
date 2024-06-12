@@ -1,11 +1,12 @@
 import {CVideoData} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
 import {FileManager, infoDiv, NodeMan, Sit} from "../Globals";
-import {assert, loadImage, versionString} from "../utils";
+import {loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
 import {updateFrameSlider} from "../FrameSlider";
 import {isLocal} from "../../config";
+import {assert} from "../assert.js";
 
 // Working, including with drag-and-drop, but there are some videos where
 // the MOOV chunk seems not to load, or something, and so

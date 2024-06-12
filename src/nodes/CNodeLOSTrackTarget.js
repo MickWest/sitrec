@@ -2,9 +2,9 @@
 // i.e. a series of lines of sight positions and headings
 // So basically it contains the camera track, and the direction the camera is looking in
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {assert} from "../utils";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
+import {assert} from "../assert.js";
 
 export class CNodeLOSTrackTarget extends CNodeEmptyArray {
     constructor(v) {

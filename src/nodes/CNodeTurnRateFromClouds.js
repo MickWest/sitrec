@@ -1,9 +1,10 @@
 
 import {NodeMan} from "../Globals";
-import {assert, degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
+import {degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {calcHorizonPoint, getLocalUpVector} from "../SphericalMath";
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {V3} from "../threeExt";
+import {assert} from "../assert.js";
 
 /*
     cloudAlt = altitude of the top of the cloud layer above the ground

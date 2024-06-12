@@ -3,7 +3,6 @@
 import {FileManager, Globals, gui, NodeMan, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
-import {assert, getShortURL} from "./utils";
 import {isKeyHeld} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
@@ -14,6 +13,8 @@ import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
 import {GlobalScene, LocalFrame} from "./LocalFrame";
 import {measurementUIVars} from "./nodes/CNodeLabels3D";
+import {assert} from "./assert.js";
+import {getShortURL} from "./urlUtils";
 
 
 export class CCustomManager {

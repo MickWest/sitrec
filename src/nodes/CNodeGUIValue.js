@@ -1,8 +1,8 @@
 // a node that lets you choose a value with a slider/input box
-import {assert} from "../utils";
 import {CNodeConstant} from "./CNode";
 import {par} from "../par";
 import {isLocal} from "../../config";
+import {assert} from "../assert.js";
 
 
 export class CNodeGUIConstant extends CNodeConstant {

@@ -8,7 +8,6 @@ import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {resolveAnonObjects} from "../SituationSetup";
 import {par} from "../par";
 import {StaticNoiseShader} from "../shaders/StaticNoiseShader";
-import {assert} from "../utils";
 import {InvertShader} from "../shaders/InvertShader";
 import {CompressShader} from "../shaders/CompressShader";
 import {LevelsShader} from "../shaders/LevelsShader";
@@ -16,6 +15,7 @@ import {GreyscaleShader} from "../shaders/GreyscaleShader";
 import {JPEGArtifactsShader} from "../shaders/JPEGArtifactsShader";
 import {Globals, guiTweaks} from "../Globals";
 import {CopyShader} from "../shaders/CopyShader";
+import {assert} from "../assert.js";
 
 let guiOnOffFolder = null;
 

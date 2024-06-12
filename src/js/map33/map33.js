@@ -2,10 +2,10 @@
 import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_ROOT, SITREC_SERVER} from "../../../config";
-import {assert} from "../../utils";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {DebugSphere} from "../../threeExt";
  import {MeshBasicMaterial, RepeatWrapping, TextureLoader} from "three";
+ import {assert} from "../../assert.js";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 

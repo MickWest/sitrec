@@ -1,11 +1,12 @@
 // attempt to traverse the LOS in a stright line (straight in the horizontal plane, i.e. viewed from above)
 // given start distance and a heading track
 import {CNode} from "./CNode";
-import {metersFromMiles, radians, assert} from "../utils";
+import {metersFromMiles, radians} from "../utils";
 import {Color, Plane, Ray} from "three";
 import {V3} from "../threeExt";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTrack} from "./CNodeTrack";
+import {assert} from "../assert.js";
 
 export class CNodeLOSTraverseStraightLine extends CNodeTrack {
     constructor(v) {

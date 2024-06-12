@@ -1,7 +1,7 @@
 // Buffer node just holds an array of the GetValueFrame for each frame
 // of another node, and has a getBuffer() method to return it
-import {assert} from "../utils";
 import {CNode} from "./CNode";
+import {assert} from "../assert.js";
 
 export class CNodeBuffer extends CNode {
     constructor(v) {

@@ -1,5 +1,5 @@
-import {assert} from "./utils";
 import {SITREC_SERVER} from "../config";
+import {assert} from "./assert.js";
 
 
 class CRehoster {

@@ -54,7 +54,6 @@ import {
 import {CNodeFactory} from "./nodes/CNodeFactory";
 import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
-import {assert} from "./utils"
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
@@ -76,6 +75,7 @@ import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
 import {preventDoubleClicks} from "./lil-gui-extras";
 import {ColorManagement} from "three";
+import {assert} from "./assert.js";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -315,7 +315,7 @@ async function initializeOnce() {
     //
     // console.log("TESTING CNodeMath")
     // console.log("TESTING CNodeMath")
-    // console.log(test1.getValueFrame(0)) // 11
+    // console.log(test1.getValueFrame(0))
 
     new CNodeConstant({id: "nodeA", value: 5})
     new CNodeConstant({id: "nodeB", value: 17})
@@ -329,7 +329,7 @@ async function initializeOnce() {
                Z * 100;
                `,
     })
-    console.log(test2.getValueFrame(0)) // 11
+    console.log(test2.getValueFrame(0))
 
 // Get all the text based sitches from the server
 // these are the sitches defined by <name>.sitch.js files inside the folder of the same name in data

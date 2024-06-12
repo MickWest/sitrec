@@ -4,9 +4,9 @@ import {CNodeMunge, makeMunge} from "./nodes/CNodeMunge";
 import {NodeMan, Sit, Units} from "./Globals";
 import {acos, degrees, m2f, metersFromMiles, NMFromMeters} from "./utils";
 import {pointAltitude} from "./SphericalMath";
-import {assert} from "./utils"
 import {getGlareAngleFromFrame} from "./JetStuff";
 import {CNodeTrackScreenAngle} from "./nodes/CNodeJetTrack";
+import {assert} from "./assert.js";
 
 // add a graph of the subtended size of the target
 // as a percentage of its size at the start of the video
