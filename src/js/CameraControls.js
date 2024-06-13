@@ -15,7 +15,7 @@ import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
 import {getLocalUpVector} from "../SphericalMath";
-import {NodeMan, Sit} from "../Globals";
+import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
 

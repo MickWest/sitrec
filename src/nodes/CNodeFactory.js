@@ -5,7 +5,7 @@ import {CNodeController} from "./CNodeController";
 
 export class CNodeFactory {
     constructor(nodeMan) {
-        const _nodeMan = nodeMan;
+        this._nodeMan = nodeMan;
         this.nodeTypes = {}
     }
 
@@ -31,6 +31,11 @@ export class CNodeFactory {
         const result = new this.nodeTypes[type](def)
 //        console.log("FACTORY Making a "+type+" id= " + def.id)
         return result;
+    }
+
+
+    validType(type) {
+        return this.nodeTypes[type] !== undefined;
     }
 
     // return true if "type" is a type of controller node
@@ -77,6 +82,68 @@ export class CNodeFactory {
             }
         }
         this.createNodes(JSON.parse(nodeJSON))
+    }
+
+
+    // Give a node, we create a new node, optionally with this one as an input (as sourceKey in the def)
+    // the old node is renamed with "_old", the new node has the old nodes name
+    // old will maintain the inputs, with need renaming to reflect
+    // new with have old as an input.
+    // outputs from old are transferred to new
+    // example: reinterpretNode("cameraTrack", "SmoothedPositionTrack", {smooth:30}, "source" )
+    reinterpret(id, type, def, sourceKey) {
+        const oldID = id+"_old";
+        const oldNode = this._nodeMan.renameNodeUnsafe(id, oldID)
+
+        // copy (via reference) the old outputs
+        // and clear the old outputs
+        const oldOutputs = oldNode.outputs;
+        oldNode.outputs = [];
+
+        // if the sourceKey is defined, then we add the old node as an input to the new node
+        // using the sourceKey as the input name
+        if (sourceKey !== undefined) {
+            def[sourceKey] = oldID;
+        }
+
+        // if old node is exportable, then new one should also be
+        if (oldNode.exportable !== undefined) {
+            def.exportable = oldNode.exportable;
+        }
+
+        // Copy the id from the old node to the new node
+        def.id = id;
+
+        // create the new node
+        const newNode = this.create(type,def)
+
+        // just copy over the old output array from the old node to the new node
+        // (the old node will now just have one output, to the new node)
+        newNode.outputs = oldOutputs;
+
+        // and fix those old outputs to point to the new node
+        for (let out of oldOutputs) {
+            for (let key in out.inputs) {
+                if (out.inputs[key] === oldNode) {
+                    out.inputs[key] = newNode;
+                }
+            }
+        }
+
+        oldNode.recalculateCascade(0)
+
+        // if the old node had an export button, then the new node should too
+        // and we need to rename the old export button to the _old name
+        if (oldNode.exportBaseName !== undefined) {
+            // copy over the old node's export button definition
+            //newNode.exportBaseName = oldNode.exportBaseName;
+            //newNode.exportFunction = oldNode.exportFunction;
+            // rename the old button
+            oldNode.exportUI.name(newNode.exportBaseName + oldNode.id)
+            //newNode.exportUI = FileManager.makeExportButton(newNode, newNode.exportFunction, newNode.exportBaseName + newNode.id)
+        }
+
+        return newNode;
     }
 
 

@@ -1,5 +1,5 @@
 import {CNode} from "./CNode";
-import {guiShowHide, NodeMan} from "../Globals";
+import {guiShowHide, NodeFactory, NodeMan} from "../Globals";
 import {par} from "../par";
 
 import {mainLoopCount} from "../Globals";

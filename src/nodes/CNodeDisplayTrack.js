@@ -37,7 +37,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         this.ignoreAB = v.ignoreAB ?? false;
 
-        assert(this.in.track.p(0) !== undefined, "CNodeDisplayTrackPosition needs input with position")
+    //    assert(this.in.track.p(0) !== undefined, "CNodeDisplayTrackPosition needs input with position")
 
         this.frames = v.frames ?? this.in.track.frames;
         this.useSitFrames = this.in.track.useSitFrames;
@@ -100,7 +100,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
             // don't fully have all the data
             // like if we got a track from ADSBX, but stopped it in the middle of the video segments
             // instead of playing it past the end.
-            if (trackPoint.position !== undefined) {
+            // also skips over invalid points, which will return trackPoint = {},
+            // so we use .? to check both trackPoint being valid, and trackPoint.position being valid
+            if (trackPoint?.position !== undefined) {
 
                 var A = trackPoint.position
                 assert(!isNaN(A.x) && !isNaN(A.y) && !isNaN(A.z), "CNodeDisplayTrack: trackPoint has NaNs in position, id=" + this.id + " frame=" + f);

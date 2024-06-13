@@ -3,7 +3,7 @@ import {
     DirectionalLight,
     HemisphereLight,
 } from "three";
-import {EarthRadiusMiles, FileManager, guiJetTweaks, Sit} from "../Globals";
+import {EarthRadiusMiles, FileManager, guiJetTweaks, NodeFactory, Sit} from "../Globals";
 import * as LAYER from "../LayerMasks";
 import {
     ExpandKeyframes,

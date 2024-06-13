@@ -1007,7 +1007,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             SSLog();
 
             if (data.method === "moving") {
-                node = NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                node = NodeFactory.reinterpret(data.track, "SmoothedPositionTrack",
                     {
                         //   source: data.track,
                         method: data.method,
@@ -1024,7 +1024,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     "source"
                 );
             } else {
-                node = NodeMan.reinterpret(data.track, "SmoothedPositionTrack",
+                node = NodeFactory.reinterpret(data.track, "SmoothedPositionTrack",
                     {
                         //   source: data.track,
                         method: "catmull",
@@ -1053,7 +1053,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
         case "straightenTrack":
             SSLog();
-            node = NodeMan.reinterpret(data.track, "InterpolateTwoFramesTrack",
+            node = NodeFactory.reinterpret(data.track, "InterpolateTwoFramesTrack",
                 {
                     source: data.track,
                 }
@@ -1190,7 +1190,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 data.frameOffset ?? 0);
             node = new CNodeArray({id: data.id, array: expanded, exportable: data.exportable});
             if (data.smooth) {
-                node = NodeMan.reinterpret(data.id, "SmoothedArray", {source: data.id, window: data.smooth}, "source")
+                node = NodeFactory.reinterpret(data.id, "SmoothedArray", {source: data.id, window: data.smooth}, "source")
             }
             break;
 
@@ -1285,7 +1285,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             // so we'll have a "camera" key in the data, and we'll add the controller to that
             // but need to detect if it's derived from CNodeController
             // and then add it to the camera
-            if (NodeMan.isController("Controller" + key)) {
+            if (NodeFactory.isController("Controller" + key)) {
                 const camera = data.camera ?? "lookCamera";
                 const cameraNode = NodeMan.get(camera);
                 data.id = data.id ?? (cameraNode.id+"_Controller" + key);
@@ -1300,7 +1300,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
                 // passing in the data as the constructor
-                if (NodeMan.validType(key)) {
+                if (NodeFactory.validType(key)) {
                     SSLog();
                     // otherwise it's just a regular node
                     node = NodeFactory.create(key, data);

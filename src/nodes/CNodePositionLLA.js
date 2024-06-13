@@ -2,6 +2,7 @@
 // Can be defined by a lat, lon, and alt
 // or a LLA array of three values
 import {LLAToEUS} from "../LLA-ECEF-ENU";
+import {CNode} from "./CNode";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {

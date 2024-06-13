@@ -87,6 +87,8 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
                 this.array.push({position: pos})
             } else {
                 // otherwise, just give it an empty structure
+                console.warn("CNodeMISBDataTrack: invalid data at frame " + f + " in track " + this.id + " lat=" + this.getLat(f) + " lon=" + this.getLon(f) + " alt=" + this.getAlt(f));
+                console.warn("Returning empty object {}")
                 this.array.push({})
             }
 
@@ -161,10 +163,13 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         }
 
         if (alt ===0 ) {
-            // check if the last valid slot's alt was near zero, if so we allow this
-            if (this.lastValidSlot === undefined || Math.abs(this.getAlt(this.lastValidSlot)) > 1000) {
-                return false;
-            }
+            // always allow alt === 0, as it's common for grounded planes (ADS-B)
+            // maybe we might want to check if it is on the ground and use terrain elevation?
+            // // check if the last valid slot's alt was near zero, if so we allow this
+            // if (this.lastValidSlot === undefined || Math.abs(this.getAlt(this.lastValidSlot)) > 1000) {
+            //     return false;
+            // }
+            console.warn("Altitude is zero at slot " + slotNumber + " in track " + this.id+" (allowed, likely grounded plane)");
         }
 
 
