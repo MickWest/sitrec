@@ -1,4 +1,3 @@
-import {trackHeading} from "../nodes/CNode";
 import {par} from "../par";
 import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {
@@ -30,7 +29,7 @@ import {guiTweaks} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {showHider, toggler} from "../KeyBoardHandler";
 import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
-import {DebugSphere, MV3, V3} from "../threeExt";
+import {DebugSphere} from "../threeExt";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
 import {Color} from "three";
@@ -39,6 +38,8 @@ import {CNodeTransferSpeed} from "../nodes/CNodeTransferSpeed";
 import {CNodeSmoothedPositionTrack} from "../nodes/CNodeSmoothedPositionTrack";
 import {CNodeTrackClosest} from "../nodes/CNodeTrackClosest";
 import {assert} from "../assert.js";
+import {trackHeading} from "../trackUtils";
+import {MV3, V3} from "../threeUtils";
 
 export const SitAguadilla = {
     name: "agua",

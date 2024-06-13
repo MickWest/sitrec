@@ -3,10 +3,10 @@
 import {CNode} from "./CNode";
 import {metersFromMiles, radians} from "../utils";
 import {Color, Plane, Ray} from "three";
-import {V3} from "../threeExt";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 export class CNodeLOSTraverseStraightLine extends CNodeTrack {
     constructor(v) {

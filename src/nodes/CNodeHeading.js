@@ -1,8 +1,9 @@
 import {CNode, CNodeOrigin} from "./CNode";
 import {f2m, metersPerSecondFromKnots, radians} from "../utils";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
-import {DebugArrowAB, V3} from "../threeExt";
+import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
+import {V3} from "../threeUtils";
 
 export class CNodeHeading extends CNode {
     constructor(v, guiMenu) {

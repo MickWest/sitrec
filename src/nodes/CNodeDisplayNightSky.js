@@ -15,10 +15,9 @@ import {
     DebugArrow, DebugArrowAB,
     DebugAxes,
     DebugSphere, DebugWireframeSphere,
-    intersectSphere2, pointOnGround,
+    pointOnGround,
     propagateLayerMaskObject,
-    removeDebugArrow, setLayerMaskRecursive,
-    V3
+    removeDebugArrow, setLayerMaskRecursive
 } from "../threeExt";
 import {
     ECEF2ENU, ECEF2EUS,
@@ -51,6 +50,7 @@ import SpriteText from '../js/three-spritetext';
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
 import {assert} from "../assert.js";
+import {intersectSphere2, V3} from "../threeUtils";
 
 
 // other source of stars, if we need more (for zoomed-in pics)

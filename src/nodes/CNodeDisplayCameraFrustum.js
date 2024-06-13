@@ -2,7 +2,7 @@ import {radians, tan, unitsToMeters} from "../utils";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
-import {DebugArrow, DebugArrowAB, dispose, intersectSphere2} from "../threeExt";
+import {DebugArrow, DebugArrowAB, dispose} from "../threeExt";
 import {guiShowHide, NodeMan, Sit} from "../Globals";
 import {makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
@@ -13,6 +13,7 @@ import {CNodeLabel3D, CNodeMeasureAB, CNodeMeasureAltitude} from "./CNodeLabels3
 import * as LAYER from "../LayerMasks";
 import {isNaN} from "mathjs";
 import {assert} from "../assert.js";
+import {intersectSphere2} from "../threeUtils";
 
 export class CNodeDisplayCameraFrustumATFLIR extends CNode3DGroup {
     constructor(v) {

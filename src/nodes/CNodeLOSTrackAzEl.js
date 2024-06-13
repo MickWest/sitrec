@@ -1,9 +1,9 @@
 import {radians} from "../utils";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {Matrix4} from "three";
-import {V3} from "../threeExt";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 // CNodeLOSTrackAzEl calculates lines of sight from jetTrack, az and el tracks
 // LOS track consists of {position:, heading:) where heading is a unit vector

@@ -5,7 +5,8 @@ import {Raycaster} from "three";
 import {vdump} from "../utils";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
-import {V3} from "../threeExt";
+
+import {V3} from "../threeUtils";
 
 export class CNodeLOSTraverseTerrain extends CNodeEmptyArray {
     constructor(v) {

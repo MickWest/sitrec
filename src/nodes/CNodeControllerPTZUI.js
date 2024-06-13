@@ -1,11 +1,11 @@
 import {radians} from "../utils";
-import {V3} from "../threeExt";
 import {getLocalUpVector} from "../SphericalMath";
 import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
 import {gui, guiTweaks, Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
 import {isKeyHeld} from "../KeyBoardHandler";
+import {V3} from "../threeUtils";
 
 const pszUIColor = "#C0C0FF";
 

@@ -4,7 +4,7 @@
 
 import SpriteText from '../js/three-spritetext';
 import * as LAYER from "../LayerMasks";
-import {DebugArrowAB, removeDebugArrow, V2, V3} from "../threeExt";
+import {DebugArrowAB, removeDebugArrow} from "../threeExt";
 import {altitudeAboveSphere, pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
 import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
@@ -13,6 +13,7 @@ import {par} from "../par";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 import {assert} from "../assert.js";
+import {V2, V3} from "../threeUtils";
 
 
 export const measurementUIVars = {

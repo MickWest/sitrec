@@ -4,7 +4,8 @@ import {Sit, Units} from "../Globals";
 import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {NodeMan} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
-import {V3} from "../threeExt";
+
+import {V3} from "../threeUtils";
 
 
 const fleeterScale = 1.5;

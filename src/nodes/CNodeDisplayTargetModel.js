@@ -2,14 +2,14 @@
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {CNode3DTarget} from "./CNode3DTarget";
 import {FileManager, gui, NodeMan, Sit} from "../Globals";
-import {V3} from "../threeExt";
 
 import {Matrix4} from "three";
 
-import {trackAcceleration, trackDirection, trackVelocity} from "./CNode";
 import {degrees, radians, tan} from "../utils";
 import {getGlareAngleFromFrame} from "../JetStuff";
 import {par} from "../par";
+import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";
+import {V3} from "../threeUtils";
 
 
 // By default it will create a model from the file tagged "TargetObjectFile"

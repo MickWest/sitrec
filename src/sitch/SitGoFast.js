@@ -17,7 +17,7 @@ import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
 import {ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {CNodeJetTrack} from "../nodes/CNodeJetTrack";
-import {closingSpeed, CNodeConstant} from "../nodes/CNode";
+import {CNodeConstant} from "../nodes/CNode";
 import {CNodeWatch} from "../nodes/CNodeWatch";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeArray} from "../nodes/CNodeArray";
@@ -40,7 +40,7 @@ import {AddGenericNodeGraph, AddSpeedGraph} from "../JetGraphs";
 import {gui, guiTweaks, NodeMan, } from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {initJetVariables, initViews, SetupCommon, SetupTrackLOSNodes, SetupTraverseNodes} from "../JetStuff";
-import {GridHelperWorld, MV3, V3} from "../threeExt";
+import {GridHelperWorld} from "../threeExt";
 import {CNodeATFLIRUI} from "../nodes/CNodeATFLIRUI";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
@@ -49,6 +49,8 @@ import {Color, MeshStandardMaterial, TextureLoader} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
 import {commonJetLabels} from "./CommonSitch";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeInterpolateTwoFramesTrack";
+import {closingSpeed} from "../trackUtils";
+import {MV3, V3} from "../threeUtils";
 
 export var SitGoFast = {
     name: "gofast",
@@ -368,12 +370,12 @@ export var SitGoFast = {
 
         // no clouds in GoFast, but instead of the cloud horizon line we have a ground (sea) track line
 
-         // NodeMan.createNodes({
+         // NodeFactory.createNodes({
          //     seaLevel:["Constant",{"value":0}],
          //     groundTrackWidth:["Constant",{"value":3}],
          // })
 
-        NodeMan.createNodesJSON(`[
+        NodeFactory.createNodesJSON(`[
          {"new":"Constant",      "id":"seaLevel",         "value":0}, 
          {"new":"Constant",      "id":"groundTrackWidth", "value":3}, 
         ]`)

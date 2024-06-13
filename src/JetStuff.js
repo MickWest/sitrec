@@ -10,8 +10,7 @@ import {
     dispose,
     GridHelperWorld,
     propagateLayerMaskObject,
-    sphereMark,
-    V3
+    sphereMark
 } from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {Line2} from "three/addons/lines/Line2.js";
@@ -30,7 +29,7 @@ import {Ball, CNodeDisplayATFLIR, EOSU, PODBack, PodFrame} from "./nodes/CNodeDi
 import {calculateGlareStartAngle, getDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
 import {GlobalScene, LocalFrame} from "./LocalFrame";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {CNodeConstant, trackVelocity} from "./nodes/CNode";
+import {CNodeConstant} from "./nodes/CNode";
 import {CNodeScale, scaleNodeF2M} from "./nodes/CNodeScale";
 import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeLOSTraverse} from "./nodes/CNodeLOSTraverse";
@@ -73,6 +72,8 @@ import {CNodeChartView} from "./nodes/CNodeChartView";
 import {CNodeHeading} from "./nodes/CNodeHeading";
 import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeInterpolateTwoFramesTrack";
 import {CNodeCamera} from "./nodes/CNodeCamera";
+import {trackVelocity} from "./trackUtils";
+import {V3} from "./threeUtils";
 
 
 var matLineWhite = makeMatLine(0xffffff);

@@ -1,5 +1,6 @@
 // Register all nodes in the nodes folder
-import { NodeMan } from "./Globals";
+
+import {NodeFactory} from "./Globals";
 
 const nodeContext = require.context('./nodes', false, /^\.\/.*\.js$/);
 
@@ -9,7 +10,7 @@ export function registerNodes() {
         Object.keys(moduleExports).forEach(exportKey => {
             if(exportKey.startsWith('CNode')) {
                 const exportObject = moduleExports[exportKey];
-                NodeMan.register(exportObject);
+                NodeFactory.register(exportObject);
  //               console.log("Found Node: "+key+ " Node Object Name = "+exportKey)
             }
         });

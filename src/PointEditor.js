@@ -10,10 +10,10 @@ import {
 } from "three";
 import {vdump} from "./utils"
 import {par} from "./par";
-import {MV3, V3} from "./threeExt";
 import {mouseInViewOnly, mouseToViewNormalized, ViewMan} from "./nodes/CNodeView";
 import {EUSToLLA, LLAToEUS, LLAVToEUS} from "./LLA-ECEF-ENU";
 import {assert} from "./assert.js";
+import {MV3, V3} from "./threeUtils";
 
 // base class for curve editors
 // has a list of positions that are the control points

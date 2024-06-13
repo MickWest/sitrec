@@ -6,13 +6,13 @@ import {AddTimeDisplayToUI} from "../UIHelpers";
 import {ViewMan} from "../nodes/CNodeView";
 import {DragDropHandler} from "../DragDropHandler";
 import JSURL from "../js/jsurl"
-import {MV3} from "../threeExt";
 import {isLocal, SITREC_SERVER} from "../../config";
 import {Rehoster} from "../CRehoster";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeControllerVarious";
 import {asyncCheckLogin} from "../login";
 import {assert} from "../assert.js";
+import {MV3} from "../threeUtils";
 
 
 export const SitNightSky = {

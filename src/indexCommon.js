@@ -1,4 +1,4 @@
-import { CNodeFactory } from "./nodes/CNodeFactory"
+import { CNodeManager } from "./nodes/CNodeManager"
 import { CSitchFactory } from "./CSitchFactory"
 import { CFileManager } from "./CFileManager"
 import {
@@ -19,7 +19,7 @@ import {CNode} from "./nodes/CNode";
 export function initGlobals() {
     setSitchMan(new CSitchFactory())
     setFileManager(new CFileManager())
-    setNodeMan(new CNodeFactory())
+    setNodeMan(new CNodeManager())
     setNullNode(new CNode({id: "null"}))
     setUnits(new CUnits("Nautical"))
 }

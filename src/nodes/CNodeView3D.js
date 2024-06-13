@@ -15,7 +15,7 @@ import {
     Vector3,
     WebGLRenderer, Camera, SRGBColorSpace
 } from "three";
-import {DebugArrowAB, forceFilterChange, V3} from "../threeExt";
+import {DebugArrowAB, forceFilterChange} from "../threeExt";
 import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {
@@ -32,6 +32,7 @@ import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
 import {quickToggle} from "../KeyBoardHandler";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 function linearToSrgb(color) {
     function toSrgbComponent(c) {

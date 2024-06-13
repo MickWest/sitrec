@@ -1,7 +1,7 @@
 import {NodeMan} from "./Globals";
-import {trackHeading} from "./nodes/CNode";
-import {V3} from "./threeExt";
 import {radians} from "./utils";
+import {trackHeading} from "./trackUtils";
+import {V3} from "./threeUtils";
 
 // move the main camera based on the lock track
 // this makes the camera follow the track (i.e. a plane)

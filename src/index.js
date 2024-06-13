@@ -13,7 +13,7 @@ import {
     NodeMan, setFileManager,
     setGlobalDateTimeNode,
     setGlobalURLParams,
-    setInfoDiv, setNewSitchText,
+    setInfoDiv, setNewSitchText, setNodeFactory,
     setNodeMan, setNullNode,
     setSit,
     setSitchMan,
@@ -51,7 +51,7 @@ import {
     setupNightSkyScene,
     setupScene
 } from "./LocalFrame";
-import {CNodeFactory} from "./nodes/CNodeFactory";
+import {CNodeManager} from "./nodes/CNodeManager";
 import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
@@ -76,6 +76,7 @@ import {CustomManager} from "./CustomSupport";
 import {preventDoubleClicks} from "./lil-gui-extras";
 import {ColorManagement} from "three";
 import {assert} from "./assert.js";
+import {CNodeFactory} from "./nodes/CNodeFactory";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -295,7 +296,8 @@ async function initializeOnce() {
 
     await checkLogin();
 
-    setNodeMan(new CNodeFactory())
+    setNodeMan(new CNodeManager())
+    setNodeFactory(new CNodeFactory(NodeMan))
     setSitchMan(new CSitchFactory())
 
     // Some metacode to find the node types and sitches (and common setup fragments)

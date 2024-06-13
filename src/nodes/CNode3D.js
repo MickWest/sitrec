@@ -89,7 +89,7 @@ export class CNode3D extends CNode {
             def.id = this.id + "_Controller" + type;
             console.warn("Controller added without id, using " + def.id)
         }
-        this.addControllerNode(NodeMan.create("Controller"+type, def))
+        this.addControllerNode(NodeFactory.create("Controller"+type, def))
         return this;
     }
 

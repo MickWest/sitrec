@@ -1,16 +1,29 @@
-// test/nodes/CNodeMath.test.js
+/**
+ * @jest-environment jsdom
+ */
+
+import {registerNodes} from "../../src/RegisterNodes";
+
+test('use jsdom in this test file', () => {
+    const element = document.createElement('div');
+    expect(element).not.toBeNull();
+});
+
 import { CNodeMath } from '../../src/nodes/CNodeMath.js';
 import { CNodeConstant } from '../../src/nodes/CNode.js';
-import { NodeMan } from '../../src/Globals.js';
+import {NodeMan, setNodeMan} from '../../src/Globals.js';
+import {CNodeManager} from "../../src/nodes/CNodeManager";
+
 
 describe('CNodeMath Integration Tests', () => {
     let nodeA, nodeB, cNodeMath;
 
     beforeEach(() => {
         // Clear NodeMan and add the nodes manually
-        NodeMan.clear();  // Assuming you have a method to clear NodeMan
+        setNodeMan(new CNodeManager())
+        registerNodes();
 
-        // Create and register actual nodes
+        // Create actual nodes
         nodeA = new CNodeConstant({ id: 'nodeA', value: 5 });
         nodeB = new CNodeConstant({ id: 'nodeB', value: 17 });
 

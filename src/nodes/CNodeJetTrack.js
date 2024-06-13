@@ -2,11 +2,11 @@ import {degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../ut
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {NodeMan, Sit, Units} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
-import {V3} from "../threeExt";
 import {CNode} from "./CNode";
 import {CNodeTrack} from "./CNodeTrack";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 export class CNodeJetTrack extends CNodeTrack {
     constructor(v) {

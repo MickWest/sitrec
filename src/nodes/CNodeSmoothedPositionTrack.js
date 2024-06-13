@@ -4,8 +4,8 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {NodeMan} from "../Globals";
 import {f2m, RollingAverage} from "../utils";
-import {V3} from "../threeExt";
 import {CatmullRomCurve3} from "three";
+import {V3} from "../threeUtils";
 
 export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
     constructor(v) {

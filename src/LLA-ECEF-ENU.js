@@ -5,8 +5,8 @@ import {Matrix3, Vector3} from "three";
 import {cos, degrees, radians, sin} from "./utils";
 import {Sit} from "./Globals";
 import {drop} from "./SphericalMath"
-import {V3} from "./threeExt";
 import {assert} from "./assert.js";
+import {V3} from "./threeUtils";
 
 
 // This is the distance in KM between two lat/long locations

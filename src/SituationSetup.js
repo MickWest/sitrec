@@ -1,5 +1,5 @@
-import {FileManager, gui, guiTweaks, NodeMan, setSit, Sit, SitchMan} from "./Globals";
-import {CNode, CNodeConstant, makePositionLLA} from "./nodes/CNode";
+import {FileManager, gui, guiTweaks, NodeMan, NodeFactory, setSit, Sit, SitchMan} from "./Globals";
+import {CNode, CNodeConstant} from "./nodes/CNode";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeTerrain} from "./nodes/CNodeTerrain";
@@ -39,12 +39,14 @@ import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
-import {DebugSphere, MV3, testColorCube, testTextureCube} from "./threeExt";
+import {DebugSphere, testColorCube, testTextureCube} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 import {isLocal} from "../config";
 import {assert} from "./assert.js";
+import {makePositionLLA} from "./nodes/CNodePositionLLA";
+import {MV3} from "./threeUtils";
 
 
 export function SituationSetup(runDeferred = false) {
@@ -1288,7 +1290,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 const cameraNode = NodeMan.get(camera);
                 data.id = data.id ?? (cameraNode.id+"_Controller" + key);
                 if (cameraNode) {
-                    node = NodeMan.create("Controller"+key, data);
+                    node = NodeFactory.create("Controller"+key, data);
                     cameraNode.addControllerNode(node);
                 } else {
                     console.error("SituationSetup: controller " + key + " needs a camera")
@@ -1301,7 +1303,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 if (NodeMan.validType(key)) {
                     SSLog();
                     // otherwise it's just a regular node
-                    node = NodeMan.create(key, data);
+                    node = NodeFactory.create(key, data);
                 } else {
                     if (data.kind !== undefined) {
                         assert(false, "SituationSetup: unknown kind: " + data.kind)

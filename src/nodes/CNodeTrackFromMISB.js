@@ -106,7 +106,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             else {
                 misb.misb[slot][MISB.SensorVerticalFieldofView] = validFOV;
             }
-            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb[SensorVerticalFieldofView] = " + misb.misb[slot][MISB.SensorVerticalFieldofView] + " validFOV = " + validFOV);
+//            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb[SensorVerticalFieldofView] = " + misb.misb[slot][MISB.SensorVerticalFieldofView] + " validFOV = " + validFOV);
         }
 
         // later if validFOV is still undefined, just skip over all the FOV stuff

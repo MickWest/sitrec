@@ -13,7 +13,7 @@ import {FileManager, Globals, Sit} from "../Globals";
 import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
-import {dispose, disposeScene, propagateLayerMaskObject, V3} from "../threeExt";
+import {dispose, disposeScene, propagateLayerMaskObject} from "../threeExt";
 import {} from "../Globals";
 
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
@@ -24,6 +24,7 @@ import {makeMatLine} from "../MatLines";
 import {GridHelper, Group} from "three";
 import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 
 export var Pod;

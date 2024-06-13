@@ -9,7 +9,7 @@ import {
 
 } from "three";
 import {degrees, f2m, radians, vdump} from "../utils";
-import {DebugArrow, DebugArrowAB, intersectSphere2, V3} from "../threeExt";
+import {DebugArrow, DebugArrowAB} from "../threeExt";
 import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
@@ -17,6 +17,7 @@ import {Sphere} from "three";
 import {getLocalUpVector} from "../SphericalMath";
 import {NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
+import {intersectSphere2, V3} from "../threeUtils";
 
 const STATE = {
 	NONE: - 1,
@@ -201,7 +202,7 @@ class CameraMapControls {
 		if (NodeMan.exists("cursorLLA")) {
 			NodeMan.get("cursorLLA").changeLLA(LLA.x, LLA.y, LLA.z)
 		} else {
-			NodeMan.create("LLALabel", {id: "cursorLLA", text: "Cursor LLA",
+			NodeFactory.create("LLALabel", {id: "cursorLLA", text: "Cursor LLA",
 				lat: LLA.x, lon: LLA.y, alt: LLA.z, size: 12, offsetX: 20, offsetY: 25, centerX:0, centerY:0})
 		}
 

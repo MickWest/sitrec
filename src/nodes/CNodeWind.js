@@ -1,11 +1,12 @@
 import {CNode, CNodeOrigin} from "./CNode";
 import {f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
-import {DebugArrowAB, V3} from "../threeExt";
+import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
 import {getLocalNorthVector, getLocalSouthVector, getLocalUpVector} from "../SphericalMath";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {assert} from "../assert.js";
+import {V3} from "../threeUtils";
 
 export class CNodeWind extends CNode {
     constructor(v, _guiMenu) {

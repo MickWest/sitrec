@@ -1,7 +1,7 @@
 // loader object for a
 import {CNode} from "./CNode";
 import { Map, Source} from '../js/map33/map33.js'
-import {propagateLayerMaskObject, V3} from "../threeExt";
+import {propagateLayerMaskObject} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
 import {Globals, NodeMan, Sit} from "../Globals";
 import { RLLAToECEFV_Sphere, wgs84, EUSToLLA} from "../LLA-ECEF-ENU";
@@ -13,6 +13,7 @@ import {gui} from "../Globals";
 // to path.js
 import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
+import {V3} from "../threeUtils";
 
 const terrainGUIColor = "#c0ffc0";
 

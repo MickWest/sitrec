@@ -15,13 +15,10 @@
 // display node - displays the result on screen (like a graph or HUD) or in the 3D world (like a line or marker)
 // a display node might also be an input, like something you can drag with the mouse
 
-import {degrees} from '../utils.js'
-import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {par} from "../par";
 import {Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
-import {V3} from "../threeExt";
 import {assert} from "../assert.js";
-
+import {V3} from "../threeUtils";
 
 
 var debugNodeNumber = 0;
@@ -516,6 +513,9 @@ class CNode {
         // }
         if (pos.position !== undefined)
             pos = pos.position;
+        // assert pos.clone is a function
+        assert(pos.clone !== undefined, "Node "+this.id+" has no position at frame "+frameFloat)
+
         return pos.clone()
     }
 
@@ -685,49 +685,6 @@ export class CNodeOrigin extends CNode {
 
 export {CNode}
 
-// A node that returns a EUS vector position based on LLA input
-// Can be defined by a lat, lon, and alt
-// or a LLA array of three values
-export class CNodePositionLLA extends CNode {
-    constructor(v) {
-        super(v);
-
-        if (v.LLA != undefined) {
-            // copy the array in v.LLA to this.LLA
-            this.LLA = v.LLA.slice()
-        } else {
-
-            this.input("lat")
-            this.input("lon")
-            this.input("alt")
-        }
-        this.recalculate()
-    }
-
-    recalculate() {
-    }
-
-    // return vector3 EUS for the specified LLA (animateabel)
-    getValueFrame(f) {
-        if (this.LLA !== undefined) {
-            return LLAToEUS(this.LLA[0], this.LLA[1], this.LLA[2])
-        }
-        const lat = this.in.lat.v(f)
-        const lon = this.in.lon.v(f)
-        const alt = this.in.alt.v(f)
-        return LLAToEUS(lat, lon, alt)
-    }
-
-
-}
-
-export function makePositionLLA(id, lat, lon, alt) {
-    return new CNodePositionLLA({
-        id:id,
-        lat: lat, lon: lon, alt: alt
-    })
-}
-
 
 export class CNodeMovablePoint extends CNode {
     constructor(v) {
@@ -736,50 +693,5 @@ export class CNodeMovablePoint extends CNode {
 
 }
 
-// get heading in the XZ plane - i.e. the compass heading
-export function trackHeading(source, f) {
-    if (f > Sit.frames-2) f = Sit.frames-2; // hand out of range
-    if (f < 0) f = 0
-    var fwd = source.p(f+1).sub(source.p(f))
-    var heading = degrees(Math.atan2(fwd.x, -fwd.z))
-    return heading
-}
-
-// per frame velocity vector
-// source = track object
-// f = frame number
-// given that source.p(f) is the position at frame f
-// we calculate the velocity vector at f as the position at f+1 minus the position at f
-export function trackVelocity(source, f) {
-    if (f > Sit.frames-2) f = Sit.frames-2; // hand out of range
-    if (f < 0) f = 0
-    var fwd = source.p(f+1).sub(source.p(f))
-    return fwd
-}
-
-// per frame direction vector (normalized velocity)
-export function trackDirection(source, f) {
-    return trackVelocity(source, f).normalize();
-}
-
-
-
-// per frame acceleration
-// essential the first derivative of the position
-export function trackAcceleration(source, f) {
-    const v1 = trackVelocity(source,f)
-    const v2 = trackVelocity(source,f+1)
-    var fwd = v2.clone().sub(v1)
-    return fwd
-}
-
-// per frame closing speed
-// this is the chan
-export function closingSpeed(jet, target, f) {
-    var d1 = jet.p(f).sub(target.p(f)).length()
-    var d2 = jet.p(f+1).sub(target.p(f+1)).length()
-    return d1-d2
-
-}
 
 

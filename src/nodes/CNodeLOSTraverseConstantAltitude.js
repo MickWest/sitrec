@@ -3,8 +3,8 @@
 // or "startDist" to start at a particular distance along the first line
 import {metersFromMiles} from "../utils";
 import {Color, Ray, Sphere} from "three";
-import {intersectSphere2, V3} from "../threeExt";
 import {CNodeTrack} from "./CNodeTrack";
+import {intersectSphere2, V3} from "../threeUtils";
 
 export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
     constructor(v) {

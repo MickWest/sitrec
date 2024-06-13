@@ -4,7 +4,8 @@
 
 import {mouseInView, mouseInViewOnly, ViewMan} from "./nodes/CNodeView";
 import {par} from "./par";
-import {V2} from "./threeExt";
+
+import {V2} from "./threeUtils";
 
 var mouseMoveView
 var mouseDown = false

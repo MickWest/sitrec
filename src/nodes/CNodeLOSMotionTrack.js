@@ -2,8 +2,9 @@ import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
 import {ExpandKeyframes, radians, RollingAverage, tan} from "../utils";
 import {FileManager, NodeMan, Sit} from "../Globals";
 import {CNodeCloudData} from "./CNodeCloudData";
-import {DebugArrowAB, V3} from "../threeExt";
+import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
+import {V3} from "../threeUtils";
 
 
 /*
