@@ -37,12 +37,14 @@ export class CNodeMath extends CNode {
         // this ensures that the node is recalculated when the input nodes change
         // and hence other nodes that depend on this node will also be recalculated
         let matches = this.getNodeVariables(this.math)
-        for (let match of matches) {
-            let id = match.slice(1); // remove the leading $
-            assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
-            let node = NodeMan.get(id);
-            this.addInput(node.id, node.id)
-            console.log("CNodeMath: adding input: "+ node.id+" to "+this.id);
+        if (matches) {
+            for (let match of matches) {
+                let id = match.slice(1); // remove the leading $
+                assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
+                let node = NodeMan.get(id);
+                this.addInput(node.id, node.id)
+                console.log("CNodeMath: adding input: " + node.id + " to " + this.id);
+            }
         }
     }
 
@@ -62,22 +64,28 @@ export class CNodeMath extends CNode {
     }
 
     getValueFrame(f) {
+        if (!this.math) {
+            // empty string is undefined
+            return undefined;
+        }
         let expression = this.math;
         let matches = this.getNodeVariables(this.math)
-        for (let match of matches) {
-            let id = match.slice(1)
-            assert(NodeMan.exists(id), "CNodeMath: node does not exist, id: " + id)
-            let node = NodeMan.get(id);
-            // and replace it in the string with the value of the node at frame f
-            let value = node.getValueFrame(f)
-            // if it's not a number, need more parsing
-            if (typeof value !== "number") {
-                if (value.position !== undefined) {
-                    // adding a vector value as [x,y,z]
-                    value = '[' + value.position.x + ',' + value.position.y + ',' + value.position.z + ']'
+        if (matches) {
+            for (let match of matches) {
+                let id = match.slice(1)
+                assert(NodeMan.exists(id), "CNodeMath: node does not exist, id: " + id)
+                let node = NodeMan.get(id);
+                // and replace it in the string with the value of the node at frame f
+                let value = node.getValueFrame(f)
+                // if it's not a number, need more parsing
+                if (typeof value !== "number") {
+                    if (value.position !== undefined) {
+                        // adding a vector value as [x,y,z]
+                        value = '[' + value.position.x + ',' + value.position.y + ',' + value.position.z + ']'
+                    }
                 }
+                expression = expression.replace(match, value)
             }
-            expression = expression.replace(match, value)
         }
        // console.log("expression after : ", expression)
 

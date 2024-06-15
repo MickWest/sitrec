@@ -2,8 +2,6 @@
  * @jest-environment jsdom
  */
 
-import {registerNodes} from "../../src/RegisterNodes";
-
 test('use jsdom in this test file', () => {
     const element = document.createElement('div');
     expect(element).not.toBeNull();
@@ -21,14 +19,21 @@ describe('CNodeMath Integration Tests', () => {
     beforeEach(() => {
         // Clear NodeMan and add the nodes manually
         setNodeMan(new CNodeManager())
-        registerNodes();
 
         // Create actual nodes
         nodeA = new CNodeConstant({ id: 'nodeA', value: 5 });
         nodeB = new CNodeConstant({ id: 'nodeB', value: 17 });
 
-        NodeMan.add(nodeA); // Assuming you have a method to add nodes
-        NodeMan.add(nodeB);
+    });
+
+    test('should calculate value with no node variable', () => {
+        cNodeMath = new CNodeMath({
+            id: 'test1',
+            math: `5 * 17`,
+        });
+
+        const result = cNodeMath.getValueFrame(0);
+        expect(result).toBe(85); // Calculated as: 5 * 17 = 85
     });
 
     test('should calculate value correctly based on math expression', () => {
@@ -57,7 +62,7 @@ describe('CNodeMath Integration Tests', () => {
         });
 
         const result = cNodeMath.getValueFrame(0);
-        expect(result).toBe(145); // Calculated as: ((5 * 2) + (17 / 2)) * 10 = 145
+        expect(result).toBe(185); // Calculated as: ((5 * 2) + (17 / 2)) * 10 = 185
     });
 
     test('should handle no-op and comments correctly', () => {
