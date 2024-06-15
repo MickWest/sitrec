@@ -1,28 +1,33 @@
-import {Group, REVISION, Scene, WebGLRenderer,} from "three";
+import {ColorManagement, Group, REVISION, Scene, WebGLRenderer,} from "three";
 import "./js/uPlot/uPlot.css"
 import "./extra.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {
     FileManager,
-    GlobalDateTimeNode, Globals,
+    GlobalDateTimeNode,
+    Globals,
     gui,
     guiTweaks,
     incrementMainLoopCount,
     infoDiv,
-    NodeMan, setFileManager,
+    NodeMan,
+    setFileManager,
     setGlobalDateTimeNode,
     setGlobalURLParams,
-    setInfoDiv, setNewSitchText, setNodeFactory,
-    setNodeMan, setNullNode,
+    setInfoDiv,
+    setNodeFactory,
+    setNodeMan,
+    setNullNode,
     setSit,
     setSitchMan,
     setUnits,
-    setupGUIGlobals, setupGUIjetTweaks,
+    setupGUIGlobals,
+    setupGUIjetTweaks,
     Sit,
     SitchMan,
 } from "./Globals";
-import {disableScroll, sleep} from './utils.js'
+import {disableScroll} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
@@ -35,7 +40,6 @@ import {SetupMouseHandler} from "./mouseMoveView";
 import {initKeyboard, showHider} from "./KeyBoardHandler";
 import {
     CommonJetStuff,
-    Frame2Az,
     glareSprite,
     initJetStuff,
     initJetStuffOverlays,
@@ -74,7 +78,6 @@ import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
 import {preventDoubleClicks} from "./lil-gui-extras";
-import {ColorManagement} from "three";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 

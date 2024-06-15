@@ -23,9 +23,8 @@
 // and position heading are the usual LOS values
 import {CNodeEmptyArray} from "./CNodeArray";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
-import {Matrix4} from "three";
+import {Matrix4, Vector3} from "three";
 import {radians} from "../utils";
-import {Vector3} from "three";
 import {DebugMatrixAxes} from "../threeExt";
 
 export class CNodeLOSTrackMISB extends CNodeEmptyArray {

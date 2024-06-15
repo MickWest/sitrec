@@ -1,12 +1,10 @@
 import {CNodeCloudData} from "./nodes/CNodeCloudData";
-import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {gui} from "./Globals";
 import {CNodeDisplayClouds} from "./nodes/CNodeDisplayClouds";
 import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {CNodeLOSHorizonTrack} from "./nodes/CNodeLOSHorizonTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {Color, MeshStandardMaterial, TextureLoader} from "three";
+import {MeshStandardMaterial, TextureLoader} from "three";
 
 // Wrapper for the cloud node setup - used by Gimbal
 export function SetupCloudNodes() {

@@ -2,12 +2,10 @@ import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {FileManager, NodeMan} from "../Globals";
 import {MISB, MISBFields} from "../MISBUtils";
 import {CNodeEmptyArray} from "./CNodeArray";
-import {f2m} from "../utils";
 import {saveAs} from "../js/FileSaver";
 
 import {CNodeLOSTrackMISB} from "./CNodeLOSTrackMISB";
 import {makeArrayNodeFromMISBColumn} from "./CNodeArrayFromMISBColumn";
-import {assert} from "../assert.js";
 
 //export const MISBFields = Object.keys(MISB).length;
 

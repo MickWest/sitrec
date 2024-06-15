@@ -1,10 +1,8 @@
 // Track of LOS intersection with the cloud horizon
 // i.e. the point on on the LOS closes to the horizon viewed from the LOS start point in the direction of the LOS
-import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
+import {CNodeEmptyArray} from "./CNodeArray";
 import {calcHorizonPoint} from "../SphericalMath";
 import {metersFromMiles} from "../utils";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
 
 export class CNodeLOSHorizonTrack extends CNodeEmptyArray {
     constructor(v) {

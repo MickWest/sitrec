@@ -11,7 +11,7 @@ import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
-import {GlobalScene, LocalFrame} from "./LocalFrame";
+import {GlobalScene} from "./LocalFrame";
 import {measurementUIVars} from "./nodes/CNodeLabels3D";
 import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";

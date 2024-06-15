@@ -1,6 +1,6 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {Vector2} from "three";
-import {mouseToCanvas, mouseToView} from "./CNodeView";
+import {mouseToCanvas} from "./CNodeView";
 import {par} from "../par";
 
 // A DDI is a screen in a fighter jet, F/A-18 or similar

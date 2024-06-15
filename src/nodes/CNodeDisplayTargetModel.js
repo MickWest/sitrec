@@ -5,7 +5,7 @@ import {FileManager, gui, NodeMan, Sit} from "../Globals";
 
 import {Matrix4} from "three";
 
-import {degrees, radians, tan} from "../utils";
+import {radians} from "../utils";
 import {getGlareAngleFromFrame} from "../JetStuff";
 import {par} from "../par";
 import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";

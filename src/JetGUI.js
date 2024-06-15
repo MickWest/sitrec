@@ -1,6 +1,6 @@
 // GUI controls for the Jet sitches like Gimbal and GoFast
 
-import {gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, Sit, NodeMan} from "./Globals";
+import {gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
 import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStuff";
 import {calculateGlareStartAngle} from "./JetHorizon";

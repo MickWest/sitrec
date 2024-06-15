@@ -1,5 +1,5 @@
 import {CNodeView} from "./CNodeView";
-import {chartDiv, setChartDiv, updateChartSize} from "../JetChart";
+import {setChartDiv, updateChartSize} from "../JetChart";
 
 export class CNodeChartView extends CNodeView {
     constructor(v) {

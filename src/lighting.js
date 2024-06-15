@@ -1,5 +1,5 @@
 // Lighting. Could be improved
-import {AmbientLight, DirectionalLight, DirectionalLightHelper, HemisphereLight} from "three";
+import {AmbientLight, DirectionalLight, HemisphereLight} from "three";
 import {Globals, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {GlobalScene} from "./LocalFrame";

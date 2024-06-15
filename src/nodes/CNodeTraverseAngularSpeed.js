@@ -1,10 +1,8 @@
 // takes a track and traverse node and returns the per-second
 // angular difference between the lines beteeen the nodes
 // for this frame and the previous frame.
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {asin, atan2, clockwiseXY, clockwiseZX, degrees, vdump} from "../utils";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {asin, clockwiseZX, degrees} from "../utils";
 
 export class CNodeTraverseAngularSpeed extends CNode {
     constructor(v) {

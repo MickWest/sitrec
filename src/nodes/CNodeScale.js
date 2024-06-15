@@ -1,4 +1,3 @@
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 import {scaleF2M} from "../utils";
 

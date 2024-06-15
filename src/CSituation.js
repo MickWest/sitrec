@@ -1,5 +1,5 @@
 import {Color} from "three";
-import {FileManager, guiTweaks, infoDiv, Sit, Units} from "./Globals";
+import {FileManager, infoDiv, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant} from "./nodes/CNode";
 import {NightSkyFiles} from "./ExtraFiles";

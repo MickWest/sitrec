@@ -1,18 +1,16 @@
 //
-import {gui, Sit}                   from "../Globals";
-import {dispose}                    from "../threeExt";
-import {LineGeometry}               from "three/addons/lines/LineGeometry.js";
-import {LineMaterial}               from "three/addons/lines/LineMaterial.js";
+import {Sit} from "../Globals";
+import {dispose} from "../threeExt";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 
-import {Line2}                      from "three/addons/lines/Line2.js";
-import {CNode3DGroup}               from "./CNode3DGroup";
-import {wgs84}                      from "../LLA-ECEF-ENU";
-import {drop}                       from "../SphericalMath";
-import {LessDepth, Color,  LineSegments} from "three";
-import {CNodeDisplayTargetSphere}   from "./CNodeDisplayTargetSphere";
-import * as LAYER                   from "../LayerMasks";
-import {par} from "../par";
-import {AlwaysDepth} from "three";
+import {Line2} from "three/addons/lines/Line2.js";
+import {CNode3DGroup} from "./CNode3DGroup";
+import {wgs84} from "../LLA-ECEF-ENU";
+import {drop} from "../SphericalMath";
+import {AlwaysDepth, Color, LessDepth} from "three";
+import {CNodeDisplayTargetSphere} from "./CNodeDisplayTargetSphere";
+import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 
 export class CNodeDisplayTrack extends CNode3DGroup {

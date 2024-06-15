@@ -1,7 +1,6 @@
 // Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
-import {SitGimbal} from "./sitch/SitGimbal";
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Note. This failed once due to what seemed to be a circular dependency

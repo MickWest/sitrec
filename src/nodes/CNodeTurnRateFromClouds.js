@@ -1,8 +1,6 @@
-
-import {NodeMan} from "../Globals";
 import {degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {calcHorizonPoint, getLocalUpVector} from "../SphericalMath";
-import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
+import {CNodeEmptyArray} from "./CNodeArray";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 

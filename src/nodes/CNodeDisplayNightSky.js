@@ -1,33 +1,49 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import {GlobalNightSkyScene, GlobalScene, setupNightSkyScene} from "../LocalFrame";
 import {
+    BufferAttribute,
+    BufferGeometry,
     Color,
-    Group, MathUtils,
-    Matrix4, Points,
+    Group,
+    Line,
+    LineBasicMaterial,
+    MathUtils,
+    Matrix4,
+    Points,
+    Ray,
     Raycaster,
-    Scene, Sprite, SpriteMaterial,
+    Scene,
+    ShaderMaterial,
+    Sphere,
+    Sprite,
+    SpriteMaterial,
     TextureLoader,
     Vector3
 } from "three";
-import {radians, sin, cos, degrees} from "../utils";
-import {gui, guiShowHide, guiTweaks, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
+import {degrees, radians} from "../utils";
+import {FileManager, GlobalDateTimeNode, Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {
-    DebugArrow, DebugArrowAB,
-    DebugAxes,
-    DebugSphere, DebugWireframeSphere,
+    DebugArrow,
+    DebugArrowAB,
+    DebugWireframeSphere,
     pointOnGround,
     propagateLayerMaskObject,
-    removeDebugArrow, setLayerMaskRecursive
+    removeDebugArrow
 } from "../threeExt";
-import {
-    ECEF2ENU, ECEF2EUS,
-    ECEFCelestialToAzEl,
-    ECEFToLLAVD_Sphere,
-    EUSToECEF,
-    getLST,
-    raDecToAzElRADIANS,
-    wgs84
-} from "../LLA-ECEF-ENU";
+import {ECEF2ENU, ECEF2EUS, ECEFToLLAVD_Sphere, EUSToECEF, getLST, raDecToAzElRADIANS, wgs84} from "../LLA-ECEF-ENU";
+// npm install three-text2d --save-dev
+// https://github.com/gamestdio/three-text2d
+//import { MeshText2D, textAlign } from 'three-text2d'
+import {CNodeViewUI} from "./CNodeViewUI";
+import {ViewMan} from "./CNodeView";
+import * as LAYER from "../LayerMasks";
+import {par} from "../par";
+
+import SpriteText from '../js/three-spritetext';
+import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
+import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
+import {assert} from "../assert.js";
+import {intersectSphere2, V3} from "../threeUtils";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -36,21 +52,6 @@ var satellite = require('satellite.js');
 // npm install astronomy-engine --save-dev
 // in the project dir (using terminal in PHPStorm)
 var Astronomy = require("astronomy-engine")
-
-// npm install three-text2d --save-dev
-// https://github.com/gamestdio/three-text2d
-//import { MeshText2D, textAlign } from 'three-text2d'
-import {CNodeViewUI} from "./CNodeViewUI";
-import {ViewMan} from "./CNodeView";
-import * as LAYER from "../LayerMasks";
-import {par} from "../par";
-import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Ray, ShaderMaterial, Sphere} from "three";
-
-import SpriteText from '../js/three-spritetext';
-import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {CNodeDisplayGlobeCircle} from "./CNodeDisplayGlobeCircle";
-import {assert} from "../assert.js";
-import {intersectSphere2, V3} from "../threeUtils";
 
 
 // other source of stars, if we need more (for zoomed-in pics)

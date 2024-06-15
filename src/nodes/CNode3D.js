@@ -1,8 +1,6 @@
 import {CNode} from "./CNode";
-import {guiShowHide, NodeFactory, NodeMan} from "../Globals";
+import {guiShowHide, mainLoopCount, NodeFactory} from "../Globals";
 import {par} from "../par";
-
-import {mainLoopCount} from "../Globals";
 import {assert} from "../assert.js";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.

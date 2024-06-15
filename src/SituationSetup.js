@@ -1,21 +1,11 @@
-import {FileManager, gui, guiTweaks, NodeMan, NodeFactory, setSit, Sit, SitchMan} from "./Globals";
+import {FileManager, gui, guiTweaks, NodeFactory, NodeMan, Sit, SitchMan} from "./Globals";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
-import {CNodeTerrain} from "./nodes/CNodeTerrain";
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import * as LAYER from "./LayerMasks";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {
-    abs,
-    ExpandKeyframes,
-    f2m,
-    floor,
-    getArrayValueFromFrame,
-    normalizeLayerType,
-    radians,
-    scaleF2M
-} from "./utils";
+import {abs, ExpandKeyframes, f2m, floor, getArrayValueFromFrame, normalizeLayerType, radians, scaleF2M} from "./utils";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeVideoWebCodecView} from "./nodes/CNodeVideoWebCodecView";
 import {DragDropHandler} from "./DragDropHandler";
@@ -43,7 +33,6 @@ import {DebugSphere, testColorCube, testTextureCube} from "./threeExt";
 import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
-import {isLocal} from "../config";
 import {assert} from "./assert.js";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
 import {MV3} from "./threeUtils";

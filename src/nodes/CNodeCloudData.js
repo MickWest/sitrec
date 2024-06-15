@@ -1,4 +1,3 @@
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 
 // Note: this JUST has three input which gets repackaged as an object,

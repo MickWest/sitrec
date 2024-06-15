@@ -1,6 +1,5 @@
 import {CNode, CNodeOrigin} from "./CNode";
-import {f2m, metersPerSecondFromKnots, radians} from "../utils";
-import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
+import {radians} from "../utils";
 import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
 import {V3} from "../threeUtils";

@@ -1,9 +1,6 @@
-import {metersFromMiles, metersFromNM, radians} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
+import {metersFromNM, radians} from "../utils";
 import {Sit, Units} from "../Globals";
-import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {CNodeEmptyArray} from "./CNodeArray";
 
 import {V3} from "../threeUtils";
 

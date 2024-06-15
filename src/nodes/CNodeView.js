@@ -7,9 +7,7 @@
 import {CameraMapControls} from "../js/CameraControls";
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
-import {guiShowHide, guiShowHideViews, NodeMan, Sit} from "../Globals";
-import {isLocal} from "../../config";
-import {par} from "../par";
+import {guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 
 const defaultCViewParams = {

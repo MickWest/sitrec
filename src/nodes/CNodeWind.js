@@ -1,10 +1,9 @@
 import {CNode, CNodeOrigin} from "./CNode";
-import {f2m, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
-import {gui, guiTweaks, NodeMan, Sit} from "../Globals";
+import {metersPerSecondFromKnots, radians} from "../utils";
+import {NodeMan, Sit} from "../Globals";
 import {DebugArrowAB} from "../threeExt";
 import {GlobalScene} from "../LocalFrame";
-import {getLocalNorthVector, getLocalSouthVector, getLocalUpVector} from "../SphericalMath";
-import {LLAToEUS} from "../LLA-ECEF-ENU";
+import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 

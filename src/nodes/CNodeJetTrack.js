@@ -1,10 +1,8 @@
 import {degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
-import {NodeMan, Sit, Units} from "../Globals";
-import {CNodeEmptyArray} from "./CNodeArray";
+import {Sit, Units} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeTrack} from "./CNodeTrack";
-import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 

@@ -1,12 +1,11 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
-import {DebugArrowAB, dispose} from "../threeExt";
-import {LineGeometry}               from "three/addons/lines/LineGeometry.js";
+import {dispose} from "../threeExt";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {Line2} from "three/addons/lines/Line2.js";
 import {makeMatLine} from "../MatLines";
 import {perpendicularVector, V3} from "../threeUtils";
-
 
 
 export class CNodeDisplayGlobeCircle extends CNode3DGroup {

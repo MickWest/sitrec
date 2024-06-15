@@ -2,8 +2,7 @@
 // uses a 2d canvas that optionally sits on top of a CView
 import {cos, getTextBBox, radians, sin} from "../utils";
 import {CUIText} from "./CNodeView";
-import {NodeMan, Sit} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
+import {NodeMan} from "../Globals";
 import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {par} from "../par";
 

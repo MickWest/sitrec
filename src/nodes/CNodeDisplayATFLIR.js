@@ -3,8 +3,10 @@ import {radians} from "../utils";
 import {
     getGlareAngleFromFrame,
     jetPitchFromFrame,
-    jetRollFromFrame, pitchAndGlobalRollFromFrame,
-    targetSphere, vizRadius
+    jetRollFromFrame,
+    pitchAndGlobalRollFromFrame,
+    targetSphere,
+    vizRadius
 } from "../JetStuff";
 import {showHider} from "../KeyBoardHandler";
 import {par} from "../par";
@@ -14,7 +16,6 @@ import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
 import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
 import {dispose, disposeScene, propagateLayerMaskObject} from "../threeExt";
-import {} from "../Globals";
 
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {Line2} from "three/addons/lines/Line2.js";

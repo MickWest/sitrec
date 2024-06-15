@@ -1,9 +1,8 @@
 import {CNodeVideoView} from "./CNodeVideoView";
 import {par} from "../par";
-import {NodeMan, Sit} from "../Globals";
+import {Sit} from "../Globals";
 import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
-import {Rehoster} from "../CRehoster";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {

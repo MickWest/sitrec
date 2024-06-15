@@ -1,14 +1,11 @@
-import { CNodeManager } from "./nodes/CNodeManager"
-import { CSitchFactory } from "./CSitchFactory"
-import { CFileManager } from "./CFileManager"
-import {
-    setFileManager, setNodeMan, setSitchMan, setUnits, setSit,
-    SitchMan, Sit, setNullNode
-} from "./Globals"
-import { registerSitchModule } from "./RegisterSitches"
-import { CUnits } from "./CUnits"
-import { CSituation } from "./CSituation"
-import { resetPar } from "./par"
+import {CNodeManager} from "./nodes/CNodeManager"
+import {CSitchFactory} from "./CSitchFactory"
+import {CFileManager} from "./CFileManager"
+import {setFileManager, setNodeMan, setNullNode, setSit, setSitchMan, setUnits, Sit, SitchMan} from "./Globals"
+import {registerSitchModule} from "./RegisterSitches"
+import {CUnits} from "./CUnits"
+import {CSituation} from "./CSituation"
+import {resetPar} from "./par"
 import {CNode} from "./nodes/CNode";
 
 // When building Sitrec as a console application 

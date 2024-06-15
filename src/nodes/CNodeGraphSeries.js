@@ -1,7 +1,5 @@
 // info for a data series to be displayed on a graph
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
-import {CNodeCloudData} from "./CNodeCloudData";
 
 export class CNodeGraphSeries extends CNode {
     constructor(v) {

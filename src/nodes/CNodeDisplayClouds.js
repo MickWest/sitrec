@@ -4,9 +4,6 @@ import {BufferGeometry, Float32BufferAttribute, Mesh} from "three";
 import seedrandom from "seedrandom";
 import {drop} from "../SphericalMath";
 import {CNode3DGroup} from "./CNode3DGroup";
-import {NodeMan} from "../Globals";
-import {CNodeCloudData} from "./CNodeCloudData";
-import {par} from "../par";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 

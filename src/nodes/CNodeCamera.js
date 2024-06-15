@@ -1,10 +1,9 @@
 import {Camera, PerspectiveCamera, Vector3} from "three";
-import {f2m, m2f, vdump} from "../utils";
+import {f2m, m2f} from "../utils";
 import {NodeMan} from "../Globals";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAVToEUS} from "../LLA-ECEF-ENU";
 import {raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
-import {assert} from "../assert.js";
 import {MV3} from "../threeUtils";
 
 export class CNodeCamera extends CNode3D {

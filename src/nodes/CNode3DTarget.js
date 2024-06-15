@@ -1,7 +1,4 @@
 import {CNode3DGroup} from "./CNode3DGroup";
-import {NodeMan} from "../Globals";
-
-import {assert} from "../assert.js";
 
 export class CNode3DTarget extends CNode3DGroup {
     constructor(v) {

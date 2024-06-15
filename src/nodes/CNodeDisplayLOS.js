@@ -6,10 +6,9 @@ import {par} from "../par";
 import {metersFromMiles} from "../utils";
 import {CNode3DGroup} from "./CNode3DGroup";
 
-import {LineGeometry}               from "three/addons/lines/LineGeometry.js";
-import {Line2}                      from "three/addons/lines/Line2.js";
+import {LineGeometry} from "three/addons/lines/LineGeometry.js";
+import {Line2} from "three/addons/lines/Line2.js";
 import * as LAYER from "../LayerMasks";
-import {assert} from "../assert.js";
 
 var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // CNodeDisplayLOS display the Lines Of Sight

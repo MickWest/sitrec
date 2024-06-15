@@ -1,5 +1,4 @@
 import {CNodeEmptyArray} from "./CNodeArray";
-import {f2m} from "../utils";
 import {GlobalDateTimeNode} from "../Globals";
 import {EUSToLLA} from "../LLA-ECEF-ENU";
 

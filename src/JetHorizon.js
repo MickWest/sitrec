@@ -9,7 +9,8 @@ import {
     jetPitchFromFrame,
     jetRollFromFrame,
     pitchAndGlobalRollFromFrame,
-    podRollFromFrame, vizRadius
+    podRollFromFrame,
+    vizRadius
 } from "./JetStuff";
 import {par} from "./par";
 import {Sit} from "./Globals";

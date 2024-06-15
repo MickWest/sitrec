@@ -1,5 +1,5 @@
 // Helper functions for lil-gui
-import {GUI, Controller} from "./js/lil-gui.esm";
+import {Controller} from "./js/lil-gui.esm";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array

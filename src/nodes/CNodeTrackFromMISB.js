@@ -1,5 +1,5 @@
 import {f2m, interpolate} from "../utils";
-import {Sit, GlobalDateTimeNode, FileManager, NodeMan} from "../Globals";
+import {GlobalDateTimeNode, NodeMan, Sit} from "../Globals";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 import {MISB} from "../MISBUtils";

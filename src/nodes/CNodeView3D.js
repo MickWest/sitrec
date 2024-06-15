@@ -1,36 +1,37 @@
 import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
-import {f2m, m2f, vdump} from "../utils";
+import {f2m} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {GlobalComposer, Globals, gui, guiTweaks, keyHeld, NodeMan, Sit} from "../Globals";
+import {Globals, gui, guiTweaks, keyHeld, NodeMan} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
-import {} from "../Globals"
 import {makeMouseRay} from "../mouseMoveView";
 import {
-    Raycaster,
-    Sprite,
-    SpriteMaterial,
-    TextureLoader,
-    Plane,
-    Vector3,
-    WebGLRenderer, Camera, SRGBColorSpace
-} from "three";
-import {DebugArrowAB, forceFilterChange} from "../threeExt";
-import {CNodeViewCanvas, CNodeViewCanvas2D} from "./CNodeViewCanvas";
-import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
-import {
-    Color, LinearFilter, Mesh,
+    Camera,
+    Color,
+    LinearFilter,
+    Mesh,
     NearestFilter,
+    Plane,
     PlaneGeometry,
+    Raycaster,
     RGBAFormat,
     ShaderMaterial,
-    Sphere, UnsignedByteType,
+    Sphere,
+    Sprite,
+    SpriteMaterial,
+    SRGBColorSpace,
+    TextureLoader,
+    UnsignedByteType,
+    Vector3,
+    WebGLRenderer,
     WebGLRenderTarget
 } from "three";
+import {DebugArrowAB, forceFilterChange} from "../threeExt";
+import {CNodeViewCanvas} from "./CNodeViewCanvas";
+import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {wgs84} from "../LLA-ECEF-ENU";
 import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
-import {quickToggle} from "../KeyBoardHandler";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 

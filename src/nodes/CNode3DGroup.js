@@ -1,11 +1,9 @@
-import {Group} from "three"
+import {Color, Group} from "three"
 import {CNodeConstant} from "./CNode";
 import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"
 import {CNode3D} from "./CNode3D";
-import {Color} from "three";
 import {normalizeLayerType} from "../utils";
-import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 
 // a CNode3DGroup encapsulates a THREE.Group one or more 3D objects

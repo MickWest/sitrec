@@ -1,5 +1,5 @@
 import {MetaBezierCurveEditor} from "../MetaCurveEdit";
-import {NodeMan, Sit} from "../Globals";
+import {Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {CNodeGraphLine} from "./CNodeGraphLine";

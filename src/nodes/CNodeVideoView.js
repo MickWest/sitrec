@@ -5,8 +5,6 @@ import {quickToggle} from "../KeyBoardHandler";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 import {guiTweaks} from "../Globals";
 import {versionString} from "../utils";
-import {assert} from "../assert.js";
-
 
 
 export class CVideoData {

@@ -1,8 +1,7 @@
 // e.g. in SitAguadilla.js:
 
 import {PointEditor} from "./PointEditor";
-import {BufferAttribute, BufferGeometry, Line, LineBasicMaterial, Vector3} from "three";
-import {CatmullRomCurve3} from "three";
+import {BufferAttribute, BufferGeometry, CatmullRomCurve3, Line, LineBasicMaterial, Vector3} from "three";
 import * as LAYER from "./LayerMasks";
 
 export class   SplineEditor extends PointEditor{

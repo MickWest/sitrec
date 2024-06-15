@@ -1,7 +1,6 @@
 // const acorn = require("acorn");
 // const estraverse = require("estraverse");
 // const escodegen = require("escodegen");
-import stringify from "json-stringify-pretty-compact";
 
 function removeQuotesFromKeys(jsonString) {
     // This regular expression matches property names in quotes followed by a colon,

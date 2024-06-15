@@ -1,7 +1,6 @@
 // we want a node factory to allow for data-driven node creation
 
 import {CManager} from "../CManager";
-import {isConsole} from "../../config";
 import {CNode} from "./CNode";
 import {FileManager, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";

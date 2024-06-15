@@ -1,4 +1,4 @@
-import {atan, degrees, getArrayValueFromFrame, radians, tan} from "../utils";
+import {atan, degrees, radians, tan} from "../utils";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
@@ -9,7 +9,6 @@ import {CNodeController} from "./CNodeController";
 
 import {MISB} from "../MISBUtils";
 import {Quaternion, Vector2, Vector3} from "three";
-import {par} from "../par";
 import {assert} from "../assert.js";
 
 

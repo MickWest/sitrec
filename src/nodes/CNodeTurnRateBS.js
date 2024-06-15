@@ -1,5 +1,4 @@
 import {degrees, metersPerSecondFromKnots, radians, tan} from "../utils";
-import {NodeMan} from "../Globals";
 import {CNode} from "./CNode";
 import {assert} from "../assert.js";
 

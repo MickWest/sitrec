@@ -1,5 +1,5 @@
 import {CNode3DGroup} from "./CNode3DGroup";
-import {CDisplayLine, pointAbove, pointOnGroundLL, pointOnGroundLLA} from "../threeExt";
+import {CDisplayLine, pointAbove, pointOnGroundLL} from "../threeExt";
 import * as LAYER from "../LayerMasks";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {radians} from "../utils";

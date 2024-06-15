@@ -1,9 +1,8 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {CRegionSelector} from "../CRegionSelector";
 import {CNodeCurveEditor} from "./CNodeCurveEdit";
-import {FileManager, NodeMan, Sit} from "../Globals";
+import {FileManager, gui, NodeMan, Sit} from "../Globals";
 import {RollingAverage} from "../utils";
-import {gui} from "../Globals";
 import {CNodeArray} from "./CNodeArray";
 import {CNodeGraphSeries} from "./CNodeGraphSeries";
 import {par} from "../par";

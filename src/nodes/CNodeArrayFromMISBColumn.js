@@ -1,4 +1,4 @@
-import {CNodeArray, CNodeEmptyArray} from "./CNodeArray";
+import {CNodeEmptyArray} from "./CNodeArray";
 import {MISB} from "../MISBUtils";
 import {ExpandMISBKeyframes, RollingAverage, RollingAverageDegrees} from "../utils";
 import {CNode} from "./CNode";

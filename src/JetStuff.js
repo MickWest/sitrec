@@ -1,30 +1,17 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
 // so mostly related to Gimbal, GoFast, FLIR1 and Aguadilla
 
-import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan,  Sit, Units} from "./Globals";
+import {EarthRadiusMiles, gui, guiTweaks, infoDiv, NodeMan, Sit, Units} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
-import {
-    DebugArrowAB,
-    dispose,
-    GridHelperWorld,
-    propagateLayerMaskObject,
-    sphereMark
-} from "./threeExt";
+import {DebugArrowAB, dispose, GridHelperWorld, propagateLayerMaskObject, sphereMark} from "./threeExt";
 import * as LAYER from "./LayerMasks";
 import {Line2} from "three/addons/lines/Line2.js";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {showHider, toggles} from "./KeyBoardHandler";
 import {VG, ViewMan} from "./nodes/CNodeView";
-import {
-    chartDiv,
-    setupGimbalChart,
-    theChart,
-    UpdateChart,
-    UpdateChartLine,
-    updateChartSize
-} from "./JetChart";
+import {chartDiv, setupGimbalChart, theChart, UpdateChart, UpdateChartLine, updateChartSize} from "./JetChart";
 import {Ball, CNodeDisplayATFLIR, EOSU, PODBack, PodFrame} from "./nodes/CNodeDisplayATFLIR";
 import {calculateGlareStartAngle, getDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
 import {GlobalScene, LocalFrame} from "./LocalFrame";

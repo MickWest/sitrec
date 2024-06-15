@@ -1,10 +1,7 @@
 // attempt to traverse the LOS at constant speed
-import {NodeMan, Sit} from "../Globals";
-import {CNode} from "./CNode";
-import {abs, angleDifferenceDeg, atan2, degrees, f2m, metersPerSecondFromKnots, radians} from "../utils";
-import {Color, Ray, Sphere} from "three";
+import {abs, angleDifferenceDeg, atan2, degrees, radians} from "../utils";
+import {Ray, Sphere} from "three";
 import {DebugArrowAB} from "../threeExt";
-import {CNodeCloudData} from "./CNodeCloudData";
 import {GlobalScene} from "../LocalFrame";
 import {CNodeTrack} from "./CNodeTrack";
 import {intersectSphere2, V3} from "../threeUtils";

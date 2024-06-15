@@ -1,8 +1,7 @@
 // The Atflir UI has some of the screen symbology, plus the rendering of the artifial horizon
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {par} from "../par";
-import {abs, cos, floor, m2f, pad, radians, sin} from "../utils";
-import {NodeMan} from "../Globals";
+import {abs, floor, m2f, pad, radians} from "../utils";
 import {CNodeViewUI} from "./CNodeViewUI";
 
 export class   CNodeATFLIRUI extends CNodeViewUI {
