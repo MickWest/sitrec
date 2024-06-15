@@ -24,8 +24,10 @@ export const SitSWRCSC = {
 
     laser1: {kind: "LaserMarker", lat:  40.257024, lon: -109.893159, // center of triangle
         height: {kind:"GUIValue", value:50000, start:1, end: 200000, step:100, desc: "Laser Height"},
-        color: "#C0FFFF",
-        weight: 2,
+        color: "#80A0A0",
+        weight: 1,
+        cloudBand1: {start: 2000, depth:50, weight: 4, color: "#FFFFFF"},
+        cloudBand2: {start: 2200, depth:50, weight: 4, color: "#FFFFFF"},
         radius: {kind:"GUIValue", value:38, start:0, end: 100, step:0.1, desc: "Laser Radius"},
         angle: {kind:"GUIValue", value:-27, start:-180, end: 180, step:1, desc: "Laser Angle"},
         sides: {kind:"GUIValue", value:3, start:0, end: 20, step:1, desc: "Number of Lasers"},
@@ -41,9 +43,8 @@ export const SitSWRCSC = {
         // startCameraPositionLLA:[40.044026,-111.703724,7951172.784585],
         // startCameraTargetLLA:[40.043969,-111.703807,7950173.014630],
 
-        // close to triangle
-        startCameraPositionLLA:[40.239084,-109.880595,1982.141336],
-        startCameraTargetLLA:[40.247203,-109.885505,1889.827698],
+        startCameraPositionLLA:[40.207438,-109.883901,3110.042055],
+        startCameraTargetLLA:[40.216372,-109.884777,3043.437765],
     },
 
     // a full screen view. The size and position are fractions of the window size

@@ -49,6 +49,13 @@ export class CNodeLaserMarker extends CNode3DGroup {
         this.input("radius");
         this.input("angle");
         this.input("sides")
+        this.cloudBands = [];
+        if (v.cloudBand1) {
+            this.cloudBands.push(v.cloudBand1);
+        }
+        if (v.cloudBand2) {
+            this.cloudBands.push(v.cloudBand2);
+        }
         this.halveColors = v.halveColors ?? false;
         this.lines = null
         this.recalculate();
@@ -86,15 +93,31 @@ export class CNodeLaserMarker extends CNode3DGroup {
         this.lines = [];
 
         for (let i = 0; i < this.sides; i++) {
-            this.lines[i] = new CDisplayLine({
+            const groundA = ground.clone().add(heading);
+            this.lines.push(new CDisplayLine({
                 color: color,
-                A: ground.clone().add(heading),
+                A: groundA,
                 B: above.clone().add(heading),
                 width: weight,
                 group: this.group,
                 layers: LAYER.MASK_LOOKRENDER
-            });
-            if (this.halveColors) {
+            }));
+
+            for (let band of this.cloudBands) {
+                const cloudBase = pointAbove(groundA, band.start);
+                const cloudTop = pointAbove(groundA, band.start + band.depth);
+                this.lines.push(new CDisplayLine({
+                    color: band.color ?? color,
+                    A: cloudBase,
+                    B: cloudTop,
+                    width: band.weight ?? weight,
+                    group: this.group,
+                    layers: LAYER.MASK_LOOKRENDER
+                }));
+            }
+
+
+            if (this.halveColors) {parse
                 color.r /= 2;
                 color.g /= 2;
                 color.b /= 2;

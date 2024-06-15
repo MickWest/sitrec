@@ -127,6 +127,12 @@ export class CNodeControllerManualPosition extends CNodeController {
             return;
         }
 
+        // get the camera position, and forward and right vectors
+        const camera = objectNode.camera
+        let camPos = camera.position.clone()
+        const fwd = camera.getWorldDirection(new Vector3())
+        const right = new Vector3().crossVectors(fwd, camera.up)
+
         if (isKeyHeld('l')) {
             this.applying = true;
             const mainView = ViewMan.get("mainView")
@@ -139,13 +145,15 @@ export class CNodeControllerManualPosition extends CNodeController {
             // automatic cascade recalculation for anything that uses them.
             NodeMan.get("cameraLat").value = LLA.x
             NodeMan.get("cameraLon").value = LLA.y
+
+            // convert that to a camera position
+            camPos = LLAToEUSMAP(LLA.x, LLA.y, LLA.z, wgs84.RADIUS)
+            if (this.aboveGround !== undefined) {
+                camPos.y = adjustHeightAboveGround(camPos, this.aboveGround).y
+            }
         }
 
-        // get the camera position, and forward and right vectors
-        const camera = objectNode.camera
-        let camPos = camera.position.clone()
-        const fwd = camera.getWorldDirection(new Vector3())
-        const right = new Vector3().crossVectors(fwd, camera.up)
+
 
         let speed = 0.1;  // meters per frame
         if (isKeyHeld('Shift')) {
