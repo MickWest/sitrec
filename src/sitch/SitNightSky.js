@@ -37,7 +37,8 @@ export const SitNightSky = {
         // So in the file manager we'll need to store the raw file
         // not just the parsed file.
         // we flag it as dynamic by prepending a !
-        starLink: "!"+SITREC_SERVER+"proxy.php?url=https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle",
+//        starLink: "!"+SITREC_SERVER+"proxy.php?url=https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle",
+        starLink: "!"+SITREC_SERVER+"proxy.php?request=CURRENT_STARLINK",
 
     },
 
