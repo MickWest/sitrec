@@ -9,10 +9,22 @@ export const isConsole = (typeof window == 'undefined');
 // the sitrecServer tools on the remote host, not on the local dev machine
 // so we need to hardwire it below.
 //export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
-export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.hostname)
-const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
-const SITREC_LOCAL = "http://localhost/sitrec/"
-// console applications are often run from just outside the source tree 
+
+export const isConsole = (typeof window == 'undefined');
+
+let port = window.location.port;
+if (port) {
+    port = ":" + port;
+}
+
+export const SITREC_DOMAIN = window.location.hostname
+//const SITREC_HOST = window.location.protocol + "//" + window.location.hostname + window.location.pathname;
+// like that, but with the port number
+const SITREC_HOST = window.location.protocol + "//" + window.location.host + window.location.pathname;
+
+const SITREC_LOCAL = "http://localhost"+port+"/sitrec/"
+
+// console applications are often run from just outside the source tree
 const SITREC_CONSOLE_ROOT = "./sitrec/"
 
 // regular expression that allows us to detect if we are local
@@ -27,7 +39,7 @@ const SITREC_LOCAL_RE = '^https?:\/\/localhost'
 export const SITREC_DEV_DOMAIN = "www.metabunk.org"
 const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
 const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
-const SITREC_LOCAL_SERVER = "http://localhost/sitrec/sitrecServer/"
+const SITREC_LOCAL_SERVER = "http://localhost"+port+"/sitrec/sitRecServer/"
 
 // local host might not have a capability to act as a php server,
 // so we can tell Sitrec to use the remote for the proxies
@@ -69,6 +81,7 @@ checkLocal();
 export const SITREC_ROOT = (isConsole ? SITREC_CONSOLE_ROOT : (isLocal ? SITREC_LOCAL : SITREC_HOST))
 export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
     (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
+export const SITREC_UPLOAD = SITREC_HOST + "../sitrec-upload/"
 
 console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
 console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
@@ -77,9 +90,9 @@ export const _configParams = {
    rehostRequiresLogin: false,      // if true, rehosting requires login - currently only supported for Metabunk/Xenforo
 };
 
-////////////////////////////////////////////////\\
-// / Gimbal, GoFast, flir1, aguadilla, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, porterville, folsomlake, etc
+////////////////////////////////////////////////
+// / Gimbal, GoFast, flir1, agua, dume, video, hayle, 29palms, SWR, kml, kansas,
+// aa2292, lakemichigan, chilean, porterville, folsomlake, n14aq, swr, swrcss, etc
 // This is the sitch that is loaded when running on local
-export const localSituation = "nightsky";
+export const localSituation = "custom";
 //////////////////////////////////////////////

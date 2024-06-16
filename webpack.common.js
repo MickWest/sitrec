@@ -1,28 +1,22 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const webpack=require('webpack')
+const webpack = require('webpack');
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
-
-const InstallPaths = require('./config-install')
-
+const InstallPaths = require('./config-install');
 const child_process = require('child_process');
 
 function getFormattedLocalDateTime() {
     const now = new Date();
-
-    // get last two digits of year
-    const year = String(now.getFullYear()).substring(2)
-
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // getMonth() returns 0-11
+    const year = String(now.getFullYear()).substring(2);
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
     // Get the most recent tag from git
     const gitTag = child_process.execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
-
     return `Sitrec ${gitTag}: ${year}-${month}-${day} ${hours}:${minutes} PT`;
 }
 
@@ -32,23 +26,14 @@ console.log(getFormattedLocalDateTime());
 // npm install copy-webpack-plugin --save-dev
 
 module.exports = {
-    mode: 'development',
     entry: {
         index: './src/index.js',
     },
-
-    ///////////////////////////////////////////////////////////////////////////
-    //  fix for error: Module build failed: UnhandledSchemeError: Reading from "node:fs" is not handled by plugins (Unhandled scheme).
     target: 'web',
     externals: {
         'node:fs': 'commonjs2 fs',
     },
-    ///////////////////////////////////////////////////////////////////////////
-
-//    devtool: 'eval',
     module: {
-
-
         rules: [
             /*
             { // erm - do I need this? babel is for transpiling down to earlier verisons of js?
@@ -77,11 +62,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['.js'],
-
-        // Mick, this is to ensure one common three.js module when using things like the jsm line examples.
         alias: {
-        //   'three/addons': path.resolve(__dirname, 'three.js/examples/jsm/'),
-        //    'three': path.resolve(__dirname, 'three.js/build/three.module.js'),
         },
     },
     plugins: [
@@ -90,7 +71,7 @@ module.exports = {
             title: "Sitrec - Metabunk's Situation Recreation Tool",
         }),
         new webpack.ProvidePlugin({
-            Buffer: ['buffer', 'Buffer'], // for map33
+            Buffer: ['buffer', 'Buffer'],
         }),
         new webpack.ProvidePlugin({
             // Fix for jquery issues with normal import under Webpack. Possibly circular dependencies
@@ -115,10 +96,7 @@ module.exports = {
             'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime()),
             'CAN_REQUIRE_CONTEXT': JSON.stringify(true)
         }),
-],
-
-    // This is needed because I do some "await"s at the top level (not in async functions)
-    // maybe I shouldn't
+    ],
     experiments: {
         topLevelAwait: true
     },
@@ -129,7 +107,6 @@ module.exports = {
     optimization: {
         minimizer: [
             new TerserPlugin({
-                //exclude: /\.sitch\.js$/, // Exclude files ending with .sitch.js from minification
                 // exclude files starting with "Sit" and ending with ".js"
                 exclude: /Sit.*\.js$/,
                 terserOptions: {
@@ -138,12 +115,9 @@ module.exports = {
             }),
         ],
     },
-
     output: {
-        filename: '[name].[contenthash].bundle.js', // each entry translates into one of these bundles
-        //      path: path.resolve(__dirname, 'dist'),
-      //  path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/sitrec',
+        filename: '[name].[contenthash].bundle.js',
         path: InstallPaths.dev_path,
-        clean: true, // this deleted the contents of path (dist)
+        clean: true, // this deleted the contents of path (InstallPaths.dev_path)
     },
 };
