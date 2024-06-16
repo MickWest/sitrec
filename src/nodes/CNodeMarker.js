@@ -117,7 +117,7 @@ export class CNodeLaserMarker extends CNode3DGroup {
             }
 
 
-            if (this.halveColors) {parse
+            if (this.halveColors) {
                 color.r /= 2;
                 color.g /= 2;
                 color.b /= 2;
