@@ -145,7 +145,7 @@ if (!file_exists($userFilePath)) {
 
     // Create a directory for the user if it doesn't exist
     if (!file_exists($userDir)) {
-        mkdir($userDir, 0777, true);
+        mkdir($userDir, 0555, true);
     }
 
     move_uploaded_file($_FILES['fileContent']['tmp_name'], $userFilePath);
