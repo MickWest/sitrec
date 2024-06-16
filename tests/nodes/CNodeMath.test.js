@@ -1,17 +1,7 @@
-/**
- * @jest-environment jsdom
- */
-
-test('use jsdom in this test file', () => {
-    const element = document.createElement('div');
-    expect(element).not.toBeNull();
-});
-
 import { CNodeMath } from '../../src/nodes/CNodeMath.js';
 import { CNodeConstant } from '../../src/nodes/CNode.js';
-import {NodeMan, setNodeMan} from '../../src/Globals.js';
+import { setNodeMan} from '../../src/Globals.js';
 import {CNodeManager} from "../../src/nodes/CNodeManager";
-
 
 describe('CNodeMath Integration Tests', () => {
     let nodeA, nodeB, cNodeMath;
