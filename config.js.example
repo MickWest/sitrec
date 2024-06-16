@@ -10,15 +10,18 @@ export const isConsole = (typeof window == 'undefined');
 // so we need to hardwire it below.
 //export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
 
-let port = window.location.port;
-if (port) {
-    port = ":" + port;
+let port = "";
+
+if (!isConsole) {
+    port = window.location.port;
+    if (port) {
+        port = ":" + port;
+    }
 }
 
-export const SITREC_DOMAIN = window.location.hostname
-//const SITREC_HOST = window.location.protocol + "//" + window.location.hostname + window.location.pathname;
-// like that, but with the port number
-const SITREC_HOST = window.location.protocol + "//" + window.location.host + window.location.pathname;
+export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.hostname)
+//const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
+const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.host + window.location.pathname));
 
 const SITREC_LOCAL = "http://localhost"+port+"/sitrec/"
 
