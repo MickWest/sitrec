@@ -32,7 +32,7 @@ export const SitSWR = {
         // these are nodes, but simplifed setup
         // so we have the shader name, and the uniforms
         // note some shaders nodes require extra calculations, like for resolution
-        FLIRShader: {},
+//        FLIRShader: {},
         hBlur: {
             inputs: {
                 h: {kind: "GUIValue", value: 0.2, start: 0.0, end: 1.0, step: 0.01, desc: "Blur Horizontal"}

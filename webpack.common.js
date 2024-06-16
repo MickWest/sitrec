@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const InstallPaths = require('./config-install');
 const child_process = require('child_process');
+const copyPatterns = require('./webpackCopyPatterns');
 
 function getFormattedLocalDateTime() {
     const now = new Date();
@@ -80,17 +81,7 @@ module.exports = {
         }),
         new CopyPlugin({
 
-            patterns: [
-                // copies the data directory
-                { from: "data", to: "./data"},
-                { from: "sitrecServer", to: "./sitrecServer"},
-
-                // Web worker source code needs to be loaded at run time
-                // so we just copy it over
-                // This is currently not used
-                { from: "./src/workers/*.js", to:""},
-                { from: "./src/PixelFilters.js", to:"./src"},
-            ],
+            patterns: copyPatterns
         }),
         new webpack.DefinePlugin({
             'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime()),

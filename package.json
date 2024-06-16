@@ -5,7 +5,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "build": "npx webpack --config webpack.dev.js",
     "deploy": "npx webpack --config webpack.prod.js",
-    "start": "webpack serve --config webpack.dev.js --mode development"
+    "start": "webpack serve --config webpack.dev.js --mode development",
+    "copy": "npx webpack --config webpack.copy-files.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
