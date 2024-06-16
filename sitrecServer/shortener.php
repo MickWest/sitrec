@@ -42,11 +42,6 @@ if (isset($params['url'])) {
         exit;
     }
 
-    if (strpos($url, 'sitrecServer') !== false) {
-        echo "URL containing 'sitrecServer' is not allowed.";
-        exit;
-    }
-
     // Generate a unique code for the URL
     $code = generateUniqueCode($storageDir);
 
