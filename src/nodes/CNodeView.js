@@ -243,7 +243,7 @@ class CNodeView extends CNode {
 
         // Sync the zoom on this camera to the video zoom
         // check if it's flagged, and we actually have a videoZoom UI control
-        if (NodeMan.exists("videoZoom") && NodeMan.exists("pixelZoomNode")) {
+        if (NodeMan.exists("videoZoom")) {
             if (this.effectsEnabled && this.syncPixelZoomWithVideo && NodeMan.get("pixelZoomNode").enabled) {
                 this.camera.zoom = 1; // i.e. render it noramally, and then zoom up the pixels
                 // these are CNodeGUI objects
