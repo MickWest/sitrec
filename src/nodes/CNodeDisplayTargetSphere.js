@@ -1,14 +1,15 @@
-import {CNode3DTarget} from "./CNode3DTarget";
 import {Color, LineSegments, SphereGeometry, WireframeGeometry} from "three";
 import * as LAYER from "../LayerMasks";
+import {CNode3DGroup} from "./CNode3DGroup";
 
-export class CNodeDisplayTargetSphere extends CNode3DTarget {
+export class CNode3DSphere extends CNode3DGroup {
     constructor(v) {
         v.layers      ??= LAYER.MASK_HELPERS;
         v.color ??= "white"
 
         super(v);
 
+        this.input("size", true); // size input is optional
 
         this.color = v.color;
 
@@ -45,6 +46,19 @@ export class CNodeDisplayTargetSphere extends CNode3DTarget {
 //        console.log("TARGET SPHERE DIAMETER = " + scale + "m "+ m2f(scale) + "f");
         this.group.scale.setScalar(scale);
     }
+}
+
+// legacy class using the new CNode3DSphere, and adding the functionality that was in CNode3DTarget
+export class CNodeDisplayTargetSphere extends CNode3DSphere {
+    constructor(v) {
+        super(v);
+        this.input("track");
+    }
+
+    update(f) {
+        this.group.position.copy(this.in.track.p(f))
+    }
+
 }
 
 

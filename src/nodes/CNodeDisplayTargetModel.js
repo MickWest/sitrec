@@ -1,6 +1,5 @@
 // fiddly temporary class to handle the jet target
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
-import {CNode3DTarget} from "./CNode3DTarget";
 import {FileManager, gui, NodeMan, Sit} from "../Globals";
 
 import {Matrix4} from "three";
@@ -10,16 +9,18 @@ import {getGlareAngleFromFrame} from "../JetStuff";
 import {par} from "../par";
 import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";
 import {V3} from "../threeUtils";
+import {CNode3DGroup} from "./CNode3DGroup";
 
 
 // By default it will create a model from the file tagged "TargetObjectFile"
-// or you can passa "TargetObjectFile" member in the input structure (v, here)
-export class CNodeDisplayTargetModel extends CNode3DTarget {
+// or you can pass a "TargetObjectFile" member in the input structure (v, here)
+export class CNode3DModel extends CNode3DGroup {
     constructor(v) {
         super(v);
 
         this.input("track")
         this.optionalInputs(["wind", "airTrack"])
+
 
         this.tiltType = v.tiltType ?? "none"
 
@@ -251,7 +252,6 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
 
         var m = new Matrix4()
-//      m.makeBasis(_x, _y, _z)
         m.makeBasis(_y, _z, _x)    // z goes into the y slot
 
 
@@ -272,5 +272,17 @@ export class CNodeDisplayTargetModel extends CNode3DTarget {
 
     }
 
+}
+
+// legacy class using the new CNode3DModel, and adding the functionality that was in CNode3DTarget
+export class CNodeDisplayTargetModel extends CNode3DModel {
+    constructor(v) {
+        super(v);
+    }
+
+    update(f) {
+        super.update(f);
+        this.group.position.copy(this.in.track.p(f))
+    }
 }
 

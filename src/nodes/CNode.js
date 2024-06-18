@@ -138,7 +138,7 @@ class CNode {
         // virtual function, derived nodes override to implement per-frame updates
         // here we just check f is defined to ensure derived update(f) functions
         // are passing it down
-        assert(f !== undefined, "Something is not passing in f")
+        assert(f !== undefined, "Something upstream is not passing in f to node's update function")
     }
 
     show() {
