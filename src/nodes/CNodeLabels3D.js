@@ -47,7 +47,7 @@ export function setupMeasurementUI() {
     refreshMeasurementVisibility();
 
     measurementUIVars.controller =  guiShowHide.add(Globals, "showMeasurements").name("Measurements").listen().onChange( (value) => {
-        console.warn("%%%%%%% showMeasurements changed to " + value)
+//        console.warn("%%%%%%% showMeasurements changed to " + value)
         refreshMeasurementVisibility();
         par.renderOne = true;
     })
