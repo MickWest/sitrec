@@ -78,14 +78,16 @@ const GimbalDefaults = {
     },
 
     mainCamera: {},
-    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#000000' },
+    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#404040' },
 
     videoFile: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,background:[1,0,0,0]},
 
     lookCamera: { fov:0.35 },
-    lookView: {left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,background:[0.02,0.02,0.02],
-               draggable:true,resizable:true,shiftDrag:true,freeAspect:false, noOrbitControls:true},
+    lookView: {left: 0.6656, top: 1 - 0.3333, width: -1, height: 0.333,
+               draggable:true,resizable:true,shiftDrag:true,freeAspect:false, noOrbitControls:true,
+    },
+    syncVideoZoom: true,
 
     mirrorVideo: { transparency: 0.15, autoClear: true, autoFill: false},
 
