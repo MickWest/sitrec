@@ -57,6 +57,8 @@ jobs:
       if: github.event_name != 'push'
     - name: build prod
       run: npm run deploy
+    - name: run tests
+      run: npm test
       
   build_console:
     if: true  # the job can be disabled from here
@@ -83,3 +85,6 @@ jobs:
         # note: by default, without remapping imports, bun uses the three.js version from package-lock.json 
     - name: run console test
       run: cd ../ && bun test.js
+    - name: run tests
+      # jsdom does not work with bun, so skip tests whose name contains 'jsdom'
+      run: cd tests && bun test -t "^((?!jsdom).)*$"
