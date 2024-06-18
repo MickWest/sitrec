@@ -16,7 +16,7 @@ This just runs the script in package.json, but in the node environment. Webpack 
 so needs to be in that environment (i.e. NOT brew install webpack).
 Also some packages used by the Sitrec client are from node.
 
-See webpack.common.cjs for details of what is copied over
+See webpack.common.js for details of what is copied over
 
 
 npm run deploy

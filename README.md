@@ -77,8 +77,8 @@ Clone Sitrec from Github, or download a release archive. This will give you the 
 
 Then there are the project build files:
 - `package.json` - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
-- `webpack.common.cjs` - the main configuration file for Webpack. The next two files both include this. 
-- `webpack.dev.cjs` - used for development
+- `webpack.common.js` - the main configuration file for Webpack. The next two files both include this. 
+- `webpack.dev.js` - used for development
 - `webpack.prod.js` - used for production/deployment
 - `config.js` - Contains install-specific constants for server paths used by the app
 - `config-install.js` - development and production file paths, used by the build system
