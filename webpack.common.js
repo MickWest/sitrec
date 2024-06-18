@@ -80,7 +80,6 @@ module.exports = {
             jQuery: "jquery",
         }),
         new CopyPlugin({
-
             patterns: copyPatterns
         }),
         new webpack.DefinePlugin({

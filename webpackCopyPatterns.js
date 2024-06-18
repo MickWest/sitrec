@@ -2,8 +2,13 @@ const path = require('path');
 const InstallPaths = require('./config-install');
 
 module.exports = [
-    { from: 'data', to: path.join(InstallPaths.dev_path, 'data') },
-    { from: 'sitrecServer', to: path.join(InstallPaths.dev_path, 'sitrecServer') },
-    { from: './src/workers/*.js', to: path.join(InstallPaths.dev_path, 'src/workers/[name][ext]') },
-    { from: './src/PixelFilters.js', to: path.join(InstallPaths.dev_path, 'src') },
+    // copies the data directory
+    { from: "data", to: "./data"},
+    { from: "sitrecServer", to: "./sitrecServer"},
+
+    // Web worker source code needs to be loaded at run time
+    // so we just copy it over
+    // This is currently not used
+    { from: "./src/workers/*.js", to:""},
+    { from: "./src/PixelFilters.js", to:"./src"},
 ];
