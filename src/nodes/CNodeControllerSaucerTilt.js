@@ -34,6 +34,18 @@ export class CNodeControllerSaucerTilt extends CNodeController {
 
     }
 
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            tiltType: this.tiltType,
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        this.tiltType = v.tiltType
+    }
+
     apply(f, objectNode ) {
 
         const object = objectNode._object;

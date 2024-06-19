@@ -1,52 +1,19 @@
-import {Color, LineSegments, SphereGeometry, WireframeGeometry} from "three";
-import * as LAYER from "../LayerMasks";
-import {CNode3DGroup} from "./CNode3DGroup";
+import {CNode3DObject} from "./CNode3DObject";
 
-export class CNode3DSphere extends CNode3DGroup {
+
+export class CNode3DSphere extends CNode3DObject {
     constructor(v) {
-        v.layers      ??= LAYER.MASK_HELPERS;
-        v.color ??= "white"
+        v.geometry = "sphere";
+        v.radius = 0.5
+        v.widthSegments = 20
+        v.heightSegments = 20
 
         super(v);
-
-        this.input("size", true); // size input is optional
-
-        this.color = v.color;
-
-        // we make a sphere of radius 0.5 so it has a 1 METER diameter
-        // so scale passed in must be in meters.
-        const geometry = new SphereGeometry(0.5, 20, 20);
-        const wireframe = new WireframeGeometry(geometry);
-        const sphere = new LineSegments(wireframe);
-
-        const matColor = new Color(this.color.v())
-        sphere.material.color = matColor;
-
-        sphere.material.depthTest = true;
-        sphere.material.opacity = 0.75;
-        sphere.material.transparent = true;
-
-        this.group.add(sphere);
-        this.targetObject = sphere;
-        this.propagateLayerMask()
-        this.recalculate()
-
     }
 
-    dispose() {
-        this.targetObject.geometry.dispose();
-        this.targetObject.material.dispose();
-        this.group.remove(this.targetObject);
-        super.dispose();
-    }
 
-    recalculate() {
-        // with a 1 meter diameter sphere, the "size" input is the diameter in meters.
-        const scale = this.in.size.v0
-//        console.log("TARGET SPHERE DIAMETER = " + scale + "m "+ m2f(scale) + "f");
-        this.group.scale.setScalar(scale);
-    }
 }
+
 
 // legacy class using the new CNode3DSphere, and adding the functionality that was in CNode3DTarget
 export class CNodeDisplayTargetSphere extends CNode3DSphere {
