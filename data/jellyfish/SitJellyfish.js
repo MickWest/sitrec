@@ -116,14 +116,29 @@ export const SitJellyfish    = {
     //     layers: "LOOKRENDER"
     // },
 
-    sphereInLookView: { kind: "3DObject",
-        geometry: "cube",
+    targetObject: { kind: "3DObject",
+        geometry: "torusknot",
         size: "sphereSize",
         layers: "LOOKRENDER",
-        color: "red"
+
+        color: "red",
+        //opacity: .5,
+        rotateZ: 45,
+        wireframe: true
     },
 
-    moveSphere: {kind: "TrackPosition", object: "sphereInLookView", sourceTrack: "targetTrack"},
+
+    // sphereInLookView: { kind: "3DObject",
+    //     geometry: "capsule",
+    //     size: "sphereSize",
+    //     layers: "LOOKRENDER",
+    //     color: "red",
+    //     opacity: .5,
+    //     rotateZ: 90,
+    //     edges: true
+    // },
+
+    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "targetTrack"},
 
 
     targetTrackDisplay: { kind: "DisplayTrack",

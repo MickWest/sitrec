@@ -110,17 +110,17 @@ const QuadTextureMaterial = (urls) => {
     // in Area6 we can adjust the time of day to see this effect
     // all the lights add together to make it brighter
 
-    // return new MeshStandardMaterial({map: texture,
-    //   emissive: new Color(0xffffff),  // Set emissive color to white
-    //   emissiveMap: texture,                 // Use the same texture for emissive map
-    //   emissiveIntensity: 1.0,                // Full intensity for emissive
-    //   //colorSpace: SRGBColorSpace
-    //    })
-    //
+    return new MeshStandardMaterial({map: texture,
+      emissive: new Color(0xffffff),  // Set emissive color to white
+      emissiveMap: texture,                 // Use the same texture for emissive map
+      emissiveIntensity: 1.0,                // Full intensity for emissive
+      //colorSpace: SRGBColorSpace
+       })
+
 
     // for now use this basic material
     // // basic material for no lighting, just render the original colors.
-     return new MeshBasicMaterial({map: texture})
+    // return new MeshBasicMaterial({map: texture})
 
 
   })
