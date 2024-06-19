@@ -1275,14 +1275,14 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             // but need to detect if it's derived from CNodeController
             // and then add it to the camera
             if (NodeFactory.isController("Controller" + key)) {
-                const camera = data.camera ?? "lookCamera";
-                const cameraNode = NodeMan.get(camera);
-                data.id = data.id ?? (cameraNode.id+"_Controller" + key);
-                if (cameraNode) {
+                const objectID = data.object ?? data.camera ?? "lookCamera";
+                const objectNode = NodeMan.get(objectID);
+                data.id = data.id ?? (objectNode.id+"_Controller" + key);
+                if (objectNode) {
                     node = NodeFactory.create("Controller"+key, data);
-                    cameraNode.addControllerNode(node);
+                    objectNode.addControllerNode(node);
                 } else {
-                    console.error("SituationSetup: controller " + key + " needs a camera")
+                    console.error("SituationSetup: controller " + key + " needs an object/camera")
                 }
             } else {
 

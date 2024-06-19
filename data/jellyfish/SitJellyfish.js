@@ -34,9 +34,9 @@ export const SitJellyfish    = {
     mainView:{ left:0.0, top:0, width:0.50,height:1,background:'#000000'},
 
     lookView:{ left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
-        effects: {
-            FLIRShader: {},
-        }
+        // effects: {
+        //     FLIRShader: {},
+        // }
     },
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5,},
 
@@ -110,11 +110,21 @@ export const SitJellyfish    = {
     //     layers: "HELPERS",
     // },
 
-    sphereInLookView: { kind: "DisplayTargetSphere",
-        track: "targetTrack",
+    // sphereInLookView: { kind: "DisplayTargetSphere",
+    //     track: "targetTrack",
+    //     size: "sphereSize",
+    //     layers: "LOOKRENDER"
+    // },
+
+    sphereInLookView: { kind: "3DObject",
+        geometry: "cube",
         size: "sphereSize",
-        layers: "LOOKRENDER"
+        layers: "LOOKRENDER",
+        color: "red"
     },
+
+    moveSphere: {kind: "TrackPosition", object: "sphereInLookView", sourceTrack: "targetTrack"},
+
 
     targetTrackDisplay: { kind: "DisplayTrack",
         track: "targetTrack",

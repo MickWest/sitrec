@@ -4,7 +4,7 @@
 
 import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
-import {Color, LineSegments, Mesh, SphereGeometry, WireframeGeometry} from "three";
+import {BoxGeometry, Color, LineSegments, Mesh, SphereGeometry, WireframeGeometry} from "three";
 
 export class CNode3DObject extends CNode3DGroup {
     constructor(v) {
@@ -20,7 +20,13 @@ export class CNode3DObject extends CNode3DGroup {
         // make a geometry based on v.geometry, "sphere", "cube", etc
         switch (v.geometry) {
             case "sphere":
+                v.widthSegments ??= 20;
+                v.heightSegments ??= 20;
+                v.radius ??= 0.5;
                 this.geometry = new SphereGeometry(v.radius, v.widthSegments, v.heightSegments);
+                break;
+            case "cube":
+                this.geometry = new BoxGeometry(1,1,1);
                 break;
             default:
                 console.error("CNode3DObject: unknown geometry type: ", v.geometry)

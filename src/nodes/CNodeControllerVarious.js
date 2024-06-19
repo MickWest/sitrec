@@ -69,14 +69,19 @@ export class CNodeControllerTrackPosition extends CNodeController {
     }
 
     apply(f, objectNode) {
-        const camera = objectNode.camera
-        assert(this.in.sourceTrack !== undefined, "CNodeControllerTrackPosition: sourceTrack is undefined, id="+this.id)
-        var camPos = this.in.sourceTrack.p(f)
-        assert(!Number.isNaN(camPos.x),"CNodeControllerTrackPosition: camera.position.x NaN")
+        const object = objectNode._object; // could be a camera or ony THREE.Object3D
+        assert(this.in.sourceTrack !== undefined, "CNodeControllerTrackPosition: sourceTrack is undefined, id=" + this.id)
+        var pos = this.in.sourceTrack.p(f)
+        assert(!Number.isNaN(pos.x), "CNodeControllerTrackPosition: track's position.x NaN")
 
-        updateCameraAndUI(camPos, camera, objectNode);
+        if (object.isCamera) {
+            updateCameraAndUI(pos, object, objectNode);
+        } else {
+            object.position.copy(pos)
+        }
     }
 }
+
 
 function updateCameraAndUI(camPos, camera, objectNode) {
     if (camPos.equals(camera.position)) return;
