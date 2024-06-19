@@ -19,7 +19,8 @@ const terrainGUIColor = "#c0ffc0";
 // let terrainGUI;
 // let mapTypeMenu;
 let local = {}
-const mapTypes = ["mapbox","osm","eox","wireframe","RGBTest"];
+//const mapTypes = ["mapbox","osm","eox","wireframe","RGBTest"];
+const mapTypes = {"MapBox":"mapbox","Open Streetmap":"osm","EOX":"eox","Wireframe":"wireframe","RGB Test":"RGBTest"};
 
 // function makeMapTypeMenu() {
 //     if (terrainGUI === undefined) {
@@ -191,7 +192,7 @@ export class CNodeTerrain extends CNode {
 
 
        this.terrainGUI = gui.addFolder("Terrain")
-       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen()
+       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen().name("Map Type")
 
 
         this.loaded = false;
@@ -270,13 +271,25 @@ export class CNodeTerrain extends CNode {
 
 
         this.maps = []
-        mapTypes.forEach(m => {
-            this.maps[m] = {
+        // changed from an array to K/V pairs
+        // so iterate over K/V
+        for (const mapName in mapTypes) {
+            const mapID = mapTypes[mapName]
+            this.maps[mapID] = {
                 group: new Group(),
-                source: new Source(m, ''), // << Todo - allow the user to access it directly with their own token
+                source: new Source(mapID, ''), // << Todo - allow the user to access it directly with their own token
             }
-            GlobalScene.add(this.maps[m].group)
-        })
+            GlobalScene.add(this.maps[mapID].group)
+
+        }
+
+        // mapTypes.forEach(m => {
+        //     this.maps[m] = {
+        //         group: new Group(),
+        //         source: new Source(m, ''), // << Todo - allow the user to access it directly with their own token
+        //     }
+        //     GlobalScene.add(this.maps[m].group)
+        // })
 
         local.mapType = v.mapType ?? "mapbox"
         this.deferLoad = v.deferLoad;
