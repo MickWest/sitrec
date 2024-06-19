@@ -162,7 +162,7 @@ const commonParams = {
     depthTest: true,
     opacity: [1,0,1,0.01],
     transparent: false,
- //   color: "white",
+    color: "white",
 }
 
 export class CNode3DObject extends CNode3DGroup {
@@ -170,13 +170,16 @@ export class CNode3DObject extends CNode3DGroup {
         v.layers ??= LAYER.MASK_HELPERS;
         v.color ??= "white"
 
+        // patch DON'T convert the color to a constant node
+        const oldColor = v.color;
         super(v);
+        v.color = oldColor;
 
         this.input("size", true); // size input is optional
 
         this.color = v.color;
 
-        this.gui = gui.addFolder("3DObject: " + this.id)
+        this.gui = gui.addFolder("3DObject: " + this.id).close()
         this.common = {}
 
         // add the common parameters to the GUI
@@ -191,28 +194,43 @@ export class CNode3DObject extends CNode3DGroup {
 
     }
 
-    addParams(geometryParams, tooHere, isCommon=false) {
+    addParams(geometryParams, toHere, isCommon=false) {
         const v = this.props;
         for (const key in geometryParams) {
             if (v[key] === undefined) {
                 // if no value is given, then use the first value in the array
                 // (the default value)
                 // or the value itself if it's not an array
-                if (Array.isArray(geometryParams[key])) {
+                if (Array.isArray(geometryParams[key]) && key !== "color") {
                     v[key] = geometryParams[key][0];
                 } else {
                     v[key] = geometryParams[key];
                 }
             }
-            tooHere[key] = v[key];
+            toHere[key] = v[key];
 
             let controller;
-            if (Array.isArray(geometryParams[key])) {
+
+            if (key === "color") {
+              // add color picker
+                // its going to be to controlling toHere[key]
+                // which will be this.common.color
+                // first we need to ensure it's in the correct format for lil-gui
+                // which expect a hex string like "#RRGGBB"
+                const color3 = new Color(toHere[key]);
+                toHere[key] = "#" + color3.getHexString();
+                controller = this.gui.addColor(toHere, key).name(key).listen()
+                    .onChange((v) => {
+                        this.rebuild();
+                        par.renderOne = true
+                    })
+
+            } else if (Array.isArray(geometryParams[key])) {
 
                 // is the firsts value in the array a number?
                 if (typeof geometryParams[key][0] === "number") {
                     // and make a gui slider for the parameter
-                    controller = this.gui.add(tooHere, key, geometryParams[key][1], geometryParams[key][2], geometryParams[key][3]).name(key).listen()
+                    controller = this.gui.add(toHere, key, geometryParams[key][1], geometryParams[key][2], geometryParams[key][3]).name(key).listen()
                         .onChange((v) => {
                             this.rebuild();
                             par.renderOne = true
@@ -220,7 +238,7 @@ export class CNode3DObject extends CNode3DGroup {
                 } else {
                     // assume it's a string, so a drop-down
                     // make a drop-down for the parameter
-                    controller = this.gui.add(tooHere, key, geometryParams[key]).name(key).listen()
+                    controller = this.gui.add(toHere, key, geometryParams[key]).name(key).listen()
                         .onChange((v) => {
                             this.rebuild();
                             par.renderOne = true
@@ -230,7 +248,7 @@ export class CNode3DObject extends CNode3DGroup {
             } else {
                 // if it's not an array, then it's a boolean
                 // so make a checkbox
-                controller = this.gui.add(tooHere, key).name(key).listen()
+                controller = this.gui.add(toHere, key).name(key).listen()
                     .onChange((v) => {
                         this.rebuild();
                         par.renderOne = true
@@ -308,7 +326,7 @@ export class CNode3DObject extends CNode3DGroup {
             this.object = new Mesh(this.geometry);
         }
 
-        const matColor = new Color(this.color.v())
+        const matColor = new Color(common.color)
         this.object.material.color = matColor;
 
         this.object.material.depthTest = common.depthTest ?? true;
