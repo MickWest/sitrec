@@ -80,8 +80,8 @@ export class CNodeDisplayTargetModel extends CNode3DModel {
     }
 
     update(f) {
-        super.update(f);
         this.group.position.copy(this.in.track.p(f))
+        super.update(f);
     }
 }
 
