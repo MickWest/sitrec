@@ -36,9 +36,10 @@ export const SitFlir1 = {
     focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
 
 
-    mainView: {left: 0, top: 0, width: 1, height: 1, background: [0.05, 0.05, 0.05]},
+    mainView: {left: 0, top: 0, width: 1, height: 1, background: "#505070"},
+
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
-      lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
+    lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
         canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
         // effects: [ "StaticNoise", "hBlur", "vBlur", "digitalZoom", "PixelateNxN", "pixelZoom"],
         // inputs: {
@@ -75,9 +76,9 @@ export const SitFlir1 = {
                 id: "FLIR1_IRW_Levels",
                 kind: "Levels",
                 inputs: {
-                    inputBlack: {kind: "GUIValue", value: 0.32, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
-                    inputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
-                    gamma: {kind: "GUIValue", value: 3.2, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
+                    inputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
+                    inputWhite: {kind: "GUIValue", value: 0.80, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
+                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
                     outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black"},
                     outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White"},
 
@@ -87,9 +88,9 @@ export const SitFlir1 = {
                 id: "FLIR1_TV_Levels",
                 kind: "Levels",
                 inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.22, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
-                    inputWhite:  {kind: "GUIValue", value: 0.68, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
-                    gamma:       {kind: "GUIValue", value: 3.60, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
+                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
+                    gamma:       {kind: "GUIValue", value: 3.28, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
                     outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
                     outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
 
