@@ -8,12 +8,26 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
 import {
     BoxGeometry,
-    CapsuleGeometry, CircleGeometry,
-    Color, ConeGeometry, CylinderGeometry, DodecahedronGeometry,
-    EdgesGeometry, IcosahedronGeometry,
+    CapsuleGeometry,
+    CircleGeometry,
+    Color,
+    ConeGeometry,
+    CylinderGeometry,
+    DodecahedronGeometry,
+    EdgesGeometry,
+    IcosahedronGeometry,
     LineSegments,
-    Mesh, OctahedronGeometry, RingGeometry,
-    SphereGeometry, TetrahedronGeometry, TorusGeometry, TorusKnotGeometry,
+    Mesh,
+    MeshBasicMaterial,
+    MeshLambertMaterial,
+    MeshPhongMaterial,
+    MeshPhysicalMaterial,
+    OctahedronGeometry,
+    RingGeometry,
+    SphereGeometry,
+    TetrahedronGeometry,
+    TorusGeometry,
+    TorusKnotGeometry,
     WireframeGeometry
 } from "three";
 import {gui} from "../Globals";
@@ -152,11 +166,71 @@ const gTypes = {
     },
 }
 
+// material types for meshes
+const materialTypes = {
+    basic: {
+        m: MeshBasicMaterial,
+        params: {
+            color: "white",
+            fog: true,
+        }
+    },
+
+    // lambert, with no maps, essentially just combines the color and emissive
+    lambert: {
+        m: MeshLambertMaterial,
+        params: {
+            color: "white",
+            emissive: "black",
+            emissiveIntensity: [1,0,1,0.01],
+            flatShading: false,
+            fog: true,
+
+        }
+    },
+
+    phong: {
+        m: MeshPhongMaterial,
+        params: {
+            color: "white",
+            emissive: "black",
+            emissiveIntensity: [1,0,1,0.01],
+            specular: "white",
+            shininess: [30,0,100,0.1],
+            flatShading: false,
+            fog: true,
+        }
+    },
+
+    physical: {
+        m: MeshPhysicalMaterial,
+        params: {
+            color: "white",
+            emissive: "black",
+            emissiveIntensity: [1, 0, 1, 0.01],
+            specular: "white",
+            shininess: 30,
+            flatShading: false,
+            fog: true,
+            reflectivity: [1, 0, 1, 0.01],
+            clearcoat: [1, 0, 1, 0.01],
+            clearcoatRoughness: [0, 0, 1, 0.01],
+            transmission: [0, 0, 1, 0.01],
+            ior: [1.5, 1, 2.33, 0.01],
+            roughness: [0.5, 0, 1, 0.01],
+            metalness: [0.5, 0, 1, 0.01],
+        }
+    }
+
+}
+
 const commonParams = {
     geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tetrahedron", "torus", "torusknot"],
     rotateX: [0, -180, 180, 1],
     rotateY: [0, -180, 180, 1],
     rotateZ: [0, -180, 180, 1],
+
+    material: ["basic", "lambert", "phong", "physical"],
     wireframe: false,
     edges: false,
     depthTest: true,
@@ -187,9 +261,6 @@ export class CNode3DObject extends CNode3DGroup {
         // so they don't get deleted when we rebuild the GUI after object type change
         this.addParams(commonParams, this.common, true); // add the common parameters to the GUI
 
-//        this.lastGeometry = this.common.geometry.splice(); // copy the geometry type to compare later
-
-
         this.rebuild();
 
     }
@@ -211,7 +282,10 @@ export class CNode3DObject extends CNode3DGroup {
 
             let controller;
 
-            if (key === "color") {
+            const colorNames = ["color", "emissive", "specular"]
+            if (colorNames.includes(key)) {
+                // assume string values are colors
+                // (might need to have an array of names of color keys, like "emissive"
               // add color picker
                 // its going to be to controlling toHere[key]
                 // which will be this.common.color
@@ -264,7 +338,6 @@ export class CNode3DObject extends CNode3DGroup {
     rebuild() {
         const v = this.props;
         this.destroyObject();
-
         const common = this.common;
 
         // set up inputs based on the geometry type
@@ -278,11 +351,16 @@ export class CNode3DObject extends CNode3DGroup {
         // add them to the geometryParams object
         // (either the passed value, or a default)
 
-        // if the geometry type has changed, then delete all the geometry-specific parameters
-        // and re-create them
-        // delete the non-common children of this.gui
-        if (this.lastGeometry !== common.geometry) {
+        const materialType = common.material.toLowerCase();
+        const materialDef = materialTypes[materialType];
+        assert(materialDef !== undefined, "Unknown material type: " + materialType)
+        const materialParams = materialDef.params;
 
+
+        // if the geometry or material type has changed, then delete all the geometry-specific parameters
+        // and re-create them
+        if (this.lastGeometry !== common.geometry || this.lastMaterial !== common.material) {
+            // delete the non-common children of this.gui
             // iterate backwards so we can delete as we go
             for (let i = this.gui.controllers.length - 1; i >= 0; i--) {
                 let c = this.gui.controllers[i];
@@ -295,7 +373,11 @@ export class CNode3DObject extends CNode3DGroup {
             this.geometryParams = {}
             this.addParams(geometryParams, this.geometryParams);
 
+            this.materialParams = {}
+            this.addParams(materialParams, this.materialParams);
+
             this.lastGeometry = common.geometry;
+            this.lastMaterial = common.material;
         }
 
 
@@ -316,6 +398,12 @@ export class CNode3DObject extends CNode3DGroup {
         }
 
 
+        const material = new materialDef.m({
+            color: common.color,
+            ...this.materialParams
+        });
+
+
         if (common.wireframe) {
             this.wireframe = new WireframeGeometry(this.geometry);
             this.object = new LineSegments(this.wireframe);
@@ -323,11 +411,11 @@ export class CNode3DObject extends CNode3DGroup {
             this.wireframe = new EdgesGeometry(this.geometry);
             this.object = new LineSegments(this.wireframe);
         } else {
-            this.object = new Mesh(this.geometry);
+            this.object = new Mesh(this.geometry, material);
         }
 
-        const matColor = new Color(common.color)
-        this.object.material.color = matColor;
+        // const matColor = new Color(common.color)
+        // this.object.material.color = matColor;
 
         this.object.material.depthTest = common.depthTest ?? true;
         this.object.material.opacity = common.opacity ?? 1;
@@ -348,6 +436,11 @@ export class CNode3DObject extends CNode3DGroup {
             this.group.remove(this.object);
             this.object = undefined;
         }
+
+        if (this.material) {
+            this.material.dispose();
+        }
+
     }
 
     dispose() {

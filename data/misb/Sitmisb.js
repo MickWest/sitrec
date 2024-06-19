@@ -239,12 +239,26 @@ sitch = {
     //     color: [0,0,1],
     // },
 
-    sphereCamera: { kind: "DisplayTargetSphere",
-        track: "cameraTrack",
-        size: 5,
-        layers: "MAINRENDER",
-        color: [1,1,0],
+    // sphereCamera: { kind: "DisplayTargetSphere",
+    //     track: "cameraTrack",
+    //     size: 5,
+    //     layers: "MAINRENDER",
+    //     color: [1,1,0],
+    // },
+
+    sphereCamera: { kind: "3DObject",
+        geometry: "capsule",
+        size: 1,
+        layers: "LOOKRENDER",
+
+        color: "grey",
+        //opacity: .5,
+        rotateX: 90,
+        //wireframe: true
     },
+    moveTargetAlongPath: {kind: "TrackPosition", object: "sphereCamera", sourceTrack: "cameraTrack"},
+
+
 
     sphereCameraOld: { kind: "DisplayTargetSphere",
         track: "cameraTrack_old",

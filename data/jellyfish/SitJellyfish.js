@@ -117,14 +117,15 @@ export const SitJellyfish    = {
     // },
 
     targetObject: { kind: "3DObject",
-        geometry: "torusknot",
+        geometry: "sphere",
         size: "sphereSize",
         layers: "LOOKRENDER",
 
-        color: "red",
+        material: "lambert",
+        color: "grey",
         //opacity: .5,
         rotateZ: 45,
-        wireframe: true
+        //wireframe: true
     },
 
 
