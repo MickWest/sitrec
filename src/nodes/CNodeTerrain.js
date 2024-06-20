@@ -59,6 +59,7 @@ export class CNodeTerrainUI extends CNode {
 
 
         this.gui = this.terrainNode.terrainGUI;
+        this.mapTypeMenu = this.terrainNode.mapTypeMenu;
 
         this.latController = this.gui.add(this, "lat", -85, 85,.001).onChange( v => {
             this.flagForRecalculation()
@@ -162,7 +163,12 @@ export class CNodeTerrainUI extends CNode {
             NodeMan.disposeRemove(this.terrainNode)
         }
         // and make a new one
-        this.terrainNode = new CNodeTerrain({id: terrainID, lat: this.lat, lon: this.lon, zoom: this.zoom, nTiles: this.nTiles, deferLoad:true})
+        this.terrainNode = new CNodeTerrain({
+                id: terrainID, lat: this.lat, lon: this.lon,
+                zoom: this.zoom, nTiles: this.nTiles, deferLoad: true,
+                mapTypeMenu: this.mapTypeMenu, terrainGUI: this.gui,
+            }
+        )
     }
 
     // one time button to add a terrain node
@@ -190,10 +196,17 @@ export class CNodeTerrain extends CNode {
         //     terrainGUI = gui.addFolder("Terrain")
         // }
 
-
-       this.terrainGUI = gui.addFolder("Terrain")
-       this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen().name("Map Type")
-
+        // we only want to create the menu once
+        // if the CNodeTerrainUI exits, then that will manage it
+        // and pass these two values in
+        // Bit of a patch for backwards compatibility when there's no CNodeTerrainUI
+        if (!v.mapTypeMenu) {
+            this.terrainGUI = gui.addFolder("Terrain")
+            this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen().name("Map Type")
+        } else {
+            this.terrainGUI = v.terrainGUI;
+            this.mapTypeMenu = v.mapTypeMenu;
+        }
 
         this.loaded = false;
 

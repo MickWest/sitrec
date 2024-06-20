@@ -195,7 +195,7 @@ const materialTypes = {
             color: "white",
             emissive: "black",
             emissiveIntensity: [1,0,1,0.01],
-            specular: "white",
+            specularColor: "white",
             shininess: [30,0,100,0.1],
             flatShading: false,
             fog: true,
@@ -206,15 +206,18 @@ const materialTypes = {
         m: MeshPhysicalMaterial,
         params: {
             color: "white",
+            clearcoat: [1, 0, 1, 0.01],
+            clearcoatRoughness: [0, 0, 1, 0.01],
             emissive: "black",
             emissiveIntensity: [1, 0, 1, 0.01],
-            specular: "white",
-            shininess: 30,
+            specularColor: "white",
+            specularIntensity: [1,0,1,0.01],
+            sheen: [0, 0, 1, 0.01],
+            sheenRoughness: [0.5, 0, 1, 0.01],
+            sheenColor: "black",
             flatShading: false,
             fog: true,
             reflectivity: [1, 0, 1, 0.01],
-            clearcoat: [1, 0, 1, 0.01],
-            clearcoatRoughness: [0, 0, 1, 0.01],
             transmission: [0, 0, 1, 0.01],
             ior: [1.5, 1, 2.33, 0.01],
             roughness: [0.5, 0, 1, 0.01],
@@ -236,7 +239,7 @@ const commonParams = {
     depthTest: true,
     opacity: [1,0,1,0.01],
     transparent: false,
-    color: "white",
+   // color: "white",
 }
 
 export class CNode3DObject extends CNode3DGroup {
@@ -282,7 +285,7 @@ export class CNode3DObject extends CNode3DGroup {
 
             let controller;
 
-            const colorNames = ["color", "emissive", "specular"]
+            const colorNames = ["color", "emissive", "specularColor", "sheenColor"]
             if (colorNames.includes(key)) {
                 // assume string values are colors
                 // (might need to have an array of names of color keys, like "emissive"
@@ -291,7 +294,16 @@ export class CNode3DObject extends CNode3DGroup {
                 // which will be this.common.color
                 // first we need to ensure it's in the correct format for lil-gui
                 // which expect a hex string like "#RRGGBB"
-                const color3 = new Color(toHere[key]);
+
+                let passedColor = toHere[key];
+                let color3;
+                if (Array.isArray(passedColor)) {
+                    // the only format three.js can't handle is an array
+                    color3 = new Color(passedColor[0], passedColor[1], passedColor[2]);
+                } else {
+                    // otherwise it's a hex string, or a three.js color
+                    color3 = new Color(passedColor);
+                }
                 toHere[key] = "#" + color3.getHexString();
                 controller = this.gui.addColor(toHere, key).name(key).listen()
                     .onChange((v) => {
@@ -399,7 +411,7 @@ export class CNode3DObject extends CNode3DGroup {
 
 
         const material = new materialDef.m({
-            color: common.color,
+          //  color: common.color,
             ...this.materialParams
         });
 

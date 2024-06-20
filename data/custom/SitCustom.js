@@ -48,11 +48,11 @@ sitch = {
     },
 
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
-    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#00FF00'},
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 
     focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
 
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#008000',
+    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
 
         effects: {
             //Copy:{},
@@ -127,6 +127,7 @@ sitch = {
 
     dragDropHandler: true,
     useGlobe: true,
+    nightSky: true,
 
 
     fixedCameraPosition: {kind: "PositionLLA", LLA: [40.767657,-105.215694,15862.255512]},
@@ -236,12 +237,36 @@ sitch = {
         width: 1,
     },
 
-    sphereTraverse: { kind: "DisplayTargetSphere",
-        track: "LOSTraverseSelectTrack",
-        size: 5,
-        layers: "MAINRENDER",
-        color: [0,0,1],
+
+    // WHY does smoothing lose the heading info for SaucerTilt
+   // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
+
+    // sphereTraverse: { kind: "DisplayTargetSphere",
+    //     track: "LOSTraverseSelectTrack",
+    //     size: 5,
+    //     layers: "MAINRENDER",
+    //     color: [0,0,1],
+    // },
+
+    sphereTraverse: { kind: "3DObject",
+        geometry: "box",
+        layers: "LOOKRENDER",
+        size: 1,
+        radius: 10,
+
+        width: 3,
+        height: 4,
+        depth: 10,
+
+        material: "lambert",
+        color: "#FFFFFF",
+        emissive: '#404040',
+        widthSegments:20,
+        heightSegments:20,
     },
+    moveTargetAlongPath: {kind: "TrackPosition", object: "sphereTraverse", sourceTrack: "LOSTraverseSelectTrack"},
+    orientTarget: {kind: "SaucerTilt", object: "sphereTraverse", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
+
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
 
@@ -281,5 +306,7 @@ sitch = {
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
     },
 
+    // patch to not add track spheres (TEMPORARY)
+    //dontAddTrackSpheres:true,
 
 }

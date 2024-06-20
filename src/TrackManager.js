@@ -358,8 +358,11 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 size: "sizeTargetScaled",
             },
             color: [1, 0, 1],
-            layers:sphereMask
+            layers: sphereMask,
+            wireframe: true,
+
         })
+
 
         if (centerID !== null) {
 
@@ -394,6 +397,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 },
                 color: [1, 1, 0],
                 layers: sphereMask,
+                wireframe: true,
+
             })
 
         }

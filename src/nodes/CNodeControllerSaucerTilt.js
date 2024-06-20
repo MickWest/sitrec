@@ -17,18 +17,19 @@ export class CNodeControllerSaucerTilt extends CNodeController {
         this.tiltType = v.tiltType ?? "none"
 
         // This ia specific to the flying saucer
-        if (this.tiltType !== "banking") {
+        if (this.tiltType !== "banking" && !v.noMenu) {
             gui.add(this,"tiltType",{
+                banking:"banking",
+                frontPointing:"frontPointing",
+                frontPointingAir:"frontPointingAir",
                 axialPush:"axialPush",
                 axialPull:"axialPull",
                 axialPushZeroG:"axialPushZeroG",
                 axialPullZeroG:"axialPullZeroG",
-                frontPointing:"frontPointing",
-                frontPointingAir:"frontPointingAir",
                 bottomPointing:"bottomPointing",
                 bottomPointingAir:"bottomPointingAir",
                 glareAngle:"glareAngle",
-            }).name("saucer tilt type")
+            }).name("Object Orientation type")
                 .listen(()=>{par.renderOne = true})
         }
 

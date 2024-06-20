@@ -149,7 +149,7 @@ export class CSituation {
             // videoFile is a special case, we don't want to load it here
             if (key !== "videoFile") {
                 if(!isConsole)
-                    infoDiv.innerHTML += this.files[key] + "<br>";
+                    infoDiv.innerHTML += assets[key] + "<br>";
                 await FileManager.loadAsset(assets[key], key)
             }
         }

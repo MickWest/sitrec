@@ -34,9 +34,9 @@ export const SitJellyfish    = {
     mainView:{ left:0.0, top:0, width:0.50,height:1,background:'#000000'},
 
     lookView:{ left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
-        // effects: {
-        //     FLIRShader: {},
-        // }
+        effects: {
+            FLIRShader: {},
+        }
     },
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5,},
 
@@ -122,7 +122,8 @@ export const SitJellyfish    = {
         layers: "LOOKRENDER",
 
         material: "lambert",
-        color: "grey",
+        color: "#FFFFFF",
+        emissive: '#404040',
         //opacity: .5,
         rotateZ: 45,
         //wireframe: true
@@ -165,5 +166,7 @@ export const SitJellyfish    = {
 
     altitudeGraph: {track: "targetTrack", max: 3000, left: 0.25},
 
+    nightSky: true,
+    useGlobe: true,
 
 }
