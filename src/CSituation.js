@@ -76,6 +76,8 @@ const situationDefaults = {
     showFlareBand: false,
     showVenusArrow: false,
 
+    ambientLight: 0.5,
+
 }
 
 export class CSituation {

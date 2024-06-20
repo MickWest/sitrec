@@ -30,6 +30,8 @@ sitch = {
     frames: 900,
     fps: 30,
 
+    ambientLight: 0.0,
+
     // if we are loading a video, then we want to extract frames from it
     framesFromVideo: true,
 
@@ -306,7 +308,7 @@ sitch = {
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
     },
 
-    // patch to not add track spheres (TEMPORARY)
-    //dontAddTrackSpheres:true,
+    compassMain: {kind: "CompassUI", camera: "mainCamera", left: 0.0, top: 0.90, width: -1, height: 0.1},
+
 
 }

@@ -113,7 +113,7 @@ const QuadTextureMaterial = (urls) => {
     return new MeshStandardMaterial({map: texture,
       emissive: new Color(0xffffff),  // Set emissive color to white
       emissiveMap: texture,                 // Use the same texture for emissive map
-      emissiveIntensity: 1.0,                // Full intensity for emissive
+      emissiveIntensity: 0.0,                // Full intensity for emissive
       //colorSpace: SRGBColorSpace
        })
 

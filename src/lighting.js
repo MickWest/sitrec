@@ -10,8 +10,8 @@ export function addDefaultLights(brightness = 100) {
 
     if (Sit.useGlobe) {
 
-        // Ambient light for the globe is the light for the dark side of the globe
-        Globals.ambientLight = new AmbientLight(0xFFFFFF, 0.1);
+        // // Ambient light for the globe is the light for the dark side of the globe
+        Globals.ambientLight = new AmbientLight(0xFFFFFF, Sit.ambientLight);
         GlobalScene.add(Globals.ambientLight);
 
         // then sunlight is direct light
