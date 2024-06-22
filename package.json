@@ -41,6 +41,7 @@
     "@babel/core": "^7.24.7",
     "@babel/plugin-transform-modules-commonjs": "^7.24.7",
     "@babel/preset-env": "^7.24.7",
+    "@biomejs/biome": "1.8.2",
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^10.2.4",
