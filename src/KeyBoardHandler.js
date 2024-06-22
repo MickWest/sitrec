@@ -1,4 +1,4 @@
-import {gui, guiShowHide, keyCodeHeld, keyHeld, NodeMan, Sit} from "./Globals";
+import {Globals, gui, guiShowHide, keyCodeHeld, keyHeld, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
 import {closeFullscreen, openFullscreen} from "./utils";
 import {Vector3} from "three";
@@ -259,7 +259,8 @@ export function initKeyboard() {
                 break;
 
             case 'KeyU' :
-                if (gui._hidden) gui.show(); else gui.hide();
+//                if (gui._hidden) gui.show(); else gui.hide();
+                Globals.menuBar.toggleVisiblity();
                 break;
             case 'KeyF':
                 if (!isFullScreen) {

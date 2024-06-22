@@ -52,11 +52,12 @@ export const SitHayle = {
 
         // Window for Rolling Average smoothing
         window: 30,
+        gui: "physics"
     },
 
     DisplayLOS: { id: "displayMotionTrackLOS", LOS: "motionTrackLOS", width: 3},
 
-    startDistanceFeet: {value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Ft)"},
+    startDistanceFeet: {value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Ft)", gui: "physics"},
 
 
     LOSTraverseConstantDistance: { kind: "LOSTraverse",
@@ -64,7 +65,7 @@ export const SitHayle = {
     },
 
     // Wind is only relevant in calculating the air speed
-    targetWind: { from: 270, knots: 0, max: 50},
+    targetWind: { from: 270, knots: 0, max: 50, gui: "physics"},
 
     speedGraph: {track: "LOSTraverseConstantDistance", label: "Target Speed", max: 100, width:0.5},
 

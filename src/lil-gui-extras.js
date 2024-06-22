@@ -127,6 +127,8 @@ export class CGuiMenuBar {
         this.menuBar.style.width = "100%"; // Added this to ensure full width
         this.menuBar.style.overflowY = "auto"; // Allow scrolling if content overflows
 
+        this._hidden = false;
+
         // add the menuBar to the document body
         document.body.appendChild(this.menuBar);
 
@@ -166,6 +168,25 @@ export class CGuiMenuBar {
 
         this.nextSlot = 0; // next slot to be filled
     }
+
+    show() {
+        this.menuBar.style.display = "block";
+        this._hidden = false;
+    }
+
+    hide() {
+        this.menuBar.style.display = "none";
+        this._hidden = true;
+    }
+
+    toggleVisiblity() {
+        if (this._hidden) {
+            this.show();
+        } else {
+            this.hide();
+        }
+    }
+
 
     // creates a gui, adds it into the next menu slot
     // and returns it.
