@@ -401,11 +401,11 @@ async function initializeOnce() {
 
 
     Globals.menuBar = new CGuiMenuBar();
-    var _gui = Globals.menuBar.addGui(process.env.BUILD_VERSION_STRING).close().perm();
-    var _guiShowHide = Globals.menuBar.addGui('Show/Hide').close().perm();
+    var _gui = Globals.menuBar.addFolder(process.env.BUILD_VERSION_STRING).close().perm();
+    var _guiShowHide = Globals.menuBar.addFolder('Show/Hide').close().perm();
     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
 
-    var _guiTweaks = Globals.menuBar.addGui('Tweaks & Effects').close().perm();
+    var _guiTweaks = Globals.menuBar.addFolder('Tweaks & Effects').close().perm();
 
 
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews)
@@ -988,7 +988,7 @@ function disposeEverything() {
     NodeMan.disposeAll();
 
     // dispose of any remaining GUI, except for the permanent folders and items
-    gui.destroy(false);
+    Globals.menuBar.destroy(false);
 
     disposeDebugArrows();
     disposeDebugSpheres();

@@ -163,8 +163,9 @@ export class CGuiMenuBar {
     }
 
     // creates a gui, adds it into the next menu slot
-    // and returns it
-    addGui(title) {
+    // and returns it.
+    // called addFolder to maintain compatibility with a single gui system under dat.gui
+    addFolder(title) {
         const newGUI = new GUI({container: this.divs[this.nextSlot]});
         //newGUI.title(title);
         newGUI.$title.innerHTML = title;
@@ -193,6 +194,32 @@ export class CGuiMenuBar {
         })
 
         return newGUI;
+    }
+
+    destroy(all = true) {
+        for (let i = this.numSlots-1; i >= 0; i--) {
+            const gui = this.slots[i];
+            if (gui) {
+                gui.destroy(all);
+
+                if (all || !gui.permanent) {
+                    // splice out the slots and divs
+                    this.slots.splice(i, 1);
+
+                    // temp reference to the div
+                    const div = this.divs[i];
+                    // remove div
+                    this.divs.splice(i, 1);
+                    // move the div at i to the end. so it can be reused
+                    // not really ideal, but it's a quick fix
+                    // we probably want more control over the order per-sitch
+                    this.divs.push(div)
+
+                    this.nextSlot--;
+                }
+            }
+        }
+
     }
 
 }
