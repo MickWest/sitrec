@@ -1,6 +1,5 @@
 // Helper functions for lil-gui
 import GUI, {Controller} from "./js/lil-gui.esm";
-import {pointWidth} from "three/examples/jsm/nodes/core/PropertyNode";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
