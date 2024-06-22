@@ -1,4 +1,4 @@
-import {FileManager, gui, guiTweaks, NodeFactory, NodeMan, Sit, SitchMan} from "./Globals";
+import {FileManager, gui, guiPhysics, NodeFactory, NodeMan, Sit, SitchMan} from "./Globals";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -684,19 +684,19 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
         case "startDistanceFeet":
             SSLog();
             node = new CNodeScale(data.id ?? "startDistance", scaleF2M, new CNodeGUIValue(
-                {id: "startDistanceFeet", ...data}, gui))
+                {id: "startDistanceFeet", ...data}, data.gui ?? gui))
             break;
 
         case "sizeFeet":
             SSLog();
             node = new CNodeScale(data.id ?? "targetSize", scaleF2M, new CNodeGUIValue(
-                {...data, ...{id: "targetSizeFeetGUI"}}, gui))
+                {...data, ...{id: "targetSizeFeetGUI"}}, data.gui ?? gui))
             break;
 
         case "inputFeet":
             SSLog();
             node = new CNodeScale(data.id, scaleF2M, new CNodeGUIValue(
-                {...data, ...{id: data.id + "GUI"}}, gui));
+                {...data, ...{id: data.id + "GUI"}}, data.gui ?? gui));
             break
 
         case "ptz":
@@ -710,7 +710,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             const idObject = {id: addID};
             const showGUI = data.showGUI ?? true;
             NodeMan.get(camera).addController("PTZUI", {
-                gui: gui, ...data, ...idObject, showGUI: showGUI});
+                gui: data.gui ?? gui, ...data, ...idObject, showGUI: showGUI});
 
             break;
 
@@ -725,7 +725,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: 90,
                     step: 0.001,
                     desc: "Camera Lat"
-                }, gui),
+                }, data.gui ?? gui),
 
                 fromLon: new CNodeGUIValue({
                     id: "cameraLon",
@@ -734,7 +734,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: 180,
                     step: 0.001,
                     desc: "Camera Lon"
-                }, gui),
+                }, data.gui ?? gui),
 
                 fromAltFeet: new CNodeGUIValue({
                     id: "cameraAlt",
@@ -743,7 +743,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: data.fromAltFeetMax ?? 50000,
                     step: 0.1,
                     desc: "Camera Alt (ft)"
-                }, gui),
+                }, data.gui ?? gui),
                 radiusMiles: "radiusMiles",
             })
             break;
@@ -1209,7 +1209,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             SSLog();
             initJetVariables();
             initViews()
-            guiTweaks.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
+            guiPhysics.add(par, 'jetPitch', -8, 8, 0.01).onChange(function () {
                 curveChanged();
                 // calculateGlareStartAngle();
                 par.renderOne = true;

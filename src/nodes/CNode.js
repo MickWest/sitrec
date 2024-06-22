@@ -16,7 +16,7 @@
 // a display node might also be an input, like something you can drag with the mouse
 
 import {par} from "../par";
-import {Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {Globals, gui, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 
@@ -256,8 +256,11 @@ class CNode {
                     case "main":
                         this.gui = gui;
                         break;
+                    case "physics":
+                        this.gui = guiPhysics;
+                        break;
                     default:
-                        console.error("Unknown gui type: " + v.gui)
+                        assert(0,"Unknown gui type: " + v.gui)
                 }
             } else {
                 // otherwise, it's a gui object passed in the parameters

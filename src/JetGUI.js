@@ -80,7 +80,7 @@ export function SetupJetGUI() {
 
 
 
-    guiTweaks.add(par, 'scaleJetPitch').listen().onChange(function () {
+    guiPhysics.add(par, 'scaleJetPitch').listen().onChange(function () {
         curveChanged();
         calculateGlareStartAngle();
 

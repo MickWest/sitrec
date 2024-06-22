@@ -272,7 +272,9 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.color = v.color;
 
-        this.gui = gui.addFolder("3DObject: " + this.id).close()
+
+        let menuName = this.props.name ?? this.id;
+        this.gui = gui.addFolder("3D Ob: " + menuName).close()
         this.common = {}
 
         this.modelOrGeometry = "model";

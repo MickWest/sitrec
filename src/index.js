@@ -402,13 +402,14 @@ async function initializeOnce() {
 
     Globals.menuBar = new CGuiMenuBar();
     var _gui = Globals.menuBar.addFolder(process.env.BUILD_VERSION_STRING).close().perm();
+    var _guiPhysics = Globals.menuBar.addFolder('Physics').close().perm();
     var _guiShowHide = Globals.menuBar.addFolder('Show/Hide').close().perm();
     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
 
     var _guiTweaks = Globals.menuBar.addFolder('Tweaks & Effects').close().perm();
 
 
-    setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews)
+    setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)
     setUnits(new CUnits("Nautical"));
     setFileManager(new CFileManager())
 

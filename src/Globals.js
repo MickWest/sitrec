@@ -30,6 +30,7 @@ export var guiTweaks;
 export var guiShowHide;
 export var guiJetTweaks;
 export var guiShowHideViews
+export var guiPhysics;
 
 export var infoDiv;
 export function setInfoDiv(i) {infoDiv=i;}
@@ -47,11 +48,12 @@ export function setNewSitchText(text){
     Globals.newSitchText = text;
 }
 
-export function setupGUIGlobals(_gui, _show, _tweaks, _showViews) {
+export function setupGUIGlobals(_gui, _show, _tweaks, _showViews, _physics) {
     gui = _gui
     guiShowHide = _show;
     guiTweaks = _tweaks;
     guiShowHideViews = _showViews;
+    guiPhysics = _physics;
 }
 
 export function setupGUIjetTweaks(_jetTweaks) {

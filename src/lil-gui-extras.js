@@ -1,5 +1,6 @@
 // Helper functions for lil-gui
 import GUI, {Controller} from "./js/lil-gui.esm";
+import {pointWidth} from "three/examples/jsm/nodes/core/PropertyNode";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
@@ -112,7 +113,7 @@ Controller.prototype.moveToFirst = function() {
 export class CGuiMenuBar {
     constructor() {
         this.divs = [];
-        this.divWidth = 400; // width of a div in pixels
+        this.divWidth = 240; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
         this.numSlots = 10; // number of emptyslots in the menu bar
         this.slots = []; // array og GUI objects
@@ -144,19 +145,21 @@ export class CGuiMenuBar {
 
         // create numSlots empty divs of width divWidth,
         // each positioned at divWidth * i
-        for (let i = 0; i < this.numSlots; i++) {
+//        for (let i = 0; i < this.numSlots; i++) {
+          for (let i = this.numSlots-1; i >= 0; i--) {
             const div = document.createElement("div");
             div.style.width = this.divWidth + "px";
             div.style.position = "absolute";
             div.style.left = (i * this.divWidth) + "px";
             div.style.top = "0px";
-            div.style.height = "100%";
+
+            // since we are only using the divs for positioning,
+            // we can set the height to 1px to avoid overlapping divs capturing mouse inputs
+
+            div.style.height = "1px";
+
        //     div.style.overflowY = "auto"; // Allow scrolling if content overflows
             div.style.zIndex = 9999;
-
-            // // Initialize lil-gui instance and append to div
-            // const gui = new dat.GUI({ autoPlace: false });
-            // div.appendChild(gui.domElement);
 
             this.menuBar.appendChild(div);
             this.divs.push(div);
@@ -177,7 +180,24 @@ export class CGuiMenuBar {
 
         this.divs[this.nextSlot].style.left = this.totalWidth + "px";
 
-        this.totalWidth += getTextWidth(title) + 30;
+        // const divDebugColor = ["red", "green", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta", "lime", "teal", "indigo", "violet", "brown", "grey", "black", "white"];
+        // // give the div a colored border
+        // this.divs[this.nextSlot].style.border = "1px solid "+ divDebugColor[this.nextSlot % divDebugColor.length];
+
+        const width = getTextWidth(title) + 30;
+       // this.divs[this.nextSlot].style.width = width + "px";
+       // this.divs[this.nextSlot].style.height = "1 px";
+        this.totalWidth += width;
+
+        let left = this.totalWidth;
+        // adjust the position of all subsequent divs to the right
+        for (let i = this.nextSlot+1; i < this.numSlots; i++) {
+            this.divs[i].style.left = left + "px";
+            left += this.divWidth;
+        }
+
+        // make the div pass through mouse events
+        //this.divs[this.nextSlot].style.pointerEvents = "none";
 
 
         preventDoubleClicks(newGUI);

@@ -5,7 +5,7 @@
 // 2. Imperial / Statute
 // 3. Nautical
 
-import {guiTweaks} from "./Globals";
+import {guiPhysics, guiTweaks} from "./Globals";
 import {assert} from "./assert.js";
 
 export class CUnits {
@@ -13,8 +13,8 @@ export class CUnits {
         this.units = _units.toLowerCase();
         this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical"};
         this.changeUnits(this.units);
-        if(guiTweaks)
-            guiTweaks.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
+        if(guiPhysics)
+            guiPhysics.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
     }
 
     modSerialize() {

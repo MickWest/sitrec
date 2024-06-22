@@ -161,13 +161,13 @@ export const SitFlir1 = {
 
     include_JetLabels: true,
 
-    jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS"},
-    elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start"},
-    elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end"},
-    elNegate:   {kind: "GUIFlag",  value:false, desc: "Negate Elevation"},
+    jetTAS:     {kind: "GUIValue", value: 333, start: 320, end: 360, step: 0.1, desc: "TAS", gui:"physics"},
+    elStart:    {kind: "GUIValue", value:5.7, start:4.5,  end: 6.5,  step: 0.001,  desc:"el Start", gui:"physics"},
+    elEnd:      {kind: "GUIValue", value: 5,  start:4.5,  end: 6.5,   step:0.001,  desc: "el end", gui:"physics"},
+    elNegate:   {kind: "GUIFlag",  value:false, desc: "Negate Elevation", gui:"physics"},
 
-    elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd"},
-    el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)"},
+    elNormal:   {kind: "Interpolate",  start:"elStart", end:"elEnd", gui:"physics"},
+    el:         {kind: "Math", math: "$elNormal * ($elNegate ? -1 : 1)", gui:"physics"},
 
     azRawData:  {kind: "arrayFromKeyframes", file: "Flir1Az", stepped: true},
     azData:     {kind: "arrayFromKeyframes", file: "Flir1Az"},
@@ -192,23 +192,27 @@ export const SitFlir1 = {
             'Az FLIR Video': "azData",
             'Linear': "azLinear",
         },
-        desc: "Azimuth Type"
+        desc: "Azimuth Type",
+        gui:"physics"
     },
 
-    userBank: {kind: "GUIValue",value: 0, desc: "User Bank Angle", start: -5, end: 5, step: 0.1},
+    userBank: {kind: "GUIValue",value: 0, desc: "User Bank Angle", start: -5, end: 5, step: 0.1, gui:"physics"},
 
     bank: { kind: "Switch",
         inputs: {
             "User Bank Angle": "userBank",
         },
-        desc: "Bank Angle Type"
+        desc: "Bank Angle Type",
+        gui:"physics"
     },
 
     turnRateBS: {kind: "TurnRateBS",
         inputs: {
             speed: { id: "watchTAS", kind: "parWatch", watchID: "TAS"},
             bank: "bank"
-        }
+        },
+        gui:"physics"
+
     },
 
     // Green line is the original smoothed data
@@ -231,20 +235,20 @@ export const SitFlir1 = {
     // jetLon:-117.870,
     jetLat: {kind: "Constant", value: 31.205},
     jetLon: {kind: "Constant", value: -117.870},
-    jetAltitude: {kind: "inputFeet",value: 20000, desc: "Altitude", start: 19500, end: 20500, step: 1},
+    jetAltitude: {kind: "inputFeet",value: 20000, desc: "Altitude", start: 19500, end: 20500, step: 1, gui:"physics"},
 
     // JetOrigin uses the above three nodes to set the initial position of the jet
     jetOrigin: {kind: "TrackFromLLA", lat: "jetLat", lon: "jetLon", alt: "jetAltitude"},
 
 
 
-    targetWind: { kind: "Wind",from: 0, knots: 100, name: "Target", arrowColor: "cyan", lock: "localWind"},
-    localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind"},
-    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind"},
+    targetWind: { kind: "Wind",from: 0, knots: 100, name: "Target", arrowColor: "cyan", lock: "localWind", gui:"physics"},
+    localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
+    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind", gui:"physics"},
 
-    initialHeading: { kind: "Heading", heading: 227, name: "Initial", jetOrigin: "jetOrigin", arrowColor: "green" },
+    initialHeading: { kind: "Heading", heading: 227, name: "Initial", jetOrigin: "jetOrigin", arrowColor: "green", gui:"physics" },
 
-    userTurnRate: { kind: "GUIValue", value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001},
+    userTurnRate: { kind: "GUIValue", value: 0, desc: "User Turn Rate", start: -3, end: 3, step: 0.001, gui:"physics"},
 
     turnRate: {kind: "Switch",
         inputs: {
@@ -252,7 +256,8 @@ export const SitFlir1 = {
             "User Constant": "userTurnRate",
             "From Bank and Speed": "turnRateBS",
         },
-        desc: "Turn Rate Type"
+        desc: "Turn Rate Type",
+        gui:"physics"
     },
 
 
@@ -287,6 +292,7 @@ export const SitFlir1 = {
             "Fixed Line": "LOSTraverseStraightLineFixed",
         },
         default: "Constant Air Speed",
+        gui:"physics",
     },
 
 
@@ -366,6 +372,7 @@ export const SitFlir1 = {
         emissive: '#404040',
         widthSegments:20,
         heightSegments:20,
+        name: "Target",
     },
 
     moveTargetAlongPath: {kind: "TrackPosition", object: "TargetObjectModel", sourceTrack: "LOSTraverseSelect"},
