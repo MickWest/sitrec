@@ -33,7 +33,7 @@ import {
 import {gui} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
-import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {disposeScene} from "../threeExt";
 
 
