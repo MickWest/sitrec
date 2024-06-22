@@ -5,11 +5,10 @@ WORKDIR /build
 COPY data ./data
 COPY src ./src
 COPY sitrecServer ./sitrecServer
-COPY three.js ./three.js
 COPY package.json .
 COPY package-lock.json .
 COPY webpack.*.js .
-
+COPY webpackCopyPatterns.js .
 COPY docker/docker-config.js ./config.js
 COPY docker/docker-config-install.js ./config-install.js
 
