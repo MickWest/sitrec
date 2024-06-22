@@ -1,5 +1,5 @@
 // Helper functions for lil-gui
-import {Controller} from "./js/lil-gui.esm";
+import GUI, {Controller} from "./js/lil-gui.esm";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
@@ -105,4 +105,116 @@ Controller.prototype.moveToFirst = function() {
         parentElement.insertBefore(this.domElement, parentElement.firstChild);
     }
 };
+
+
+
+
+export class CGuiMenuBar {
+    constructor() {
+        this.divs = [];
+        this.divWidth = 100; // width of a div in pixels
+        this.totalWidth = 0; // total width of all the divs
+        this.numSlots = 10; // number of emptyslots in the menu bar
+        this.slots = []; // array og GUI objects
+
+        // create a div for the menu bar
+        this.menuBar = document.createElement("div");
+        // position it at the top left
+        this.menuBar.style.position = "absolute";
+        this.menuBar.style.top = "0px";
+        this.menuBar.style.left = "0px";
+
+        // add the menuBar to the document body
+        document.body.appendChild(this.menuBar);
+
+        // capture clicks from anywhere on screen to detect if we want to close the GUIs
+        document.addEventListener("click", (event) => {
+            // if the click was not in the menu bar, close all the GUIs
+            if (!this.menuBar.contains(event.target)) {
+                this.slots.forEach((gui) => {
+                    gui.close();
+                });
+            }
+        });
+
+
+
+        // create numSlots empty divs of width divWidth,
+        // each positioned at divWidth * i
+        for (let i = 0; i < this.numSlots; i++) {
+            const div = document.createElement("div");
+            div.style.width = this.divWidth + "px";
+            div.style.position = "absolute";
+//            div.style.left = (i * this.divWidth) + "px";
+            div.style.left = (i * this.divWidth) + "px";
+            div.style.top = "0px";
+            div.style.height = "auto";
+            div.style.width = this.divWidth + "px";
+            // add a red border ot the div
+            //div.style.border = "1px solid red";
+            // z value on top
+            div.style.zIndex = 9999;
+
+            this.menuBar.appendChild(div);
+            this.divs.push(div);
+        }
+
+        this.nextSlot = 0; // next slot to be filled
+    }
+
+    // creates a gui, adds it into the next menu slot
+    // and returns it
+    addGui(title) {
+        const newGUI = new GUI({container: this.divs[this.nextSlot]});
+        //newGUI.title(title);
+        newGUI.$title.innerHTML = title;
+
+        console.log("Adding GUI "+title+" at slot "+this.nextSlot+" with left "+this.totalWidth+"px")
+
+        this.divs[this.nextSlot].style.left = this.totalWidth + "px";
+
+        this.totalWidth += getTextWidth(title) + 30;
+
+
+        preventDoubleClicks(newGUI);
+        this.slots[this.nextSlot] = newGUI;
+        this.nextSlot++;
+
+        // when opened, close the others
+        newGUI.onOpenClose( (changedGUI) => {
+
+            if (!changedGUI._closed) {
+                this.slots.forEach((gui, index) => {
+                    if (gui !== newGUI) {
+                        gui.close();
+                    }
+                });
+            }
+        })
+
+        return newGUI;
+    }
+
+}
+
+
+function getTextWidth(text) {
+    // Create a temporary element
+    const element = document.createElement('span');
+    // Apply styles from the stylesheet
+    element.style.fontFamily = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+    element.style.fontSize = `11px`;
+    element.style.fontWeight = `normal`;
+    element.style.fontStyle = `normal`;
+    element.style.lineHeight = `1`;
+    // Add text to the element
+    element.innerText = text;
+    // Append to the body to measure
+    document.body.appendChild(element);
+    // Measure width
+    const width = element.offsetWidth;
+    // Remove the temporary element
+    document.body.removeChild(element);
+    return width;
+}
 

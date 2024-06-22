@@ -77,7 +77,7 @@ import {CNodeMath} from "./nodes/CNodeMath";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
-import {preventDoubleClicks} from "./lil-gui-extras";
+import {CGuiMenuBar, preventDoubleClicks} from "./lil-gui-extras";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 
@@ -393,12 +393,19 @@ async function initializeOnce() {
 //   --name-width: 45%;
 // to
 //  --name-width: 36%;
-    var _gui = new GUI().perm()
-    preventDoubleClicks(_gui);
+//     var _gui = new GUI().perm()
+//     var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
+//     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
+//     var _guiTweaks = _gui.addFolder('Tweaks & Effects').close().perm();
+//     preventDoubleClicks(_gui);
 
-    var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
+
+    Globals.menuBar = new CGuiMenuBar();
+    var _gui = Globals.menuBar.addGui(process.env.BUILD_VERSION_STRING).close().perm();
+    var _guiShowHide = Globals.menuBar.addGui('Show/Hide').close().perm();
     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
-    var _guiTweaks = _gui.addFolder('Tweaks & Effects').close().perm();
+
+    var _guiTweaks = Globals.menuBar.addGui('Tweaks & Effects').close().perm();
 
 
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews)
@@ -516,8 +523,6 @@ function legacySetup() {
 // check if Sit.name is all lower case
     assert(Sit.name.slice().toLowerCase() === Sit.name, "Sit.name ("+Sit.name+") is not all lower case")
 
-//gui.title("Sitrec "+Sit.name+" - [U]I")
-    gui.title(process.env.BUILD_VERSION_STRING);
 
     var newTitle = "Sitrec "+Sit.name
 
