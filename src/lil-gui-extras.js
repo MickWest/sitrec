@@ -112,7 +112,7 @@ Controller.prototype.moveToFirst = function() {
 export class CGuiMenuBar {
     constructor() {
         this.divs = [];
-        this.divWidth = 100; // width of a div in pixels
+        this.divWidth = 400; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
         this.numSlots = 10; // number of emptyslots in the menu bar
         this.slots = []; // array og GUI objects
@@ -123,6 +123,9 @@ export class CGuiMenuBar {
         this.menuBar.style.position = "absolute";
         this.menuBar.style.top = "0px";
         this.menuBar.style.left = "0px";
+        this.menuBar.style.height = "100%";
+        this.menuBar.style.width = "100%"; // Added this to ensure full width
+        this.menuBar.style.overflowY = "auto"; // Allow scrolling if content overflows
 
         // add the menuBar to the document body
         document.body.appendChild(this.menuBar);
@@ -145,15 +148,15 @@ export class CGuiMenuBar {
             const div = document.createElement("div");
             div.style.width = this.divWidth + "px";
             div.style.position = "absolute";
-//            div.style.left = (i * this.divWidth) + "px";
             div.style.left = (i * this.divWidth) + "px";
             div.style.top = "0px";
-            div.style.height = "auto";
-            div.style.width = this.divWidth + "px";
-            // add a red border ot the div
-            //div.style.border = "1px solid red";
-            // z value on top
+            div.style.height = "100%";
+       //     div.style.overflowY = "auto"; // Allow scrolling if content overflows
             div.style.zIndex = 9999;
+
+            // // Initialize lil-gui instance and append to div
+            // const gui = new dat.GUI({ autoPlace: false });
+            // div.appendChild(gui.domElement);
 
             this.menuBar.appendChild(div);
             this.divs.push(div);
@@ -166,7 +169,7 @@ export class CGuiMenuBar {
     // and returns it.
     // called addFolder to maintain compatibility with a single gui system under dat.gui
     addFolder(title) {
-        const newGUI = new GUI({container: this.divs[this.nextSlot]});
+        const newGUI = new GUI({container: this.divs[this.nextSlot], autoPlace: false});
         //newGUI.title(title);
         newGUI.$title.innerHTML = title;
 

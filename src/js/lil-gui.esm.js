@@ -1647,7 +1647,13 @@ const stylesheet = `.lil-gui {
   display: none;
 }
 .lil-gui.transition > .children {
-  transition-duration: 1ms;  /* MICK: changed from 300ms to 1ms  - need at least 1 so we get an onTransitionEnd */
+
+  transition-duration: 200ms;  /* MICK: changed from 300ms to 100ms  
+  - need at least 1 so we get an onTransitionEnd 
+  - and seems to need to be over one frame to work
+  */
+
+
   transition-property: height, opacity, transform;
   transition-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
   overflow: hidden;
