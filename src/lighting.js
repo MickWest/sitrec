@@ -8,7 +8,7 @@ import {GlobalScene} from "./LocalFrame";
 export function addDefaultLights(brightness = 100) {
 
 
-    if (Sit.useGlobe) {
+    if (Sit.useGlobe || Sit.useRealisticLights) {
 
         // // Ambient light for the globe is the light for the dark side of the globe
         Globals.ambientLight = new AmbientLight(0xFFFFFF, Sit.ambientLight);

@@ -3,6 +3,7 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import {FileManager} from "../Globals";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
+import {disposeScene} from "../threeExt";
 
 export class CNode3DModel extends CNode3DGroup {
     constructor(v) {
@@ -18,6 +19,14 @@ export class CNode3DModel extends CNode3DGroup {
             this.group.add(this.model)
         })
 
+    }
+
+    dispose()
+    {
+        this.group.remove(this.model)
+        disposeScene(this.model)
+        this.model = undefined
+        super.dispose()
     }
 
     modSerialize() {

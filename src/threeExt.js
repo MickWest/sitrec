@@ -664,11 +664,5 @@ export function testColorCube(color, position, size, scene) {
     scene.add(mesh);
 
 
-
-
-
-
-
-
 }
 

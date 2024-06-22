@@ -343,20 +343,43 @@ export const SitFlir1 = {
 
     },
 
-    TargetObjectModel: { kind: "DisplayTargetModel",
-        track: "LOSTraverseSelect",
-        TargetObjectFile: "TargetObjectFile",
-        wind:"targetWind",
-        tiltType: "banking",
+    // TargetObjectModel: { kind: "DisplayTargetModel",
+    //     track: "LOSTraverseSelect",
+    //     TargetObjectFile: "TargetObjectFile",
+    //     wind:"targetWind",
+    //     tiltType: "banking",
+    // },
+
+
+    TargetObjectModel: { kind: "3DObject",
+        geometry: "box",
+        layers: "LOOKRENDER",
+        size: 1,
+        radius: 10,
+
+        width: 3,
+        height: 4,
+        depth: 10,
+
+        material: "lambert",
+        color: "#FFFFFF",
+        emissive: '#404040',
+        widthSegments:20,
+        heightSegments:20,
     },
 
-    targetSphere: { kind: "DisplayTargetSphere",
-        inputs: {
-            track: "LOSTraverseSelect",
-            size: {kind:"sizeFeet", value: 0, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
-        },
-        layers: "LOOK",
-    },
+    moveTargetAlongPath: {kind: "TrackPosition", object: "TargetObjectModel", sourceTrack: "LOSTraverseSelect"},
+    orientTarget: {kind: "SaucerTilt", object: "TargetObjectModel", track: "LOSTraverseSelect", tiltType: "banking"},
+
+
+
+    // targetSphere: { kind: "DisplayTargetSphere",
+    //     inputs: {
+    //         track: "LOSTraverseSelect",
+    //         size: {kind:"sizeFeet", value: 0, start: 0, end: 500,step: 0.1,desc: "Target size ft"},
+    //     },
+    //     layers: "LOOK",
+    // },
 
     tailAngleGraph:{
             targetTrack: "LOSTraverseSelect",
@@ -394,5 +417,11 @@ export const SitFlir1 = {
         left: 0.6, top:0, width: -1, height:0.25},
 
     flir1LegacyCode: {},
+
+    useRealisticLights: true,
+    nightSky: true, // for now we need to set this to true to get the realistic lights to work
+
+    // TODO - make the night sky only appear in daytime...
+    // TODO - don't light objects if they are in earth's shadow - but account for penubra
 
 }

@@ -33,6 +33,22 @@ import {
 import {gui} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import {disposeScene} from "../threeExt";
+
+
+const Models = {
+
+    "F/A-18E/F" :           { file: 'data/models/FA-18F.glb',},
+    "737 MAX 8 (AA)":       { file: 'data/models/737_MAX_8_AA.glb',},
+    "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
+    "777-200ER (Malyasia)": { file: 'data/models/777-200ER_Malaysia.glb',},
+    "A340-600":             { file: 'data/models/A340-600.glb',},
+    "DC-10":                { file: 'data/models/DC-10.glb',},
+
+    "Saucer":               { file: 'data/models/saucer01a.glb',},
+
+}
 
 // Describe the parameters of each geometry type
 // any numeric entry is [default, min, max, step]
@@ -58,9 +74,9 @@ const gTypes = {
         g: CapsuleGeometry,
         params: {
             radius: [0.5, 0.1, 100, 0.1],
-            length: [1, 0.1, 100, 0.1],
-            capSegments: [10, 4, 40, 1],
-            radialSegments: [10, 4, 40, 1],
+            length: [4, 0.1, 100, 0.1],
+            capSegments: [20, 4, 40, 1],
+            radialSegments: [20, 4, 40, 1],
         }
     },
 
@@ -259,6 +275,22 @@ export class CNode3DObject extends CNode3DGroup {
         this.gui = gui.addFolder("3DObject: " + this.id).close()
         this.common = {}
 
+        this.modelOrGeometry = "model";
+        this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).name("Model or Geometry").onChange((v) => {
+            this.rebuild();
+            par.renderOne = true
+        });
+
+        this.modelOrGeometryMenu.isCommon = true;
+
+        this.selectModel = "F/A-18E/F";
+        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Object Type").onChange((v) => {
+            this.rebuild();
+            par.renderOne = true
+        });
+
+        this.modelMenu.isCommon = true;
+
         // add the common parameters to the GUI
         // note we set isCommon to true to flag them as common
         // so they don't get deleted when we rebuild the GUI after object type change
@@ -352,6 +384,24 @@ export class CNode3DObject extends CNode3DGroup {
         this.destroyObject();
         const common = this.common;
 
+
+        if (this.modelOrGeometry === "model") {
+            // load the model, this will be async
+            const model = Models[this.selectModel];
+            const loader = new GLTFLoader();
+            console.log("Loading model: ", model.file);
+            loader.load(model.file, (gltf) => {
+                this.model = gltf.scene;
+                this.group.add(this.model);
+                this.propagateLayerMask()
+                this.recalculate()
+            })
+
+            return;
+        }
+
+
+
         // set up inputs based on the geometry type
         // add the defaults if a parameter is missing
         // and add UI controls for the parameters
@@ -372,14 +422,7 @@ export class CNode3DObject extends CNode3DGroup {
         // if the geometry or material type has changed, then delete all the geometry-specific parameters
         // and re-create them
         if (this.lastGeometry !== common.geometry || this.lastMaterial !== common.material) {
-            // delete the non-common children of this.gui
-            // iterate backwards so we can delete as we go
-            for (let i = this.gui.controllers.length - 1; i >= 0; i--) {
-                let c = this.gui.controllers[i];
-                if (!c.isCommon) {
-                    c.destroy();
-                }
-            }
+            this.destroyNonCommonUI();
 
             // and re-create them
             this.geometryParams = {}
@@ -399,12 +442,15 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.geometry = new geometryDef.g(...params);
 
-        if (common.rotateX) {
-            this.geometry.rotateX(common.rotateX * Math.PI / 180);
+        const rotateX  = common.rotateX + (common.geometry === "capsule" ? 90 : 0);
+
+        if (rotateX) {
+            this.geometry.rotateX(rotateX * Math.PI / 180);
         }
         if (common.rotateY) {
             this.geometry.rotateY(common.rotateY * Math.PI / 180);
         }
+
         if (common.rotateZ) {
             this.geometry.rotateZ(common.rotateZ * Math.PI / 180);
         }
@@ -441,6 +487,17 @@ export class CNode3DObject extends CNode3DGroup {
 
     }
 
+    destroyNonCommonUI() {
+        // delete the non-common children of this.gui
+        // iterate backwards so we can delete as we go
+        for (let i = this.gui.controllers.length - 1; i >= 0; i--) {
+            let c = this.gui.controllers[i];
+            if (!c.isCommon) {
+                c.destroy();
+            }
+        }
+    }
+
     destroyObject() {
         if (this.object) {
             this.object.geometry.dispose();
@@ -451,6 +508,12 @@ export class CNode3DObject extends CNode3DGroup {
 
         if (this.material) {
             this.material.dispose();
+        }
+
+        if (this.model) {
+            this.group.remove(this.model);
+            disposeScene(this.model)
+            this.model = undefined
         }
 
     }
