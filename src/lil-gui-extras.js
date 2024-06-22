@@ -187,7 +187,6 @@ export class CGuiMenuBar {
         }
     }
 
-
     // creates a gui, adds it into the next menu slot
     // and returns it.
     // called addFolder to maintain compatibility with a single gui system under dat.gui
