@@ -262,6 +262,7 @@ export class CNode3DObject extends CNode3DGroup {
     constructor(v) {
         v.layers ??= LAYER.MASK_HELPERS;
         v.color ??= "white"
+        v.size ??= 1;
 
         // patch DON'T convert the color to a constant node
         const oldColor = v.color;
@@ -277,7 +278,17 @@ export class CNode3DObject extends CNode3DGroup {
         this.gui = gui.addFolder("3D Ob: " + menuName).close()
         this.common = {}
 
-        this.modelOrGeometry = "model";
+        this.modelOrGeometry = v.modelOrGeometry;
+        // if we don't have one, infer it from the presence of either "model" or geometry" in the parameters
+        if (this.modelOrGeometry === undefined) {
+            if (v.model !== undefined) {
+                this.modelOrGeometry = "model";
+            } else {
+                this.modelOrGeometry = "geometry";
+            }
+        }
+
+
         this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).name("Model or Geometry").onChange((v) => {
             this.rebuild();
             par.renderOne = true

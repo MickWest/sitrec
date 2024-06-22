@@ -3,6 +3,7 @@ import {CNode3DObject} from "./CNode3DObject";
 
 export class CNode3DSphere extends CNode3DObject {
     constructor(v) {
+        v.modelOrGeometry = "sphere";
         v.geometry = "sphere";
 
         // these are the original defaults for the legacy CNodeDisplayTargetSphere

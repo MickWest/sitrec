@@ -170,12 +170,18 @@ export class CGuiMenuBar {
     }
 
     show() {
-        this.menuBar.style.display = "block";
+        this.slots.forEach((gui) => {
+            gui.show();
+        })
         this._hidden = false;
     }
 
     hide() {
-        this.menuBar.style.display = "none";
+        // call hide on all the GUI slots
+        this.slots.forEach((gui) => {
+            gui.hide();
+        })
+
         this._hidden = true;
     }
 

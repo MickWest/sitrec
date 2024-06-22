@@ -946,9 +946,9 @@ export function initViews() {
 
     ViewMan.get("chart").setVisible(par.showChart);
 
-    var labelVideo = new CNodeViewUI({id: "labelVideo", overlayView: ViewMan.list.video.data});
-    labelVideo.addText("videolabel", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
-    labelVideo.setVisible(true)
+    var labelOriginalVideo = new CNodeViewUI({id: "labelOriginalVideo", overlayView: ViewMan.list.video.data});
+    labelOriginalVideo.addText("videolabel", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
+    labelOriginalVideo.setVisible(true)
 
     if (1 || !isLocal) {
         var labelMainView = new CNodeViewUI({id: "labelMainView", overlayView: ViewMan.list.mainView.data});

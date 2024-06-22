@@ -12,6 +12,9 @@ export const SitFlir1 = {
     startDistance:10,
     azSlider:{defer:true},
 
+    startTime: "2004-11-14T20:00:00.000Z",
+
+
     mainCamera: {
         startCameraPosition: [-126342.63, 56439.02, 101932.66],
         startCameraTarget: [-126346.69, 56137.48, 100979.21],
@@ -39,7 +42,10 @@ export const SitFlir1 = {
     mainView: {left: 0, top: 0, width: 1, height: 1, background: "#505070"},
 
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
-    lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
+      //   lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
+        lookView: {left: 0.74, top: 0.0, width: -1, height: 0.5,
+
+
         canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
         // effects: [ "StaticNoise", "hBlur", "vBlur", "digitalZoom", "PixelateNxN", "pixelZoom"],
         // inputs: {
@@ -148,9 +154,8 @@ export const SitFlir1 = {
           backgroundIR: "#000000",
     },
 
-    videoView: {left: 0.653, top: 0.25, width: -1, height: 0.375,},
-//    videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,},
-
+    videoView: {left: 0.74, top: 0.5, width: -1, height: 0.5,},
+    labelView: {},
 
 
     focusTracks:{
@@ -358,21 +363,30 @@ export const SitFlir1 = {
 
 
     TargetObjectModel: { kind: "3DObject",
-        geometry: "box",
-        layers: "LOOKRENDER",
-        size: 1,
-        radius: 10,
+        // geometry: "box",
+        // size: 1,
+        // radius: 10,
+        //
+        // width: 3,
+        // height: 4,
+        // depth: 10,
+        // widthSegments:20,
+        // heightSegments:20,
 
-        width: 3,
-        height: 4,
-        depth: 10,
+        geometry: "capsule",
+        radius:4.3,
+        length:12,
+
+
+        model:"F/A-18E/F",
 
         material: "lambert",
         color: "#FFFFFF",
         emissive: '#404040',
-        widthSegments:20,
-        heightSegments:20,
+
         name: "Target",
+        layers: "LOOKRENDER",
+
     },
 
     moveTargetAlongPath: {kind: "TrackPosition", object: "TargetObjectModel", sourceTrack: "LOSTraverseSelect"},
@@ -414,14 +428,14 @@ export const SitFlir1 = {
     altitudeGraphForTarget: { kind: "altitudeGraph",
         track: "LOSTraverseSelect",
         min: 20000, max: 35000,
-        left:0.73, top:0, width:-1, height:.25, xStep: 500, yStep:5000
+        left:0.55, top:0, width:.15, height:-1, xStep: 500, yStep:5000
     },
 
     speedGraphForTarget: { kind: "speedGraph",
         label: "Target Speed",
         track: "LOSTraverseSelect",
         min:0, max:500,
-        left: 0.6, top:0, width: -1, height:0.25},
+        left: 0.4, top:0, width: .15, height:-1},
 
     flir1LegacyCode: {},
 
