@@ -1,6 +1,6 @@
 // Support functions for the custom sitches and mods
 
-import {FileManager, Globals, gui, NodeMan, Sit, Units} from "./Globals";
+import {FileManager, Globals, gui, guiMenus, NodeMan, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
 import {isKeyHeld} from "./KeyBoardHandler";
@@ -35,8 +35,7 @@ export class CCustomManager {
         // add a lil-gui button linked ot the serialize function
         //FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
 
-        //const theGUI = FileManager.guiFolder;
-        const theGUI = gui;
+        const theGUI = guiMenus.file;
 
         this.buttonColor = "#80ff80"
 

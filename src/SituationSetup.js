@@ -1,4 +1,4 @@
-import {FileManager, gui, guiPhysics, NodeFactory, NodeMan, Sit, SitchMan} from "./Globals";
+import {FileManager, gui, guiMenus, guiPhysics, NodeFactory, NodeMan, Sit, SitchMan} from "./Globals";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {LLAToEUS, wgs84} from "./LLA-ECEF-ENU";
 import {CNodeGUIValue, makeCNodeGUIValue} from "./nodes/CNodeGUIValue";
@@ -432,7 +432,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
             })
 
-            gui.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+            guiMenus.view.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
                 cameraNode.camera.updateProjectionMatrix()
             }).listen().name("Main FOV")
 
@@ -628,7 +628,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     id: "videoZoom",
                     value: 100, start: 5, end: 2000, step: 1,
                     desc: "Video Zoom %"
-                }, gui)
+                }, guiMenus.view)
             }
 
 
@@ -861,7 +861,8 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             const overlayView = NodeMan.get(overlayNode);
             var labelVideo = new CNodeViewUI({id: data.id ?? "labelVideo", overlayView: overlayView});
             let textSize = 2.5;
-            AddTimeDisplayToUI(labelVideo, 50, 96, textSize, "#f0f000")
+            let dataTimeY = data.dateTimeY ?? 96;
+            AddTimeDisplayToUI(labelVideo, 50, dataTimeY, textSize, "#f0f000")
             labelVideo.setVisible(true)
             node = labelVideo;
             break;
@@ -1060,7 +1061,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     aZMin = aZMax;
                     aZMax = t;
                 }
-                gui.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
+                guiPhysics.add(par, 'az', aZMin, aZMax, 0.2).listen().onChange(UIChangedAz).name("azimuth")
             }
             break;
 

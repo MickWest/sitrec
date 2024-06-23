@@ -12,7 +12,10 @@ export const SitFlir1 = {
     startDistance:10,
     azSlider:{defer:true},
 
-    startTime: "2004-11-14T20:00:00.000Z",
+    // Date: November 14, 2004
+    // Time: Approximately between 12:00 PM and 1:00 PM PST (20:00 and 21:00 UTC)
+    startTime: "2004-11-14T20:30:00.000Z",
+    timeZone: "PST",
 
 
     mainCamera: {
@@ -155,7 +158,7 @@ export const SitFlir1 = {
     },
 
     videoView: {left: 0.74, top: 0.5, width: -1, height: 0.5,},
-    labelView: {},
+    labelView: {dateTimeY:90},
 
 
     focusTracks:{

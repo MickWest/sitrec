@@ -1,6 +1,6 @@
 // GUI controls for the Jet sitches like Gimbal and GoFast
 
-import {gui, guiJetTweaks, guiShowHide, guiTweaks, infoDiv, NodeMan, Sit} from "./Globals";
+import {guiJetTweaks, guiMenus, guiShowHide, guiTweaks, infoDiv, NodeMan, Sit} from "./Globals";
 import {par} from "./par";
 import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStuff";
 import {calculateGlareStartAngle} from "./JetHorizon";
@@ -26,13 +26,15 @@ export function SetupGUIFrames() {
 }
 
 export function updateGUIFrames() {
-    guiRemove(gui, par, 'time')
-    guiRemove(gui, par, 'frame')
-    guiRemove(gui, par, 'paused')
+    const guiFrames = guiMenus.time
 
-    gui.add(par, 'time', 0, Sit.frames / Sit.fps, 1 / Sit.fps).onChange(UIChangedTime).listen().name("Time (sec)")
-    gui.add(par, 'frame', 0, Sit.frames - 1, 1).onChange(UIChangedFrame).listen().name("Frame in Video")
-    gui.add(par, 'paused').listen()
+    guiRemove(guiFrames, par, 'time')
+    guiRemove(guiFrames, par, 'frame')
+    guiRemove(guiFrames, par, 'paused')
+
+    guiFrames.add(par, 'time', 0, Sit.frames / Sit.fps, 1 / Sit.fps).onChange(UIChangedTime).listen().name("Time (sec)")
+    guiFrames.add(par, 'frame', 0, Sit.frames - 1, 1).onChange(UIChangedFrame).listen().name("Frame in Video")
+    guiFrames.add(par, 'paused').listen()
 
 }
 

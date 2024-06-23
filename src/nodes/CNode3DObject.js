@@ -30,7 +30,7 @@ import {
     TorusKnotGeometry,
     WireframeGeometry
 } from "three";
-import {gui} from "../Globals";
+import {guiMenus} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
@@ -275,7 +275,7 @@ export class CNode3DObject extends CNode3DGroup {
 
 
         let menuName = this.props.name ?? this.id;
-        this.gui = gui.addFolder("3D Ob: " + menuName).close()
+        this.gui = guiMenus.objects.addFolder("3D Ob: " + menuName).close()
         this.common = {}
 
         this.modelOrGeometry = v.modelOrGeometry;
@@ -297,7 +297,7 @@ export class CNode3DObject extends CNode3DGroup {
         this.modelOrGeometryMenu.isCommon = true;
 
         this.selectModel = "F/A-18E/F";
-        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Object Type").onChange((v) => {
+        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Model").onChange((v) => {
             this.rebuild();
             par.renderOne = true
         });

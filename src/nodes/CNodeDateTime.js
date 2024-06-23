@@ -1,4 +1,4 @@
-import {gui, NodeMan, Sit} from "../Globals";
+import {guiMenus, NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {par} from "../par";
 import {calculateGST} from "./CNodeDisplayNightSky";
@@ -106,7 +106,7 @@ export class CNodeDateTime extends CNode {
         
         this.refreshingUI = false;
 
-        this.dateTimeFolder = gui.addFolder("Date/Time");
+        this.dateTimeFolder = guiMenus.time;
 
         this.dateTime = {
             // year: 2022,
@@ -148,7 +148,7 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v))
 
         const options = { timeZoneName: 'short' };
-        const timeZone = new Date().toLocaleTimeString('en-us', options).split(' ')[2];
+        const timeZone = Sit.timeZone ?? new Date().toLocaleTimeString('en-us', options).split(' ')[2];
 
         this.timeZoneName = "PDT UTC-7";
         for (let tz of timeZoneKeys) {

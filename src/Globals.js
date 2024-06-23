@@ -48,12 +48,26 @@ export function setNewSitchText(text){
     Globals.newSitchText = text;
 }
 
+export const guiMenus = {}
+
 export function setupGUIGlobals(_gui, _show, _tweaks, _showViews, _physics) {
     gui = _gui
     guiShowHide = _show;
     guiTweaks = _tweaks;
     guiShowHideViews = _showViews;
     guiPhysics = _physics;
+}
+
+// add to the menubar
+export function addGUIMenu(id, title) {
+    guiMenus[id] = Globals.menuBar.addFolder(title).close().perm();
+    return guiMenus[id];
+}
+
+// ad a folder to a menu
+export function addGUIFolder(id, title, parent) {
+    guiMenus[id] = guiMenus[parent].addFolder(title).close().perm();
+    return guiMenus[id];
 }
 
 export function setupGUIjetTweaks(_jetTweaks) {

@@ -3,7 +3,7 @@ import {CNode} from "./CNode";
 import {Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
-import {Globals, gui, NodeMan, Sit} from "../Globals";
+import {Globals, gui, guiMenus, NodeMan, Sit} from "../Globals";
 import {EUSToLLA, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
 import {Group} from "three";
 
@@ -201,7 +201,7 @@ export class CNodeTerrain extends CNode {
         // and pass these two values in
         // Bit of a patch for backwards compatibility when there's no CNodeTerrainUI
         if (!v.mapTypeMenu) {
-            this.terrainGUI = gui.addFolder("Terrain")
+            this.terrainGUI = guiMenus.terrain; // gui.addFolder("Terrain")
             this.mapTypeMenu = this.terrainGUI.add(local, "mapType", mapTypes).setLabelColor(terrainGUIColor).listen().name("Map Type")
         } else {
             this.terrainGUI = v.terrainGUI;

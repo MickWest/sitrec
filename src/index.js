@@ -4,6 +4,8 @@ import "./extra.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {
+    addGUIFolder,
+    addGUIMenu,
     FileManager,
     GlobalDateTimeNode,
     Globals,
@@ -393,22 +395,21 @@ async function initializeOnce() {
 //   --name-width: 45%;
 // to
 //  --name-width: 36%;
-//     var _gui = new GUI().perm()
-//     var _guiShowHide = _gui.addFolder('Show/Hide').close().perm();
-//     var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
-//     var _guiTweaks = _gui.addFolder('Tweaks & Effects').close().perm();
-//     preventDoubleClicks(_gui);
-
 
     Globals.menuBar = new CGuiMenuBar();
-    var _gui = Globals.menuBar.addFolder(process.env.BUILD_VERSION_STRING).close().perm();
-    var _guiPhysics = Globals.menuBar.addFolder('Physics').close().perm();
-    var _guiShowHide = Globals.menuBar.addFolder('Show/Hide').close().perm();
-    var _guiShowHideViews = _guiShowHide.addFolder('Views').close().perm();
 
-    var _guiTweaks = Globals.menuBar.addFolder('Tweaks & Effects').close().perm();
+    var _gui = addGUIMenu("main", process.env.BUILD_VERSION_STRING);
+    addGUIMenu("file", "File");
+    addGUIMenu("view", "View");
+    addGUIMenu("time", "Time");
+    addGUIMenu("objects", "Objects");
+    addGUIMenu("terrain", "Terrain");
+    var _guiPhysics = addGUIMenu("physics", "Physics");
+    var _guiShowHide = addGUIMenu("showhide", "Show/Hide");
+    var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
+    var _guiTweaks = addGUIMenu("tweaks", "Effects" );
 
-
+    // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)
     setUnits(new CUnits("Nautical"));
     setFileManager(new CFileManager())
@@ -734,7 +735,7 @@ function renderMain() {
         par.renderOne--;
     }
 
-    gui.updateListeners();
+    Globals.menuBar.updateListeners();
 
     if (Sit.updateFunction) {
         Sit.updateFunction(par.frame)

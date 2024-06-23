@@ -2,7 +2,7 @@ import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
 import {f2m} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {Globals, gui, guiTweaks, keyHeld, NodeMan} from "../Globals";
+import {Globals, gui, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
 import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {makeMouseRay} from "../mouseMoveView";
 import {
@@ -464,10 +464,10 @@ export class CNodeView3D extends CNodeViewCanvas {
     addFocusTracks(focusTracks) {
         this.focusTrackName = "default"
         this.lockTrackName = "default"
-        gui.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
+        guiMenus.view.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
             //
         }).name("Focus Track").listen()
-        gui.add(this, "lockTrackName", focusTracks).onChange(lockTrackName => {
+        guiMenus.view.add(this, "lockTrackName", focusTracks).onChange(lockTrackName => {
             //
             console.log(this.lockTrackName)
         }).name("Lock Track").listen()

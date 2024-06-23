@@ -169,6 +169,12 @@ export class CGuiMenuBar {
         this.nextSlot = 0; // next slot to be filled
     }
 
+    updateListeners() {
+        this.slots.forEach((gui) => {
+            gui.updateListeners();
+        })
+    }
+
     show() {
         this.slots.forEach((gui) => {
             gui.show();

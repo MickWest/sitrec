@@ -12,7 +12,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {Globals, gui, NodeMan} from "./Globals";
+import {Globals, gui, guiMenus, NodeMan} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -35,7 +35,7 @@ export class CFileManager extends CManager {
         this.rehostedStarlink = false;
 
         if (!isConsole) {
-            this.guiFolder = gui.addFolder("FileManager (User:" + Globals.userID + ")").perm().close();
+            this.guiFolder = guiMenus.file;
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {

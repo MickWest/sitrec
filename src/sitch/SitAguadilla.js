@@ -1,5 +1,5 @@
 import {par} from "../par";
-import {FileManager, gui, NodeMan, Sit} from "../Globals";
+import {FileManager, gui, guiMenus, NodeMan, Sit} from "../Globals";
 import {
     DirectionalLight,
     HemisphereLight,
@@ -166,7 +166,7 @@ export const SitAguadilla = {
      //   gui.add(par, 'lockCameraToJet').listen().name("Lock Camera to Plane");
 
         // adjusing the main FOV, not really used now it's set well.
-        gui.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
+        guiMenus.view.add(par, 'mainFOV', 0.35, 80, 0.01).onChange(value => {
             const mainCam = NodeMan.get("mainCamera").camera;
             mainCam.fov = value
             mainCam.updateProjectionMatrix()

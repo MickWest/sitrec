@@ -21,7 +21,17 @@ import {
     Vector3
 } from "three";
 import {degrees, radians} from "../utils";
-import {FileManager, GlobalDateTimeNode, Globals, gui, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {
+    FileManager,
+    GlobalDateTimeNode,
+    Globals,
+    gui,
+    guiMenus,
+    guiShowHide,
+    guiTweaks,
+    NodeMan,
+    Sit
+} from "../Globals";
 import {
     DebugArrow,
     DebugArrowAB,
@@ -454,9 +464,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }).name("Satellite Names")
 
 
-        gui.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
-        gui.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
-        gui.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
+        guiMenus.view.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
+        guiMenus.view.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
+        guiMenus.view.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
 
 
         // Sun Direction will get recalculated based on data

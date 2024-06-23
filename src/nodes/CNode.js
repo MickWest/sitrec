@@ -16,7 +16,7 @@
 // a display node might also be an input, like something you can drag with the mouse
 
 import {par} from "../par";
-import {Globals, gui, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {Globals, gui, guiMenus, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 
@@ -246,22 +246,8 @@ class CNode {
         if (_gui) {
             // if it's a string, then it's from the data driven setup
             if (typeof _gui === "string") {
-                switch (_gui.toLowerCase()) {
-                    case "showhide":
-                        this.gui = guiShowHide;
-                        break;
-                    case "tweaks":
-                        this.gui = guiTweaks;
-                        break;
-                    case "main":
-                        this.gui = gui;
-                        break;
-                    case "physics":
-                        this.gui = guiPhysics;
-                        break;
-                    default:
-                        assert(0,"Unknown gui type: " + v.gui)
-                }
+                this.gui = guiMenus[_gui];
+                assert(this.gui !== undefined, "Unknown gui type: " + _gui)
             } else {
                 // otherwise, it's a gui object passed in the parameters
                 // check its type is  GUI class
