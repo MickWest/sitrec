@@ -3,14 +3,12 @@
  */
 
 export const GreyscaleShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -21,7 +19,7 @@ export const GreyscaleShader = {
 
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 
@@ -42,7 +40,5 @@ export const GreyscaleShader = {
             gl_FragColor = vec4(vec3(grey), opacity);
 
 
-		}`
-
+		}`,
 };
-

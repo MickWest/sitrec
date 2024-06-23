@@ -1,19 +1,16 @@
 /**
  * Pixelate Shader
  */
-import {Vector2} from "three";
+import { Vector2 } from 'three';
 
 export const Pixelate2x2Shader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    resolution: { value: new Vector2(800, 600) }, // Set your render target size here
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-        'resolution': { value: new Vector2(800, 600) } // Set your render target size here
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -24,7 +21,7 @@ export const Pixelate2x2Shader = {
 
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 		uniform sampler2D tDiffuse;
@@ -51,27 +48,22 @@ export const Pixelate2x2Shader = {
 			vec4 avgColor = (color1 + color2 + color3 + color4) / 4.0;
 
 			gl_FragColor = vec4(avgColor.rgb, opacity);
-		}`
-
+		}`,
 };
-
 
 /**
  * Pixelate NxN Shader
  */
 
 export const PixelateNxNShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    resolution: { value: new Vector2(800, 600) }, // Set your render target size here
+    blockSize: { value: 4.0 }, // Set the block size for NxN
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-        'resolution': { value: new Vector2(800, 600) }, // Set your render target size here
-        'blockSize': { value: 4.0 } // Set the block size for NxN
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -82,7 +74,7 @@ export const PixelateNxNShader = {
 
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 		uniform sampler2D tDiffuse;
@@ -115,7 +107,5 @@ export const PixelateNxNShader = {
 			color /= blockSize * blockSize;
 
 			gl_FragColor = vec4(color.rgb, opacity);
-		}`
-
+		}`,
 };
-

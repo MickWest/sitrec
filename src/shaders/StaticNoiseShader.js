@@ -1,21 +1,19 @@
- export const StaticNoiseShader = {
+export const StaticNoiseShader = {
+  name: 'StaticNoiseShader',
 
-        name: "StaticNoiseShader",
+  uniforms: {
+    tDiffuse: { type: 't', value: null },
+    time: { type: 'f', value: 0.0 },
+    amount: { type: 'f', value: 0.1 },
+    size: { type: 'f', value: 4.0 },
+  },
 
-        uniforms: {
-
-            "tDiffuse": {type: "t", value: null},
-            "time": {type: "f", value: 0.0},
-            "amount": {type: "f", value: 0.1},
-            "size": {type: "f", value: 4.0}
-        },
-
-        vertexShader: `
+  vertexShader: `
 
             varying vec2 vUv;
 
             void main() {
-    
+
                 vUv = uv;
                 gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
@@ -23,7 +21,7 @@
 
         `,
 
-fragmentShader: `
+  fragmentShader: `
 
     uniform sampler2D tDiffuse;
     uniform float time;
@@ -34,16 +32,16 @@ fragmentShader: `
 
     // https://www.shadertoy.com/view/WttXWX
     // --- from Chris Wellons https://nullprogram.com/blog/2018/07/31/
-    // Note that it might not be costlier than the infamous fract(big*sin(big*x)) ;-) 
-    
+    // Note that it might not be costlier than the infamous fract(big*sin(big*x)) ;-)
+
             // --- choose one:
     //#define hashi(x)   lowbias32(x)
     precision highp float;
     precision highp int;
-    
-    #define hashi(x)   triple32(x) 
+
+    #define hashi(x)   triple32(x)
     #define hash(x)  ( float( hashi(x) ) / float( 0xffffffffU ) )
-    
+
     uint lowbias32(uint x)
     {
         x ^= x >> 16;
@@ -53,7 +51,7 @@ fragmentShader: `
         x ^= x >> 16;
         return x;
     }
-    
+
     uint triple32(uint x)
     {
         x ^= x >> 17;
@@ -65,11 +63,11 @@ fragmentShader: `
         x ^= x >> 14;
         return x;
     }
-    
+
     float rand2(vec2 co) {
         return hash(uint(co.x) + hashi(uint(co.y)));
     }
-    
+
     void main() {
         vec2 p = vUv;
         vec4 color = texture2D(tDiffuse, p);
@@ -80,4 +78,4 @@ fragmentShader: `
     }
 
        `,
-    }
+};

@@ -4,7 +4,8 @@ import {Sky} from "three/addons/objects/Sky.js";
 import {MathUtils, Vector3} from "three";
 import GUI from "./js/lil-gui.esm";
 
-let sky, sun;
+let sky;
+let sun;
 
 export function initSky(scene, renderer) {
 
@@ -30,17 +31,17 @@ export function initSky(scene, renderer) {
     function guiChanged() {
 
         const uniforms = sky.material.uniforms;
-        uniforms['turbidity'].value = effectController.turbidity;
-        uniforms['rayleigh'].value = effectController.rayleigh;
-        uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-        uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+        uniforms.turbidity.value = effectController.turbidity;
+        uniforms.rayleigh.value = effectController.rayleigh;
+        uniforms.mieCoefficient.value = effectController.mieCoefficient;
+        uniforms.mieDirectionalG.value = effectController.mieDirectionalG;
 
         const phi = MathUtils.degToRad(90 - effectController.elevation);
         const theta = MathUtils.degToRad(effectController.azimuth);
 
         sun.setFromSphericalCoords(1, phi, theta);
 
-        uniforms['sunPosition'].value.copy(sun);
+        uniforms.sunPosition.value.copy(sun);
 
         renderer.toneMappingExposure = effectController.exposure;
 

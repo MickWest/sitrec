@@ -3,14 +3,11 @@
  */
 
 export const InvertShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -21,7 +18,7 @@ export const InvertShader = {
 
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 
@@ -36,9 +33,7 @@ export const InvertShader = {
             gl_FragColor.r = 1.0 - gl_FragColor.r;
             gl_FragColor.g = 1.0 - gl_FragColor.g;
             gl_FragColor.b = 1.0 - gl_FragColor.b;
-            
 
-		}`
 
+		}`,
 };
-

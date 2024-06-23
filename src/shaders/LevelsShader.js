@@ -3,20 +3,17 @@
  */
 
 export const LevelsShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    inputBlack: { value: 0.0 },
+    inputWhite: { value: 1.0 },
+    gamma: { value: 1.0 },
+    outputBlack: { value: 0.0 },
+    outputWhite: { value: 1.0 },
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-        'inputBlack': { value: 0.0 },
-        'inputWhite': { value: 1.0 },
-        'gamma': { value: 1.0 },
-        'outputBlack': { value: 0.0 },
-        'outputWhite': { value: 1.0 }
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
         varying vec2 vUv;
 
@@ -27,7 +24,7 @@ export const LevelsShader = {
 
         }`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
         uniform float opacity;
         uniform float inputBlack;
@@ -55,6 +52,5 @@ export const LevelsShader = {
 
             gl_FragColor = vec4(color.rgb, opacity);
 
-        }`
-
+        }`,
 };

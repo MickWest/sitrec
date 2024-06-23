@@ -1,8 +1,13 @@
-import {degrees, metersFromMiles, metersPerSecondFromKnots, radians} from "../utils";
-import {calcHorizonPoint, getLocalUpVector} from "../SphericalMath";
-import {CNodeEmptyArray} from "./CNodeArray";
-import {assert} from "../assert.js";
-import {V3} from "../threeUtils";
+import {
+  degrees,
+  metersFromMiles,
+  metersPerSecondFromKnots,
+  radians,
+} from '../utils';
+import { calcHorizonPoint, getLocalUpVector } from '../SphericalMath';
+import { CNodeEmptyArray } from './CNodeArray';
+import { assert } from '../assert.js';
+import { V3 } from '../threeUtils';
 
 /*
     cloudAlt = altitude of the top of the cloud layer above the ground
@@ -21,54 +26,63 @@ import {V3} from "../threeUtils";
 
  */
 export class CNodeTurnRateFromClouds extends CNodeEmptyArray {
-    constructor(v) {
-        super(v);
-        this.startTurnRate = v.startTurnRate ?? 0
-        // cloud speed is the desired speed of the clouds
-        this.checkInputs(["cloudAlt","cloudSpeed","az", "speed", "altitude", "radius"])
-        this.frames = this.in.az.frames
-        this.fps = this.in.az.fps
-        assert(this.frames >0, "Need frames in az input to CNodeTurnRateFromClouds")
-        this.recalculate()
-    }
+  constructor(v) {
+    super(v);
+    this.startTurnRate = v.startTurnRate ?? 0;
+    // cloud speed is the desired speed of the clouds
+    this.checkInputs([
+      'cloudAlt',
+      'cloudSpeed',
+      'az',
+      'speed',
+      'altitude',
+      'radius',
+    ]);
+    this.frames = this.in.az.frames;
+    this.fps = this.in.az.fps;
+    assert(
+      this.frames > 0,
+      'Need frames in az input to CNodeTurnRateFromClouds'
+    );
+    this.recalculate();
+  }
 
-    // like the code in CNodeLOSHorizonTrack
-    // we calculate the angular speed at the horizon given the jetTack
-    // then see what angular speed we need
-    // and put the difference (the needed turn rate) in the array
-    recalculate() {
-        this.array = []
-        var jetHeading = 0
-        var radius = metersFromMiles(this.in.radius.v0)
-        var jetPos = V3(0,this.in.altitude.v0,0)   // this is above the EUS (East, Up, South) origin
-        var jetFwd = V3(0,0,-1) // start out pointing north (Z = -1 in EUS
+  // like the code in CNodeLOSHorizonTrack
+  // we calculate the angular speed at the horizon given the jetTack
+  // then see what angular speed we need
+  // and put the difference (the needed turn rate) in the array
+  recalculate() {
+    this.array = [];
+    const jetHeading = 0;
+    const radius = metersFromMiles(this.in.radius.v0);
+    const jetPos = V3(0, this.in.altitude.v0, 0); // this is above the EUS (East, Up, South) origin
+    const jetFwd = V3(0, 0, -1); // start out pointing north (Z = -1 in EUS
 
-        var turnRate = this.startTurnRate // initial value of turn rate - could start with something better
+    let turnRate = this.startTurnRate; // initial value of turn rate - could start with something better
 
-        for (var f=0;f<this.frames-1;f++) {
+    for (let f = 0; f < this.frames - 1; f++) {
+      /////////////////////////////////////////////////////////////////////
+      // This is essentially from CNodeJetTrack
 
-            /////////////////////////////////////////////////////////////////////
-            // This is essentially from CNodeJetTrack
+      const lastPosition = jetPos.clone();
+      const lastFwd = jetFwd.clone();
+      // move the jet along the fwd vector
+      const jetSpeed = metersPerSecondFromKnots(this.in.speed.getValueFrame(f)); // 351 from CAS of 241 (239-242)
+      jetPos.add(jetFwd.clone().multiplyScalar(jetSpeed / this.fps)); // one frame
 
-            const lastPosition = jetPos.clone()
-            const lastFwd = jetFwd.clone()
-            // move the jet along the fwd vector
-            var jetSpeed = metersPerSecondFromKnots(this.in.speed.getValueFrame(f))  // 351 from CAS of 241 (239-242)
-            jetPos.add(jetFwd.clone().multiplyScalar(jetSpeed / this.fps)) // one frame
+      // rotate around local up (opposite of gravity)
+      const upAxis = getLocalUpVector(jetPos, radius);
+      jetFwd.applyAxisAngle(upAxis, -radians(turnRate / this.fps));
+      const rightAxis = V3();
+      rightAxis.crossVectors(upAxis, jetFwd); // right is calculated as being at right angles to up and fwd
+      jetFwd.crossVectors(rightAxis, upAxis); // then fwd is a right angles to right and up
 
-            // rotate around local up (opposite of gravity)
-            var upAxis = getLocalUpVector(jetPos, radius)
-            jetFwd.applyAxisAngle(upAxis, -radians(turnRate / this.fps))
-            var rightAxis = V3()
-            rightAxis.crossVectors(upAxis, jetFwd)  // right is calculated as being at right angles to up and fwd
-            jetFwd.crossVectors(rightAxis,upAxis) // then fwd is a right angles to right and up
+      ///////////////////////////////////////////////////////////////////////
+      // Now we have the old and new positions for this frame
+      // so need to calculate the adjustment to the turn rate
+      const cloudAlt = this.in.cloudAlt.v(f); // unlikely to change, but what the heck!
 
-            ///////////////////////////////////////////////////////////////////////
-            // Now we have the old and new positions for this frame
-            // so need to calculate the adjustment to the turn rate
-            const cloudAlt = this.in.cloudAlt.v(f) // unlikely to change, but what the heck!
-
-            /*
+      /*
             let horizon1 = calcHorizonPoint(lastPosition, lastFwd, cloudAlt, radius)
             horizon1.sub(lastPosition).normalize()
             let horizon2 = calcHorizonPoint(jetPos, jetFwd, cloudAlt, radius)
@@ -79,37 +93,33 @@ export class CNodeTurnRateFromClouds extends CNodeEmptyArray {
             let angleChange = (angle2-angle1);
             */
 
-            // the change in angle we are looking for is how much a point on the horizon moves
-            // when we move to the next position
-            // TODO - also in graph of cloud speed?
+      // the change in angle we are looking for is how much a point on the horizon moves
+      // when we move to the next position
+      // TODO - also in graph of cloud speed?
 
+      const LOS = lastFwd.clone();
+      //    var upAxis = V3(0, 1, 0)
+      const upAxis = getLocalUpVector(lastPosition, radius); // not a real difference
 
-            let LOS = lastFwd.clone()
-        //    var upAxis = V3(0, 1, 0)
-            var upAxis = getLocalUpVector(lastPosition, radius) // not a real difference
+      LOS.applyAxisAngle(upAxis, radians(-this.in.az.v(f)));
 
-            LOS.applyAxisAngle(upAxis, radians(-this.in.az.v(f)))
+      const horizon1 = calcHorizonPoint(lastPosition, LOS, cloudAlt, radius);
+      const from1 = horizon1.clone().sub(lastPosition).normalize();
+      const from2 = horizon1.clone().sub(jetPos).normalize();
+      const angle1 = Math.atan2(from1.z, from1.x);
+      const angle2 = Math.atan2(from2.z, from2.x);
+      let angleChange = degrees(angle2 - angle1);
 
-            let horizon1 = calcHorizonPoint(lastPosition, LOS, cloudAlt, radius)
-            let from1 = horizon1.clone().sub(lastPosition).normalize()
-            let from2 = horizon1.clone().sub(jetPos).normalize()
-            let angle1 = Math.atan2(from1.z, from1.x)
-            let angle2 = Math.atan2(from2.z, from2.x)
-            let angleChange = degrees((angle2-angle1));
+      angleChange -=
+        this.in.az.getValueFrame(f + 1) - this.in.az.getValueFrame(f);
+      turnRate = angleChange * this.fps;
+      turnRate += this.in.cloudSpeed.v(f);
 
-            angleChange -= this.in.az.getValueFrame(f+1) - this.in.az.getValueFrame(f)
-            turnRate = angleChange * this.fps
-            turnRate += this.in.cloudSpeed.v(f)
-
-
-            ///////////////////////////////////////////////////////////
-            // finally store and add that turn rate
-            this.array.push(turnRate)
-        }
-        // as we don't predict from the last frame, just duplicate the final turn rate
-        this.array.push(turnRate)
-
+      ///////////////////////////////////////////////////////////
+      // finally store and add that turn rate
+      this.array.push(turnRate);
     }
-
+    // as we don't predict from the last frame, just duplicate the final turn rate
+    this.array.push(turnRate);
+  }
 }
-

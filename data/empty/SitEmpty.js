@@ -1,6 +1,5 @@
 export const SitEmpty = {
-    name: "empty",
-    menuName: "Empty",
-    isTextable: true,
-
-}
+  name: 'empty',
+  menuName: 'Empty',
+  isTextable: true,
+};

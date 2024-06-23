@@ -10,305 +10,462 @@
 // - SitMISB.js (MISB track)
 // - SitJellyfish (simple user spline track) (MAYBE)
 
-
 sitch = {
-    name: "custom",
-    menuName: "Custom (Drag and Drop)",
-    isCustom: true,
-    canMod: false, // this is a custom sitch, so does not use the "modding" system, instead exports all of this
+  name: 'custom',
+  menuName: 'Custom (Drag and Drop)',
+  isCustom: true,
+  canMod: false, // this is a custom sitch, so does not use the "modding" system, instead exports all of this
 
-    startDistance: 1,
-    startDistanceMin: 0.01,
-    startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
+  startDistance: 1,
+  startDistanceMin: 0.01,
+  startDistanceMax: 25, // this might need to be adjusted based on the terrain per sitch
 
-    startTime: "2012-09-19T20:50:26.970Z",
-    // default terrain covers North America
-    TerrainModel: {kind: "Terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 6},
-    terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
+  startTime: '2012-09-19T20:50:26.970Z',
+  // default terrain covers North America
+  TerrainModel: {
+    kind: 'Terrain',
+    lat: 41.0957,
+    lon: -104.8702,
+    zoom: 4,
+    nTiles: 6,
+  },
+  terrainUI: { kind: 'TerrainUI', terrain: 'TerrainModel' },
 
-    // default to 30 seconds. Loading a video will change this (also need manual, eventually)
-    frames: 900,
-    fps: 30,
+  // default to 30 seconds. Loading a video will change this (also need manual, eventually)
+  frames: 900,
+  fps: 30,
 
-    ambientLight: 0.0,
+  ambientLight: 0.0,
 
-    // if we are loading a video, then we want to extract frames from it
-    framesFromVideo: true,
+  // if we are loading a video, then we want to extract frames from it
+  framesFromVideo: true,
 
-    lat: 40, lon: -100,
+  lat: 40,
+  lon: -100,
 
-    targetSize: 100,
+  targetSize: 100,
 
-    lookCamera: {fov: 10, near: 1, far: 8000000},
-    mainCamera: {fov: 30, near: 1, far: 60000000,
-        // startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
-        // startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
+  lookCamera: { fov: 10, near: 1, far: 8000000 },
+  mainCamera: {
+    fov: 30,
+    near: 1,
+    far: 60000000,
+    // startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
+    // startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
 
-        // close to truck terrain for testing
-         startCameraPositionLLA:[40.767657,-105.215694,15862.255512],
-         startCameraTargetLLA:[40.774329,-105.208906,15520.851507],
-    },
+    // close to truck terrain for testing
+    startCameraPositionLLA: [40.767657, -105.215694, 15862.255512],
+    startCameraTargetLLA: [40.774329, -105.208906, 15520.851507],
+  },
 
-    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
-    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
+  videoView: {
+    left: 0.5,
+    top: 0,
+    width: -1.7927,
+    height: 0.5,
+    autoClear: false,
+  },
+  mainView: { left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080' },
 
-    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
+  focus: {
+    kind: 'GUIValue',
+    value: 0.0,
+    start: 0.0,
+    end: 2.0,
+    step: 0.01,
+    desc: 'Defocus',
+    gui: 'tweaks',
+  },
 
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
+  lookView: {
+    left: 0.5,
+    top: 0.5,
+    width: -1.7927,
+    height: 0.5,
 
-        effects: {
-            //Copy:{},
+    effects: {
+      //Copy:{},
 
-
-
-            // initial blurs are for focus
-            hBlur: { inputs: {
-                    h: "focus",
-                }},
-            vBlur: {inputs:{
-                    v: "focus",
-                }},
-            // Noise comes AFTER focus, becuase it's on the sensor
-            StaticNoise: {inputs:{
-                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
-                }},
-            Greyscale:{id:"Custom_GreyScale", enabled: false},
-            Invert: {id:"Custom_Invert", enabled: false},
-
-            Custom_Levels: {
-                kind: "Levels",
-                inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
-                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
-                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
-                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
-                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
-
-                },
-                enabled: true,
-                },
-
-
-            // digitalZoom: {inputs:{
-            //         magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
-            //     }},
-            //
-            // these blurs are for the video conversion
-
-
-            // JPEGArtifacts: {
-            //     filter: "Linear",
-            //     inputs: {
-            //         size: 16,
-            //         amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
-            //     }
-            // },
-
-            // 2x2 pixelation is for the video being later resized to 242 size from 484
-
-
-            // final zoom to match the video zoom (scaling up pixels)
-            pixelZoom: {
-                id: "pixelZoomNode",
-                inputs: {
-                    magnifyFactor: {
-                        id: "pixelZoom",
-                        kind: "GUIValue",
-                        value: 100,
-                        start: 10,
-                        end: 2000,
-                        step: 0.01,
-                        desc: "Pixel Zoom %",
-                        hidden: true
-                    },
-                }},
-        },
-
-        syncPixelZoomWithVideo: true,
-    },
-
-    dragDropHandler: true,
-    useGlobe: true,
-    nightSky: true,
-
-
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.767657,-105.215694,15862.255512]},
-
-    cameraTrackSwitch: {kind: "Switch",
+      // initial blurs are for focus
+      hBlur: {
         inputs: {
-           "fixedCamera": "fixedCameraPosition",
+          h: 'focus',
         },
-        desc: "Camera Track"
-    },
-
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [34.5,-115.858257450, 0]},
-
-    targetTrackSwitch: {
-        kind: "Switch",
+      },
+      vBlur: {
         inputs: {
-            "fixedTarget": "fixedTargetPosition",
+          v: 'focus',
         },
-        desc: "Target Track"
-    },
-
-    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, showGUI: true},
-
-    // angels controllers
-    angelsSwitch: {
-        kind: "Switch",
+      },
+      // Noise comes AFTER focus, becuase it's on the sensor
+      StaticNoise: {
         inputs: {
-            "Manual PTZ": "ptzAngles",
-            // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
-            // then a matrixController
+          amount: {
+            kind: 'GUIValue',
+            value: 0.01,
+            start: 0.0,
+            end: 1.0,
+            step: 0.01,
+            desc: 'Noise Amount',
+          },
         },
-        desc: "Angles Source"
-    },
+      },
+      Greyscale: { id: 'Custom_GreyScale', enabled: false },
+      Invert: { id: 'Custom_Invert', enabled: false },
 
-    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV"},
-
-    fovSwitch: {
-        kind: "Switch",
+      Custom_Levels: {
+        kind: 'Levels',
         inputs: {
-            "userFOV": "fovUI",
+          inputBlack: {
+            kind: 'GUIValue',
+            value: 0.0,
+            start: 0.0,
+            end: 1.0,
+            step: 0.01,
+            desc: 'TV In Black',
+          },
+          inputWhite: {
+            kind: 'GUIValue',
+            value: 1.0,
+            start: 0.0,
+            end: 1.0,
+            step: 0.01,
+            desc: 'TV In White',
+          },
+          gamma: {
+            kind: 'GUIValue',
+            value: 1.0,
+            start: 0.0,
+            end: 4.0,
+            step: 0.01,
+            desc: 'TV Gamma',
+          },
+          outputBlack: {
+            kind: 'GUIValue',
+            value: 0.0,
+            start: 0.0,
+            end: 1.0,
+            step: 0.01,
+            desc: 'Tv Out Black',
+          },
+          outputWhite: {
+            kind: 'GUIValue',
+            value: 1.0,
+            start: 0.0,
+            end: 1.0,
+            step: 0.01,
+            desc: 'Tv Out White',
+          },
         },
-        desc: "Camera FOV"
-    },
+        enabled: true,
+      },
 
+      // digitalZoom: {inputs:{
+      //         magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
+      //     }},
+      //
+      // these blurs are for the video conversion
 
-    fovController: {
-        kind: "fovController",
-        object: "lookCamera",
-        source: "fovSwitch",
-    },
+      // JPEGArtifacts: {
+      //     filter: "Linear",
+      //     inputs: {
+      //         size: 16,
+      //         amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+      //     }
+      // },
 
-    trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
+      // 2x2 pixelation is for the video being later resized to 242 size from 484
 
-    // These are the types of controller for the camera
-    // which will reference the cameraTrackSwitch for source data
-    CameraPositionController: {
-        kind: "Switch",
+      // final zoom to match the video zoom (scaling up pixels)
+      pixelZoom: {
+        id: 'pixelZoomNode',
         inputs: {
-            "Follow Track": "trackPositionController",
+          magnifyFactor: {
+            id: 'pixelZoom',
+            kind: 'GUIValue',
+            value: 100,
+            start: 10,
+            end: 2000,
+            step: 0.01,
+            desc: 'Pixel Zoom %',
+            hidden: true,
+          },
         },
-        desc: "Camera Position",
+      },
     },
 
+    syncPixelZoomWithVideo: true,
+  },
 
-    trackToTrackController: {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+  dragDropHandler: true,
+  useGlobe: true,
+  nightSky: true,
 
-    // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
-    // for source data
-    // can be track-to-track, fixed angles, Az/El/Roll track, etc.
-    CameraLOSController: {kind: "Switch",
-        inputs: {
-            "To Target": "trackToTrackController",
-            "Use Angles": "angelsSwitch",
-        },
-        desc: "Camera Heading"
+  fixedCameraPosition: {
+    kind: 'PositionLLA',
+    LLA: [40.767657, -105.215694, 15862.255512],
+  },
+
+  cameraTrackSwitch: {
+    kind: 'Switch',
+    inputs: {
+      fixedCamera: 'fixedCameraPosition',
     },
+    desc: 'Camera Track',
+  },
 
-    // Since we are controlling the camera with the LOS controller, we can extract the LOS
-    // for other uses, such as a target track generated for LOS traversal
+  fixedTargetPosition: { kind: 'PositionLLA', LLA: [34.5, -115.85825745, 0] },
 
-    recordLos: {kind: "RecordLOS"},
-    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
-//    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
-
-    // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
-    targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
-
-    // The "Track" traverse node uses the ground track
-    LOSTraverseSelectTrack: {
-        kind: "traverseNodes",
-        idExtra: "Track",
-        los: "JetLOS",
-        menu: {
-            "Constant Speed": "LOSTraverseConstantSpeed",
-            "Constant Altitude": "LOSTraverseConstantAltitude",
-            "Straight Line": "LOSTraverseStraightLine",
-        },
-        default: "Constant Altitude",
-        exportable: true,
+  targetTrackSwitch: {
+    kind: 'Switch',
+    inputs: {
+      fixedTarget: 'fixedTargetPosition',
     },
+    desc: 'Target Track',
+  },
 
-    // display the traverse track (Track)
-    traverseDisplayTrack: {
-        kind: "DisplayTrack",
-        track: "LOSTraverseSelectTrack",
-        color: [0,0,1],
-        width: 1,
+  ptzAngles: { kind: 'PTZUI', az: 0, el: 0, roll: 0, showGUI: true },
+
+  // angels controllers
+  angelsSwitch: {
+    kind: 'Switch',
+    inputs: {
+      'Manual PTZ': 'ptzAngles',
+      // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
+      // then a matrixController
     },
+    desc: 'Angles Source',
+  },
 
+  fovUI: {
+    kind: 'GUIValue',
+    value: 30,
+    start: 0.1,
+    end: 170,
+    step: 0.001,
+    desc: 'vFOV',
+  },
 
-    // WHY does smoothing lose the heading info for SaucerTilt
-   // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
-
-    // sphereTraverse: { kind: "DisplayTargetSphere",
-    //     track: "LOSTraverseSelectTrack",
-    //     size: 5,
-    //     layers: "MAINRENDER",
-    //     color: [0,0,1],
-    // },
-
-    sphereTraverse: { kind: "3DObject",
-        geometry: "box",
-        layers: "LOOKRENDER",
-        size: 1,
-        radius: 10,
-
-        width: 3,
-        height: 4,
-        depth: 10,
-
-        material: "lambert",
-        color: "#FFFFFF",
-        emissive: '#404040',
-        widthSegments:20,
-        heightSegments:20,
+  fovSwitch: {
+    kind: 'Switch',
+    inputs: {
+      userFOV: 'fovUI',
     },
-    moveTargetAlongPath: {kind: "TrackPosition", object: "sphereTraverse", sourceTrack: "LOSTraverseSelectTrack"},
-    orientTarget: {kind: "SaucerTilt", object: "sphereTraverse", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
+    desc: 'Camera FOV',
+  },
 
+  fovController: {
+    kind: 'fovController',
+    object: 'lookCamera',
+    source: 'fovSwitch',
+  },
 
-    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
+  trackPositionController: {
+    kind: 'TrackPosition',
+    sourceTrack: 'cameraTrackSwitch',
+  },
 
-
-    focusTracks:{},
-
-    // for each type of files that is dropped (e.g. KLV, CSV, video)
-    // specify what switch nodes will be updated with this new option
-    // and what kind of data will be extracted from the file
-    // TODO: add support for focus tracks, which are currently using
-    // a direct GUI, and should be a CNodeSwitch
-    dropTargets: {
-        "track": ["cameraTrackSwitch", "targetTrackSwitch", "zoomToTrack"],
-//        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
-        "fov": ["fovSwitch"],
-        "angles": ["angelsSwitch"],
+  // These are the types of controller for the camera
+  // which will reference the cameraTrackSwitch for source data
+  CameraPositionController: {
+    kind: 'Switch',
+    inputs: {
+      'Follow Track': 'trackPositionController',
     },
+    desc: 'Camera Position',
+  },
 
+  trackToTrackController: {
+    kind: 'TrackToTrack',
+    sourceTrack: 'cameraTrackSwitch',
+    targetTrack: 'targetTrackSwitch',
+  },
 
-// Standard useful things, eventually have them more configurable
-
-    mirrorVideo: { transparency: 0.0, autoClear:false},
-    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
-
-    altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
-    altitudeLabel2: {kind: "MeasureAltitude", position: "LOSTraverseSelectTrack"},
-    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitch", B: "targetTrackSwitch", defer: true},
-
-
-
-    shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
-        frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
-        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
-        multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"tweaks"},
-        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
-        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
-        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
+  // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
+  // for source data
+  // can be track-to-track, fixed angles, Az/El/Roll track, etc.
+  CameraLOSController: {
+    kind: 'Switch',
+    inputs: {
+      'To Target': 'trackToTrackController',
+      'Use Angles': 'angelsSwitch',
     },
+    desc: 'Camera Heading',
+  },
 
-    compassMain: {kind: "CompassUI", camera: "mainCamera", left: 0.0, top: 0.90, width: -1, height: 0.1},
+  // Since we are controlling the camera with the LOS controller, we can extract the LOS
+  // for other uses, such as a target track generated for LOS traversal
 
+  recordLos: { kind: 'RecordLOS' },
+  JetLOS: {
+    kind: 'LOSFromCamera',
+    cameraNode: 'lookCamera',
+    useRecorded: true,
+  },
+  //    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
 
-}
+  // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
+  targetWind: { from: 270, knots: 0, name: 'Target', arrowColor: 'cyan' },
+
+  // The "Track" traverse node uses the ground track
+  LOSTraverseSelectTrack: {
+    kind: 'traverseNodes',
+    idExtra: 'Track',
+    los: 'JetLOS',
+    menu: {
+      'Constant Speed': 'LOSTraverseConstantSpeed',
+      'Constant Altitude': 'LOSTraverseConstantAltitude',
+      'Straight Line': 'LOSTraverseStraightLine',
+    },
+    default: 'Constant Altitude',
+    exportable: true,
+  },
+
+  // display the traverse track (Track)
+  traverseDisplayTrack: {
+    kind: 'DisplayTrack',
+    track: 'LOSTraverseSelectTrack',
+    color: [0, 0, 1],
+    width: 1,
+  },
+
+  // WHY does smoothing lose the heading info for SaucerTilt
+  // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
+
+  // sphereTraverse: { kind: "DisplayTargetSphere",
+  //     track: "LOSTraverseSelectTrack",
+  //     size: 5,
+  //     layers: "MAINRENDER",
+  //     color: [0,0,1],
+  // },
+
+  sphereTraverse: {
+    kind: '3DObject',
+    geometry: 'box',
+    layers: 'LOOKRENDER',
+    size: 1,
+    radius: 10,
+
+    width: 3,
+    height: 4,
+    depth: 10,
+
+    material: 'lambert',
+    color: '#FFFFFF',
+    emissive: '#404040',
+    widthSegments: 20,
+    heightSegments: 20,
+  },
+  moveTargetAlongPath: {
+    kind: 'TrackPosition',
+    object: 'sphereTraverse',
+    sourceTrack: 'LOSTraverseSelectTrack',
+  },
+  orientTarget: {
+    kind: 'SaucerTilt',
+    object: 'sphereTraverse',
+    track: 'LOSTraverseSelectTrack',
+    tiltType: 'frontPointing',
+  },
+
+  displayLOS: { kind: 'DisplayLOS', LOS: 'JetLOS', color: 'red', width: 1.0 },
+
+  focusTracks: {},
+
+  // for each type of files that is dropped (e.g. KLV, CSV, video)
+  // specify what switch nodes will be updated with this new option
+  // and what kind of data will be extracted from the file
+  // TODO: add support for focus tracks, which are currently using
+  // a direct GUI, and should be a CNodeSwitch
+  dropTargets: {
+    track: ['cameraTrackSwitch', 'targetTrackSwitch', 'zoomToTrack'],
+    //        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
+    fov: ['fovSwitch'],
+    angles: ['angelsSwitch'],
+  },
+
+  // Standard useful things, eventually have them more configurable
+
+  mirrorVideo: { transparency: 0.0, autoClear: false },
+  DisplayCameraFrustum: { radius: 500000, lineWeight: 1.0, color: 'white' },
+
+  altitudeLabel: { kind: 'MeasureAltitude', position: 'lookCamera' },
+  altitudeLabel2: {
+    kind: 'MeasureAltitude',
+    position: 'LOSTraverseSelectTrack',
+  },
+  distanceLabel: {
+    kind: 'MeasureAB',
+    A: 'cameraTrackSwitch',
+    B: 'targetTrackSwitch',
+    defer: true,
+  },
+
+  shakeLookCamera: {
+    kind: 'CameraShake',
+    object: 'lookCamera',
+    frequency: {
+      kind: 'GUIValue',
+      value: 0.0,
+      start: 0.0,
+      end: 1,
+      step: 0.001,
+      desc: 'Shake Freq',
+      gui: 'tweaks',
+    },
+    decay: {
+      kind: 'GUIValue',
+      value: 0.708,
+      start: 0.0,
+      end: 1,
+      step: 0.001,
+      desc: 'Shake Decay',
+      gui: 'tweaks',
+    },
+    multiply: {
+      kind: 'GUIValue',
+      value: 10,
+      start: 1,
+      end: 100,
+      step: 1,
+      desc: 'Shake Multiply',
+      gui: 'tweaks',
+    },
+    xScale: {
+      kind: 'GUIValue',
+      value: 0.35,
+      start: 0.0,
+      end: 10,
+      step: 0.01,
+      desc: 'Shake X Scale',
+      gui: 'tweaks',
+    },
+    yScale: {
+      kind: 'GUIValue',
+      value: 0.652,
+      start: 0.0,
+      end: 10,
+      step: 0.01,
+      desc: 'Shake Y Scale',
+      gui: 'tweaks',
+    },
+    spring: {
+      kind: 'GUIValue',
+      value: 0.719,
+      start: 0.0,
+      end: 1,
+      step: 0.001,
+      desc: 'Shake Spring',
+      gui: 'tweaks',
+    },
+  },
+
+  compassMain: {
+    kind: 'CompassUI',
+    camera: 'mainCamera',
+    left: 0.0,
+    top: 0.9,
+    width: -1,
+    height: 0.1,
+  },
+};

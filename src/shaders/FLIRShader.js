@@ -4,17 +4,14 @@
  */
 
 export const FLIRShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    //      'colorAmplification': { value: 1.0 },
+    //      'luminanceThreshold': { value: 0.2 },
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-  //      'colorAmplification': { value: 1.0 },
-  //      'luminanceThreshold': { value: 0.2 },
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -25,7 +22,7 @@ export const FLIRShader = {
 //            gl_TexCoord[0] = gl_MultiTexCoord0;
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 		uniform sampler2D tDiffuse;
@@ -41,7 +38,7 @@ export const FLIRShader = {
         vec3 c = vec3(texture2D( tDiffuse, vUv ));
 
 
-// Simple horizontal blur. 
+// Simple horizontal blur.
 
     // float h=0.001; // a fraction of the fragment width
     //
@@ -56,19 +53,19 @@ export const FLIRShader = {
     //
     // vec3 c = vec3(sum);
 
-  
-        
-        vec3 componentScale = vec3(-0.5, 1.5, -0.5);
-        vec3 componentOffset = vec3(0.5, 0, 0.5); 
-        vec3 cflir = c * componentScale + componentOffset;
-        
-      
 
-      
-      
+
+        vec3 componentScale = vec3(-0.5, 1.5, -0.5);
+        vec3 componentOffset = vec3(0.5, 0, 0.5);
+        vec3 cflir = c * componentScale + componentOffset;
+
+
+
+
+
       float greenness = dot(c,vec3(0.0, 1.0, 0.0));
       if (greenness < 0.0) greenness = -greenness;
-      
+
       cflir = cflir * (1.0-greenness);
 //      cflir = cflir * (greenness);
 
@@ -87,12 +84,10 @@ export const FLIRShader = {
       // }
 
         vec3 mono = vec3(length( cflir));  // get a vec3 from a float, puts it in all r,g,b
-      
-        
+
+
         gl_FragColor.rgb = mono.rgb;
         gl_FragColor.a = 1.0;
 
-		}`
-
+		}`,
 };
-

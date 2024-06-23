@@ -1,6 +1,5 @@
 // Common snippets of data definitions for sitrecs
 
-
 /*
  Nodes can be converted by using this regular expression / replacement
 
@@ -11,46 +10,105 @@ $2: { kind: "$1",\n$3},
  */
 
 export const commonTargetTrack = {
-    targetTrack: {kind: "trackFromDataFile", file: "TargetTrack", dataID: "TargetTrackData",},
-    displayTargetTrack: {kind: "DisplayTrack", track: "TargetTrackData", color: [1,0,0], width: 1,},
-    displaySmoothedTarget: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 4,},
-    targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
-}
+  targetTrack: {
+    kind: 'trackFromDataFile',
+    file: 'TargetTrack',
+    dataID: 'TargetTrackData',
+  },
+  displayTargetTrack: {
+    kind: 'DisplayTrack',
+    track: 'TargetTrackData',
+    color: [1, 0, 0],
+    width: 1,
+  },
+  displaySmoothedTarget: {
+    kind: 'DisplayTrack',
+    track: 'targetTrack',
+    color: [1, 0, 0],
+    width: 4,
+  },
+  targetSphereBig: {
+    kind: 'DisplayTargetSphere',
+    track: 'targetTrack',
+    size: 1000,
+    color: [1, 0, 0],
+  },
+};
 
 export const commonTrackedCamera = {
-    cameraTrack: {},
-    followTrack: {},
-    cameraSphereBig: {kind: "DisplayTargetSphere", track: "cameraTrack", size: 1000, color: [1,1,0],},
-}
-
+  cameraTrack: {},
+  followTrack: {},
+  cameraSphereBig: {
+    kind: 'DisplayTargetSphere',
+    track: 'cameraTrack',
+    size: 1000,
+    color: [1, 1, 0],
+  },
+};
 
 export const commonLabels = {
-    cameraLabel:        { kind: "Label3D", text: "Camera", position: "lookCamera" , defer: true},
-    targetLabel:        { kind: "Label3D", text: "Target", position: "targetTrack" , defer: true},
-    altitudeLabel:      { kind: "MeasureAltitude",position: "lookCamera" , defer: true },
-    targetAltitudeLabel:{ kind: "MeasureAltitude",position: "targetTrack" , defer: true},
-    distanceLabel:      { kind: "MeasureAB",A: "lookCamera", B: "targetTrack" , defer: true},
-}
+  cameraLabel: {
+    kind: 'Label3D',
+    text: 'Camera',
+    position: 'lookCamera',
+    defer: true,
+  },
+  targetLabel: {
+    kind: 'Label3D',
+    text: 'Target',
+    position: 'targetTrack',
+    defer: true,
+  },
+  altitudeLabel: {
+    kind: 'MeasureAltitude',
+    position: 'lookCamera',
+    defer: true,
+  },
+  targetAltitudeLabel: {
+    kind: 'MeasureAltitude',
+    position: 'targetTrack',
+    defer: true,
+  },
+  distanceLabel: {
+    kind: 'MeasureAB',
+    A: 'lookCamera',
+    B: 'targetTrack',
+    defer: true,
+  },
+};
 
 export const commonJetLabels = {
-    altitudeLabel1:      { kind: "MeasureAltitude",position: "jetTrack" , defer: true},
-    altitudeLabel2:      { kind: "MeasureAltitude",position: "LOSTraverseSelect", defer: true },
-    distanceLabel:      { kind: "MeasureAB",A: "jetTrack", B: "LOSTraverseSelect", defer: true},
-}
+  altitudeLabel1: {
+    kind: 'MeasureAltitude',
+    position: 'jetTrack',
+    defer: true,
+  },
+  altitudeLabel2: {
+    kind: 'MeasureAltitude',
+    position: 'LOSTraverseSelect',
+    defer: true,
+  },
+  distanceLabel: {
+    kind: 'MeasureAB',
+    A: 'jetTrack',
+    B: 'LOSTraverseSelect',
+    defer: true,
+  },
+};
 
 export const commonTrackAndCameraLabeled = {
-    ...commonTargetTrack,
-    ...commonTrackedCamera,
-//    displayLOS: {kind: "DisplayTrackToTrack"},
-    //   targetObject: {file: "TargetObjectFile",},
-    DisplayCameraFrustum: {targetTrack: "targetTrack"},
-    ...commonLabels,
-}
+  ...commonTargetTrack,
+  ...commonTrackedCamera,
+  //    displayLOS: {kind: "DisplayTrackToTrack"},
+  //   targetObject: {file: "TargetObjectFile",},
+  DisplayCameraFrustum: { targetTrack: 'targetTrack' },
+  ...commonLabels,
+};
 
 export const commonTrackToTrack = {
-    ...commonTrackAndCameraLabeled,
-    lookAtTrack: {},  // and look at targetTrack
-}
+  ...commonTrackAndCameraLabeled,
+  lookAtTrack: {}, // and look at targetTrack
+};
 
 // // common traverse nodes and UI
 // export const commonTraverse = {

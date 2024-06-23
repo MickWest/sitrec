@@ -1,94 +1,72 @@
 // parseXML from https://stackoverflow.com/questions/4200913/xml-to-javascript-object
-import {atan, degrees, radians, tan} from "./utils";
-import {MISB, MISBFields} from "./MISBUtils";
-import {assert} from "./assert.js";
+import { atan, degrees, radians, tan } from './utils';
+import { MISB, MISBFields } from './MISBUtils';
+import { assert } from './assert.js';
 
-export function parseXml(xml, arrayTags)
-{
-    var dom = null;
-    if (window.DOMParser)
-    {
-        dom = (new DOMParser()).parseFromString(xml, "text/xml");
+export function parseXml(xml, arrayTags) {
+  let dom = null;
+  if (window.DOMParser) {
+    dom = new DOMParser().parseFromString(xml, 'text/xml');
+  } else if (window.ActiveXObject) {
+    dom = new ActiveXObject('Microsoft.XMLDOM');
+    dom.async = false;
+    if (!dom.loadXML(xml)) {
+      throw `${dom.parseError.reason} ${dom.parseError.srcText}`;
     }
-    else if (window.ActiveXObject)
-    {
-        dom = new ActiveXObject('Microsoft.XMLDOM');
-        dom.async = false;
-        if (!dom.loadXML(xml))
-        {
-            throw dom.parseError.reason + " " + dom.parseError.srcText;
-        }
-    }
-    else
-    {
-        throw "cannot parse xml string!";
-    }
+  } else {
+    throw 'cannot parse xml string!';
+  }
 
-    function isArray(o)
-    {
-        return Object.prototype.toString.apply(o) === '[object Array]';
-    }
+  function isArray(o) {
+    return Object.prototype.toString.apply(o) === '[object Array]';
+  }
 
-    function parseNode(xmlNode, result)
-    {
-        if (xmlNode.nodeName === "#text") {
-            var v = xmlNode.nodeValue;
-            if (v.trim()) {
-                result['#text'] = v;
-//                    result = v;
-            }
-            return;
-        }
-
-        var jsonNode = {};
-        var existing = result[xmlNode.nodeName];
-        if(existing)
-        {
-            if(!isArray(existing))
-            {
-                result[xmlNode.nodeName] = [existing, jsonNode];
-            }
-            else
-            {
-                result[xmlNode.nodeName].push(jsonNode);
-            }
-        }
-        else
-        {
-            if(arrayTags && arrayTags.indexOf(xmlNode.nodeName) != -1)
-            {
-                result[xmlNode.nodeName] = [jsonNode];
-            }
-            else
-            {
-                result[xmlNode.nodeName] = jsonNode;
-            }
-        }
-
-        if(xmlNode.attributes)
-        {
-            var length = xmlNode.attributes.length;
-            for(var i = 0; i < length; i++)
-            {
-                var attribute = xmlNode.attributes[i];
-                jsonNode[attribute.nodeName] = attribute.nodeValue;
-            }
-        }
-
-        var length = xmlNode.childNodes.length;
-        for(var i = 0; i < length; i++)
-        {
-            parseNode(xmlNode.childNodes[i], jsonNode);
-        }
+  function parseNode(xmlNode, result) {
+    if (xmlNode.nodeName === '#text') {
+      const v = xmlNode.nodeValue;
+      if (v.trim()) {
+        result['#text'] = v;
+        //                    result = v;
+      }
+      return;
     }
 
-    var result = {};
-    for (let i = 0; i < dom.childNodes.length; i++)
-    {
-        parseNode(dom.childNodes[i], result);
+    const jsonNode = {};
+    const existing = result[xmlNode.nodeName];
+    if (existing) {
+      if (!isArray(existing)) {
+        result[xmlNode.nodeName] = [existing, jsonNode];
+      } else {
+        result[xmlNode.nodeName].push(jsonNode);
+      }
+    } else {
+      if (arrayTags && arrayTags.indexOf(xmlNode.nodeName) !== -1) {
+        result[xmlNode.nodeName] = [jsonNode];
+      } else {
+        result[xmlNode.nodeName] = jsonNode;
+      }
     }
 
-    return result;
+    if (xmlNode.attributes) {
+      const length = xmlNode.attributes.length;
+      for (let i = 0; i < length; i++) {
+        const attribute = xmlNode.attributes[i];
+        jsonNode[attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+
+    const length = xmlNode.childNodes.length;
+    for (let i = 0; i < length; i++) {
+      parseNode(xmlNode.childNodes[i], jsonNode);
+    }
+  }
+
+  const result = {};
+  for (let i = 0; i < dom.childNodes.length; i++) {
+    parseNode(dom.childNodes[i], result);
+  }
+
+  return result;
 }
 
 // Given a KML file, extract two array,
@@ -96,115 +74,113 @@ export function parseXml(xml, arrayTags)
 // "coord" = LLA coordinates.
 
 export function getKMLTrackWhenCoord(kml, when, coord, info) {
+  // first extract the gx:Track into "when" and "coord" array
+  // this differs based on file format
 
+  // New FR24 format has:
+  // kml.kml.Document.name.#text = "5X957/UPS957"  (for example)
+  // kml.kml.Document.Folder[] contains two entries:
+  // [0].name == "Route"
+  // [1].name == "Trail
+  // Trail has no timestamps, it's just the line, color coded for altitude
+  // [0].Placemark = an array of:
+  // [].TimeStamp.when = time in format: 2023-11-12T08:40:19+00:00
+  // [].Point.coordinates.#text  =
 
+  if (kml.kml.Document !== undefined) {
+    if (kml.kml.Document.Folder !== undefined) {
+      const route = kml.kml.Document.Folder[0];
+      if (route.name['#text'] === 'Route') {
+        // FR24 format
+        info.name = kml.kml.Document.name['#text'];
+        const p = route.Placemark;
+        for (let i = 0; i < p.length; i++) {
+          const date = p[i].TimeStamp.when['#text'];
 
-    // first extract the gx:Track into "when" and "coord" array
-    // this differs based on file format
+          if (
+            i > 0 &&
+            p[i].TimeStamp.when['#text'] === p[i - 1].TimeStamp.when['#text']
+          ) {
+            console.warn(
+              `getKMLTrackWhenCoord: FR24 Duplicate time ${p[i].TimeStamp.when['#text']}`
+            );
+            continue;
+          }
 
-    // New FR24 format has:
-    // kml.kml.Document.name.#text = "5X957/UPS957"  (for example)
-    // kml.kml.Document.Folder[] contains two entries:
-    // [0].name == "Route"
-    // [1].name == "Trail
-    // Trail has no timestamps, it's just the line, color coded for altitude
-    // [0].Placemark = an array of:
-    // [].TimeStamp.when = time in format: 2023-11-12T08:40:19+00:00
-    // [].Point.coordinates.#text  =
+          when.push(Date.parse(date));
 
-
-    if (kml.kml.Document !== undefined) {
-        if (kml.kml.Document.Folder !== undefined) {
-            var route = kml.kml.Document.Folder[0]
-            if (route.name["#text"] === "Route") {
-                // FR24 format
-                info.name = kml.kml.Document.name["#text"];
-                const p = route.Placemark
-                for (var i=0;i<p.length;i++) {
-                    const date = p[i].TimeStamp.when["#text"]
-
-                    if (i>0 && p[i].TimeStamp.when["#text"] === p[i-1].TimeStamp.when["#text"]) {
-                        console.warn("getKMLTrackWhenCoord: FR24 Duplicate time "+p[i].TimeStamp.when["#text"])
-                        continue;
-                    }
-
-
-                    when.push(Date.parse(date))
-
-                    var c = p[i].Point.coordinates["#text"]
-                    var cs = c.split(',')
-                    var lon = Number(cs[0])
-                    var lat = Number(cs[1])
-                    var alt = Number(cs[2])
-                    coord.push({lat: lat, lon: lon, alt: alt})
-                }
-
-                return;
-
-            }
+          const c = p[i].Point.coordinates['#text'];
+          const cs = c.split(',');
+          const lon = Number(cs[0]);
+          const lat = Number(cs[1]);
+          const alt = Number(cs[2]);
+          coord.push({ lat: lat, lon: lon, alt: alt });
         }
+
+        return;
+      }
     }
+  }
 
-    // otherwise we assume it's
+  // otherwise we assume it's
 
-    var tracks;
+  let tracks;
 
-    if (kml.kml.Document !== undefined) {
-        // There is only one track in a FlightAware file
-        // so dummmy up an array, so we can reuse the ADBS Exchange code
-        if (Array.isArray(kml.kml.Document.Placemark)) {
-            tracks = [kml.kml.Document.Placemark[2]]
-            info.name = kml.kml.Document.name["#text"].split(" ")[2];
-        } else {
-            // some old format, used by Chilean
-            tracks = [kml.kml.Document.Placemark]
-            info.name = kml.kml.Document.Placemark.name["#text"];
-        }
+  if (kml.kml.Document !== undefined) {
+    // There is only one track in a FlightAware file
+    // so dummmy up an array, so we can reuse the ADBS Exchange code
+    if (Array.isArray(kml.kml.Document.Placemark)) {
+      tracks = [kml.kml.Document.Placemark[2]];
+      info.name = kml.kml.Document.name['#text'].split(' ')[2];
     } else {
-        if (kml.kml.Folder.Folder !== undefined) {
-            // ADSB Exchange
-            tracks = kml.kml.Folder.Folder.Placemark
-            info.name = kml.kml.Folder.Folder.name["#text"].split(" ")[0];
-        } else {
-            // exported from Google earth, maybe via ADSB Exchange
-            tracks = kml.kml.Folder.Placemark.name["#text"];
-        }
+      // some old format, used by Chilean
+      tracks = [kml.kml.Document.Placemark];
+      info.name = kml.kml.Document.Placemark.name['#text'];
     }
-
-    assert(info.name !== undefined && info.name !== "", "Unable to find name")
-
-    if (!Array.isArray(tracks)) {
-        // just one object, so put it in an array, so we can use the same following code
-        tracks = [tracks]
+  } else {
+    if (kml.kml.Folder.Folder !== undefined) {
+      // ADSB Exchange
+      tracks = kml.kml.Folder.Folder.Placemark;
+      info.name = kml.kml.Folder.Folder.name['#text'].split(' ')[0];
+    } else {
+      // exported from Google earth, maybe via ADSB Exchange
+      tracks = kml.kml.Folder.Placemark.name['#text'];
     }
+  }
 
-    tracks.forEach(track => {
-        const gxTrack = track["gx:Track"];
-        var whenArray;
-        var coordArray;
-        whenArray = gxTrack["when"]
-        coordArray = gxTrack["gx:coord"]
-        const len = whenArray.length;
-        for (var i = 0; i < len; i++) {
+  assert(info.name !== undefined && info.name !== '', 'Unable to find name');
 
-            if (i>0 && whenArray[i]["#text"] === whenArray[i-1]["#text"]) {
-                console.warn("getKMLTrackWhenCoord: Duplicate time "+whenArray[i]["#text"])
-                continue;
-            }
+  if (!Array.isArray(tracks)) {
+    // just one object, so put it in an array, so we can use the same following code
+    tracks = [tracks];
+  }
 
-            var w = whenArray[i]["#text"]
-            var c = coordArray[i]["#text"]
-            var cs = c.split(' ')
-            var lon = Number(cs[0])
-            var lat = Number(cs[1])
-            var alt = Number(cs[2])
-//                console.log(">>"+w+"    "+lat+","+lon+" - "+alt)
-            when.push(Date.parse(w))  // whenArray is time in MS since 1970
-            coord.push({lat: lat, lon: lon, alt: alt})
-        }
-    })
+  tracks.forEach((track) => {
+    const gxTrack = track['gx:Track'];
+    let whenArray;
+    let coordArray;
+    whenArray = gxTrack.when;
+    coordArray = gxTrack['gx:coord'];
+    const len = whenArray.length;
+    for (let i = 0; i < len; i++) {
+      if (i > 0 && whenArray[i]['#text'] === whenArray[i - 1]['#text']) {
+        console.warn(
+          `getKMLTrackWhenCoord: Duplicate time ${whenArray[i]['#text']}`
+        );
+        continue;
+      }
 
-
+      const w = whenArray[i]['#text'];
+      const c = coordArray[i]['#text'];
+      const cs = c.split(' ');
+      const lon = Number(cs[0]);
+      const lat = Number(cs[1]);
+      const alt = Number(cs[2]);
+      //                console.log(">>"+w+"    "+lat+","+lon+" - "+alt)
+      when.push(Date.parse(w)); // whenArray is time in MS since 1970
+      coord.push({ lat: lat, lon: lon, alt: alt });
+    }
+  });
 }
 
 // DJI SRT format is in six lines:
@@ -215,49 +191,43 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
 // [iso: 100] [shutter: 1/640.0] [fnum: 3.4] [ev: 0] [color_md: default] [focal_len: 166.00] [latitude: 36.06571] [longitude: -119.01938] [rel_alt: 17.800 abs_alt: 134.835] [ct: 5896] </font>
 // <blank line>
 
-
 // We are using the simple DJI-Mini SRT column names as generic names
 // maybe come up with a better mapping, with more consistent names
 // as the fuller DJI TXT (AirData) format has more, but is also missing some fields
 // Keep as index? Probably not needed for speed
 
 export const SRT = {
-    FrameCnt: 0,
-    DiffTime:1,
-    iso:2,
-    shutter:3,
-    fnum:4,
-    ev:5,
-    color_md:6,
-    focal_len:7,
-    latitude:8,
-    longitude:9,
-    rel_alt:10,
-    abs_alt:11,
-    ct:12,
-    date: 13,
-    heading: 14,
-    pitch: 15,
-    roll: 16,
-    gHeading: 17,
-    gPitch: 18,
-    gRoll: 19,
-
-}
+  FrameCnt: 0,
+  DiffTime: 1,
+  iso: 2,
+  shutter: 3,
+  fnum: 4,
+  ev: 5,
+  color_md: 6,
+  focal_len: 7,
+  latitude: 8,
+  longitude: 9,
+  rel_alt: 10,
+  abs_alt: 11,
+  ct: 12,
+  date: 13,
+  heading: 14,
+  pitch: 15,
+  roll: 16,
+  gHeading: 17,
+  gPitch: 18,
+  gRoll: 19,
+};
 
 const SRTFields = Object.keys(SRT).length;
 
-
 export function parseSRT(data) {
-    const lines = data.split('\n');
-    if (lines[4] == "2" && lines [8] == "3") {
-        return parseSRT2(lines)
-    }
-    return parseSRT1(lines)
+  const lines = data.split('\n');
+  if (lines[4] === '2' && lines[8] === '3') {
+    return parseSRT2(lines);
+  }
+  return parseSRT1(lines);
 }
-
-
-
 
 /* Type 2 is like:
 1
@@ -338,31 +308,30 @@ F/2.8, SS 1950.57, ISO 100, EV 0, DZOOM 1.000, GPS (-121.1689, 38.7225, 21), D 1
 //
 // }
 
-
 // maps the SRT fields that are directly equivalent to MISB fields
 // null entries are ignored, but some will need conversion
 const SRTMapMISB = {
-        FrameCnt: null,
-        DiffTime: null,
-        iso:null,
-        shutter:null,
-        fnum:null,
-        ev:null,
-        color_md:null,
-        focal_len:null,  // will need to convert this to FOV
-        latitude:MISB.SensorLatitude,
-        longitude:MISB.SensorLongitude,
-        rel_alt:MISB.SensorRelativeAltitude,
-        abs_alt:MISB.SensorTrueAltitude,
-        ct:null,
-        date: null,  // also needs converting
-        heading: MISB.PlatformHeadingAngle,
-        pitch: MISB.PlatformPitchAngle,
-        roll: MISB.PlatformPitchAngle,
-        gHeading: MISB.SensorRelativeAzimuthAngle,
-        gPitch: MISB.SensorRelativeElevationAngle,
-        gRoll: MISB.SensorRelativeRollAngle,
-}
+  FrameCnt: null,
+  DiffTime: null,
+  iso: null,
+  shutter: null,
+  fnum: null,
+  ev: null,
+  color_md: null,
+  focal_len: null, // will need to convert this to FOV
+  latitude: MISB.SensorLatitude,
+  longitude: MISB.SensorLongitude,
+  rel_alt: MISB.SensorRelativeAltitude,
+  abs_alt: MISB.SensorTrueAltitude,
+  ct: null,
+  date: null, // also needs converting
+  heading: MISB.PlatformHeadingAngle,
+  pitch: MISB.PlatformPitchAngle,
+  roll: MISB.PlatformPitchAngle,
+  gHeading: MISB.SensorRelativeAzimuthAngle,
+  gPitch: MISB.SensorRelativeElevationAngle,
+  gRoll: MISB.SensorRelativeRollAngle,
+};
 
 // SRT1 (e.g. SitPorterville) format is sets of six lines:
 // 0: 1
@@ -372,79 +341,81 @@ const SRTMapMISB = {
 // 4:     [iso: 100] [shutter: 1/640.0] [fnum: 3.4] [ev: 0] [color_md: default] [focal_len: 166.00] [latitude: 36.06571] [longitude: -119.01938] [rel_alt: 17.800 abs_alt: 134.835] [ct: 5896] </font>
 // 5: ...blank line...
 export function parseSRT1(lines) {
-    const numPoints = Math.floor(lines.length / 6);
-    let MISBArray = new Array(numPoints);
+  const numPoints = Math.floor(lines.length / 6);
+  const MISBArray = new Array(numPoints);
 
-    // iterate over all lines and remove any html formatting
-    for (let i = 0; i < lines.length; i++) {
-        // Remove all html tags
-        lines[i] = lines[i].replace(/<[^>]*>/g, '');
-    }
+  // iterate over all lines and remove any html formatting
+  for (let i = 0; i < lines.length; i++) {
+    // Remove all html tags
+    lines[i] = lines[i].replace(/<[^>]*>/g, '');
+  }
 
-    for (let i = 0; i < numPoints; i++) {
-        let dataIndex = i * 6;
-        let frameInfo = lines[dataIndex + 2].split(', ');
-        let detailInfo = lines[dataIndex + 4].match(/\[(.*?)\]/g);
+  for (let i = 0; i < numPoints; i++) {
+    const dataIndex = i * 6;
+    const frameInfo = lines[dataIndex + 2].split(', ');
+    const detailInfo = lines[dataIndex + 4].match(/\[(.*?)\]/g);
 
-        MISBArray[i] = new Array(MISBFields).fill(null);
+    MISBArray[i] = new Array(MISBFields).fill(null);
 
-        // Extract frame information (FrameCnt and DiffTime in Porterville)
-        // NOT USED!!
-        frameInfo.forEach(info => {
-            let [key, value] = info.split(': ');
-//            console.log(key +": "+value)
-            if (SRT.hasOwnProperty(key)) {
-//                MISBArray[i][SRT[key]] = value.replace('ms', '').trim();
-//                console.log("key: "+key+" value: "+value+" SRTMapMISB[SRT[key]]: "+SRTMapMISB[key]);
-                if(SRTMapMISB[key] !== null) {
-                    MISBArray[i][SRTMapMISB[key]] = value.replace('ms', '').trim();
-                }
-            }
-        });
+    // Extract frame information (FrameCnt and DiffTime in Porterville)
+    // NOT USED!!
+    frameInfo.forEach((info) => {
+      const [key, value] = info.split(': ');
+      //            console.log(key +": "+value)
+      if (SRT.hasOwnProperty(key)) {
+        //                MISBArray[i][SRT[key]] = value.replace('ms', '').trim();
+        //                console.log("key: "+key+" value: "+value+" SRTMapMISB[SRT[key]]: "+SRTMapMISB[key]);
+        if (SRTMapMISB[key] !== null) {
+          MISBArray[i][SRTMapMISB[key]] = value.replace('ms', '').trim();
+        }
+      }
+    });
 
-        // Extract detailed information (LLA, and camera settings)
-        detailInfo.forEach(info => {
-            let details = info.replace(/[\[\]]/g, '');
-            let tokens = details.split(' ');
-            for (let j = 0; j < tokens.length; j += 2) {
-                let key = tokens[j].replace(':', '');
-                let value = tokens[j + 1].trim();
+    // Extract detailed information (LLA, and camera settings)
+    detailInfo.forEach((info) => {
+      const details = info.replace(/[\[\]]/g, '');
+      const tokens = details.split(' ');
+      for (let j = 0; j < tokens.length; j += 2) {
+        const key = tokens[j].replace(':', '');
+        const value = tokens[j + 1].trim();
 
-                if (SRT.hasOwnProperty(key)) {
-       //             MISBArray[i][SRT[key]] = value;
-                    if(SRTMapMISB[key] !== null) {
-                        if (i<20) console.log("key: "+key+" value: "+value+" SRTMapMISB[SRT[key]]: "+SRTMapMISB[key]);
-                        MISBArray[i][SRTMapMISB[key]] = value;
-                    }
+        if (SRT.hasOwnProperty(key)) {
+          //             MISBArray[i][SRT[key]] = value;
+          if (SRTMapMISB[key] !== null) {
+            if (i < 20)
+              console.log(
+                `key: ${key} value: ${value} SRTMapMISB[SRT[key]]: ${SRTMapMISB[key]}`
+              );
+            MISBArray[i][SRTMapMISB[key]] = value;
+          }
 
-                    if (key === 'focal_len') {
-                        // Convert focal length to FOV
-                        let focal_len = parseFloat(value);
+          if (key === 'focal_len') {
+            // Convert focal length to FOV
+            const focal_len = Number.parseFloat(value);
 
-                        let referenceFocalLength = 166;
-                        let referenceFOV = 5;
+            const referenceFocalLength = 166;
+            const referenceFOV = 5;
 
-                        const sensorSize = 2 * referenceFocalLength * tan(radians(referenceFOV) / 2)
-                        const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len))
+            const sensorSize =
+              2 * referenceFocalLength * tan(radians(referenceFOV) / 2);
+            const vFOV = degrees(2 * atan(sensorSize / 2 / focal_len));
 
-                        MISBArray[i][MISB.SensorVerticalFieldofView] = vFOV;
-                    }
+            MISBArray[i][MISB.SensorVerticalFieldofView] = vFOV;
+          }
+        }
+      }
+    });
 
+    // Extract date
+    //        MISBArray[i][SRT['date']] = lines[dataIndex + 3].trim();
+    const date = Date.parse(lines[dataIndex + 3].trim());
+    // convert to milliseconds
+    const dateMS = new Date(date).getTime();
+    MISBArray[i][MISB.UnixTimeStamp] = dateMS;
+    //      console.log(MISBArray[i][MISB.UnixTimeStamp])
+  }
 
-                }
-            }
-        });
-
-        // Extract date
-//        MISBArray[i][SRT['date']] = lines[dataIndex + 3].trim();
-        const date = Date.parse(lines[dataIndex + 3].trim());
-        // convert to milliseconds
-        const dateMS = new Date(date).getTime();
-        MISBArray[i][MISB.UnixTimeStamp] = dateMS;
-  //      console.log(MISBArray[i][MISB.UnixTimeStamp])
-    }
-
-    return MISBArray;
+  return MISBArray;
 }
 
 /*
@@ -502,7 +473,6 @@ flycState
 message
 */
 
-
 // Convert a KML track to MISB format
 // This is a simple conversion, and doesn't handle all the possible KML features
 // We just use the existing getKMLTrackWhenCoord function to get the data
@@ -510,19 +480,18 @@ message
 // then we just map that to the MISB format
 // Which means we are only using the time, lat, lon, and alt fields
 export function KMLToMISB(kml) {
-    const _times = []
-    const _coord = []
-    const info = {}
-    getKMLTrackWhenCoord(kml, _times, _coord, info)
+  const _times = [];
+  const _coord = [];
+  const info = {};
+  getKMLTrackWhenCoord(kml, _times, _coord, info);
 
-    const misb = []
-    for (let i = 0; i < _times.length; i++) {
-        misb[i] = new Array(MISBFields);
-        misb[i][MISB.UnixTimeStamp] = _times[i]
-        misb[i][MISB.SensorLatitude] = _coord[i].lat
-        misb[i][MISB.SensorLongitude] = _coord[i].lon
-        misb[i][MISB.SensorTrueAltitude] = _coord[i].alt
-
-    }
-    return misb
+  const misb = [];
+  for (let i = 0; i < _times.length; i++) {
+    misb[i] = new Array(MISBFields);
+    misb[i][MISB.UnixTimeStamp] = _times[i];
+    misb[i][MISB.SensorLatitude] = _coord[i].lat;
+    misb[i][MISB.SensorLongitude] = _coord[i].lon;
+    misb[i][MISB.SensorTrueAltitude] = _coord[i].alt;
+  }
+  return misb;
 }

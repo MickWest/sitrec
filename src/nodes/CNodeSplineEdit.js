@@ -1,116 +1,144 @@
-import {SplineEditor} from "../SplineEditor";
-import {gui, NodeMan, Sit} from "../Globals";
-import {Vector3} from "three";
-import {PointEditor} from "../PointEditor";
-import {CNodeEmptyArray} from "./CNodeArray";
-import {getCameraNode} from "./CNodeCamera";
-import {assert} from "../assert.js";
+import { SplineEditor } from '../SplineEditor';
+import { gui, NodeMan, Sit } from '../Globals';
+import { Vector3 } from 'three';
+import { PointEditor } from '../PointEditor';
+import { CNodeEmptyArray } from './CNodeArray';
+import { getCameraNode } from './CNodeCamera';
+import { assert } from '../assert.js';
 
 // a node wrapper for varioius spline editors
 export class CNodeSplineEditor extends CNodeEmptyArray {
-    constructor(v) {
-        super(v);
-        this.frames = v.frames ?? Sit.frames
-        assert(this.frames >0, "CNodeSplineEditor has frames=0")
+  constructor(v) {
+    super(v);
+    this.frames = v.frames ?? Sit.frames;
+    assert(this.frames > 0, 'CNodeSplineEditor has frames=0');
 
-        
-        assert(v.view !== undefined, "CNodeSplineEditor needs a view");
-        const view = NodeMan.get(v.view) // convert id to node, if needed
-        const renderer = view.renderer;
-        const controls = view.controls;
+    assert(v.view !== undefined, 'CNodeSplineEditor needs a view');
+    const view = NodeMan.get(v.view); // convert id to node, if needed
+    const renderer = view.renderer;
+    const controls = view.controls;
 
-        const camera = getCameraNode(v.camera).camera;
+    const camera = getCameraNode(v.camera).camera;
 
-        switch (v.type.toLowerCase()) {
-            case "catmull":
-            case "centripetal":
-            case "chordal":
-                if (v.initialPointsLLA === undefined) {
-                    this.splineEditor = new SplineEditor(v.scene, camera, renderer, controls, () => this.recalculateCascade(),
-                        v.initialPoints, false, v.type.toLowerCase())
-                } else {
-                    this.splineEditor = new SplineEditor(v.scene, camera, renderer, controls, () => this.recalculateCascade(),
-                        v.initialPointsLLA, true, v.type.toLowerCase())
-                }
-                break;
-            case "linear":
-            default:
-                if (v.initialPointsLLA === undefined) {
-                    this.splineEditor = new PointEditor(v.scene, camera, renderer, controls, () => this.recalculateCascade(),
-                        v.initialPoints, false)
-                } else {
-                    this.splineEditor = new PointEditor(v.scene, camera, renderer, controls, () => this.recalculateCascade(),
-                        v.initialPointsLLA, true)
-                }
+    switch (v.type.toLowerCase()) {
+      case 'catmull':
+      case 'centripetal':
+      case 'chordal':
+        if (v.initialPointsLLA === undefined) {
+          this.splineEditor = new SplineEditor(
+            v.scene,
+            camera,
+            renderer,
+            controls,
+            () => this.recalculateCascade(),
+            v.initialPoints,
+            false,
+            v.type.toLowerCase()
+          );
+        } else {
+          this.splineEditor = new SplineEditor(
+            v.scene,
+            camera,
+            renderer,
+            controls,
+            () => this.recalculateCascade(),
+            v.initialPointsLLA,
+            true,
+            v.type.toLowerCase()
+          );
         }
-
-        this.optionalInputs(["snapCamera","snapTarget"])
-        if (this.in.snapCamera != undefined) {
-            this.splineEditor.snapCamera  = this.in.snapCamera;
-            this.splineEditor.snapTarget  = this.in.snapTarget;
-        }
-
-        this.enable = false;
-
-        this.gui = gui.addFolder("Spline " + this.id).close()
-        this.gui.add(this,"enable").onChange( v =>{
-           this.splineEditor.setEnable(v)
-        })
-        this.gui.add(this,"exportSpline")
-
-
-        this.recalculate()
-        this.splineEditor.updatePointEditorGraphics()
-    }
-
-    modSerialize() {
-
-
-        assert(this.splineEditor.frameNumbers !== undefined, "CNodeSplineEditor has no frameNumbers")
-        // check same length
-        assert(this.splineEditor.frameNumbers.length === this.splineEditor.positions.length, "CNodeSplineEditor frameNumbers and positions length mismatch")
-
-
-        let positions = [];
-        for (let i=0;i<this.splineEditor.positions.length;i++) {
-            const p = this.splineEditor.positions[i];
-            positions.push([this.splineEditor.frameNumbers[i], p.x, p.y, p.z])
-        }
-        return {
-            ...super.modSerialize(),
-            positions: positions,
+        break;
+      default:
+        if (v.initialPointsLLA === undefined) {
+          this.splineEditor = new PointEditor(
+            v.scene,
+            camera,
+            renderer,
+            controls,
+            () => this.recalculateCascade(),
+            v.initialPoints,
+            false
+          );
+        } else {
+          this.splineEditor = new PointEditor(
+            v.scene,
+            camera,
+            renderer,
+            controls,
+            () => this.recalculateCascade(),
+            v.initialPointsLLA,
+            true
+          );
         }
     }
 
-    modDeserialize(v) {
-        super.modDeserialize(v);
-        if (v.positions !== undefined) {
-            this.splineEditor.load(v.positions)
-        }
+    this.optionalInputs(['snapCamera', 'snapTarget']);
+    if (this.in.snapCamera !== undefined) {
+      this.splineEditor.snapCamera = this.in.snapCamera;
+      this.splineEditor.snapTarget = this.in.snapTarget;
     }
 
+    this.enable = false;
 
+    this.gui = gui.addFolder(`Spline ${this.id}`).close();
+    this.gui.add(this, 'enable').onChange((v) => {
+      this.splineEditor.setEnable(v);
+    });
+    this.gui.add(this, 'exportSpline');
 
-    exportSpline() {
-        this.splineEditor.exportSpline()
+    this.recalculate();
+    this.splineEditor.updatePointEditorGraphics();
+  }
+
+  modSerialize() {
+    assert(
+      this.splineEditor.frameNumbers !== undefined,
+      'CNodeSplineEditor has no frameNumbers'
+    );
+    // check same length
+    assert(
+      this.splineEditor.frameNumbers.length ===
+        this.splineEditor.positions.length,
+      'CNodeSplineEditor frameNumbers and positions length mismatch'
+    );
+
+    const positions = [];
+    for (let i = 0; i < this.splineEditor.positions.length; i++) {
+      const p = this.splineEditor.positions[i];
+      positions.push([this.splineEditor.frameNumbers[i], p.x, p.y, p.z]);
     }
+    return {
+      ...super.modSerialize(),
+      positions: positions,
+    };
+  }
 
-    update(f) {
-        if (this.splineEditor.dirty) {
-            this.splineEditor.dirty = false;
-            this.recalculateCascade(f)
-        }
+  modDeserialize(v) {
+    super.modDeserialize(v);
+    if (v.positions !== undefined) {
+      this.splineEditor.load(v.positions);
     }
+  }
 
-    // a spline is parametric and we step along it as a function of t
-    recalculate() {
-//        console.log("+++++Start Recalculate Spline")
- //       const spline = this.splineEditor.spline;
-        this.array = []
-        var pos = new Vector3()
+  exportSpline() {
+    this.splineEditor.exportSpline();
+  }
 
+  update(f) {
+    if (this.splineEditor.dirty) {
+      this.splineEditor.dirty = false;
+      this.recalculateCascade(f);
+    }
+  }
 
-        /*
+  // a spline is parametric and we step along it as a function of t
+  recalculate() {
+    //        console.log("+++++Start Recalculate Spline")
+    //       const spline = this.splineEditor.spline;
+    this.array = [];
+    const pos = new Vector3();
+
+    /*
         this.length = this.splineEditor.getLength(this.frames) // get length, based on the frames
 
         //console.log ("Spline length = " + len)
@@ -179,80 +207,70 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
         }
     */
 
-        // update snapping, if needed
-        this.splineEditor.updateSnapping();
+    // update snapping, if needed
+    this.splineEditor.updateSnapping();
 
-
-        // NEW! Get it based on the frame number, as the spline now has a per-node frame number stored
-        // and will work out the t value for you
-      for (var i=0;i<this.frames;i++) {
-          var pos = this.splineEditor.getPointFrame(i)
-          this.array.push({position:pos})
-      }
-
-      // we've got enough points to define a nice curve,
-        // but need to smooth out the velocity along that curve
-        // while keeping the keyframes fixed
-        // this shoudl not be a difficult thing.
-
-
-
-
-
-//        console.log("Spine split into " + this.array.length)  // shoudl be 7027
-//        console.log("-----End Recalculate Spline")
+    // NEW! Get it based on the frame number, as the spline now has a per-node frame number stored
+    // and will work out the t value for you
+    for (let i = 0; i < this.frames; i++) {
+      const pos = this.splineEditor.getPointFrame(i);
+      this.array.push({ position: pos });
     }
 
-    insertPoint(frame, point) {
-        this.splineEditor.insertPoint(frame, point)
-        this.recalculateCascade()
-    }
+    // we've got enough points to define a nice curve,
+    // but need to smooth out the velocity along that curve
+    // while keeping the keyframes fixed
+    // this shoudl not be a difficult thing.
 
+    //        console.log("Spine split into " + this.array.length)  // shoudl be 7027
+    //        console.log("-----End Recalculate Spline")
+  }
 
+  insertPoint(frame, point) {
+    this.splineEditor.insertPoint(frame, point);
+    this.recalculateCascade();
+  }
 
-//     // heirachical search for the closest point
-// NOT TESTED
-//     findClosestPointToRay(ray) {
-//
-//         var A = 0;
-//         var B = 1;
-//         var steps = 10;
-//         var accuracyDistance = 0.001 // to 1 mm
-//
-//         var point;
-//         while (Math.abs(A-B)<0.000000001) {
-//
-//             // Find the segment that has the closest center point to the ray
-//             // and then repeat with that until accurate enough
-//             var bestSegment = A;
-//             var bestSegmentDistance = 10000000000
-//             var stepSize = (A-B)/steps
-//             for (var t=A; t<=B; t+=stepSize) {
-//                 var mid = t+stepSize / 2
-//                 point = this.v(mid)
-//                 var distance = ray.distanceToPoint(point)
-//                 if (distance < accuracyDistance) {
-//                     return point
-//                 }
-//                 if (distance < bestSegmentDistance) {
-//                     bestSegmentDistance = distance;
-//                     bestSegment = t
-//                 }
-//             }
-//
-//             A = bestSegment;
-//             B = bestSegment+stepSize;
-//
-//         }
-//
-//         // This will be the B point, but essentially the same as A
-//         return point;
-//     }
+  //     // heirachical search for the closest point
+  // NOT TESTED
+  //     findClosestPointToRay(ray) {
+  //
+  //         var A = 0;
+  //         var B = 1;
+  //         var steps = 10;
+  //         var accuracyDistance = 0.001 // to 1 mm
+  //
+  //         var point;
+  //         while (Math.abs(A-B)<0.000000001) {
+  //
+  //             // Find the segment that has the closest center point to the ray
+  //             // and then repeat with that until accurate enough
+  //             var bestSegment = A;
+  //             var bestSegmentDistance = 10000000000
+  //             var stepSize = (A-B)/steps
+  //             for (var t=A; t<=B; t+=stepSize) {
+  //                 var mid = t+stepSize / 2
+  //                 point = this.v(mid)
+  //                 var distance = ray.distanceToPoint(point)
+  //                 if (distance < accuracyDistance) {
+  //                     return point
+  //                 }
+  //                 if (distance < bestSegmentDistance) {
+  //                     bestSegmentDistance = distance;
+  //                     bestSegment = t
+  //                 }
+  //             }
+  //
+  //             A = bestSegment;
+  //             B = bestSegment+stepSize;
+  //
+  //         }
+  //
+  //         // This will be the B point, but essentially the same as A
+  //         return point;
+  //     }
 
-    adjustUp(height, cameraTrack) {
-        this.splineEditor.adjustUp(height,cameraTrack)
-
-    }
-
- }
-
+  adjustUp(height, cameraTrack) {
+    this.splineEditor.adjustUp(height, cameraTrack);
+  }
+}

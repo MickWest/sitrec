@@ -1,6 +1,6 @@
 // Register all the sitches in the sitch directory
-import {SitchMan} from "./Globals";
-import {parseJavascriptObject} from "./Serialize";
+import { SitchMan } from './Globals';
+import { parseJavascriptObject } from './Serialize';
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Note. This failed once due to what seemed to be a circular dependency
@@ -10,7 +10,6 @@ import {parseJavascriptObject} from "./Serialize";
 // and index.js includes a lot of things, including DragDropHandler (via FileManager)
 // Circular dependencies have caused other obscure failures, and are best avoided entirely.
 /////////////////////////////////////////////////////////////////////
-
 
 //const sitchContext = require.context('./sitch', false, /^\.\/Sit.*\.js$/);
 
@@ -28,112 +27,116 @@ import {parseJavascriptObject} from "./Serialize";
 // this might be worth normalizing so names are consistent (i.e. SitAguadilla is added as "aguadilla")
 
 export function registerSitchModule(key, moduleExports) {
-    Object.keys(moduleExports).forEach(exportKey => {
-        const exportObject = moduleExports[exportKey];
-//            console.log("Checking key: "+key+ " Which exports = "+exportKey)
-        if(exportKey.startsWith('Sit')) {
-            console.log("Found Sitch: "+key+ " Sitch Object Name = "+exportKey)
-            SitchMan.add(exportObject.name, exportObject);
-            //const sitchName = exportKey.substring(3);
-            //SitchMan.add(sitchName, exportObject);
-
-        } else if (exportKey.startsWith('common')) {
-            console.log("Found Common Sitch: "+key+ " Sitch Object Name = "+exportKey)
-            // remove the common prefix
-            const commonName = exportKey.substring(6);
-            SitchMan.add(commonName, exportObject);
-        }
-    });
+  Object.keys(moduleExports).forEach((exportKey) => {
+    const exportObject = moduleExports[exportKey];
+    //            console.log("Checking key: "+key+ " Which exports = "+exportKey)
+    if (exportKey.startsWith('Sit')) {
+      console.log(`Found Sitch: ${key} Sitch Object Name = ${exportKey}`);
+      SitchMan.add(exportObject.name, exportObject);
+      //const sitchName = exportKey.substring(3);
+      //SitchMan.add(sitchName, exportObject);
+    } else if (exportKey.startsWith('common')) {
+      console.log(
+        `Found Common Sitch: ${key} Sitch Object Name = ${exportKey}`
+      );
+      // remove the common prefix
+      const commonName = exportKey.substring(6);
+      SitchMan.add(commonName, exportObject);
+    }
+  });
 }
 
 export function registerSitches(textSitches) {
-    let sitchContext;
-    if (CAN_REQUIRE_CONTEXT !== undefined && CAN_REQUIRE_CONTEXT === true) {
-        sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
-    } else {
-        sitchContext = {};
-    }
+  let sitchContext;
+  if (CAN_REQUIRE_CONTEXT !== undefined && CAN_REQUIRE_CONTEXT === true) {
+    sitchContext = require.context('./sitch', false, /^\.\/.*\.js$/);
+  } else {
+    sitchContext = {};
+  }
 
-    sitchContext.keys().forEach(key => {
-        const moduleExports = sitchContext(key);
-        registerSitchModule(key, moduleExports)
-    });
+  sitchContext.keys().forEach((key) => {
+    const moduleExports = sitchContext(key);
+    registerSitchModule(key, moduleExports);
+  });
 
-    console.log("Starting Text Sitches")
+  console.log('Starting Text Sitches');
 
-    // add the text sitches
-    for (const key in textSitches) {
-        const text = textSitches[key];
-//        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
-        const obj = textSitchToObject(text);
-        SitchMan.add(key, obj);
-    }
+  // add the text sitches
+  for (const key in textSitches) {
+    const text = textSitches[key];
+    //        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
+    const obj = textSitchToObject(text);
+    SitchMan.add(key, obj);
+  }
 }
-
 
 // legacy support, should be able to load this:
 // http://localhost/sitrec/?custom=http://localhost/sitrec-upload/99999999/Custom-e1a4054f13b50b451d3da6558d83b413.js
 
 const legacyReplacements = [
-    "CNodeGUIValue2", "startDistanceGUI",
-    "CNodeGUIValue3", "targetVCGUI",
-    "CNodeGUIValue4", "targetSpeedGUI",
-    "CNodeGUIValue13", "videoBrightness",
-    "CNodeGUIValue14", "videoContrast",
-    "CNodeGUIValue15", "videoBlur",
-]
-
+  'CNodeGUIValue2',
+  'startDistanceGUI',
+  'CNodeGUIValue3',
+  'targetVCGUI',
+  'CNodeGUIValue4',
+  'targetSpeedGUI',
+  'CNodeGUIValue13',
+  'videoBrightness',
+  'CNodeGUIValue14',
+  'videoContrast',
+  'CNodeGUIValue15',
+  'videoBlur',
+];
 
 export function textSitchToObject(text) {
-// we have a text sitch, which starts with something like:
-    // sitch = {
-    //     include_pvs14: true,
-    //     name: "westjet",
-    // we want the contents of the object
-    // so we first convert it into a JSON comatible format
-    // then parse it as JSON
+  // we have a text sitch, which starts with something like:
+  // sitch = {
+  //     include_pvs14: true,
+  //     name: "westjet",
+  // we want the contents of the object
+  // so we first convert it into a JSON comatible format
+  // then parse it as JSON
 
-    let data = text;
+  let data = text;
 
-    // replace any legacy names
-    for (let i = 0; i < legacyReplacements.length; i += 2) {
-        const legacyName = legacyReplacements[i];
-        const newName = legacyReplacements[i+1];
-        data = data.replace(new RegExp(legacyName, 'g'), newName);
+  // replace any legacy names
+  for (let i = 0; i < legacyReplacements.length; i += 2) {
+    const legacyName = legacyReplacements[i];
+    const newName = legacyReplacements[i + 1];
+    data = data.replace(new RegExp(legacyName, 'g'), newName);
+  }
+
+  try {
+    const obj = parseJavascriptObject(data);
+    return obj;
+  } catch (e) {
+    console.error('Error parsing text sitch: ');
+    console.error(e);
+    // if the error message contains something like:  (line 51 column 18)
+    // then we can try to find that line and column in the text
+    // and display it in an alert
+    let match = e.message.match(/\(line (\d+) column (\d+)\)/);
+
+    // if no match, check for format like (line:column), e.g. (31:30)
+    if (!match) {
+      match = e.message.match(/\((\d+):(\d+)\)/);
     }
 
-
-    try {
-        const obj = parseJavascriptObject(data)
-        return obj;
-    } catch (e) {
-        console.error("Error parsing text sitch: ");
-        console.error(e);
-        // if the error message contains something like:  (line 51 column 18)
-        // then we can try to find that line and column in the text
-        // and display it in an alert
-        let match = e.message.match(/\(line (\d+) column (\d+)\)/);
-
-        // if no match, check for format like (line:column), e.g. (31:30)
-        if (!match) {
-            match = e.message.match(/\((\d+):(\d+)\)/);
-        }
-
-        if (match) {
-            const lineNumber = parseInt(match[1]);
-            const columnNumber = parseInt(match[2]);
-            const lines = text.split("\n");
-            let lineCount = 0;
-            let charCount = 0;
-            const line = lines[lineNumber-1]; // 0 based array, 1 based line numbers
-            alert("Error parsing text sitch: " + e + "\n" + line + "\n" + " ".repeat(columnNumber) + "^")
-            return {};
-        } else {
-            // also display an alert showing the error message e
-            alert("Error parsing text sitch: " + e)
-        }
-        return {};
-
+    if (match) {
+      const lineNumber = Number.parseInt(match[1]);
+      const columnNumber = Number.parseInt(match[2]);
+      const lines = text.split('\n');
+      const lineCount = 0;
+      const charCount = 0;
+      const line = lines[lineNumber - 1]; // 0 based array, 1 based line numbers
+      alert(
+        `Error parsing text sitch: ${e}\n${line}\n${' '.repeat(columnNumber)}^`
+      );
+      return {};
     }
+    // also display an alert showing the error message e
+    alert(`Error parsing text sitch: ${e}`);
     return {};
+  }
+  return {};
 }

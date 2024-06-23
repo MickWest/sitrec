@@ -3,7 +3,10 @@ import {Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {assert} from "./assert.js";
 
-const MD5 = function(d){var r = M(V(Y(X(d),8*d.length)));return r.toLowerCase()};function M(d){for(var _,m="0123456789ABCDEF",f="",r=0; r<d.length; r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}function X(d){for(var _=Array(d.length>>2),m=0; m<_.length; m++)_[m]=0;for(m=0; m<8*d.length; m+=8)_[m>>5]|=(255&d.charCodeAt(m/8))<<m%32;return _}function V(d){for(var _="",m=0; m<32*d.length; m+=8)_+=String.fromCharCode(d[m>>5]>>>m%32&255);return _}function Y(d, _){d[_>>5]|=128<<_%32,d[14+(_+64>>>9<<4)]=_;for(var m=1732584193,f=-271733879,r=-1732584194,i=271733878,n=0; n<d.length; n+=16){var h=m,t=f,g=r,e=i;f=md5_ii(f=md5_ii(f=md5_ii(f=md5_ii(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_ff(f=md5_ff(f=md5_ff(f=md5_ff(f,r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+0],7,-680876936),f,r,d[n+1],12,-389564586),m,f,d[n+2],17,606105819),i,m,d[n+3],22,-1044525330),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+4],7,-176418897),f,r,d[n+5],12,1200080426),m,f,d[n+6],17,-1473231341),i,m,d[n+7],22,-45705983),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+8],7,1770035416),f,r,d[n+9],12,-1958414417),m,f,d[n+10],17,-42063),i,m,d[n+11],22,-1990404162),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+12],7,1804603682),f,r,d[n+13],12,-40341101),m,f,d[n+14],17,-1502002290),i,m,d[n+15],22,1236535329),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+1],5,-165796510),f,r,d[n+6],9,-1069501632),m,f,d[n+11],14,643717713),i,m,d[n+0],20,-373897302),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+5],5,-701558691),f,r,d[n+10],9,38016083),m,f,d[n+15],14,-660478335),i,m,d[n+4],20,-405537848),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+9],5,568446438),f,r,d[n+14],9,-1019803690),m,f,d[n+3],14,-187363961),i,m,d[n+8],20,1163531501),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+13],5,-1444681467),f,r,d[n+2],9,-51403784),m,f,d[n+7],14,1735328473),i,m,d[n+12],20,-1926607734),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+5],4,-378558),f,r,d[n+8],11,-2022574463),m,f,d[n+11],16,1839030562),i,m,d[n+14],23,-35309556),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+1],4,-1530992060),f,r,d[n+4],11,1272893353),m,f,d[n+7],16,-155497632),i,m,d[n+10],23,-1094730640),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+13],4,681279174),f,r,d[n+0],11,-358537222),m,f,d[n+3],16,-722521979),i,m,d[n+6],23,76029189),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+9],4,-640364487),f,r,d[n+12],11,-421815835),m,f,d[n+15],16,530742520),i,m,d[n+2],23,-995338651),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+0],6,-198630844),f,r,d[n+7],10,1126891415),m,f,d[n+14],15,-1416354905),i,m,d[n+5],21,-57434055),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+12],6,1700485571),f,r,d[n+3],10,-1894986606),m,f,d[n+10],15,-1051523),i,m,d[n+1],21,-2054922799),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+8],6,1873313359),f,r,d[n+15],10,-30611744),m,f,d[n+6],15,-1560198380),i,m,d[n+13],21,1309151649),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+4],6,-145523070),f,r,d[n+11],10,-1120210379),m,f,d[n+2],15,718787259),i,m,d[n+9],21,-343485551),m=safe_add(m,h),f=safe_add(f,t),r=safe_add(r,g),i=safe_add(i,e)}return Array(m,f,r,i)}function md5_cmn(d, _, m, f, r, i){return safe_add(bit_rol(safe_add(safe_add(_,d),safe_add(f,i)),r),m)}function md5_ff(d, _, m, f, r, i, n){return md5_cmn(_&m|~_&f,d,_,r,i,n)}function md5_gg(d, _, m, f, r, i, n){return md5_cmn(_&f|m&~f,d,_,r,i,n)}function md5_hh(d, _, m, f, r, i, n){return md5_cmn(_^m^f,d,_,r,i,n)}function md5_ii(d, _, m, f, r, i, n){return md5_cmn(m^(_|~f),d,_,r,i,n)}function safe_add(d, _){var m=(65535&d)+(65535&_);return(d>>16)+(_>>16)+(m>>16)<<16|65535&m}function bit_rol(d, _){return d<<_|d>>>32-_}
+const MD5 = (d)=> {const r = M(V(Y(X(d),8*d.length)));return r.toLowerCase()};function M(d){for(let _,m="0123456789ABCDEF",f="",r=0; r<d.length; r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}function X(d){for(let _=Array(d.length>>2),m=0; m<_.length; m++)_[m]=0;for(m=0; m<8*d.length; m+=8)_[m>>5]|=(255&d.charCodeAt(m/8))<<m%32;return _}function V(d){for(let _="",m=0; m<32*d.length; m+=8)_+=String.fromCharCode(d[m>>5]>>>m%32&255);return _}function Y(d, _){d[_>>5]|=128<<_%32,d[14+(_+64>>>9<<4)]=_;for(let m=1732584193,f=-271733879,r=-1732584194,i=271733878,n=0; n<d.length; n+=16){const h=m;
+const t=f;
+const g=r;
+const e=i;f=md5_ii(f=md5_ii(f=md5_ii(f=md5_ii(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_ff(f=md5_ff(f=md5_ff(f=md5_ff(f,r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+0],7,-680876936),f,r,d[n+1],12,-389564586),m,f,d[n+2],17,606105819),i,m,d[n+3],22,-1044525330),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+4],7,-176418897),f,r,d[n+5],12,1200080426),m,f,d[n+6],17,-1473231341),i,m,d[n+7],22,-45705983),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+8],7,1770035416),f,r,d[n+9],12,-1958414417),m,f,d[n+10],17,-42063),i,m,d[n+11],22,-1990404162),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+12],7,1804603682),f,r,d[n+13],12,-40341101),m,f,d[n+14],17,-1502002290),i,m,d[n+15],22,1236535329),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+1],5,-165796510),f,r,d[n+6],9,-1069501632),m,f,d[n+11],14,643717713),i,m,d[n+0],20,-373897302),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+5],5,-701558691),f,r,d[n+10],9,38016083),m,f,d[n+15],14,-660478335),i,m,d[n+4],20,-405537848),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+9],5,568446438),f,r,d[n+14],9,-1019803690),m,f,d[n+3],14,-187363961),i,m,d[n+8],20,1163531501),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+13],5,-1444681467),f,r,d[n+2],9,-51403784),m,f,d[n+7],14,1735328473),i,m,d[n+12],20,-1926607734),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+5],4,-378558),f,r,d[n+8],11,-2022574463),m,f,d[n+11],16,1839030562),i,m,d[n+14],23,-35309556),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+1],4,-1530992060),f,r,d[n+4],11,1272893353),m,f,d[n+7],16,-155497632),i,m,d[n+10],23,-1094730640),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+13],4,681279174),f,r,d[n+0],11,-358537222),m,f,d[n+3],16,-722521979),i,m,d[n+6],23,76029189),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+9],4,-640364487),f,r,d[n+12],11,-421815835),m,f,d[n+15],16,530742520),i,m,d[n+2],23,-995338651),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+0],6,-198630844),f,r,d[n+7],10,1126891415),m,f,d[n+14],15,-1416354905),i,m,d[n+5],21,-57434055),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+12],6,1700485571),f,r,d[n+3],10,-1894986606),m,f,d[n+10],15,-1051523),i,m,d[n+1],21,-2054922799),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+8],6,1873313359),f,r,d[n+15],10,-30611744),m,f,d[n+6],15,-1560198380),i,m,d[n+13],21,1309151649),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+4],6,-145523070),f,r,d[n+11],10,-1120210379),m,f,d[n+2],15,718787259),i,m,d[n+9],21,-343485551),m=safe_add(m,h),f=safe_add(f,t),r=safe_add(r,g),i=safe_add(i,e)}return Array(m,f,r,i)}function md5_cmn(d, _, m, f, r, i){return safe_add(bit_rol(safe_add(safe_add(_,d),safe_add(f,i)),r),m)}function md5_ff(d, _, m, f, r, i, n){return md5_cmn(_&m|~_&f,d,_,r,i,n)}function md5_gg(d, _, m, f, r, i, n){return md5_cmn(_&f|m&~f,d,_,r,i,n)}function md5_hh(d, _, m, f, r, i, n){return md5_cmn(_^m^f,d,_,r,i,n)}function md5_ii(d, _, m, f, r, i, n){return md5_cmn(m^(_|~f),d,_,r,i,n)}function safe_add(d, _){const m=(65535&d)+(65535&_);return(d>>16)+(_>>16)+(m>>16)<<16|65535&m}function bit_rol(d, _){return d<<_|d>>>32-_}
 
 // short versions of commonly used Math functions. Maybe not optimal for heavy use?
 function abs(x) {return Math.abs(x)}
@@ -24,7 +27,7 @@ function radians(Value) {     return Value * Math.PI / 180;}
 
 function degrees(Value) {    return Value / (Math.PI / 180);}
 
-export var scaleF2M = 0.3048
+export const scaleF2M = 0.3048
 
 export function f2m(f) {return f * scaleF2M}
 export function m2f(m) {return m / scaleF2M}
@@ -39,7 +42,7 @@ export function unitsToMeters(units, value) {
         case "nm": return metersFromNM(value)
         case "km": case "kilometers": return value * 1000
 
-        default: assert(false, "Unknown units: "+units);
+        default: assert(false, `Unknown units: ${units}`);
     }
 
 
@@ -52,7 +55,7 @@ export function unitsToMeters(units, value) {
 function pad(num, size) {
     const numString = num.toString()
     if (numString.length > size) return numString;
-    const s = "0000000000000000000" + numString;
+    const s = `0000000000000000000${numString}`;
     return s.slice(-size);
 }
 
@@ -64,23 +67,23 @@ export {metersFromMiles,MD5,abs,floor,sin,cos,tan,asin,acos,atan,atan2,radians,d
 // (somewhat ad-hoc method, by Mick)
 export function RollingAverage(data, window, iterations=1) {
 
-    for (var i=0;i<iterations;i++) {
-        var output = new Array()
+    for (let i=0;i<iterations;i++) {
+        const output = new Array()
         const len = data.length;
 
         // conversion from strings would typically be when data is a CSV column or similar.
         if (typeof data[0] !== 'number') {
-            data = data.map(x => parseFloat(x))
+            data = data.map(x => Number.parseFloat(x))
         }
 
-        var xa = -1;
-        var xb = -1;
-        var sum = 0;
-        const halfWindow = parseInt(window / 2) // force int, as otherwise it fails for odd numbers
+        let xa = -1;
+        let xb = -1;
+        let sum = 0;
+        const halfWindow = Number.parseInt(window / 2) // force int, as otherwise it fails for odd numbers
 
-        for (var f = 0; f < len; f++) {
-            var a = f - halfWindow
-            var b = f + halfWindow
+        for (let f = 0; f < len; f++) {
+            let a = f - halfWindow
+            let b = f + halfWindow
 
             if (a < 0) {
                 // a needs bringing up by -a to 0
@@ -101,7 +104,7 @@ export function RollingAverage(data, window, iterations=1) {
             // keeping a running total. CHECK.....
             if (xa === -1) {
                 sum = 0;
-                for (var x = a; x <= b; x++)
+                for (let x = a; x <= b; x++)
                     sum += (data[x])
                 //sum += parseFloat(data[x])
                 xa = a
@@ -170,7 +173,7 @@ export function RollingAverageDegrees(data, window, iterations=1) {
 export function smoothDerivative(data, window, iterations) {
     const derivatives = []
     const len = data.length;
-    for (var i=0;i<len-1;i++) {
+    for (let i=0;i<len-1;i++) {
         derivatives.push(data[i+1] - data[i])
     }
     const smoothedDerivatives = RollingAverage(derivatives,window,iterations)
@@ -196,20 +199,20 @@ export function smoothDerivative(data, window, iterations) {
 // MAYBE JUST SMOOTH?
 export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, stepped = false, string = false, degrees = false, frameOffset = 0) {
     if (string) stepped = true; // can't interpolate strings
-    var out = new Array()
-    var aFrame = parseInt(input[0][indexCol]) + frameOffset
-    var aValue
+    const out = new Array()
+    let aFrame = Number.parseInt(input[0][indexCol]) + frameOffset
+    let aValue
     if (string)
         aValue = input[0][dataCol]
     else
-        aValue = parseFloat(input[0][dataCol])
-    var f = 0;
-    input.forEach(function (frame, index) {
-        var bFrame = parseInt(frame[indexCol]) + frameOffset
+        aValue = Number.parseFloat(input[0][dataCol])
+    let f = 0;
+    input.forEach((frame, index) => {
+        const bFrame = Number.parseInt(frame[indexCol]) + frameOffset
         if (string)
             bValue = frame[dataCol]
         else
-            var bValue = parseFloat(frame[dataCol])
+            let bValue = Number.parseFloat(frame[dataCol])
 
         // we are going to interpolate from aValue to bValue over the range aFrame to bFrame
         // if degrees, then we need to handle wrap-around
@@ -229,7 +232,7 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
         out.push(aValue)
 //        console.log(f+": "+out[f]);
         f++;
-        for (var i = aFrame + 1; i < bFrame; i++) {
+        for (let i = aFrame + 1; i < bFrame; i++) {
             if (stepped)
                 out.push(aValue);
             else
@@ -243,7 +246,7 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
     // fill up any remaining with the last frame
     // will be at least one, as the last fencepost possible is outLen-1
     // and the above always stops short of the last fencepost
-    for (var i = aFrame; i < outLen-1; i++) {
+    for (let i = aFrame; i < outLen-1; i++) {
         out.push(aValue)
     }
     return out;
@@ -317,7 +320,7 @@ export function metersPerSecondFromKnots(k) {
 // given a time in ms, an interval in ms, and function f
 // then call f for that time, every interval
 export async function doOver(time, interval, f) {
-    for (var t=0;t<=time;t+=interval) {
+    for (let t=0;t<=time;t+=interval) {
         f(t);
         await sleep(interval)
     }
@@ -336,9 +339,9 @@ export function getTextBBox( ctx, text ) {
     return { left, top, right, bottom, width, height };
 }
 
-export var loadImage = async (src) => {
+export const loadImage = async (src) => {
     return new Promise((resolve, reject) => {
-        let img = new Image();
+        const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => reject(new Error('Image loading failed'));
         img.src = src;
@@ -348,15 +351,16 @@ export var loadImage = async (src) => {
 export function vdump(v,decimals,a='(', b=')') {
     if (v.position !== undefined) {
         v = v.position;
-        a='P'+a
+        a=`P${a}`
     }
     if (decimals === undefined)
-        return (a+v.x+","+v.y+","+v.z+b)
-    else
-        return (a+v.x.toFixed(decimals)+","+v.y.toFixed(decimals)+","+v.z.toFixed(decimals)+b)
+        return (`${a+v.x},${v.y},${v.z}${b}`)
+
+        return (`${a+v.x.toFixed(decimals)},${v.y.toFixed(decimals)},${v.z.toFixed(decimals)}${b}`)
 }
 
-var scrollTop, scrollLeft
+let scrollTop
+let scrollLeft
 export function disableScroll() {
     // Get the current page scroll position
     scrollTop =
@@ -366,13 +370,13 @@ export function disableScroll() {
 
         // if any scroll is attempted,
         // set this to the previous value
-        window.onscroll = function() {
+        window.onscroll = () => {
             window.scrollTo(scrollLeft, scrollTop);
         };
 }
 
 export function enableScroll() {
-    window.onscroll = function() {};
+    window.onscroll = () => {};
 }
 
 // check if three 2D XY points are clockwise
@@ -419,14 +423,14 @@ export function utcDate(d) {
 }
 
 export function timezoneAbbreviation() {
-    let [, tzName] = /.*\s(.+)/.exec((new Date()).toLocaleDateString(navigator.language, { timeZoneName: 'short' }));
+    const [, tzName] = /.*\s(.+)/.exec((new Date()).toLocaleDateString(navigator.language, { timeZoneName: 'short' }));
     return tzName;
 }
 
 export function localDate(d) {
    // let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    return d.toLocaleString() +" "+timezoneAbbreviation()
+    return `${d.toLocaleString()} ${timezoneAbbreviation()}`
 }
 
 
@@ -436,7 +440,7 @@ export const arrayColumn = (arr, n) => arr.map(x => x[n]);
 
 /* View in fullscreen */
 export function openFullscreen() {
-    var elem = document.documentElement;
+    const elem = document.documentElement;
     if (elem.requestFullscreen) {
         elem.requestFullscreen();
     } else if (elem.webkitRequestFullscreen) { /* Safari */
@@ -446,7 +450,7 @@ export function openFullscreen() {
     }
 } /* Close fullscreen */
 export function closeFullscreen() {
-    var elem = document.documentElement;
+    const elem = document.documentElement;
     if (document.exitFullscreen) {
         document.exitFullscreen();
     } else if (document.webkitExitFullscreen) { /* Safari */
@@ -459,7 +463,7 @@ export function closeFullscreen() {
 function getVersionString() {
     if(typeof document !== 'undefined')
         return MD5(document.lastModified)
-    else
+
         return "n/a";
 }
 export const versionString = getVersionString() // if we want to make version-unique names
@@ -470,7 +474,7 @@ export function angleDifferenceDeg(a,b) {
     while (a>=360) a-=360;
     while (b<0) b+=360;
     while (b>=360) b-=360;
-    var d = Math.abs(b-a);
+    let d = Math.abs(b-a);
     if (d > 180) d = 360-d
     return d
 }
@@ -482,7 +486,7 @@ export function isSubdomain(domainToCheck, baseDomain) {
 
     // Add a dot at the beginning of the baseDomain to ensure we're matching subdomains
     // and not domains that merely end with the same sequence.
-    const pattern = new RegExp('(^|\\.)' + baseDomain.replace('.', '\\.') + '$');
+    const pattern = new RegExp(`(^|\\.)${baseDomain.replace('.', '\\.')}$`);
 
     return pattern.test(domainToCheck);
 }
@@ -518,14 +522,14 @@ export function isHttpOrHttps(url) {
 }
 
 export function getFileExtension(filename) {
-    let splitDot = filename.toLowerCase().split('.')
+    const splitDot = filename.toLowerCase().split('.')
     let fileExt = splitDot.pop();
     // if the extension ends in a / then we are probably trying to load an attachment
     // like https://www.metabunk.org/attachments/n615ux-track-egm96-kml.54528/
     // from Metabunk, so the extension is actually the end of the string before the last .
     // and the dots have been replaced with dashes
     if (fileExt.slice(-1) === "/") {
-        var beforeExt = splitDot.pop();
+        const beforeExt = splitDot.pop();
         fileExt = beforeExt.split('-').pop()
     }
 
@@ -545,7 +549,7 @@ export function getFileExtension(filename) {
             prev = "sitch"
         }
 
-        fileExt = prev +"."+ fileExt;
+        fileExt = `${prev}.${fileExt}`;
     }
 
     return fileExt;
@@ -558,12 +562,12 @@ export function setURLParameters(params) {
     const oldURL = window.location.href;
 
     // get the base of the URL (e.g. https://www.metabunk.org/sitrec/
-    var url = oldURL.split('?')[0];
+    let url = oldURL.split('?')[0];
 
     // and add that to the base URL
-    url += "?sitch=" + Sit.name + params;
+    url += `?sitch=${Sit.name}${params}`;
 
-    if (oldURL.localeCompare(url) != 0) {
+    if (oldURL.localeCompare(url) !== 0) {
         // then push the current state, so we can go back
         window.history.pushState({}, null, url);
     }
@@ -619,9 +623,9 @@ export function arrayBufferToString(buffer) {
 
 // Helper function to convert String to ArrayBuffer
 export function stringToArrayBuffer(str) {
-    var buf = new ArrayBuffer(str.length); // 1 byte for each char
-    var bufView = new Uint8Array(buf);
-    for (var i=0, strLen=str.length; i<strLen; i++) {
+    const buf = new ArrayBuffer(str.length); // 1 byte for each char
+    const bufView = new Uint8Array(buf);
+    for (let i=0, strLen=str.length; i<strLen; i++) {
         bufView[i] = str.charCodeAt(i);
     }
     return buf;
@@ -629,9 +633,9 @@ export function stringToArrayBuffer(str) {
 
 export function normalizeLayerType(layers) {
     if (typeof layers === "string") {
-        var layerName = layers;
-        layers = LAYER["MASK_" + layers]
-        assert(layers !== undefined, "CNode3DGroup layer name not found: " + layerName)
+        const layerName = layers;
+        layers = LAYER[`MASK_${layers}`]
+        assert(layers !== undefined, `CNode3DGroup layer name not found: ${layerName}`)
     }
     return layers;
 }

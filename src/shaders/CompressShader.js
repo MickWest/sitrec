@@ -3,18 +3,14 @@
  */
 
 export const CompressShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    lower: { value: 0.1 },
+    upper: { value: 0.9 },
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-        'lower': { value: 0.1 },
-        'upper': { value: 0.9 },
-
-
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
 		varying vec2 vUv;
 
@@ -25,7 +21,7 @@ export const CompressShader = {
 
 		}`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
 		uniform float opacity;
 		uniform float lower;
@@ -47,7 +43,5 @@ export const CompressShader = {
                 gl_FragColor.g = lower + span * gl_FragColor.g;
                 gl_FragColor.b = lower + span * gl_FragColor.b;
 
-		}`
-
+		}`,
 };
-

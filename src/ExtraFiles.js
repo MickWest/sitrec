@@ -2,6 +2,6 @@
 
 // NightSkyFiles - loaded when Sit.nightSky is true
 export const NightSkyFiles = {
-    IAUCSN: "nightsky/IAU-CSN.txt",
-    BSC5: "nightsky/BSC5.bin",
-}
+  IAUCSN: 'nightsky/IAU-CSN.txt',
+  BSC5: 'nightsky/BSC5.bin',
+};

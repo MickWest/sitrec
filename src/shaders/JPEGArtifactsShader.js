@@ -1,20 +1,18 @@
 /**
  * Full-screen textured quad shader
  */
-import {Vector2} from "three";
+import { Vector2 } from 'three';
 
 export const JPEGArtifactsShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    opacity: { value: 1.0 },
+    amount: { value: 0.5 }, // Shrink amount, 0.0 means no shrink, 1.0 means maximum shrink to center
+    resolution: { value: new Vector2(256.0, 256.0) }, // Width and Height of the texture
+    size: { value: 8.0 }, // Size of the block
+  },
 
-    uniforms: {
-
-        'tDiffuse': { value: null },
-        'opacity': { value: 1.0 },
-        'amount': { value: 0.5 }, // Shrink amount, 0.0 means no shrink, 1.0 means maximum shrink to center
-        'resolution': { value: new Vector2(256.0, 256.0) }, // Width and Height of the texture
-        'size': { value: 8.0 }, // Size of the block
-    },
-
-    vertexShader: /* glsl */`
+  vertexShader: /* glsl */ `
 
         varying vec2 vUv;
 
@@ -25,7 +23,7 @@ export const JPEGArtifactsShader = {
 
         }`,
 
-    fragmentShader: /* glsl */`
+  fragmentShader: /* glsl */ `
 
         uniform float opacity;
         uniform float amount;
@@ -53,6 +51,5 @@ export const JPEGArtifactsShader = {
 
             gl_FragColor = vec4(color.rgb, opacity);
 
-        }`
-
+        }`,
 };
