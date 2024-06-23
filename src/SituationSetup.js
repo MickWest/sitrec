@@ -752,7 +752,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             SSLog();
             NodeMan.get(data.object ?? "lookCamera").addController("TrackPosition", {
                 id:data.id,
-                sourceTrack: data.sourceTrack ?? "cameraTrack",
+                sourceTrack: data.track ?? "cameraTrack",
             })
             break;
 

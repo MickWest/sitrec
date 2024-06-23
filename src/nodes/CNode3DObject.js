@@ -15,19 +15,19 @@ import {
     CylinderGeometry,
     DodecahedronGeometry,
     EdgesGeometry,
-    IcosahedronGeometry,
+    IcosahedronGeometry, LatheGeometry,
     LineSegments,
     Mesh,
     MeshBasicMaterial,
     MeshLambertMaterial,
     MeshPhongMaterial,
-    MeshPhysicalMaterial,
+    MeshPhysicalMaterial, NoColorSpace,
     OctahedronGeometry,
     RingGeometry,
-    SphereGeometry,
+    SphereGeometry, SRGBColorSpace,
     TetrahedronGeometry,
     TorusGeometry,
-    TorusKnotGeometry,
+    TorusKnotGeometry, Vector2,
     WireframeGeometry
 } from "three";
 import {guiMenus} from "../Globals";
@@ -35,6 +35,7 @@ import {par} from "../par";
 import {assert} from "../assert";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {disposeScene} from "../threeExt";
+import {versionString} from "../utils";
 
 
 const Models = {
@@ -42,13 +43,57 @@ const Models = {
     "F/A-18E/F" :           { file: 'data/models/FA-18F.glb',},
     "737 MAX 8 (AA)":       { file: 'data/models/737_MAX_8_AA.glb',},
     "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
-    "777-200ER (Malyasia)": { file: 'data/models/777-200ER_Malaysia.glb',},
+    "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
     "DC-10":                { file: 'data/models/DC-10.glb',},
+    "WhiteCube":             { file: 'data/models/white-cube.glb',},
+    "PinkCube":             { file: 'data/models/pink-cube.glb',},
 
     "Saucer":               { file: 'data/models/saucer01a.glb',},
 
 }
+
+
+// Custom geometries
+
+// SuperEggGeometry
+// https://en.wikipedia.org/wiki/Superellipsoid
+
+class SuperEggGeometry extends LatheGeometry {
+    constructor(radius = 1, length = 1, sharpness = 5.5, widthSegments = 20, heightSegments = 20) {
+        // Generate points for the profile curve of the superegg
+        const points = [];
+        for (let i = 0; i <= heightSegments; i++) {
+            const t = (i / heightSegments) * Math.PI - Math.PI / 2; // Range from -π/2 to π/2
+            const y = Math.sin(t) * length; // Y-coordinate, scaled by length
+            const x = Math.sign(Math.cos(t)) * Math.abs(Math.cos(t)) ** (2 / sharpness) * radius; // X-coordinate scaled by radius
+            points.push(new Vector2(x, y));
+        }
+
+        // Create LatheGeometry by revolving the profile curve around the y-axis
+        super(points, widthSegments);
+
+        this.type = 'SuperEggGeometry';
+        this.parameters = {
+            radius: radius,
+            length: length,
+            sharpness: sharpness,
+            widthSegments: widthSegments,
+            heightSegments: heightSegments
+        };
+    }
+}
+
+// defaults for a TicTac shape made from a SuperEgg
+class TicTacGeometry extends SuperEggGeometry {
+constructor(radius = 1, length = 1, sharpness = 3.5, widthSegments = 20, heightSegments = 20) {
+        super(radius, length, sharpness, widthSegments, heightSegments);
+    }
+
+}
+
+
+
 
 // Describe the parameters of each geometry type
 // any numeric entry is [default, min, max, step]
@@ -180,6 +225,19 @@ const gTypes = {
             q: [3, 1, 10, 1],
         }
     },
+
+    superegg: {
+        g: SuperEggGeometry,
+        params: {
+            radius: [0.5, 0.1, 100, 0.1],
+            length: [4, 0.1, 100, 0.1],
+            sharpness: [5.5, 0.1, 10, 0.1],
+            widthSegments: [20, 4, 40, 1],
+            heightSegments: [20, 3, 40, 1],
+        }
+
+    }
+
 }
 
 // material types for meshes
@@ -244,7 +302,7 @@ const materialTypes = {
 }
 
 const commonParams = {
-    geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tetrahedron", "torus", "torusknot"],
+    geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tetrahedron", "torus", "torusknot", "superegg"],
     rotateX: [0, -180, 180, 1],
     rotateY: [0, -180, 180, 1],
     rotateZ: [0, -180, 180, 1],
@@ -260,7 +318,7 @@ const commonParams = {
 
 export class CNode3DObject extends CNode3DGroup {
     constructor(v) {
-        v.layers ??= LAYER.MASK_HELPERS;
+        v.layers ??= LAYER.MASK_LOOKRENDER;
         v.color ??= "white"
         v.size ??= 1;
 
@@ -296,7 +354,7 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.modelOrGeometryMenu.isCommon = true;
 
-        this.selectModel = "F/A-18E/F";
+        this.selectModel = v.model ?? "F/A-18E/F";
         this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Model").onChange((v) => {
             this.rebuild();
             par.renderOne = true
@@ -403,7 +461,16 @@ export class CNode3DObject extends CNode3DGroup {
             const model = Models[this.selectModel];
             const loader = new GLTFLoader();
             console.log("Loading model: ", model.file);
-            loader.load(model.file, (gltf) => {
+            loader.load(model.file  + "?v=1" + versionString, (gltf) => {
+
+                 gltf.scene.traverse((child) => {
+                     if (child.isMesh) {
+                         if (child.material.map) child.material.map.colorSpace = NoColorSpace;
+                         if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
+                     }
+                 });
+
+
                 this.model = gltf.scene;
                 this.group.add(this.model);
                 this.propagateLayerMask()

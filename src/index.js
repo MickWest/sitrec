@@ -536,6 +536,11 @@ function legacySetup() {
 async function setupFunctions() {
     resetPar();
 
+    // not sure this is the best place to do this......
+    // but resetPar has just set par.paused to false
+    // so no earlier.
+    par.paused = Sit.paused;
+
     Globals.showMeasurements = true;
 
 

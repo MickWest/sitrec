@@ -462,8 +462,14 @@ export class CNodeView3D extends CNodeViewCanvas {
     // todo - change to nodes, so we can add and remove them
     // for the custom sitch
     addFocusTracks(focusTracks) {
-        this.focusTrackName = "default"
-        this.lockTrackName = "default"
+        let select = "default"
+        if (focusTracks.select !== undefined) {
+            select = focusTracks.select
+            delete focusTracks.select
+        }
+
+        this.focusTrackName = select
+        this.lockTrackName = select
         guiMenus.view.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
             //
         }).name("Focus Track").listen()

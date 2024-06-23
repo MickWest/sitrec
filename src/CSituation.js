@@ -78,6 +78,8 @@ const situationDefaults = {
 
     ambientLight: 0.5,
 
+    paused: false,
+
 }
 
 export class CSituation {
