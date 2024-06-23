@@ -246,7 +246,7 @@ class CNode {
         if (_gui) {
             // if it's a string, then it's from the data driven setup
             if (typeof _gui === "string") {
-                this.gui = guiMenus[_gui];
+                this.gui = guiMenus[_gui.toLowerCase()];
                 assert(this.gui !== undefined, "Unknown gui type: " + _gui)
             } else {
                 // otherwise, it's a gui object passed in the parameters
