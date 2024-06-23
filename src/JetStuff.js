@@ -1058,12 +1058,80 @@ export function initViews() {
 
   ViewMan.get('chart').setVisible(par.showChart);
 
-  const labelVideo = new CNodeViewUI({
-    id: 'labelVideo',
-    overlayView: ViewMan.list.video.data,
-  });
-  labelVideo.addText('videolabel', 'ORIGINAL VIDEO', 70, 10, 3, '#f0f00080');
-  labelVideo.setVisible(true);
+    var labelOriginalVideo = new CNodeViewUI({id: "labelOriginalVideo", overlayView: ViewMan.list.video.data});
+    labelOriginalVideo.addText("videolabel", "ORIGINAL VIDEO", 70, 10, 3, "#f0f00080")
+    labelOriginalVideo.setVisible(true)
+
+    if (1 || !isLocal) {
+        var labelMainView = new CNodeViewUI({id: "labelMainView", overlayView: ViewMan.list.mainView.data});
+        labelMainView.addText("videolabel1", "WORK IN PROGRESS", 45, 90, 3, "#f0f00020")
+        labelMainView.addText("videolabel2", "RESULTS MAY VARY", 45, 95, 3, "#f0f00020")
+        labelMainView.setVisible(true)
+    }
+    var farClipLook = metersFromMiles(500)
+
+
+
+    if (Sit.name === "gimbal" || Sit.name === "gimbalnear" || Sit.name === "flir1") {
+
+        // a grid spaced one Nautical mile square
+        const gridSquaresGround = 200
+        let gridHelperGround = new GridHelperWorld(1,metersFromNM(gridSquaresGround), gridSquaresGround, metersFromMiles(EarthRadiusMiles), 0x606000, 0x606000);
+        GlobalScene.add(gridHelperGround);
+
+        setATFLIR(new CNodeDisplayATFLIR({
+            id: "displayATFLIR",
+            inputs: {},
+            layers: LAYER.MASK_MAIN, // ATFLIR pod would obscure the camera in look view
+        }))
+
+        // everything in the local frame should show up in MAIN, but not in LOOK
+        LocalFrame.layers.mask = LAYER.MASK_MAIN;
+        propagateLayerMaskObject(LocalFrame);
+
+    }
+
+
+    var line_material = new LineBasicMaterial({color: 0xffffff});
+    var line_materialRED = new LineBasicMaterial({color: 0xff8080, linewidth: 5});
+
+    // Now using the Line2, etc from https://github.com/mrdoob/three.js/blob/master/examples/webgl_lines_fat.html
+
+    var pitchStep = 2;
+    var rollStep = 1;
+    var pitchGap = 10
+    var rollGap = 10;
+
+    // an invisible hemisphere, just for collision, with vizRadius
+    const positions = [];
+    for (var pitch = 0; pitch < 90; pitch += pitchGap) {
+
+        for (var roll = 0; roll <= 360; roll += rollGap) {
+            var A = PRJ2XYZ(pitch, roll, 0, vizRadius)
+            var B = PRJ2XYZ(pitch, roll + rollGap, 0, vizRadius)
+            var C = PRJ2XYZ(pitch + pitchGap, roll, 0, vizRadius)
+            var D = PRJ2XYZ(pitch + pitchGap, roll + rollGap, 0, vizRadius)
+
+            // It's a triangle list (not a strip), so need two sets of three verts for a quad.
+            positions.push(A.x, A.y, A.z);
+            positions.push(C.x, C.y, C.z);
+            positions.push(B.x, B.y, B.z);
+
+            positions.push(C.x, C.y, C.z);
+            positions.push(D.x, D.y, D.z);
+            positions.push(B.x, B.y, B.z);
+
+        }
+    }
+    const geometry = new BufferGeometry();
+    geometry.setAttribute('position', new Float32BufferAttribute(positions, 3))
+    geometry.computeBoundingSphere();
+
+    const material = new MeshBasicMaterial({
+        color: 0x101010,
+        transparent: true,
+        opacity: 0.5,
+        side: DoubleSide  // not workingf ?
 
   if (1 || !isLocal) {
     const labelMainView = new CNodeViewUI({

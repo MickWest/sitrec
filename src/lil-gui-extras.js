@@ -265,7 +265,108 @@ export class CGuiMenuBar {
         }
       }
     }
-  }
+
+    show() {
+        this.slots.forEach((gui) => {
+            gui.show();
+        })
+        this._hidden = false;
+    }
+
+    hide() {
+        // call hide on all the GUI slots
+        this.slots.forEach((gui) => {
+            gui.hide();
+        })
+
+        this._hidden = true;
+    }
+
+    toggleVisiblity() {
+        if (this._hidden) {
+            this.show();
+        } else {
+            this.hide();
+        }
+    }
+
+    // creates a gui, adds it into the next menu slot
+    // and returns it.
+    // called addFolder to maintain compatibility with a single gui system under dat.gui
+    addFolder(title) {
+        const newGUI = new GUI({container: this.divs[this.nextSlot], autoPlace: false});
+        //newGUI.title(title);
+        newGUI.$title.innerHTML = title;
+
+        console.log("Adding GUI "+title+" at slot "+this.nextSlot+" with left "+this.totalWidth+"px")
+
+        this.divs[this.nextSlot].style.left = this.totalWidth + "px";
+
+        // const divDebugColor = ["red", "green", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta", "lime", "teal", "indigo", "violet", "brown", "grey", "black", "white"];
+        // // give the div a colored border
+        // this.divs[this.nextSlot].style.border = "1px solid "+ divDebugColor[this.nextSlot % divDebugColor.length];
+
+        const width = getTextWidth(title) + 30;
+       // this.divs[this.nextSlot].style.width = width + "px";
+       // this.divs[this.nextSlot].style.height = "1 px";
+        this.totalWidth += width;
+
+        let left = this.totalWidth;
+        // adjust the position of all subsequent divs to the right
+        for (let i = this.nextSlot+1; i < this.numSlots; i++) {
+            this.divs[i].style.left = left + "px";
+            left += this.divWidth;
+        }
+
+        // make the div pass through mouse events
+        //this.divs[this.nextSlot].style.pointerEvents = "none";
+
+
+        preventDoubleClicks(newGUI);
+        this.slots[this.nextSlot] = newGUI;
+        this.nextSlot++;
+
+        // when opened, close the others
+        newGUI.onOpenClose( (changedGUI) => {
+
+            if (!changedGUI._closed) {
+                this.slots.forEach((gui, index) => {
+                    if (gui !== newGUI) {
+                        gui.close();
+                    }
+                });
+            }
+        })
+
+        return newGUI;
+    }
+
+    destroy(all = true) {
+        for (let i = this.numSlots-1; i >= 0; i--) {
+            const gui = this.slots[i];
+            if (gui) {
+                gui.destroy(all);
+
+                if (all || !gui.permanent) {
+                    // splice out the slots and divs
+                    this.slots.splice(i, 1);
+
+                    // temp reference to the div
+                    const div = this.divs[i];
+                    // remove div
+                    this.divs.splice(i, 1);
+                    // move the div at i to the end. so it can be reused
+                    // not really ideal, but it's a quick fix
+                    // we probably want more control over the order per-sitch
+                    this.divs.push(div)
+
+                    this.nextSlot--;
+                }
+            }
+        }
+
+    }
+
 }
 
 function getTextWidth(text) {

@@ -266,9 +266,10 @@ const commonParams = {
 };
 
 export class CNode3DObject extends CNode3DGroup {
-  constructor(v) {
-    v.layers ??= LAYER.MASK_HELPERS;
-    v.color ??= 'white';
+    constructor(v) {
+        v.layers ??= LAYER.MASK_HELPERS;
+        v.color ??= "white"
+        v.size ??= 1;
 
     // patch DON'T convert the color to a constant node
     const oldColor = v.color;
@@ -283,11 +284,41 @@ export class CNode3DObject extends CNode3DGroup {
     this.gui = gui.addFolder(`3D Ob: ${menuName}`).close();
     this.common = {};
 
-    this.modelOrGeometry = 'model';
-    this.modelOrGeometryMenu = this.gui
-      .add(this, 'modelOrGeometry', ['geometry', 'model'])
-      .name('Model or Geometry')
-      .onChange((v) => {
+        let menuName = this.props.name ?? this.id;
+        this.gui = gui.addFolder("3D Ob: " + menuName).close()
+        this.common = {}
+
+        this.modelOrGeometry = v.modelOrGeometry;
+        // if we don't have one, infer it from the presence of either "model" or geometry" in the parameters
+        if (this.modelOrGeometry === undefined) {
+            if (v.model !== undefined) {
+                this.modelOrGeometry = "model";
+            } else {
+                this.modelOrGeometry = "geometry";
+            }
+        }
+
+
+        this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).name("Model or Geometry").onChange((v) => {
+            this.rebuild();
+            par.renderOne = true
+        });
+
+        this.modelOrGeometryMenu.isCommon = true;
+
+        this.selectModel = "F/A-18E/F";
+        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Object Type").onChange((v) => {
+            this.rebuild();
+            par.renderOne = true
+        });
+
+        this.modelMenu.isCommon = true;
+
+        // add the common parameters to the GUI
+        // note we set isCommon to true to flag them as common
+        // so they don't get deleted when we rebuild the GUI after object type change
+        this.addParams(commonParams, this.common, true); // add the common parameters to the GUI
+
         this.rebuild();
         par.renderOne = true;
       });

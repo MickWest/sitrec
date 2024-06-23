@@ -1,8 +1,19 @@
 import { CNode3DObject } from './CNode3DObject';
 
 export class CNode3DSphere extends CNode3DObject {
-  constructor(v) {
-    v.geometry = 'sphere';
+    constructor(v) {
+        v.modelOrGeometry = "sphere";
+        v.geometry = "sphere";
+
+        // these are the original defaults for the legacy CNodeDisplayTargetSphere
+        v.radius = 0.5
+        v.widthSegments = 20
+        v.heightSegments = 20
+        v.opacity ??= 0.75;
+        v.transparent ??= true;
+
+        super(v);
+    }
 
     // these are the original defaults for the legacy CNodeDisplayTargetSphere
     v.radius = 0.5;
