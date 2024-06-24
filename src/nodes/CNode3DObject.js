@@ -300,13 +300,17 @@ const materialTypes = {
 
 }
 
+const commonMaterialParams = {
+    material: ["basic", "lambert", "phong", "physical"],
+}
+
 const commonParams = {
     geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tetrahedron", "torus", "torusknot", "superegg"],
+    applyMaterial: false,
     rotateX: [0, -180, 180, 1],
     rotateY: [0, -180, 180, 1],
     rotateZ: [0, -180, 180, 1],
 
-    material: ["basic", "lambert", "phong", "physical"],
     wireframe: false,
     edges: false,
     depthTest: true,
@@ -335,6 +339,13 @@ export class CNode3DObject extends CNode3DGroup {
         this.gui = guiMenus.objects.addFolder("3D Ob: " + menuName).close()
         this.common = {}
 
+        this.common.material = v.material ?? "lambert";
+        this.materialFolder = this.gui.addFolder("Material").open();
+        this.materialFolder.isCommon = true; //temp patch - not needed?  not a controller???
+        this.addParams(commonMaterialParams, this.common, this.materialFolder, true);
+
+        this.rebuildMaterial();
+
         this.modelOrGeometry = v.modelOrGeometry;
         // if we don't have one, infer it from the presence of either "model" or geometry" in the parameters
         if (this.modelOrGeometry === undefined) {
@@ -344,7 +355,6 @@ export class CNode3DObject extends CNode3DGroup {
                 this.modelOrGeometry = "geometry";
             }
         }
-
 
         this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).listen().name("Model or Geometry").onChange((v) => {
             this.rebuild();
@@ -365,13 +375,41 @@ export class CNode3DObject extends CNode3DGroup {
         // add the common parameters to the GUI
         // note we set isCommon to true to flag them as common
         // so they don't get deleted when we rebuild the GUI after object type change
-        this.addParams(commonParams, this.common, true); // add the common parameters to the GUI
+        this.addParams(commonParams, this.common, this.gui, true); // add the common parameters to the GUI
+
 
         this.rebuild();
 
     }
 
-    addParams(geometryParams, toHere, isCommon=false) {
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            color: this.color,
+            modelOrGeometry: this.modelOrGeometry,
+            model: this.selectModel,
+            common: this.common,
+            geometryParams: this.geometryParams,
+            materialParams: this.materialParams,
+            // might need a modelParams
+
+
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v)
+        this.color = v.color;
+        this.modelOrGeometry = v.modelOrGeometry;
+        this.selectModel = v.model;
+        this.common = v.common;
+        this.geometryParams = v.geometryParams;
+        this.materialParams = v.materialParams;
+        // might need a modelParams
+    }
+
+
+    addParams(geometryParams, toHere, gui, isCommon=false) {
         const v = this.props;
         for (const key in geometryParams) {
             if (v[key] === undefined) {
@@ -408,7 +446,7 @@ export class CNode3DObject extends CNode3DGroup {
                     color3 = new Color(passedColor);
                 }
                 toHere[key] = "#" + color3.getHexString();
-                controller = this.gui.addColor(toHere, key).name(key).listen()
+                controller = gui.addColor(toHere, key).name(key).listen()
                     .onChange((v) => {
                         this.rebuild();
                         par.renderOne = true
@@ -419,7 +457,7 @@ export class CNode3DObject extends CNode3DGroup {
                 // is the firsts value in the array a number?
                 if (typeof geometryParams[key][0] === "number") {
                     // and make a gui slider for the parameter
-                    controller = this.gui.add(toHere, key, geometryParams[key][1], geometryParams[key][2], geometryParams[key][3]).name(key).listen()
+                    controller = gui.add(toHere, key, geometryParams[key][1], geometryParams[key][2], geometryParams[key][3]).name(key).listen()
                         .onChange((v) => {
                             this.rebuild();
                             par.renderOne = true
@@ -427,7 +465,7 @@ export class CNode3DObject extends CNode3DGroup {
                 } else {
                     // assume it's a string, so a drop-down
                     // make a drop-down for the parameter
-                    controller = this.gui.add(toHere, key, geometryParams[key]).name(key).listen()
+                    controller = gui.add(toHere, key, geometryParams[key]).name(key).listen()
                         .onChange((v) => {
                             if (key === "geometry") {
                                 this.modelOrGeometry = "geometry"
@@ -440,7 +478,7 @@ export class CNode3DObject extends CNode3DGroup {
             } else {
                 // if it's not an array, then it's a boolean
                 // so make a checkbox
-                controller = this.gui.add(toHere, key).name(key).listen()
+                controller = gui.add(toHere, key).name(key).listen()
                     .onChange((v) => {
                         this.rebuild();
                         par.renderOne = true
@@ -453,43 +491,64 @@ export class CNode3DObject extends CNode3DGroup {
     }
 
 
+
+
     rebuild() {
+        let newType = false;
+        if (this.modelOrGeometry !== this.lastModelOrGeometry) {
+            this.lastModelOrGeometry = this.modelOrGeometry;
+            newType = true;
+        }
+
+
         const v = this.props;
-        this.destroyObject();
+
         const common = this.common;
 
 
         if (this.modelOrGeometry === "model") {
-            // load the model, this will be async
+            //this.destroyNonCommonUI(this.gui);
+
+            // load the model if different, this will be async
             const model = Models[this.selectModel];
-            //const loader = new GLTFLoader();
-            //console.log("Loading model: ", model.file);
 
-            loadGLTFModel(model.file, gltf => {
-                this.model = gltf.scene;
-                this.group.add(this.model);
-                this.propagateLayerMask()
-                this.recalculate()
-            });
+            if (model !== this.currentModel || newType) {
 
-            // loader.load(model.file  + "?v=1" + versionString, (gltf) => {
-            //      gltf.scene.traverse((child) => {
-            //          if (child.isMesh) {
-            //              if (child.material.map) child.material.map.colorSpace = NoColorSpace;
-            //              if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
-            //          }
-            //      });
-            //
-            //     this.model = gltf.scene;
-            //     this.group.add(this.model);
-            //     this.propagateLayerMask()
-            //     this.recalculate()
-            // })
 
+                this.currentModel = model;
+                this.destroyObject();
+
+                //const loader = new GLTFLoader();
+                //console.log("Loading model: ", model.file);
+
+                loadGLTFModel(model.file, gltf => {
+                    this.model = gltf.scene;
+                    this.group.add(this.model);
+                    this.propagateLayerMask()
+                    this.recalculate()
+                    this.applyMaterialToModel();
+                });
+            }
+
+            if (this.common.applyMaterial) {
+                this.rebuildMaterial();
+                this.applyMaterialToModel();
+            } else {
+                // restore the original materials
+                if (this.model) {
+                    this.model.traverse((child) => {
+                        if (child.isMesh && child.originalMaterial) {
+                            child.material = child.originalMaterial;
+                            child.originalMaterial = undefined;
+                        }
+                    });
+                }
+            }
             return;
         }
 
 
+        this.destroyObject();
 
         // set up inputs based on the geometry type
         // add the defaults if a parameter is missing
@@ -502,26 +561,18 @@ export class CNode3DObject extends CNode3DGroup {
         // add them to the geometryParams object
         // (either the passed value, or a default)
 
-        const materialType = common.material.toLowerCase();
-        const materialDef = materialTypes[materialType];
-        assert(materialDef !== undefined, "Unknown material type: " + materialType)
-        const materialParams = materialDef.params;
 
 
         // if the geometry or material type has changed, then delete all the geometry-specific parameters
         // and re-create them
-        if (this.lastGeometry !== common.geometry || this.lastMaterial !== common.material) {
-            this.destroyNonCommonUI();
+        if (this.lastGeometry !== common.geometry) {
+            this.destroyNonCommonUI(this.gui);
 
             // and re-create them
             this.geometryParams = {}
-            this.addParams(geometryParams, this.geometryParams);
-
-            this.materialParams = {}
-            this.addParams(materialParams, this.materialParams);
+            this.addParams(geometryParams, this.geometryParams, this.gui);
 
             this.lastGeometry = common.geometry;
-            this.lastMaterial = common.material;
         }
 
 
@@ -544,12 +595,7 @@ export class CNode3DObject extends CNode3DGroup {
             this.geometry.rotateZ(common.rotateZ * Math.PI / 180);
         }
 
-
-        const material = new materialDef.m({
-          //  color: common.color,
-            ...this.materialParams
-        });
-
+        this.rebuildMaterial();
 
         if (common.wireframe) {
             this.wireframe = new WireframeGeometry(this.geometry);
@@ -558,7 +604,7 @@ export class CNode3DObject extends CNode3DGroup {
             this.wireframe = new EdgesGeometry(this.geometry);
             this.object = new LineSegments(this.wireframe);
         } else {
-            this.object = new Mesh(this.geometry, material);
+            this.object = new Mesh(this.geometry, this.material);
         }
 
         // const matColor = new Color(common.color)
@@ -576,11 +622,71 @@ export class CNode3DObject extends CNode3DGroup {
 
     }
 
-    destroyNonCommonUI() {
+    rebuildMaterial()
+    {
+        const materialType = this.common.material.toLowerCase();
+        const materialDef = materialTypes[materialType];
+        assert(materialDef !== undefined, "Unknown material type: " + materialType)
+
+        // if the material type has changed, then delete all the material-specific parameters
+        // and re-create them for the new material type
+        if (this.lastMaterial !== materialType) {
+
+            // remove all the non-common children of the material folder
+            this.destroyNonCommonUI(this.materialFolder)
+
+
+
+
+            this.lastMaterial = materialType
+            const materialParams = materialDef.params;
+            this.materialParams = {}
+            this.addParams(materialParams, this.materialParams, this.materialFolder);
+        }
+
+        if (this.material)  {
+            this.material.dispose();
+        }
+
+        //this.lastMaterial = this.common.material;
+        this.material = new materialDef.m({
+            //  color: this.common.color,
+            ...this.materialParams
+        });
+    }
+
+    applyMaterialToModel() {
+        // iterate over all the meshes in the model
+        // and apply this.material to them
+
+        if (this.model === undefined || !this.common.applyMaterial) {
+            return;
+        }
+        this.model.traverse((child) => {
+            if (child.isMesh) {
+                if (child.originalMaterial === undefined) {
+                    // save the original material so we can restore it later
+                    child.originalMaterial = child.material;
+                }
+                child.material = this.material.clone();
+                // // if the material has a map, then set the colorSpace to NoColorSpace
+                // if (child.material.map) {
+                //     child.material.map.colorSpace = NoColorSpace;
+                // }
+                // if (child.material.emissiveMap) {
+                //     child.material.emissiveMap.colorSpace = NoColorSpace;
+                // }
+            }
+        });
+
+    }
+
+
+    destroyNonCommonUI(gui) {
         // delete the non-common children of this.gui
         // iterate backwards so we can delete as we go
-        for (let i = this.gui.controllers.length - 1; i >= 0; i--) {
-            let c = this.gui.controllers[i];
+        for (let i = gui.controllers.length - 1; i >= 0; i--) {
+            let c = gui.controllers[i];
             if (!c.isCommon) {
                 c.destroy();
             }
@@ -617,4 +723,7 @@ export class CNode3DObject extends CNode3DGroup {
         const scale = this.in.size.v0
         this.group.scale.setScalar(scale);
     }
+
+
+
 }
