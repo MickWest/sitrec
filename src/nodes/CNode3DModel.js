@@ -4,6 +4,21 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import {FileManager} from "../Globals";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {disposeScene} from "../threeExt";
+import {NoColorSpace} from "three";
+
+export function loadGLTFModel(file, callback) {
+    const loader = new GLTFLoader()
+    loader.load(file, gltf => {
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                if (child.material.map) child.material.map.colorSpace = NoColorSpace;
+                if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
+            }
+        });
+        callback(gltf);
+
+    })
+}
 
 export class CNode3DModel extends CNode3DGroup {
     constructor(v) {

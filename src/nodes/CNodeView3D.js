@@ -347,16 +347,19 @@ export class CNodeView3D extends CNodeViewCanvas {
             depthTest: false, // no depth buffer, so it's always on top
             depthWrite: false,
         });
-        this.cursorSprite = new Sprite(spriteCrosshairMaterial)
-        this.cursorSprite.position.set(0, 25000, -50)
-        this.cursorSprite.scale.setScalar(0.02)
-        this.cursorSprite.visible = false;
-        GlobalScene.add(this.cursorSprite)
+
+        this.showCursor = v.showCursor;
+            this.cursorSprite = new Sprite(spriteCrosshairMaterial)
+            this.cursorSprite.position.set(0, 25000, -50)
+            this.cursorSprite.scale.setScalar(0.02)
+            this.cursorSprite.visible = false;
+            GlobalScene.add(this.cursorSprite)
+
         this.mouseDown = false;
         this.dragMode = 0;
 
         this.showLOSArrow = v.showLOSArrow;
-        this.showCursor = v.showCursor;
+
 
         this.defaultTargetHeight = v.defaultTargetHeight ?? 0
 

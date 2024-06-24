@@ -38,6 +38,7 @@ export const SitModelInspector = {
             },
             Copy: {},
         },
+        showCursor: false,
     },
 
     ambientLight: 0.8,

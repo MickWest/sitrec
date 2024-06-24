@@ -191,8 +191,9 @@ class CameraMapControls {
 		this.mouseStart.set( x, y );
 		this.canvas.setPointerCapture(event.pointerId)
 		par.renderOne = true;
-		this.view.cursorSprite.visible = true;
-
+		if (this.view.showCursor) {
+			this.view.cursorSprite.visible = true;
+		}
 		const mainView = ViewMan.get("mainView")
 		const cursorPos = mainView.cursorSprite.position.clone();
 		// convert to LLA
@@ -202,8 +203,12 @@ class CameraMapControls {
 		if (NodeMan.exists("cursorLLA")) {
 			NodeMan.get("cursorLLA").changeLLA(LLA.x, LLA.y, LLA.z)
 		} else {
-			NodeFactory.create("LLALabel", {id: "cursorLLA", text: "Cursor LLA",
-				lat: LLA.x, lon: LLA.y, alt: LLA.z, size: 12, offsetX: 20, offsetY: 25, centerX:0, centerY:0})
+			if (this.view.showCursor) {
+				NodeFactory.create("LLALabel", {
+					id: "cursorLLA", text: "Cursor LLA",
+					lat: LLA.x, lon: LLA.y, alt: LLA.z, size: 12, offsetX: 20, offsetY: 25, centerX: 0, centerY: 0
+				})
+			}
 		}
 
 

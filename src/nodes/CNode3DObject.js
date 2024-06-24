@@ -36,6 +36,7 @@ import {assert} from "../assert";
 import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {disposeScene} from "../threeExt";
 import {versionString} from "../utils";
+import {loadGLTFModel} from "./CNode3DModel";
 
 
 const Models = {
@@ -459,23 +460,29 @@ export class CNode3DObject extends CNode3DGroup {
         if (this.modelOrGeometry === "model") {
             // load the model, this will be async
             const model = Models[this.selectModel];
-            const loader = new GLTFLoader();
-            console.log("Loading model: ", model.file);
-            loader.load(model.file  + "?v=1" + versionString, (gltf) => {
+            //const loader = new GLTFLoader();
+            //console.log("Loading model: ", model.file);
 
-                 gltf.scene.traverse((child) => {
-                     if (child.isMesh) {
-                         if (child.material.map) child.material.map.colorSpace = NoColorSpace;
-                         if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
-                     }
-                 });
-
-
+            loadGLTFModel(model.file, gltf => {
                 this.model = gltf.scene;
                 this.group.add(this.model);
                 this.propagateLayerMask()
                 this.recalculate()
-            })
+            });
+
+            // loader.load(model.file  + "?v=1" + versionString, (gltf) => {
+            //      gltf.scene.traverse((child) => {
+            //          if (child.isMesh) {
+            //              if (child.material.map) child.material.map.colorSpace = NoColorSpace;
+            //              if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
+            //          }
+            //      });
+            //
+            //     this.model = gltf.scene;
+            //     this.group.add(this.model);
+            //     this.propagateLayerMask()
+            //     this.recalculate()
+            // })
 
             return;
         }
