@@ -74,6 +74,8 @@ export const SitModelInspector = {
     },
     fixPosition: {kind: "TrackPosition", object: "inspectedObject", sourceTrack: "fixedTargetPosition"},
 
+    axes: {kind:"DebugMatrixAxes", object: "inspectedObject", length: 50},
+
     // focus track
     focusTracks: {
         "Default": "default",

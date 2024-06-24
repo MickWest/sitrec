@@ -119,7 +119,7 @@ export class CNodeLOSTrackMISB extends CNodeEmptyArray {
             const v = this.array[f]
 
             // DebugAxes("MISB Axes", v.position, 1000)
-            DebugMatrixAxes("MISB Axes", v.position, v.matrix, 1000)
+            // DebugMatrixAxes("MISB Axes", v.position, v.matrix, 1000)
         }
     }
 
