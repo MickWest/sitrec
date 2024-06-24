@@ -258,7 +258,12 @@ export class CCustomManager {
                 let customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
 
                 getShortURL(customLink).then((shortURL) => {
-                    createCustomModalWithCopy("https://"+shortURL)();
+                    // if short url does not start with http, then add https://
+                    // this is the case for the local server which does not shorten URLS
+                    if (!shortURL.startsWith("http")) {
+                        shortURL = "https://"+shortURL;
+                    }
+                    createCustomModalWithCopy(shortURL)();
                 })
             })
 

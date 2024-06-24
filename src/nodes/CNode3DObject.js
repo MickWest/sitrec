@@ -338,6 +338,8 @@ export class CNode3DObject extends CNode3DGroup {
         let menuName = this.props.name ?? this.id;
         this.gui = guiMenus.objects.addFolder("3D Ob: " + menuName).close()
         this.common = {}
+        this.geometryParams = {};
+        this.materialParams = {};
 
         this.common.material = v.material ?? "lambert";
         this.materialFolder = this.gui.addFolder("Material").open();
@@ -402,10 +404,39 @@ export class CNode3DObject extends CNode3DGroup {
         this.color = v.color;
         this.modelOrGeometry = v.modelOrGeometry;
         this.selectModel = v.model;
-        this.common = v.common;
-        this.geometryParams = v.geometryParams;
-        this.materialParams = v.materialParams;
+
+
+
+        // copy the values from v.common, v.geometryParams, v.materialParams
+        // to this.common, this.geometryParams, this.materialParams
+        // we need to copy the values, not just assign the object
+        // because the GUI is referencing the values in this.common, etc
+        // and so creating a new object would break the GUI
+        for (const key in v.common) {
+            this.common[key] = v.common[key];
+        }
+
+        if (this.modelOrGeometry === "geometry") {
+            // we do an initial rebuild of geometry to set up the parameters
+            // with this.common.geometry
+            // otherwise parameters will get reset to defaults
+            this.rebuild();
+        }
+
+        for (const key in v.geometryParams) {
+            this.geometryParams[key] = v.geometryParams[key];
+        }
+        for (const key in v.materialParams) {
+            this.materialParams[key] = v.materialParams[key];
+        }
+
         // might need a modelParams
+
+        this.rebuildMaterial();
+        this.rebuild();
+
+
+
     }
 
 
@@ -522,11 +553,15 @@ export class CNode3DObject extends CNode3DGroup {
                 //console.log("Loading model: ", model.file);
 
                 loadGLTFModel(model.file, gltf => {
-                    this.model = gltf.scene;
-                    this.group.add(this.model);
-                    this.propagateLayerMask()
-                    this.recalculate()
-                    this.applyMaterialToModel();
+                    // since it's async, we might now be rendering a geometry
+                    // If so, then don't add the model to the group
+                    if (this.modelOrGeometry === "model") {
+                        this.model = gltf.scene;
+                        this.group.add(this.model);
+                        this.propagateLayerMask()
+                        this.recalculate()
+                        this.applyMaterialToModel();
+                    }
                 });
             }
 
