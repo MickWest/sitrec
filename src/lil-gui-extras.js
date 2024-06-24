@@ -106,6 +106,12 @@ Controller.prototype.moveToFirst = function() {
     }
 };
 
+// delete all the children of a GUI
+GUI.prototype.destroyChildren = function() {
+    Array.from( this.children ).forEach( c => c.destroy() );
+
+
+}
 
 
 
