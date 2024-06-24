@@ -247,13 +247,37 @@ export class CGuiMenuBar {
             }
         })
 
+        // allow for opening menus when hovering over the title
+        // (if we've already got a menu open)
+        // So the intial open is done by clicking, but subsequent opens are done by hovering
+        // like with Windows and Mac menus.
+
+        // Bind the method and store the reference in a property (so we can unbind cleanly)
+        this.boundHandleTitleMouseOver = this.handleTitleMouseOver.bind(this);
+
+        // Add the event listener using the bound method
+        newGUI.$title.addEventListener("mouseover", this.boundHandleTitleMouseOver);
+
         return newGUI;
+    }
+
+    handleTitleMouseOver(event) {
+        // event.target will be the title element we just moused over
+        // find the GUI object that has this title element
+        const newGUI = this.slots.find((gui) => gui.$title === event.target);
+
+        if (this.slots.some((gui) => !gui._closed && gui !== newGUI)) {
+            newGUI.open();
+        }
     }
 
     destroy(all = true) {
         for (let i = this.numSlots-1; i >= 0; i--) {
             const gui = this.slots[i];
             if (gui) {
+
+                gui.$title.removeEventListener("mouseover", this.boundHandleTitleMouseOver);
+
                 gui.destroy(all);
 
                 if (all || !gui.permanent) {
@@ -279,6 +303,8 @@ export class CGuiMenuBar {
 }
 
 
+// text width helper function
+// assumes the default lil-gui font
 function getTextWidth(text) {
     // Create a temporary element
     const element = document.createElement('span');
