@@ -1648,7 +1648,7 @@ const stylesheet = `.lil-gui {
 }
 .lil-gui.transition > .children {
 
-  transition-duration: 200ms;  /* MICK: changed from 300ms to 100ms  
+  transition-duration: 1ms;  /* MICK: changed from 300ms to 100ms  
   - need at least 1 so we get an onTransitionEnd 
   - and seems to need to be over one frame to work
   */
@@ -2248,16 +2248,15 @@ class GUI {
             const initialHeight = this.$children.clientHeight;
             this.$children.style.height = initialHeight + 'px';
 
-            this.domElement.classList.add( 'transition' );
+//            this.domElement.classList.add( 'transition' );
 
-            const onTransitionEnd = e => {
-                if ( e.target !== this.$children ) return;
-                this.$children.style.height = '';
-                this.domElement.classList.remove( 'transition' );
-                this.$children.removeEventListener( 'transitionend', onTransitionEnd );
-            };
-
-            this.$children.addEventListener( 'transitionend', onTransitionEnd );
+            // const onTransitionEnd = e => {
+            //     if ( e.target !== this.$children ) return;
+            //     this.$children.style.height = '';
+            //     this.domElement.classList.remove( 'transition' );
+            //     this.$children.removeEventListener( 'transitionend', onTransitionEnd );
+            // };
+            // this.$children.addEventListener( 'transitionend', onTransitionEnd );
 
             // todo: this is wrong if children's scrollHeight makes for a gui taller than maxHeight
             const targetHeight = !open ? 0 : this.$children.scrollHeight;
@@ -2266,6 +2265,17 @@ class GUI {
 
             requestAnimationFrame( () => {
                 this.$children.style.height = targetHeight + 'px';
+
+                // MICK, this is the logic from the above onTransitionEnd
+                // since the transition now is less tha a frame
+                // things were happening out of order
+                // which meant opening a folder would not resize the parent correctly.
+                requestAnimationFrame( () => {
+                    this.$children.style.height = '';
+//                    this.domElement.classList.remove( 'transition' );
+                });
+
+
             } );
 
         } );
