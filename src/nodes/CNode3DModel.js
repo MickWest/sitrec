@@ -7,16 +7,18 @@ import {disposeScene} from "../threeExt";
 import {NoColorSpace} from "three";
 
 export function loadGLTFModel(file, callback) {
-    const loader = new GLTFLoader()
-    loader.load(file, gltf => {
-        gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-                if (child.material.map) child.material.map.colorSpace = NoColorSpace;
-                if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
-            }
-        });
-        callback(gltf);
 
+    FileManager.loadAsset(file, file).then( (asset) => {
+        const loader = new GLTFLoader()
+        loader.parse(asset.parsed, "", gltf => {
+            gltf.scene.traverse((child) => {
+                if (child.isMesh) {
+                    if (child.material.map) child.material.map.colorSpace = NoColorSpace;
+                    if (child.material.emissiveMap) child.material.emissiveMap.colorSpace = NoColorSpace;
+                }
+            });
+            callback(gltf);
+        })
     })
 }
 

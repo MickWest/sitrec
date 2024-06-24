@@ -33,9 +33,7 @@ import {
 import {guiMenus} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
-import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 import {disposeScene} from "../threeExt";
-import {versionString} from "../utils";
 import {loadGLTFModel} from "./CNode3DModel";
 
 
@@ -47,8 +45,8 @@ const Models = {
     "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
     "DC-10":                { file: 'data/models/DC-10.glb',},
-    "WhiteCube":             { file: 'data/models/white-cube.glb',},
-    "PinkCube":             { file: 'data/models/pink-cube.glb',},
+    "WhiteCube":            { file: 'data/models/white-cube.glb',},
+   // "PinkCube":             { file: 'data/models/pink-cube.glb',},
 
     "Saucer":               { file: 'data/models/saucer01a.glb',},
 
@@ -348,7 +346,7 @@ export class CNode3DObject extends CNode3DGroup {
         }
 
 
-        this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).name("Model or Geometry").onChange((v) => {
+        this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).listen().name("Model or Geometry").onChange((v) => {
             this.rebuild();
             par.renderOne = true
         });
@@ -357,6 +355,7 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.selectModel = v.model ?? "F/A-18E/F";
         this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Model").onChange((v) => {
+            this.modelOrGeometry = "model"
             this.rebuild();
             par.renderOne = true
         });
@@ -430,6 +429,9 @@ export class CNode3DObject extends CNode3DGroup {
                     // make a drop-down for the parameter
                     controller = this.gui.add(toHere, key, geometryParams[key]).name(key).listen()
                         .onChange((v) => {
+                            if (key === "geometry") {
+                                this.modelOrGeometry = "geometry"
+                            }
                             this.rebuild();
                             par.renderOne = true
                         })

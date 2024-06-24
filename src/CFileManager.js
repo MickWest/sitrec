@@ -236,8 +236,13 @@ export class CFileManager extends CManager {
     }
 
     // general file asset loader, detect file type from extension and add to manager
-    // returns a promise, which you can then await
+    // returns a promise, which you can then await or .then
     loadAsset(filename, id) {
+
+        // if it starts with data/ then strip that off
+        if (filename.startsWith("data/")) {
+            filename = filename.substring(5);
+        }
 
         var dynamicLink = false;
         if (filename.startsWith("!")) {
@@ -254,8 +259,14 @@ export class CFileManager extends CManager {
             id = filename; // Fallback to use filename as id if id is undefined
         }
 
-        // if we are going to try to load it,
-        assert(!this.exists(id), "Asset " + id + " already exists");
+        if (this.exists(id)) {
+          //  return Promise.resolve(this.list[id]);
+            return Promise.resolve({filename: filename, parsed: this.list[id].data})
+
+        }
+
+        // // if we are going to try to load it,
+        // assert(!this.exists(id), "Asset " + id + " already exists");
 
         // If it has no forward slash, then it's a local file
         // and will be in the this.directoryHandle folder
