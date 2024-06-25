@@ -1,11 +1,11 @@
 import {guiMenus, NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {par} from "../par";
-import {calculateGST} from "./CNodeDisplayNightSky";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
 import {forceUpdateUIText} from "./CNodeViewUI";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {assert} from "../assert.js";
+import {calculateGST} from "../CelestialMath";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West

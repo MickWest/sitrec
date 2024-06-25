@@ -78,6 +78,7 @@ export const SitModelInspector = {
 
     arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 50, color: "#FFFF00"},
 
+    theSun: {kind: "Sunlight"},
 
     // focus track
     focusTracks: {

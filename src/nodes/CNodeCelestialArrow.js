@@ -1,11 +1,11 @@
 // Dispaly an arrow from an object to a celestial body
 
 import {assert} from "../assert";
-import {DebugArrow, DebugMatrixAxes, removeDebugArrow} from "../threeExt";
+import {DebugArrow, removeDebugArrow} from "../threeExt";
 import {CNode} from "./CNode";
-import {getCelestialDirection} from "./CNodeDisplayNightSky";
 import {GlobalDateTimeNode} from "../Globals";
 import {convertColorInput} from "../ConvertColorInputs";
+import {getCelestialDirection} from "../CelestialMath";
 
 export class CNodeCelestialArrow extends CNode {
     constructor(v) {
@@ -25,13 +25,14 @@ export class CNodeCelestialArrow extends CNode {
          const date = GlobalDateTimeNode.dateNow;
          const dir = getCelestialDirection(this.body, date, ob.position);
 
-         DebugArrow(ob.id+"_toSun", dir, ob.position, this.in.length.v0, this.in.color.v0);
+         this.arrowName = ob.id+"_toSun"
+         DebugArrow(this.arrowName, dir, ob.position, this.in.length.v0, this.in.color.v0);
 
     }
 
     dispose() {
+        removeDebugArrow(this.arrowName)
         super.dispose();
-        removeDebugArrow(this.in.object._object.id+"_toSun")
     }
 
 

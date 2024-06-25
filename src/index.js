@@ -9,7 +9,6 @@ import {
     FileManager,
     GlobalDateTimeNode,
     Globals,
-    gui,
     guiTweaks,
     incrementMainLoopCount,
     infoDiv,
@@ -58,7 +57,6 @@ import {
     setupScene
 } from "./LocalFrame";
 import {CNodeManager} from "./nodes/CNodeManager";
-import {GUI} from "./js/lil-gui.esm";
 import {CSitchFactory} from "./CSitchFactory";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
@@ -79,7 +77,7 @@ import {CNodeMath} from "./nodes/CNodeMath";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
 import {CustomManager} from "./CustomSupport";
-import {CGuiMenuBar, preventDoubleClicks} from "./lil-gui-extras";
+import {CGuiMenuBar} from "./lil-gui-extras";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 
@@ -519,6 +517,8 @@ function legacySetup() {
     setGlobalDateTimeNode(new CNodeDateTime({
         id:"dateTimeStart",
     }))
+
+//    NodeFactory.create("Sunlight", {id: "sunlight"})
 
     setNullNode(new CNode({id: "null"}))
 
