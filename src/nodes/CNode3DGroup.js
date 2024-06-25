@@ -1,10 +1,10 @@
-import {Color, Group} from "three"
-import {CNodeConstant} from "./CNode";
+import {Group} from "three"
 import {propagateLayerMaskObject} from "../threeExt";
 import {GlobalScene} from "../LocalFrame"
 import {CNode3D} from "./CNode3D";
 import {normalizeLayerType} from "../utils";
 import {assert} from "../assert.js";
+import {convertColorInput} from "../ConvertColorInputs";
 
 // a CNode3DGroup encapsulates a THREE.Group one or more 3D objects
 // is a standard node with inputs, so it will respond to changes in the inputs
@@ -24,7 +24,7 @@ export class CNode3DGroup extends CNode3D {
         // a Color object
         // [r,g,b]
         // (this is a bit of a hack, but it's a common case)
-        this.convertColorInput(v,"color")
+        convertColorInput(v,"color",this.id)
 
 
         this._object = new Group()
@@ -53,26 +53,7 @@ export class CNode3DGroup extends CNode3D {
         super.dispose();
     }
 
-    convertColorInput(v, name) {
-        if (v[name] !== undefined && !(v[name] instanceof CNodeConstant)) {
-            var colorObject = v[name];
-            if (! (colorObject instanceof Color)) {
-                if (typeof colorObject === "string" || typeof colorObject === "number" ) {
-                    // hex string or number
-                    colorObject = new Color(colorObject)
-                } else if (Array.isArray(colorObject)) {
-                    colorObject = new Color(colorObject[0], colorObject[1], colorObject[2])
-                } else {
-                    assert(0, "CNode3DGroup color input not understood");
-                    console.log("CNode3DGroup color input not understood")
-                }
-            }
-
-            v[name] = new CNodeConstant({id:this.id+"_"+name+"_colorInput", value: colorObject})
-        }
-
-    }
-
+    
     get group() {
         return this._object;
     }

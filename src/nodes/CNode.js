@@ -584,6 +584,10 @@ class CNode {
             console.log(`Test node (${v}) = ${this.v(v)}`)
         }
     }
+
+
+
+
 }
 
 
@@ -681,6 +685,8 @@ export class CNodeMovablePoint extends CNode {
     }
 
 }
+
+
 
 
 

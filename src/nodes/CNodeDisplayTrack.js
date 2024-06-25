@@ -12,6 +12,7 @@ import {AlwaysDepth, Color, LessDepth} from "three";
 import {CNodeDisplayTargetSphere} from "./CNodeDisplayTargetSphere";
 import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
+import {convertColorInput} from "../ConvertColorInputs";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
@@ -19,10 +20,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         super(v);
 
         // convert any color inputs to Color objects
-        this.convertColorInput(v,"color")
-        this.convertColorInput(v,"badColor")
-        this.convertColorInput(v,"secondColor")
-        this.convertColorInput(v,"dropColor")
+        convertColorInput(v,"color",this.id)
+        convertColorInput(v,"badColor",this.id)
+        convertColorInput(v,"secondColor",this.id)
+        convertColorInput(v,"dropColor",this.id)
 
         // newer method - allow input nodes to be declared outside the inputs object
         // and automatically convert constant inputs to CConstantNodes

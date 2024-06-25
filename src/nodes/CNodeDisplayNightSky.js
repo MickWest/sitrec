@@ -1689,11 +1689,16 @@ void main() {
             // We can use this to find the region where Starlink flares are expected
 
             const eus = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
-            const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
+            const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true).normalize();
             // DebugArrow("Sunarrow", eusDir, eus, 2000000,"#FFFFFF")
 
              if (Globals.sunLight) {
                  Globals.sunLight.position.copy(eusDir)
+
+
+                 let toSun2 = getCelestialDirection("Sun", date);
+                 assert(eusDir.distanceTo(toSun2) < 0.000001, "Sunlight direction mismatch")
+
              }
 
              // sunDir is the direction vector FROM the sun. i.e. the direction sunlight is in.
@@ -2000,3 +2005,36 @@ function eciKToEcefM(eci, date) {
 
     return V3(x*1000,y*1000,z*1000)
 }
+
+// get a vector in ESU coordinates to a celestial body from a EUS position (like a camera or object)
+// - body = (e.g "Sun", "Venus", "Moon", etc)
+// - date = date of observation (Date object)
+export function getCelestialDirection(body, date, pos) {
+    let LLA;
+    // if a position is provided, use that to calculate the LLA of the observer
+    // realistically this won't make any significant difference for the Sun,
+    // the biggest difference will be for the Moon, then nearby planets
+    if (pos !== undefined) {
+        LLA = ECEFToLLAVD_Sphere(pos)
+    } else {
+        // default to the local origin, should be fine for the sun.
+        LLA = V3(Sit.lat, Sit.lon, 0)
+    }
+
+//    let observer = new Astronomy.Observer(Sit.lat, Sit.lon, 0);
+    let observer = new Astronomy.Observer(LLA.x, LLA.y, LLA.z);
+    const celestialInfo = Astronomy.Equator(body, date, observer, false, true);
+    const ra = (celestialInfo.ra) / 24 * 2 * Math.PI;   // Right Ascension NOTE, in hours, so 0..24 -> 0..2π
+    const dec = radians(celestialInfo.dec); // Declination
+  //  const equatorial = raDec2Celestial(ra, dec, wgs84.RADIUS)
+
+    const gst = calculateGST(date);
+    const ecef = celestialToECEF(ra,dec,wgs84.RADIUS, gst)
+    // ecef for the sun will give us a vector from the center to the earth towards the Sun (which, for our purposes
+    // is considered to be infinitely far away
+
+    // roate this into the EUS coordinate system and normalize
+    const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true).normalize();
+    return eusDir;
+}
+
