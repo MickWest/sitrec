@@ -74,9 +74,9 @@ export const SitModelInspector = {
     },
     fixPosition: {kind: "TrackPosition", object: "inspectedObject", sourceTrack: "fixedTargetPosition"},
 
-    axes: {kind:"DebugMatrixAxes", object: "inspectedObject", length: 50},
+    axes: {kind:"DebugMatrixAxes", object: "inspectedObject", length: 25},
 
-    arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 50, color: "#FFFF00"},
+    arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 10, color: "#FFFF00"},
 
     theSun: {kind: "Sunlight"},
 

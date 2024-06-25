@@ -11,9 +11,9 @@ export class CNodeSunlight extends CNode {
         super(v);
 
         this.sunIntensity = 3.0;
-        this.ambientIntensity = 1.0;
+        this.ambientIntensity = 1.2;
 
-        this.darkeningAngle = 5.0;
+        this.darkeningAngle = 8.0;
     }
 
     update(f) {

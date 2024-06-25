@@ -338,9 +338,9 @@ export function DebugMatrixAxes(name, position, matrix, length) {
     const y = new Vector3().setFromMatrixColumn(matrix, 1);
     const z = new Vector3().setFromMatrixColumn(matrix, 2);
     // draw the debug arrows
-    DebugArrow(name+"Xaxis",x, position.clone().sub(x.clone().multiplyScalar(length/2)),length,"#FF8080")
-    DebugArrow(name+"Yaxis",y, position.clone().sub(y.clone().multiplyScalar(length/2)),length,"#80FF80")
-    DebugArrow(name+"Zaxis",z, position.clone().sub(z.clone().multiplyScalar(length/2)),length,"#8080FF")
+    DebugArrow(name+"Xaxis",x, position.clone().sub(x.clone().multiplyScalar(length)),length*2,"#FF8080")
+    DebugArrow(name+"Yaxis",y, position.clone().sub(y.clone().multiplyScalar(length)),length*2,"#80FF80")
+    DebugArrow(name+"Zaxis",z, position.clone().sub(z.clone().multiplyScalar(length)),length*2,"#8080FF")
 
 }
 

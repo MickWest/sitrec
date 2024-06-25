@@ -7,7 +7,7 @@ import {CNode} from "./CNode";
 export class CNodeDebugMatrixAxes extends CNode {
     constructor(v) {
         super(v);
-        v.length ??= 1000;
+        v.length ??= 500;
         this.input("object")
         this.input("length")
 
