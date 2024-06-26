@@ -655,7 +655,7 @@ export function createCustomModalWithCopy(url) {
     const modal = document.createElement('div');
     modal.style.display = 'none';
     modal.style.position = 'fixed';
-    modal.style.zIndex = '1';
+    modal.style.zIndex = '10001';
     modal.style.left = '0';
     modal.style.top = '0';
     modal.style.width = '100%';

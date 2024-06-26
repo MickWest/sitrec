@@ -486,7 +486,8 @@ export class CNodeView3D extends CNodeViewCanvas {
         return {
             ...super.modSerialize(),
             focusTrackName: this.focusTrackName,
-            lockTrackName: this.lockTrackName
+            lockTrackName: this.lockTrackName,
+            effectsEnabled: this.effectsEnabled,
         }
 
     }
@@ -495,6 +496,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         super.modDeserialize(v)
         if (v.focusTrackName !== undefined) this.focusTrackName = v.focusTrackName
         if (v.lockTrackName  !== undefined) this.lockTrackName  = v.lockTrackName
+        if (v.effectsEnabled !== undefined) this.effectsEnabled = v.effectsEnabled
     }
 
     dispose() {

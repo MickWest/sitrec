@@ -166,7 +166,7 @@ export class CGuiMenuBar {
             div.style.height = "1px";
 
        //     div.style.overflowY = "auto"; // Allow scrolling if content overflows
-            div.style.zIndex = 9999;
+            div.style.zIndex = 5000;
 
             this.menuBar.appendChild(div);
             this.divs.push(div);
