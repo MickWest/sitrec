@@ -244,6 +244,8 @@ export class CGuiMenuBar {
         this.slots[this.nextSlot] = newGUI;
         this.nextSlot++;
 
+        newGUI.mode = "DOCKED";
+
         // when opened, close the others
         newGUI.onOpenClose( (changedGUI) => {
 
@@ -295,6 +297,7 @@ export class CGuiMenuBar {
         newDiv.style.left = newGUI.originalLeft + "px";
         newDiv.style.top = newGUI.originalTop + "px";
         newGUI._lockOpenClose = false;
+        newGUI.mode = "DOCKED";
     }
 
     handleTitleMouseDown(event) {
@@ -310,7 +313,9 @@ export class CGuiMenuBar {
         let mouseX = event.clientX;
         let mouseY = event.clientY;
 
+        newGUI.firstDrag = (newGUI.mode === "DOCKED");
 
+        newGUI.mode = "DRAGGING"
 
         // capture all the mouse move events and use then to move the div
         // when the mouse is released, remove the event listener
@@ -332,10 +337,11 @@ export class CGuiMenuBar {
             mouseY = event.clientY;
 
             // if off the top, then click it back into the menu bar
-            if (parseInt(newDiv.style.top) < 0) {
+            if (parseInt(newDiv.style.top) < -5) {
                 this.restoreToBar(newGUI);
                 document.removeEventListener("mousemove", boundHandleMouseMove);
                 newDiv.removeEventListener("mouseup", boundHandleMouseUp);
+                newGUI.close();
             }
 
             // prevent all the default mouse events
@@ -353,8 +359,8 @@ export class CGuiMenuBar {
             document.removeEventListener("mousemove", boundHandleMouseMove);
             newDiv.removeEventListener("mouseup", boundHandleMouseUp);
 
-            // if only moved a little, then snap it back
-            if (parseInt(newDiv.style.top) < 5) {
+            // if in the first drag, and only moved a little, then snap it back
+            if (newGUI.firstDrag && parseInt(newDiv.style.top) < 5) {
                 this.restoreToBar(newGUI);
             }
             event.preventDefault();
