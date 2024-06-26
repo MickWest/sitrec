@@ -255,6 +255,11 @@ export class CGuiMenuBar {
                         gui.close();
                     }
                 });
+
+                // if this gui only has one child, which is a folder (GUI class), then open it
+                if (newGUI.children.length === 1 && newGUI.children[0].constructor.name === "GUI") {
+                    newGUI.children[0].open();
+                }
             }
         })
 

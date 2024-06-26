@@ -1,6 +1,5 @@
 import {ColorManagement, Group, REVISION, Scene, WebGLRenderer,} from "three";
 import "./js/uPlot/uPlot.css"
-import "./extra.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {
@@ -81,6 +80,7 @@ import {CustomManager} from "./CustomSupport";
 import {CGuiMenuBar} from "./lil-gui-extras";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
+import {extraCSS} from "./extra.css.js";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -395,7 +395,9 @@ async function initializeOnce() {
 // to
 //  --name-width: 36%;
 
+
     Globals.menuBar = new CGuiMenuBar();
+
 
     // these area accessed like:
     // guiMenus.main, guiMenus.showhide, guiMenus.tweaks, guiMenus.showhideviews, guiMenus.physics
@@ -456,6 +458,18 @@ async function initializeOnce() {
 
     // setup the common keyboard handler
     initKeyboard();
+
+
+    function injectExtraCSS(cssContent) {
+        const styleElement = document.createElement('style');
+        styleElement.innerHTML = cssContent;
+        document.head.appendChild(styleElement);
+    }
+
+    // after the gui has been created it will have injected its styles into the head
+    // so we can now add our own styles
+    injectExtraCSS(extraCSS);
+
 
 }
 

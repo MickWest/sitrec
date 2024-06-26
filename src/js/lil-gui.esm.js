@@ -1648,12 +1648,6 @@ const stylesheet = `.lil-gui {
 }
 .lil-gui.transition > .children {
 
-  transition-duration: 1ms;  /* MICK: changed from 300ms to 100ms  
-  - need at least 1 so we get an onTransitionEnd 
-  - and seems to need to be over one frame to work
-  */
-
-
   transition-property: height, opacity, transform;
   transition-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
   overflow: hidden;
@@ -1703,12 +1697,11 @@ to ensure the folder is visually distinctive
 .lil-gui .lil-gui .lil-gui > .children {
   border: none;
   margin-left: var(--folder-indent);
- /* MICK: changed to a full 1-px bright border
   border-left: 2px solid var(--widget-color);
-  */
-    border: 1px solid #FFFFFF;
- /* END MICK*/ 
+  border: 1px solid #FFFFFF; // MICK
 }
+
+
 .lil-gui .lil-gui .controller {
   border: none;
 }
