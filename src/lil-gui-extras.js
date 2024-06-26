@@ -240,7 +240,7 @@ export class CGuiMenuBar {
         //this.divs[this.nextSlot].style.pointerEvents = "none";
 
 
-    //    preventDoubleClicks(newGUI);
+        preventDoubleClicks(newGUI);
         this.slots[this.nextSlot] = newGUI;
         this.nextSlot++;
 
