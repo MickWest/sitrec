@@ -69,7 +69,19 @@ const situationDefaults = {
     cameraSphereSize: 2000,
     targetSphereSize: 2000,
 
-    defaultLights: {brightness: 100},
+    //defaultLights: {brightness: 100},
+
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.2,
+        sunIntensity: 1.2,
+        ambientOnly: false,
+
+    },
+
+    theSun: {kind: "Sunlight"},   // default sun
+
+
 
     showSunArrows: false,
     showFlareRegion: false,
@@ -79,6 +91,8 @@ const situationDefaults = {
     ambientLight: 0.5,
 
     paused: false,
+
+
 
 }
 

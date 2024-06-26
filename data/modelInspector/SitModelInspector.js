@@ -44,9 +44,9 @@ export const SitModelInspector = {
     ambientLight: 0.8,
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,1685.104643]},
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [40.257957,-109.891099,1600.697690]},
-    lookCamera:  {fov: 5},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,1700]},
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [40.257957,-109.891099,1600]},
+    lookCamera:  {fov: 4},
     followTrack: {track:"fixedCameraPosition"},
     lookAtTrack: {track: "fixedTargetPosition"},
 
@@ -79,6 +79,7 @@ export const SitModelInspector = {
     arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 10, color: "#FFFF00"},
 
     theSun: {kind: "Sunlight"},
+    theSky: {kind: "DaySky"},
 
     // focus track
     focusTracks: {
@@ -95,5 +96,6 @@ export const SitModelInspector = {
     nightSky: true, // for now we need to set this to true to get the realistic lights to work
 
     paused: true,
+    useGlobe: true,
 
 }

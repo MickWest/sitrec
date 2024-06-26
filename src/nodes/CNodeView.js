@@ -152,19 +152,7 @@ class CNodeView extends CNode {
 
     toSerialCNodeView = ["left","top","width","height","visible","preFullScreenVisible","doubled","preDoubledLeft","preDoubledTop","preDoubledWidth","preDoubledHeight"];
 
-    simpleSerialize(list) {
-        let result = {}
-        for (let key of list) {
-            result[key] = this[key]
-        }
-        return result;
-    }
 
-    simpleDeserialize(v, list) {
-        for (let key of list) {
-            this[key] = v[key]
-        }
-    }
 
     modSerialize() {
         return {

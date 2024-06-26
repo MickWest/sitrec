@@ -29,13 +29,22 @@ export class CNodeSunlight extends CNode {
 
                 let scale = brightnessOfSun(angle,this.darkeningAngle)
 
-                Globals.sunLight.intensity = this.sunIntensity * scale;
+                // note, the intensity is in radians
+                // so we multiply by PI (so 1.0 is full intensity)
+
+                Globals.sunLight.intensity = this.sunIntensity * scale * Math.PI
 
                 // scale the ambient over 10 to -10 degrees
                 let scaleAmbient = brightnessOfSun(angle+this.darkeningAngle,this.darkeningAngle*2)
 
                 let baseAmbient = 0.5; // fraction of ambient light that is always on
                 scaleAmbient = baseAmbient + (1-baseAmbient) * scaleAmbient;
+
+                if (this.ambientOnly) {
+                    scaleAmbient = 1.0;
+                }
+
+                scaleAmbient *= Math.PI;
 
                 Globals.ambientLight.intensity = this.ambientIntensity * scaleAmbient;
 

@@ -3,12 +3,13 @@ import {par} from "../par";
 import {f2m} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
 import {Globals, gui, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
-import {GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
+import {GlobalDaySkyScene, GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {makeMouseRay} from "../mouseMoveView";
 import {
+    ACESFilmicToneMapping,
     Camera,
-    Color,
-    LinearFilter,
+    Color, FloatType,
+    LinearFilter, LinearToneMapping,
     Mesh,
     NearestFilter,
     Plane,
@@ -20,7 +21,7 @@ import {
     Sprite,
     SpriteMaterial,
     SRGBColorSpace,
-    TextureLoader,
+    TextureLoader, UniformsUtils,
     UnsignedByteType,
     Vector3,
     WebGLRenderer,
@@ -34,6 +35,8 @@ import {getCameraNode} from "./CNodeCamera";
 import {CNodeEffect} from "./CNodeEffect";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
+import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
+import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
 
 function linearToSrgb(color) {
     function toSrgbComponent(c) {
@@ -149,6 +152,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             Globals.renderTargetAntiAliased = new WebGLRenderTarget(256, 256, {
                 format: RGBAFormat,
                 type: UnsignedByteType,
+             //   type: FloatType, // Use FloatType for HDR
                 colorSpace: SRGBColorSpace,
                 minFilter: NearestFilter,
                 magFilter: NearestFilter,
@@ -244,6 +248,7 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.renderer.setRenderTarget(currentRenderTarget);
             //}
 
+
             // clear the render target (or canvas) with the background color
             this.renderer.setClearColor(this.background);
             this.renderer.clear(true, true, true);
@@ -272,8 +277,55 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.camera.updateMatrixWorld();
             }
 
+            // render the day sky
+            if (GlobalDaySkyScene !== undefined) {
+
+                var tempPos = this.camera.position.clone();
+                this.camera.position.set(0, 0, 0)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
+                const oldTME = this.renderer.toneMappingExposure;
+                const oldTM = this.renderer.toneMapping;
+
+                // this.renderer.toneMapping = ACESFilmicToneMapping;
+                // this.renderer.toneMappingExposure = NodeMan.get("theSky").effectController.exposure;
+                this.renderer.render(GlobalDaySkyScene, this.camera);
+                // this.renderer.toneMappingExposure = oldTME;
+                // this.renderer.toneMapping = oldTM;
+
+                this.renderer.clearDepth()
+                this.camera.position.copy(tempPos)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
+
+
+                // if tone mapping the sky, insert the tone mapping shader here
+
+                // create the pass similar to in CNodeEffect.js
+                // passing in a shader to the ShaderPass
+                const acesFilmicToneMappingPass = new ShaderPass(ACESFilmicToneMappingShader);
+
+// Set the exposure value
+                acesFilmicToneMappingPass.uniforms['exposure'].value = NodeMan.get("theSky").effectController.exposure;
+
+// test patch in the block of code from the effect loop
+                acesFilmicToneMappingPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                // flip the render targets
+                const useRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
+
+                this.renderer.setRenderTarget(useRenderTarget);
+                this.fullscreenQuad.material = acesFilmicToneMappingPass.material;  // Set the material to the current effect pass
+                this.renderer.render(this.fullscreenQuad, new Camera());
+                this.renderer.clearDepth()
+
+                currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
+            }
+////////////////////////////////////////////////////////////////
+
             // Render the scene to the off-screen canvas or render target
             this.renderer.render(GlobalScene, this.camera);
+
+
 
             if (this.effectsEnabled) {
 
@@ -319,14 +371,6 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.renderer.setRenderTarget(null);
                 this.renderer.render(this.fullscreenQuad, new Camera());
             }
-
-            // Globals.renderTargetAntiAliased.dispose();
-            // Globals.renderTargetA.dispose();
-            // Globals.renderTargetB.dispose();
-            // Globals.renderTargetAntiAliased = null;
-            // Globals.renderTargetA = null;
-            // Globals.renderTargetB = null;
-
 
 
         }

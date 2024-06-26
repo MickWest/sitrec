@@ -1,5 +1,5 @@
 import { Vector3} from "three";
-import {gui, NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager} from "../Globals";
+import {NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager, guiMenus} from "../Globals";
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
@@ -116,7 +116,7 @@ export const SitNightSky = {
                 // }),
 
             }
-        }, gui)
+        }, guiMenus.view)
 
         // cameraSwitch.addOptionToGUIMenu("YYY Position", new CNodeControllerManualPosition ({
         //     id: "manual3Controller"
@@ -148,9 +148,9 @@ export const SitNightSky = {
         });
 
         if (Globals.userID > 0)
-            this.permaButton = gui.add(this, "makeNightSkyURL").name("Permalink")
+            this.permaButton = guiMenus.view.add(this, "makeNightSkyURL").name("Permalink")
         else {
-            this.permaButton = gui.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
+            this.permaButton = guiMenus.view.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
         }
     },
 

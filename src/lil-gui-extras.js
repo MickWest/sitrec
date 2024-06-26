@@ -217,6 +217,9 @@ export class CGuiMenuBar {
 
         this.divs[this.nextSlot].style.left = this.totalWidth + "px";
 
+        newGUI.originalLeft = this.totalWidth;
+        newGUI.originalTop = 0;
+
         // const divDebugColor = ["red", "green", "blue", "yellow", "purple", "orange", "pink", "cyan", "magenta", "lime", "teal", "indigo", "violet", "brown", "grey", "black", "white"];
         // // give the div a colored border
         // this.divs[this.nextSlot].style.border = "1px solid "+ divDebugColor[this.nextSlot % divDebugColor.length];
@@ -237,7 +240,7 @@ export class CGuiMenuBar {
         //this.divs[this.nextSlot].style.pointerEvents = "none";
 
 
-        preventDoubleClicks(newGUI);
+    //    preventDoubleClicks(newGUI);
         this.slots[this.nextSlot] = newGUI;
         this.nextSlot++;
 
@@ -246,7 +249,7 @@ export class CGuiMenuBar {
 
             if (!changedGUI._closed) {
                 this.slots.forEach((gui, index) => {
-                    if (gui !== newGUI) {
+                    if (gui !== newGUI && !gui._closed) {
                         gui.close();
                     }
                 });
@@ -260,21 +263,118 @@ export class CGuiMenuBar {
 
         // Bind the method and store the reference in a property (so we can unbind cleanly)
         this.boundHandleTitleMouseOver = this.handleTitleMouseOver.bind(this);
+        this.boundHandleTitleMouseDown = this.handleTitleMouseDown.bind(this);
+        this.boundHandleTitleDoubleClick = this.handleTitleDoubleClick.bind(this);
 
         // Add the event listener using the bound method
         newGUI.$title.addEventListener("mouseover", this.boundHandleTitleMouseOver);
 
+        newGUI.$title.addEventListener("mousedown", this.boundHandleTitleMouseDown);
+        newGUI.$title.addEventListener("dblclick", this.boundHandleTitleDoubleClick);
+
+
         return newGUI;
     }
 
-    handleTitleMouseOver(event) {
+    handleTitleDoubleClick(event) {
+        // restore the original position
+        // event.target will be the title element we just moused over
+        // find the GUI object that has this title element
+        const newGUI = this.slots.find((gui) => gui.$title === event.target);
+        this.restoreToBar(newGUI);
+        newGUI.close();
+        event.stopPropagation();
+
+    }
+
+    restoreToBar(newGUI) {
+        // and the div
+        const newDiv = this.divs.find((div) => div === newGUI.domElement.parentElement);
+        // restore position
+
+        newDiv.style.left = newGUI.originalLeft + "px";
+        newDiv.style.top = newGUI.originalTop + "px";
+        newGUI._lockOpenClose = false;
+    }
+
+    handleTitleMouseDown(event) {
         // event.target will be the title element we just moused over
         // find the GUI object that has this title element
         const newGUI = this.slots.find((gui) => gui.$title === event.target);
 
-        if (this.slots.some((gui) => !gui._closed && gui !== newGUI)) {
-            newGUI.open();
+        // and find the div
+        const newDiv = this.divs.find((div) => div === newGUI.domElement.parentElement);
+
+
+        // record current mouse position
+        let mouseX = event.clientX;
+        let mouseY = event.clientY;
+
+
+
+        // capture all the mouse move events and use then to move the div
+        // when the mouse is released, remove the event listener
+        const boundHandleMouseMove = (event) => {
+            // make sure it's open
+            if (newGUI._closed) {
+                // in case we got locked into a closed state
+                // (dragged menus are always open)
+                newGUI._lockOpenClose = false;
+                newGUI.open();
+                // lock it open
+            }
+            newGUI._lockOpenClose = true;
+
+
+            newDiv.style.left = (parseInt(newDiv.style.left) + event.clientX - mouseX) + "px";
+            newDiv.style.top = (parseInt(newDiv.style.top) + event.clientY - mouseY) + "px";
+            mouseX = event.clientX;
+            mouseY = event.clientY;
+
+            // if off the top, then click it back into the menu bar
+            if (parseInt(newDiv.style.top) < 0) {
+                this.restoreToBar(newGUI);
+                document.removeEventListener("mousemove", boundHandleMouseMove);
+                newDiv.removeEventListener("mouseup", boundHandleMouseUp);
+            }
+
+            // prevent all the default mouse events
+            event.preventDefault();
         }
+
+        //newDiv.addEventListener("mousemove", boundHandleMouseMove);
+        // capture ALL mouse events, not just those on the div
+        document.addEventListener("mousemove", boundHandleMouseMove);
+
+
+
+        const boundHandleMouseUp = (event) => {
+            console.log("Mouse up in boundHandleMouseUp")
+            document.removeEventListener("mousemove", boundHandleMouseMove);
+            newDiv.removeEventListener("mouseup", boundHandleMouseUp);
+
+            // if only moved a little, then snap it back
+            if (parseInt(newDiv.style.top) < 5) {
+                this.restoreToBar(newGUI);
+            }
+            event.preventDefault();
+        }
+        newDiv.addEventListener("mouseup", boundHandleMouseUp);
+
+        event.preventDefault();
+    }
+
+
+
+    handleTitleMouseOver(event) {
+        // now we have some menus locked open, mosuign over does not make sense
+        // // event.target will be the title element we just moused over
+        // // find the GUI object that has this title element
+        // const newGUI = this.slots.find((gui) => gui.$title === event.target);
+        //
+        // if (this.slots.some((gui) => !gui._closed && gui !== newGUI)) {
+        //     newGUI.open();
+        // }
     }
 
     destroy(all = true) {

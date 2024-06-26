@@ -93,16 +93,56 @@ class CNode {
 
     }  // any garbage collection
 
+
+    // maybe this should be in the base class
+    addGUIValue(variable, start, end, step, name) {
+        assert(this.gui, "No GUI in addGUIValue for node ${this.id}");
+        this.addSimpleSerial(variable)
+        this.gui.add(this, variable, start, end, step).name(name).listen().onChange(()=>this.recalculate());
+    }
+
+    addGUIBoolean(variable, name) {
+        assert(this.gui, "No GUI in addGUIValue for node ${this.id}");
+        this.addSimpleSerial(variable)
+        this.gui.add(this, variable).name(name).listen().onChange(()=>this.recalculate());
+    }
+
+
     modSerialize() {
         // essentially an abstract function, derived classes override to implement serialization
         // but we need to return an object to expand, so we just return an empty object
-        return {rootTestRemove:true}
+        return {rootTestRemove:true, // this is there to ensure this function is reached
+            ...this.simpleSerialize(this.simpleSerials)
+        }
     }
 
     modDeserialize(v) {
-        // abstract function, derived classes override to implement deserialization
+        this.simpleDeserialize(v, this.simpleSerials)
     }
 
+    addSimpleSerial(serial) {
+        if (this.simpleSerials === undefined) {
+            this.simpleSerials = [];
+        }
+        this.simpleSerials.push(serial);
+    }
+
+    simpleSerialize(list) {
+        let result = {}
+        if (list === undefined) return result;
+        for (let key of list) {
+            assert(result[key] === undefined, "Duplicate key in simpleSerialize");
+            result[key] = this[key]
+        }
+        return result;
+    }
+
+    simpleDeserialize(v, list) {
+        if (list === undefined) return;
+        for (let key of list) {
+            this[key] = v[key]
+        }
+    }
 
     // the default serialize function
     // this is overridden by derived classes
@@ -115,6 +155,7 @@ class CNode {
         const kind = classType.slice(5);
         return {
             kind: kind,
+            ...this.simpleSerialize(this, this.simpleSerials)
         }
     }
 

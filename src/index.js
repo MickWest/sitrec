@@ -49,9 +49,10 @@ import {
     updateSize
 } from "./JetStuff";
 import {
+    GlobalDaySkyScene,
     GlobalNightSkyScene,
     GlobalScene,
-    LocalFrame,
+    LocalFrame, setupDaySkyScene,
     setupLocalFrame,
     setupNightSkyScene,
     setupScene
@@ -396,16 +397,20 @@ async function initializeOnce() {
 
     Globals.menuBar = new CGuiMenuBar();
 
+    // these area accessed like:
+    // guiMenus.main, guiMenus.showhide, guiMenus.tweaks, guiMenus.showhideviews, guiMenus.physics
     var _gui = addGUIMenu("main", process.env.BUILD_VERSION_STRING);
     addGUIMenu("file", "File");
     addGUIMenu("view", "View");
     addGUIMenu("time", "Time");
     addGUIMenu("objects", "Objects");
     addGUIMenu("terrain", "Terrain");
+    // these four have legacy globals
     var _guiPhysics = addGUIMenu("physics", "Physics");
     var _guiShowHide = addGUIMenu("showhide", "Show/Hide");
     var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
     var _guiTweaks = addGUIMenu("tweaks", "Effects" );
+    addGUIMenu("lighting", "Lighting")
 
     // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)
@@ -1006,6 +1011,10 @@ function disposeEverything() {
     if (GlobalNightSkyScene !== undefined) {
         disposeScene(GlobalNightSkyScene)
         setupNightSkyScene(undefined)
+    }
+    if (GlobalDaySkyScene !== undefined) {
+        disposeScene(GlobalDaySkyScene)
+        setupDaySkyScene(undefined)
     }
 
     // dispose of the renderers attached to the views

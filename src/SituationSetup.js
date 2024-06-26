@@ -725,7 +725,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: 90,
                     step: 0.001,
                     desc: "Camera Lat"
-                }, data.gui ?? gui),
+                }, data.gui ?? guiMenus.view),
 
                 fromLon: new CNodeGUIValue({
                     id: "cameraLon",
@@ -734,7 +734,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: 180,
                     step: 0.001,
                     desc: "Camera Lon"
-                }, data.gui ?? gui),
+                }, data.gui ?? guiMenus.view),
 
                 fromAltFeet: new CNodeGUIValue({
                     id: "cameraAlt",
@@ -743,7 +743,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     end: data.fromAltFeetMax ?? 50000,
                     step: 0.1,
                     desc: "Camera Alt (ft)"
-                }, data.gui ?? gui),
+                }, data.gui ?? guiMenus.view),
                 radiusMiles: "radiusMiles",
             })
             break;

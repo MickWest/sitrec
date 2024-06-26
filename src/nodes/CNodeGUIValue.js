@@ -30,7 +30,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         this.start = v.start ?? 0
         this.end = v.end ?? v.value * 2
-        this.step = v.step ?? 0
+        this.step = v.step ?? Math.abs((this.end-this.start)/100);
 
 
         this.onChange = v.onChange;

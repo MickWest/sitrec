@@ -1,7 +1,7 @@
 import {radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
-import {gui, Sit} from "../Globals";
+import {gui, guiMenus, Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
 import {V3} from "../threeUtils";
@@ -17,7 +17,7 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.roll = v.roll
 
         if (v.showGUI) {
-            const guiPTZ = v.gui ?? gui;
+            const guiPTZ = v.gui ?? guiMenus.view;
 
             guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)

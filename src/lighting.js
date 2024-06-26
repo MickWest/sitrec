@@ -3,10 +3,11 @@ import {AmbientLight, DirectionalLight, HemisphereLight} from "three";
 import {Globals, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {GlobalScene} from "./LocalFrame";
+import {assert} from "./assert";
 
 
 export function addDefaultLights(brightness = 100) {
-
+    assert(0,"Deprecated DefaultLights")
 
     if (Sit.useGlobe || Sit.useRealisticLights) {
 

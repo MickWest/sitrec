@@ -1915,7 +1915,10 @@ class GUI {
         this.$title.setAttribute( 'aria-expanded', true );
         this.$title.setAttribute( 'tabindex', 0 );
 
-        this.$title.addEventListener( 'click', () => this.openAnimated( this._closed ) );
+        // MICK: changed to mousedown
+        this.$title.addEventListener( 'mousedown', () => {
+            this.openAnimated( this._closed )
+        } );
         this.$title.addEventListener( 'keydown', e => {
             if ( e.code === 'Enter' || e.code === 'Space' ) {
                 e.preventDefault();
@@ -2183,6 +2186,7 @@ class GUI {
      * gui.open( gui._closed ); // toggle
      */
     open( open = true ) {
+        if (this._lockOpenClose) return; // MICK
 
         this._setClosed( !open );
 
@@ -2235,7 +2239,7 @@ class GUI {
     }
 
     openAnimated( open = true ) {
-
+        if (this._lockOpenClose) return;  // MICK
         // set state immediately
         this._setClosed( !open );
 
