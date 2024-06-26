@@ -36,7 +36,8 @@ import {CNodeEffect} from "./CNodeEffect";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
-import {ShaderPass} from "three/examples/jsm/postprocessing/ShaderPass";
+import {ShaderPass} from "three/addons/postprocessing/ShaderPass";
+
 
 function linearToSrgb(color) {
     function toSrgbComponent(c) {
