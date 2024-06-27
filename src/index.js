@@ -401,7 +401,7 @@ async function initializeOnce() {
 
     // these area accessed like:
     // guiMenus.main, guiMenus.showhide, guiMenus.tweaks, guiMenus.showhideviews, guiMenus.physics
-    var _gui = addGUIMenu("main", process.env.BUILD_VERSION_STRING);
+    var _gui = addGUIMenu("main", "Sitrec");
     addGUIMenu("file", "File");
     addGUIMenu("view", "View");
     addGUIMenu("time", "Time");
@@ -419,6 +419,7 @@ async function initializeOnce() {
     setUnits(new CUnits("Nautical"));
     setFileManager(new CFileManager())
 
+    Globals.menuBar.infoGUI.title(process.env.BUILD_VERSION_STRING);
 
     // Add the menu to select a situation
 // The onChange function will change the url to the new situation

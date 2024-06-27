@@ -155,7 +155,7 @@ export class CGuiMenuBar {
         this.divWidth = 240; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
         this.numSlots = 10; // number of emptyslots in the menu bar
-        this.slots = []; // array og GUI objects
+        this.slots = []; // array of GUI objects
 
         // create a div for the menu bar
         this.menuBar = document.createElement("div");
@@ -171,6 +171,20 @@ export class CGuiMenuBar {
 
         // add the menuBar to the document body
         document.body.appendChild(this.menuBar);
+
+        // add a black bar div, with a grey 1 pixel border
+        const bar = document.createElement("div");
+        bar.style.position = "absolute";
+        bar.style.top = "0px";
+        bar.style.left = "0px";
+        bar.style.height = "24px";
+        bar.style.width = "100%";
+        bar.style.backgroundColor = "black";
+        bar.style.borderBottom = "1px solid grey";
+        bar.style.zIndex = 400; // behind the other menus
+
+        document.body.appendChild(bar);
+
 
         // capture clicks from anywhere on screen to detect if we want to close the GUIs
         document.addEventListener("click", (event) => {
@@ -207,6 +221,12 @@ export class CGuiMenuBar {
         }
 
         this.nextSlot = 0; // next slot to be filled
+
+        // add an info GUI in the top right
+        this.infoGUI = new GUI().title("Sitrec").close()
+
+
+
     }
 
     updateListeners() {
