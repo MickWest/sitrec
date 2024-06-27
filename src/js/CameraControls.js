@@ -18,6 +18,7 @@ import {getLocalUpVector} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
+import {onDocumentMouseMove} from "../mouseMoveView";
 
 const STATE = {
 	NONE: - 1,
@@ -96,6 +97,16 @@ class CameraMapControls {
 	}
 
 	handleMouseWheel( event ) {
+
+		// bit of patch, as we need to call the document mouse move
+		// if the window does not have focus, so we can update the cursor position
+		// even if the window does not have focus
+		// This is important for the 3D view, where the cursor position is used to
+		// calculate the ray from the camera to the mouse position
+		// which is used to determine what the mouse is pointing at, for zooming
+		if (window.document.hasFocus() === false) {
+			onDocumentMouseMove(event);
+		}
 
 		if ( this.enabled === false || this.enableZoom === false || this.state !== STATE.NONE ) return;
 
