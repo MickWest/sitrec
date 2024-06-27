@@ -148,7 +148,7 @@ export class CSituation {
         // then other flags can cause files to be added, like the night sky
         var assets = this.files ?? {};
         var assets2 = this.files2 ?? {}
-        if (this.nightSky) {
+        if (this.nightSky || this.theNightSky) {
             assets = {...assets,...assets2,...NightSkyFiles}
         }
         if(!isConsole)

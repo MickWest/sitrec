@@ -662,11 +662,6 @@ async function setupFunctions() {
         showHider(par.globe,"[G]lobe", true, "g")
     }
 
-    // if (Sit.nightSky) {
-    //     console.log("addNightSky()")
-    //     addNightSky()
-    // }
-
 // Finally move the camera and reset the start time, if defined in the URL parameters
     if (urlParams.get("data")) {
         urlData = urlParams.get("data")

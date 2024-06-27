@@ -333,6 +333,12 @@ class CTLEData {
 
 }
 
+// NightSkyFiles - loaded when Sit.nightSky is true, defined in ExtraFiles.js
+// export const NightSkyFiles = {
+//     IAUCSN: "nightsky/IAU-CSN.txt",
+//     BSC5: "nightsky/BSC5.bin",
+// }
+
 
 export class CNodeDisplayNightSky extends CNode3DGroup {
 
@@ -524,7 +530,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.equatorialSphereGroup = new Group();
         this.celestialSphere.add(this.equatorialSphereGroup);
         this.addCelestialSphereLines(this.equatorialSphereGroup, 10);
-        this.showEquatorialGrid = true;
+        this.showEquatorialGrid = (v.showEquatorialGrid !== undefined) ? v.showEquatorialGrid : true;
+
 
         guiShowHide.add(this,"showEquatorialGrid" ).listen().onChange(()=>{
             par.renderOne=true;
@@ -538,7 +545,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         propagateLayerMaskObject(this.celestialSphere)
 
 
-        this.showEquatorialGridLook = true;
+        this.showEquatorialGridLook = (v.showEquatorialGridLook !== undefined) ? v.showEquatorialGridLook : true;
         guiShowHide.add(this,"showEquatorialGridLook" ).listen().onChange(()=>{
             par.renderOne=true;
             this.updateVis()

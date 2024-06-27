@@ -443,7 +443,8 @@ export const SitFlir1 = {
     flir1LegacyCode: {},
 
     useRealisticLights: true,
-    nightSky: true, // for now we need to set this to true to get the realistic lights to work
+    nightSky: {showEquatorialGridLook:false},
+
 
     // TODO - make the night sky only appear in daytime...
     // TODO - don't light objects if they are in earth's shadow - but account for penubra
