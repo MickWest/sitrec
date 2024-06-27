@@ -55,8 +55,8 @@ export const SitModelInspector = {
 
     inspectedObject: {kind: "3DObject",
 
-        model:"F/A-18E/F",
-        //model:"WhiteCube",
+        //model:"F/A-18E/F",
+        geometry:"tictac",
 
         size: 1,
         radius: 5,
