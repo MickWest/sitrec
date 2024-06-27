@@ -557,6 +557,11 @@ export class CNode3DObject extends CNode3DGroup {
                     // If so, then don't add the model to the group
                     if (this.modelOrGeometry === "model") {
                         this.model = gltf.scene;
+
+                        if (Globals.shadowsEnabled) {
+                            this.model.castShadow = true;
+                            this.model.receiveShadow = true;
+                        }
                         this.group.add(this.model);
                         this.propagateLayerMask()
                         this.recalculate()
@@ -649,6 +654,10 @@ export class CNode3DObject extends CNode3DGroup {
         this.object.material.opacity = common.opacity ?? 1;
         this.object.material.transparent = common.transparent ?? (v.opacity < 1.0);
 
+        if (Globals.shadowsEnabled) {
+            this.object.castShadow = true;
+            this.object.receiveShadow = true;
+        }
         this.group.add(this.object);
         this.propagateLayerMask()
         this.recalculate()

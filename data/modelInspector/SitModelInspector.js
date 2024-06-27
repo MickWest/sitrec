@@ -44,9 +44,10 @@ export const SitModelInspector = {
     ambientLight: 0.8,
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,1700]},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,700]},
     fixedTargetPosition: {kind: "PositionLLA", LLA: [40.257957,-109.891099,1600]},
-    lookCamera:  {fov: 4},
+  //  fixedTargetPosition: {kind: "PositionXYZ", XYZ: [0,1600,0]},
+    lookCamera:  {fov: 30},
     followTrack: {track:"fixedCameraPosition"},
     lookAtTrack: {track: "fixedTargetPosition"},
 
@@ -79,7 +80,7 @@ export const SitModelInspector = {
     arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 10, color: "#FFFF00"},
 
     theSun: {kind: "Sunlight"},
-    theSky: {kind: "DaySky"},
+   // theSky: {kind: "DaySky"},
 
     // focus track
     focusTracks: {

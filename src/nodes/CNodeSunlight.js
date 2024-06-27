@@ -6,6 +6,7 @@ import {V3} from "../threeUtils";
 import {getCelestialDirection} from "../CelestialMath";
 import {degrees} from "../utils";
 
+// will exist as a singleton node: "theSun"
 export class CNodeSunlight extends CNode {
     constructor(v) {
         super(v);
@@ -22,7 +23,8 @@ export class CNodeSunlight extends CNode {
             try {
                 const date = GlobalDateTimeNode.dateNow;
                 const dir = getCelestialDirection("Sun", date, V3(0, 0, 0));
-                Globals.sunLight.position.copy(dir)
+                const sunPos = dir.clone().multiplyScalar(60000)
+                Globals.sunLight.position.copy(sunPos)
 
                 // find the angle above or below the horizon
                 const angle = degrees(Math.asin(dir.y));
@@ -47,6 +49,10 @@ export class CNodeSunlight extends CNode {
                 scaleAmbient *= Math.PI;
 
                 Globals.ambientLight.intensity = this.ambientIntensity * scaleAmbient;
+
+                // calculate the total light in the sky
+                // just a ballpark for how visible the stars should be.
+                Globals.sunTotal = Globals.sunLight.intensity + Globals.ambientLight.intensity;
 
 
             } catch (e) {

@@ -4,6 +4,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNode} from "./CNode";
 import {assert} from "../assert";
 
+// by default this will live in one node "lighting"
 export class CNodeLighting extends CNode {
     constructor(v) {
         super(v);
@@ -24,7 +25,15 @@ export class CNodeLighting extends CNode {
 
         // then sunlight is direct light
         Globals.sunLight = new DirectionalLight(0xFFFFFF, 3);
-        Globals.sunLight.position.set(5,0,0);  // sun is along the X axis
+        Globals.sunLight.position.set(0,7000,0);  // sun is along the y axis
+        if (Globals.shadowsEnabled) {
+
+            Globals.sunLight.castShadow = true;
+            Globals.sunLight.shadow.mapSize.width = 1024;
+            Globals.sunLight.shadow.mapSize.height = 1024;
+            Globals.sunLight.shadow.camera.near = 0.5;
+            Globals.sunLight.shadow.camera.far = 100000;
+        }
         GlobalScene.add(Globals.sunLight);
 
         this.recalculate();

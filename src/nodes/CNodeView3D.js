@@ -133,7 +133,11 @@ export class CNodeView3D extends CNodeViewCanvas {
         // Create the renderer
 
         try {
-            this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true});
+            this.renderer = new WebGLRenderer({
+                antialias: true,
+                canvas: this.canvas,
+                logarithmicDepthBuffer: true,
+            });
         } catch (e) {
             console.error("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer: "+e)
             // show an alert
@@ -146,7 +150,9 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
         this.renderer.setSize(this.widthDiv, this.heightDiv, false);
         this.renderer.colorSpace = SRGBColorSpace;
-
+        if (Globals.shadowsEnabled) {
+            this.renderer.shadowMap.enabled = true;
+        }
         if (!Globals.renderTargetAntiAliased) {
             // intial rendering is done to the renderTargetAntiAliased
             // which is anti-aliased with MSAA
@@ -248,6 +254,16 @@ export class CNodeView3D extends CNodeViewCanvas {
                 currentRenderTarget = Globals.renderTargetAntiAliased;
                 this.renderer.setRenderTarget(currentRenderTarget);
             //}
+
+/*
+ maybe:
+ - Render day sky to renderTargetA
+ - Render night sky to renderTargetA (should have a black background)
+ - Combine them both to renderTargetAntiAliased instead of clearing it
+ - they will only need combining at dusk/dawn, using total light in the sky
+ - then render the scene to renderTargetAntiAliased, and apply effects with A/B as before
+
+ */
 
 
             // clear the render target (or canvas) with the background color
