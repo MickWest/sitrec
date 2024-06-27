@@ -2232,9 +2232,9 @@ class GUI {
     }
 
     openAnimated( open = true ) {
-        if (this._lockOpenClose) return;  // MICK
+
         // set state immediately
-        this._setClosed( !open );
+        this._closed = !open;
 
         this.$title.setAttribute( 'aria-expanded', !this._closed );
 
@@ -2245,15 +2245,16 @@ class GUI {
             const initialHeight = this.$children.clientHeight;
             this.$children.style.height = initialHeight + 'px';
 
-//            this.domElement.classList.add( 'transition' );
+            this.domElement.classList.add( 'transition' );
 
-            // const onTransitionEnd = e => {
-            //     if ( e.target !== this.$children ) return;
-            //     this.$children.style.height = '';
-            //     this.domElement.classList.remove( 'transition' );
-            //     this.$children.removeEventListener( 'transitionend', onTransitionEnd );
-            // };
-            // this.$children.addEventListener( 'transitionend', onTransitionEnd );
+            const onTransitionEnd = e => {
+                if ( e.target !== this.$children ) return;
+                this.$children.style.height = '';
+                this.domElement.classList.remove( 'transition' );
+                this.$children.removeEventListener( 'transitionend', onTransitionEnd );
+            };
+
+            this.$children.addEventListener( 'transitionend', onTransitionEnd );
 
             // todo: this is wrong if children's scrollHeight makes for a gui taller than maxHeight
             const targetHeight = !open ? 0 : this.$children.scrollHeight;
@@ -2262,17 +2263,6 @@ class GUI {
 
             requestAnimationFrame( () => {
                 this.$children.style.height = targetHeight + 'px';
-
-                // MICK, this is the logic from the above onTransitionEnd
-                // since the transition now is less tha a frame
-                // things were happening out of order
-                // which meant opening a folder would not resize the parent correctly.
-                requestAnimationFrame( () => {
-                    this.$children.style.height = '';
-//                    this.domElement.classList.remove( 'transition' );
-                });
-
-
             } );
 
         } );

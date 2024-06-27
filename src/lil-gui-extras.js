@@ -113,10 +113,44 @@ GUI.prototype.destroyChildren = function() {
 
 }
 
-
+var injectedLILGUICode = false;
 
 export class CGuiMenuBar {
     constructor() {
+
+        if (!injectedLILGUICode) {
+
+            // For the menu bar, we need to modify the lil-gui code
+            // removing the transition logic.
+            GUI.prototype.openAnimated = function(open = true) {
+                if (this._lockOpenClose) return;
+
+                // Set state immediately
+                this._setClosed(!open);
+
+                // Set the aria-expanded attribute for accessibility
+                this.$title.setAttribute('aria-expanded', !this._closed);
+
+                // Calculate the target height
+                const targetHeight = !open ? '0px' : `${this.$children.scrollHeight}px`;
+
+                // Set initial height
+                this.$children.style.height = targetHeight;
+
+                // Ensure the closed class is correctly toggled
+                this.domElement.classList.toggle('closed', !open);
+
+                // Remove height after setting it to allow for dynamic resizing
+                // but not until next event loop, to allow the height to be set first
+                setTimeout(() => {
+                    this.$children.style.height = '';
+                }, 0);
+
+                return this;
+            }
+            injectedLILGUICode = true;
+        }
+
         this.divs = [];
         this.divWidth = 240; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
