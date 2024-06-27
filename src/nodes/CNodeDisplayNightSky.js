@@ -528,13 +528,27 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         guiShowHide.add(this,"showEquatorialGrid" ).listen().onChange(()=>{
             par.renderOne=true;
-            this.equatorialSphereGroup.visible = this.showEquatorialGrid;
+            this.updateVis()
         }).name("Equatorial Grid")
-        
+        this.addSimpleSerial("showEquatorialGrid")
+
         // For the stars to show up in the lookView
         // we need to enable the layer for everything in the celestial sphere.
         this.celestialSphere.layers.enable(LAYER.LOOK);  // probably not needed
         propagateLayerMaskObject(this.celestialSphere)
+
+
+        this.showEquatorialGridLook = true;
+        guiShowHide.add(this,"showEquatorialGridLook" ).listen().onChange(()=>{
+            par.renderOne=true;
+            this.updateVis()
+
+        }).name("Equatorial Grid in Look View")
+        this.addSimpleSerial("showEquatorialGridLook")
+
+
+        this.updateVis()
+
 
         this.recalculate()
 
@@ -543,6 +557,23 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         console.log("Done with CNodeDisplayNightSky constructor")
+    }
+
+    updateVis() {
+
+        this.equatorialSphereGroup.visible = this.showEquatorialGrid;
+
+        // equatorial lines might not want to be in the look view
+        this.equatorialSphereGroup.layers.mask = this.showEquatorialGridLook ? LAYER.MASK_MAINRENDER : LAYER.MASK_HELPERS;
+
+        propagateLayerMaskObject(this.equatorialSphereGroup)
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v);
+        // a guid value's .listn() only updates the gui, so we need to do it manually
+        // perhaps better to flag the gui system to update it?
+        this.updateVis();
     }
 
     update(frame) {
