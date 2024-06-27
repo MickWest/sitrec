@@ -18,6 +18,13 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
         this.addInputs(v.displayInputs)
         this.editor = new MetaBezierCurveEditor(v.editorConfig)
         this.recalculate()
+
+        // We need to call recalculate when its canvas has been resized
+        // to force a redraw
+        // since graphs do not redraw unless changed
+        // (i.e. the "dirty" flag is set)
+        this.recalculateOnCanvasChange = true;
+
     }
 
     renderCanvas(frame) {
@@ -51,6 +58,7 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
             }
         }
 
+        // flag a single frame redraw
         this.editor.dirty = true;
 //        console.log("+++ Set Editor DIRTY in CNodeCurveEditorView.recalculate")
 

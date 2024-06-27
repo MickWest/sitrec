@@ -24,7 +24,7 @@ export class CNodeImageView extends CNodeViewUI {
         super(v);
 
         this.stretchToFit = v.stretchToFit ?? false
-        this.recalculateOnChange = true;
+        this.recalculateOnCanvasChange = true;
 
         if (v.mirror) {
             this.image = NodeMan.get(v.mirror).image
