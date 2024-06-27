@@ -11,31 +11,32 @@ import {
     CapsuleGeometry,
     CircleGeometry,
     Color,
-    ConeGeometry,
+    ConeGeometry, CurvePath,
     CylinderGeometry,
     DodecahedronGeometry,
     EdgesGeometry,
-    IcosahedronGeometry, LatheGeometry,
+    IcosahedronGeometry, LatheGeometry, LineCurve3,
     LineSegments,
     Mesh,
     MeshBasicMaterial,
     MeshLambertMaterial,
     MeshPhongMaterial,
     MeshPhysicalMaterial, NoColorSpace,
-    OctahedronGeometry,
+    OctahedronGeometry, QuadraticBezierCurve3,
     RingGeometry,
     SphereGeometry, SRGBColorSpace,
     TetrahedronGeometry,
     TorusGeometry,
-    TorusKnotGeometry, Vector2,
+    TorusKnotGeometry, TubeGeometry, Vector2, Vector3,
     WireframeGeometry
 } from "three";
-import {guiMenus} from "../Globals";
+import {Globals, guiMenus} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
 import {disposeScene} from "../threeExt";
 import {loadGLTFModel} from "./CNode3DModel";
-
+import {V3} from "../threeUtils";
+import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
 const Models = {
 
@@ -83,13 +84,88 @@ class SuperEggGeometry extends LatheGeometry {
     }
 }
 
-// defaults for a TicTac shape made from a SuperEgg
-class TicTacGeometry extends SuperEggGeometry {
-constructor(radius = 1, length = 1, sharpness = 3.5, widthSegments = 20, heightSegments = 20) {
-        super(radius, length, sharpness, widthSegments, heightSegments);
+// TicTac mode from a capsule and two legs
+class TicTacGeometry {
+    constructor(radius = 1, length = 1, capSegments = 20, radialSegments = 20, legRadius = 0.1, legLength1 = 0.1, legLength2 = 0.1, legCurveRadius = 0.1, legOffset = 0.1, legSpacing = 0.1) {
+
+        const capsule = new CapsuleGeometry(radius, length, capSegments, radialSegments);
+
+        // get the offset of the legs, radius*0.95 so it overlaps the capsule to avoid gaps
+        const leg1Start = V3(0, legOffset + legSpacing/2, radius*0.95);
+        const leg2Start = V3(0, legOffset - legSpacing/2, radius*0.95);
+
+        // get realtive positions of the leg mid and end
+        const legMid = V3(0, 0,          legLength1);
+        const legEnd = V3(0, legLength2, legLength1);
+
+        // calculate the two sets of mid and end
+        const leg1Mid = leg1Start.clone().add(legMid);
+        const leg1End = leg1Start.clone().add(legEnd);
+        const leg2Mid = leg2Start.clone().add(legMid);
+        const leg2End = leg2Start.clone().add(legEnd);
+
+        legCurveRadius = Math.min(legCurveRadius, legLength1);
+        legCurveRadius = Math.min(legCurveRadius, Math.abs(legLength2));
+
+        const tube1 = createTube(leg1Start, leg1Mid, leg1End, legRadius, legCurveRadius);
+        const tube2 = createTube(leg2Start, leg2Mid, leg2End, legRadius, legCurveRadius);
+
+        const geometries = [capsule,tube1, tube2];
+        const mergedGeometry = BufferGeometryUtils.mergeGeometries(geometries);
+
+        return mergedGeometry;
     }
 
 }
+
+// Function to compute a point on a line segment at a given distance from an endpoint
+function computePointAtDistance(p1, p2, distance) {
+    const direction = new Vector3().subVectors(p1, p2).normalize();
+    return new Vector3().addVectors(p2, direction.multiplyScalar(distance));
+}
+
+// Function to create a cap geometry at a given position with a specified radius
+function createCapGeometry(position, radius, direction) {
+    const geometry = new CircleGeometry(radius, 32);
+    geometry.lookAt(direction);
+    geometry.translate(position.x, position.y, position.z);
+    return geometry;
+}
+
+// Function to create a bent tube geometry with the given parameters
+function createTube(A, B, C, R, K) {
+
+    // Compute points A1 and C1
+    const A1 = computePointAtDistance(A, B, K);
+    const C1 = computePointAtDistance(C, B, K);
+
+    // Create straight line segments A-A1 and C1-C
+    const straightSegment1 = new LineCurve3(A, A1);
+    const straightSegment2 = new LineCurve3(C1, C);
+
+    // Create quadratic Bézier curve segment A1-B-C1
+    const bezierCurve = new QuadraticBezierCurve3(A1, B, C1);
+
+    // Combine the segments into a single curve
+    const curvePath = new CurvePath();
+    curvePath.add(straightSegment1);
+    curvePath.add(bezierCurve);
+    curvePath.add(straightSegment2);
+
+    // Create tube geometry
+    const tubeGeometry = new TubeGeometry(curvePath, 64, R, 8, false);
+
+    // Create cap geometries
+    const capGeometryStart = createCapGeometry(A, R, A.clone().sub(B));
+    const capGeometryEnd = createCapGeometry(C, R, C.clone().sub(B));
+
+    const geometries = [tubeGeometry, capGeometryStart, capGeometryEnd];
+    const mergedGeometry = BufferGeometryUtils.mergeGeometries(geometries);
+
+    return mergedGeometry;
+
+}
+
 
 
 
@@ -235,6 +311,24 @@ const gTypes = {
             heightSegments: [20, 3, 40, 1],
         }
 
+    },
+
+    tictac: {
+        g: TicTacGeometry,
+        params: {
+            radius: [5, 0.1, 10, 0.1],
+            length: [14, 0.1, 30, 0.1],
+            capSegments: [20, 4, 40, 1],
+            radialSegments: [20, 4, 40, 1],
+            legRadius: [0.28, 0.01, 5, 0.001],
+            legLength1: [2, 0.1, 10, 0.001],
+            legLength2: [2.5, -5, 5, 0.001],
+            legCurveRadius: [0.85, 0.0, 5, 0.001],
+            legOffset: [0.01, -10, 10, 0.001],
+            legSpacing: [7.6, 0.0, 20, 0.001],
+        }
+
+
     }
 
 }
@@ -305,7 +399,7 @@ const commonMaterialParams = {
 }
 
 const commonParams = {
-    geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tetrahedron", "torus", "torusknot", "superegg"],
+    geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tictac", "tetrahedron", "torus", "torusknot", "superegg"],
     applyMaterial: false,
     rotateX: [0, -180, 180, 1],
     rotateY: [0, -180, 180, 1],
@@ -622,7 +716,7 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.geometry = new geometryDef.g(...params);
 
-        const rotateX  = common.rotateX + (common.geometry === "capsule" ? 90 : 0);
+        const rotateX  = common.rotateX + ((common.geometry === "capsule" || common.geometry === "tictac") ? 90 : 0);
 
         if (rotateX) {
             this.geometry.rotateX(rotateX * Math.PI / 180);
