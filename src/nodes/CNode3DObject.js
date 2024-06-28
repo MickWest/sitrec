@@ -323,8 +323,8 @@ const gTypes = {
     tictac: {
         g: TicTacGeometry,
         params: {
-            radius: [5, 0.1, 10, 0.1],
-            totalLength: [20, 0.1, 30, 0.1],
+            radius: [5, 0.1, 30, 0.1],
+            totalLength: [20, 0.1, 50, 0.1],
             capSegments: [20, 4, 40, 1],
             radialSegments: [20, 4, 40, 1],
             legRadius: [0.28, 0.01, 5, 0.001],
