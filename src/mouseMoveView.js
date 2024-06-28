@@ -34,17 +34,17 @@ export function onDocumentMouseDown(event) {
 
         var vm = ViewMan
 
-        console.log("Mouse Down, checking exclusive")
+//        console.log("Mouse Down, checking exclusive")
 
         vm.iterateVisible((name, view) => {
             if (mouseInViewOnly(view, mouseX, mouseY)) {
                 //console.log("onDocumentMouseDown has mouseInViewOnly true for" + view.id)
                 if (view.onMouseDown != undefined) {
-                    console.log("Calling onMouseDown for" + view.id)
+             //       console.log("Calling onMouseDown for" + view.id)
                     view.onMouseDown(event, mouseX, mouseY)
                     mouseDragView = view;
                 } else {
-                    console.log("No callback onMouseDown for" + view.id)
+             //       console.log("No callback onMouseDown for" + view.id)
                 }
 
 
