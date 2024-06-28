@@ -60,7 +60,7 @@ export const SitModelInspector = {
 
         size: 1,
         radius: 5,
-        length:14,
+        totalLength:20,
 
         width: 3,
         height: 4,

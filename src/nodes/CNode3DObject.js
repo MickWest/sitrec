@@ -84,11 +84,18 @@ class SuperEggGeometry extends LatheGeometry {
     }
 }
 
-// TicTac mode from a capsule and two legs
-class TicTacGeometry {
-    constructor(radius = 1, length = 1, capSegments = 20, radialSegments = 20, legRadius = 0.1, legLength1 = 0.1, legLength2 = 0.1, legCurveRadius = 0.1, legOffset = 0.1, legSpacing = 0.1) {
+// wrapper to use the CapsuleGeometry with a total length instead of cylinder length
+class CapsuleGeometryTL {
+    constructor(radius=0.5, totalLength = 5, capSegments = 20, radialSegments = 20) {
+        return new CapsuleGeometry(radius, totalLength-radius*2, capSegments, radialSegments);
+    }
+}
 
-        const capsule = new CapsuleGeometry(radius, length, capSegments, radialSegments);
+// Procedural TicTac model from a capsule and two legs
+class TicTacGeometry {
+    constructor(radius = 1, totalLength = 1, capSegments = 20, radialSegments = 20, legRadius = 0.1, legLength1 = 0.1, legLength2 = 0.1, legCurveRadius = 0.1, legOffset = 0.1, legSpacing = 0.1) {
+
+        const capsule = new CapsuleGeometry(radius, totalLength-radius*2, capSegments, radialSegments);
 
         // get the offset of the legs, radius*0.95 so it overlaps the capsule to avoid gaps
         const leg1Start = V3(0, legOffset + legSpacing/2, radius*0.95);
@@ -191,10 +198,10 @@ const gTypes = {
         }
     },
     capsule: {
-        g: CapsuleGeometry,
+        g: CapsuleGeometryTL,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
-            length: [4, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 20, 0.1],
+            totalLength: [5, 0.1, 30, 0.1],
             capSegments: [20, 4, 40, 1],
             radialSegments: [20, 4, 40, 1],
         }
@@ -304,8 +311,8 @@ const gTypes = {
     superegg: {
         g: SuperEggGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
-            length: [4, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 30, 0.1],
+            length: [4, 0.1, 20, 0.1],
             sharpness: [5.5, 0.1, 10, 0.1],
             widthSegments: [20, 4, 40, 1],
             heightSegments: [20, 3, 40, 1],
@@ -317,7 +324,7 @@ const gTypes = {
         g: TicTacGeometry,
         params: {
             radius: [5, 0.1, 10, 0.1],
-            length: [14, 0.1, 30, 0.1],
+            totalLength: [20, 0.1, 30, 0.1],
             capSegments: [20, 4, 40, 1],
             radialSegments: [20, 4, 40, 1],
             legRadius: [0.28, 0.01, 5, 0.001],
