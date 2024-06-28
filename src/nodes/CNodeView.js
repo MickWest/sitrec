@@ -15,31 +15,33 @@ import {isConsole} from "../../config";
 class CViewManager extends CManager {
     constructor(v) {
         super(v);
+        if (!isConsole) { // will not be used in console mode, so just an empty singleton
 
-        this.topPx = 24;
-        this.leftPx = 0;
-        this.updateSize();
+            this.topPx = 24;
+            this.leftPx = 0;
+            this.updateSize();
 
 
-        // make a div the size of the window, but missing the topPx
-        // so we can have a menu bar at the top
-        // this.div = document.createElement('div')
-        // this.div.style.position = 'absolute';
-        // this.div.style.top = this.topPx + 'px';
-        // this.div.style.left = '0px';
-        // this.div.style.width = '100%'
-        // this.div.style.height = 'calc(100% - ' + this.topPx + 'px)'
-        // this.div.style.backgroundColor = '#000000'
-        // this.div.style.zIndex = 0;
-        //
-        // // make transparent to mouse events
-        // this.div.style.pointerEvents = 'none';
-        //
-        // document.body.appendChild(this.div);
-        // this.container = this.div;
+            // make a div the size of the window, but missing the topPx
+            // so we can have a menu bar at the top
+            // this.div = document.createElement('div')
+            // this.div.style.position = 'absolute';
+            // this.div.style.top = this.topPx + 'px';
+            // this.div.style.left = '0px';
+            // this.div.style.width = '100%'
+            // this.div.style.height = 'calc(100% - ' + this.topPx + 'px)'
+            // this.div.style.backgroundColor = '#000000'
+            // this.div.style.zIndex = 0;
+            //
+            // // make transparent to mouse events
+            // this.div.style.pointerEvents = 'none';
+            //
+            // document.body.appendChild(this.div);
+            // this.container = this.div;
 
-        // old (working) way
-        this.container = window;
+            // old (working) way
+            this.container = window;
+        }
     }
 
     updateSize() {
