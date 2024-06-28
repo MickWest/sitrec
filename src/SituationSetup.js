@@ -334,7 +334,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 //        console.log("SituationSetup iterating: key = " + key );
 
     function SSLog() {
-        console.log("..... SSLOG SituationSetup: " + key + " " + JSON.stringify(data))
+//        console.log("..... SSLOG SituationSetup: " + key + " " + JSON.stringify(data))
     }
 
     if (data.kind !== undefined) {

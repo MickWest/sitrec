@@ -87,8 +87,8 @@ export class CNodeView3D extends CNodeViewCanvas {
         // When using a logorithmic depth buffer (or any really)
         // need to ensure the near/far clip distances are propogated to custom shaders
 
-        console.log(" devicePixelRatio = "+window.devicePixelRatio+" canvas.width = "+this.canvas.width+" canvas.height = "+this.canvas.height)
-        console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
+//        console.log(" devicePixelRatio = "+window.devicePixelRatio+" canvas.width = "+this.canvas.width+" canvas.height = "+this.canvas.height)
+ //       console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
 
         // this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true})
         //

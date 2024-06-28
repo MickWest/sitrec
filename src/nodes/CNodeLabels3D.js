@@ -33,7 +33,7 @@ export function setupMeasurementUI() {
     measureArrowGroupNode.isMeasurement = true
 
 
-    console.warn("%%%%%%% setupMeasurementUI: Globals.showMeasurements = " + Globals.showMeasurements)
+//    console.warn("%%%%%%% setupMeasurementUI: Globals.showMeasurements = " + Globals.showMeasurements)
 
     function refreshMeasurementVisibility() {
         NodeMan.iterate((key, node) => {

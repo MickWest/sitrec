@@ -22,6 +22,7 @@ import {CNode} from "./CNode";
 import {NodeMan} from "../Globals";
 
 import {assert} from "../assert.js";
+import {stripComments} from "../utils";
 
 const math = require('mathjs')
 
@@ -31,7 +32,7 @@ export class CNodeMath extends CNode {
         super(v);
         this.frameless = true; // set to indicate that this node does not need a frame number, but will pass the frame number to inputs
         this.mathOriginal = v.math
-        this.math = this.stripComments(this.mathOriginal)
+        this.math = stripComments(this.mathOriginal)
 
         // find any node variable and add them to the inputs
         // this ensures that the node is recalculated when the input nodes change
@@ -49,14 +50,7 @@ export class CNodeMath extends CNode {
     }
 
 
-    stripComments(expression) {
-        // strip comments from the string
-        // anything from a // to a newline
-        expression = expression.replace(/\/\/.*\n/g, "\n")
-        // and strip out any comments in the form /* ... */
-        expression = expression.replace(/\/\*.*\*\//g, "")
-        return expression
-    }
+
 
     getNodeVariables(expression) {
         let re = /\$\w+/g

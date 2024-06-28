@@ -45,7 +45,7 @@ export class CFileManager extends CManager {
 
             let textSitches = [];
             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-                console.log("Local files: " + data)
+//                console.log("Local files: " + data)
                 let localfiles = JSON.parse(data) // will give an array of local files
             })
 

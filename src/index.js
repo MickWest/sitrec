@@ -27,7 +27,7 @@ import {
     Sit,
     SitchMan,
 } from "./Globals";
-import {disableScroll} from './utils.js'
+import {disableScroll, stripComments} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
@@ -469,8 +469,12 @@ async function initializeOnce() {
 
     // after the gui has been created it will have injected its styles into the head
     // so we can now add our own styles
-    injectExtraCSS(extraCSS);
 
+    requestAnimationFrame(() => {
+        // strip off any C++ style comments.
+        const stripped = stripComments(extraCSS)
+        injectExtraCSS(stripped);
+    })
 
 }
 

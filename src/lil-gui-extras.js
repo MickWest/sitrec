@@ -295,7 +295,7 @@ export class CGuiMenuBar {
         //newGUI.title(title);
         newGUI.$title.innerHTML = title;
 
-        console.log("Adding GUI "+title+" at slot "+this.nextSlot+" with left "+this.totalWidth+"px")
+//        console.log("Adding GUI "+title+" at slot "+this.nextSlot+" with left "+this.totalWidth+"px")
 
         this.divs[this.nextSlot].style.left = this.totalWidth + "px";
 
@@ -306,7 +306,7 @@ export class CGuiMenuBar {
         // // give the div a colored border
         // this.divs[this.nextSlot].style.border = "1px solid "+ divDebugColor[this.nextSlot % divDebugColor.length];
 
-        const width = getTextWidth(title) + 30;
+        const width = getTextWidth(title) + 16;
        // this.divs[this.nextSlot].style.width = width + "px";
        // this.divs[this.nextSlot].style.height = "1 px";
         this.totalWidth += width;

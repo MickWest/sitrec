@@ -636,3 +636,14 @@ export function normalizeLayerType(layers) {
     return layers;
 }
 
+export function stripComments(expression) {
+    // and strip out any comments in the form /* ... */
+//    expression = expression.replace(/\/\*.*\*\//g, "")
+    expression = expression.replace(/\/\*[\s\S]*?\*\//g, "");
+
+    // strip comments from the string
+    // anything from a // to a newline
+    expression = expression.replace(/\/\/.*\n/g, "\n")
+
+    return expression
+}

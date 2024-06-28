@@ -136,6 +136,28 @@ a {
         transition-duration: 1ms;  // changed from 300ms to 1ms 
 }
 
+.lil-gui.closed > .title:before {
+  content: ""; 
+}
+.lil-gui .lil-gui.closed > .title:before {
+  content: "▸";  
+}
+
+.lil-gui .title:before {
+  font-family: "lil-gui";
+  content: "";  
+  padding-right: 2px;
+  display: inline-block;
+}
+
+.lil-gui .lil-gui .title:before {
+  font-family: "lil-gui";
+  content: "▾";  
+  padding-right: 2px;
+  display: inline-block;
+}
+
+/*
 // INDENT TOP-LEVEL FOLDERS 
 // THIS IS LIKE .lil-gui .lil-gui .lil-gui > .children, BUT WITH ONE LESS .lil-gui 
 // I also use a dark blue background and a thicker white left border
@@ -155,6 +177,7 @@ a {
 //     border-left: none;
 //     border: 1px solid #FFFFFF;
 // }
+*/
 
 body.hide-cursor {
     cursor: none;
