@@ -9,6 +9,7 @@ import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
 import {guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
+import {isConsole} from "../../config";
 
 
 class CViewManager extends CManager {
@@ -43,9 +44,10 @@ class CViewManager extends CManager {
 
     updateSize() {
 
-        this.widthPx = window.innerWidth-this.leftPx;
-        this.heightPx = window.innerHeight-this.topPx;
-
+        if (!isConsole) {
+            this.widthPx = window.innerWidth - this.leftPx;
+            this.heightPx = window.innerHeight - this.topPx;
+        }
     }
 
 }
