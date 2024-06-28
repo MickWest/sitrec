@@ -139,13 +139,13 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(Sit, "nowTime").listen()
 
       // The UI will update the dateNow member, and then we will update the dateStart member
-        this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "month", 1, 12, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "day", 1, 31, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "hour", 0, 23, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "minute", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "second", 0, 59, 1).listen().onChange(v => this.updateDateTime(v))
-        this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v))
+        const guiYear = this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))
+        const guiMonth = this.dateTimeFolder.add(this.dateTime, "month", 1, 12, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiYear)
+        const guiDay = this.dateTimeFolder.add(this.dateTime, "day", 1, 31, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiMonth)
+        const guiHour =  this.dateTimeFolder.add(this.dateTime, "hour", 0, 23, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiDay)
+        const guiMinute = this.dateTimeFolder.add(this.dateTime, "minute", 0, 59, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiHour)
+        const guiSecond = this.dateTimeFolder.add(this.dateTime, "second", 0, 59, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiMinute)
+        const guiMillisecond = this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiSecond)
 
         const options = { timeZoneName: 'short' };
         const timeZone = Sit.timeZone ?? new Date().toLocaleTimeString('en-us', options).split(' ')[2];

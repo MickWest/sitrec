@@ -1,3 +1,4 @@
+
 export const extraCSS = `
 .uplot {
     font-family: monospace;
@@ -155,7 +156,9 @@ a {
 //     border: 1px solid #FFFFFF;
 // }
 
-
+body.hide-cursor {
+    cursor: none;
+}
 
 
 `;

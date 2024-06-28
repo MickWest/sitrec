@@ -765,6 +765,12 @@ class NumberController extends Controller {
         return this;
     }
 
+    wrap( wrapReceiver ) {
+        this._canWrap = true;
+        this._wrapReceiver = wrapReceiver;
+        return this;
+    }
+
     updateDisplay() {
 
         const value = this.getValue();
@@ -867,6 +873,7 @@ class NumberController extends Controller {
             initClientX,
             initClientY,
             prevClientY,
+            prevClientX,
             initValue,
             dragDelta;
 
@@ -876,7 +883,7 @@ class NumberController extends Controller {
 
         const onMouseDown = e => {
 
-            initClientX = e.clientX;
+            initClientX = prevClientX = e.clientX;
             initClientY = prevClientY = e.clientY;
             testingForVerticalDrag = true;
 
@@ -930,6 +937,7 @@ class NumberController extends Controller {
             }
 
             prevClientY = e.clientY;
+            prevClientX = e.clientX;
 
         };
 
@@ -987,23 +995,61 @@ class NumberController extends Controller {
             return ( v - a ) / ( b - a ) * ( d - c ) + c;
         };
 
-        const setValueFromX = clientX => {
+
+        const setValueFromX = ((clientX, allowWrapping=true) => {
             const rect = this.$slider.getBoundingClientRect();
-            let value = map( clientX, rect.left, rect.right, this._min, this._max );
-            this._snapClampSetValue( value );
-        };
+            const sliderWidth = rect.right - rect.left;
+            let value = map(clientX, rect.left, rect.right, this._min, this._max);
+
+            if (allowWrapping && this._canWrap) {
+                if (clientX < rect.left) {
+                    value = this._max - ((rect.left - clientX) % sliderWidth) / sliderWidth * (this._max - this._min);
+                } else if (clientX > rect.right) {
+                    value = this._min + ((clientX - rect.right) % sliderWidth) / sliderWidth * (this._max - this._min);
+                }
+            }
+            const oldValue = this.getValue();
+            this._snapClampSetValue(value);
+            const newValue = this.getValue();
+
+            if (allowWrapping && this._canWrap && this._wrapReceiver && newValue !== oldValue) {
+//            if (this._canWrap && this._wrapReceiver && newValue !== oldValue) {
+                // we have this.lastEvent, and can get deltaX
+                // if the sign of deltaX is NOT the same as the sign of the change in value
+                // then we have wrapped
+                // and we need to increment or decremnt the wrapReceiver
+                // by +/- 1
+                if (this.deltaX > 0 && newValue < oldValue) {
+                    this._wrapReceiver.setValue(this._wrapReceiver.getValue() + 1);
+                } else if (this.deltaX < 0 && newValue > oldValue) {
+                    this._wrapReceiver.setValue(this._wrapReceiver.getValue() - 1);
+                }
+
+            }
+
+
+        });
+
+        // const setValueFromX = clientX => {
+        //     const rect = this.$slider.getBoundingClientRect();
+        //     let value = map( clientX, rect.left, rect.right, this._min, this._max );
+        //     this._snapClampSetValue( value );
+        // };
 
         // Mouse drag
         // ---------------------------------------------------------------------
 
         const mouseDown = e => {
             this._setDraggingStyle( true );
-            setValueFromX( e.clientX );
+            setValueFromX( e.clientX , false); // don't allow wrapping on initial click
+            this.prevDragX = e.clientX;
             window.addEventListener( 'mousemove', mouseMove );
             window.addEventListener( 'mouseup', mouseUp );
         };
 
         const mouseMove = e => {
+            this.deltaX = e.clientX - this.prevDragX;
+            this.prevDragX = e.clientX;
             setValueFromX( e.clientX );
         };
 
@@ -1210,6 +1256,14 @@ class NumberController extends Controller {
         // either condition is false if min or max is undefined
         if ( value < this._min ) value = this._min;
         if ( value > this._max ) value = this._max;
+
+        // if ( value < this._min ) {
+        //     value = this._max;
+        //
+        //
+        // }
+        // if ( value > this._max ) value = this._min;
+
         return value;
     }
 
