@@ -2,6 +2,8 @@
 import GUI, {Controller} from "./js/lil-gui.esm";
 import {updateSize} from "./JetStuff";
 import {ViewMan} from "./nodes/CNodeView";
+import {Globals} from "./Globals";
+const Stats = require("stats.js");
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
@@ -228,6 +230,11 @@ export class CGuiMenuBar {
         // add an info GUI in the top right
         this.infoGUI = new GUI().title("Sitrec").close()
 
+         Globals.stats = new Stats();
+        // Globals.stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+        // const attach = this.infoGUI.domElement;
+        //
+        // attach.appendChild( Globals.stats.dom );
 
 
     }
@@ -245,6 +252,11 @@ export class CGuiMenuBar {
 
         this.infoGUI.show();
         this.bar.style.display = "block";
+
+
+
+
+
 
         this._hidden = false;
 

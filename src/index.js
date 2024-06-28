@@ -697,6 +697,8 @@ function animate(newtime) {
     // and does nothing if the time has not elapsed
     // requestAnimationFrame( animate );
 
+    Globals.stats.begin();
+
     now = newtime;
     elapsed = now - then;
 
@@ -718,6 +720,7 @@ function animate(newtime) {
         par.noLogic = false;
         //par.paused = oldPaused;
     }
+    Globals.stats.end();
     animationFrameId = requestAnimationFrame( animate );
 
 }
