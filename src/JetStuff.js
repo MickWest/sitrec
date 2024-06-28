@@ -927,6 +927,8 @@ export function updateSize(force) {
 
         var scale = window.innerWidth / 1920
 
+        ViewMan.updateSize();
+
         ViewMan.iterate((key, data) => data.updateWH())
         infoDiv.style.fontSize = 12 * scale + "px"
         updateChartSize()

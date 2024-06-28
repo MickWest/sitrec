@@ -183,7 +183,7 @@ export const SitFlir1 = {
     azEditor: { kind: "CurveEditor",
         visible: true,
         left:0, top:0.5, width:-1,height:0.5,
-        draggable:true, resizable:true, shiftDrag: true, freeAspect: true,
+        draggable:true, resizable:true,  freeAspect: true, shiftDrag: true,
         editorConfig: {
             useRegression:true,
             minX: 0, maxX: "Sit.frames", minY: -10, maxY: 10,

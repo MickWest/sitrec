@@ -7,7 +7,7 @@ import {par} from "./par";
 
 import {V2} from "./threeUtils";
 
-var mouseMoveView
+var mouseDragView
 var mouseDown = false
 var dragMode = 0;
 var mouseLastX = 0;
@@ -34,17 +34,17 @@ export function onDocumentMouseDown(event) {
 
         var vm = ViewMan
 
-//        console.log("Mouse Down, checking exclusive")
+        console.log("Mouse Down, checking exclusive")
 
         vm.iterateVisible((name, view) => {
             if (mouseInViewOnly(view, mouseX, mouseY)) {
                 //console.log("onDocumentMouseDown has mouseInViewOnly true for" + view.id)
                 if (view.onMouseDown != undefined) {
-                    //console.log("Calling onMouseDown for" + view.id)
+                    console.log("Calling onMouseDown for" + view.id)
                     view.onMouseDown(event, mouseX, mouseY)
-                    mouseMoveView = view;
+                    mouseDragView = view;
                 } else {
-                    //console.log("No callback onMouseDown for" + view.id)
+                    console.log("No callback onMouseDown for" + view.id)
                 }
 
 
@@ -61,26 +61,28 @@ export function onDocumentMouseDown(event) {
 export function onDocumentMouseMove(event) {
 
 
-
     mouseX = (event.clientX);
     mouseY = (event.clientY);
 
-//    console.log ("onDocumentMouseMove "+mouseX+","+mouseY)
+    // console.log("onDocumentMouseMove " + mouseX + "," + mouseY)
 
 
     // if we started dragging in a view, then send moves only to that
-    if (mouseMoveView) {
-//        console.log("Mouse Move Only "+mouseMoveView.id)
-        if (mouseMoveView.onMouseDrag)
-            mouseMoveView.onMouseDrag(event, mouseX, mouseY, mouseX-mouseLastX, mouseY-mouseLastY)
-        else
-            mouseMoveView.onMouseMove(event, mouseX, mouseY, mouseX-mouseLastX, mouseY-mouseLastY)
+    if (mouseDragView) {
+        console.log("Mouse Dragging " + mouseDragView.id)
+        if (mouseDragView.onMouseDrag) {
+            // console.log("Mouse Dragging " + mouseDragView.id)
+            mouseDragView.onMouseDrag(event, mouseX, mouseY, mouseX - mouseLastX, mouseY - mouseLastY)
+        } else {
+//            console.log("Mouse Unhandled Dragging " + mouseDragView.id)
+            mouseDragView.onMouseMove(event, mouseX, mouseY, mouseX - mouseLastX, mouseY - mouseLastY)
+        }
     } else {
         // otherwise, send to the view we are inside
         ViewMan.iterateVisible((name, view) => {
 
             if (mouseInViewOnly(view, mouseX, mouseY) && view.onMouseMove != undefined) {
-//                console.log("Mouse Move (no drag) in view "+view.id)
+                // console.log("Mouse Move (no drag) in view "+view.id)
                 view.onMouseMove(event, mouseX, mouseY, mouseX-mouseLastX, mouseY-mouseLastY)
             }
         })
@@ -97,11 +99,11 @@ export function onDocumentMouseMove(event) {
 }
 
 export function onDocumentMouseUp(event) {
-    if (mouseMoveView && mouseMoveView.onMouseUp != undefined ) {
-        mouseMoveView.onMouseUp(event, mouseX, mouseY)
+    if (mouseDragView && mouseDragView.onMouseUp != undefined ) {
+        mouseDragView.onMouseUp(event, mouseX, mouseY)
         dragMode = 0;
     }
-    mouseMoveView = null;
+    mouseDragView = null;
     mouseDown = false;
 }
 

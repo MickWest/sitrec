@@ -928,6 +928,7 @@ class MetaBezierCurveEditor {
         if (!this.override && !this.disable) {
             this.selectPointAt(e.layerX, e.layerY);
 
+            // adding and deleteing point is now done with right click
             if (e.button == 2) {
 
                 if (this.selectedPoint != null && this.curve.ps.length > 4) {
@@ -937,28 +938,28 @@ class MetaBezierCurveEditor {
                     this.mouseIsDown = false;
                     this.recalculate()
                     this.onChange();
-                    this.dirty=true;
+                    this.dirty = true;
                     console.log("+++ Set Editor DIRTY here")
 
 
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                return false;
+//                return false;
+
+
+                if (this.selectedPoint != null) {
+                    return;
+                }
+
+                this.curve.ps.push(new Point(this.C2DX(e.layerX), this.C2DY(e.layerY)));
+                this.curve.ps.push(new Point(this.C2DX(e.layerX), this.C2DY(e.layerY + 25)));
+                sortPointsX(this.curve.ps);
+                this.recalculate()
+                this.onChange();
+                this.dirty = true;
+                console.log("+++ Set Editor DIRTY here")
             }
-
-
-            if (this.selectedPoint != null) {
-                return;
-            }
-
-            this.curve.ps.push(new Point(this.C2DX(e.layerX), this.C2DY(e.layerY)));
-            this.curve.ps.push(new Point(this.C2DX(e.layerX), this.C2DY(e.layerY + 25)));
-            sortPointsX(this.curve.ps);
-            this.recalculate()
-            this.onChange();
-            this.dirty=true;
-            console.log("+++ Set Editor DIRTY here")
 
         }
 

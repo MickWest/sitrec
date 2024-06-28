@@ -1,5 +1,7 @@
 // Helper functions for lil-gui
 import GUI, {Controller} from "./js/lil-gui.esm";
+import {updateSize} from "./JetStuff";
+import {ViewMan} from "./nodes/CNodeView";
 
 // Issue with lil-gui, the OptionController options() method adds a
 // _names array to the controller object, and a _values array
@@ -184,6 +186,7 @@ export class CGuiMenuBar {
         bar.style.zIndex = 400; // behind the other menus
 
         document.body.appendChild(bar);
+        this.bar = bar;
 
 
         // capture clicks from anywhere on screen to detect if we want to close the GUIs
@@ -239,7 +242,13 @@ export class CGuiMenuBar {
         this.slots.forEach((gui) => {
             gui.show();
         })
+
+        this.infoGUI.show();
+        this.bar.style.display = "block";
+
         this._hidden = false;
+
+        viewMan.topPx = 24;
     }
 
     hide() {
@@ -248,7 +257,14 @@ export class CGuiMenuBar {
             gui.hide();
         })
 
+        this.infoGUI.hide();
+        this.bar.style.display = "none";
+
         this._hidden = true;
+
+        ViewMan.topPx = 0;
+        ViewMan.updateSize();
+        updateSize();
     }
 
     toggleVisiblity() {

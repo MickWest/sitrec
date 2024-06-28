@@ -10,6 +10,50 @@ import {CManager} from "../CManager";
 import {guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 
+
+class CViewManager extends CManager {
+    constructor(v) {
+        super(v);
+
+        this.topPx = 24;
+        this.leftPx = 0;
+        this.updateSize();
+
+
+        // make a div the size of the window, but missing the topPx
+        // so we can have a menu bar at the top
+        // this.div = document.createElement('div')
+        // this.div.style.position = 'absolute';
+        // this.div.style.top = this.topPx + 'px';
+        // this.div.style.left = '0px';
+        // this.div.style.width = '100%'
+        // this.div.style.height = 'calc(100% - ' + this.topPx + 'px)'
+        // this.div.style.backgroundColor = '#000000'
+        // this.div.style.zIndex = 0;
+        //
+        // // make transparent to mouse events
+        // this.div.style.pointerEvents = 'none';
+        //
+        // document.body.appendChild(this.div);
+        // this.container = this.div;
+
+        // old (working) way
+        this.container = window;
+    }
+
+    updateSize() {
+
+        this.widthPx = window.innerWidth-this.leftPx;
+        this.heightPx = window.innerHeight-this.topPx;
+
+    }
+
+}
+
+
+export var ViewMan = new CViewManager()
+
+
 const defaultCViewParams = {
     visible: true,
     left: 0,
@@ -67,7 +111,7 @@ class CNodeView extends CNode {
         // container defaults to the window, but could be something else
         // (not yet tested with anything else)
         if (this.container === undefined)
-            this.container = window;
+            this.container = ViewMan.container;   // was window
 
         this.updateWH(); //need to get the pixel dimension to set the div
 
@@ -84,6 +128,9 @@ class CNodeView extends CNode {
             this.div.style.left = this.leftPx + 'px';
             this.div.style.width = this.widthPx + 'px'
             this.div.style.height = this.heightPx + 'px'
+            this.div.style.zIndex = 1;
+
+            this.div.style.pointerEvents = 'auto';
 
             console.log("For node "+this.id+" INITIAL setting widthPx,heightPx and div.style to "+this.widthPx+","+this.heightPx)
 
@@ -93,7 +140,13 @@ class CNodeView extends CNode {
 
             this.setVisible(this.visible)
 
-            document.body.appendChild(this.div);
+            if (this.container === window) {
+                this.divParent = document.body;
+            } else {
+                this.divParent = this.container;
+            }
+
+            this.divParent.appendChild(this.div);
 
             if (this.draggable) {
 
@@ -178,7 +231,7 @@ class CNodeView extends CNode {
         // if it's an overlay view, then we don't want to remove the div
         if (this.overlayView === undefined && this.div) {
 
-            document.body.removeChild(this.div);
+            this.divParent.removeChild(this.div);
  //           this.div = null
         }
         super.dispose()
@@ -190,10 +243,18 @@ class CNodeView extends CNode {
 
 
     containerWidth() {
-        return this.container.innerWidth;
+        return ViewMan.widthPx;
     }
     containerHeight() {
-        return this.container.innerHeight;
+        return ViewMan.heightPx;
+    }
+
+    containerTop() {
+        return ViewMan.topPx;
+    }
+
+    containerLeft() {
+        return ViewMan.leftPx;
     }
 
     dumpPosition() {
@@ -271,10 +332,18 @@ class CNodeView extends CNode {
             this.leftPx = div.offsetLeft;
             this.topPx = div.offsetTop;
 
+            if (this.freeAspect) {
+                if (this.width < 0 ) this.width = this.widthPx / this.heightPx;
+                if (this.height < 0) this.height = this.heightPx / this.widthPx;
+            }
+
+
             if (this.width>0) this.width = this.widthPx / this.containerWidth()
             if (this.height>0) this.height = this.heightPx / this.containerHeight()
-            this.left = this.leftPx / this.containerWidth()
-            this.top = this.topPx / this.containerHeight()
+
+
+            this.left = (this.leftPx-this.containerLeft()) / this.containerWidth()
+            this.top = (this.topPx-this.containerTop()) / this.containerHeight()
         }
 
         this.widthDiv = div.clientWidth
@@ -284,8 +353,8 @@ class CNodeView extends CNode {
 
     // Updates the Pixel and Div values from the fractional and window values
     updateWH() {
-        this.leftPx = Math.floor(this.containerWidth() * this.left);
-        this.topPx = Math.floor(this.containerHeight() * this.top);
+        this.leftPx = Math.floor(this.containerLeft() + this.containerWidth()  * this.left);
+        this.topPx  = Math.floor(this.containerTop()  + this.containerHeight() * this.top);
 
         let oldWidth = this.widthPx;
         let oldHeight = this.heightPx;
@@ -539,7 +608,7 @@ class CUIText {
 }
 
 export {CNodeView, CUIText}
-export var ViewMan = new CManager()
+
 
 export function VG(id){
     return ViewMan.get(id)
