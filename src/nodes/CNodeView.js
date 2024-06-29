@@ -80,6 +80,9 @@ class CNodeView extends CNode {
         assert(v.id !== undefined,"View Node Requires ID")
         super(v)
 
+        // optionally make the view relative to anohther view
+        this.input("relativeTo", true);
+
         
         // if (isLocal) {
         //     // local debugging, make a (ref) copy of v for later checks
@@ -247,17 +250,25 @@ class CNodeView extends CNode {
 
 
     containerWidth() {
+        if (this.in.relativeTo)
+            return this.in.relativeTo.widthPx
         return ViewMan.widthPx;
     }
     containerHeight() {
+        if (this.in.relativeTo)
+            return this.in.relativeTo.heightPx
         return ViewMan.heightPx;
     }
 
     containerTop() {
+        if (this.in.relativeTo)
+            return this.in.relativeTo.topPx
         return ViewMan.topPx;
     }
 
     containerLeft() {
+        if (this.in.relativeTo)
+            return this.in.relativeTo.leftPx
         return ViewMan.leftPx;
     }
 

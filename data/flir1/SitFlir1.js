@@ -447,6 +447,11 @@ export const SitFlir1 = {
 
 
     // TODO - make the night sky only appear in daytime...
-    // TODO - don't light objects if they are in earth's shadow - but account for penubra
+    // TODO - don't light objects if they are in earth's shadow - but account for penumbra
+
+
+    compassMain: {kind: "CompassUI", camera: "mainCamera", relativeTo: "mainView", left: 0.65, top: 0.90, width: -1, height: 0.1},
+    compassLook: {kind: "CompassUI", camera: "lookCamera", relativeTo: "lookView", left: 0.8, top: 0.40, width: -1, height: 0.15},
+
 
 }
