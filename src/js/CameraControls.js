@@ -14,7 +14,7 @@ import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNo
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
-import {getLocalUpVector} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalUpVector} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
@@ -155,6 +155,9 @@ class CameraMapControls {
 				toCamera.normalize().multiplyScalar(maxDistance).add(this.target)
 				this.camera.position.copy(toCamera)
 			}
+
+
+			this.fixUp()
 
 		}
 
@@ -492,8 +495,30 @@ class CameraMapControls {
 
 		}
 
+		this.fixUp()
 
 		this.mouseStart.copy( this.mouseEnd );
+
+	}
+
+	fixUp() {
+		// if we are close to the ground, and not looking up more than 45 degrees
+		// then we want to keep the camera up vector to local up
+		var xAxis = new Vector3()
+		var yAxis = new Vector3()
+		var zAxis = new Vector3()
+		this.camera.matrix.extractBasis(xAxis, yAxis, zAxis)
+		const up = getLocalUpVector(this.target, wgs84.RADIUS)
+		const alt = altitudeAboveSphere(this.camera.position);
+		if (alt < 100000) {
+			const upAngle = degrees(up.angleTo(xAxis))
+			if (upAngle > 45) {
+
+				this.camera.up.lerp(up, 0.01);
+				var pointInFront = this.camera.position.clone().sub(zAxis)
+				this.camera.lookAt(pointInFront)
+			}
+		}
 
 	}
 
