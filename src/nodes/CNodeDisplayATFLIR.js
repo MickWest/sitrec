@@ -98,14 +98,17 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         loader.parse(dataFA18, "", (gltf2) => {
             Globals.parsing --;
             console.log("Loaded & parsed FA-18F model")
-            FA18 = gltf2.scene.getObjectByName('FA-18F')
+            FA18 = gltf2.scene; //.getObjectByName('FA-18F')
             var podScale = 10;
-            FA18.scale.setScalar(podScale);
-            FA18.position.z = 120
-            FA18.position.y = par.jetOffset
+           // FA18.scale.setScalar(podScale);
+            FA18.position.z = 0 // 120
+            FA18.position.y = 10; // par.jetOffset
+
+            // the podFrame is backwards, so we rotate the FA18 180 degrees
+            FA18.rotateY(radians(180))
 
             PodFrame.add(gltf2.scene)
-            FA18.visible = false
+    //        FA18.visible = false
             showHider(FA18, "[J]et", false, 'j')
             propagateLayerMaskObject(PodFrame)
 
