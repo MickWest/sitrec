@@ -143,7 +143,7 @@ export class CSituation {
     }
 
     async loadAssets() {
-        console.log("++++++++++++++++++++ Loading assets")
+        console.log("++++++++++++++++++++ Loading assets for ", this.name,  " ++++++++++++++++++++++");
         // There's a per-sitch set of files
         // then other flags can cause files to be added, like the night sky
         var assets = this.files ?? {};

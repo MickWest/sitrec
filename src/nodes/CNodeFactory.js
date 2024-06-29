@@ -46,10 +46,10 @@ export class CNodeFactory {
     }
 
     createNodes(nodes) {
-        console.log("++++++++ createNodes")
+//        console.log("++++++++ createNodes")
         console.log(JSON.stringify(nodes))
         for (const node of nodes) {
-            console.log("createNodes: " + node.id + ": " + node.new)
+//            console.log("createNodes: " + node.id + ": " + node.new)
             this.create(node.new, node)
         }
     }
@@ -65,16 +65,16 @@ export class CNodeFactory {
     //     ]`);
 
     createNodesJSON(nodeJSON) {
-        console.log(nodeJSON)
+//        console.log(nodeJSON)
         // if last character is a } or a ] and the previous non-whitespace one is a ,
         // then remove it, to allow a final comma in the last line
         var i = nodeJSON.length - 1;
         var last = nodeJSON.charAt(i);
-        console.log("Last char = " + last)
+//        console.log("Last char = " + last)
         if (last === '}' || last === ']') {
             i--;
             while (i > 0 && /\s/.test(nodeJSON.charAt(i))) i-- // step back over whitespace
-            console.log("Last none WS char = " + nodeJSON.charAt(i))
+ //           console.log("Last none WS char = " + nodeJSON.charAt(i))
             if (nodeJSON.charAt(i) === ',') {
                 nodeJSON = nodeJSON.substring(0, i) + nodeJSON.substring(i + 1);
                 //     console.log("Removed trailing comma")

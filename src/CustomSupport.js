@@ -276,7 +276,7 @@ export class CCustomManager {
     // after setting up a custom scene, call this to perform the mods
     // i.e. load the files, and then apply the mods
     deserialize(sitchData) {
-        console.log("Deserializing custom sitch")
+        console.log("Deserializing text-base sitch")
 
 
 

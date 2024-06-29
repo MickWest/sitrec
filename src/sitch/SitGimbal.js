@@ -476,7 +476,7 @@ export const SitGimbalNear = {
         GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
 
-        TargetObjectFile: './models/saucer01a.glb',
+        TargetObjectFile: 'models/saucer01a.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
         FA18Model: 'models/FA-18F.glb',
 

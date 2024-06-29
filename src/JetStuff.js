@@ -660,7 +660,7 @@ export function UIChangedPR() {
 
 export function SetupTrackLOSNodes() {
 
-    console.log("+++ JetLOSDisplayNode")
+//    console.log("+++ JetLOSDisplayNode")
 
     if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
         new CNodeDisplayLOS({
@@ -687,7 +687,7 @@ export function SetupTrackLOSNodes() {
 
     }
 
-    console.log("+++ JetTrackDisplayNode")
+//    console.log("+++ JetTrackDisplayNode")
     new CNodeDisplayTrack({
         id: "jetTrackDisplayNode",
         track: "jetTrack",
@@ -698,7 +698,7 @@ export function SetupTrackLOSNodes() {
         toGround:60,
     })
 
-    console.log("+++ LOSTraverseDisplayNode")
+//    console.log("+++ LOSTraverseDisplayNode")
     new CNodeDisplayTrack({
         id: "LOSTraverseDisplayNode",
         inputs: {
@@ -742,7 +742,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         }, guiPhysics))
     }
 
-    console.log("+++ LOSTraverse")
+//    console.log("+++ LOSTraverse")
     new CNodeLOSTraverse({
         id: "LOSTraverse1"+idExtra,
         LOS: los,
@@ -866,7 +866,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
 
 
     // Constant altitude
-    console.log("+++ LOSTraverseConstantAltitude Node")
+//    console.log("+++ LOSTraverseConstantAltitude Node")
     new CNodeLOSTraverseConstantAltitude({
         id: "LOSTraverseConstantAltitude"+idExtra,
         inputs: {
@@ -1065,7 +1065,7 @@ export function initViews() {
 }
 
 export function SetupCommon(altitude=25000) {
-    console.log("+++ radiusMiles Node")
+//    console.log("+++ radiusMiles Node")
     // new CNodeGUIValue({
     //     id: "radiusMiles",
     //     value: EarthRadiusMiles,
@@ -1084,7 +1084,7 @@ export function SetupCommon(altitude=25000) {
     //     step: 1
     // }, guiTweaks))
 
-    console.log("+++ cloudAltitude Node")
+//    console.log("+++ cloudAltitude Node")
     scaleNodeF2M("cloudAltitude", new CNodeGUIValue({
         id: "cloudAltitudeGUI",
         value: 11740,           // Was 9500 when we had refraction adjusted Earth radius, not it's all wgs84.RADIUS

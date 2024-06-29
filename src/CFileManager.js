@@ -265,6 +265,24 @@ export class CFileManager extends CManager {
 
         }
 
+        // might be loading a file that's already been loaded but using a different ID
+        // so check the existing files, and make a new entry if so. Flag it as a duplicate
+        // so we can handle it later
+        // to find it we need to iterate over the files, and check the filename, not the id
+        // as the id might be different
+
+        // shoudl we strip off "./" from the start, or just fix them in the original data <<<< HEY, FIX THIS
+
+        var duplicate = false;
+        this.iterate( (key, parsed) => {
+            const f = this.list[key];
+            if (f.filename === filename) {
+                duplicate = true;
+                console.error("Duplicate file " + filename + " found as existing id: " + key + " new id requested:" + id)
+            }
+        });
+
+
         // // if we are going to try to load it,
         // assert(!this.exists(id), "Asset " + id + " already exists");
 

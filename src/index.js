@@ -165,59 +165,16 @@ if (urlParams.get("custom")) {
 
 legacySetup();
 await setupFunctions();
-
-
-// Problem. The sitches are defined from data structures which contain parameters that get passed to variosu setup functions
-// however, once we call them, the parameters get added to - especially when we need some defaults
-// so, for example, the ptz object has no ID, so it gets and id of "lookCameraPTZ" in SituationSetup
-//
-// Solution
-// 1 - make a deep clone of the sitch object, and pass that to the setup functions
-
-
-
-
-//  testing = true;
-// // SitchMan.iterate((key, sitch) =>{
-// for (let key in selectableSitches) {
-//     if (selectableSitches[key] === "testall" || selectableSitches[key] === "testhere")
-//         continue;
-//
-//     let situation = selectableSitches[key]
-//     console.log("Change sitch to "+situation);
-//
-//     cancelAnimationFrame(animate);
-//     await waitForParsingToComplete();
-//
-//     disposeEverything();
-// // // theoretically we should new be able to do the above again....
-//     selectInitialSitch(situation);
-//     legacySetup();
-//     await setupFunctions();
-//
-//     // render one frame
-//     //renderMain();
-//
-//     // render five frames
-//     for (let i = 0; i < 5; i++) {
-//         updateFrame();
-//         renderMain();
-//
-//     }
-//
-// }
-// testing = false;
-
-console.log("animate")
-//animate(true); // Passing in true for ForceRender to render even if the windows does not have focus, like with live.js
 windowChanged()
 
 infoDiv.innerHTML = ""
+console.log("............... Done with setup, starting animation")
 startAnimating(Sit.fps);
 
-// if testing, then wait 3.5 seconds, and then load the next test URL
+// We continutally check to see if we are testing
 
-setTimeout( checkForTest, 3500);
+const testCheckInterval = 1000;
+setTimeout( checkForTest, testCheckInterval);
 setTimeout( checkForNewSitchText, 500);
 
 // **************************************************************************************************
@@ -233,11 +190,13 @@ function checkForTest() {
         var testArray = toTest.split(',');
         situation = testArray.shift() // remove the first (gimbal)
         toTest = testArray.join(",")
-        console.log("Testing " + situation + ", will text next: " + toTest)
+        // log current time:
+        console.log("Time = " + new Date().toLocaleTimeString());
+        console.warn("  Testing " + situation + ", will text next: " + toTest)
 
 
         newSitch(situation)
-        setTimeout( checkForTest, 3500);
+
 
     } else {
         testing = false;
@@ -287,6 +246,7 @@ async function newSitch(situation, customSetup = false ) {
     legacySetup();
     await setupFunctions();
     startAnimating(Sit.fps);
+    setTimeout( checkForTest, testCheckInterval);
 }
 
 async function initializeOnce() {
@@ -496,9 +456,15 @@ function initRendering() {
     infoDiv.style.height = 100;
     infoDiv.style.color = "white";
     infoDiv.innerHTML = "Loading";
-    infoDiv.style.top = 20 + 'px';
+    infoDiv.style.top = 40 + 'px';
     infoDiv.style.left = 20 + 'px';
-    infoDiv.style.display = 'block';
+    infoDiv.style.fontSize = 20 + 'px';
+    infoDiv.style.display = 'none';
+    if (isLocal) {
+ //       infoDiv.style.display = 'block';
+ //       infoDiv.style.zIndex = 10002;
+    }
+    infoDiv.style.background="black";
     document.body.appendChild(infoDiv);
 
 
@@ -691,7 +657,7 @@ function startAnimating(fps) {
     fpsInterval = 1000 / fps ;           // e.g. 1000/30 = 33.333333
     then = window.performance.now();    //
     startTime = then;
-    console.log("Startup time = " + startTime/1000);
+    console.log("STARTUP TIME = " + startTime/1000);
     animate();
 }
 

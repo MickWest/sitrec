@@ -165,7 +165,7 @@ export var SitGoFast = {
 
 
 
-        console.log("+++ azEditor Node")
+//        console.log("+++ azEditor Node")
         var azEditorNode = new CNodeCurveEditor({
                 id: "azEditor",   // GOFast
                 visible: true,
@@ -184,7 +184,7 @@ export var SitGoFast = {
         new CNodeArray({id: "azCSVGoFast", array: this.GoFastAz})
 
         // GOFAST
-        console.log("+++ azSources Node")
+//        console.log("+++ azSources Node")
         new CNodeSwitch({
             id: "azSources",
             inputs: {
@@ -380,7 +380,7 @@ export var SitGoFast = {
          {"new":"Constant",      "id":"groundTrackWidth", "value":3}, 
         ]`)
 
-        console.log("+++ LOSGroundTrackNode")
+//        console.log("+++ LOSGroundTrackNode")
         new CNodeLOSTraverseConstantAltitude({ id: "LOSGroundTrack",
             inputs: {
                 LOS: "JetLOS2",
@@ -419,7 +419,7 @@ export var SitGoFast = {
             transparent: true,
         });
 
-        console.log("+++ oceanDisplay Node")
+//        console.log("+++ oceanDisplay Node")
         new CNodeDisplayOcean({
             id: "oceanDisplay",
             inputs: {
@@ -429,7 +429,7 @@ export var SitGoFast = {
             },
         })
 
-        console.log("+++ LOSGroundTrackDisplayNode")
+//        console.log("+++ LOSGroundTrackDisplayNode")
         new CNodeDisplayTrack({
             id: "LOSGroundTrackDisplayNode",
             inputs: {
