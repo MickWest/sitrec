@@ -35,6 +35,8 @@ class CManager {
     }
 
     disposeRemove(id) {
+        if (id===undefined)
+            return;
         if (typeof id === "object") {
             id = id.id;
         }

@@ -22,7 +22,19 @@ export class CNodeManager extends CManager{
     }
 
 
-
+    // dispose and remove, optionally doing to same to all inputs, recursively
+    // not a common use case, but useful for cleaning up a node that has auto-generated inputs
+    disposeRemove(id, inputs=false) {
+        if (id === undefined)
+            return;
+        if (inputs) {
+            const node = this.get(id)
+            for (let key in node.inputs) {
+                this.disposeRemove(node.inputs[key].id, inputs)
+            }
+        }
+        super.disposeRemove(id);
+    }
 
 
 

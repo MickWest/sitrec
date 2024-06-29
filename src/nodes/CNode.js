@@ -332,8 +332,10 @@ class CNode {
         if (nodeID instanceof CNode) {
             node = nodeID
         } else {
-            // if not a number, then it's a node name
-            if (typeof nodeID !== 'number') {
+
+
+            // if not a number or a vector, then it's a node name
+            if (typeof nodeID !== 'number' && nodeID.x === undefined) {
 
                 if (optional) {
                     // if optional, then do nothing if the node does not exist.
@@ -345,7 +347,7 @@ class CNode {
                 assert(node instanceof CNode, "Non-Node with id=" + nodeID + "  found for input key=" + key)
             }
             else {
-                // it's a number, so wrap it in a CNodeConstant
+                // it's a number or vector, so wrap it in a CNodeConstant
                 node = new CNodeConstant({
                     id: this.id+"_"+key,  // give it a unique id from node id plus input key
                     value: nodeID})
@@ -389,8 +391,8 @@ class CNode {
             if (NodeMan.exists(this.props[i]))
                 sourceNode = NodeMan.get(this.props[i])
             else {
-                // auto constants must be numbers
-                assert(typeof this.props[i] === 'number', "Node "+this.id+" has input "+i+" : "+this.props[i]+" which is not a node or number, probably name of noded that's not created")
+                // auto constants must be numbers or Vector3
+                assert(typeof this.props[i] === 'number' || this.props[i].x !== undefined, "Node "+this.id+" has input "+i+" : "+this.props[i]+" which is not a node or number, probably name of noded that's not created")
                 // it's not a node, and it is a number so wrap it in a CNodeConstant
 //                sourceNode = new CNodeConstant({value: this.props[i]})
                 // wrapping is now done in addInput, for consistent behavior

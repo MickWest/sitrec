@@ -389,6 +389,48 @@ export function isVisible(ob) {
 }
 
 
+// Recursive function to dispose of materials and geometries
+export function disposeObject(object) {
+
+    if (!object) return;
+
+    // if (object.type === 'Mesh' || object.type === 'Line' || object.type === 'Points') {
+    // Dispose geometry
+    if (object.geometry) {
+        object.geometry.dispose();
+    }
+
+    if (object.material) {
+        // Dispose materials
+        if (Array.isArray(object.material)) {
+            // In case of an array of materials, dispose each one
+            object.material.forEach(material => disposeMaterial(material));
+        } else {
+            // Single material
+            disposeMaterial(object.material);
+        }
+    }
+    //}
+
+    // Recurse into children
+    while (object.children.length > 0) {
+        disposeObject(object.children[0]);
+        object.remove(object.children[0]);
+    }
+}
+
+// Helper function to dispose materials and textures
+export function disposeMaterial(material) {
+    Object.keys(material).forEach(prop => {
+        if (material[prop] !== null && material[prop] != undefined && typeof material[prop].dispose === 'function') {
+            // This includes disposing textures, render targets, etc.
+            material[prop].dispose();
+        }
+    });
+    material.dispose(); // Dispose the material itself
+}
+
+
 // given a three.js scene, we can dispose of all the objects in it
 // this is used when we want to change scenes/sitches
 // we can't just delete the scene, as it's a THREE.Object3D, and we need to dispose of all the objects in it
@@ -398,45 +440,9 @@ export function disposeScene(scene) {
 
     if (scene === undefined) return;
 
-    // Recursive function to dispose of materials and geometries
-    function disposeObject(object) {
 
 
-       // if (object.type === 'Mesh' || object.type === 'Line' || object.type === 'Points') {
-            // Dispose geometry
-            if (object.geometry) {
-                object.geometry.dispose();
-            }
 
-            if (object.material) {
-                // Dispose materials
-                if (Array.isArray(object.material)) {
-                    // In case of an array of materials, dispose each one
-                    object.material.forEach(material => disposeMaterial(material));
-                } else {
-                    // Single material
-                    disposeMaterial(object.material);
-                }
-            }
-        //}
-
-        // Recurse into children
-        while (object.children.length > 0) {
-            disposeObject(object.children[0]);
-            object.remove(object.children[0]);
-        }
-    }
-
-    // Helper function to dispose materials and textures
-    function disposeMaterial(material) {
-        Object.keys(material).forEach(prop => {
-            if (material[prop] !== null && material[prop] != undefined && typeof material[prop].dispose === 'function') {
-                // This includes disposing textures, render targets, etc.
-                material[prop].dispose();
-            }
-        });
-        material.dispose(); // Dispose the material itself
-    }
 
     // Start the disposal process from the scene's children
     if (scene.children!== undefined) {
@@ -665,4 +671,6 @@ export function testColorCube(color, position, size, scene) {
 
 
 }
+
+
 

@@ -7,7 +7,8 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import * as LAYER from "../LayerMasks";
 import {
-    BoxGeometry,
+    Box3,
+    BoxGeometry, BoxHelper,
     CapsuleGeometry,
     CircleGeometry,
     Color,
@@ -30,13 +31,14 @@ import {
     TorusKnotGeometry, TubeGeometry, Vector2, Vector3,
     WireframeGeometry
 } from "three";
-import {Globals, guiMenus} from "../Globals";
+import {Globals, guiMenus, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
-import {disposeScene} from "../threeExt";
+import {disposeObject, disposeScene} from "../threeExt";
 import {loadGLTFModel} from "./CNode3DModel";
 import {V3} from "../threeUtils";
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
+import {CNodeMeasureAB} from "./CNodeLabels3D";
 
 const Models = {
 
@@ -481,6 +483,12 @@ export class CNode3DObject extends CNode3DGroup {
         // so they don't get deleted when we rebuild the GUI after object type change
         this.addParams(commonParams, this.common, this.gui, true); // add the common parameters to the GUI
 
+        this.displayBoundingBox = false;
+
+        this.gui.add(this, "displayBoundingBox").name("Display Bounding Box").listen().onChange((v) => {
+            this.rebuild();
+            par.renderOne = true
+        }).isCommon = true;
 
         this.rebuild();
 
@@ -668,6 +676,7 @@ export class CNode3DObject extends CNode3DGroup {
                         this.propagateLayerMask()
                         this.recalculate()
                         this.applyMaterialToModel();
+                        this.rebuildBoundingBox();
                     }
                 });
             }
@@ -686,6 +695,7 @@ export class CNode3DObject extends CNode3DGroup {
                     });
                 }
             }
+            this.rebuildBoundingBox();
             return;
         }
 
@@ -764,8 +774,139 @@ export class CNode3DObject extends CNode3DGroup {
         this.propagateLayerMask()
         this.recalculate()
 
+        this.rebuildBoundingBox();
 
 
+
+    }
+
+    rebuildBoundingBox()
+    {
+        // if we are displauing a bonding box, then do it
+        if (this.displayBoundingBox) {
+
+            if (this.boundingBox) {
+              //  disposeObject(this.boundingBox);
+              //  this.boundingBox.parent.remove(this.boundingBox)
+            }
+
+            if (this.modelOrGeometry === "model") {
+
+                //this.model.computeBoundingBox();
+
+                // we will need to do something like expondby object recursivly
+                // on the model's geometry (and children)
+
+                // probably best to detach the object from the group
+                // and then use 			_box.setFromObject( this.object );
+                // and then re-attach it
+                // so we get the transforms of children
+
+                // detach from the group
+                this.group.remove(this.model);
+
+                // ensure the matrix is up to date
+                this.model.updateMatrixWorld(true);
+
+                // store the original matrix
+                const matrix = this.model.matrix.clone();
+                // set the matrix to the identity
+                this.model.matrix.identity();
+                // update the world matrix
+                this.model.updateWorldMatrix(true, true);
+
+
+                this.boundingBox = new Box3();
+                this.boundingBox.setFromObject(this.model);
+
+                // restore the original matrix
+                this.model.matrix.copy(matrix);
+                this.model.updateWorldMatrix(true, true);
+                // re-attach to the group
+                this.group.add(this.model);
+
+
+
+            } else {
+                this.object.geometry.computeBoundingBox();
+                this.boundingBox = this.object.geometry.boundingBox;
+            }
+
+            //this.group.add(this.boundingBox);
+
+            // const position = this.boundingBox.geometry.attributes.position.array;
+            //
+            // // local bounding box is just the min and max of the geometry
+            // //
+            //
+            // function vertex(i) {
+            //     return V3(position[i * 3], position[i * 3 + 1], position[i * 3 + 2]);
+            // }
+
+            // const AX = vertex(0);
+            // const BX = vertex(1);
+            // const AY = vertex(0);
+            // const BY = vertex(3);
+            // const AZ = vertex(0);
+            // const BZ = vertex(4);
+
+            const min = this.boundingBox.min.clone();
+            const max = this.boundingBox.max.clone();
+
+            // transform them by this.group
+            min.applyMatrix4(this.group.matrixWorld);
+            max.applyMatrix4(this.group.matrixWorld);
+
+            // calculat all the corners of the bounding box
+            const corners = [];
+            for (let i = 0; i < 8; i++) {
+                const x = i & 1 ? max.x : min.x;
+                const y = i & 2 ? max.y : min.y;
+                const z = i & 4 ? max.z : min.z;
+                corners.push(V3(x, y, z));
+            }
+
+            // calculate three edges of the bounding box about the min point
+
+
+            const AX = corners[0];
+            const BX = corners[1];
+            const AY = corners[0];
+            const BY = corners[2];
+            const AZ = corners[0];
+            const BZ = corners[4];
+
+
+            //
+            NodeMan.disposeRemove(this.measureX, true);
+            NodeMan.disposeRemove(this.measureY, true);
+            NodeMan.disposeRemove(this.measureZ, true);
+            this.measureX = new CNodeMeasureAB({
+                id: this.id + "_AX",
+                A: AX,
+                B: BX,
+                color: "red",
+                text: "X",
+                unitSize: "small"
+            })
+            this.measureY = new CNodeMeasureAB({
+                id: this.id + "_AY",
+                A: AY,
+                B: BY,
+                color: "green",
+                text: "X",
+                unitSize: "small"
+            })
+            this.measureZ = new CNodeMeasureAB({
+                id: this.id + "_AZ",
+                A: AZ,
+                B: BZ,
+                color: "blue",
+                text: "X",
+                unitSize: "small"
+            })
+
+        }
     }
 
     rebuildMaterial()

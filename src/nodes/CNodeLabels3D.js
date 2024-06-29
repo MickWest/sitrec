@@ -194,6 +194,7 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         super(v);
         this.input("A");
         this.input("B");
+        this.input("color",true)
         this.update(0)
     }
 
