@@ -1735,26 +1735,11 @@ const stylesheet = `.lil-gui {
   border: none;
 }
 
-/* MICK - INDENT TOP-LEVEL FOLDERS 
-THIS IS LIKE THE NEXT ONE, BUT WITH ONE LESS .lil-gui 
-I also use a dark blue background and a thicker white left border
-to ensure the folder is visually distinctive
-*/
-.lil-gui .lil-gui > .children {
-    border: none;
-    margin-left: var(--folder-indent);
-    border: 1px solid #FFFFFF;
-    background: #202030;
-}
-/* END MICK */
-
 .lil-gui .lil-gui .lil-gui > .children {
   border: none;
   margin-left: var(--folder-indent);
   border-left: 2px solid var(--widget-color);
-  border: 1px solid #FFFFFF; // MICK
 }
-
 
 .lil-gui .lil-gui .controller {
   border: none;

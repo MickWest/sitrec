@@ -463,9 +463,11 @@ async function initializeOnce() {
 
     function injectExtraCSS(cssContent) {
         const styleElement = document.createElement('style');
-        styleElement.innerHTML = cssContent;
-        document.head.appendChild(styleElement);
+        styleElement.textContent = cssContent;
+        document.head.append(styleElement);
     }
+
+
 
     // after the gui has been created it will have injected its styles into the head
     // so we can now add our own styles

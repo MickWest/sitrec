@@ -53,7 +53,7 @@ a {
     background: rgba( 0, 0, 0, .6 );
 }
 
-/* https://lugolabs.com/flat-slider */
+/* lugolabs.com/flat-slider */
 
 
 // .flat-slider.ui-corner-all,
@@ -157,27 +157,22 @@ a {
   display: inline-block;
 }
 
-/*
 // INDENT TOP-LEVEL FOLDERS 
 // THIS IS LIKE .lil-gui .lil-gui .lil-gui > .children, BUT WITH ONE LESS .lil-gui 
 // I also use a dark blue background and a thicker white left border
 // to ensure the folder is visually distinctive
 
-// // THIS IS NOT WORKING
-// .lil-gui .lil-gui > .children {
-//     border: none;
-// //    margin-left: 7px;
-//     border: 1px solid #FFFFFF;
-//     background: #202030;
-// }
+.lil-gui .lil-gui > .children {
+    border: none;
+    border: 1px solid #FFFFFF;
+    background: #202030;
+}
 
-// // NOT THIS
-// .lil-gui .lil-gui .lil-gui > .children {
-//
-//     border-left: none;
-//     border: 1px solid #FFFFFF;
-// }
-*/
+.lil-gui .lil-gui .lil-gui > .children {
+
+    border-left: none;
+    border: 1px solid #FFFFFF;
+}
 
 body.hide-cursor {
     cursor: none;
