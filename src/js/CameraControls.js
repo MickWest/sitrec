@@ -507,6 +507,7 @@ class CameraMapControls {
 		var xAxis = new Vector3()
 		var yAxis = new Vector3()
 		var zAxis = new Vector3()
+		this.camera.updateMatrix();
 		this.camera.matrix.extractBasis(xAxis, yAxis, zAxis)
 		const up = getLocalUpVector(this.target, wgs84.RADIUS)
 		const alt = altitudeAboveSphere(this.camera.position);
