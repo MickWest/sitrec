@@ -1335,6 +1335,21 @@ class OptionController extends Controller {
 
         this.$select.replaceChildren();
 
+        // MICK Create and append the default option
+        if (this.object[this.property] === "-Select-") {
+            const $defaultOption = document.createElement('option');
+            $defaultOption.innerHTML = 'Select an option';
+            $defaultOption.value = '';
+            $defaultOption.disabled = true;
+            $defaultOption.selected = false;
+            this.$select.appendChild($defaultOption);
+
+            // add a dummy value to the start of the _values array
+            // so teh indexing is correct
+            this._values.unshift('DUMMYVALUE');
+
+        }
+
         this._names.forEach( name => {
             const $option = document.createElement( 'option' );
             $option.innerHTML = name;

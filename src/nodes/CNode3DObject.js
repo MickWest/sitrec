@@ -774,6 +774,11 @@ export class CNode3DObject extends CNode3DGroup {
         this.propagateLayerMask()
         this.recalculate()
 
+        // remove the BB measure, in case we don't rebuild them
+        NodeMan.disposeRemove(this.measureX, true);
+        NodeMan.disposeRemove(this.measureY, true);
+        NodeMan.disposeRemove(this.measureZ, true);
+
         this.rebuildBoundingBox();
 
 
@@ -869,9 +874,7 @@ export class CNode3DObject extends CNode3DGroup {
                 const BZ = corners[closest ^ 4];
 
                 //
-                NodeMan.disposeRemove(this.measureX, true);
-                NodeMan.disposeRemove(this.measureY, true);
-                NodeMan.disposeRemove(this.measureZ, true);
+
                 this.measureX = new CNodeMeasureAB({
                     id: this.id + "_AX",
                     A: AX,
