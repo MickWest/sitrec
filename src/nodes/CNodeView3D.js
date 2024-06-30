@@ -525,6 +525,10 @@ export class CNodeView3D extends CNodeViewCanvas {
     dispose() {
         super.dispose();
         this.renderer.dispose();
+        this.renderer.forceContextLoss();
+        this.renderer.context = null;
+        this.renderer.domElement = null;
+
         this.renderer = null;
         if (this.composer !== undefined) this.composer.dispose();
         this.composer = null;
