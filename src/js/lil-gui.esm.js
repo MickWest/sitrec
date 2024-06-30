@@ -1345,7 +1345,7 @@ class OptionController extends Controller {
             this.$select.appendChild($defaultOption);
 
             // add a dummy value to the start of the _values array
-            // so teh indexing is correct
+            // so the indexing is correct
             this._values.unshift('DUMMYVALUE');
 
         }
