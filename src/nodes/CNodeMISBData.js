@@ -167,7 +167,9 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
             // if (this.lastValidSlot === undefined || Math.abs(this.getAlt(this.lastValidSlot)) > 1000) {
             //     return false;
             // }
-            console.warn("Altitude is zero at slot " + slotNumber + " in track " + this.id+" (allowed, likely grounded plane)");
+            if (!this.warnedAboutZeroAltitude)
+                console.warn("Altitude is zero at slot " + slotNumber + " (and maybe others) in track " + this.id+" (allowed, likely grounded plane)");
+            this.warnedAboutZeroAltitude = true;
         }
 
 
