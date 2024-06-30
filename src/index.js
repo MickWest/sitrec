@@ -81,6 +81,7 @@ import {CGuiMenuBar} from "./lil-gui-extras";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 import {extraCSS} from "./extra.css.js";
+import {TrackManager} from "./TrackManager";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -1017,8 +1018,13 @@ function disposeEverything() {
     // so we need to make sure it knows it's been destroyed
     removeMeasurementUI();
 
+
+    // dispose the track manager managed nodes
+    TrackManager.disposeAll();
+
     // delete all the nodes (which should remove their GUI elements, but might not have implement that all. CNodeSwitch destroys)
     NodeMan.disposeAll();
+
 
     // dispose of any remaining GUI, except for the permanent folders and items
     Globals.menuBar.destroy(false);
