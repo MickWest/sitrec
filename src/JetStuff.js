@@ -1,7 +1,7 @@
 // A variety of functions related to the jet and the atflir pod orientation, and glare
 // so mostly related to Gimbal, GoFast, FLIR1 and Aguadilla
 
-import {EarthRadiusMiles, gui, guiPhysics, guiTweaks, infoDiv, NodeMan, Sit, Units} from "./Globals";
+import {EarthRadiusMiles, gui, guiMenus, guiPhysics, guiTweaks, infoDiv, NodeMan, Sit, Units} from "./Globals";
 import {par} from "./par";
 import {abs, cos, degrees, metersFromMiles, metersFromNM, radians} from "./utils";
 import {CueAz, EA2XYZ, EAJP2PR, getLocalUpVector, PRJ2XYZ, XYZ2EA} from "./SphericalMath";
@@ -739,7 +739,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             step: 0.01,
             desc: "Tgt Start Dist " + Units.bigUnitsAbbrev,
             color: "#FFC0C0"
-        }, guiPhysics))
+        }, guiMenus.traverse))
     }
 
 //    console.log("+++ LOSTraverse")
@@ -749,7 +749,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         startDist: "startDistance",
         VcMPH: new CNodeGUIValue({id: "targetVCGUI"+idExtra, value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"
         },
-            guiPhysics),
+            guiMenus.traverse),
     })
 
 
@@ -763,7 +763,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
                 end: Sit.targetSpeedMax,
                 step: Sit.targetSpeedStep,
                 desc: "Target Speed " + Units.speedUnits
-            }, guiPhysics))
+            }, guiMenus.traverse))
     }
 
     // Traverse at constant GROUND speed (using the above)
@@ -789,14 +789,14 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             wind: "targetWind"
         },
         airSpeed:true,
-    },guiPhysics)
+    },guiMenus.traverse)
 
     // as above, but interpolate between the start and end frames
     // remaining constant speed, but not necessarily on the LOS
     new CNodeInterpolateTwoFramesTrack({
         id: "LOSTraverseStraightConstantAir"+idExtra,
         source: "LOSTraverseConstantAirSpeed"+idExtra,
-    },guiPhysics)
+    },guiMenus.traverse)
 
 
     // In any Sitch we have an initialHeading and a relativeHeading
@@ -819,7 +819,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             name: "Initial",
             arrowColor: "green"
 
-        }, guiPhysics)
+        }, guiMenus.traverse)
     }
 
     if (!NodeMan.exists("targetRelativeHeading")) {
@@ -830,7 +830,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             end: 180,
             step: 0.01,
             desc: "Tgt Relative Heading"
-        }, guiPhysics)
+        }, guiMenus.traverse)
     }
 
     if (!NodeMan.exists("targetActualHeading")) {
@@ -843,7 +843,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
                 if (newHeading >= 360) newHeading -= 360
                 return newHeading
             }
-        }, guiPhysics)
+        }, guiMenus.traverse)
     }
     // and with that target heading we can try for a stright line traversal
     // currently very simplistic and does not work with noisy data.
@@ -896,7 +896,7 @@ export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra
         default: defaultTraverse,
         exportable: exportable,
 
-    }, guiPhysics)
+    }, guiMenus.traverse)
 
     // bit of a patch
     nodeMenu.frames = Sit.frames;

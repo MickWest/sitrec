@@ -313,8 +313,8 @@ export const SitAguadilla = {
         // The moving average smoothed jet track
         new CNodeSmoothedPositionTrack({ id:"jetTrackAverage",
             source: "jetTrack",
-            window: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Camera Smooth Window"},gui),
-            iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Camera Smooth Iterations"},gui),
+            window: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Camera Smooth Window"},guiMenus.camera),
+            iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Camera Smooth Iterations"},guiMenus.camera),
 
         })
 
@@ -325,8 +325,8 @@ export const SitAguadilla = {
             method:"catmull",
 //            method:"chordal",
 //            intervals: new CNodeGUIValue({value: 119, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-            intervals: new CNodeGUIValue({value: 20, start:1, end:200, step:1, desc:"Catmull Intervals"},gui),
-            tension: new CNodeGUIValue({value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension"},gui),
+            intervals: new CNodeGUIValue({value: 20, start:1, end:200, step:1, desc:"Catmull Intervals"},guiMenus.camera),
+            tension: new CNodeGUIValue({value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension"},guiMenus.camera),
         })
 
 //        new CNodeTransferSpeed({
@@ -402,7 +402,7 @@ export const SitAguadilla = {
 
         new CNodeSmoothedPositionTrack({ id:"targetTrackSmooth",
             source: "targetTrack",
-            window: new CNodeGUIValue({value: 1, start:1, end:1000, step:1, desc:"Target Smooth Value"},gui)
+            window: new CNodeGUIValue({value: 1, start:1, end:1000, step:1, desc:"Target Smooth Value"},guiMenus.physics)
         })
 
 

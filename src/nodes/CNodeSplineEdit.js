@@ -1,5 +1,5 @@
 import {SplineEditor} from "../SplineEditor";
-import {gui, NodeMan, Sit} from "../Globals";
+import {gui, guiMenus, NodeMan, Sit} from "../Globals";
 import {Vector3} from "three";
 import {PointEditor} from "../PointEditor";
 import {CNodeEmptyArray} from "./CNodeArray";
@@ -52,7 +52,7 @@ export class CNodeSplineEditor extends CNodeEmptyArray {
 
         this.enable = false;
 
-        this.gui = gui.addFolder("Spline " + this.id).close()
+        this.gui = guiMenus.physics.addFolder("Spline " + this.id).close()
         this.gui.add(this,"enable").onChange( v =>{
            this.splineEditor.setEnable(v)
         })

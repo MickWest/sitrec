@@ -2,7 +2,7 @@
 // we use this for the CNodeViewUI and the (upcoming) CNodeVideoView
 // passing in an "overlayView" parameter will attache
 import {CNodeView} from "./CNodeView";
-import {gui} from "../Globals";
+import {gui, guiMenus} from "../Globals";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 
 
@@ -31,12 +31,12 @@ export class CNodeViewCanvas extends CNodeView {
             new CNodeGUIValue({
                 id: this.id+"_transparency",
                 value: this.transparency, start: 0, end: 1, step: 0.01,
-                desc: "Transparency %",
+                desc: "Vid Overlay Trans %",
                 onChange: (value) => {
                     this.transparency = value;
                     this.canvas.style.opacity = this.transparency;
                 }
-            }, gui)
+            }, guiMenus.view)
         }
 
 

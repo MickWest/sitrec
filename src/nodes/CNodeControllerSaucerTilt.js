@@ -1,5 +1,5 @@
 import {CNodeController} from "./CNodeController";
-import {gui, NodeMan, Sit} from "../Globals";
+import {gui, guiMenus, NodeMan, Sit} from "../Globals";
 import {par} from "../par";
 import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";
 import {V3} from "../threeUtils";
@@ -18,7 +18,7 @@ export class CNodeControllerSaucerTilt extends CNodeController {
 
         // This ia specific to the flying saucer
         if (this.tiltType !== "banking" && !v.noMenu) {
-            gui.add(this,"tiltType",{
+            guiMenus.physics.add(this,"tiltType",{
                 banking:"banking",
                 frontPointing:"frontPointing",
                 frontPointingAir:"frontPointingAir",

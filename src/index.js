@@ -381,6 +381,8 @@ async function initializeOnce() {
     addGUIMenu("terrain", "Terrain");
     // these four have legacy globals
     var _guiPhysics = addGUIMenu("physics", "Physics");
+    addGUIMenu("traverse", "Traverse");
+    addGUIMenu("camera", "Camera");
     var _guiShowHide = addGUIMenu("showhide", "Show/Hide");
     var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
     var _guiTweaks = addGUIMenu("tweaks", "Effects" );

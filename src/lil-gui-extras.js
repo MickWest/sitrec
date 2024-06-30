@@ -3,6 +3,7 @@ import GUI, {Controller} from "./js/lil-gui.esm";
 import {updateSize} from "./JetStuff";
 import {ViewMan} from "./nodes/CNodeView";
 import {Globals} from "./Globals";
+import {assert} from "./assert";
 const Stats = require("stats.js");
 
 // Issue with lil-gui, the OptionController options() method adds a
@@ -158,8 +159,10 @@ export class CGuiMenuBar {
         this.divs = [];
         this.divWidth = 240; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
-        this.numSlots = 10; // number of emptyslots in the menu bar
+        this.numSlots = 20; // number of empty slots in the menu bar
         this.slots = []; // array of GUI objects
+
+        this.barHeight = 25; // height of the menu bar
 
         // create a div for the menu bar
         this.menuBar = document.createElement("div");
@@ -181,7 +184,7 @@ export class CGuiMenuBar {
         bar.style.position = "absolute";
         bar.style.top = "0px";
         bar.style.left = "0px";
-        bar.style.height = "24px";
+        bar.style.height = this.barHeight+"px"; // one pixel more than the menu title divs
         bar.style.width = "100%";
         bar.style.backgroundColor = "black";
         bar.style.borderBottom = "1px solid grey";
@@ -260,7 +263,7 @@ export class CGuiMenuBar {
 
         this._hidden = false;
 
-        viewMan.topPx = 24;
+        viewMan.topPx = this.barHeight;
     }
 
     hide() {
@@ -296,6 +299,8 @@ export class CGuiMenuBar {
         newGUI.$title.innerHTML = title;
 
 //        console.log("Adding GUI "+title+" at slot "+this.nextSlot+" with left "+this.totalWidth+"px")
+
+        assert (this.nextSlot < this.numSlots, "Too many GUIs in the menu bar");
 
         this.divs[this.nextSlot].style.left = this.totalWidth + "px";
 

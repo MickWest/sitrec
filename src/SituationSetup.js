@@ -457,7 +457,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 const lookCameraNode = NodeMan.get("lookCamera");
 
                 if (data.addFOVController) {
-                    gui.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
+                    guiMenus.camera.add(lookCameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
                         lookCameraNode.camera.updateProjectionMatrix()
                     }).listen().name("Look Camera FOV")
                 }
@@ -710,7 +710,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             const idObject = {id: addID};
             const showGUI = data.showGUI ?? true;
             NodeMan.get(camera).addController("PTZUI", {
-                gui: data.gui ?? gui, ...data, ...idObject, showGUI: showGUI});
+                gui: data.gui ?? guiMenus.camera, ...data, ...idObject, showGUI: showGUI});
 
             break;
 
@@ -817,7 +817,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                         end: 200,
                         step: 0.01,
                         desc: "Target Sphere size ft"
-                    }, gui)
+                    }, guiMenus.objects)
                 ),
                 layers: LAYER.MASK_LOOK,
                 color: data.color ?? "#FFFFFF"
@@ -978,7 +978,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                         end: 200,
                         step: 0.01,
                         desc: "Target Sphere size ft"
-                    }, gui)
+                    }, guiMenus.objects)
                 ),
                 layers: LAYER.MASK_LOOK,
                 color: "#00c000"  // green fixed relative to ground

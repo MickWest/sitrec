@@ -17,7 +17,7 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.roll = v.roll
 
         if (v.showGUI) {
-            const guiPTZ = v.gui ?? guiMenus.view;
+            const guiPTZ = v.gui ?? guiMenus.camera;
 
             guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)

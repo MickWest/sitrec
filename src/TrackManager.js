@@ -6,7 +6,7 @@ import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "three";
 import {getFileExtension, scaleF2M} from "./utils";
-import {FileManager, GlobalDateTimeNode, gui, NodeMan, Sit} from "./Globals";
+import {FileManager, GlobalDateTimeNode, gui, guiMenus, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
@@ -115,7 +115,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 end: 20000,
                 step: 0.1,
                 desc: "Target Sphere size ft"
-            }, gui)
+            }, guiMenus.objects)
         )
     }
 
