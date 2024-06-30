@@ -52,6 +52,12 @@ export const commonTrackToTrack = {
     lookAtTrack: {},  // and look at targetTrack
 }
 
+export const commonCompasses = {
+    compassMain: {kind: "CompassUI", camera: "mainCamera", relativeTo: "mainView", left: 0.0, top: 0.90, width: -1, height: 0.1},
+    compassLook: {kind: "CompassUI", camera: "lookCamera", relativeTo: "lookView", left: 0.0, top: 0.85, width: -1, height: 0.15},
+
+}
+
 // // common traverse nodes and UI
 // export const commonTraverse = {
 //

@@ -309,9 +309,6 @@ sitch = {
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
     },
 
-
-    compassMain: {kind: "CompassUI", camera: "mainCamera", relativeTo: "mainView", left: 0.0, top: 0.90, width: -1, height: 0.1},
-    compassLook: {kind: "CompassUI", camera: "lookCamera", relativeTo: "lookView", left: 0.0, top: 0.85, width: -1, height: 0.15},
-
+    include_Compasses: true,
 
 }

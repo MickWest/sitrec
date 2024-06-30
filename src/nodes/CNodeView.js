@@ -500,7 +500,7 @@ class CNodeView extends CNode {
 
                 if (this.doubleClickFullScreen) {
                     ViewMan.iterate((id,v) => {
-                        if (v !== this && v.overlayView !== this) {
+                        if (v !== this && v.overlayView !== this && v.in.relativeTo !== this) {
                             v.preFullScreenVisible = v.visible;
 //                            console.log("Hiding: "+v.id+" for full screen")
                             v.setVisible(false);
@@ -519,7 +519,7 @@ class CNodeView extends CNode {
                 this.updateWH()
                 if (this.doubleClickFullScreen) {
                     ViewMan.iterate((id, v) => {
-                        if (v !== this && v.overlayView !== this) {
+                        if (v !== this && v.overlayView !== this  && v.in.relativeTo !== this) {
     //                        console.log("Restoring visible: "+v.id+" to "+v.preFullScreenVisible)
                             v.setVisible(v.preFullScreenVisible);
                         }

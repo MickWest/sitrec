@@ -14,6 +14,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
 
         this.cx = 50;
         this.cy = 60;
+        this.doubleClickFullScreen = false;
     }
 
 
@@ -49,12 +50,26 @@ export class   CNodeCompassUI extends CNodeViewUI {
         c.strokeStyle = '#FFFFFF';
         c.lineWidth = 2.5;
         c.beginPath();
-        const length = 30
+        const length = 30;
+        const gap = 10;
+        const segment = (length ) / 2
         // rLine draws lines rotated about cx,cy
-        this.rLine(this.cx,this.cy+length,this.cx,this.cy-length,heading);
+        //this.rLine(this.cx,this.cy+length,this.cx,this.cy-length,heading);
+
+        this.rLine(this.cx,this.cy+length,this.cx,this.cy+gap,heading);
+        this.rLine(this.cx,this.cy-length,this.cx,this.cy-gap,heading);
+
+
         this.rLine(this.cx,this.cy-length,this.cx-3,this.cy-length*0.5,heading);
         this.rLine(this.cx,this.cy-length,this.cx+3,this.cy-length*0.5,heading);
         c.stroke();
+
+        // draw the letter N in the center
+        c.fillStyle = '#FFFFFF';
+        c.font = this.px(17)+'px Arial';
+        c.textAlign = 'center';
+        c.fillText('N', this.px(this.cx), this.py(this.cy+7));
+
 
     }
 

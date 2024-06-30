@@ -1,8 +1,6 @@
 import {par} from "../par";
 import {FileManager, gui, guiMenus, NodeMan, Sit} from "../Globals";
 import {
-    DirectionalLight,
-    HemisphereLight,
     AlwaysDepth
 } from "three";
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
@@ -10,7 +8,6 @@ import {VG, ViewMan} from "../nodes/CNodeView";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
-import {CNodeConstant} from "../nodes/CNode";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {
     CNodeArray,
@@ -32,13 +29,10 @@ import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "..
 import {DebugSphere} from "../threeExt";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
-import {Color} from "three";
 import {addControllerTo} from "../nodes/CNodeController";
-import {CNodeTransferSpeed} from "../nodes/CNodeTransferSpeed";
 import {CNodeSmoothedPositionTrack} from "../nodes/CNodeSmoothedPositionTrack";
 import {CNodeTrackClosest} from "../nodes/CNodeTrackClosest";
 import {assert} from "../assert.js";
-import {trackHeading} from "../trackUtils";
 import {MV3, V3} from "../threeUtils";
 
 export const SitAguadilla = {
@@ -158,6 +152,8 @@ export const SitAguadilla = {
 
     DisplayCameraFrustum: {targetTrack: "LOSTraverseSelectSmoothed", defer: true},
 
+    include_Compasses: true,
+
     setup: function() {
 
         assert(GlobalScene !== undefined,"Missing GlobalScene")
@@ -198,22 +194,6 @@ export const SitAguadilla = {
 
         }
 
-
-        // Lighting
-        var light = new DirectionalLight(0xffffff, 0.8);
-        light.position.set(100,1300,100);
-        light.layers.enable(LAYER.LOOK)
-        light.layers.enable(LAYER.MAIN)
-        GlobalScene.add(light);
-
-        const hemiLight = new HemisphereLight(
-            'white', // bright sky color
-            'darkslategrey', // dim ground color
-            0.3, // intensity
-        );
-        hemiLight.layers.enable(LAYER.LOOK)
-        hemiLight.layers.enable(LAYER.MAIN)
-        GlobalScene.add(hemiLight);
 
        function trackFromLatLonCSV(id, csvID, latIndex, lonIndex, altIndex, viaMidpoints){
            var points = []
@@ -649,7 +629,7 @@ export const SitAguadilla = {
             },
             desc: "LOS Target Track"
 
-        }, gui)
+        }, guiMenus.traverse)
 
 
         new CNodeLOSTrackTarget({id:"JetLOS",
@@ -705,7 +685,7 @@ export const SitAguadilla = {
             end: 180,
             step: 0.01,
             desc: "Tgt Preferred Heading"
-        }, gui)
+        }, guiMenus.traverse)
 
         CreateTraverseNodes();
 
@@ -727,7 +707,7 @@ export const SitAguadilla = {
             source: "LOSTraverseSelect",
 //            source: "lanternSplineEditor",  // PATCH!!!!
 
-            window: new CNodeGUIValue({value: 0, start:1, end:500, step:1, desc:"Traverse Smooth Window"},gui),
+            window: new CNodeGUIValue({value: 0, start:1, end:500, step:1, desc:"Traverse Smooth Window"},guiMenus.traverse),
             copyData: true,
         })
 
@@ -759,7 +739,7 @@ export const SitAguadilla = {
 */
 
         new CNodeScale("sizeScaled", scaleF2M,
-            new CNodeGUIValue({value:Sit.targetSize,start:1,end:2000, step:0.1, desc:"Target size ft"},gui)
+            new CNodeGUIValue({value:Sit.targetSize,start:1,end:2000, step:0.1, desc:"Target size ft"},guiMenus.objects)
         )
 
 
@@ -818,13 +798,13 @@ export const SitAguadilla = {
         const lookCamera = NodeMan.get("lookCamera").camera;
         // FOV in Three.js is vertical, which was not an issue with the square videos
         // but you need to be aware of it in things like thi
-        gui.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
+        guiMenus.camera.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
             lookCamera.fov = value
             lookCamera.updateProjectionMatrix()
             par.renderOne = true;
         }).listen().name("Look Cam FOV")
 
-        toggler('g', gui.add(par, 'showGraphs').listen().name("[G]raphs").onChange(value =>
+        toggler('g', guiMenus.view.add(par, 'showGraphs').listen().name("[G]raphs").onChange(value =>
             ViewMan.iterateTest(
                 (x) => {return x.constructor.name === 'CNodeCurveEditorView'},
                 (k,x) => {x.setVisible(value)}
