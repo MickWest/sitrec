@@ -93,7 +93,10 @@ let situation = "nightsky";
 
 // Some (essentially) global variables
 let urlParams;
+const sortedSitches = {};
 const selectableSitches = {};
+const builtInSitches = {};
+const toolSitches = {};
 let toTest;
 let testing = false;
 let container;
@@ -138,8 +141,6 @@ if (urlParams.get("custom")) {
         console.log("Result = "+data)
 
         const modObject = textSitchToObject(data);
-      //  let sitchObject = selectableSitches[modObject.modding]
-
 
         let sitchObject = SitchMan.findFirstData(s => {return s.data.name === modObject.modding;})
 
@@ -313,28 +314,35 @@ async function initializeOnce() {
 
     // Create the selectable sitches menu
 // basically anything that is not hidden and has a menuName
-    const selectableSitchesUnsorted = {}
+    const unsortedSitches = {}
     SitchMan.iterate((key, sitch) =>{
         if (sitch.hidden !== true && sitch.menuName !== undefined ) {
 
             if (isLocal && sitch.isSitKML)
                 sitch.menuName = sitch.menuName + " (KML)"
 
-            selectableSitchesUnsorted[sitch.menuName] = key;
+            unsortedSitches[sitch.menuName] = key;
         }
     })
+
 // Extract sitch keys (the lower case version of the name) and sort them
-    const sortedKeys = Object.keys(selectableSitchesUnsorted).sort();
+    const sortedKeys = Object.keys(unsortedSitches).sort();
 // Create a new sorted object
     sortedKeys.forEach(key => {
-        selectableSitches[key] = selectableSitchesUnsorted[key];
+        const sitchName = unsortedSitches[key];
+        const sitch = SitchMan.get(sitchName);
+        if (sitch.isTool)
+            toolSitches[key] = sitchName;
+        else
+            selectableSitches[key] = sitchName;
+        sortedSitches[key] = sitchName
     });
 // Add the "Test All" option which smoke-tests all sitches
 // and the "Test Here+" option (which does the same as test all, but starts at the current sitch)
 
-    selectableSitches["* Test All *"] = "testall";
-    selectableSitches["* Test Quick *"] = "testquick";
-    selectableSitches["* Test Here+ *"] = "testhere";
+    toolSitches["* Test All *"] = "testall";
+    toolSitches["* Test Quick *"] = "testquick";
+    toolSitches["* Test Here+ *"] = "testhere";
 
     console.log("SITREC START - Three.JS Revision = " + REVISION)
 
@@ -384,41 +392,55 @@ async function initializeOnce() {
 
     Globals.menuBar.infoGUI.title(process.env.BUILD_VERSION_STRING);
 
+    const unselectedText = "-Select-";
+
+    par.nameSelect = unselectedText;
     // Add the menu to select a situation
-// The onChange function will change the url to the new situation
-// which will cause the page to reload with the new situation
-// selectableSitches is defined in situations.js
-    _gui.add(par, "name", selectableSitches).name("Sitch").perm().listen().onChange(sitch => {
+    _gui.add(par, "nameSelect", selectableSitches).name("Built-in Sitch").perm().onChange(sitch => {
+        par.name = par.nameSelect;
+        console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.nameSelect)
+        var url = SITREC_ROOT+"?sitch=" + sitch
+        newSitch(sitch);
+        window.history.pushState({}, null, url);
+        par.nameSelect = unselectedText ;
+
+    })
+
+    // and one for tools
+    par.toolSelect = unselectedText;
+    _gui.add(par, "toolSelect", toolSitches).name("Tools").perm().listen().onChange(sitch => {
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
         var url = SITREC_ROOT+"?sitch=" + sitch
 
-        let nextSitch = sitch;
-
-// smoke test of everything after the current sitch
+// smoke test of everything after the current sitch in alphabetical order
         if (sitch === "testhere") {
             toTest = ""
             let skip = true;
-            for (var key in selectableSitches) {
+            for (var key in sortedSitches) {
                 if (skip) {
-                    if (selectableSitches[key] === situation)
+                    if (sortedSitches[key] === situation)
                         skip = false;
                 } else {
-                    if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testquick" && selectableSitches[key] !== "testhere")
-                        toTest += selectableSitches[key] + ",";
+                    //if (sortedSitches[key] !== "testall" && sortedSitches[key] !== "testquick" && sortedSitches[key] !== "testhere")
+                    if (SitchMan.exists(sortedSitches[key]))
+                        toTest += sortedSitches[key] + ",";
                 }
             }
             toTest+=situation  // end up back where we started
             checkForTest();
-          //  url = SITREC_ROOT + "?test="+toTest;
         } else {
-            newSitch(nextSitch);
+            newSitch(sitch);
         }
 
         // not loading the new sitch, so just change the URL of this page
         window.history.pushState({}, null, url);
-
-        //window.location.assign(url) //
+        par.toolSelect = unselectedText;
     })
+
+
+
+
+
 
     // setup the common keyboard handler
     initKeyboard();
@@ -828,9 +850,10 @@ function selectInitialSitch(force) {
 // which then gets passed as a URL, as above.
         if (urlParams.get("testAll")) {
             toTest = ""
-            for (const key in selectableSitches) {
-                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testquick" && selectableSitches[key] !== "testhere")
-                    toTest += selectableSitches[key] + ",";
+            for (const key in sortedSitches) {
+             //   if (sortedSitches[key] !== "testall" && sortedSitches[key] !== "testquick" && sortedSitches[key] !== "testhere")
+                if (SitchMan.exists(sortedSitches[key]));
+                    toTest += sortedSitches[key] + ",";
             }
             toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
             testing = true;
@@ -881,7 +904,7 @@ function selectInitialSitch(force) {
 
     par.name = lower;
 
-    const startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
+    let startSitch = SitchMan.findFirstData(s => {return lower === s.data.name;})
     assert(startSitch !== null, "Can't find startup Sitch: "+lower)
 
     console.log("");

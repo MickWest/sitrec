@@ -6,6 +6,7 @@ export const SitVideo = {
     name: "video",
     menuName: "Video Viewer",
     isTextable: false,
+    isTool: true,
 
     framesFromVideo: true,
 

@@ -2,6 +2,7 @@ export const SitLineTest = {
     name: "linetest",
     menuName: "Line Detector",
     isTextable: true,
+    isTool: true,
 
 
     files: {

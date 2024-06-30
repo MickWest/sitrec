@@ -2,6 +2,7 @@ export const SitSWRCSC = {
     name: "testcolors",                    // the name of the sitch, which we can use with "include_"
     menuName: "test colors",   // Name displayed in the menu
     isTextable: true,               // true if we can export and edit this sitch as a custom sitch
+    isTool: true,
 
 
     startTime: "2021-10-25T02:05:16.000Z",

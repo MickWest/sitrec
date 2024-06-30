@@ -6,6 +6,7 @@ export const SitRGB = {
     name: "rgb",
     menuName: "RGB Profile",
     isTextable: false,
+    isTool: true,
 
 
 

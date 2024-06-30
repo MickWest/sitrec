@@ -18,6 +18,7 @@ export const SitNightSky = {
     name: "nightsky",
     menuName: "Night Sky / Starlink",
     isTextable: false,
+    isTool: true,
 
 
     showDateTime: true, // opens the DateTime folder in the UI

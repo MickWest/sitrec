@@ -16,6 +16,7 @@ sitch = {
     menuName: "Custom (Drag and Drop)",
     isCustom: true,
     canMod: false, // this is a custom sitch, so does not use the "modding" system, instead exports all of this
+    isTool: true,
 
     startDistance: 1,
     startDistanceMin: 0.01,

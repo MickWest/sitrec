@@ -2,6 +2,7 @@ export const SitModelInspector = {
     name: "modelinspector",                    // the name of the sitch, which we can use with "include_"
     menuName: "Model Inspector",   // Name displayed in the menu
     isTextable: true,               // true if we can export and edit this sitch as a custom sitch
+    isTool: true,
 
 
     startTime: "2004-11-14T20:30:00.000Z",
