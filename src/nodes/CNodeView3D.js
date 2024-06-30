@@ -37,6 +37,7 @@ import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
+import {isLocal} from "../../config";
 
 
 function linearToSrgb(color) {
@@ -145,6 +146,11 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
             return;
+        }
+
+        if (!isLocal) {
+            console.warn("Disabling shader error checking for production performance");
+            this.renderer.debug.checkShaderErrors = false;
         }
 
         this.renderer.setPixelRatio(this.in.canvasWidth ? 1 : window.devicePixelRatio);
