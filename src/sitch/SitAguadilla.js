@@ -70,6 +70,15 @@ export const SitAguadilla = {
         aguaCSV: "agua/agua-frames-data.csv"
     },
 
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.85,
+        IRAmbientIntensity: 0.85,
+        sunIntensity: 1.2,
+        ambientOnly: false,
+
+    },
+
 
     mainCamera: {
         startCameraPosition: [-9851.407079455104, 2847.1976940099407, -2584.264310831998],
@@ -84,6 +93,7 @@ export const SitAguadilla = {
         left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,
         canvasWidth: "canvasResolution",
         canvasHeight: {id: "canvasHeight", kind: "Math", math: "$canvasResolution/1.5"},
+        isIR: true,
         effects: {
             FLIRShader: {},
 

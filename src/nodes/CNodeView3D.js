@@ -63,6 +63,8 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         super(v);
 
+        this.isIR = v.isIR ?? false;
+
         this.syncVideoZoom = v.syncVideoZoom ?? false;  // by default, don't sync the zoom with the video view, as we might not have a zoom controlelr
         this.syncPixelZoomWithVideo = v.syncPixelZoomWithVideo ?? false;
         this.background = v.background ?? new Color(0x000000);
@@ -345,10 +347,20 @@ export class CNodeView3D extends CNodeViewCanvas {
             }
 ////////////////////////////////////////////////////////////////
 
+
+            // if this is an IR viewport, then we need to render the IR ambient light
+            // instead of the normal ambient light.
+
+            if (this.isIR && this.effectsEnabled) {
+                NodeMan.get("lighting").setIR(true);
+            }
+
             // Render the scene to the off-screen canvas or render target
             this.renderer.render(GlobalScene, this.camera);
 
-
+            if (this.isIR && this.effectsEnabled) {
+                NodeMan.get("lighting").setIR(false);
+            }
 
             if (this.effectsEnabled) {
 

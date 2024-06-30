@@ -48,6 +48,18 @@ export class CNodeLighting extends CNode {
     }
 
 
+    setIR(on) {
+        if (on) {
+            Globals.IRAmbientLight.visible = true;
+            Globals.ambientLight.visible = false;
+            //Globals.sunLight.visible = false;
+        } else {
+            Globals.IRAmbientLight.visible = false;
+            Globals.ambientLight.visible = true;
+            //Globals.sunLight.visible = true;
+        }
+    }
+
     // for serialization, we don't need to do anything with the variables that were added with addGUIValue (hence addSimpleSerial)
     modSerialize() {
         return {...super.modSerialize()}
