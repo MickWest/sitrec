@@ -77,6 +77,18 @@ export class CNodeLabel3D extends CNode3DGroup {
 //            this.sprite.position.set(pos.x, pos.y, pos.z);
             this.position.copy(pos)
         }
+        this.input("color",true)
+
+        let color = '#FFFFFF';
+        if (this.in.color !== undefined) {
+            color = this.in.color.v(0)
+            // convert from THREE.Color to hex
+            if (color.getStyle !== undefined) {
+                color = color.getStyle();
+            }
+        }
+
+        this.sprite.color = color;
         this.sprite.layers.mask = v.layers ?? LAYER.MASK_HELPERS;
         this.group.add(this.sprite);
         this.isMeasurement = true;
@@ -194,7 +206,6 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         super(v);
         this.input("A");
         this.input("B");
-        this.input("color",true)
         this.update(0)
     }
 
@@ -209,9 +220,14 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         // and the same for B
         this.D = this.B.clone().lerp(midPoint, 0.9);
 
+        let color = 0x00FF00;
+        if (this.in.color !== undefined) {
+            color = this.in.color.v(f)
+        }
+
         // add an arrow from A to C and B to D
-        DebugArrowAB(this.id+"start", this.C, this.A, 0x00ff00, true, measureArrowGroupNode.group);
-        DebugArrowAB(this.id+"end", this.D, this.B, 0x00ff00, true, measureArrowGroupNode.group);
+        DebugArrowAB(this.id+"start", this.C, this.A, color, true, measureArrowGroupNode.group);
+        DebugArrowAB(this.id+"end", this.D, this.B, color, true, measureArrowGroupNode.group);
 
         const length = this.A.distanceTo(this.B);
         let text;

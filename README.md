@@ -211,6 +211,9 @@ A more complex sitch with a video, landscape, tracks, and complex computations
 - [Smoke Test](http://localhost/s/sitrec/?testAll=1)
 A smoke test that loads ALL the sitches one after another
 
+- [Quick Smoke Test](http://localhost/s/sitrec/?testAll=2)
+  A smoke test that loads ALL the sitches one after another as quickly as possible
+
 Failure could mean
 - PHP-fpm not running
 - php.ini missing extension=openssl

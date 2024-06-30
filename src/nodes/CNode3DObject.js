@@ -326,16 +326,16 @@ const gTypes = {
     tictac: {
         g: TicTacGeometry,
         params: {
-            radius: [5, 0.1, 30, 0.1],
-            totalLength: [20, 0.1, 50, 0.1],
+            radius: [2.6, 0.1, 30, 0.1],
+            totalLength: [12.2, 0.1, 50, 0.1],
             capSegments: [20, 4, 40, 1],
-            radialSegments: [20, 4, 40, 1],
+            radialSegments: [30, 4, 40, 1],
             legRadius: [0.28, 0.01, 5, 0.001],
-            legLength1: [2, 0.1, 10, 0.001],
-            legLength2: [2.5, -5, 5, 0.001],
-            legCurveRadius: [0.85, 0.0, 5, 0.001],
-            legOffset: [0.01, -10, 10, 0.001],
-            legSpacing: [7.6, 0.0, 20, 0.001],
+            legLength1: [1.4, 0.1, 10, 0.001],
+            legLength2: [1.4, -5, 5, 0.001],
+            legCurveRadius: [0.88, 0.0, 5, 0.001],
+            legOffset: [-0.45, -10, 10, 0.001],
+            legSpacing: [6.2, 0.0, 20, 0.001],
         }
 
 
@@ -780,75 +780,48 @@ export class CNode3DObject extends CNode3DGroup {
 
     }
 
-    rebuildBoundingBox()
+    rebuildBoundingBox(force = true)
     {
         // if we are displauing a bonding box, then do it
         if (this.displayBoundingBox) {
 
-            if (this.boundingBox) {
-              //  disposeObject(this.boundingBox);
-              //  this.boundingBox.parent.remove(this.boundingBox)
+            // only recalculate the box if forced
+            if (force) {
+
+                if (this.modelOrGeometry === "model") {
+                    // detach from the group
+                    this.group.remove(this.model);
+
+                    // ensure the matrix is up to date
+                    this.model.updateMatrixWorld(true);
+
+                    // store the original matrix
+                    const matrix = this.model.matrix.clone();
+                    // set the matrix to the identity
+                    this.model.matrix.identity();
+                    // update the world matrix
+                    this.model.updateWorldMatrix(true, true);
+
+
+                    this.boundingBox = new Box3();
+                    this.boundingBox.setFromObject(this.model);
+
+                    // restore the original matrix
+                    this.model.matrix.copy(matrix);
+                    this.model.updateWorldMatrix(true, true);
+                    // re-attach to the group
+                    this.group.add(this.model);
+
+                } else {
+                    this.object.geometry.computeBoundingBox();
+                    this.boundingBox = this.object.geometry.boundingBox;
+                }
             }
 
-            if (this.modelOrGeometry === "model") {
-
-                //this.model.computeBoundingBox();
-
-                // we will need to do something like expondby object recursivly
-                // on the model's geometry (and children)
-
-                // probably best to detach the object from the group
-                // and then use 			_box.setFromObject( this.object );
-                // and then re-attach it
-                // so we get the transforms of children
-
-                // detach from the group
-                this.group.remove(this.model);
-
-                // ensure the matrix is up to date
-                this.model.updateMatrixWorld(true);
-
-                // store the original matrix
-                const matrix = this.model.matrix.clone();
-                // set the matrix to the identity
-                this.model.matrix.identity();
-                // update the world matrix
-                this.model.updateWorldMatrix(true, true);
-
-
-                this.boundingBox = new Box3();
-                this.boundingBox.setFromObject(this.model);
-
-                // restore the original matrix
-                this.model.matrix.copy(matrix);
-                this.model.updateWorldMatrix(true, true);
-                // re-attach to the group
-                this.group.add(this.model);
-
-
-
-            } else {
-                this.object.geometry.computeBoundingBox();
-                this.boundingBox = this.object.geometry.boundingBox;
+            if (!this.boundingBox) {
+                return;
             }
 
-            //this.group.add(this.boundingBox);
-
-            // const position = this.boundingBox.geometry.attributes.position.array;
-            //
-            // // local bounding box is just the min and max of the geometry
-            // //
-            //
-            // function vertex(i) {
-            //     return V3(position[i * 3], position[i * 3 + 1], position[i * 3 + 2]);
-            // }
-
-            // const AX = vertex(0);
-            // const BX = vertex(1);
-            // const AY = vertex(0);
-            // const BY = vertex(3);
-            // const AZ = vertex(0);
-            // const BZ = vertex(4);
 
             const min = this.boundingBox.min.clone();
             const max = this.boundingBox.max.clone();
@@ -857,7 +830,7 @@ export class CNode3DObject extends CNode3DGroup {
             min.applyMatrix4(this.group.matrixWorld);
             max.applyMatrix4(this.group.matrixWorld);
 
-            // calculat all the corners of the bounding box
+            // calculate all the corners of the bounding box
             const corners = [];
             for (let i = 0; i < 8; i++) {
                 const x = i & 1 ? max.x : min.x;
@@ -866,46 +839,64 @@ export class CNode3DObject extends CNode3DGroup {
                 corners.push(V3(x, y, z));
             }
 
-            // calculate three edges of the bounding box about the min point
+            // calculate three edges of the bounding box about
+            // the corner which is closest to the camera
 
+            const cameraNode = NodeMan.get("mainCamera");
+            const camPos = cameraNode.camera.position;
+            let closest = 0;
+            let closestDist = 1000000;
+            for (let i = 0; i < 8; i++) {
+                const dist = corners[i].distanceTo(camPos);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closest = i;
+                }
+            }
 
-            const AX = corners[0];
-            const BX = corners[1];
-            const AY = corners[0];
-            const BY = corners[2];
-            const AZ = corners[0];
-            const BZ = corners[4];
+            // only rebuild it if the closest corner has changed
+            // or forced (some external change, like size)
+            if (force || this.lastClosest !== closest) {
 
+                this.lastClosest = closest;
 
-            //
-            NodeMan.disposeRemove(this.measureX, true);
-            NodeMan.disposeRemove(this.measureY, true);
-            NodeMan.disposeRemove(this.measureZ, true);
-            this.measureX = new CNodeMeasureAB({
-                id: this.id + "_AX",
-                A: AX,
-                B: BX,
-                color: "red",
-                text: "X",
-                unitSize: "small"
-            })
-            this.measureY = new CNodeMeasureAB({
-                id: this.id + "_AY",
-                A: AY,
-                B: BY,
-                color: "green",
-                text: "X",
-                unitSize: "small"
-            })
-            this.measureZ = new CNodeMeasureAB({
-                id: this.id + "_AZ",
-                A: AZ,
-                B: BZ,
-                color: "blue",
-                text: "X",
-                unitSize: "small"
-            })
+                // now we have the closest corner, we can calculate the three edges
+                const AX = corners[closest];
+                const BX = corners[closest ^ 1];
+                const AY = corners[closest];
+                const BY = corners[closest ^ 2];
+                const AZ = corners[closest];
+                const BZ = corners[closest ^ 4];
 
+                //
+                NodeMan.disposeRemove(this.measureX, true);
+                NodeMan.disposeRemove(this.measureY, true);
+                NodeMan.disposeRemove(this.measureZ, true);
+                this.measureX = new CNodeMeasureAB({
+                    id: this.id + "_AX",
+                    A: AX,
+                    B: BX,
+                    color: "#ff8080",
+                    text: "X",
+                    unitSize: "small"
+                })
+                this.measureY = new CNodeMeasureAB({
+                    id: this.id + "_AY",
+                    A: AY,
+                    B: BY,
+                    color: "#80ff80",
+                    text: "X",
+                    unitSize: "small"
+                })
+                this.measureZ = new CNodeMeasureAB({
+                    id: this.id + "_AZ",
+                    A: AZ,
+                    B: BZ,
+                    color: "#8080ff",
+                    text: "X",
+                    unitSize: "small"
+                })
+            }
         }
     }
 
@@ -1011,6 +1002,10 @@ export class CNode3DObject extends CNode3DGroup {
         this.group.scale.setScalar(scale);
     }
 
+    update(f) {
+        super.update(f);
+        this.rebuildBoundingBox(false);
+    }
 
 
 }

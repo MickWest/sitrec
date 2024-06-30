@@ -42,6 +42,8 @@ export class CNodeTerrainUI extends CNode {
         this.nTiles = 4;
         this.refresh = false;
 
+
+
         if (v.terrain) {
             this.terrainNode = NodeMan.get(v.terrain);
             this.lat = this.terrainNode.lat;
@@ -228,6 +230,11 @@ export class CNodeTerrain extends CNode {
         this.zoom = v.zoom;
         this.nTiles = v.nTiles;
         this.tileSegments = v.tileSegments ?? 100;
+
+
+        if (Globals.quickTerrain) {
+            this.nTiles = 1;
+        }
 
         // Important: The tile size calculation assumes a SPHERICAL Earth, not ellipsoid
         // and it uses the WGS84 circumference, radius 6378137, -> 40075016

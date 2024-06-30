@@ -15,8 +15,8 @@ export const SitModelInspector = {
 
     // a single camera, with the position and heading define by two LLA points
     mainCamera: {
-        startCameraPositionLLA:[40.257526,-109.890756,1625.739717],
-        startCameraTargetLLA:[40.264538,-109.896100,1196.552360],
+        startCameraPositionLLA:[40.257709,-109.890459,1609.477159],
+        startCameraTargetLLA:[40.261860,-109.900708,1442.610726],
     },
 
     canvasResolution: {kind: "GUIValue", value: 1600, start: 10, end: 2000, step: 1, desc: "Resolution"},
@@ -59,8 +59,8 @@ export const SitModelInspector = {
         geometry:"tictac",
 
         size: 1,
-        radius: 5,
-        totalLength:20,
+        radius: 2.6,
+        totalLength:12.2,
 
         width: 3,
         height: 4,

@@ -174,7 +174,7 @@ startAnimating(Sit.fps);
 // We continutally check to see if we are testing
 
 const testCheckInterval = 1000;
-setTimeout( checkForTest, testCheckInterval);
+setTimeout( checkForTest, Globals.quickTerrain?1:testCheckInterval);
 setTimeout( checkForNewSitchText, 500);
 
 // **************************************************************************************************
@@ -200,6 +200,8 @@ function checkForTest() {
 
     } else {
         testing = false;
+        Globals.quickTerrain = false;
+
     }
 }
 
@@ -246,7 +248,7 @@ async function newSitch(situation, customSetup = false ) {
     legacySetup();
     await setupFunctions();
     startAnimating(Sit.fps);
-    setTimeout( checkForTest, testCheckInterval);
+    setTimeout( checkForTest, Globals.quickTerrain?1:testCheckInterval);
 }
 
 async function initializeOnce() {
@@ -331,6 +333,7 @@ async function initializeOnce() {
 // and the "Test Here+" option (which does the same as test all, but starts at the current sitch)
 
     selectableSitches["* Test All *"] = "testall";
+    selectableSitches["* Test Quick *"] = "testquick";
     selectableSitches["* Test Here+ *"] = "testhere";
 
     console.log("SITREC START - Three.JS Revision = " + REVISION)
@@ -400,7 +403,7 @@ async function initializeOnce() {
                     if (selectableSitches[key] === situation)
                         skip = false;
                 } else {
-                    if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                    if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testquick" && selectableSitches[key] !== "testhere")
                         toTest += selectableSitches[key] + ",";
                 }
             }
@@ -826,11 +829,17 @@ function selectInitialSitch(force) {
         if (urlParams.get("testAll")) {
             toTest = ""
             for (const key in selectableSitches) {
-                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testhere")
+                if (selectableSitches[key] !== "testall" && selectableSitches[key] !== "testquick" && selectableSitches[key] !== "testhere")
                     toTest += selectableSitches[key] + ",";
             }
             toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
             testing = true;
+
+            console.log(urlParams.get("testAll"));
+            const testType = urlParams.get("testAll")
+            if (testType === "2")
+                Globals.quickTerrain = true;
+
         }
 
 // toTest is a comma separated list of situations to test
@@ -863,6 +872,10 @@ function selectInitialSitch(force) {
 
     if (lower === "testall") {
         const url = SITREC_ROOT + "?testAll=1"
+        window.location.assign(url)
+    }
+    if (lower === "testquick") {
+        const url = SITREC_ROOT + "?testAll=2"
         window.location.assign(url)
     }
 
