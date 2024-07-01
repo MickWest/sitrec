@@ -315,7 +315,9 @@ export class CGuiMenuBar {
                     div.style.display = "none";
                 } else {
                     div.style.display = "block";
-                    div.style.left = x+"px";
+                    if (!gui.lockOpenClose) {
+                        div.style.left = x + "px";
+                    }
                     x += getTextWidth(gui.$title.innerText) + 16;
                 }
             }
