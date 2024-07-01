@@ -13,7 +13,7 @@ export const SitAFR179 = {
 
     nightsky:true,
 
-    frames: 1256, // 157 * 8, // currently needs manual setting
+    frames: 1248, // 156 * 8, // currently needs manual setting
     videoSpeed: 8,
 
     terrain: {lat: 37.897411, lon: -84.402051, zoom: 9, nTiles: 8},
