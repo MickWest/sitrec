@@ -243,6 +243,10 @@ export class CGuiMenuBar {
     }
 
     updateListeners() {
+
+        this.hideEmpty();
+
+
         this.slots.forEach((gui) => {
             gui.updateListeners();
         })
@@ -297,6 +301,28 @@ export class CGuiMenuBar {
         })
     }
 
+    hideEmpty() {
+        let x = 0;
+        for (let i = 0; i < this.numSlots; i++) {
+            const gui = this.slots[i];
+            if (gui) {
+                const div = this.divs[i];
+
+
+
+                if (gui.children.length === 0) {
+                    gui.close();
+                    div.style.display = "none";
+                } else {
+                    div.style.display = "block";
+                    div.style.left = x+"px";
+                    x += getTextWidth(gui.$title.innerText) + 16;
+                }
+            }
+
+        }
+    }
+
     // creates a gui, adds it into the next menu slot
     // and returns it.
     // called addFolder to maintain compatibility with a single gui system under dat.gui
@@ -318,7 +344,7 @@ export class CGuiMenuBar {
         // // give the div a colored border
         // this.divs[this.nextSlot].style.border = "1px solid "+ divDebugColor[this.nextSlot % divDebugColor.length];
 
-        const width = getTextWidth(title) + 16;
+        const width = getTextWidth(newGUI.$title.innerHTML) + 16;
        // this.divs[this.nextSlot].style.width = width + "px";
        // this.divs[this.nextSlot].style.height = "1 px";
         this.totalWidth += width;

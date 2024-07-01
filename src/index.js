@@ -228,7 +228,7 @@ async function newSitch(situation, customSetup = false ) {
     window.history.pushState({}, null, url);
 
     // close all the menus, and reattach them to the bar
-    // otherwise it gets messy
+    // otherwise it gets messy using an old menu config in a new sitch.
     Globals.menuBar.reset();
 
     cancelAnimationFrame(animate);
