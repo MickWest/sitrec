@@ -455,7 +455,7 @@ export const SitFlir1 = {
     flir1LegacyCode: {},
 
     useRealisticLights: true,
-    nightSky: {showEquatorialGridLook:false},
+   // nightSky: {showEquatorialGridLook:false},
 
 
     // TODO - make the night sky only appear in daytime...
