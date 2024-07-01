@@ -85,7 +85,7 @@ export const SitJellyfish    = {
     },
 
     // only needed as the speed graph needs it. Fix that in the graph and delete this
-    targetWind: {kind: "Wind", from: 270, knots: 0,name: "Target", arrowColor: "cyan", gui: "Tweaks"},
+    targetWind: {kind: "Wind", from: 270, knots: 0,name: "Target", arrowColor: "cyan", gui: "physics"},
 
     // the direction of the straight line traversal of the LOS
     initialHeading: {kind: "Heading", heading: 81, name: "Target", arrowColor: "green"},
