@@ -794,7 +794,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
         case "targetObject":
             SSLog();
             node = new CNodeDisplayTargetModel({
-                id: data.id ?? "targetObjectModel",
+                id: data.id ?? "targetObject",
                 track: data.track ?? "targetTrack",
                 TargetObjectFile: data.file,
                 wind: data.wind ?? undefined,

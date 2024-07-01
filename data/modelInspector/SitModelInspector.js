@@ -54,7 +54,7 @@ export const SitModelInspector = {
 
     lookView: {left:0.5, top:0, width:0.5,height:1, background: [0.53, 0.81, 0.92],},
 
-    inspectedObject: {kind: "3DObject",
+    targetObject: {kind: "3DObject",
 
         //model:"F/A-18F",
         geometry:"tictac",
@@ -74,11 +74,11 @@ export const SitModelInspector = {
         heightSegments:20,
 
     },
-    fixPosition: {kind: "TrackPosition", object: "inspectedObject", sourceTrack: "fixedTargetPosition"},
+    fixPosition: {kind: "TrackPosition", object: "targetObject", sourceTrack: "fixedTargetPosition"},
 
-    axes: {kind:"DebugMatrixAxes", object: "inspectedObject", length: 25},
+    axes: {kind:"DebugMatrixAxes", object: "targetObject", length: 25},
 
-    arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "inspectedObject", length: 10, color: "#FFFF00"},
+    arrowToSun: {kind: "CelestialArrow", body: "Sun", object: "targetObject", length: 10, color: "#FFFF00"},
 
     theSun: {kind: "Sunlight"},
    // theSky: {kind: "DaySky"},
@@ -99,5 +99,7 @@ export const SitModelInspector = {
 
     paused: true,
     useGlobe: true,
+    dragDropHandler: true,
+    
 
 }

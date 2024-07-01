@@ -384,6 +384,7 @@ export class CVideoWebCodecData extends CVideoData {
 
         // if it's already loading, then we are good, don't need to do anything with this request
         const group = this.getGroup(frame);
+        assert(group !== null, "group not found for frame "+frame)
         if (group.loaded || group.pending > 0)
             return;
 

@@ -2,12 +2,14 @@ import {CNode} from "./CNode";
 import {guiShowHide, mainLoopCount, NodeFactory} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert.js";
+import {normalizeLayerType} from "../utils";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
 // Mostly to allow hooking up of controllers, which previous were camera-only
 export class CNode3D extends CNode {
     constructor(v) {
         super(v);
+        v.layers = normalizeLayerType(v.layers)
         this._object = null;    // a 3D object
     }
 

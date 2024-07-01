@@ -29,17 +29,7 @@ export class CNode3DGroup extends CNode3D {
 
         this._object = new Group()
 
-        // if v.layers is a string then it's a layer make name
-        // so we prepend it with MASK_ to get the layer mask index
-        // and then get the value from the LAYER object
-        // so             layers: "HELPERS",
-        // becomes         layers: LAYER.MASK_HELPERS,
-
-
-        v.layers = normalizeLayerType(v.layers)
-
         this._object.layers.mask = v.layers ?? 1 // 1 is just the default layer 0 (1<<0)
-
 
         this.container.add(this._object)
 

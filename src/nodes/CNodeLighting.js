@@ -2,6 +2,7 @@ import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {AmbientLight, DirectionalLight} from "three";
 import {GlobalScene} from "../LocalFrame";
 import {CNode} from "./CNode";
+import * as LAYER from "../LayerMasks";
 import {assert} from "../assert";
 
 // by default this will live in one node "lighting"
@@ -23,15 +24,18 @@ export class CNodeLighting extends CNode {
 
 
         Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity);
+        Globals.ambientLight.layers.mask = LAYER.MASK_LIGHTING
         GlobalScene.add(Globals.ambientLight);
 
         Globals.IRAmbientLight = new AmbientLight(0xFFFFFF, 10*this.IRAmbientIntensity);
+        Globals.IRAmbientLight.layers.mask = LAYER.MASK_LIGHTING
         GlobalScene.add(Globals.IRAmbientLight);
         // this light is disabled, and only gets used when rendering an IR viewport
         Globals.IRAmbientLight.visible = false;
 
         // then sunlight is direct light
         Globals.sunLight = new DirectionalLight(0xFFFFFF, 3);
+        Globals.sunLight.layers.mask = LAYER.MASK_LIGHTING
         Globals.sunLight.position.set(0,7000,0);  // sun is along the y axis
         if (Globals.shadowsEnabled) {
 

@@ -6,6 +6,7 @@ import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
 import {textSitchToObject} from "./RegisterSitches";
+import {ModelFiles} from "./nodes/CNode3DObject";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -30,13 +31,16 @@ class CDragDropHandler {
         dropZone.style.display = 'flex';
         dropZone.style.justifyContent = 'center';
         dropZone.style.alignItems = 'center';
-        dropZone.style.fontSize = '24px';
+        dropZone.style.fontSize = '48px';
         dropZone.style.color = '#fff';
         dropZone.style.transition = 'background-color 0.2s';
         dropZone.style.pointerEvents = 'none';
         dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
         dropZone.innerHTML = 'DROP FILES HERE';
         dropZone.style.visibility = 'hidden'; // Initially hidden
+        // 10px red border
+        dropZone.style.border = '10px solid red';
+        dropZone.style.boxSizing = 'border-box';
 
         document.body.appendChild(dropZone);
 
@@ -250,6 +254,19 @@ class CDragDropHandler {
                 copy = textSitchToObject(decodedString);
             }
             setNewSitchText(copy)
+        } else if (fileExt === "glb") {
+            // it's a model, so we can replace the model used in targetModel
+            // we have filename, and we can just set
+            ModelFiles[filename] = {file: filename};
+            if (NodeMan.exists("targetObject")) {
+                const target = NodeMan.get("targetObject");
+                target.modelOrGeometry = "model"
+                target.selectModel = filename;
+                target.rebuild();
+                // woudl also need to add it to the gui
+            }
+
+
         }
     }
 

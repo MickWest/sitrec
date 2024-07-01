@@ -25,7 +25,7 @@ export const MASK_TARGET = (1<<TARGET)     // things that are targets, like the 
 // Lighitng applies to all non-helpers
 // generally this is just going to be stuff in WORLD group
 // very few real ussage of this just MASK_MAIN or MASK_LOOK
-export const MASK_LIGHTING = MASK_WORLD | MASK_MAIN | MASK_LOOK;
+export const MASK_LIGHTING = MASK_WORLD | MASK_MAIN | MASK_LOOK | MASK_TARGET;
 
 export const MASK_MAINRENDER = MASK_WORLD | MASK_MAIN | MASK_HELPERS
 export const MASK_LOOKRENDER = MASK_WORLD | MASK_LOOK | MASK_TARGET;

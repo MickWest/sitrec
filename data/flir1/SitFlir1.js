@@ -42,7 +42,9 @@ export const SitFlir1 = {
     focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"effects"},
 
 
-    mainView: {left: 0, top: 0, width: 1, height: 1, background: "#505070"},
+    mainView: {left: 0, top: 0, width: 1, height: 1, background: "#505070",
+     //   layers: "TARGETRENDER",  // just render the target with no effects
+    },
 
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
       //   lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
@@ -163,7 +165,7 @@ export const SitFlir1 = {
         fovOverride: 0.055,
         camera:"lookCamera",
         background: "#B8B8B8",
-        layers: "TARGETRENDER",  // just render the target with no effects
+        layers: "TARGET",  // just render the target with no effects
     },
 
 
@@ -368,7 +370,7 @@ export const SitFlir1 = {
 
     },
 
-    // TargetObjectModel: { kind: "DisplayTargetModel",
+    // targetObject: { kind: "DisplayTargetModel",
     //     track: "LOSTraverseSelect",
     //     TargetObjectFile: "TargetObjectFile",
     //     wind:"targetWind",
@@ -376,7 +378,7 @@ export const SitFlir1 = {
     // },
 
 
-    TargetObjectModel: { kind: "3DObject",
+    targetObject: { kind: "3DObject",
         // geometry: "box",
         // size: 1,
         // radius: 10,
@@ -399,14 +401,14 @@ export const SitFlir1 = {
         emissive: '#404040',
 
         name: "Target",
-        layers: "TARGETRENDER",
+        layers: "TARGET",
 
     },
 
     angleOfAttack: {kind: "GUIValue", value: 3.8, start: -90, end: 90, step: 1, desc: "Angle of Attack", gui:"physics"},
     
-    moveTargetAlongPath: {kind: "TrackPosition", object: "TargetObjectModel", sourceTrack: "LOSTraverseSelect"},
-    orientTarget: {kind: "ObjectTilt", object: "TargetObjectModel", track: "LOSTraverseSelect", tiltType: "banking", angleOfAttack: "angleOfAttack"},
+    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "LOSTraverseSelect"},
+    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelect", tiltType: "banking", angleOfAttack: "angleOfAttack"},
 
 
 

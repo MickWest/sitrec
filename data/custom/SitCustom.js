@@ -251,7 +251,7 @@ sitch = {
     //     color: [0,0,1],
     // },
 
-    sphereTraverse: { kind: "3DObject",
+    targetObject: { kind: "3DObject",
         geometry: "box",
         layers: "TARGETRENDER",
         size: 1,
@@ -267,8 +267,8 @@ sitch = {
         widthSegments:20,
         heightSegments:20,
     },
-    moveTargetAlongPath: {kind: "TrackPosition", object: "sphereTraverse", sourceTrack: "LOSTraverseSelectTrack"},
-    orientTarget: {kind: "ObjectTilt", object: "sphereTraverse", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
+    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "LOSTraverseSelectTrack"},
+    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
 
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},

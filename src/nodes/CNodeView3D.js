@@ -1,6 +1,6 @@
 import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
-import {f2m} from "../utils";
+import {f2m, normalizeLayerType} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
 import {Globals, gui, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
 import {GlobalDaySkyScene, GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
@@ -63,8 +63,11 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         super(v);
 
+
         this.isIR = v.isIR ?? false;
         this.fovOverride = v.fovOverride;
+        this.layers = normalizeLayerType(v.layers) ?? undefined; // leaving it undefined will use the camera layers
+
 
         this.syncVideoZoom = v.syncVideoZoom ?? false;  // by default, don't sync the zoom with the video view, as we might not have a zoom controlelr
         this.syncPixelZoomWithVideo = v.syncPixelZoomWithVideo ?? false;
@@ -356,14 +359,28 @@ export class CNodeView3D extends CNodeViewCanvas {
                 NodeMan.get("lighting").setIR(true);
             }
 
+            // viewport setting for fov, layer mask, override camera settings
+            // but we want to preserve the camera settings
+
             const oldFOV = this.camera.fov;
             if (this.fovOverride !== undefined) {
                 this.camera.fov = this.fovOverride;
                 this.camera.updateProjectionMatrix();
             }
 
+            const oldLayers = this.camera.layers.mask;
+            if (this.layers !== undefined) {
+                this.camera.layers.mask = this.layers;
+            }
+
+
             // Render the scene to the off-screen canvas or render target
             this.renderer.render(GlobalScene, this.camera);
+
+            if (this.layers !== undefined) {
+                this.camera.layers.mask = oldLayers;
+            }
+
 
             if (this.fovOverride !== undefined) {
                 this.camera.fov = oldFOV;

@@ -627,6 +627,11 @@ export function stringToArrayBuffer(str) {
     return buf;
 }
 
+// if layers is a string then it's a layer make name
+// so we prepend it with MASK_ to get the layer mask index
+// and then get the value from the LAYER object
+// so             layers: "HELPERS",
+// becomes         layers: LAYER.MASK_HELPERS,
 export function normalizeLayerType(layers) {
     if (typeof layers === "string") {
         var layerName = layers;

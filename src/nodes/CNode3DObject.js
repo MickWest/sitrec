@@ -34,21 +34,21 @@ import {
 import {Globals, guiMenus, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
-import {disposeObject, disposeScene} from "../threeExt";
+import {disposeObject, disposeScene, propagateLayerMaskObject, setLayerMaskRecursive} from "../threeExt";
 import {loadGLTFModel} from "./CNode3DModel";
 import {V3} from "../threeUtils";
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import {CNodeMeasureAB} from "./CNodeLabels3D";
 
-const Models = {
+export const ModelFiles = {
 
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/F-15.glb',},
-    "737 MAX 8 (AA)":       { file: 'data/models/737_MAX_8_AA.glb',},
+    "737 MAX 8 BA":       { file: 'data/models/737 MAX 8 BA.glb',},
     "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
-    "DC-10":                { file: 'data/models/DC-10.glb',},
+//    "DC-10":                { file: 'data/models/DC-10.glb',},
     "WhiteCube":            { file: 'data/models/white-cube.glb',},
    // "PinkCube":             { file: 'data/models/pink-cube.glb',},
     "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
@@ -438,7 +438,7 @@ export class CNode3DObject extends CNode3DGroup {
         this.input("size", true); // size input is optional
 
         this.color = v.color;
-
+        this.layers = v.layers; // usually undefined, as the camera handles layers
 
         let menuName = this.props.name ?? this.id;
         this.gui = guiMenus.objects.addFolder("3D Ob: " + menuName).close()
@@ -471,7 +471,7 @@ export class CNode3DObject extends CNode3DGroup {
         this.modelOrGeometryMenu.isCommon = true;
 
         this.selectModel = v.model ?? "F/A-18F";
-        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Model").onChange((v) => {
+        this.modelMenu = this.gui.add(this, "selectModel", Object.keys(ModelFiles)).name("Model").onChange((v) => {
             this.modelOrGeometry = "model"
             this.rebuild();
             par.renderOne = true
@@ -652,7 +652,7 @@ export class CNode3DObject extends CNode3DGroup {
             //this.destroyNonCommonUI(this.gui);
 
             // load the model if different, this will be async
-            const model = Models[this.selectModel];
+            const model = ModelFiles[this.selectModel];
 
             if (model !== this.currentModel || newType) {
 
@@ -822,6 +822,11 @@ export class CNode3DObject extends CNode3DGroup {
                     this.model.updateWorldMatrix(true, true);
                     // re-attach to the group
                     this.group.add(this.model);
+
+                    if (this.layers) {
+                        this.group.layers.mask = this.layers;
+                        propagateLayerMaskObject(this.group);
+                    }
 
                 } else {
                     this.object.geometry.computeBoundingBox();
