@@ -53,7 +53,7 @@ sitch = {
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 
-    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
+    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"effects"},
 
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
 
@@ -301,12 +301,12 @@ sitch = {
 
 
     shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
-        frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
-        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
-        multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"tweaks"},
-        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
-        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
-        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
+        frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"effects"},
+        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"effects"},
+        multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"effects"},
+        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"effects"},
+        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"effects"},
+        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"effects"},
     },
 
     include_Compasses: true,

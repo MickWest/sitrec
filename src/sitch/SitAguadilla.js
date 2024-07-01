@@ -87,7 +87,7 @@ export const SitAguadilla = {
     mainView: {left: 0.0, top: 0, width: 1, height: 1, fov:50, background: '#005000'},
 
 
-    canvasResolution: {kind: "GUIValue", value: 720, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
+    canvasResolution: {kind: "GUIValue", value: 720, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"effects"},
 
     lookView: {
         left: 0.6250, top: 1 - 0.5, width: -1.5, height: 0.5,

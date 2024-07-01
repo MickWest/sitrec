@@ -27,4 +27,12 @@ export const SitDAL2158 = {
     lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},
     include_TrackToTrack: true,
     targetSizedSphere: { size:200 },
+
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.85,
+    },
+
+    include_compasses: true,
+
 }

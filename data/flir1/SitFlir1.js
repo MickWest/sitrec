@@ -37,9 +37,9 @@ export const SitFlir1 = {
 
     lookCamera: {},
 
-    canvasResolution: {kind: "GUIValue", value: 484, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"tweaks"},
+    canvasResolution: {kind: "GUIValue", value: 484, start: 10, end: 1000, step: 1, desc: "Resolution", gui:"effects"},
 
-    focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"tweaks"},
+    focus: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"effects"},
 
 
     mainView: {left: 0, top: 0, width: 1, height: 1, background: "#505070"},
@@ -335,12 +335,12 @@ export const SitFlir1 = {
     ATFLIRCamera: {object: "lookCamera", focalMode: "focalMode", zoomMode: "zoomMode"},
 
     shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
-        frequency: {kind: "GUIValue", value: 0.276, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"tweaks"},
-        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"tweaks"},
-        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"tweaks"},
-        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"tweaks"},
-        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"tweaks"},
-        multiply: {kind: "GUIValue",  value: 1, start: 1, end: 10, step: 1, desc: "Shake Multiply", gui:"tweaks"},
+        frequency: {kind: "GUIValue", value: 0.276, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"effects"},
+        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"effects"},
+        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"effects"},
+        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"effects"},
+        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"effects"},
+        multiply: {kind: "GUIValue",  value: 1, start: 1, end: 10, step: 1, desc: "Shake Multiply", gui:"effects"},
     },
 
 

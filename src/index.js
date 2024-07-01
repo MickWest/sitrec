@@ -388,7 +388,7 @@ async function initializeOnce() {
     addGUIMenu("camera", "Camera");
     var _guiShowHide = addGUIMenu("showhide", "Show/Hide");
     var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
-    var _guiTweaks = addGUIMenu("tweaks", "Effects" );
+    var _guiTweaks = addGUIMenu("effects", "Effects" );
     addGUIMenu("lighting", "Lighting")
 
     // legacy accessor variables. can also use guiMenus.physics, etc

@@ -896,7 +896,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 max: data.max,
                 name: "Target",
                 arrowColor: "red"
-            }, gui)
+            }, guiPhysics)
             break;
 
         case "objectWind":
@@ -908,7 +908,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 max: data.max,
                 name: "Object",
                 arrowColor: "cyan"
-            }, gui)
+            }, guiPhysics)
             break;
 
         case "localWind":
@@ -920,7 +920,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 max: data.max,
                 name: "Local",
                 arrowColor: "yellow"
-            }, gui)
+            }, guiPhysics)
             break;
 
         case "losTarget":
