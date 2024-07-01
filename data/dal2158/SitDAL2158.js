@@ -33,6 +33,6 @@ export const SitDAL2158 = {
         ambientIntensity: 0.85,
     },
 
-    include_compasses: true,
+    include_Compasses: true,
 
 }
