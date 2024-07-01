@@ -46,5 +46,9 @@ export const SitArea6 = {
 
     compassMain: {kind: "CompassUI", camera: "mainCamera", left: 0.0, top: 0.90, width: -1, height: 0.1},
 
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.45,
+    },
 
 }

@@ -3,6 +3,10 @@ export const SitAriel = {
     menuName: "Ariel School",
     isTextable: true,
 
+    startTime: "1994-09-16T08:00:00.000Z",
+    timeZone: "EET",
+
+
     terrain: {lat: -17.863574, lon: 31.290858, zoom: 15, nTiles: 3, tileSegments: 256},
 
     mainCamera: {
