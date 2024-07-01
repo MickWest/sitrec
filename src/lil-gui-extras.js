@@ -590,10 +590,15 @@ export class CGuiMenuBar {
 
 }
 
+const textWidths = {};
 
 // text width helper function
 // assumes the default lil-gui font
 function getTextWidth(text) {
+    // cache values, as it's an expensive calculation
+    if (textWidths[text] !== undefined) {
+        return textWidths[text];
+    }
     // Create a temporary element
     const element = document.createElement('span');
     // Apply styles from the stylesheet
@@ -610,6 +615,7 @@ function getTextWidth(text) {
     const width = element.offsetWidth;
     // Remove the temporary element
     document.body.removeChild(element);
+    textWidths[text] = width;
     return width;
 }
 

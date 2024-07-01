@@ -163,6 +163,7 @@ export const SitFlir1 = {
         fovOverride: 0.055,
         camera:"lookCamera",
         background: "#B8B8B8",
+        layers: "TARGETRENDER",  // just render the target with no effects
     },
 
 
@@ -398,7 +399,7 @@ export const SitFlir1 = {
         emissive: '#404040',
 
         name: "Target",
-        layers: "LOOKRENDER",
+        layers: "TARGETRENDER",
 
     },
 

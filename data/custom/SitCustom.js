@@ -253,7 +253,7 @@ sitch = {
 
     sphereTraverse: { kind: "3DObject",
         geometry: "box",
-        layers: "LOOKRENDER",
+        layers: "TARGETRENDER",
         size: 1,
         radius: 10,
 
