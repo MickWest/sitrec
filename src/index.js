@@ -227,6 +227,9 @@ async function newSitch(situation, customSetup = false ) {
     var url = SITREC_ROOT+"?sitch=" + situation
     window.history.pushState({}, null, url);
 
+    // close all the menus, and reattach them to the bar
+    // otherwise it gets messy
+    Globals.menuBar.reset();
 
     cancelAnimationFrame(animate);
     console.log("%%%%% BEFORE the two AWAITS %%%%%%%%")

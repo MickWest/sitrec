@@ -2233,7 +2233,7 @@ class GUI {
      * gui.open( gui._closed ); // toggle
      */
     open( open = true ) {
-        if (this._lockOpenClose) return; // MICK
+        if (this.lockOpenClose) return; // MICK
 
         this._setClosed( !open );
 

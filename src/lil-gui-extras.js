@@ -128,7 +128,7 @@ export class CGuiMenuBar {
             // For the menu bar, we need to modify the lil-gui code
             // removing the transition logic.
             GUI.prototype.openAnimated = function(open = true) {
-                if (this._lockOpenClose) return;
+                if (this.lockOpenClose) return;
 
                 // Set state immediately
                 this._setClosed(!open);
@@ -290,6 +290,13 @@ export class CGuiMenuBar {
         }
     }
 
+    reset() {
+        this.slots.forEach((gui) => {
+            this.restoreToBar(gui);
+            gui.close();
+        })
+    }
+
     // creates a gui, adds it into the next menu slot
     // and returns it.
     // called addFolder to maintain compatibility with a single gui system under dat.gui
@@ -388,7 +395,7 @@ export class CGuiMenuBar {
 
         newDiv.style.left = newGUI.originalLeft + "px";
         newDiv.style.top = newGUI.originalTop + "px";
-        newGUI._lockOpenClose = false;
+        newGUI.lockOpenClose = false;
         newGUI.mode = "DOCKED";
     }
 
@@ -416,11 +423,11 @@ export class CGuiMenuBar {
             if (newGUI._closed) {
                 // in case we got locked into a closed state
                 // (dragged menus are always open)
-                newGUI._lockOpenClose = false;
+                newGUI.lockOpenClose = false;
                 newGUI.open();
                 // lock it open
             }
-            newGUI._lockOpenClose = true;
+            newGUI.lockOpenClose = true;
 
 
             newDiv.style.left = (parseInt(newDiv.style.left) + event.clientX - mouseX) + "px";
@@ -503,6 +510,55 @@ export class CGuiMenuBar {
         }
 
     }
+
+    getSerialID(slot) {
+        return this.slots[slot].$title.innerHTML
+    }
+
+    modSerialize( ) {
+
+        // serialize the GUIs by index
+        // as we have issue with nested structures
+        // each entry has a uniquie key
+        const out  = {};
+        for (let i = 0; i < this.slots.length; i++) {
+            const gui = this.slots[i];
+            out[this.getSerialID(i)] = {
+                closed: gui._closed,
+                left: gui.domElement.parentElement.style.left,
+                top: gui.domElement.parentElement.style.top,
+                mode: gui.mode,
+                lockOpenClose: gui.lockOpenClose,
+            };
+        }
+
+        return out;
+    }
+
+
+    modDeserialize( v ) {
+        const guiData = v;
+        for (let i = 0; i < this.slots.length; i++) {
+            const key = this.getSerialID(i);
+            if (v[key] !== undefined) {
+                const gui = this.slots[i];
+                const data = guiData[key];
+                gui._closed = data.closed;
+                gui.domElement.parentElement.style.left = data.left;
+                gui.domElement.parentElement.style.top = data.top;
+                gui.mode = data.mode;
+                gui.lockOpenClose = data.lockOpenClose;
+                if (gui.lockOpenClose) {
+                    // really we only lock them open
+                    gui.lockOpenClose = false;
+                    gui.open();
+                    gui.lockOpenClose = true;
+                }
+            }
+        }
+
+    }
+
 
 }
 

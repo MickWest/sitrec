@@ -236,6 +236,8 @@ export class CCustomManager {
 
             out.modUnits = Units.modSerialize()
 
+            out.guiMenus = Globals.menuBar.modSerialize()
+
 
             // convert to a string
             let str = JSON.stringify(out, null, 2)
@@ -340,6 +342,10 @@ export class CCustomManager {
             // apply the units, etc
             if (sitchData.modUnits) {
                 Units.modDeserialize(sitchData.modUnits)
+            }
+
+            if (sitchData.guiMenus) {
+                Globals.menuBar.modDeserialize(sitchData.guiMenus)
             }
 
             // recalculate everything after the mods
