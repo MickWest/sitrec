@@ -43,6 +43,7 @@ import {CNodeMeasureAB} from "./CNodeLabels3D";
 const Models = {
 
     "F/A-18E/F" :           { file: 'data/models/FA-18F.glb',},
+    "F-15":                 { file: 'data/models/F-15.glb',},
     "737 MAX 8 (AA)":       { file: 'data/models/737_MAX_8_AA.glb',},
     "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
@@ -774,10 +775,14 @@ export class CNode3DObject extends CNode3DGroup {
         this.propagateLayerMask()
         this.recalculate()
 
+
         // remove the BB measure, in case we don't rebuild them
         NodeMan.disposeRemove(this.measureX, true);
+        this.measureX  = undefined;
         NodeMan.disposeRemove(this.measureY, true);
+        this.measureY  = undefined;
         NodeMan.disposeRemove(this.measureZ, true);
+        this.measureZ  = undefined;
 
         this.rebuildBoundingBox();
 
@@ -787,6 +792,7 @@ export class CNode3DObject extends CNode3DGroup {
 
     rebuildBoundingBox(force = true)
     {
+
         // if we are displauing a bonding box, then do it
         if (this.displayBoundingBox) {
 
@@ -874,6 +880,9 @@ export class CNode3DObject extends CNode3DGroup {
                 const BZ = corners[closest ^ 4];
 
                 //
+                NodeMan.disposeRemove(this.measureX, true);
+                NodeMan.disposeRemove(this.measureY, true);
+                NodeMan.disposeRemove(this.measureZ, true);
 
                 this.measureX = new CNodeMeasureAB({
                     id: this.id + "_AX",
