@@ -6,9 +6,10 @@ import {V3} from "../threeUtils";
 import {Matrix4} from "three";
 import {radians} from "../utils";
 import {getGlareAngleFromFrame} from "../JetStuff";
+import {getLocalUpVector} from "../SphericalMath";
 
 
-export class CNodeControllerSaucerTilt extends CNodeController {
+export class CNodeControllerObjectTilt extends CNodeController {
     constructor(v) {
         super(v);
 
@@ -32,6 +33,9 @@ export class CNodeControllerSaucerTilt extends CNodeController {
             }).name("Object Orientation type")
                 .listen(()=>{par.renderOne = true})
         }
+
+        // optional input for the angle of attack
+        this.input("angleOfAttack",true);
 
     }
 
@@ -73,7 +77,7 @@ export class CNodeControllerSaucerTilt extends CNodeController {
                         // around the track direction
 
                         const sampleDuration = 1;
-                        // first get the
+                        // first get the angular velocity
                         const velocityA = trackDirection(this.in.track, f - sampleDuration * Sit.fps / 2)
                         const velocityB = trackDirection(this.in.track, f + sampleDuration * Sit.fps / 2)
                         const velocity = trackVelocity(this.in.track, f)
@@ -102,8 +106,16 @@ export class CNodeControllerSaucerTilt extends CNodeController {
                         // and rotate the model about fwd by the bank angle
                         const m = new Matrix4()
                         m.makeRotationAxis(fwd, bankAngle)
-
                         object.rotateOnWorldAxis(fwd, bankAngle);
+
+                        if (this.in.angleOfAttack !== undefined) {
+                            const aoa = this.in.angleOfAttack.v(f)
+                            const aoaRad = radians(aoa)
+                            const up = getLocalUpVector(object.position)
+                            const left = up.cross(fwd)
+                            object.rotateOnWorldAxis(left, -aoaRad)
+                        }
+
                         object.updateMatrix()
                         object.updateMatrixWorld()
 

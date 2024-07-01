@@ -46,7 +46,7 @@ export const SitFlir1 = {
 
 //    lookView: {left: 0.653, top: 0.6666, width: -1, height: 0.3333,
       //   lookView: {left: 0.653, top: 0.625, width: -1, height: 0.375,
-        lookView: {left: 0.74, top: 0.0, width: -1, height: 0.5,
+    lookView: {left: 0.74, top: 0.0, width: -1, height: 0.5,
 
 
         canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
@@ -156,6 +156,16 @@ export const SitFlir1 = {
           backgroundTV: "#000000",
           backgroundIR: "#000000",
     },
+
+    lookView2: { kind: "View3D",
+        left: 0.66, top: 0.3, width: .08, height: -1,
+        draggable:true,resizable:true,shiftDrag:true,freeAspect:false,
+        fovOverride: 0.055,
+        camera:"lookCamera",
+        background: "#B8B8B8",
+    },
+
+
 
     videoView: {left: 0.74, top: 0.5, width: -1, height: 0.5,},
     labelView: {dateTimeY:90},
@@ -376,12 +386,12 @@ export const SitFlir1 = {
         // widthSegments:20,
         // heightSegments:20,
 
-        geometry: "capsule",
-        radius:4.3,
-        length:12,
+        geometry: "tictac",
+        radius:2.8,
+        totalLength:12,
 
 
-        model:"F/A-18E/F",
+        model:"F/A-18F",
 
         material: "lambert",
         color: "#FFFFFF",
@@ -392,8 +402,10 @@ export const SitFlir1 = {
 
     },
 
+    angleOfAttack: {kind: "GUIValue", value: 3.8, start: -90, end: 90, step: 1, desc: "Angle of Attack", gui:"physics"},
+    
     moveTargetAlongPath: {kind: "TrackPosition", object: "TargetObjectModel", sourceTrack: "LOSTraverseSelect"},
-    orientTarget: {kind: "SaucerTilt", object: "TargetObjectModel", track: "LOSTraverseSelect", tiltType: "banking"},
+    orientTarget: {kind: "ObjectTilt", object: "TargetObjectModel", track: "LOSTraverseSelect", tiltType: "banking", angleOfAttack: "angleOfAttack"},
 
 
 

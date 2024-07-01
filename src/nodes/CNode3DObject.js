@@ -42,7 +42,7 @@ import {CNodeMeasureAB} from "./CNodeLabels3D";
 
 const Models = {
 
-    "F/A-18E/F" :           { file: 'data/models/FA-18F.glb',},
+    "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/F-15.glb',},
     "737 MAX 8 (AA)":       { file: 'data/models/737_MAX_8_AA.glb',},
     "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
@@ -188,7 +188,7 @@ const gTypes = {
     sphere: {
         g: SphereGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             widthSegments: [10, 4, 40, 1],
             heightSegments: [10, 3, 40, 1],
         }
@@ -196,16 +196,16 @@ const gTypes = {
     box: {
         g: BoxGeometry,
         params: {
-            width: [1, 0.1, 100, 0.1],
-            height: [1, 0.1, 100, 0.1],
-            depth: [1, 0.1, 100, 0.1],
+            width: [1, 0.1, 100, 0.01],
+            height: [1, 0.1, 100, 0.01],
+            depth: [1, 0.1, 100, 0.01],
         }
     },
     capsule: {
         g: CapsuleGeometryTL,
         params: {
-            radius: [0.5, 0.1, 20, 0.1],
-            totalLength: [5, 0.1, 30, 0.1],
+            radius: [0.5, 0.1, 20, 0.01],
+            totalLength: [5, 0.1, 30, 0.01],
             capSegments: [20, 4, 40, 1],
             radialSegments: [20, 4, 40, 1],
         }
@@ -214,7 +214,7 @@ const gTypes = {
     circle: {
         g: CircleGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             segments: [10, 3, 100, 1],
         }
     },
@@ -222,8 +222,8 @@ const gTypes = {
     cone: {
         g: ConeGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
-            height: [1, 0, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
+            height: [1, 0, 100, 0.01],
             radialSegments: [10, 4, 40, 1],
             heightSegments: [10, 3, 40, 1],
         }
@@ -232,8 +232,8 @@ const gTypes = {
     cylinder: {
         g: CylinderGeometry,
         params: {
-            radiusTop: [0.5, 0.1, 100, 0.1],
-            radiusBottom: [0.5, 0.1, 100, 0.1],
+            radiusTop: [0.5, 0.1, 100, 0.01],
+            radiusBottom: [0.5, 0.1, 100, 0.01],
             height: [1, 0, 100, 0.1],
             radialSegments: [10, 4, 40, 1],
             heightSegments: [10, 3, 40, 1],
@@ -246,7 +246,7 @@ const gTypes = {
     dodecahedron: {
         g: DodecahedronGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             detail: [0, 0, 5, 1],
         }
     },
@@ -254,7 +254,7 @@ const gTypes = {
     icosahedron: {
         g: IcosahedronGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             detail: [0, 0, 5, 1],
         }
     },
@@ -262,7 +262,7 @@ const gTypes = {
     octahedron: {
         g: OctahedronGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             detail: [0, 0, 5, 1],
         }
     },
@@ -284,7 +284,7 @@ const gTypes = {
     tetrahedron: {
         g: TetrahedronGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             detail: [0, 0, 5, 1],
         }
     },
@@ -292,7 +292,7 @@ const gTypes = {
     torus: {
         g: TorusGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             tube: [0.15, 0.01, 100, 0.01],
             radialSegments: [10, 3, 100, 1],
             tubularSegments: [20, 3, 100, 1],
@@ -303,7 +303,7 @@ const gTypes = {
     torusknot: {
         g: TorusKnotGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.1],
+            radius: [0.5, 0.1, 100, 0.01],
             tube: [0.15, 0.01, 100, 0.01],
             tubularSegments: [64, 3, 100, 1],
             radialSegments: [8, 3, 100, 1],
@@ -315,8 +315,8 @@ const gTypes = {
     superegg: {
         g: SuperEggGeometry,
         params: {
-            radius: [0.5, 0.1, 30, 0.1],
-            length: [4, 0.1, 20, 0.1],
+            radius: [0.5, 0.1, 30, 0.01],
+            length: [4, 0.1, 20, 0.01],
             sharpness: [5.5, 0.1, 10, 0.1],
             widthSegments: [20, 4, 40, 1],
             heightSegments: [20, 3, 40, 1],
@@ -327,8 +327,8 @@ const gTypes = {
     tictac: {
         g: TicTacGeometry,
         params: {
-            radius: [2.6, 0.1, 30, 0.1],
-            totalLength: [12.2, 0.1, 50, 0.1],
+            radius: [2.6, 0.1, 30, 0.01],
+            totalLength: [12.2, 0.1, 50, 0.01],
             capSegments: [20, 4, 40, 1],
             radialSegments: [30, 4, 40, 1],
             legRadius: [0.28, 0.01, 5, 0.001],
@@ -470,7 +470,7 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.modelOrGeometryMenu.isCommon = true;
 
-        this.selectModel = v.model ?? "F/A-18E/F";
+        this.selectModel = v.model ?? "F/A-18F";
         this.modelMenu = this.gui.add(this, "selectModel", Object.keys(Models)).name("Model").onChange((v) => {
             this.modelOrGeometry = "model"
             this.rebuild();

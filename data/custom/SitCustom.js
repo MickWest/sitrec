@@ -241,7 +241,7 @@ sitch = {
     },
 
 
-    // WHY does smoothing lose the heading info for SaucerTilt
+    // WHY does smoothing lose the heading info for ObjectTilt
    // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
 
     // sphereTraverse: { kind: "DisplayTargetSphere",
@@ -268,7 +268,7 @@ sitch = {
         heightSegments:20,
     },
     moveTargetAlongPath: {kind: "TrackPosition", object: "sphereTraverse", sourceTrack: "LOSTraverseSelectTrack"},
-    orientTarget: {kind: "SaucerTilt", object: "sphereTraverse", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
+    orientTarget: {kind: "ObjectTilt", object: "sphereTraverse", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
 
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},

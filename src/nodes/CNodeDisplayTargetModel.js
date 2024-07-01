@@ -12,7 +12,7 @@ export class CNodeDisplayTargetModel extends CNode3DModel {
 
         // split this into bank and saucer tilt
         // note backwards compatiability patch to get the tracks from the inputs
-        this.addController("SaucerTilt", {
+        this.addController("ObjectTilt", {
             tiltType: v.tiltType,
             track:    v.track    ?? this.in.track,
             wind:     v.wind,

@@ -43,7 +43,7 @@ const situationDefaults = {
     satScale: 1,
     satCutOff: 0,
 
-    targetSize:1,   // the diameter of the default target sphere F/A-18E/F wingspan = 45 feet
+    targetSize:1,   // the diameter of the default target sphere F/A-18F wingspan = 45 feet
 
     // Display Units
     //bigUnits: "NM",

@@ -476,12 +476,32 @@ class CNodeView extends CNode {
                     }
                     console.log("Doubling: "+this.id+" to "+this.width+","+this.height)
                 } else {
-                    if (this.width > 0) {
-                        this.width = 1;
-                    }
-                    if (this.height > 0) {
-                        this.height = 1;
-                    }
+
+                    // let aspect;
+                    // if (this.width>0 && this.height>0) {
+                    //     aspect = this.width/this.height;
+                    // } else {
+                    //     if (this.width<0) {
+                    //         aspect = -this.width;
+                    //     } else {
+                    //         aspect = -1/this.height;
+                    //     }
+                    // }
+                    // if (aspect > 1) {
+                    //     this.width = 1;
+                    //     this.height = 1/aspect;
+                    // }
+
+                    this.width = 1;
+                    this.height = 1;
+
+                    // if (this.width > 0) {
+                    //     this.width = 1;
+                    // }
+                    // if (this.height > 0) {
+                    //     this.height = 1;
+                    // }
+                    // problem if we have height = -1, meaning a fucntion of width
 
                     this.left = 0;
                     this.top = 0;
