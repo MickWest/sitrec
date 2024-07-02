@@ -9,6 +9,7 @@ My goal here is to create a tool to effectively analyze UAP/UFO cases, and to sh
 - [Sitrec on Metabunk](https://www.metabunk.org/sitrec).
 - [No-code tutorial on creating a custom Sitch](./docs/CustomSitches.md)
 - [File Rehosting and Server Configuration](./docs/FileRehosting.md)
+- [Custom Models and 3D Object](docs/CustomModels.md)
 
 The most common use case is to display three views:
 - A video of a UAP situation 
