@@ -54,10 +54,11 @@ import {CManager} from "../CManager";
 
 
 
+// Note these files are CASE SENSIVE. Mac OS is case insensitive, so be careful. (e.g. F-15.glb will not work on my deployed server)
 export const ModelFiles = {
 
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
-    "F-15":                 { file: 'data/models/F-15.glb',},
+    "F-15":                 { file: 'data/models/f-15.glb',},
     "737 MAX 8 BA":       { file: 'data/models/737 MAX 8 BA.glb',},
     "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
