@@ -35,7 +35,7 @@ This is called via Rehoster.rehostFile, which returns a promise
     }
 ```
 
-You can use the promise returned by teh  function Rehoster.waitForAllRehosts() to ensure it has all been uploaded. 
+You can use the promise returned by the function Rehoster.waitForAllRehosts() to ensure it has all been uploaded. 
 
 Currently error handling is minimal.
 

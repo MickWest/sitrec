@@ -105,7 +105,7 @@ export class CCustomManager {
                 }
 
                 // the files object is the rehosted files
-                // files will be reference in switches using their original file names
+                // files will be reference in sitches using their original file names
                 // we have rehosted them, so we need to create a new "files" object
                 // that uses the rehosted file names
                 // maybe special case for the video file ?

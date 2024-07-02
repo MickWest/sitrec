@@ -56,6 +56,13 @@ export class CFileManager extends CManager {
         //
     }
 
+    // a file is unhosted if it's flagged as a dynamic link, and has no static URL
+    isUnhosted(id) {
+        const f = this.list[id];
+        assert(f, `Checking unhosted on missing file, id =${id}`);
+        return (f.dynamicLink && !f.staticURL);
+    }
+
     loginAttempt(callback, button = this.permaButton, rename = "Permalink", color="#FFFFFF") {
         asyncCheckLogin().then(() => {
             if (Globals.userID > 0) {

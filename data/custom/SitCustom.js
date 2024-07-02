@@ -71,7 +71,7 @@ sitch = {
                 }},
             // Noise comes AFTER focus, becuase it's on the sensor
             StaticNoise: {inputs:{
-                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
+                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount", gui:"effects"},
                 }},
             Greyscale:{id:"Custom_GreyScale", enabled: false},
             Invert: {id:"Custom_Invert", enabled: false},
@@ -79,11 +79,11 @@ sitch = {
             Custom_Levels: {
                 kind: "Levels",
                 inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
-                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
-                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
-                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
-                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black", gui:"effects"},
+                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White", gui:"effects"},
+                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma", gui:"effects"},
+                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black", gui:"effects"},
+                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White", gui:"effects"},
 
                 },
                 enabled: true,
@@ -274,7 +274,12 @@ sitch = {
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
 
 
-    focusTracks:{},
+    focusTracks:{
+        "Ground (no track)": "default",
+        "Sensor (camera) track": "cameraTrackSwitch",
+        "Traverse Path (UFO)": "LOSTraverseSelectTrack"
+    },
+
 
     // for each type of files that is dropped (e.g. KLV, CSV, video)
     // specify what switch nodes will be updated with this new option

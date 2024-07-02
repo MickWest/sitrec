@@ -31,7 +31,7 @@ import {
     TorusKnotGeometry, TubeGeometry, Vector2, Vector3,
     WireframeGeometry
 } from "three";
-import {Globals, guiMenus, NodeMan} from "../Globals";
+import {FileManager, Globals, guiMenus, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
 import {disposeObject, disposeScene, propagateLayerMaskObject, setLayerMaskRecursive} from "../threeExt";
@@ -39,6 +39,20 @@ import {loadGLTFModel} from "./CNode3DModel";
 import {V3} from "../threeUtils";
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import {CNodeMeasureAB} from "./CNodeLabels3D";
+import {CManager} from "../CManager";
+//
+// class CModelManager extends CManager {
+//     constructor(initialModels) {
+//         super();
+//         for (const key in initialModels) {
+//             this.add(key, initialModels[key]);
+//         }
+//     }
+//
+//
+// }
+
+
 
 export const ModelFiles = {
 
@@ -56,6 +70,8 @@ export const ModelFiles = {
     "Saucer":               { file: 'data/models/saucer01a.glb',},
 
 }
+
+
 
 
 // Custom geometries
@@ -652,21 +668,43 @@ export class CNode3DObject extends CNode3DGroup {
             //this.destroyNonCommonUI(this.gui);
 
             // load the model if different, this will be async
+            // here this.selectModel is the NAME of the model (id or drag and drop filename
+            // and this.currentModel points to a model def object (which currently just just a file)
+            // so this.currentModel.file is the filename of the last loaded file
             const model = ModelFiles[this.selectModel];
 
             if (model !== this.currentModel || newType) {
 
+                // if the new model and the old model are BOTH dynamic
+                // then we need to remove the old model from the file manager and the GUI
+                // Otherwise we'll accumulate models that will get loaded but are not used
+
+                if (this.currentModel
+                    && FileManager.isUnhosted(this.currentModel.file)
+                    && FileManager.isUnhosted(this.selectModel)) {
+                    console.log(`Removing unhosted file: ${this.currentModel.file}, replacing with ${model.file}`)
+                    FileManager.disposeRemove(this.currentModel.file);
+                    // will need to remove from GUI. after we implement adding it ...
+
+                }
+
 
                 this.currentModel = model;
-                this.destroyObject();
+
 
                 //const loader = new GLTFLoader();
-                //console.log("Loading model: ", model.file);
+                console.log("LOADING NEW GLTF model: ", model.file);
 
                 loadGLTFModel(model.file, gltf => {
                     // since it's async, we might now be rendering a geometry
                     // If so, then don't add the model to the group
                     if (this.modelOrGeometry === "model") {
+
+                        // destroy the existing object AFTER the new one is loaded
+                        // otherwise we might start loading a new object before the last one had finished loading
+                        // so the first one will still get added
+                        this.destroyObject();
+
                         this.model = gltf.scene;
 
                         if (Globals.shadowsEnabled) {
@@ -678,6 +716,8 @@ export class CNode3DObject extends CNode3DGroup {
                         this.recalculate()
                         this.applyMaterialToModel();
                         this.rebuildBoundingBox();
+                        console.log("ADDED TO SCENE : ", model.file);
+
                     }
                 });
             }
