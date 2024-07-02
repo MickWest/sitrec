@@ -160,7 +160,7 @@ export const SitFlir1 = {
     },
 
     lookView2: { kind: "View3D",
-        left: 0.66, top: 0.3, width: .08, height: -1,
+        left: 0.58, top: 0.0, width: .15, height: -1,
         draggable:true,resizable:true,shiftDrag:true,freeAspect:false,
         fovOverride: 0.055,
         camera:"lookCamera",
@@ -446,14 +446,14 @@ export const SitFlir1 = {
     altitudeGraphForTarget: { kind: "altitudeGraph",
         track: "LOSTraverseSelect",
         min: 20000, max: 35000,
-        left:0.55, top:0, width:.15, height:-1, xStep: 500, yStep:5000
+        left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
     },
 
     speedGraphForTarget: { kind: "speedGraph",
         label: "Target Speed",
         track: "LOSTraverseSelect",
         min:0, max:500,
-        left: 0.4, top:0, width: .15, height:-1},
+        left: 0.25, top:0, width: .15, height:-1},
 
     flir1LegacyCode: {},
 
