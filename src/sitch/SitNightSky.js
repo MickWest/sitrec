@@ -22,7 +22,7 @@ export const SitNightSky = {
     isTool: true,
 
 
-    showDateTime: true, // opens the DateTime folder in the UI
+    showDateTime: false, // opens the DateTime folder in the UI - not needed any more with new menu system
 
     showFlareBand: true,
     showSunArrows: true,
@@ -151,10 +151,11 @@ export const SitNightSky = {
             this.text = "In Range:" + par.validPct.toFixed(1) + "%"
         });
 
+
         if (Globals.userID > 0)
-            this.permaButton = guiMenus.view.add(this, "makeNightSkyURL").name("Permalink")
+            this.permaButton = guiMenus.file.add(this, "makeNightSkyURL").name("Night Sky Permalink")
         else {
-            this.permaButton = guiMenus.view.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
+            this.permaButton = guiMenus.file.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
         }
     },
 
