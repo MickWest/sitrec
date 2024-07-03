@@ -531,6 +531,10 @@ export class CFileManager extends CManager {
                     dataType = "srt";
                     parsed = parseSRT(decoder.decode(buffer));
                     break;
+                case "json": //
+                    dataType = "json";
+                    parsed = JSON.parse(decoder.decode(buffer))
+                    break;
 
                 default:
                     // theoretically we could inspect the file contents and then reload it...

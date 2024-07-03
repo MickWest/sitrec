@@ -18,6 +18,8 @@ sitch = {
     canMod: false, // this is a custom sitch, so does not use the "modding" system, instead exports all of this
     isTool: true,
 
+    initialDropZoneAnimation: true,
+
     startDistance: 1,
     startDistanceMin: 0.01,
     startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch

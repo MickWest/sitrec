@@ -100,16 +100,16 @@ export const SitAguadilla = {
             Agua_Levels: {
                 kind: "Levels",
                 inputs: {
-                    inputBlack: {kind: "GUIValue", value: 0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
-                    inputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
-                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
-                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black"},
-                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White"},
+                    inputBlack: {kind: "GUIValue", value: 0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black", gui:"effects"},
+                    inputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White", gui:"effects"},
+                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma", gui:"effects"},
+                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black", gui:"effects"},
+                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White", gui:"effects"},
 
                 }},
 
             StaticNoise: {inputs:{
-                    amount: {kind: "GUIValue", value: 0.02, start: 0.0, end: .2, step: 0.001, desc: "Noise Amount"},
+                    amount: {kind: "GUIValue", value: 0.02, start: 0.0, end: .2, step: 0.001, desc: "Noise Amount", gui:"effects"},
                 }},
 
             // digital zoom for the 3x with 2024 focal length

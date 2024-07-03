@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
 import {addTracks} from "./TrackManager";
-import {FileManager, NodeMan, setNewSitchText} from "./Globals";
+import {FileManager, NodeMan, setNewSitchText, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
@@ -37,9 +37,12 @@ class CDragDropHandler {
         dropZone.style.pointerEvents = 'none';
         dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
         dropZone.innerHTML = 'DROP FILES HERE';
-        //dropZone.style.visibility = 'hidden'; // Initially hidden
+
+        if (!Sit.initialDropZoneAnimation) {
+            dropZone.style.visibility = 'hidden'; // Initially hidden
+        }
         // 10px red border
-        dropZone.style.border = '10px solid red';
+        dropZone.style.border = '2px solid red';
         dropZone.style.boxSizing = 'border-box';
 
 

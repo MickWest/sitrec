@@ -6,7 +6,7 @@ import {
     Color,
     Group,
     Line,
-    LineBasicMaterial,
+    LineBasicMaterial, LineSegments,
     MathUtils,
     Matrix4,
     Points,
@@ -52,6 +52,7 @@ import {
     raDec2Celestial,
     raDecToAltAz
 } from "../CelestialMath";
+import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -508,6 +509,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         console.log("Loading planets")
         this.addPlanets(this.celestialSphere)
 
+
+
         // if (FileManager.exists("starLink")) {
         //     console.log("parsing starlink")
         //     this.replaceTLE(FileManager.get("starLink"))
@@ -539,6 +542,21 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }).name("Equatorial Grid")
         this.addSimpleSerial("showEquatorialGrid")
 
+
+        this.constellationsGroup = new Group();
+        this.celestialSphere.add(this.constellationsGroup);
+        this.addCelestialSphereLines(this.constellationsGroup, 10);
+        this.showConstellations = (v.showConstellations !== undefined) ? v.showConstellations : true;
+        guiShowHide.add(this,"showConstellations" ).listen().onChange(()=>{
+            par.renderOne=true;
+            this.updateVis()
+        }).name("Constellation Lines")
+        this.addSimpleSerial("showConstellations")
+        this.addConstellationLines(this.constellationsGroup)
+        
+
+        this.addConstellationNames(this.constellationsGroup);
+
         // For the stars to show up in the lookView
         // we need to enable the layer for everything in the celestial sphere.
         this.celestialSphere.layers.enable(LAYER.LOOK);  // probably not needed
@@ -569,6 +587,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     updateVis() {
 
         this.equatorialSphereGroup.visible = this.showEquatorialGrid;
+        this.constellationsGroup.visible = this.showConstellations;
 
         // equatorial lines might not want to be in the look view
         this.equatorialSphereGroup.layers.mask = this.showEquatorialGridLook ? LAYER.MASK_MAINRENDER : LAYER.MASK_HELPERS;
@@ -1122,6 +1141,61 @@ void main() {
     }
 
 
+    addConstellationNames(scene) {
+        const constellations = FileManager.get("constellations");
+        const features = constellations.features;
+        console.log(features)
+
+    }
+
+    addConstellationLines(scene) {
+        // we will be adding multiple line segments to the scene
+        // all the same color, so use on object
+        const material = new LineBasicMaterial({color: 0x808080}); // Line color
+
+        const constellationsLines = FileManager.get("constellationsLines");
+        // this is a structured GeoJSON object, get the array of features
+        const features = constellationsLines.features;
+        for (const feature of features) {
+            // feature.geometry.coordinates is an array of arrays of Lon/Lat pairs
+            // we want to convert these to ECEF coordinates
+            // and then create a line segment between each pair
+
+         //   if (feature.id !== "UMi") continue;
+
+            // let's create an array of ECEF coordinates, two each for each line
+            const segments = [];
+            for (let c of feature.geometry.coordinates) {
+
+                // c is now an array of multiple arrays of two Lat/Lon pairs
+                // need to create segments between each of them
+                const p0 = c[0];
+                const ra0 = MathUtils.degToRad(Number(p0[0]));
+                const dec0 = MathUtils.degToRad(Number(p0[1]));
+                let equatorial0 = raDec2Celestial(ra0, dec0, 100);
+                for (let i = 1; i < c.length; i++) {
+                    const p1 = c[i];
+                    // convert to ECEF
+                    const ra1 = MathUtils.degToRad(Number(p1[0]));
+                    const dec1 = MathUtils.degToRad(Number(p1[1]));
+                    const equatorial1 = raDec2Celestial(ra1, dec1, 100);
+                    segments.push(new Vector3(equatorial0.x, equatorial0.y, equatorial0.z));
+                    segments.push(new Vector3(equatorial1.x, equatorial1.y, equatorial1.z));
+                    equatorial0 = equatorial1;
+                }
+            }
+
+            // create the buffer geometry for the line segments
+            const geometry = new BufferGeometry().setFromPoints(segments);
+
+
+            // and create the multi-segment line
+            const line = new LineSegments(geometry, material);
+            scene.add(line);
+        }
+
+
+    }
 
 
     addPlanets(scene) {

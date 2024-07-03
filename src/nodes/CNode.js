@@ -283,7 +283,8 @@ class CNode {
 
 
     setGUI(v, _gui) {
-        _gui ??= v.gui;
+        //_gui ??= v.gui;
+        if (v.gui !== undefined) _gui = v.gui; // we want the data to override the code, not the other way around. Code is default.
         if (_gui) {
             // if it's a string, then it's from the data driven setup
             if (typeof _gui === "string") {
