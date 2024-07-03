@@ -33,16 +33,22 @@ class CDragDropHandler {
         dropZone.style.alignItems = 'center';
         dropZone.style.fontSize = '48px';
         dropZone.style.color = '#fff';
-        dropZone.style.transition = 'background-color 0.2s';
+        dropZone.style.transition = 'background-color 0.2s, opacity 5s';
         dropZone.style.pointerEvents = 'none';
         dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
         dropZone.innerHTML = 'DROP FILES HERE';
-        dropZone.style.visibility = 'hidden'; // Initially hidden
+        //dropZone.style.visibility = 'hidden'; // Initially hidden
         // 10px red border
         dropZone.style.border = '10px solid red';
         dropZone.style.boxSizing = 'border-box';
 
+
         document.body.appendChild(dropZone);
+
+        // make it transition over 2 seconds from visible to invisible
+        requestAnimationFrame(() => {
+            dropZone.style.opacity = '0';
+        })
 
         function handleDragOver(event) {
             event.preventDefault(); // Necessary to allow a drop
@@ -65,6 +71,8 @@ class CDragDropHandler {
     }
 
     showDropZone() {
+        this.dropZone.style.opacity = '1';
+        this.dropZone.style.transition = 'background-color 0.2s, opacity 0.2s';
         this.dropZone.style.visibility = 'visible';
         this.dropZone.style.backgroundColor = 'rgba(0,0,0,0.5)';
         this.dropZone.style.pointerEvents = 'all'; // Enable pointer events when showing

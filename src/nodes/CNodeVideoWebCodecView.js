@@ -61,8 +61,8 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     }
 
     addNoVideoMessage() {
-        if (this.overlay)
-            this.overlay.addText("videoNo", "DROP VIDEO HERE", 50, 50, 5, "#f0f000")
+        // if (this.overlay)
+        //     this.overlay.addText("videoNo", "DROP VIDEO HERE", 50, 50, 5, "#f0f000")
     }
 
     removeText() {
