@@ -736,6 +736,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             const positions = this.satelliteGeometry.attributes.position.array;
             const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
 
+            // get the forward vector (-z) of the camera matrix, for perp distance
+            const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+
 
             // Update satellites to correct position for nowDate
 //            for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
@@ -756,7 +759,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 const satPosition = sat.eus;
 
                 const camToSat = satPosition.clone().sub(this.camera.position)
-                const distToSat = camToSat.length();
+
+                // get the perpendicular distance to the satellite, and use that to scale the name
+                const distToSat = camToSat.dot(cameraForward);
                 const nameScale  = 0.025 * distToSat * tanHalfFOV;
                 const sprite = sat.spriteText;
                 sprite.scale.set(nameScale * sprite.aspect, nameScale, 1);
