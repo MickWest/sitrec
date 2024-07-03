@@ -52,7 +52,7 @@ import {
     raDec2Celestial,
     raDecToAltAz
 } from "../CelestialMath";
-import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry";
+import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
