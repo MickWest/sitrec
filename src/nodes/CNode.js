@@ -5,8 +5,8 @@
 // and we want exact values on frames. But we can use time as well.
 //
 // CNode is the base class for a variety of different nodes
-// Each node has a object (inputs) which is a list of named noded that provide data to calculate the value of this node
-// It also has a simple array object (outputs) which is all the noded that have this one as an input
+// Each node has a object (inputs) which is a list of named nodes that provide data to calculate the value of this node
+// It also has a simple array object (outputs) which is all the nodes that have this one as an input
 //
 // Root nodes are generally data or computation nodes
 // leaf nodes are display nodes, the end product
