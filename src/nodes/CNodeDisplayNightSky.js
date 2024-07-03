@@ -755,6 +755,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
                 const satPosition = sat.eus;
 
+                const camToSat = satPosition.clone().sub(this.camera.position)
+                const distToSat = camToSat.length();
+                const nameScale  = 0.025 * distToSat * tanHalfFOV;
+                const sprite = sat.spriteText;
+                sprite.scale.set(nameScale * sprite.aspect, nameScale, 1);
+
+
+
+
+
                 let scale = 0.1;                // base value for scale
                 let darknessMultiplier = 0.3    // if in dark, multiply by this
                 var fade = 1
@@ -1473,8 +1483,9 @@ void main() {
             var name = sat.name.replace("0 STARLINK", "SL").replace("STARLINK", "SL");
             // strip whitespae off the end
             name = name.replace(/\s+$/, '');
-            const spriteText = new SpriteText(name, 5);
-            spriteText.layers.mask = LAYER.MASK_LOOK;
+            const spriteText = new SpriteText(name, 0.01, "white", {depthTest:true} );
+            spriteText.layers.mask = LAYER.MASK_LOOK  ;
+
             sat.spriteText = spriteText;
             textGroup.add(spriteText);
 
@@ -1694,6 +1705,8 @@ void main() {
                     positions[i * 3 + 1] = sat.eus.y;
                     positions[i * 3 + 2] = sat.eus.z;
                     sat.invalidPosition = false;
+
+                    sat.spriteText.position.set(sat.eus.x, sat.eus.y, sat.eus.z);
 
                     // draw an arrow from the satellite in the direction of its velocity (yellow)
                     if (this.showSatelliteTracks) {
