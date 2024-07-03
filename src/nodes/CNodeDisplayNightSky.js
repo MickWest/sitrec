@@ -545,7 +545,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.constellationsGroup = new Group();
         this.celestialSphere.add(this.constellationsGroup);
-        this.addCelestialSphereLines(this.constellationsGroup, 10);
         this.showConstellations = (v.showConstellations !== undefined) ? v.showConstellations : true;
         guiShowHide.add(this,"showConstellations" ).listen().onChange(()=>{
             par.renderOne=true;
