@@ -12,6 +12,7 @@ import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeControllerVarious";
 import {assert} from "../assert.js";
 import {MV3} from "../threeUtils";
+import {getPTZController} from "../js/CameraControls";
 
 
 export const SitNightSky = {
@@ -185,8 +186,8 @@ export const SitNightSky = {
 
             const nightSkyNode = NodeMan.get("NightSkyNode");
 
-            const lookPTZ = NodeMan.get("lookCameraPTZ");
-            assert(lookPTZ !== undefined, "lookCameraPTZ not found");
+            const lookPTZ = getPTZController("lookCamera");
+            assert(lookPTZ !== undefined, "lookCamera's PTZ controller not found");
 
             const savePar = {
                 olat: Sit.lat,
@@ -311,8 +312,8 @@ export const SitNightSky = {
         console.log("PARSING (AFTER): "+data)
         const p = JSURL.parse(data)
 
-        const lookPTZ = NodeMan.get("lookCameraPTZ");
-        assert(lookPTZ !== undefined, "lookCameraPTZ not found");
+        const lookPTZ = getPTZController("lookCamera");
+        assert(lookPTZ !== undefined, "lookCamera's PTZ controller not found");
 
         lookPTZ.az = p.az;
         lookPTZ.el = p.el;

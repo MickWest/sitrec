@@ -77,24 +77,7 @@ class CameraMapControls {
 
 	}
 
-	getPTZController() {
-		const cameraNode = this.view.cameraNode	;
 
-		// given the camera node, find the PTZ controller in the inputs
-		// by inspecting the type of the input
-		// then return the controller
-		// if not found, return undefined
-		//
-		for (const key in cameraNode.inputs) {
-			const input = cameraNode.inputs[key];
-			// is it a CNodeControllerPTZ
-			if (input instanceof CNodeControllerPTZUI) {
-				return input;
-			}
-		}
-		return undefined;
-
-	}
 
 	handleMouseWheel( event ) {
 
@@ -112,7 +95,7 @@ class CameraMapControls {
 
 		event.preventDefault();
 
-		const ptzControls= this.getPTZController();
+		const ptzControls= getPTZController(this.view.cameraNode);
 
 		if (ptzControls !== undefined) {
 			ptzControls.fov += event.deltaY/10
@@ -187,7 +170,7 @@ class CameraMapControls {
 		if (event.metaKey || event.ctrlKey) this.state = STATE.PAN;
 
 		// if we have a PTZ UI controller, then all buttons just pan
-		if (this.getPTZController() !== undefined ) this.state = STATE.PAN;
+		if (getPTZController(this.view.cameraNode) !== undefined ) this.state = STATE.PAN;
 
 
 	}
@@ -284,7 +267,7 @@ class CameraMapControls {
 
 //		console.log(x+","+y+","+vdump(this.mouseDelta))
 
-		const ptzControls= this.getPTZController();
+		const ptzControls= getPTZController(this.view.cameraNode);
 
 		
 		switch (this.state) {
@@ -550,6 +533,26 @@ class CameraMapControls {
 	}
 
 
+
+}
+
+export function getPTZController(cameraNode) {
+
+	cameraNode = NodeMan.get(cameraNode);
+
+	// given the camera node, find the PTZ controller in the inputs
+	// by inspecting the type of the input
+	// then return the controller
+	// if not found, return undefined
+	//
+	for (const key in cameraNode.inputs) {
+		const input = cameraNode.inputs[key];
+		// is it a CNodeControllerPTZ
+		if (input instanceof CNodeControllerPTZUI) {
+			return input;
+		}
+	}
+	return undefined;
 
 }
 
