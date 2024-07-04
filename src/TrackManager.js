@@ -208,6 +208,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         // backwards compatibility for SitNightSky
                         // which expects dropped tracks to create a controller
                         switchNode.addOption(menuText, new CNodeControllerTrackPosition({
+                            id: "TrackController_" + trackID,
                             sourceTrack: trackID,
                         }))
                         // and select it

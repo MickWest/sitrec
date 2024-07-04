@@ -14,6 +14,8 @@ import {assert} from "../assert.js";
 import {MV3} from "../threeUtils";
 import {getPTZController} from "../js/CameraControls";
 
+import {waitForParsingToComplete} from "../CFileManager";
+
 
 export const SitNightSky = {
     name: "nightsky",
@@ -362,11 +364,40 @@ export const SitNightSky = {
            // Rehoster.rehostedFiles = p.rehostedFiles;
             /// we need a list of used URLs that are not in the sitch
             for (const url of p.rehostedFiles) {
-                DragDropHandler.uploadURL(url)
+                console.log(`Calling DragDropHandler.uploadURL(url) for ${url}`)
+                DragDropHandler.uploadURL(url).then(() => {
+                    console.log(`uploaded ${url} from rehostedFiles, checking drop queue`)
+                    // uploadURL will add to the drop queue, so we need to check it now
+                    // so we can wait for parsing to complete
+                    // otherwise it would be added to the queue, but not processed until the next frame
+                    // this is a backwards compatibility thing
+                    DragDropHandler.checkDropQueue();
+                    waitForParsingToComplete().then(() => {
+
+                        console.log(`done with simulating dropped files, resetting time`)
+                        // as adding tracks can change start time, restore it here
+                        Sit.startTime = p.startTime;
+                        GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
+
+                        // a bit brutal
+                        NodeMan.recalculateAllRootFirst();
+                    })
+
+                });
             }
+
+
+
+
         }
 
+
+
+
+
         // ANY NEW  should be checked to see if they exist, for backwards compatibility.
+
+
 
         // we do a par.renderOne to ensure the initial display looks good if we are paused.
         par.renderOne = true;

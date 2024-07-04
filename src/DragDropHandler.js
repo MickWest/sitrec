@@ -169,7 +169,7 @@ class CDragDropHandler {
 
 
 
-    uploadURL(url) {
+    async uploadURL(url) {
         // Check if the URL is from the same domain we are hosting on
         // later we might support other domains, and load them via proxy
         const urlObject = new URL(url);
@@ -180,7 +180,7 @@ class CDragDropHandler {
             console.warn('The provided URL ' + urlObject.hostname +' is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN + "or amazonaws.com");
             return;
         }
-        fetch(url)
+        return fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -188,6 +188,7 @@ class CDragDropHandler {
                 return response.arrayBuffer();
             })
             .then(buffer => {
+                console.log(`Fetched ${url} successfully, queueing result for parsing`)
                 this.queueResult(url, buffer, url)
             })
             .catch(error => {

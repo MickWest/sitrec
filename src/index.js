@@ -51,7 +51,8 @@ import {
     GlobalDaySkyScene,
     GlobalNightSkyScene,
     GlobalScene,
-    LocalFrame, setupDaySkyScene,
+    LocalFrame,
+    setupDaySkyScene,
     setupLocalFrame,
     setupNightSkyScene,
     setupScene
@@ -68,7 +69,7 @@ import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
 import {checkLogin} from "./login";
-import {CFileManager} from "./CFileManager";
+import {CFileManager, waitForParsingToComplete} from "./CFileManager";
 import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
 import {removeMeasurementUI, setupMeasurementUI} from "./nodes/CNodeLabels3D";
 import {imageQueueManager} from "./js/get-pixels-mick";
@@ -1066,31 +1067,6 @@ function disposeEverything() {
     assert(ViewMan.size() === 0, "ViewMan.size() should be zero, it's " + ViewMan.size());
     console.log("disposeEverything() is finished");
     console.log("");
-}
-
-/**
- * Waits until Globals.parsing becomes zero.
- */
-async function waitForParsingToComplete() {
-    console.log("Waiting for parsing to complete... Globals.parsing = " + Globals.parsing);
-    // Use a Promise to wait
-    await new Promise((resolve, reject) => {
-        // Function to check the value of Globals.parsing
-        function checkParsing() {
-            if (Globals.parsing === 0) {
-                console.log("DONE: Globals.parsing = " + Globals.parsing);
-                resolve(); // Resolve the promise if Globals.parsing is 0
-            } else {
-                // If not 0, wait a bit and then check again
-                setTimeout(checkParsing, 100); // Check every 100ms, adjust as needed
-                console.log("Still Checking, Globals.parsing = " + Globals.parsing)
-            }
-        }
-
-        // Start checking
-        checkParsing();
-    });
-    console.log("Parsing complete!");
 }
 
 /**

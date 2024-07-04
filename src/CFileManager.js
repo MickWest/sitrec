@@ -12,7 +12,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {Globals, gui, guiMenus, NodeMan} from "./Globals";
+import {Globals, guiMenus, NodeMan} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -771,3 +771,28 @@ export function createCustomModalWithCopy(url) {
 }
 
 
+/**
+ * Waits until Globals.parsing becomes zero.
+ */
+export async function waitForParsingToComplete() {
+    DragDropHandler.checkDropQueue();
+    console.log("Waiting for parsing to complete... Globals.parsing = " + Globals.parsing);
+    // Use a Promise to wait
+    await new Promise((resolve, reject) => {
+        // Function to check the value of Globals.parsing
+        function checkParsing() {
+            if (Globals.parsing === 0) {
+                console.log("DONE: Globals.parsing = " + Globals.parsing);
+                resolve(); // Resolve the promise if Globals.parsing is 0
+            } else {
+                // If not 0, wait a bit and then check again
+                setTimeout(checkParsing, 100); // Check every 100ms, adjust as needed
+                console.log("Still Checking, Globals.parsing = " + Globals.parsing)
+            }
+        }
+
+        // Start checking
+        checkParsing();
+    });
+    console.log("Parsing complete!");
+}
