@@ -60,14 +60,15 @@ export const ModelFiles = {
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/f-15.glb',},
     "A-10":                 { file: 'data/models/A-10.glb',},
+    "MiG-29":               { file: 'data/models/MiG-29.glb',},
     "737 MAX 8 BA":         { file: 'data/models/737 MAX 8 BA.glb',},
  //   "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
 //    "DC-10":                { file: 'data/models/DC-10.glb',},
-    "WhiteCube":            { file: 'data/models/white-cube.glb',},
+   // "WhiteCube":            { file: 'data/models/white-cube.glb',},
    // "PinkCube":             { file: 'data/models/pink-cube.glb',},
-    "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
+   // "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
 
     "Saucer":               { file: 'data/models/saucer01a.glb',},
 
@@ -680,10 +681,13 @@ export class CNode3DObject extends CNode3DGroup {
                 // if the new model and the old model are BOTH dynamic
                 // then we need to remove the old model from the file manager and the GUI
                 // Otherwise we'll accumulate models that will get loaded but are not used
+                // if the new model has not been loaded yet, then we also need to remove the old model
+                // we do that test first, as isUnhosted will assert if the file doesn't exist
 
                 if (this.currentModel
                     && FileManager.isUnhosted(this.currentModel.file)
-                    && FileManager.isUnhosted(this.selectModel)) {
+                    && (!FileManager.exists(this.selectModel) || FileManager.isUnhosted(this.selectModel))
+                ) {
                     console.log(`Removing unhosted file: ${this.currentModel.file}, replacing with ${model.file}`)
                     FileManager.disposeRemove(this.currentModel.file);
                     // will need to remove from GUI. after we implement adding it ...
