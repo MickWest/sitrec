@@ -26,7 +26,7 @@ export const SitKML = {
         "Ground (No Track)": "default",
         "Jet track": "cameraTrack",
         "Target Track": "targetTrack",
-        "Other Track": "KMLOtherTarget",
+//        "Other Track": "KMLOtherTarget",
     },
 
     showAltitude: true,
