@@ -13,7 +13,7 @@ export const SitLakeMichigan = {
     files: {
         cameraFile: 'lakemichigan/FlightAware_UAL267_KBOS_KDEN_20211017.kml',
         TargetTrack: "lakemichigan/FlightAware_DAL2474_KORD_KDTW_20211017.kml",
-        TargetObjectFile: './models/737_MAX_8_White.glb',
+        TargetObjectFile: './models/737 MAX 8 BA.glb',
     },
     startTime: "2021-10-17T15:50:27.766Z",
 

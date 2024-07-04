@@ -13,7 +13,7 @@ export const SitITY621 = {
         cameraFile: 'ity621/FlightAware_ITY621_KLAX_LIRF_20221014.kml',
         TargetTrack: "ity621/FlightAware_SAS7487_ENCN_GCLP_20221015.kml",
         KMLOther: "ity621/FlightAware_RYR5580_EGPH_LEAL_20221015.kml",
-        TargetObjectFile: './models/737_MAX_8_White.glb',
+        TargetObjectFile: './models/737 MAX 8 BA.glb',
     },
     startTime: "2022-10-15T08:03:39.000Z",
 

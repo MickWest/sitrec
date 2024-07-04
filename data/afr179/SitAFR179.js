@@ -20,7 +20,7 @@ export const SitAFR179 = {
     files: {
         cameraFile: 'afr179/FlightAware_AFR179_MMMX_LFPG_20221108.kml',
         TargetTrack: "afr179/FlightAware_FDX1273_KBOS_KMEM_20221108.kml",
-        TargetObjectFile: './models/737_MAX_8_White.glb',
+        TargetObjectFile: './models/737 MAX 8 BA.glb',
     },
     videoFile: "../sitrec-videos/private/001 - passenger_films_unknown_object.mp4",
     startTime: "2022-11-08T05:20:55.700Z",

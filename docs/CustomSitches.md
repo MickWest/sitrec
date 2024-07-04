@@ -180,7 +180,7 @@ export const SitKansas = {
     startTime: "2022-09-01T20:07:32.3Z",
 }
 ```
-When we save and run that it does not work. You'll see an error in the console: "ASSERT: Missing Managed object TargetObjectFile," and you'll not that the original sitch had a line in files of **TargetObjectFile: './models/737_MAX_8_White.glb**', along with a later line that uses this "**targetObject: {file: "TargetObjectFile"},**". This might happen when you inherit a sitch. You need to manually add the missing file reference, or remove where it's used. The latter is simplest, and we can just add a line: **    targetObject: null,**
+When we save and run that it does not work. You'll see an error in the console: "ASSERT: Missing Managed object TargetObjectFile," and you'll not that the original sitch had a line in files of **TargetObjectFile: './models/737 MAX 8 BA.glb**', along with a later line that uses this "**targetObject: {file: "TargetObjectFile"},**". This might happen when you inherit a sitch. You need to manually add the missing file reference, or remove where it's used. The latter is simplest, and we can just add a line: **    targetObject: null,**
 
 The final steps to get this working is to add the terrain, and to reset the mainCamera to defaults {}, so we have:
 ```javascript

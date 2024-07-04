@@ -11,7 +11,7 @@ export const SitN14AQ = {
     files: {
         cameraFile: 'n14aq/FlightAware_N14AQ_KDVK_KLAL_20220808.kml',
         TargetTrack: "n14aq/FlightAware_DAL2369_KEYW_KATL_20220808.kml",
-        TargetObjectFile: './models/737_MAX_8_White.glb',
+        TargetObjectFile: './models/737 MAX 8 BA.glb',
     },
     startTime: "2022-08-08T12:16:15.800Z",
 
