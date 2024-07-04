@@ -59,8 +59,9 @@ export const ModelFiles = {
 
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/f-15.glb',},
-    "737 MAX 8 BA":       { file: 'data/models/737 MAX 8 BA.glb',},
-    "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
+    "A-10":                 { file: 'data/models/A-10.glb',},
+    "737 MAX 8 BA":         { file: 'data/models/737 MAX 8 BA.glb',},
+ //   "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
 //    "DC-10":                { file: 'data/models/DC-10.glb',},
