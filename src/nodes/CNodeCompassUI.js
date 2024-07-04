@@ -2,6 +2,9 @@
 // base on an input camera node
 
 import {CNodeViewUI} from "./CNodeViewUI";
+import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
+import {Vector3} from "three";
+import {MV3} from "../threeUtils";
 
 export class   CNodeCompassUI extends CNodeViewUI {
 
@@ -21,12 +24,42 @@ export class   CNodeCompassUI extends CNodeViewUI {
     renderCanvas(frame) {
         if (this.overlayView && !this.overlayView.visible) return;
 
+
         // get the three.js camera from the camera node
         const camera = this.in.camera.camera;
 
+        // get local up vector, the headings are the angle about this axis.
+        const up = getLocalUpVector(camera.position);
+
         // get the camera's forward vector, the negative z basis from its matrix
-        const forward = camera.matrixWorld.elements.slice(8,11);
-        const heading = -Math.atan2(forward[0], forward[2]);
+        const forward = MV3(camera.matrixWorld.elements.slice(8,11));
+
+        // get the north vector
+        const north = getLocalNorthVector(camera.position);
+
+        // project the forward vector onto the horizontal plane defined by up
+        const forwardH = forward.clone().sub(up.clone().multiplyScalar(forward.dot(up)));
+
+        // same with the north vector
+        const northH = north.clone().sub(up.clone().multiplyScalar(north.dot(up)));
+
+        // get the angle between the forward vector and the north vector
+        // using the three.js angleTo function
+        let heading = Math.PI - forwardH.angleTo(northH);
+
+
+        // get the east vector
+        const east = north.clone().cross(up);
+
+        // is it east (positive) or west (negative)
+        if (forwardH.dot(east) < 0) {
+            heading = -heading;
+        }
+
+
+
+
+
         // convert to degrees
         const headingDeg = heading * 180 / Math.PI;
         // make sure it's positive
