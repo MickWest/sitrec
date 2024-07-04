@@ -52,7 +52,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
         const east = north.clone().cross(up);
 
         // is it east (positive) or west (negative)
-        if (forwardH.dot(east) < 0) {
+        if (forwardH.dot(east) > 0) {
             heading = -heading;
         }
 
