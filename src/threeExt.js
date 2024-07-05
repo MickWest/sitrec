@@ -365,6 +365,7 @@ export function DebugArrowAB(name, A, B, color, visible, parent, headLength=20, 
 // Layer masks are on a per-object level, and don't affect child objects
 // so we need to propagate it if there's any chenge
 export function propagateLayerMaskObject(parent) {
+    assert(parent !== undefined, "propagateLayerMaskObject called on undefined parent")
     // copy group layers bitmask into all children
     const layersMask = parent.layers.mask;
     parent.traverse( function( child ) { child.layers.mask = layersMask } )

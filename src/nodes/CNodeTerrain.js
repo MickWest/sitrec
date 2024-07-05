@@ -381,6 +381,13 @@ export class CNodeTerrain extends CNode {
 //                radius: metersFromMiles(this.in.radiusMiles.v0),
                 radius: this.radius,
                 loadedCallback:  ()=> {
+                    // first check to see if it has been disposed
+                    // this happnes and need fixing, but for now just warn and
+                    if (this.maps[id].map === undefined) {
+                        console.error("FIX NEEDED: CNodeTerrain: id = " + id + " map loaded callback called with no map object")
+                        return;
+                    }
+
                     // Once map has finished loading, we can recalculate anything that depends on it
                     // like things that use the terrain height
                     this.outputs.forEach( o => {

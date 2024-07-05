@@ -63,6 +63,9 @@ class CameraMapControls {
 	}
 
 	update() {
+
+		// Tru just keeping the camera up vector to local up
+		this.fixUp(true);
 		// maintained for backwards compatibility with other Three.js controls
 	}
 
@@ -369,11 +372,15 @@ class CameraMapControls {
 
 
 				// make a plane at target height
+				// Note this is LEGACY code, and should be replaced with a sphere
+				// as it will only work when near the origin
 				const dragPlane = new Plane(new Vector3(0,-1,0),this.target.y)
+
+
 				var dragSphere;
-				if (this.useGlobe) {
+			//	if (this.useGlobe) {
 					dragSphere = new Sphere(new Vector3(0,-wgs84.RADIUS,0), wgs84.RADIUS)
-				}
+			//	}
 
 
 				// find intersection for start and end mouse positions
@@ -405,13 +412,13 @@ class CameraMapControls {
 				var end3D = new Vector3();
 
 				raycaster.setFromCamera(startPointer, this.camera)
-				if (this.targetIsTerrain || !this.useGlobe) {
+				if (this.targetIsTerrain && !this.useGlobe) {
 					if (!raycaster.ray.intersectPlane(dragPlane, start3D)) break;
 				} else {
 					if (!intersectSphere2(raycaster.ray, dragSphere, start3D)) break;
 				}
 				raycaster.setFromCamera(endPointer, this.camera)
-				if (this.targetIsTerrain || !this.useGlobe) {
+				if (this.targetIsTerrain && !this.useGlobe) {
 					if (!raycaster.ray.intersectPlane(dragPlane, end3D)) break;
 				} else {
 					if (!intersectSphere2(raycaster.ray, dragSphere, end3D)) break;
@@ -472,6 +479,8 @@ class CameraMapControls {
 				this.camera.updateMatrix();
 				this.camera.updateMatrixWorld();
 
+				// force up vector to be local up for camera
+				this.fixUp(true);
 
 				break;
 
@@ -484,7 +493,7 @@ class CameraMapControls {
 
 	}
 
-	fixUp() {
+	fixUp(force = false) {
 		// if we are close to the ground, and not looking up more than 45 degrees
 		// then we want to keep the camera up vector to local up
 		var xAxis = new Vector3()
@@ -492,15 +501,22 @@ class CameraMapControls {
 		var zAxis = new Vector3()
 		this.camera.updateMatrix();
 		this.camera.matrix.extractBasis(xAxis, yAxis, zAxis)
-		const up = getLocalUpVector(this.target, wgs84.RADIUS)
+		const up = getLocalUpVector(this.camera.position, wgs84.RADIUS)
 		const alt = altitudeAboveSphere(this.camera.position);
-		if (alt < 100000) {
+		if (alt < 10000000 || force) {
 			const upAngle = degrees(up.angleTo(xAxis))
 			if (upAngle > 45) {
 
-				this.camera.up.lerp(up, 0.01);
+				if (force) {
+					//console.log("Forcing up vector to local up")
+					this.camera.up.copy(up)
+				} else {
+					this.camera.up.lerp(up, 0.1);
+				}
 				var pointInFront = this.camera.position.clone().sub(zAxis)
-				this.camera.lookAt(pointInFront)
+				this.camera.lookAt(pointInFront);
+				this.camera.updateMatrix();
+				this.camera.updateMatrixWorld();
 			}
 		}
 
