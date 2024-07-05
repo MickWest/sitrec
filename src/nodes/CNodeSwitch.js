@@ -54,7 +54,7 @@ class CNodeSwitch extends CNode {
 //                    console.log("(changing) this.choice = "+this.choice)
 
                     //this.recalculateCascade()
-                    this.recalculateCascade(undefined, false, 0, true)
+                    this.recalculateCascade(undefined, false, 0, false)
 
                     // this is a bit odd, as it's calling the callback with the selected object
                     // I think nothing uses it except form the Zoom To Track button
