@@ -810,6 +810,8 @@ export const SitAguadilla = {
         // but you need to be aware of it in things like thi
         guiMenus.camera.add(Sit, 'lookFOV', 0.1, 10, 0.01).onChange(value => {
             lookCamera.fov = value
+            assert(!Number.isNaN(lookCamera.fov), "SitAguadilla: camera.fov is NaN");
+            assert(lookCamera.fov !== undefined && lookCamera.fov>0 && lookCamera.fov <= 180, `bad fov ${lookCamera.fov}` )
             lookCamera.updateProjectionMatrix()
             par.renderOne = true;
         }).listen().name("Look Cam FOV")

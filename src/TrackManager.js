@@ -272,7 +272,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         if (isNumber(value)) {
             hasFOV = true;
-        } else if (value.misbRow !== undefined && isNumber(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
+        } else if (value.misbRow !== undefined && !isNaN(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
             hasFOV = true;
         } else if (value.vFOV !== undefined) {
             hasFOV = true;

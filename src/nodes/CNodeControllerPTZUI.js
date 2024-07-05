@@ -5,6 +5,7 @@ import {gui, guiMenus, Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
 import {V3} from "../threeUtils";
+import {assert} from "../assert";
 
 const pszUIColor = "#C0C0FF";
 
@@ -15,6 +16,8 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.el = v.el
         this.fov = v.fov
         this.roll = v.roll
+
+        assert(v.fov !== undefined, "CNodeControllerPTZUI: initial fov is undefined")
 
         if (v.showGUI) {
             const guiPTZ = v.gui ?? guiMenus.camera;
@@ -113,6 +116,8 @@ export class CNodeControllerPTZUI extends CNodeController {
         fwd.applyAxisAngle(right,radians(this.el))
         fwd.applyAxisAngle(up,-radians(this.az))
         camera.fov = this.fov;
+        assert(!Number.isNaN(camera.fov), "CNodeControllerPTZUI: camera.fov is NaN");
+        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )
         fwd.add(camera.position);
         camera.up = up;
         camera.lookAt(fwd)

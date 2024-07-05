@@ -55,9 +55,13 @@ sitch = {
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 
-    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 2.0, step: 0.01, desc: "Defocus", gui:"effects"},
+    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 5.0, step: 0.01, desc: "Defocus", gui:"effects"},
+
+    canvasResolution: {kind: "GUIValue", value: 1600, start: 10, end: 2000, step: 1, desc: "Resolution", gui:"effects"},
 
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
+
+        canvasWidth: "canvasResolution", canvasHeight: "canvasResolution",
 
         effects: {
             //Copy:{},
@@ -95,17 +99,17 @@ sitch = {
             // digitalZoom: {inputs:{
             //         magnifyFactor: {id: "digitalZoomGUI", kind:"Constant", value: 100},
             //     }},
-            //
+
             // these blurs are for the video conversion
 
 
-            // JPEGArtifacts: {
-            //     filter: "Linear",
-            //     inputs: {
-            //         size: 16,
-            //         amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
-            //     }
-            // },
+            JPEGArtifacts: {
+                filter: "Linear",
+                inputs: {
+                    size: 8,
+                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+                }
+            },
 
             // 2x2 pixelation is for the video being later resized to 242 size from 484
 
@@ -154,7 +158,7 @@ sitch = {
         desc: "Target Track"
     },
 
-    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, showGUI: true},
+    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 90, showGUI: true},
 
     // angels controllers
     angelsSwitch: {

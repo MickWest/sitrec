@@ -109,7 +109,10 @@ export class CNodeControllerGUIFOV extends CNodeController {
 
     apply(f, objectNode) {
         const camera = objectNode.camera
+        assert(this.fov !== undefined && this.fov>0 && this.fov <= 180, `bad fov ${this.fov}` )
         camera.fov = this.fov;
+        assert(!Number.isNaN(camera.fov), "CNodeControllerFocalLength: camera.fov is NaN, focal_len="+focal_len+" vFOV="+vFOV);
+        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )
         camera.updateProjectionMatrix()
     }
 }
@@ -224,6 +227,7 @@ export class CNodeControllerFocalLength extends CNodeController {
 
         camera.fov = vFOV;
         assert(!Number.isNaN(camera.fov), "CNodeControllerFocalLength: camera.fov is NaN, focal_len="+focal_len+" vFOV="+vFOV);
+        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )
         camera.updateProjectionMatrix()
 
         objectNode.syncUIPosition();
@@ -281,6 +285,9 @@ export class CNodeControllerFOV extends CNodeController {
         } else {
             assert(0, "CNodeControllerFOV: no vFOV or misbRow member in source track, can't set FOV")
         }
+
+        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${this.fov}` )
+
         camera.updateProjectionMatrix()
     }
 
