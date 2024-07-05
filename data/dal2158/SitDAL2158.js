@@ -26,13 +26,19 @@ export const SitDAL2158 = {
     mainView:{ left:0.0, top:0, width:0.50,height:1},
     lookView:{ left: 0.75, top: 0, width: .25, height: 1,fov:2,},
     include_TrackToTrack: true,
-    targetSizedSphere: { size:200 },
+  //  targetSizedSphere: { size:200 },
 
+    useRealisticLights: true,
+
+    // DAL is a good test case for lighting, as it's very low sun, but not zero!
     lighting: {
         kind: "Lighting",
         ambientIntensity: 0.85,
     },
 
     include_Compasses: true,
+
+    targetObject: { kind: "3DObject", model: "737 MAX 8 BA"},
+    include_MoveAlongTrack: true,
 
 }

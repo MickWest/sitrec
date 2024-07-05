@@ -58,6 +58,11 @@ export const commonCompasses = {
 
 }
 
+export const commonMoveAlongTrack = {
+    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "targetTrack"},
+    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "targetTrack", tiltType: "frontPointing"},
+}
+
 // // common traverse nodes and UI
 // export const commonTraverse = {
 //

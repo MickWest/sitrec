@@ -42,7 +42,15 @@ export const SitAA2292 = {
     ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
 
     include_TrackAndCameraLabeled: true,
+
   //  targetSizedSphere: { size:100 },
+
+    // targetObject: {model: "Lear 75"},
+
+    targetObject: { kind: "3DObject", model: "Lear 75"},
+    include_MoveAlongTrack: true,
+
+
 
 
 }
