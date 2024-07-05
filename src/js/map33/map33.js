@@ -451,17 +451,34 @@ class Tile {
       console.error("resolveSeamY only implemented for geometries of same size")
       return
     }
+
+    // the positions are relative to the tile centers
+    // so we need to adjust by they offset
+    const tileCenter = this.mesh.position;
+    const neighborCenter = neighbor.mesh.position;
+    const offset = neighborCenter.clone().sub(tileCenter);
+
     for (let i = tPosition - nPosition; i < tPosition; i++) {
       // Mick - here I changed Z to Y, as we've rotated
-      this.mesh.geometry.attributes.position.setY(
-        i,
-        neighbor.mesh.geometry.attributes.position.getY(
-          i - (tPosition - nPosition)
+      // this.mesh.geometry.attributes.position.setY(
+      //   i,
+      //   neighbor.mesh.geometry.attributes.position.getY(
+      //     i - (tPosition - nPosition) + offset.y
+      //   )
+      // )
+      // copy the entire position vector
+        this.mesh.geometry.attributes.position.setXYZ(
+            i,  // this is the index of the vertex in the mesh
+            neighbor.mesh.geometry.attributes.position.getX(i - (tPosition - nPosition))+offset.x,
+            neighbor.mesh.geometry.attributes.position.getY(i - (tPosition - nPosition))+offset.y,
+            neighbor.mesh.geometry.attributes.position.getZ(i - (tPosition - nPosition))+offset.z
         )
-      )
     }
   }
 
+
+  // TODO: this fixes the seams, but is not quite right, there are angular and texture discontinuities:
+  // http://localhost/sitrec/?custom=http://localhost/sitrec-upload/99999999/Custom-8c549374795aec6f133bfde7f25bad93.json
   resolveSeamX(neighbor) {
     const tPosition = this.mesh.geometry.attributes.position.count
     const nPosition = Math.sqrt(tPosition)
@@ -472,10 +489,24 @@ class Tile {
       console.error("resolveSeamX only implemented for geometries of same size")
       return
     }
+
+    // the positions are relative to the tile centers
+    // so we need to adjust by the offset
+    const tileCenter = this.mesh.position;
+    const neighborCenter = neighbor.mesh.position;
+    const offset = neighborCenter.clone().sub(tileCenter);
+
     for (let i = nPosition - 1; i < tPosition; i += nPosition) {
-      this.mesh.geometry.attributes.position.setY(
-        i,
-        neighbor.mesh.geometry.attributes.position.getY(i - nPosition + 1)
+      // this.mesh.geometry.attributes.position.setY(
+      //   i,
+      //   neighbor.mesh.geometry.attributes.position.getY(i - nPosition + 1)  + offset.y
+      // )
+      // copy the entire position vector
+      this.mesh.geometry.attributes.position.setXYZ(
+          i,  // this is the index of the vertex in the mesh
+          neighbor.mesh.geometry.attributes.position.getX(i - nPosition + 1)+offset.x,
+          neighbor.mesh.geometry.attributes.position.getY(i - nPosition + 1)+offset.y,
+          neighbor.mesh.geometry.attributes.position.getZ(i - nPosition + 1)+offset.z
       )
     }
   }
