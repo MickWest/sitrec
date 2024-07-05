@@ -107,7 +107,7 @@ sitch = {
                 filter: "Linear",
                 inputs: {
                     size: 8,
-                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects"},
                 }
             },
 
@@ -157,6 +157,8 @@ sitch = {
         },
         desc: "Target Track"
     },
+
+    swapTargetAndCameraTracks: {},
 
     ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 90, showGUI: true},
 
