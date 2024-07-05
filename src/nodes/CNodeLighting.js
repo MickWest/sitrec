@@ -12,7 +12,7 @@ export class CNodeLighting extends CNode {
 
         this.ambientIntensity = v.ambientIntensity ?? 0.8;
         this.IRAmbientIntensity = v.IRAmbientIntensity ?? 0.8;
-        this.sunIntensity = v.sunIntensity ?? 3.0;
+        this.sunIntensity = v.sunIntensity ?? 1;
         this.ambientOnly = v.ambientOnly ?? false;
 
         this.gui = guiMenus.lighting;
@@ -34,7 +34,7 @@ export class CNodeLighting extends CNode {
         Globals.IRAmbientLight.visible = false;
 
         // then sunlight is direct light
-        Globals.sunLight = new DirectionalLight(0xFFFFFF, 3);
+        Globals.sunLight = new DirectionalLight(0xFFFFFF, this.sunIntensity);
         Globals.sunLight.layers.mask = LAYER.MASK_LIGHTING
         Globals.sunLight.position.set(0,7000,0);  // sun is along the y axis
         if (Globals.shadowsEnabled) {

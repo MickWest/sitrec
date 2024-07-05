@@ -65,11 +65,24 @@ export class CNodeSunlight extends CNode {
 
 }
 
+// a simple model of the brightness of the sun
+// as a function of the angle above the horizon
+// and the angle at which the sun starts to drop off
+// the drop region is the angle at which the sun starts to drop off
+// the brightness is 1.0 at zenith, and 0.25 at the horizon
+// the drop off is a cosine squared function
+// whene the sun goes below the horizon, the brightness drops to 0 over 0.5 degrees (angular diameter of the sun)
+
 function brightnessOfSun(angle,dropRegion) {
     const maxBrightness = 1.0;  // Maximum brightness at zenith
+    const minBrightness = 0.25;  // Minimum brightness at horizon
 
     if (angle < 0) {
-        return 0;  // Sun is below the horizon
+        if (angle < -0.5) {
+            return 0;  // Sun is below the horizon, shadow over 0.5 degrees
+        } else {
+            return minBrightness * (0.5+angle)/0.5;  // Sun is below the horizon, shadow over 0.5 degrees
+        }
     } else if (angle > 90) {
         return maxBrightness;  // Cap the brightness at zenith
     }
@@ -80,7 +93,7 @@ function brightnessOfSun(angle,dropRegion) {
         // Calculate the drop-off for angles below 10 degrees
         let theta = angle * (Math.PI / 180);
         let dropOffFactor = Math.cos(theta) * Math.pow((angle / dropRegion), 2);
-        return maxBrightness * dropOffFactor;
+        return minBrightness + (maxBrightness - minBrightness) * dropOffFactor;
     }
 }
 
