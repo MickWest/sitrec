@@ -20,7 +20,7 @@ import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
 import {addDefaultLights} from "./lighting";
-import {addTracks, makeTrackFromDataFile} from "./TrackManager";
+import {addTracks, makeTrackFromDataFile, TrackManager} from "./TrackManager";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
@@ -1259,13 +1259,21 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
             break;
 
         case "textureCube":
-            SSLog
+            SSLog();
             testTextureCube(data.url, MV3(data.position), data.size, GlobalScene);
             break;
 
         case "colorCube":
-            SSLog
+            SSLog();
             testColorCube(data.color, MV3(data.position), data.size, GlobalScene);
+            break;
+
+
+        case "swapTargetAndCameraTracks":
+            SSLog();
+            console.log("swapTargetAndCameraTracks is not implemented yet")
+            //    guiMenus.physics.add(TrackManager, "swapTargetAndCameraTracks").name("Swap Target and Camera Tracks");
+
             break;
 
         default:
