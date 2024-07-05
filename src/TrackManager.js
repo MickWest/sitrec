@@ -202,7 +202,28 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     //     sourceTrack: trackID,
                     // }))
 
-                    const menuText = "Track " + trackFileName
+                    let menuText = trackFileName
+
+                    // try to find the flight number as a shorter name
+                    // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
+                    const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
+                    if (match !== null) {
+                        menuText = match[1];
+                    } else {
+                        // check for something like N121DZ-track-EGM96.kml
+                        const match = trackFileName.match(/([A-Z0-9]+)-track-/);
+                        if (match !== null) {
+                            menuText = match[1];
+                        } else {
+                            // check if this has MISB data, and if so, use the platform tail
+                            if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                                menuText = misb[0][MISB.PlatformTailNumber];
+                            }
+                        }
+                    }
+
+                    // TODO: might need more checks for uniqueness
+
 
                     if (Sit.dropAsController) {
                         // backwards compatibility for SitNightSky
