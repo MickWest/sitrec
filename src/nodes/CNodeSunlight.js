@@ -72,6 +72,7 @@ export class CNodeSunlight extends CNode {
 // the brightness is 1.0 at zenith, and 0.25 at the horizon
 // the drop off is a cosine squared function
 // whene the sun goes below the horizon, the brightness drops to 0 over 0.5 degrees (angular diameter of the sun)
+// This is not perfect as it does not take into account atmospheric refraction or topology
 
 function brightnessOfSun(angle,dropRegion) {
     const maxBrightness = 1.0;  // Maximum brightness at zenith
