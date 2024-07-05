@@ -201,7 +201,7 @@ export function makeLOSNodeFromTrack(trackID, data) {
     makeArrayNodeFromMISBColumn(trackID+"sensorRoll", cameraTrackAngles, data.sensorRoll ?? MISB.SensorRelativeRollAngle, smooth, true)
 
     const node = new CNodeLOSTrackMISB({
-        id: data.id ?? "losTrackMISB", cameraTrack: trackID,
+        id: data.id ?? trackID+"_LOS", cameraTrack: trackID,
         platformHeading: trackID+"platformHeading", platformPitch: trackID+"platformPitch", platformRoll: trackID+"platformRoll",
         sensorAz: trackID+"sensorAz", sensorEl: trackID+"sensorEl", sensorRoll: trackID+"sensorRoll"
     })

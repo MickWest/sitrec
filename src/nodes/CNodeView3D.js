@@ -122,6 +122,15 @@ export class CNodeView3D extends CNodeViewCanvas {
 
     }
 
+    // return the viewport's hfov in radians
+    // assumes the camera's fov is the viewport's vfov
+    getHFOV() {
+        const vfov = this.camera.fov * Math.PI / 180;
+        const aspect = this.widthPx / this.heightPx;
+        // given the vfov, and the aspect ratio, we can calculate the hfov
+        return 2 * Math.atan(Math.tan(vfov / 2) * aspect);
+    }
+
 
     setupRenderPipeline(v) {
         this.setFromDiv(this.div); // This will set the widthDiv, heightDiv

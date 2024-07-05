@@ -17,6 +17,8 @@ import {CNodeMISBDataTrack, makeLOSNodeFromTrack, removeLOSNodeColumnNodes} from
 import {KMLToMISB} from "./KMLUtils";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {assert} from "./assert.js";
+import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./SphericalMath";
+import {trackBoundingBox} from "./trackUtils";
 
 
 export const TrackManager = new CManager();
@@ -321,6 +323,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         //
         if (hasAngles && Sit.dropTargets !== undefined && Sit.dropTargets["angles"] !== undefined) {
             let data = {
+                id: trackID+"_LOS",
                 smooth: 120, // maybe GUI this?
             }
             let anglesNode = makeLOSNodeFromTrack(trackID, data);
@@ -423,7 +426,36 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
             })
 
+            // maybe adjust the main view camera to look at the center of the track
+
         }
+
+        const mainCamera = NodeMan.get("mainCamera").camera;
+        const mainView = NodeMan.get("mainView");
+        const bbox = trackBoundingBox(trackOb.trackDataNode);
+        console.log( `Track ${trackFileName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
+        const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
+        // get point on sphere
+        const ground = pointOnSphereBelow(center);
+        // what's the length of the diagonal of the bounding box?
+        const diagonal = bbox.max.clone().sub(bbox.min).length();
+
+        const hfov = mainView.getHFOV();
+        // we want the camera height be enough to encompass the diagonal across the hfov
+        const cameraHeight = (diagonal*1.25) / (2 * Math.tan(hfov/2));
+
+
+        // move the camera up by the cameraHeight
+        const up = getLocalUpVector(ground);
+        const cameraTarget = ground.clone().add(up.clone().multiplyScalar(cameraHeight));
+        // and move south by  the cameraHeight
+        const south = getLocalSouthVector(ground);
+        cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
+        mainCamera.position.copy(cameraTarget);
+        mainCamera.lookAt(ground);
+
+
+
     }
 }
 

@@ -1,5 +1,5 @@
 // get heading in the XZ plane - i.e. the compass heading
-import {Sit} from "./Globals";
+import {NodeMan, Sit} from "./Globals";
 import {degrees} from "./utils";
 
 export function trackHeading(source, f) {
@@ -40,5 +40,21 @@ export function closingSpeed(jet, target, f) {
     var d1 = jet.p(f).sub(target.p(f)).length()
     var d2 = jet.p(f + 1).sub(target.p(f + 1)).length()
     return d1 - d2
+
+}
+
+export function trackBoundingBox(track) {
+    track = NodeMan.get(track);
+    const frames = track.frames;
+    let p = track.p(0);
+    let min = p.clone();
+    let max = p.clone();
+    for (let f = 1; f < frames; f++) {
+        const p = track.p(f);
+        min.min(p);  // using min.min instead of Math.min to avoid creating a new vector
+        max.max(p);
+    }
+    return {min:min, max:max};
+
 
 }
