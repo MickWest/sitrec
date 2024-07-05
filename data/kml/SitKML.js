@@ -36,4 +36,6 @@ export const SitKML = {
 
     labelView: {id:"labelVideo", overlay: "lookView"},
 
+    include_Compasses: true,
+
 }
