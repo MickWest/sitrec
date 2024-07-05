@@ -247,10 +247,12 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         super(v);
         // this.canvas.addEventListener( 'wheel', e => this.handleMouseWheel(e) );
 
-        this.optionalInputs(["brightness", "contrast", "blur", "greyscale"])
-
-        if (this.overlayView !== undefined)
-            addFiltersToVideoNode(this)
+        // these no longer work with the new rendering pipeline
+        // TODO: reimplement them as effects?
+        // this.optionalInputs(["brightness", "contrast", "blur", "greyscale"])
+        //
+        // if (this.overlayView !== undefined)
+        //     addFiltersToVideoNode(this)
 
         this.positioned = false;
         this.autoFill = v.autoFill ?? true; // default to autofill
