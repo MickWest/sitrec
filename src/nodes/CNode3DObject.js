@@ -71,6 +71,7 @@ export const ModelFiles = {
    // "PinkCube":             { file: 'data/models/pink-cube.glb',},
    // "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
 
+    "X-37":                 { file: 'data/models/X-37.glb',},
     "Saucer":               { file: 'data/models/saucer01a.glb',},
 
 }
