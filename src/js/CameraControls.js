@@ -376,10 +376,12 @@ class CameraMapControls {
 				// as it will only work when near the origin
 				const dragPlane = new Plane(new Vector3(0,-1,0),this.target.y)
 
+				let dragHeight = altitudeAboveSphere(this.target);
+
 
 				var dragSphere;
 			//	if (this.useGlobe) {
-					dragSphere = new Sphere(new Vector3(0,-wgs84.RADIUS,0), wgs84.RADIUS)
+					dragSphere = new Sphere(new Vector3(0,-wgs84.RADIUS,0), wgs84.RADIUS + dragHeight)
 			//	}
 
 
