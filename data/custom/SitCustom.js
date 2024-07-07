@@ -25,8 +25,8 @@ sitch = {
     startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
 
     startTime: "2012-09-19T20:50:26.970Z",
-    // default terrain covers North America
-    TerrainModel: {kind: "Terrain", lat: 41.0957, lon: -104.8702, zoom: 4, nTiles: 6},
+    // default terrain covers some of the local area
+    TerrainModel: {kind: "Terrain", lat: 31.5, lon: -118, zoom: 8, nTiles: 6},
     terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
     // default to 30 seconds. Loading a video will change this (also need manual, eventually)
@@ -38,18 +38,14 @@ sitch = {
     // if we are loading a video, then we want to extract frames from it
     framesFromVideo: true,
 
-    lat: 40, lon: -100,
+    lat: 32, lon: -118,
 
     targetSize: 100,
 
-    lookCamera: {fov: 10, near: 1, far: 8000000},
+    lookCamera: {fov: 5, near: 1, far: 8000000},
     mainCamera: {fov: 30, near: 1, far: 60000000,
-        // startCameraPositionLLA:[28.908829,-113.996881,24072381.100864],
-        // startCameraTargetLLA:[28.908812,-113.996897,24071381.163374],
-
-        // close to truck terrain for testing
-         startCameraPositionLLA:[40.767657,-105.215694,15862.255512],
-         startCameraTargetLLA:[40.774329,-105.208906,15520.851507],
+        startCameraPositionLLA:[28.732768,-117.711797,242274.849513],
+        startCameraTargetLLA:[28.740680,-117.712652,241879.049676],
     },
 
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
@@ -144,7 +140,7 @@ sitch = {
     },
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.767657,-105.215694,15862.255512]},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,63604.652928]},
 
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
@@ -153,7 +149,7 @@ sitch = {
         desc: "Camera Track"
     },
 
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [34.5,-115.858257450, 0]},
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,30000]},
 
     targetTrackSwitch: {
         kind: "Switch",
@@ -339,7 +335,7 @@ sitch = {
 
     altitudeGraphForTarget: { kind: "altitudeGraph",
         track: "LOSTraverseSelectTrack",
-        min: 20000, max: 35000,
+        min: 0, max: 60000,
         left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
     },
 

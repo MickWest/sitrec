@@ -39,7 +39,8 @@ export class CFileManager extends CManager {
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
-                this.guiFolder.add(this, "importFile").name("Rehost File").perm();
+                this.guiFolder.add(this, "importFile").name("Import File").perm();
+                this.guiFolder.add(this, "rehostFile").name("Rehost File").perm();
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
             }
 
@@ -146,7 +147,7 @@ export class CFileManager extends CManager {
 
 
 
-    importFile() {
+    loadLocalFile(parse = false) {
         // Create an input element
         const inputElement = document.createElement('input');
 
@@ -163,15 +164,18 @@ export class CFileManager extends CManager {
 
             // Listen for the 'load' event on the FileReader
             reader.addEventListener('load', () => {
-                // When the file has been read, parse it as an asset
-                Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
-                   console.log("Imported File Rehosted as " + rehostResult);
-                 //   DragDropHandler.parseResult(file.name, reader.result);
-                    // display an alert with the new URL so the user can copy it
-                    //alert(rehostResult);
-                    createCustomModalWithCopy(rehostResult)();
+                // When the file has been read, parse it as an asset or rehost it
+                if (parse) {
+                      DragDropHandler.parseResult(file.name, reader.result);
+                } else {
+                    Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
+                        console.log("Imported File Rehosted as " + rehostResult);
+                        // display an alert with the new URL so the user can copy it
+                        //alert(rehostResult);
+                        createCustomModalWithCopy(rehostResult)();
 
-                });
+                    });
+                }
 
             });
 
@@ -183,6 +187,15 @@ export class CFileManager extends CManager {
         inputElement.click();
 
     }
+
+    rehostFile() {
+        this.loadLocalFile(false)
+    }
+
+    importFile() {
+        this.loadLocalFile(true)
+    }
+
 
 
     rehostSitch() {
