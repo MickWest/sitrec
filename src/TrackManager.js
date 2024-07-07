@@ -244,8 +244,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         // this is more flexible, as the user can then add a controller if they want
                         switchNode.removeOption(menuText)
                         switchNode.addOption(menuText, NodeMan.get(trackID))
-                        // and select it
-                        switchNode.selectOption(menuText)
+                        // and select it (Quietly, as we don't want to zoom to it yet)
+                        switchNode.selectOptionQuietly(menuText)
 
                         // if there's a center point track, make that as well
                         if (centerID !== null) {
@@ -479,6 +479,12 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
                     targetTrackSwitch.selectOption(trackOb.menuText);
 
+                }
+
+                // and since we have an intersection, zoomTo it if there's a TerrainModel
+                if (NodeMan.exists("terrainUI")) {
+                    let terrainUINode = NodeMan.get("terrainUI")
+                    terrainUINode.zoomToTrack(trackOb.trackNode);
                 }
 
 

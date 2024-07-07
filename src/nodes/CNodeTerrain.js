@@ -97,8 +97,23 @@ export class CNodeTerrainUI extends CNode {
         if (Globals.dontAutoZoom) return;
         const trackNode = NodeMan.get(v);
         const {minLat, maxLat, minLon, maxLon, minAlt, maxAlt} = trackNode.getLLAExtents();
-        this.lat = (minLat + maxLat)/2;
-        this.lon = (minLon + maxLon)/2;
+
+        this.zoomToLLABox(minLat, maxLat, minLon, maxLon)
+
+    }
+
+    // given two Vector3s, zoom to the box they define
+    zoomToBox(min, max) {
+        // min and max are in EUS, so convert to LLA
+        const minLLA = EUSToLLA(min);
+        const maxLLA = EUSToLLA(max);
+        this.zoomToLLABox(minLLA.x, maxLLA.x, minLLA.y, maxLLA.y)
+    }
+
+    zoomToLLABox(minLat, maxLat, minLon, maxLon)
+    {
+        this.lat = (minLat + maxLat) / 2;
+        this.lon = (minLon + maxLon) / 2;
 
         const maxZoom = 15
 
@@ -111,7 +126,7 @@ export class CNodeTerrainUI extends CNode {
         } else {
             const latZoom = Math.log2(360 / latDiff);
             const lonZoom = Math.log2(180 / lonDiff);
-            this.zoom = Math.min(maxZoom,Math.floor(Math.min(latZoom, lonZoom)));
+            this.zoom = Math.min(maxZoom, Math.floor(Math.min(latZoom, lonZoom)));
         }
         this.latController.updateDisplay();
         this.lonController.updateDisplay();
@@ -124,6 +139,7 @@ export class CNodeTerrainUI extends CNode {
 
         this.doRefresh();
     }
+
 
     doRefresh() {
         this.startLoading = true;
