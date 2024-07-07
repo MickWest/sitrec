@@ -18,7 +18,7 @@ import {KMLToMISB} from "./KMLUtils";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {assert} from "./assert.js";
 import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./SphericalMath";
-import {trackBoundingBox} from "./trackUtils";
+import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
 
 
 export const TrackManager = new CManager();
@@ -224,6 +224,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         }
                     }
 
+                    // store the menu text so we can select it later
+                    trackOb.menuText = menuText;
+
                     // TODO: might need more checks for uniqueness
 
 
@@ -426,10 +429,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
             })
 
-            // maybe adjust the main view camera to look at the center of the track
 
         }
 
+        // maybe adjust the main view camera to look at the center of the track
         const mainCamera = NodeMan.get("mainCamera").camera;
         const mainView = NodeMan.get("mainView");
         const bbox = trackBoundingBox(trackOb.trackDataNode);
@@ -453,6 +456,33 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
         mainCamera.position.copy(cameraTarget);
         mainCamera.lookAt(ground);
+
+
+        // If this is not the first track, then find the time of the closest intersection.
+
+        const track0 = TrackManager.getByIndex(0);
+        if (track0 !== trackOb) {
+            let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
+            console.log("Closest intersection time: ", time);
+
+            // we want this in the middle, so subtract half the Sit.frames
+
+       //    time -= Math.floor(Sit.frames*Sit.fps*1000);
+
+            GlobalDateTimeNode.setStartDateTime(time);
+            GlobalDateTimeNode.recalculateCascade();
+            par.renderOne = true;
+
+            // and make the 2nd track the target track if we have a targetTrackSwitch
+            if (NodeMan.exists("targetTrackSwitch")) {
+                const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
+                targetTrackSwitch.selectOption(trackOb.menuText);
+
+            }
+
+
+
+        }
 
 
 

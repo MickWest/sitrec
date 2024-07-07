@@ -303,6 +303,7 @@ export const SitAguadilla = {
         // The moving average smoothed jet track
         new CNodeSmoothedPositionTrack({ id:"jetTrackAverage",
             source: "jetTrack",
+            method: "sliding", // "moving" or "sliding
             window: new CNodeGUIValue({value: 200, start:1, end:500, step:1, desc:"Camera Smooth Window"},guiMenus.camera),
             iterations: new CNodeGUIValue({value: 6, start:1, end:100, step:1, desc:"Camera Smooth Iterations"},guiMenus.camera),
 

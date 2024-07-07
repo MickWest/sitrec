@@ -83,6 +83,11 @@ class CManager {
         return this.list[id].data
     }
 
+    getByIndex(index) {
+        return this.list[Object.keys(this.list)[index]].data;
+    }
+
+
     // returns the full object, so you can check filename, etc.
     getInfo(id) {
 

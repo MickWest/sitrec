@@ -3,7 +3,7 @@
 // optionally copy any other data (like color, fov, etc) to the new array
 import {CNodeEmptyArray} from "./CNodeArray";
 import {NodeMan} from "../Globals";
-import {f2m, RollingAverage} from "../utils";
+import {f2m, RollingAverage, SlidingAverage} from "../utils";
 import {CatmullRomCurve3} from "three";
 import {V3} from "../threeUtils";
 
@@ -12,7 +12,7 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
         super(v)
         this.method = v.method || "moving"
         this.input("source") // source array node
-        if (this.method === "moving") {
+        if (this.method === "moving" || this.method === "sliding") {
             this.input("window") // amount to smooth (rolling average window size)
             this.optionalInputs(["iterations"])
         }
@@ -67,7 +67,7 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
             }
         }
 
-        if (this.method === "moving") {
+        if (this.method === "moving" || this.method === "sliding") {
 
             const x = this.sourceArray.map(pos => pos.position.x)
             const y = this.sourceArray.map(pos => pos.position.y)
@@ -82,9 +82,41 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
             var xs, ys, zs;
             //     if (quickToggle("Smooth Derivative", false) === false) {
-            xs = RollingAverage(x, window, iterations)
-            ys = RollingAverage(y, window, iterations)
-            zs = RollingAverage(z, window, iterations)
+
+            if (this.method === "moving") {
+                xs = RollingAverage(x, window, iterations)
+                ys = RollingAverage(y, window, iterations)
+                zs = RollingAverage(z, window, iterations)
+            } else {
+                xs = SlidingAverage(x, window, iterations)
+                ys = SlidingAverage(y, window, iterations)
+                zs = SlidingAverage(z, window, iterations)
+            }
+
+            // let  xsR = RollingAverage(x, window, iterations)
+            // let  ysR = RollingAverage(y, window, iterations)
+            // let  zsR = RollingAverage(z, window, iterations)
+            //
+            // // console.log the first and last 20 values of each xs, ys, zs, xsR, ysR, zsR
+            // console.log("xs: ", xs.slice(0, 20))
+            // console.log("xsR: ", xsR.slice(0, 20))
+            // console.log("xs: ", xs.slice(-20))
+            // console.log("xsR: ", xsR.slice(-20))
+            //
+            // console.log("ys: ", ys.slice(0, 20))
+            // console.log("ysR: ", ysR.slice(0, 20))
+            // console.log("ys: ", ys.slice(-20))
+            // console.log("ysR: ", ysR.slice(-20))
+            //
+            // console.log("z: ", z.slice(0, 20))
+            // console.log("zs: ", zs.slice(0, 20))
+            // console.log("zsR: ", zsR.slice(0, 20))
+            // console.log("-z: ", z.slice(0, -20))
+            // console.log("-zs: ", zs.slice(-20))
+            // console.log("-zsR: ", zsR.slice(-20))
+            //
+
+
             //     } else {
             //         xs = smoothDerivative(x, smooth, iterations)
             //         ys = smoothDerivative(y, smooth, iterations)
@@ -124,7 +156,7 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
     getValueFrame(frame) {
         let pos;
-        if (this.method === "moving") {
+        if (this.method === "moving" || this.method === "sliding") {
             pos = this.array[frame].position
         } else {
             pos = V3()

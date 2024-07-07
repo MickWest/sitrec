@@ -120,6 +120,27 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         return time
     }
 
+    // given a time, find the first frame that is at or after that time
+    getIndexAtTime(time) {
+        let points = this.misb.length
+        for (let f = 0; f < points; f++) {
+            if (this.getTime(f) >= time) {
+                return f;
+            }
+        }
+        return 0
+    }
+
+    // get EUS position at frame i
+    getPosition(i) {
+        return LLAToEUS(this.getLat(i), this.getLon(i), this.getAlt(i));
+    }
+
+    // given a time in ms (UNIX time), return the position at that time
+    getPositionAtTime(time) {
+        return this.getPosition(this.getIndexAtTime(time));
+    }
+
 
     // a slot is valid if it has a valid timestamp
     // and the lat/lon/alt are not NaN

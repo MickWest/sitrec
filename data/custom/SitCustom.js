@@ -229,9 +229,10 @@ sitch = {
     // The "Track" traverse node uses the ground track
     LOSTraverseSelectTrack: {
         kind: "traverseNodes",
-        idExtra: "Track",
+        // idExtra: "Track",
         los: "JetLOS",
         menu: {
+            "Target Object": "targetTrackSwitch",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Straight Line": "LOSTraverseStraightLine",
@@ -265,18 +266,18 @@ sitch = {
         size: 1,
         radius: 10,
 
-        width: 3,
-        height: 4,
-        depth: 10,
+        width: 100,
+        height: 100,
+        depth: 100,
 
         material: "lambert",
-        color: "#FFFFFF",
+        color: "#FFF00",
         emissive: '#404040',
         widthSegments:20,
         heightSegments:20,
     },
     moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "LOSTraverseSelectTrack"},
-    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelectTrack", tiltType: "frontPointing"},
+    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelectTrack", tiltType: "banking"},
 
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
@@ -321,6 +322,62 @@ sitch = {
         yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"effects"},
         spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"effects"},
     },
+
+
+    targetDistanceGraph: {
+        targetTrack: "LOSTraverseSelectTrack",
+        cameraTrack: "cameraTrackSwitch",
+        left: 0.0, top: 0.0, width: .25, height: .25,
+        maxY: 30,
+    },
+
+
+    altitudeGraphForTarget: { kind: "altitudeGraph",
+        track: "LOSTraverseSelectTrack",
+        min: 20000, max: 35000,
+        left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
+    },
+
+    speedGraphForTarget: { kind: "speedGraph",
+        label: "Target Speed",
+        track: "LOSTraverseSelectTrack",
+        min:0, max:1000,
+        left: 0.25, top:0, width: .15, height:-1},
+
+
+    // // The moving average smoothed jet track
+    // targetTrackSwitchSmooth: {
+    //     kind: "SmoothedPositionTrack",
+    //     method: "moving",
+    //     source: "targetTrackSwitch",
+    //     window: {kind: "GUIValue", value: 200, start:1, end:1000, step:1, desc:"Target Smooth Window", gui:"traverse"},
+    //     // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
+    // },
+    //
+    // speedGraphMoving: { kind: "speedGraph",
+    //     label: "Moving Speed",
+    //     track: "targetTrackSwitchSmooth",
+    //     min:0, max:1000,
+    //     left: 0.70, top:0, width: .15, height:-1},
+    //
+    // // The Camull spline smoothed jet track
+    // targetTrackSwitchSmoothSliding: {
+    //     kind: "SmoothedPositionTrack",
+    //     method: "catmull",
+    //     source: "targetTrackSwitch",
+    //     intervals: {kind: "GUIValue", value: 20, start:1, end:200, step:1, desc:"Catmull Intervals", gui:"traverse"},
+    //     tension:{kind:"GUIValue", value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension", gui:"traverse"},
+    // },
+    //
+    //
+    //
+    // speedGraphSliding: { kind: "speedGraph",
+    //     label: "Sliding Speed",
+    //     track: "targetTrackSwitchSmoothSliding",
+    //     min:0, max:1000,
+    //     left: 0.85, top:0, width: .15, height:-1},
+    //
+
 
     include_Compasses: true,
 

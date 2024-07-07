@@ -436,12 +436,6 @@ export const SitFlir1 = {
         maxY: 30,
     },
 
-    displayLOSForJet: { kind: "DisplayLOS",
-        LOS: "JetLOS",
-        clipSeaLevel: false,
-        color: "#308080",
-        spacing: 120,
-    },
 
     altitudeGraphForTarget: { kind: "altitudeGraph",
         track: "LOSTraverseSelect",
@@ -454,6 +448,14 @@ export const SitFlir1 = {
         track: "LOSTraverseSelect",
         min:0, max:500,
         left: 0.25, top:0, width: .15, height:-1},
+
+    displayLOSForJet: { kind: "DisplayLOS",
+        LOS: "JetLOS",
+        clipSeaLevel: false,
+        color: "#308080",
+        spacing: 120,
+    },
+
 
     flir1LegacyCode: {},
 
