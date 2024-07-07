@@ -128,13 +128,13 @@ class CNodeSwitch extends CNode {
     }
 
     addOption(option, value) {
-        this.inputs[option] = value;
+        this.addInput(option, value)
         addOptionToGUIMenu(this.controller, option, option)
     }
 
     removeOption(option) {
         if (this.inputs[option] !== undefined) {
-            delete this.inputs[option]
+            this.removeInput(option)
             removeOptionFromGUIMenu(this.controller, option)
         }
     }
@@ -170,6 +170,12 @@ class CNodeSwitch extends CNode {
         // turn controller on or off
         Object.keys(this.inputs).forEach(key => {
             const node = this.inputs[key];
+
+            // Make sure that the input has this as an output
+            if (node.outputs.indexOf(this) === -1) {
+                assert(0, "CNodeSwitch:recalculate: input "+node.id+" does not have this as an output")
+            }
+
             if (node.isController) {
                 if (key !== this.choice) {
                     node.enabled = false;

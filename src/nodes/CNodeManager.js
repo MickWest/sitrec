@@ -84,8 +84,8 @@ export class CNodeManager extends CManager{
     }
 
 
-    dumpNodeRecursive(node, depth) {
-        var result = "|---".repeat(depth) + node.id + "\n"
+    dumpNodeRecursive(node, depth=0) {
+        var result = "|---".repeat(depth) + node.constructor.name+": "+ node.id + "\n"
         for (const key in node.outputs) {
             const output = node.outputs[key]
             result += this.dumpNodeRecursive(output, depth+1)

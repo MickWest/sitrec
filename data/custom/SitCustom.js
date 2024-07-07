@@ -281,7 +281,7 @@ sitch = {
     orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelectTrack", tiltType: "banking"},
 
 
-    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 1.0},
+    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5},
 
 
     focusTracks:{

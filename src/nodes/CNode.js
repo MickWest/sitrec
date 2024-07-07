@@ -359,6 +359,15 @@ class CNode {
         node.outputs.push(this)
     }
 
+    removeInput(key) {
+        // remove this from the outputs of the input node
+        var input = this.inputs[key];
+        if (input !== undefined) {
+            input.outputs = input.outputs.filter(node => node !== this);
+            delete this.inputs[key];
+        }
+    }
+
     addInputs(inputs) {
         if (inputs) {
             Object.keys(inputs).forEach(key => {
@@ -611,7 +620,7 @@ class CNode {
         if (f === undefined) f = par.frame;
 
         if (debug)
-            console.log("|---".repeat(depth) + " Recalculating:  " + this.id + " frame " + f)
+            console.log("|---".repeat(depth) + " Recalculating:  " + this.constructor.name +": " +  this.id + " frame " + f)
 
         let listOfOne = [this]
         recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth, debug)
@@ -652,10 +661,15 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = fal
         // so we need to reapply the controller after the object has been recalculated
         // but before the children are recalculated (as they might depend on the effect of the controller on this node)
 
-        if (!noControllers && node.applyControllers !== undefined) {
-            if (debug && node.id === "lookCamera")
-                console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
-            node.applyControllers(f, depth)
+        if (!noControllers) {
+            if (node.applyControllers !== undefined) {
+                if (debug && node.id === "lookCamera")
+                    console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
+                node.applyControllers(f, depth)
+            } else {
+                if (debug && node.id === "lookCamera")
+                    console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
+            }
         }
 
         // for each output in node.outputs, if it's not in the outputs list, add it

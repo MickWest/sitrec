@@ -1,6 +1,6 @@
 //var matLineWhiteThin = makeMatLine(0xFFFFFF, 0.75);
 import {makeMatLine} from "../MatLines";
-import {Sit} from "../Globals";
+import {GlobalDateTimeNode, Sit} from "../Globals";
 import {DebugSphere, dispose, intersectMSL} from "../threeExt";
 import {par} from "../par";
 import {metersFromMiles} from "../utils";
