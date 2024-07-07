@@ -6,7 +6,7 @@ import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "three";
 import {getFileExtension, scaleF2M} from "./utils";
-import {FileManager, GlobalDateTimeNode, gui, guiMenus, NodeMan, Sit} from "./Globals";
+import {FileManager, GlobalDateTimeNode, Globals, gui, guiMenus, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
@@ -432,7 +432,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         }
 
-        if (Sit.centerOnLoadedTracks) {
+        if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom) {
             // maybe adjust the main view camera to look at the center of the track
             const mainCamera = NodeMan.get("mainCamera").camera;
             const mainView = NodeMan.get("mainView");
@@ -497,7 +497,16 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 }
 
 
+            } else {
+                // this is the first track loaded.
+                // so just center on this track
+                if (NodeMan.exists("terrainUI")) {
+                    let terrainUINode = NodeMan.get("terrainUI")
+                    terrainUINode.zoomToTrack(trackOb.trackNode);
+                }
+
             }
+
         }
 
 
