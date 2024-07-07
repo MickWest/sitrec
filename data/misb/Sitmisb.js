@@ -111,7 +111,7 @@ sitch = {
     // This is all for the second view, angles
     lookCamera2:  {kind: "lookCamera", fov:10, far:8000000},
     followTrack2: {kind: "followTrack", object: "lookCamera2"},            // camera follows the camera track
-    losTrackMISB: {arrayNode: "cameraTrack", smooth:120},
+    losTrackMISB: {kind: "losTrackMISB", arrayNode: "cameraTrack", smooth:120},
     matrixController: {object: "lookCamera2", source: "losTrackMISB"},
     fovController2:    {kind: "fovController", object: "lookCamera2", source: "cameraTrack"},
     lookView2: {kind:"lookView", camera:"lookCamera2", left: 0.0, top: 0.5, width: -1.7927, height: 0.5, background: '#000030'},
