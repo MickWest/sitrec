@@ -21,7 +21,7 @@ import {
     Vector3
 } from "three";
 import {degrees, radians} from "../utils";
-import {FileManager, GlobalDateTimeNode, guiMenus, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {FileManager, GlobalDateTimeNode, Globals, guiMenus, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {
     DebugArrow,
     DebugArrowAB,
@@ -561,6 +561,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.celestialSphere.layers.enable(LAYER.LOOK);  // probably not needed
         propagateLayerMaskObject(this.celestialSphere)
 
+        this.useDayNight = (v.useDayNight !== undefined) ? v.useDayNight : true;
+        guiShowHide.add(this,"useDayNight" ).listen().onChange(()=>{
+            par.renderOne=true;
+        }).name("Day/Night Sky")
+
 
         this.showEquatorialGridLook = (v.showEquatorialGridLook !== undefined) ? v.showEquatorialGridLook : true;
         guiShowHide.add(this,"showEquatorialGridLook" ).listen().onChange(()=>{
@@ -602,6 +607,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     }
 
     update(frame) {
+
+        if (this.useDayNight) {
+            const sun = Globals.sunTotal / Math.PI;
+            this.sunLevel = sun;
+            const blue = new Vector3(0.53,0.81,0.92)
+            blue.multiplyScalar(sun)
+            this.skyColor = new Color(blue.x, blue.y, blue.z)
+        }
+
+
+
+
+
         this.celestialSphere.quaternion.identity()
         this.celestialSphere.updateMatrix()
 
@@ -709,7 +727,26 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // what's this doing here? nneds to be called per camera, but not in a satellite specific function
         this.starMaterial.uniforms.cameraFOV.value = camera.fov;
-        this.starMaterial.uniforms.starScale.value = Sit.starScale/window.devicePixelRatio;
+
+        let starScale = Sit.starScale/window.devicePixelRatio;
+
+        let sunScale = 1.0;
+        // scale based on sun angle
+        let sun = Globals.sunAngle;
+        if (sun != undefined) {
+            const minSun = -10 // below this level, sunScale is 1
+            const maxSun = 1 // above this level, sunScale is 0
+            if (sun < minSun) {
+                sunScale = 1.0;
+            } else if (sun > maxSun) {
+                sunScale = 0.0;
+            } else {
+                sunScale = 1 - (sun - minSun) / (maxSun - minSun)
+            }
+            starScale *= sunScale;
+        }
+
+        this.starMaterial.uniforms.starScale.value = starScale;
 
 
         var cameraPos = camera.position;

@@ -136,7 +136,12 @@ sitch = {
 
     dragDropHandler: true,
     useGlobe: true,
-    nightSky: true,
+
+    nightSky: {
+        showEquatorialGrid: false,
+        showConstellations: false,
+        useDayNight: true,
+    },
 
 
     fixedCameraPosition: {kind: "PositionLLA", LLA: [40.767657,-105.215694,15862.255512]},
@@ -380,5 +385,8 @@ sitch = {
 
 
     include_Compasses: true,
+
+    // labelView defaults to adding an overlay to lookView, and adds the time and date
+    labelView: {},
 
 }

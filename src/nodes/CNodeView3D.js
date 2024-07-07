@@ -287,9 +287,7 @@ export class CNodeView3D extends CNodeViewCanvas {
  */
 
 
-            // clear the render target (or canvas) with the background color
-            this.renderer.setClearColor(this.background);
-            this.renderer.clear(true, true, true);
+
 
             // Render the celestial sphere
             if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
@@ -304,6 +302,15 @@ export class CNodeView3D extends CNodeViewCanvas {
                 const nightSkyNode = NodeMan.get("NightSkyNode")
                 nightSkyNode.updateSatelliteScales(this.camera)
 
+
+                this.renderer.setClearColor(this.background);
+                if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
+                    this.renderer.setClearColor(nightSkyNode.skyColor);
+                }
+                this.renderer.clear(true, true, true);
+
+
+
                 var tempPos = this.camera.position.clone();
                 this.camera.position.set(0, 0, 0)
                 this.camera.updateMatrix();
@@ -313,6 +320,10 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.camera.position.copy(tempPos)
                 this.camera.updateMatrix();
                 this.camera.updateMatrixWorld();
+            } else {
+                // clear the render target (or canvas) with the background color
+                this.renderer.setClearColor(this.background);
+                this.renderer.clear(true, true, true);
             }
 
             // render the day sky

@@ -28,6 +28,7 @@ export class CNodeSunlight extends CNode {
 
                 // find the angle above or below the horizon
                 const angle = degrees(Math.asin(dir.y));
+                Globals.sunAngle = angle;
 
                 let scale = brightnessOfSun(angle,this.darkeningAngle)
 
