@@ -19,6 +19,7 @@ import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {assert} from "./assert.js";
 import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./SphericalMath";
 import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
+import {EUSToLLA} from "./LLA-ECEF-ENU";
 
 
 export const TrackManager = new CManager();
@@ -434,7 +435,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom) {
             // maybe adjust the main view camera to look at the center of the track
-            const mainCamera = NodeMan.get("mainCamera").camera;
+            const mainCameraNode = NodeMan.get("mainCamera");
+            const mainCamera = mainCameraNode.camera;
             const mainView = NodeMan.get("mainView");
             const bbox = trackBoundingBox(trackOb.trackDataNode);
             console.log(`Track ${trackFileName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
@@ -457,6 +459,19 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
             mainCamera.position.copy(cameraTarget);
             mainCamera.lookAt(ground);
+
+            // since we've set the camera default postion for this track, store it
+            // so calling mainCameraNode.resetCamera() will use these new values
+
+            mainCameraNode.snapshotCamera();
+
+
+            // // first get LLA versions of the EUS values cameraTarget and ground
+            // const cameraTargetLLA = EUSToLLA(cameraTarget);
+            // const groundLLA = EUSToLLA(ground);
+            // // then store them in the mainCamera node
+            // mainCameraNode.startPosLLA = cameraTargetLLA;
+            // mainCameraNode.lookAtLLA = groundLLA;
 
 
             // If this is not the first track, then find the time of the closest intersection.

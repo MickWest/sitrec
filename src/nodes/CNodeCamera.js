@@ -1,6 +1,6 @@
 import {Camera, PerspectiveCamera, Vector3} from "three";
-import {f2m, m2f} from "../utils";
-import {NodeMan} from "../Globals";
+import {f2m, m2f, vdump} from "../utils";
+import {guiMenus, NodeMan} from "../Globals";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAVToEUS} from "../LLA-ECEF-ENU";
 import {raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
@@ -31,6 +31,10 @@ export class CNodeCamera extends CNode3D {
 
         this.resetCamera()
 
+        if (this.id === "mainCamera") {
+            guiMenus.view.add(this, "snapshotCamera").name("Snapshot Camera")
+            guiMenus.view.add(this, "resetCamera").name("Reset Camera")
+        }
 
     }
 
@@ -88,6 +92,18 @@ export class CNodeCamera extends CNode3D {
             this._object.lookAt(LLAVToEUS(MV3(this.lookAtLLA)));
 
         }
+    }
+
+
+    snapshotCamera() {
+        this.camera.updateMatrixWorld();
+        var p = this.camera.position.clone()
+        const v = new Vector3();
+        v.setFromMatrixColumn(this.camera.matrixWorld,2);
+        v.multiplyScalar(-1000)
+        v.add(p)
+        this.startPosLLA = EUSToLLA(this.camera.position)
+        this.lookAtLLA = EUSToLLA(v)
     }
 
 

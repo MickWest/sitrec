@@ -78,50 +78,29 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
             if (this.in.iterations)
                 iterations = this.in.iterations.v0
 
-//        console.log("Smooth = " + smooth)
-
             var xs, ys, zs;
-            //     if (quickToggle("Smooth Derivative", false) === false) {
 
-            if (this.method === "moving") {
-                xs = RollingAverage(x, window, iterations)
-                ys = RollingAverage(y, window, iterations)
-                zs = RollingAverage(z, window, iterations)
-            } else {
-                xs = SlidingAverage(x, window, iterations)
-                ys = SlidingAverage(y, window, iterations)
-                zs = SlidingAverage(z, window, iterations)
+            if (window > this.sourceArray.length-3) {
+                console.warn("Window size is larger tha 3 less than the number of frames, reducing.")
+                window = this.sourceArray.length - 3;
             }
 
-            // let  xsR = RollingAverage(x, window, iterations)
-            // let  ysR = RollingAverage(y, window, iterations)
-            // let  zsR = RollingAverage(z, window, iterations)
-            //
-            // // console.log the first and last 20 values of each xs, ys, zs, xsR, ysR, zsR
-            // console.log("xs: ", xs.slice(0, 20))
-            // console.log("xsR: ", xsR.slice(0, 20))
-            // console.log("xs: ", xs.slice(-20))
-            // console.log("xsR: ", xsR.slice(-20))
-            //
-            // console.log("ys: ", ys.slice(0, 20))
-            // console.log("ysR: ", ysR.slice(0, 20))
-            // console.log("ys: ", ys.slice(-20))
-            // console.log("ysR: ", ysR.slice(-20))
-            //
-            // console.log("z: ", z.slice(0, 20))
-            // console.log("zs: ", zs.slice(0, 20))
-            // console.log("zsR: ", zsR.slice(0, 20))
-            // console.log("-z: ", z.slice(0, -20))
-            // console.log("-zs: ", zs.slice(-20))
-            // console.log("-zsR: ", zsR.slice(-20))
-            //
-
-
-            //     } else {
-            //         xs = smoothDerivative(x, smooth, iterations)
-            //         ys = smoothDerivative(y, smooth, iterations)
-            //         zs = smoothDerivative(z, smooth, iterations)
-            //     }
+            if (window <= 0) {
+                // zero sized window, just copy the data
+                xs = x
+                ys = y
+                zs = z
+            } else {
+                if (this.method === "moving") {
+                    xs = RollingAverage(x, window, iterations)
+                    ys = RollingAverage(y, window, iterations)
+                    zs = RollingAverage(z, window, iterations)
+                } else {
+                    xs = SlidingAverage(x, window, iterations)
+                    ys = SlidingAverage(y, window, iterations)
+                    zs = SlidingAverage(z, window, iterations)
+                }
+            }
 
             this.array = []
             for (var i = 0; i < x.length; i++) {

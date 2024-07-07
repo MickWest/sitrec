@@ -152,6 +152,15 @@ sitch = {
         desc: "Camera Track"
     },
 
+
+    cameraTrackSwitchSmooth: {
+        kind: "SmoothedPositionTrack",
+        method: "sliding",
+        source: "cameraTrackSwitch",
+        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"traverse", method:"sliding"},
+        // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
+    },
+
     fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,30000]},
 
     targetTrackSwitch: {
@@ -160,6 +169,15 @@ sitch = {
             "fixedTarget": "fixedTargetPosition",
         },
         desc: "Target Track"
+    },
+
+    targetTrackSwitchSmooth: {
+        kind: "SmoothedPositionTrack",
+        //method: "moving",
+        method: "sliding",
+        source: "targetTrackSwitch",
+        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Target Smooth Window", gui:"traverse"},
+        // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
 
     swapTargetAndCameraTracks: {},
@@ -194,10 +212,10 @@ sitch = {
         source: "fovSwitch",
     },
 
-    trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitch"},
+    trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitchSmooth"},
 
     // These are the types of controller for the camera
-    // which will reference the cameraTrackSwitch for source data
+    // which will reference the cameraTrackSwitchSmooth for source data
     CameraPositionController: {
         kind: "Switch",
         inputs: {
@@ -207,9 +225,9 @@ sitch = {
     },
 
 
-    trackToTrackController: {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitch", targetTrack: "targetTrackSwitch",},
+    trackToTrackController: {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitchSmooth", targetTrack: "targetTrackSwitchSmooth",},
 
-    // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitch
+    // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitchSmooth
     // for source data
     // can be track-to-track, fixed angles, Az/El/Roll track, etc.
     CameraLOSController: {kind: "Switch",
@@ -236,7 +254,7 @@ sitch = {
         // idExtra: "Track",
         los: "JetLOS",
         menu: {
-            "Target Object": "targetTrackSwitch",
+            "Target Object": "targetTrackSwitchSmooth",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Straight Line": "LOSTraverseStraightLine",
@@ -264,17 +282,17 @@ sitch = {
         method: "moving",
         window: {
             kind: "GUIValue",
-            value: 50,
-            start: 1,
+            value: 20,
+            start: 0,
             end: 1000,
             step: 1,
-            desc: "Target Smooth Window",
+            desc: "Traverse Smooth Window",
             gui: "traverse"
         },
     },
 
 
-    smoothedDisplayTrack: {
+    traverseSmoothedDisplayTrack: {
         kind: "DisplayTrack",
         track: "traverseSmoothedTrack",
         color: [0,1,0],
@@ -300,7 +318,9 @@ sitch = {
         heightSegments:20,
     },
     moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "traverseSmoothedTrack"},
-    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "traverseSmoothedTrack", tiltType: "banking"},
+    orientTarget: {
+        kind: "ObjectTilt", object: "targetObject", track: "traverseSmoothedTrack", tiltType: "frontPointing"
+    }, // bank
 
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5},
@@ -308,7 +328,7 @@ sitch = {
 
     focusTracks:{
         "Ground (no track)": "default",
-        "Sensor (camera) track": "cameraTrackSwitch",
+        "Sensor (camera) track": "cameraTrackSwitchSmooth",
         "Traverse Path (UFO)": "LOSTraverseSelectTrack"
     },
 
@@ -332,8 +352,8 @@ sitch = {
     DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
-    altitudeLabel2: {kind: "MeasureAltitude", position: "LOSTraverseSelectTrack"},
-    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitch", B: "targetTrackSwitch", defer: true},
+    altitudeLabel2: {kind: "MeasureAltitude", position: "traverseSmoothedTrack"},
+    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "targetTrackSwitchSmooth", defer: true},
 
 
 
@@ -349,21 +369,21 @@ sitch = {
 
     targetDistanceGraph: {
         targetTrack: "LOSTraverseSelectTrack",
-        cameraTrack: "cameraTrackSwitch",
+        cameraTrack: "cameraTrackSwitchSmooth",
         left: 0.0, top: 0.0, width: .25, height: .25,
         maxY: 30,
     },
 
 
     altitudeGraphForTarget: { kind: "altitudeGraph",
-        track: "LOSTraverseSelectTrack",
+        track: "traverseSmoothedTrack",
         min: 0, max: 60000,
         left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
     },
 
     speedGraphForTarget: { kind: "speedGraph",
         label: "Target Speed",
-        track: "LOSTraverseSelectTrack",
+        track: "traverseSmoothedTrack",
         min:0, max:1000,
         left: 0.25, top:0, width: .15, height:-1},
 
