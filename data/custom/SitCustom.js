@@ -18,6 +18,9 @@ sitch = {
     canMod: false, // this is a custom sitch, so does not use the "modding" system, instead exports all of this
     isTool: true,
 
+    centerOnLoadedTracks: true, // likely unique to SitCustom. When true, the camera will center on the loaded track(s) when they are loaded.
+
+
     initialDropZoneAnimation: true,
 
     startDistance: 1,

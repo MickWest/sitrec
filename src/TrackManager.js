@@ -432,58 +432,58 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         }
 
-        // maybe adjust the main view camera to look at the center of the track
-        const mainCamera = NodeMan.get("mainCamera").camera;
-        const mainView = NodeMan.get("mainView");
-        const bbox = trackBoundingBox(trackOb.trackDataNode);
-        console.log( `Track ${trackFileName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
-        const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
-        // get point on sphere
-        const ground = pointOnSphereBelow(center);
-        // what's the length of the diagonal of the bounding box?
-        const diagonal = bbox.max.clone().sub(bbox.min).length();
+        if (Sit.centerOnLoadedTracks) {
+            // maybe adjust the main view camera to look at the center of the track
+            const mainCamera = NodeMan.get("mainCamera").camera;
+            const mainView = NodeMan.get("mainView");
+            const bbox = trackBoundingBox(trackOb.trackDataNode);
+            console.log(`Track ${trackFileName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
+            const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
+            // get point on sphere
+            const ground = pointOnSphereBelow(center);
+            // what's the length of the diagonal of the bounding box?
+            const diagonal = bbox.max.clone().sub(bbox.min).length();
 
-        const hfov = mainView.getHFOV();
-        // we want the camera height be enough to encompass the diagonal across the hfov
-        const cameraHeight = (diagonal*1.25) / (2 * Math.tan(hfov/2));
-
-
-        // move the camera up by the cameraHeight
-        const up = getLocalUpVector(ground);
-        const cameraTarget = ground.clone().add(up.clone().multiplyScalar(cameraHeight));
-        // and move south by  the cameraHeight
-        const south = getLocalSouthVector(ground);
-        cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
-        mainCamera.position.copy(cameraTarget);
-        mainCamera.lookAt(ground);
+            const hfov = mainView.getHFOV();
+            // we want the camera height be enough to encompass the diagonal across the hfov
+            const cameraHeight = (diagonal * 1.25) / (2 * Math.tan(hfov / 2));
 
 
-        // If this is not the first track, then find the time of the closest intersection.
+            // move the camera up by the cameraHeight
+            const up = getLocalUpVector(ground);
+            const cameraTarget = ground.clone().add(up.clone().multiplyScalar(cameraHeight));
+            // and move south by  the cameraHeight
+            const south = getLocalSouthVector(ground);
+            cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
+            mainCamera.position.copy(cameraTarget);
+            mainCamera.lookAt(ground);
 
-        const track0 = TrackManager.getByIndex(0);
-        if (track0 !== trackOb) {
-            let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
-            console.log("Closest intersection time: ", time);
 
-            // we want this in the middle, so subtract half the Sit.frames
+            // If this is not the first track, then find the time of the closest intersection.
 
-       //    time -= Math.floor(Sit.frames*Sit.fps*1000);
+            const track0 = TrackManager.getByIndex(0);
+            if (track0 !== trackOb) {
+                let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
+                console.log("Closest intersection time: ", time);
 
-            GlobalDateTimeNode.setStartDateTime(time);
-            GlobalDateTimeNode.recalculateCascade();
-            par.renderOne = true;
+                // we want this in the middle, so subtract half the Sit.frames
 
-            // and make the 2nd track the target track if we have a targetTrackSwitch
-            if (NodeMan.exists("targetTrackSwitch")) {
-                const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
-                targetTrackSwitch.selectOption(trackOb.menuText);
+                //    time -= Math.floor(Sit.frames*Sit.fps*1000);
+
+                GlobalDateTimeNode.setStartDateTime(time);
+                GlobalDateTimeNode.recalculateCascade();
+                par.renderOne = true;
+
+                // and make the 2nd track the target track if we have a targetTrackSwitch
+                if (NodeMan.exists("targetTrackSwitch")) {
+                    const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
+                    targetTrackSwitch.selectOption(trackOb.menuText);
+
+                }
+
 
             }
-
-
-
         }
-
 
 
     }
