@@ -65,6 +65,11 @@ export class CNodeControllerObjectTilt extends CNodeController {
                     next.sub(this.in.wind.v(f))
                 }
 
+                // for "lookAt" to work, we need to set the up vector
+                // to account for the curvature of the Earth
+                // it defaults to 0,1,0, which is only correct at the origin
+                object.up = getLocalUpVector(object.position)
+
                 object.lookAt(next)
 
                 var pos = this.in.track.p(f);

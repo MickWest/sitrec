@@ -642,7 +642,21 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.camera.aspect = this.canvas.width/this.canvas.height;
         this.camera.updateProjectionMatrix();
 
-        if (this.controls) this.controls.update(1);
+        if (this.controls) {
+            this.controls.update(1);
+
+            // if we have a focus track, then focus on it after camera controls have updated
+            if (this.focusTrackName !== "default") {
+                this.controls.justRotate = true;
+                var focusTrackNode = NodeMan.get(this.focusTrackName)
+                const target = focusTrackNode.p(par.frame)
+                this.camera.lookAt(target);
+            } else {
+                this.controls.justRotate = false;
+            }
+
+
+        }
         this.preRenderCameraUpdate()
 
 //      this.renderer.setClearColor(this.background);
@@ -892,12 +906,17 @@ export class CNodeView3D extends CNodeViewCanvas {
                 var focusTrackNode = NodeMan.get(this.focusTrackName)
 
                 var closestFrame = focusTrackNode.closestFrameToRay(this.raycaster.ray)
-                target = focusTrackNode.p(closestFrame)
 
+                target = focusTrackNode.p(closestFrame)
+                this.camera.lookAt(target);
+
+                // holding down command/Window let's you scrub along the track
                 if (keyHeld['meta']) {
                     par.frame = closestFrame
                     par.renderOne = true;
                 }
+
+
             }
 
 

@@ -60,6 +60,9 @@ class CameraMapControls {
 		this.state = STATE.NONE
 		this.enabled = true;
 
+
+		this.justRotate = false; // set to make all three buttons rotate around the target
+
 	}
 
 	update() {
@@ -171,6 +174,9 @@ class CameraMapControls {
 		if (event.shiftKey) this.state = STATE.ROTATE;
 
 		if (event.metaKey || event.ctrlKey) this.state = STATE.PAN;
+
+		// might also be forced to just rotate, like when focusing on a track
+		if (this.justRotate) this.state = STATE.ROTATE;
 
 		// if we have a PTZ UI controller, then all buttons just pan
 		if (getPTZController(this.view.cameraNode) !== undefined ) this.state = STATE.PAN;
