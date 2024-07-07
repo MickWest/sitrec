@@ -116,6 +116,7 @@ export class CNodeTerrainUI extends CNode {
         this.lon = (minLon + maxLon) / 2;
 
         const maxZoom = 15
+        const minZoom = 3;
 
         // find the zoom level that fits the track, ignore altitude
         // clamp to maxZoom
@@ -126,7 +127,8 @@ export class CNodeTerrainUI extends CNode {
         } else {
             const latZoom = Math.log2(360 / latDiff);
             const lonZoom = Math.log2(180 / lonDiff);
-            this.zoom = Math.min(maxZoom, Math.floor(Math.min(latZoom, lonZoom)));
+            this.zoom = Math.min(maxZoom, Math.floor(Math.min(latZoom, lonZoom)-1));
+            this.zoom = Math.max(minZoom, this.zoom);
         }
         this.latController.updateDisplay();
         this.lonController.updateDisplay();

@@ -479,6 +479,15 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
                     targetTrackSwitch.selectOption(trackOb.menuText);
 
+                    // and make the camera track switch use the other track.
+                    const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch");
+                    cameraTrackSwitch.selectOption(track0.menuText);
+
+                    // and set the traverse mode to target object
+                    const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
+                    traverseModeSwitch.selectOption("Target Object");
+
+
                 }
 
                 // and since we have an intersection, zoomTo it if there's a TerrainModel
