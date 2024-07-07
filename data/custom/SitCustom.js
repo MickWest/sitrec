@@ -255,14 +255,33 @@ sitch = {
 
 
     // WHY does smoothing lose the heading info for ObjectTilt
-   // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
+    // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
 
-    // sphereTraverse: { kind: "DisplayTargetSphere",
-    //     track: "LOSTraverseSelectTrack",
-    //     size: 5,
-    //     layers: "MAINRENDER",
-    //     color: [0,0,1],
-    // },
+
+    traverseSmoothedTrack: {
+        kind: "SmoothedPositionTrack",
+        source: "LOSTraverseSelectTrack",
+        method: "moving",
+        window: {
+            kind: "GUIValue",
+            value: 50,
+            start: 1,
+            end: 1000,
+            step: 1,
+            desc: "Target Smooth Window",
+            gui: "traverse"
+        },
+    },
+
+
+    smoothedDisplayTrack: {
+        kind: "DisplayTrack",
+        track: "traverseSmoothedTrack",
+        color: [0,1,0],
+        width: 1,
+    },
+
+
 
     targetObject: { kind: "3DObject",
         geometry: "box",
@@ -270,9 +289,9 @@ sitch = {
         size: 1,
         radius: 10,
 
-        width: 100,
-        height: 100,
-        depth: 100,
+        width: 10,
+        height: 10,
+        depth: 10,
 
         material: "lambert",
         color: "#FFF00",
@@ -280,8 +299,8 @@ sitch = {
         widthSegments:20,
         heightSegments:20,
     },
-    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "LOSTraverseSelectTrack"},
-    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "LOSTraverseSelectTrack", tiltType: "banking"},
+    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "traverseSmoothedTrack"},
+    orientTarget: {kind: "ObjectTilt", object: "targetObject", track: "traverseSmoothedTrack", tiltType: "banking"},
 
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5},

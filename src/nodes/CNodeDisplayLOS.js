@@ -120,7 +120,10 @@ export class CNodeDisplayLOS extends CNode3DGroup {
                     }
                 }
 
+                var mid = A.clone().add(B).multiplyScalar(0.5);
 
+                A.sub(mid);
+                B.sub(mid);
                 var points = [A.x, A.y, A.z, B.x, B.y, B.z]
                 var lineOb = {}
                 lineOb.geometry = new LineGeometry()
@@ -138,6 +141,7 @@ export class CNodeDisplayLOS extends CNode3DGroup {
                 }
 
                 lineOb.line = new Line2(lineOb.geometry, color)
+                lineOb.line.position.set(mid.x, mid.y, mid.z)
                 this.Jet_LOS3D.push(lineOb)
                 this.group.add(lineOb.line)
             }

@@ -177,6 +177,25 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
 
         assert(line_points.length > 0, "CNodeDisplayTrack: no points in track "+this.id)
+
+        // find the mid point of line_points, and make the track relative to that
+        var mid = {x: 0, y: 0, z: 0}
+        for (var i = 0; i < line_points.length; i += 3) {
+            mid.x += line_points[i]
+            mid.y += line_points[i + 1]
+            mid.z += line_points[i + 2]
+        }
+        mid.x /= line_points.length / 3
+        mid.y /= line_points.length / 3
+        mid.z /= line_points.length / 3
+
+        for (var i = 0; i < line_points.length; i += 3) {
+            line_points[i] -= mid.x
+            line_points[i + 1] -= mid.y
+            line_points[i + 2] -= mid.z
+        }
+
+
         this.trackGeometry.setPositions(line_points);
         this.trackGeometry.setColors(line_colors);
 
@@ -209,6 +228,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         this.trackLine.computeLineDistances();
         this.trackLine.scale.set(1, 1, 1);
+
+        // position this object at the mid point of the track, the track vertices are relative to this point
+        // for precision
+        this.trackLine.position.set(mid.x, mid.y, mid.z)
 
         this.group.add(this.trackLine);
 
