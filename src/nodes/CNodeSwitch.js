@@ -166,6 +166,8 @@ class CNodeSwitch extends CNode {
 
     // recursively enable or disable any controllers that are inputs to this switch
     // account for the fact that the input may be a switch itself
+    // if a switch is disabled, then it will disable all its inputs
+    // if a switch is enabled, then it will enable only the selected input
     enableController(enable) {
         console.log(`CNodeSwitch:enableController(${enable}) called for ${this.id}`)
         Object.keys(this.inputs).forEach(key => {

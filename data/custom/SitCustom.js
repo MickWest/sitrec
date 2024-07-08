@@ -182,6 +182,23 @@ sitch = {
 
     swapTargetAndCameraTracks: {}, // NOT IMPLEMENTED
 
+    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV"},
+
+    fovSwitch: {
+        kind: "Switch",
+        inputs: {
+            "userFOV": "fovUI",
+        },
+        desc: "Camera FOV",
+    },
+
+    fovController: {
+        kind: "fovController",
+        object: "lookCamera",
+        source: "fovSwitch",
+    },
+
+    // put pTZ after fov controller, so it will override it if both are enabled
     ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 90, showGUI: true},
 
     // angels controllers
@@ -195,22 +212,11 @@ sitch = {
         desc: "Angles Source"
     },
 
-    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV"},
-
-    fovSwitch: {
-        kind: "Switch",
-        inputs: {
-            "userFOV": "fovUI",
-        },
-        desc: "Camera FOV",
-    },
 
 
-    fovController: {
-        kind: "fovController",
-        object: "lookCamera",
-        source: "fovSwitch",
-    },
+
+
+
 
     trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitchSmooth"},
 
