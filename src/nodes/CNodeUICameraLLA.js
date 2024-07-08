@@ -1,4 +1,4 @@
-import {LLAToEUSMAP, LLAToEUS, RLLAToECEFV_Sphere} from "../LLA-ECEF-ENU";
+import {LLAToEUS, RLLAToECEFV_Sphere} from "../LLA-ECEF-ENU";
 import {f2m, radians} from "../utils";
 import {Sit} from "../Globals";
 

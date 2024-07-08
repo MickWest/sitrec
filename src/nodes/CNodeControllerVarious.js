@@ -1,5 +1,5 @@
 import {atan, degrees, radians, tan} from "../utils";
-import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {gui, NodeMan, Sit} from "../Globals";
