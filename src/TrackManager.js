@@ -380,17 +380,17 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         })
 
 
-        trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
-            id: "TrackSphere_" + trackFileName,
-            inputs: {
-                track: trackOb.trackNode,
-                size: "sizeTargetScaled",
-            },
-            color: [1, 0, 1],
-            layers: sphereMask,
-            wireframe: true,
-
-        })
+        // trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
+        //     id: "TrackSphere_" + trackFileName,
+        //     inputs: {
+        //         track: trackOb.trackNode,
+        //         size: "sizeTargetScaled",
+        //     },
+        //     color: [1, 0, 1],
+        //     layers: sphereMask,
+        //     wireframe: true,
+        //
+        // })
 
 
         if (centerID !== null) {
@@ -418,17 +418,17 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             })
 
 
-            trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
-                id: "CenterSphere_" + trackFileName,
-                inputs: {
-                    track: trackOb.centerNode,
-                    size: "sizeTargetScaled",
-                },
-                color: [1, 1, 0],
-                layers: sphereMask,
-                wireframe: true,
-
-            })
+            // trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
+            //     id: "CenterSphere_" + trackFileName,
+            //     inputs: {
+            //         track: trackOb.centerNode,
+            //         size: "sizeTargetScaled",
+            //     },
+            //     color: [1, 1, 0],
+            //     layers: sphereMask,
+            //     wireframe: true,
+            //
+            // })
 
 
         }
