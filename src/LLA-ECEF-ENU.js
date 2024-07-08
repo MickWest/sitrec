@@ -297,7 +297,9 @@ export function ECEF2EUS(pos,lat1, lon1, radius, justRotate=false) {
 //
 // }
 
-export function EUSToECEF(posEUS, radius = wgs84.RADIUS) {
+export function EUSToECEF(posEUS, radius) {
+    assert(radius === undefined, "undexpected radius in EUSToECEF")
+
     const lat1 = radians(Sit.lat)
     const lon1 = radians(Sit.lon)
 
@@ -312,9 +314,9 @@ export function EUSToECEF(posEUS, radius = wgs84.RADIUS) {
     mENU2ECEF.invert()
 
     // RLLAToECEFV_Sphere converts from spherical coordinates to ECEF
-    var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, radius);
+    var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0);
 
-    // COnvert from eus to enu
+    // Convert from eus to enu
     var enu = new Vector3(posEUS.x, -posEUS.z, posEUS.y);
 
     // Apply the matrix transformation
@@ -326,53 +328,24 @@ export function EUSToECEF(posEUS, radius = wgs84.RADIUS) {
     return ecef;
 }
 
-
-
-// Only use this if the rendered world actually changes size when the radius changes size
-// that is not the case with CNodeTerrain,
-export function LLAToEUS(lat, lon, alt=0, radius = wgs84.RADIUS) {
+// Convert LLA to Spherical EUS. Optional earth's radius parameter is deprecated, and should not be used.
+export function LLAToEUS(lat, lon, alt=0, radius) {
+    assert(radius === undefined, "undexpected radius in LLAToEUS")
     assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
-    const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),alt,radius)
-    var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), radius) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain
+    const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),alt,wgs84.RADIUS)
+    // Sit.lat/lon is the EUS origin, which can be defined per Sit
+    // it's mostly legacy, but the math will be more accurate if the origin is near the action
+    // when there's a terrain, Sit.lat/lon is set to center of the map in CNodeTerrain
+    var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
     var eus = V3(enu.x,enu.z,-enu.y)
     return eus
 }
 
 // vector input version
-export function LLAVToEUS(lla, radius = wgs84.RADIUS) {
-    return LLAToEUS(lla.x, lla.y, lla.z, radius)
+export function LLAVToEUS(lla, radius) {
+    assert(radius === undefined, "undexpected radius in LLAVToEUS")
+    return LLAToEUS(lla.x, lla.y, lla.z)
 }
-
-
-
-// here we calculate EUS assuming a wgs84 radius
-// then adjust the altitude
- export function LLAToEUSMAP(lat, lon, alt, radius  = wgs84.RADIUS) {
-     assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
-     const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),0,radius)
-     var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon),radius) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain
-
-     // set world y from alt and adjust for drop from map x and y
-     var z = alt - drop(enu.x,enu.y,radius) // use z to avoiud confusion with enu.y
-
-     var eus = V3(enu.x,z,-enu.y)  // z is y
-     return eus
- }
-
-// The above assumes local to the EUS origin
-// and used "drop" which isn't a good way of doing it
-export function LLAToEUSMAPGlobe(lat, lon, alt, radius  = wgs84.RADIUS) {
-    assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
-    const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),alt,wgs84.RADIUS)
-    var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon),wgs84.RADIUS) // when there's a terrain, Sit.lat/lon is set to the origin in CNodeTerrain
-
-    // set world y from alt and adjust for drop from map x and y
- //   var z = alt - drop(enu.x,enu.y,radius) // use z to avoiud confusion with enu.y
-
-    var eus = V3(enu.x,enu.z,-enu.y)  // z is y
-    return eus
-}
-
 
 
 // Convert RA, Dec to Az, El

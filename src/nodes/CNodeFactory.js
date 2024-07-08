@@ -18,6 +18,7 @@ export class CNodeFactory {
     register(nodeClass) {
         assert(nodeClass.name.substring(0, 5) === "CNode", "registered node class must start with CNode " + nodeClass.name)
         const shortName = nodeClass.name.substring(5)
+        assert(this.nodeTypes[shortName] === undefined, "Node type " + shortName + " already registered in node factory");
         this.nodeTypes[shortName] = nodeClass
 //        console.log("Registering "+shortName)
     }

@@ -255,8 +255,8 @@ class Tile {
   recalculateCurve(radius) {
 
     if (radius !== wgs84.RADIUS) {
-      console.warn('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
-      console.warn('Flat earth simulation will need a different calculation')
+      console.error('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
+      console.error('Flat earth simulation will need a different calculation')
     }
 
 
@@ -545,7 +545,7 @@ class Map {
     this.nTiles = this.options.nTiles
     this.zoom = this.options.zoom
     this.tileSize = this.options.tileSize
-    this.radius = options.radius ?? wgs84.RADIUS// 6378137  // defaults to WGS84 radius
+    this.radius = wgs84.RADIUS; // force this
     this.loadedCallback = options.loadedCallback; // function to call when map is all loaded
     this.loaded = false; // mick flag to indicate loading is finished
 

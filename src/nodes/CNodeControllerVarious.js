@@ -1,5 +1,5 @@
 import {atan, degrees, radians, tan} from "../utils";
-import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, wgs84} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUSMAP, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
 import {gui, NodeMan, Sit} from "../Globals";
@@ -155,7 +155,7 @@ export class CNodeControllerManualPosition extends CNodeController {
             NodeMan.get("cameraLon").value = LLA.y
 
             // convert that to a camera position
-            camPos = LLAToEUSMAP(LLA.x, LLA.y, LLA.z, wgs84.RADIUS)
+            camPos = LLAToEUS(LLA.x, LLA.y, LLA.z)
             if (this.aboveGround !== undefined) {
                 camPos.y = adjustHeightAboveGround(camPos, this.aboveGround).y
             }
@@ -238,6 +238,7 @@ export class CNodeControllerFocalLength extends CNodeController {
 // look at a specified LLA point
 export class CNodeControllerLookAtLLA extends CNodeController {
     constructor(v) {
+        assert(0,"Unexpect usage of CNodeControllerLookAtLLA")
         super(v);
         this.input("lat")
         this.input("lon")
@@ -248,7 +249,7 @@ export class CNodeControllerLookAtLLA extends CNodeController {
         const camera = objectNode.camera
         var radius = wgs84.RADIUS
 
-        var to = LLAToEUSMAP(
+        var to = LLAToEUS(
             this.in.lat.v(f),
             this.in.lon.v(f),
             this.in.alt.v(f),
