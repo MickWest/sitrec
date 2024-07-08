@@ -194,8 +194,8 @@ export class CGuiMenuBar {
         this.bar = bar;
 
 
-        // capture clicks from anywhere on screen to detect if we want to close the GUIs
-        document.addEventListener("click", (event) => {
+        // capture mousedown events from anywhere on screen to detect if we want to close the GUIs
+        document.addEventListener("mousedown", (event) => {
             // if the click was not in the menu bar, close all the GUIs
             if (!this.menuBar.contains(event.target)) {
                 this.slots.forEach((gui) => {
