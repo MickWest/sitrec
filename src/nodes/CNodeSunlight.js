@@ -1,10 +1,11 @@
 // CNodeSunlight.js - upates the global scene with the current sunlight
-// based on the current date and time
+// based on the current date and time and the look camera
 import {CNode} from "./CNode";
-import {GlobalDateTimeNode, Globals} from "../Globals";
+import {GlobalDateTimeNode, Globals, NodeMan} from "../Globals";
 import {V3} from "../threeUtils";
 import {getCelestialDirection} from "../CelestialMath";
 import {degrees} from "../utils";
+import {getLocalUpVector} from "../SphericalMath";
 
 // will exist as a singleton node: "theSun"
 export class CNodeSunlight extends CNode {
@@ -22,12 +23,16 @@ export class CNodeSunlight extends CNode {
             //
             try {
                 const date = GlobalDateTimeNode.dateNow;
-                const dir = getCelestialDirection("Sun", date, V3(0, 0, 0));
+
+                const lookCamera = NodeMan.get("lookCamera").camera;
+
+                const dir = getCelestialDirection("Sun", date, lookCamera.position);
                 const sunPos = dir.clone().multiplyScalar(60000)
                 Globals.sunLight.position.copy(sunPos)
 
                 // find the angle above or below the horizon
-                const angle = degrees(Math.asin(dir.y));
+                const up = getLocalUpVector(lookCamera.position);
+                const angle = 90-degrees(dir.angleTo(up));
                 Globals.sunAngle = angle;
 
                 let scale = brightnessOfSun(angle,this.darkeningAngle)
