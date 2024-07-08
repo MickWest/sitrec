@@ -103,11 +103,11 @@ Note in composer.json we have
 {
     "require": {
         "aws/aws-sdk-php": "^3.301",
-        "guzzlehttp/guzzle": "^6.5"
+        "guzzlehttp/guzzle": "^7.8"
     }
 }
 ```
-Guzzle is set to version 6.5 even though 7 is better. The reason being that Xenforo uses 6 and somehow that version is called deep within the vendor code. This probably could be fixed another way. Eventually Xenforo will update to Guzzle 7, and this can be removed. You can change it locally to 7 if you need to (and don't use Xenforo)
+In previous releases (before 1.5.0a), Guzzle was limited to version 6.5. The reason being that Xenforo (on Metabunk.org) uses 6.5 and somehow that version is called deep within the vendor code. Since Xenforo was updated to 2.3.0, this is no longer the case and we can use the latest version of Guzzle. 
 
 Configuring the AWS S3 connection is done with a set of credentials. The credentials are returned by a custom function in sitrec-config/s3-config.php, for example:
 
