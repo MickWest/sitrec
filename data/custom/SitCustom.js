@@ -202,7 +202,7 @@ sitch = {
         inputs: {
             "userFOV": "fovUI",
         },
-        desc: "Camera FOV"
+        desc: "Camera FOV",
     },
 
 
@@ -225,7 +225,11 @@ sitch = {
     },
 
 
-    trackToTrackController: {kind: "TrackToTrack", sourceTrack: "cameraTrackSwitchSmooth", targetTrack: "targetTrackSwitchSmooth",},
+    trackToTrackController: {
+        kind: "TrackToTrack",
+        sourceTrack: "cameraTrackSwitchSmooth",
+        targetTrack: "targetTrackSwitchSmooth",
+    },
 
     // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitchSmooth
     // for source data
@@ -270,11 +274,6 @@ sitch = {
         color: [0,0,1],
         width: 1,
     },
-
-
-    // WHY does smoothing lose the heading info for ObjectTilt
-    // smoothTrack: {track: "LOSTraverseSelectTrack", method:"moving"},
-
 
     traverseSmoothedTrack: {
         kind: "SmoothedPositionTrack",
@@ -386,41 +385,6 @@ sitch = {
         track: "traverseSmoothedTrack",
         min:0, max:1000,
         left: 0.25, top:0, width: .15, height:-1},
-
-
-    // // The moving average smoothed jet track
-    // targetTrackSwitchSmooth: {
-    //     kind: "SmoothedPositionTrack",
-    //     method: "moving",
-    //     source: "targetTrackSwitch",
-    //     window: {kind: "GUIValue", value: 200, start:1, end:1000, step:1, desc:"Target Smooth Window", gui:"traverse"},
-    //     // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
-    // },
-    //
-    // speedGraphMoving: { kind: "speedGraph",
-    //     label: "Moving Speed",
-    //     track: "targetTrackSwitchSmooth",
-    //     min:0, max:1000,
-    //     left: 0.70, top:0, width: .15, height:-1},
-    //
-    // // The Camull spline smoothed jet track
-    // targetTrackSwitchSmoothSliding: {
-    //     kind: "SmoothedPositionTrack",
-    //     method: "catmull",
-    //     source: "targetTrackSwitch",
-    //     intervals: {kind: "GUIValue", value: 20, start:1, end:200, step:1, desc:"Catmull Intervals", gui:"traverse"},
-    //     tension:{kind:"GUIValue", value: 0.5, start:0, end:5, step:0.001, desc:"Catmull Tension", gui:"traverse"},
-    // },
-    //
-    //
-    //
-    // speedGraphSliding: { kind: "speedGraph",
-    //     label: "Sliding Speed",
-    //     track: "targetTrackSwitchSmoothSliding",
-    //     min:0, max:1000,
-    //     left: 0.85, top:0, width: .15, height:-1},
-    //
-
 
     include_Compasses: true,
 
