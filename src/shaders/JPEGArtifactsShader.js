@@ -35,6 +35,30 @@ export const JPEGArtifactsShader = {
 
         varying vec2 vUv;
 
+
+    precision highp float;
+    precision highp int;
+    
+    #define hashi(x)   triple32(x) 
+    #define hash(x)  ( float( hashi(x) ) / float( 0xffffffffU ) )
+    
+    uint triple32(uint x)
+    {
+        x ^= x >> 17;
+        x *= uint(0xed5ad4bbU);
+        x ^= x >> 11;
+        x *= uint(0xac4c1b51U);
+        x ^= x >> 15;
+        x *= uint(0x31848babU);
+        x ^= x >> 14;
+        return x;
+    }
+    
+    float rand2(vec2 co) {
+        return hash(uint(co.x) + hashi(uint(co.y)));
+    }
+
+
         void main() {
 
             vec2 blockSize = vec2(size) / resolution; // Block size in texture coordinates
@@ -45,8 +69,11 @@ export const JPEGArtifactsShader = {
 
            // offset will be in the range -blockSize/2 to blockSize/2
            // let's calculate a new offsetY that has offset.x added to it, scaled by the amount
-            float offsetY = vUv.y + offset.x * amount;
-            float offsetX = vUv.x + offset.y * amount;
+            float xs = gl_FragCoord.x;
+            float ys = gl_FragCoord.y;
+            
+            float offsetY = vUv.y + offset.x * amount * (0.5 - rand2(vec2(xs, ys) ));
+            float offsetX = vUv.x + offset.y * amount * (0.5 - rand2(vec2(ys, xs) ));
 
            vec4 color = texture2D(tDiffuse, vec2(offsetX, offsetY));
 
