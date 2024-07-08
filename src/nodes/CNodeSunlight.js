@@ -24,14 +24,23 @@ export class CNodeSunlight extends CNode {
             try {
                 const date = GlobalDateTimeNode.dateNow;
 
-                const lookCamera = NodeMan.get("lookCamera").camera;
+                let camera;
+                if (NodeMan.exists("lookCamera")) {
+                    camera = NodeMan.get("lookCamera").camera;
+                } else if (NodeMan.exists("mainCamera")) {
+                    camera = NodeMan.get("mainCamera").camera;
+                } else {
+                    console.error("No camera found for sunlight")
+                    return;
+                }
 
-                const dir = getCelestialDirection("Sun", date, lookCamera.position);
+
+                const dir = getCelestialDirection("Sun", date, camera.position);
                 const sunPos = dir.clone().multiplyScalar(60000)
                 Globals.sunLight.position.copy(sunPos)
 
                 // find the angle above or below the horizon
-                const up = getLocalUpVector(lookCamera.position);
+                const up = getLocalUpVector(camera.position);
                 const angle = 90-degrees(dir.angleTo(up));
                 Globals.sunAngle = angle;
 
