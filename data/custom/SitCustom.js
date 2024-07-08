@@ -106,7 +106,7 @@ sitch = {
                 filter: "Linear",
                 inputs: {
                     size: 8,
-                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects"},
+                    amount: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects"},
                 }
             },
 
@@ -155,9 +155,9 @@ sitch = {
 
     cameraTrackSwitchSmooth: {
         kind: "SmoothedPositionTrack",
-        method: "sliding",
+        method: "moving",
         source: "cameraTrackSwitch",
-        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"traverse", method:"sliding"},
+        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"traverse"},
         // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
 
@@ -174,13 +174,13 @@ sitch = {
     targetTrackSwitchSmooth: {
         kind: "SmoothedPositionTrack",
         //method: "moving",
-        method: "sliding",
+        method: "moving",
         source: "targetTrackSwitch",
         window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Target Smooth Window", gui:"traverse"},
         // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
 
-    swapTargetAndCameraTracks: {},
+    swapTargetAndCameraTracks: {}, // NOT IMPLEMENTED
 
     ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 90, showGUI: true},
 
