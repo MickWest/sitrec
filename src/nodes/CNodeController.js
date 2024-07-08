@@ -1,5 +1,6 @@
 import {CNode} from "./CNode";
 import {NodeMan} from "../Globals";
+import {assert} from "../assert";
 
 export class CNodeController extends CNode {
     constructor(v) {
@@ -9,6 +10,12 @@ export class CNodeController extends CNode {
         // assert (v.camera === undefined, "CNodeController passed a camera as well as objectNode")
 
     }
+
+    enableController(enable) {
+        console.log(`CNodeController: enableController(${enable}) called for ${this.id}`)
+        this.enabled = enable;
+    }
+
 }
 
 // Utility function to add a controller to a named node

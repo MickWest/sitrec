@@ -164,26 +164,20 @@ class CNodeSwitch extends CNode {
         return this
     }
 
-    recalculate() {
-//        console.log("CNodeSwitch:recalculate "+this.id)
-
-        // turn controller on or off
+    // recursively enable or disable any controllers that are inputs to this switch
+    // account for the fact that the input may be a switch itself
+    enableController(enable) {
+        console.log(`CNodeSwitch:enableController(${enable}) called for ${this.id}`)
         Object.keys(this.inputs).forEach(key => {
             const node = this.inputs[key];
-
-            // Make sure that the input has this as an output
-            if (node.outputs.indexOf(this) === -1) {
-                assert(0, "CNodeSwitch:recalculate: input "+node.id+" does not have this as an output")
-            }
-
-            if (node.isController) {
-                if (key !== this.choice) {
-                    node.enabled = false;
-                } else {
-                    node.enabled = true;
-                }
-            }
+            node.enableController(enable && key === this.choice)
         })
+    }
+
+    recalculate() {
+        console.log("CNodeSwitch:recalculate "+this.id)
+
+        this.enableController(true);
 
         // turn on or off gui for all gui sources
         // only turn them off if they are not connected to anything else

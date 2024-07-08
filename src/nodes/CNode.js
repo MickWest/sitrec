@@ -194,6 +194,9 @@ class CNode {
         this.terrainLoadedCallback = callback
     }
 
+    enableController(enable) {
+        // virtual function that only applies to CNodeSwitch and CNodeController
+    }
 
     countVisibleOutputs(depth = 0) {
         // recursively count the number of visible outputs

@@ -244,10 +244,13 @@ sitch = {
 
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
     // for other uses, such as a target track generated for LOS traversal
-
     recordLos: {kind: "RecordLOS"},
     JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
 //    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
+
+
+    // camera changes after this point will not be recorded for LOS generation
+
 
     // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
