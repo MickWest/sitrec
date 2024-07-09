@@ -1,11 +1,11 @@
 // CNodeSunlight.js - upates the global scene with the current sunlight
 // based on the current date and time and the look camera
 import {CNode} from "./CNode";
-import {GlobalDateTimeNode, Globals, NodeMan} from "../Globals";
+import {GlobalDateTimeNode, Globals, infoDiv, NodeMan} from "../Globals";
 import {V3} from "../threeUtils";
 import {getCelestialDirection} from "../CelestialMath";
 import {degrees} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalUpVector, getWGSEllipsoidSurfaceNormal} from "../SphericalMath";
 
 // will exist as a singleton node: "theSun"
 export class CNodeSunlight extends CNode {
@@ -16,6 +16,52 @@ export class CNodeSunlight extends CNode {
         this.ambientIntensity = 1.2;
 
         this.darkeningAngle = 8.0;
+    }
+
+    calculateSunAt(camera, date) {
+        if (date === undefined) {
+            date = GlobalDateTimeNode.dateNow;
+        }
+
+        const result = {}
+
+        const dir = getCelestialDirection("Sun", date, camera.position);
+        const sunPos = dir.clone().multiplyScalar(60000)
+        result.sunPos = sunPos;
+
+        // find the angle above or below the horizon
+        const up = getLocalUpVector(camera.position);
+
+        const angle = 90-degrees(dir.angleTo(up));
+        result.sunAngle = angle;
+
+        let scale = brightnessOfSun(angle,this.darkeningAngle)
+
+        // note, the intensity is in radians
+        // so we multiply by PI (so 1.0 is full intensity)
+
+        result.sunIntensity = this.sunIntensity * scale * Math.PI
+
+        // scale the ambient over 10 to -10 degrees
+        let scaleAmbient = brightnessOfSun(angle+this.darkeningAngle,this.darkeningAngle*2)
+
+        let baseAmbient = 0.5; // fraction of ambient light that is always on
+        scaleAmbient = baseAmbient + (1-baseAmbient) * scaleAmbient;
+
+        if (this.ambientOnly) {
+            scaleAmbient = 1.0;
+        }
+
+        scaleAmbient *= Math.PI;
+
+        result.ambientIntensity = this.ambientIntensity * scaleAmbient;
+
+        // calculate the total light in the sky
+        // just a ballpark for how visible the stars should be.
+        result.sunTotal = this.sunIntensity + this.ambientIntensity;
+
+
+        return result;
     }
 
     update(f) {
@@ -34,40 +80,13 @@ export class CNodeSunlight extends CNode {
                     return;
                 }
 
+                const sun = this.calculateSunAt(camera, date);
 
-                const dir = getCelestialDirection("Sun", date, camera.position);
-                const sunPos = dir.clone().multiplyScalar(60000)
-                Globals.sunLight.position.copy(sunPos)
-
-                // find the angle above or below the horizon
-                const up = getLocalUpVector(camera.position);
-                const angle = 90-degrees(dir.angleTo(up));
-                Globals.sunAngle = angle;
-
-                let scale = brightnessOfSun(angle,this.darkeningAngle)
-
-                // note, the intensity is in radians
-                // so we multiply by PI (so 1.0 is full intensity)
-
-                Globals.sunLight.intensity = this.sunIntensity * scale * Math.PI
-
-                // scale the ambient over 10 to -10 degrees
-                let scaleAmbient = brightnessOfSun(angle+this.darkeningAngle,this.darkeningAngle*2)
-
-                let baseAmbient = 0.5; // fraction of ambient light that is always on
-                scaleAmbient = baseAmbient + (1-baseAmbient) * scaleAmbient;
-
-                if (this.ambientOnly) {
-                    scaleAmbient = 1.0;
-                }
-
-                scaleAmbient *= Math.PI;
-
-                Globals.ambientLight.intensity = this.ambientIntensity * scaleAmbient;
-
-                // calculate the total light in the sky
-                // just a ballpark for how visible the stars should be.
-                Globals.sunTotal = Globals.sunLight.intensity + Globals.ambientLight.intensity;
+                Globals.sunLight.position.copy(sun.sunPos)
+                Globals.sunAngle = sun.sunAngle;
+                Globals.sunLight.intensity = sun.sunIntensity;
+                Globals.ambientLight.intensity = sun.ambientIntensity;
+                Globals.sunTotal = sun.sunTotal
 
 
             } catch (e) {

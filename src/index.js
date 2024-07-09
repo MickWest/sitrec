@@ -493,8 +493,8 @@ function initRendering() {
     infoDiv.style.fontSize = 20 + 'px';
     infoDiv.style.display = 'none';
     if (isLocal) {
- //       infoDiv.style.display = 'block';
- //       infoDiv.style.zIndex = 10002;
+        infoDiv.style.display = 'block';
+        infoDiv.style.zIndex = 10002;
     }
     infoDiv.style.background="black";
     document.body.appendChild(infoDiv);
