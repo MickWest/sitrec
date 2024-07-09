@@ -172,7 +172,7 @@ export class CSituation {
             }
         }
         if(!isConsole)
-            infoDiv.innerHTML = "done loading"
+            infoDiv.innerHTML += "done loading"
     }
 
     makeCameraTrack()
