@@ -702,6 +702,7 @@ function animate(newtime) {
     // requestAnimationFrame( animate );
 
     Globals.stats.begin();
+    infoDiv.innerHTML = "";
 
     now = newtime;
     elapsed = now - then;

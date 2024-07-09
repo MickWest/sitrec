@@ -73,8 +73,9 @@ const situationDefaults = {
 
     lighting: {
         kind: "Lighting",
-        ambientIntensity: 0.2,
-        sunIntensity: 1.2,
+        ambientIntensity: 0.05,
+        sunIntensity: 0.7,
+        sunScattering: 0.6,
         ambientOnly: false,
 
     },

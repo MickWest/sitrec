@@ -15,7 +15,7 @@ export const SitArea6 = {
     frames: 19480, // (10*60+50)*29.97,
     startTime: "2023-08-05T07:39:13.000Z",
 
-    starScale: 0.3,
+    starScale: 1,
 
     terrain: {lat: 36.208582, lon: -115.984598, zoom: 12, nTiles: 8},
     targetSpeedMax: 100,
@@ -48,7 +48,7 @@ export const SitArea6 = {
 
     lighting: {
         kind: "Lighting",
-        ambientIntensity: 0.45,
+        ambientIntensity: 0.17,
     },
 
 }

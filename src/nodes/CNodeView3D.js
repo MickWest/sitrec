@@ -11,11 +11,11 @@ import {
     Color, FloatType,
     LinearFilter, LinearToneMapping,
     Mesh,
-    NearestFilter,
+    NearestFilter, NormalBlending,
     Plane,
     PlaneGeometry,
     Raycaster,
-    RGBAFormat,
+    RGBAFormat, Scene,
     ShaderMaterial,
     Sphere,
     Sprite,
@@ -304,22 +304,86 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
                 this.renderer.setClearColor(this.background);
-                if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
-                    this.renderer.setClearColor(nightSkyNode.skyColor);
+                // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
+                //     this.renderer.setClearColor(nightSkyNode.skyColor);
+                // }
+
+                let skyBrightness = 0;
+                let skyColor = this.background;
+                let skyOpacity = 1;
+
+
+                const sunNode = NodeMan.get("theSun",true);
+                if (sunNode !== undefined) {
+//                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))
+                    this.renderer.setClearColor("black")
+                    skyColor = sunNode.calculateSkyColor(this.camera.position);
+                    skyBrightness = sunNode.calculateSkyBrightness(this.camera.position);
+                    skyOpacity = sunNode.calculateSkyOpacity(this.camera.position);
                 }
-                this.renderer.clear(true, true, true);
+
+
+                // only draw the night sky if it will be visible
+                if (skyOpacity < 1) {
+
+                    this.renderer.clear(true, true, true);
+
+                    var tempPos = this.camera.position.clone();
+                    // this is the celestial sphere, so we want the camera at the origin
+
+                    this.camera.position.set(0, 0, 0)
+                    this.camera.updateMatrix();
+                    this.camera.updateMatrixWorld();
+                    this.renderer.render(GlobalNightSkyScene, this.camera);
+                    this.renderer.clearDepth()
+                    this.camera.position.copy(tempPos)
+                    this.camera.updateMatrix();
+                    this.camera.updateMatrixWorld();
+                }
+
+                // Only render the quad if skyOpacity is greater than zero
+                if (skyOpacity > 0) {
+                    const skyBrightnessMaterial = new ShaderMaterial({
+                        uniforms: {
+                            color: { value: skyColor },
+                            opacity: { value: skyOpacity },
+                        },
+                        vertexShader: /* glsl */`
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `,
+                        fragmentShader: /* glsl */`
+            uniform vec3 color;
+            uniform float opacity;
+            varying vec2 vUv;
+            void main() {
+                gl_FragColor = vec4(color, opacity);
+            }
+        `,
+                        transparent: true,
+                        blending: NormalBlending,
+                        depthTest: false,
+                        depthWrite: false
+                    });
+
+                    const fullscreenQuadGeometry = new PlaneGeometry(2, 2);
+                    const fullscreenQuad = new Mesh(fullscreenQuadGeometry, skyBrightnessMaterial);
+
+                    // Add the fullscreen quad to a scene dedicated to it
+                    const fullscreenQuadScene = new Scene();
+                    fullscreenQuadScene.add(fullscreenQuad);
+
+                    this.renderer.autoClear = false;
+                    this.renderer.render(fullscreenQuadScene, new Camera());
+                    //this.renderer.autoClear = true;
+                    this.renderer.clearDepth();
+                }
 
 
 
-                var tempPos = this.camera.position.clone();
-                this.camera.position.set(0, 0, 0)
-                this.camera.updateMatrix();
-                this.camera.updateMatrixWorld();
-                this.renderer.render(GlobalNightSkyScene, this.camera);
-                this.renderer.clearDepth()
-                this.camera.position.copy(tempPos)
-                this.camera.updateMatrix();
-                this.camera.updateMatrixWorld();
             } else {
                 // clear the render target (or canvas) with the background color
                 this.renderer.setClearColor(this.background);

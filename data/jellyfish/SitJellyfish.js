@@ -36,7 +36,8 @@ export const SitJellyfish    = {
     lookView:{ left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
         effects: {
             FLIRShader: {},
-        }
+        },
+        isIR: true,
     },
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5,},
 
@@ -168,5 +169,15 @@ export const SitJellyfish    = {
 
     nightSky: true,
     useGlobe: true,
+
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.23,  // night, so give it a little ambient
+        IRAmbientIntensity: 1.0,
+        sunIntensity: 0.7,
+        sunScattering: 0.6,
+        ambientOnly: false,
+
+    },
 
 }

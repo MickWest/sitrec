@@ -35,7 +35,19 @@ export const SitAFR179 = {
     lookView: { left: 0.75, top: 0.35, width: -0.75, height: 0.65,},
     videoView: { left: 0.5, top: 0.35, width: -0.75, height: 0.65,},
 
-    skyColor: '#AFBDD1',  // grey from the video
+    //skyColor: '#AFBDD1',  // grey from the video
+
+    nightSky: true,
+    useGlobe: true,
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.3,  // night, so give it a little ambient
+        sunIntensity: 0.7,
+        sunScattering: 0.6,
+        ambientOnly: false,
+
+    },
+
 
     include_TrackAndCameraLabeled: true,
     targetObject: {file: "TargetObjectFile",},

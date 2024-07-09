@@ -10,9 +10,10 @@ export class CNodeLighting extends CNode {
     constructor(v) {
         super(v);
 
-        this.ambientIntensity = v.ambientIntensity ?? 0.8;
+        this.ambientIntensity = v.ambientIntensity ?? 0.05;
         this.IRAmbientIntensity = v.IRAmbientIntensity ?? 0.8;
-        this.sunIntensity = v.sunIntensity ?? 1;
+        this.sunIntensity = v.sunIntensity ?? 0.7;
+        this.sunScattering = v.sunScattering ?? 0.6;
         this.ambientOnly = v.ambientOnly ?? false;
 
         this.gui = guiMenus.lighting;
@@ -20,21 +21,22 @@ export class CNodeLighting extends CNode {
         this.addGUIValue("ambientIntensity", 0, 2, 0.01, "Ambient Intensity");
         this.addGUIValue("IRAmbientIntensity", 0, 2, 0.01, "IR Ambient Intensity");
         this.addGUIValue("sunIntensity", 0, 2, 0.01, "Sun Intensity");
+        this.addGUIValue("sunScattering", 0, 2, 0.01, "Sun Scattering");
         this.addGUIBoolean("ambientOnly", "Ambient Only");
 
 
-        Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity);
+        Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity * Math.PI);
         Globals.ambientLight.layers.mask = LAYER.MASK_LIGHTING
         GlobalScene.add(Globals.ambientLight);
 
-        Globals.IRAmbientLight = new AmbientLight(0xFFFFFF, 10*this.IRAmbientIntensity);
+        Globals.IRAmbientLight = new AmbientLight(0xFFFFFF, this.IRAmbientIntensity * Math.PI);
         Globals.IRAmbientLight.layers.mask = LAYER.MASK_LIGHTING
         GlobalScene.add(Globals.IRAmbientLight);
         // this light is disabled, and only gets used when rendering an IR viewport
         Globals.IRAmbientLight.visible = false;
 
         // then sunlight is direct light
-        Globals.sunLight = new DirectionalLight(0xFFFFFF, this.sunIntensity);
+        Globals.sunLight = new DirectionalLight(0xFFFFFF, this.sunIntensity * Math.PI);
         Globals.sunLight.layers.mask = LAYER.MASK_LIGHTING
         Globals.sunLight.position.set(0,7000,0);  // sun is along the y axis
         if (Globals.shadowsEnabled) {
@@ -88,6 +90,7 @@ export class CNodeLighting extends CNode {
             sunNode.ambientIntensity = this.ambientIntensity;
             sunNode.sunIntensity = sunIntensity;
             sunNode.ambientOnly = this.ambientOnly;
+            sunNode.sunScattering = this.sunScattering;
 
         } else {
             // otherwise we manage the lights directly
@@ -97,7 +100,7 @@ export class CNodeLighting extends CNode {
 
         // but we manage the IR ambient light directly, as it's somewhat ad-hoc
         // and will vary based on the colors of the local texture
-        Globals.IRAmbientLight.intensity = this.IRAmbientIntensity;
+        Globals.IRAmbientLight.intensity = this.IRAmbientIntensity * Math.PI;
     }
 
 }

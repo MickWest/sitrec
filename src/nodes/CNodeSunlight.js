@@ -4,7 +4,8 @@ import {CNode} from "./CNode";
 import {GlobalDateTimeNode, Globals, infoDiv, NodeMan} from "../Globals";
 import {getCelestialDirection} from "../CelestialMath";
 import {degrees} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalUpVector, pointAltitude} from "../SphericalMath";
+import {Color, Vector3} from "three";
 
 // will exist as a singleton node: "theSun"
 export class CNodeSunlight extends CNode {
@@ -14,22 +15,22 @@ export class CNodeSunlight extends CNode {
         this.sunIntensity = 3.0;
         this.ambientIntensity = 1.2;
 
-        this.darkeningAngle = 8.0;
+        this.darkeningAngle = 10.0;
     }
 
-    calculateSunAt(camera, date) {
+    calculateSunAt(position, date) {
         if (date === undefined) {
             date = GlobalDateTimeNode.dateNow;
         }
 
         const result = {}
 
-        const dir = getCelestialDirection("Sun", date, camera.position);
+        const dir = getCelestialDirection("Sun", date, position);
         const sunPos = dir.clone().multiplyScalar(60000)
         result.sunPos = sunPos;
 
         // find the angle above or below the horizon
-        const up = getLocalUpVector(camera.position);
+        const up = getLocalUpVector(position);
 
         const angle = 90-degrees(dir.angleTo(up));
         result.sunAngle = angle;
@@ -41,26 +42,64 @@ export class CNodeSunlight extends CNode {
 
         result.sunIntensity = this.sunIntensity * scale * Math.PI
 
-        // scale the ambient over 10 to -10 degrees
-        let scaleAmbient = brightnessOfSun(angle+this.darkeningAngle,this.darkeningAngle*2)
-
-        let baseAmbient = 0.5; // fraction of ambient light that is always on
-        scaleAmbient = baseAmbient + (1-baseAmbient) * scaleAmbient;
+        // scale the scattering ambient over 10 to -10 degrees
+        let scaleScattering = this.sunScattering * brightnessOfSun(angle+this.darkeningAngle,this.darkeningAngle*2)
 
         if (this.ambientOnly) {
-            scaleAmbient = 1.0;
+            result.ambientIntensity = (this.ambientIntensity) * Math.PI;
+        } else {
+            // ambient light is scattered light plus the fixed ambient light
+            result.ambientIntensity = (this.sunIntensity * scaleScattering + this.ambientIntensity) * Math.PI;
         }
-
-        scaleAmbient *= Math.PI;
-
-        result.ambientIntensity = this.ambientIntensity * scaleAmbient;
+        //
+        // infoDiv.innerHTML+= `<br><br>Sunlight: ${result.sunIntensity.toFixed(2)} Ambient: ${result.ambientIntensity.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Angle: ${angle.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Sun Scattering: ${this.sunScattering.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Scale: ${scale.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>ScaleScattering: ${scaleScattering.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Darkening: ${this.darkeningAngle.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Position: ${position.x.toFixed(2)} ${position.y.toFixed(2)} ${position.z.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>SunPos: ${sunPos.x.toFixed(2)} ${sunPos.y.toFixed(2)} ${sunPos.z.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Dir: ${dir.x.toFixed(2)} ${dir.y.toFixed(2)} ${dir.z.toFixed(2)}`
+        // infoDiv.innerHTML+=`<br>Up: ${up.x.toFixed(2)} ${up.y.toFixed(2)} ${up.z.toFixed(2)}`
+        //
 
         // calculate the total light in the sky
         // just a ballpark for how visible the stars should be.
-        result.sunTotal = this.sunIntensity + this.ambientIntensity;
+        result.sunTotal = result.sunIntensity + result.ambientIntensity;
 
 
         return result;
+    }
+
+
+    calculateSkyBrightness(position, date) {
+        const sun = this.calculateSunAt(position, date)
+        let sunTotal = sun.sunTotal / Math.PI;
+
+        // attentuate by the square of the altitiude
+        const alt = pointAltitude(position);
+        const atten = Math.pow(0.5, alt/100000);
+        sunTotal *= atten;
+        return sunTotal;
+    }
+
+    calculateSkyColor(position, date) {
+
+        const sunTotal = this.calculateSkyBrightness(position, date);
+
+        const blue = new Vector3(0.53,0.81,0.92)
+        blue.multiplyScalar(sunTotal)
+        return new Color(blue.x, blue.y, blue.z)
+    }
+
+    // this is a simple function to calculate the opacity of the sky
+    // i.e. how transparent the blu daylight sky should be to stars
+    // most of the time it's 1.0 (daylight) or 0.0 (night)
+    calculateSkyOpacity(position, date) {
+        const skyBrightness = this.calculateSkyBrightness(position, date);
+        const skyOpacity = Math.min(1.0, skyBrightness*2);
+        return skyOpacity;
     }
 
     update(f) {
@@ -79,7 +118,7 @@ export class CNodeSunlight extends CNode {
                     return;
                 }
 
-                const sun = this.calculateSunAt(camera, date);
+                const sun = this.calculateSunAt(camera.position, date);
 
                 Globals.sunLight.position.copy(sun.sunPos)
                 Globals.sunAngle = sun.sunAngle;

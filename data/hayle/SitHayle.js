@@ -12,6 +12,8 @@ export const SitHayle = {
 
     fps: 29.97,
     frames: 2780,
+    startTime: "2020-08-17T20:15:41.000Z",
+
 
     terrain: {lat: 50.197944, lon: -5.428180, zoom: 15, nTiles: 8},
 
@@ -79,6 +81,8 @@ export const SitHayle = {
         color: [0,1,1],
         width: 1,
     },
+
+    nightSky: true,
 
     // setup2: function () {
     //     //
