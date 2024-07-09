@@ -2,10 +2,9 @@
 // based on the current date and time and the look camera
 import {CNode} from "./CNode";
 import {GlobalDateTimeNode, Globals, infoDiv, NodeMan} from "../Globals";
-import {V3} from "../threeUtils";
 import {getCelestialDirection} from "../CelestialMath";
 import {degrees} from "../utils";
-import {getLocalUpVector, getWGSEllipsoidSurfaceNormal} from "../SphericalMath";
+import {getLocalUpVector} from "../SphericalMath";
 
 // will exist as a singleton node: "theSun"
 export class CNodeSunlight extends CNode {
