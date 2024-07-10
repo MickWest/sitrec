@@ -78,7 +78,7 @@ export const SitFlir1 = {
             }},
             // Noise comes AFTER focus, becuase it's on the sensor
             StaticNoise: {inputs:{
-                amount: {kind: "GUIValue", value: 0.06, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount"},
+                amount: {kind: "GUIValue", value: 0.06, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount", gui:"effects"},
                 }},
             Greyscale:{},
             Invert: {id:"FLIR1_Invert"},
@@ -87,11 +87,11 @@ export const SitFlir1 = {
                 id: "FLIR1_IRW_Levels",
                 kind: "Levels",
                 inputs: {
-                    inputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black"},
-                    inputWhite: {kind: "GUIValue", value: 0.80, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White"},
-                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma"},
-                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black"},
-                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White"},
+                    inputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "IR In Black", gui:"effects"},
+                    inputWhite: {kind: "GUIValue", value: 0.80, start: 0.0, end: 1.0, step: 0.01, desc: "IR In White", gui:"effects"},
+                    gamma: {kind: "GUIValue", value: 1.87, start: 0.0, end: 4.0, step: 0.01, desc: "IR Gamma", gui:"effects"},
+                    outputBlack: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out Black", gui:"effects"},
+                    outputWhite: {kind: "GUIValue", value: 1.0, start: 0.0, end: 1.0, step: 0.01, desc: "IR Out White", gui:"effects"},
 
                 }},
 
@@ -99,11 +99,11 @@ export const SitFlir1 = {
                 id: "FLIR1_TV_Levels",
                 kind: "Levels",
                 inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black"},
-                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White"},
-                    gamma:       {kind: "GUIValue", value: 3.28, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma"},
-                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black"},
-                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White"},
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black", gui:"effects"},
+                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White", gui:"effects"},
+                    gamma:       {kind: "GUIValue", value: 3.28, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma", gui:"effects"},
+                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black", gui:"effects"},
+                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White", gui:"effects"},
 
                 }},
 
@@ -113,10 +113,10 @@ export const SitFlir1 = {
             }},
             // these blurs are for the video conversion
             hBlur2: { kind: "hBlur", inputs: {
-                    h: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur H"},
+                    h: {kind: "GUIValue", value: 0.90, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur H", gui:"effects"},
                 }},
             vBlur2: {kind: "vBlur", inputs:{
-                    v: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur V"},
+                    v: {kind: "GUIValue", value: 0.60, start: 0.0, end: 2.0, step: 0.01, desc: "Video Blur V", gui:"effects"},
                 }},
 
 
@@ -124,7 +124,7 @@ export const SitFlir1 = {
                 filter: "Linear",
                 inputs: {
                     size: 16,
-                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts"},
+                    amount: {kind: "GUIValue", value: 0.07, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui:"effects"},
                 }
             },
 
