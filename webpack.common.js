@@ -105,6 +105,10 @@ module.exports = {
             }),
         ],
     },
+    performance: {
+        maxAssetSize: 2000000,
+        maxEntrypointSize: 5000000,
+    },
     output: {
         filename: '[name].[contenthash].bundle.js',
         path: InstallPaths.dev_path,
