@@ -376,6 +376,7 @@ sitch = {
 
 
     targetDistanceGraph: {
+        visible: false,
         targetTrack: "LOSTraverseSelectTrack",
         cameraTrack: "cameraTrackSwitchSmooth",
         left: 0.0, top: 0.0, width: .25, height: .25,
@@ -384,12 +385,14 @@ sitch = {
 
 
     altitudeGraphForTarget: { kind: "altitudeGraph",
+        visible: false,
         track: "traverseSmoothedTrack",
         min: 0, max: 60000,
         left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
     },
 
     speedGraphForTarget: { kind: "speedGraph",
+        visible: false,
         label: "Target Speed",
         track: "traverseSmoothedTrack",
         min:0, max:1000,

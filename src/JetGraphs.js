@@ -110,7 +110,7 @@ function addGenericJetGraph(id, yLabel, mungeInputs, windowParams, editorParams,
 
     })
     targetDistanceGraphNode.editor.disable = true;
-
+    return targetDistanceGraphNode;
 
 }
 
@@ -123,7 +123,7 @@ export function AddTargetDistanceGraph(mungeInputs, windowParams={}, editorParam
         return NMFromMeters(d0)
     }
 
-    addGenericJetGraph("targetDistanceGraph", "Target Distance NM", mungeInputs, windowParams, editorParams, mungeFunction);
+    return addGenericJetGraph("targetDistanceGraph", "Target Distance NM", mungeInputs, windowParams, editorParams, mungeFunction);
 
 }
 
@@ -357,6 +357,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
         })
         speedGraphNodeFleet.editor.disable = true;
     }
+    return speedGraphNode;
 }
 
 export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  = 0.73, top =0, width = -1, height =.25, yStep=5000, xStep=200) {
@@ -400,6 +401,7 @@ export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  =
 
     })
     AltitudeGraphNode.editor.disable = true;
+    return AltitudeGraphNode;
 }
 
 

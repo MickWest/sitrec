@@ -1083,7 +1083,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
         case "speedGraph":
             SSLog();
-            AddSpeedGraph(
+            const speedGraph = AddSpeedGraph(
                 data.track ?? "targetTrack",
                 data.label ?? "Speed",
                 data.min ?? 0,
@@ -1093,13 +1093,16 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 data.width ?? 0.2,
                 data.height ?? 0.25,
 
-            )
+            );
+            if (data.visible === false) {
+                speedGraph.editorView.visible = false;
+            }
             break;
 
         case "altitudeGraph":
             SSLog();
             // this should be changed to be the same as the speed graph
-            AddAltitudeGraph(
+            const altitudeGraph = AddAltitudeGraph(
                 data.min ?? 0,
                 data.max ?? 100,
                 data.track ?? "targetTrack",
@@ -1111,7 +1114,10 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 data.yStep ?? 5000,
                 data.xStep ?? 200,
 
-            )
+            );
+            if (data.visible === false) {
+                altitudeGraph.editorView.visible = false;
+            }
             break;
 
         case "tailAngleGraph":
@@ -1137,7 +1143,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
         case "targetDistanceGraph":
             SSLog();
-            AddTargetDistanceGraph(
+            const tdGraph = AddTargetDistanceGraph(
                 {
                     targetTrack: data.targetTrack ?? "targetTrack",
                     cameraTrack: data.cameraTrack ?? "cameraTrack",
@@ -1153,6 +1159,9 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 }
 
             );
+            if (data.visible === false) {
+                tdGraph.editorView.visible = false;
+            }
             break;
 
         case "mirrorVideo":
