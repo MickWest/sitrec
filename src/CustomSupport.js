@@ -15,6 +15,7 @@ import {GlobalScene} from "./LocalFrame";
 import {measurementUIVars} from "./nodes/CNodeLabels3D";
 import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";
+import {CNode3DObject} from "./nodes/CNode3DObject";
 
 
 export class CCustomManager {
@@ -361,6 +362,51 @@ export class CCustomManager {
     }
 
 
+
+
+    preRenderUpdate(view) {
+        if (!Sit.isCustom) return;
+
+        // special logic for custom model visibility
+        // if the custom model is following the same track as this one, then turn it off
+
+        const targetObject = NodeMan.get("targetObject")
+
+
+        // iterate over the NodeMan objects
+        // if the object has a displayTargetSphere, then check if it's following the same track
+        // as the camera track, and if so, turn it off
+        NodeMan.iterate((id, node) => {
+            // is it derived from CNode3D?
+            if (node instanceof CNode3DObject) {
+                const ob = node._object;
+                disableIfNearCameraTrack(ob, view.camera)
+
+                const tob = targetObject._object;
+                // rather messy logic now
+                // if we've got a target object then disable THAT if it's too close to this object
+                if (ob !== tob) {
+                    const targetObjectDist = ob.position.distanceTo(tob.position);
+                    if (targetObjectDist < 10) {
+                        tob.customOldVisible = ob.visible;
+                        tob.visible = false;
+                    }
+                }
+            }
+
+        })
+    }
+
+    postRenderUpdate(view) {
+        if (!Sit.isCustom) return;
+        NodeMan.iterate((id, node) => {
+            if (node instanceof CNode3DObject) {
+                restoreIfDisabled(node._object, view.camera)
+            }
+        })
+    }
+
+
 // per-frame update code for custom sitches
     update(f) {
 
@@ -426,6 +472,25 @@ export class CCustomManager {
                 }
             }
         }
+    }
+}
+
+
+function disableIfNearCameraTrack(ob, camera) {
+    const dist = ob.position.distanceTo(camera.position)
+    if (dist < 5) {   // need a bit of slack for smoothed vs. unsmoothed tracks. FIX THIS so camera track and object tracks always smoothed
+        ob.customOldVisible = ob.visible;
+        ob.visible = false;
+    } else {
+        ob.customOldVisible = undefined;
+
+    }
+}
+
+function restoreIfDisabled(ob) {
+    if (ob.customOldVisible !== undefined) {
+        ob.visible = ob.customOldVisible;
+        ob.customOldVisible = undefined;
     }
 }
 

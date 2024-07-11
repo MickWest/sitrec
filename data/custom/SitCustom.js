@@ -143,7 +143,7 @@ sitch = {
     },
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,63604.652928]},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "physics", key:"C"},
 
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
@@ -161,7 +161,7 @@ sitch = {
         // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
 
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,30000]},
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "physics", key:"X"},
 
     targetTrackSwitch: {
         kind: "Switch",

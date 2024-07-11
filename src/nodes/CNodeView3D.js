@@ -38,6 +38,7 @@ import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {isLocal} from "../../config";
+import {CustomManager} from "../CustomSupport";
 
 
 function linearToSrgb(color) {
@@ -740,7 +741,9 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
         this.preRenderFunction();
+        CustomManager.preRenderUpdate(this)
         this.renderTargetAndEffects()
+        CustomManager.postRenderUpdate(this)
         this.postRenderFunction();
 
     }

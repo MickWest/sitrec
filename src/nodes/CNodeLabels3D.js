@@ -232,9 +232,11 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         const length = this.A.distanceTo(this.B);
         let text;
         if (this.altitude) {
+            // TODO: verify this is correct, use the fixed camera and target
             text = Units.withUnits(length, this.decimals, this.unitSize) + " agl";
             var alt = altitudeAboveSphere(this.A)
             text += "\n "+Units.withUnits(alt, this.decimals, this.unitSize)+ " msl";
+            //text += "\n "+Units.withUnits(alt, this.decimals, this.unitSize)+ " msl";
         } else {
             text = Units.withUnits(length, this.decimals, this.unitSize);
         }

@@ -8,7 +8,6 @@ import {Color} from "three";
 import {getFileExtension, scaleF2M} from "./utils";
 import {FileManager, GlobalDateTimeNode, Globals, gui, guiMenus, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
-import {CNodeDisplayTargetSphere} from "./nodes/CNodeDisplayTargetSphere";
 import {CManager} from "./CManager";
 import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {MISB} from "./MISBUtils";
@@ -19,7 +18,7 @@ import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {assert} from "./assert.js";
 import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./SphericalMath";
 import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
-import {EUSToLLA} from "./LLA-ECEF-ENU";
+import {CNode3DObject} from "./nodes/CNode3DObject";
 
 
 export const TrackManager = new CManager();
@@ -380,17 +379,36 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         })
 
 
-        // trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
-        //     id: "TrackSphere_" + trackFileName,
-        //     inputs: {
-        //         track: trackOb.trackNode,
-        //         size: "sizeTargetScaled",
-        //     },
-        //     color: [1, 0, 1],
-        //     layers: sphereMask,
-        //     wireframe: true,
-        //
-        // })
+     //    trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
+     //        id: trackOb.menuText+"_ob",
+     //        inputs: {
+     //            track: trackOb.trackNode,
+     // //           size: "sizeTargetScaled",
+     //        },
+     //        color: [1, 0, 1],
+     //        layers: sphereMask,
+     //        wireframe: true,
+     //
+     //    })
+
+            // instead of a sphere, add a 3dObject sphere and follow controllers
+        trackOb.displayTargetSphere = new CNode3DObject({
+            id: trackOb.menuText+"_ob",
+            object: "sphere",
+            radius: 10,
+
+        });
+
+        trackOb.displayTargetSphere.addController("TrackPosition",{
+         //   id: trackOb.menuText+"_controller",
+            sourceTrack: trackID,
+        });
+
+        trackOb.displayTargetSphere.addController("ObjectTilt", {
+            track: trackID,
+            tiltType: "banking",
+        })
+
 
 
         if (centerID !== null) {
