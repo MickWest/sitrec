@@ -18,7 +18,7 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.el = v.el
         this.fov = v.fov
         this.roll = v.roll
-        this.relative = true
+        this.relative = false;
 
         assert(v.fov !== undefined, "CNodeControllerPTZUI: initial fov is undefined")
 
