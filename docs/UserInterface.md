@@ -84,3 +84,24 @@ The look view diplays the Now Time in UTC format and in the user-seleted time zo
 
 For time-lapse videos, you can adjust the simulation speed. 
 
+## Navigating the Main View in 3D
+
+The Main View is a 3D view on the world, very similar in concept to other 3D viewers like Google Earth. To move the camera around you use the mouse
+
+- Left Drag is like dragging the world around. The camera is what actually moves.   
+- Right Drag tilts the viewpoint without moving the camera
+- Center Drag rotates the camera around a point in the world
+- The mouse wheel zooms in and out.
+
+If you get lost, you can select "Reset Camera" from the View menu. This will put the camera back to the start position. In the custom sitch tool, it will put the camera back to the position calculated when you last imported a track. You can also get this by pressing "." on the numberic keypad. 
+
+You can also set a default using "Snapshot camera".
+
+
+# Changing the Terrain
+
+Under the Terrain menu you can change "Map Type". This defaults to MapBox, but you can also choose a steet map view. The Settings EOX, Wireframe, and RGB Test are not particulalry useful, but EOX can be used if MapBox is not available - of if you just want a different satellite view time.  
+
+There are more terrain editing options in the [Custom Sitch Tool](CustomSitchTool.md)
+
+

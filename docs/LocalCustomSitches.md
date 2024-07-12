@@ -1,4 +1,4 @@
-# Custom Sitches in Sitrec
+# Local Custom Sitches in Sitrec
 
 Sitrec allows the user to create and interact with a variety of situations, called "sitches"
 
@@ -18,7 +18,7 @@ Since matching source video is so fundamental to Sitrec, and since we often want
 
 This means that the unit of time can vary. One frame is often 1/30th of a second, but could be other fractions of a second, like 1/60, 1/29.97, 1/24, 1/25 and others. The length of a frame is defined by the **frames per second** set in the sitch file. If none is specified, then **fps** will default to 30. 
 
-The time pat of the sitch is defined by two other variable, the **frames** and **startTime**.
+The time part of the sitch is defined by two other variable, the **frames** and **startTime**.
 
 **frames** is the number of frames in the sitch, which will typically be the number of frames in a video, but also might represent a simple time interval. 
 

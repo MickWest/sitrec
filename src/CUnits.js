@@ -11,7 +11,7 @@ import {assert} from "./assert.js";
 export class CUnits {
     constructor(_units = "metric", gui) {
         this.units = _units.toLowerCase();
-        this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical"};
+        this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical", "Feet only":"feet"};
         this.changeUnits(this.units);
         if(guiPhysics)
             guiPhysics.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
@@ -56,6 +56,15 @@ export class CUnits {
                 this.small2M = 1
                 this.speedUnits = "km/h"
                 break;
+            case "feet": // Only feet
+                this.bigUnitsFull = "Feet";
+                this.bigUnitsAbbrev = "ft";
+                this.smallUnitsFull = "Feet"
+                this.smallUnitsAbbrev = "ft";
+                this.speedUnits = "fph"
+                this.big2M = 0.3048
+                this.small2M = 0.3048
+                break
             default:
                 assert(0, "CUnits: unknown units: " + _units);
         }

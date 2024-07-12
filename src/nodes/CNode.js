@@ -285,6 +285,7 @@ class CNode {
     }
 
 
+    // resolve a gui name or a menubar lil-gui object into a lil-gui object
     setGUI(v, _gui) {
         //_gui ??= v.gui;
         if (v.gui !== undefined) _gui = v.gui; // we want the data to override the code, not the other way around. Code is default.

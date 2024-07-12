@@ -19,6 +19,7 @@ import {assert} from "./assert.js";
 import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./SphericalMath";
 import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
+import {par} from "./par";
 
 
 export const TrackManager = new CManager();
@@ -124,6 +125,12 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
     for (const trackFileName of trackFiles) {
         ////////////////////////////////////////////////////
 
+        let hasAngles = false;
+        let hasFOV = false;
+        let hasCenter = false;
+
+
+
         // removeDuplicates will be true if it's, for example, loaded via drag-and-drop
         // where the user might drag in the same file(s) twice
         // so if it exists, we call disposeRemove to free any buffers, and remove it from the manager
@@ -172,6 +179,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         const misb = trackDataNode.misb;
         let centerID = null;
         if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
+            hasCenter = true;
 
             const centerDataID = "CenterData_" + trackFileName;
             centerID = "Center_" + trackFileName;
@@ -193,9 +201,30 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         console.log(Sit.dropTargets)
 
+        // how many tracks are there now?
+        const trackNUmber = TrackManager.size();
+        console.log(`Track number: ${trackNUmber}`)
+
+
         if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
             const dropTargets = Sit.dropTargets["track"]
-            for (const dropTargetSwitch of dropTargets) {
+            for (let dropTargetSwitch of dropTargets) {
+
+                // if it ends with a - and a number, then we extract that number, called "selectNumber
+
+                // we set the selectNumber to the track number by default
+                // which means that it will always be selected
+                // unless the dropTarget has a number at the end
+                // in which case it will be selected only that's the same as the track number
+                let selectNumber = trackNUmber;
+                const match = dropTargetSwitch.match(/-(\d+)$/);
+                if (match !== null) {
+                    selectNumber = Number(match[1]);
+                    // strip off the last part
+                    dropTargetSwitch = dropTargetSwitch.substring(0, dropTargetSwitch.length - match[0].length);
+
+                }
+
                 if (NodeMan.exists(dropTargetSwitch)) {
                     const switchNode = NodeMan.get(dropTargetSwitch);
 
@@ -238,15 +267,18 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                             sourceTrack: trackID,
                         }))
                         // and select it
-                        switchNode.selectOption(menuText)
+                        if (trackNUmber === selectNumber) {
+                            switchNode.selectOption(menuText)
+                        }
                     } else {
                         // drag and drop default now just adds the data source track, not a controller
                         // this is more flexible, as the user can then add a controller if they want
                         switchNode.removeOption(menuText)
                         switchNode.addOption(menuText, NodeMan.get(trackID))
                         // and select it (Quietly, as we don't want to zoom to it yet)
-                        switchNode.selectOptionQuietly(menuText)
-
+                        if (trackNUmber === selectNumber) {
+                            switchNode.selectOptionQuietly(menuText)
+                        }
                         // if there's a center point track, make that as well
                         if (centerID !== null) {
                             const menuTextCenter = "Center " + trackFileName;
@@ -290,7 +322,6 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         // if the track had FOV data, and there's an fov drop target, then add it
         //
-        let hasFOV = false;
         let value = trackNode.v(0);
         if (typeof value === "string") {
             value = Number(value);
@@ -318,7 +349,6 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         }
 
         // same type of thing for heading angles
-        let hasAngles = false;
         if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.SensorVerticalFieldofView])) {
             hasAngles = true;
         }
@@ -520,6 +550,13 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
                     traverseModeSwitch.selectOption("Target Object");
 
+                    // second track, so we assume we want to focus on this target
+                    // so we are setting the "Camera Heading"  to "To Target" (from "Use Angles")
+                    const headingSwitch = NodeMan.get("CameraLOSController", true);
+                    if (headingSwitch) {
+                        headingSwitch.selectOption("To Target");
+                    }
+
 
                 }
 
@@ -538,12 +575,35 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     terrainUINode.zoomToTrack(trackOb.trackNode);
                 }
 
+
+                // if it's a simple track with no center track and no angles (i.e. not MISB)
+                // then switch to "Use Angles" for the camera heading
+                // which will use the PTZ control as no angles track will be loaded yet
+
+                if (!hasCenter && !hasAngles) {
+
+                    // first simple track, so just use angles
+                    // which will point the camera in a fixed direction
+                    const headingSwitch = NodeMan.get("CameraLOSController", true);
+                    if (headingSwitch) {
+                        headingSwitch.selectOption("Use Angles");
+                    }
+
+                }
+
+
+
             }
 
         }
 
 
     }
+
+    // we've loaded some tracks, and set stuff up, so ensure everything is calculated
+    NodeMan.recalculateAllRootFirst()
+    par.renderOne = true;
+
 }
 
 

@@ -143,13 +143,14 @@ sitch = {
     },
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "physics", key:"C"},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "camera", key:"C"},
 
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
            "fixedCamera": "fixedCameraPosition",
         },
-        desc: "Camera Track"
+        desc: "Camera Track",
+        gui: "camera",
     },
 
 
@@ -157,18 +158,19 @@ sitch = {
         kind: "SmoothedPositionTrack",
         method: "moving",
         source: "cameraTrackSwitch",
-        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"traverse"},
+        window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"camera"},
         // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
 
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "physics", key:"X"},
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "target", key:"X"},
 
     targetTrackSwitch: {
         kind: "Switch",
         inputs: {
             "fixedTarget": "fixedTargetPosition",
         },
-        desc: "Target Track"
+        desc: "Target Track",
+        gui: "target",
     },
 
     targetTrackSwitchSmooth: {
@@ -182,7 +184,7 @@ sitch = {
 
     swapTargetAndCameraTracks: {}, // NOT IMPLEMENTED
 
-    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV"},
+    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV",gui:"target"},
 
     fovSwitch: {
         kind: "Switch",
@@ -190,6 +192,7 @@ sitch = {
             "userFOV": "fovUI",
         },
         desc: "Camera FOV",
+        gui: "camera",
     },
 
     fovController: {
@@ -197,25 +200,6 @@ sitch = {
         object: "lookCamera",
         source: "fovSwitch",
     },
-
-    // put pTZ after fov controller, so it will override it if both are enabled
-    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 90, showGUI: true},
-
-    // angels controllers
-    angelsSwitch: {
-        kind: "Switch",
-        inputs: {
-            "Manual PTZ": "ptzAngles",
-            // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
-            // then a matrixController
-        },
-        desc: "Angles Source"
-    },
-
-
-
-
-
 
 
     trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitchSmooth"},
@@ -228,14 +212,39 @@ sitch = {
             "Follow Track": "trackPositionController",
         },
         desc: "Camera Position",
+        gui:"camera"
     },
 
 
+    // we orient the camera to the track by default
+    // either the PTZ controller or the trackToTrack controller will override this
+    // execpt when PTZ is set to relative, then it's relative to whatever comes out of this
+    orientCameraController: {kind: "ObjectTilt", track: "cameraTrackSwitchSmooth", gui:"camera"},
+
+    // put pTZ after fov controller, so it will override it if both are enabled
+    ptzAngles: {kind: "PTZUI", az: 0, el: 0, roll: 0, fov: 30, showGUI: true, gui: "camera"},
+
+    // this order is not important, as ptzAngles and trackToTrackController cannot be
+    // active at the same time
     trackToTrackController: {
         kind: "TrackToTrack",
         sourceTrack: "cameraTrackSwitchSmooth",
         targetTrack: "targetTrackSwitchSmooth",
     },
+
+
+    // angels controllers
+    angelsSwitch: {
+        kind: "Switch",
+        inputs: {
+            "Manual PTZ": "ptzAngles",
+            // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
+            // then a matrixController
+        },
+        desc: "Angles Source",
+        gui:"camera",
+    },
+
 
     // The LOS controller will reference the cameraTrackSwitch and targetTrackSwitchSmooth
     // for source data
@@ -245,7 +254,8 @@ sitch = {
             "To Target": "trackToTrackController",
             "Use Angles": "angelsSwitch",
         },
-        desc: "Camera Heading"
+        desc: "Camera Heading",
+        gui: "camera"
     },
 
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
@@ -270,10 +280,12 @@ sitch = {
             "Target Object": "targetTrackSwitchSmooth",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
+            "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
         },
-        default: "Constant Altitude",
+        default: "Constant Distance",
         exportable: true,
+        gui:"traverse",
     },
 
     // display the traverse track (Track)
@@ -347,7 +359,7 @@ sitch = {
     // TODO: add support for focus tracks, which are currently using
     // a direct GUI, and should be a CNodeSwitch
     dropTargets: {
-        "track": ["cameraTrackSwitch", "targetTrackSwitch", "zoomToTrack"],
+        "track": ["cameraTrackSwitch-1", "targetTrackSwitch-2", "zoomToTrack"],
 //        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
         "fov": ["fovSwitch"],
         "angles": ["angelsSwitch"],

@@ -303,6 +303,8 @@ class CameraMapControls {
 					if (ptzControls.el <= -89) ptzControls.el = -89
 					if (ptzControls.el >= 89) ptzControls.el = 89
 
+					ptzControls.recalculateCascade();
+
 				} else {
 
 

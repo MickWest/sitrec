@@ -1,4 +1,4 @@
-import {radians} from "../utils";
+import {degrees, radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
 import {gui, guiMenus, Sit} from "../Globals";
@@ -6,6 +6,8 @@ import {gui, guiMenus, Sit} from "../Globals";
 import {CNodeController} from "./CNodeController";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
+import {Vector3} from "three";
+import {DebugArrow} from "../threeExt";
 
 const pszUIColor = "#C0C0FF";
 
@@ -16,11 +18,14 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.el = v.el
         this.fov = v.fov
         this.roll = v.roll
+        this.relative = true
 
         assert(v.fov !== undefined, "CNodeControllerPTZUI: initial fov is undefined")
 
         if (v.showGUI) {
-            const guiPTZ = v.gui ?? guiMenus.camera;
+
+            this.setGUI(v,"camera");
+            const guiPTZ = this.gui;
 
             guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
@@ -30,6 +35,7 @@ export class CNodeControllerPTZUI extends CNodeController {
             if (this.roll !== undefined ) {
                 guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             }
+            guiPTZ.add(this, "relative").listen().name("Relative").onChange(v => this.refresh(v))
         }
        // this.refresh()
     }
@@ -41,6 +47,7 @@ export class CNodeControllerPTZUI extends CNodeController {
             el: this.el,
             fov: this.fov,
             roll: this.roll,
+            relative: this.relative
         }
     }
 
@@ -50,10 +57,12 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.el = v.el;
         this.fov = v.fov;
         this.roll = v.roll;
+        this.relative = v.relative ?? false;
     }
 
     refresh(v) {
         // don't think this is needed
+        this.recalculateCascade();
     }
 
     apply(f, objectNode ) {
@@ -86,12 +95,7 @@ export class CNodeControllerPTZUI extends CNodeController {
 
         const camera = objectNode.camera
         
-        var fwd =   V3(0,0,-1) // North, parallel to the local tangent
-        var right = V3(1,0,0)  // East
-        var up = V3(0,1,0)     // up
-
-
-        up = getLocalUpVector(camera.position, wgs84.RADIUS)
+        var up = getLocalUpVector(camera.position, wgs84.RADIUS)
 
 
         // to get a northish direction we get the vector from here to the north pole.
@@ -110,11 +114,36 @@ export class CNodeControllerPTZUI extends CNodeController {
         // DebugArrow("local Up",up,camera.position,length,"#80FF90")
         // DebugArrow("local South",south,camera.position,length,"#8080FF")
 
-        right = east;
-        fwd = north;
+        var right = east;
+        var fwd = north;
 
-        fwd.applyAxisAngle(right,radians(this.el))
-        fwd.applyAxisAngle(up,-radians(this.az))
+        let el = this.el
+        let az = this.az
+        if (this.relative) {
+            // if we are in relative mode, then we just rotate the camera's fwd vector
+
+            const xAxis = new Vector3()
+            const yAxis = new Vector3()
+            const zAxis = new Vector3()
+            camera.updateMatrix();
+            camera.updateMatrixWorld()
+            camera.matrix.extractBasis(xAxis,yAxis,zAxis)
+            fwd = zAxis.clone().negate()
+
+            // project fwd onto the horizontal plane define by up
+            // it's only relative to the heading, not the tilt
+            let dot = fwd.dot(up)
+            fwd = fwd.sub(up.clone().multiplyScalar(dot)).normalize()
+
+            right = fwd.clone().cross(up)
+
+
+
+        }
+
+
+        fwd.applyAxisAngle(right,radians(el))
+        fwd.applyAxisAngle(up,-radians(az))
         camera.fov = this.fov;
         assert(!Number.isNaN(camera.fov), "CNodeControllerPTZUI: camera.fov is NaN");
         assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )

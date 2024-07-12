@@ -1,7 +1,7 @@
 // A node that returns a EUS vector position based on LLA input
 // Can be defined by a lat, lon, and alt
 // or a LLA array of three values
-import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUS} from "../LLA-ECEF-ENU";
+import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNode} from "./CNode";
 import {V3} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
@@ -82,6 +82,22 @@ export class CNodePositionLLA extends CNode {
                 this.guiLon.value = LLA.y
                 this.LLA[0] = LLA.x
                 this.LLA[1] = LLA.y
+
+                // if the shift key is held, then set the altitude to the ground + 2m
+                if (isKeyHeld('Shift')) {
+                    // get the ground altitude, buy first getting the cursor position, adjusted for height
+                    const groundPoint = adjustHeightAboveGround(cursorPos, 2);
+                    // converts the ground point to LLA
+                    const groundPointLLA = EUSToLLA(groundPoint);
+                    // so the altitude is in the Z component
+                    const groundAlt = groundPointLLA.z;
+                    this.guiAlt.value = groundAlt
+                    this.LLA[2] = groundAlt
+                }
+
+
+
+
                 this.recalculateCascade(0);
                 // we don't change the altitude, as we don't know it from the cursor
             }

@@ -1,5 +1,5 @@
 // utils.js - a variety of useful functions and shortcuts
-import {Sit} from "./Globals";
+import {infoDiv, Sit} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {assert} from "./assert.js";
 
@@ -797,3 +797,7 @@ export function stripComments(expression) {
 
     return expression
 }
+
+// export function mebug(x) {
+//     infoDiv.innerHTML += x+"<br>";
+// }

@@ -753,6 +753,13 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
     })
 
 
+    new CNodeLOSTraverse({
+        id: "LOSTraverseConstantDistance"+idExtra,
+        LOS: los,
+        startDist: "startDistance",
+        },
+    guiMenus.traverse)
+
     // GUI variable Target Speed in Knots (scaled to m/s)
     if (!NodeMan.exists("speedScaled")) {
         new CNodeScale("speedScaled", 1 / Units.m2Speed,
@@ -765,6 +772,9 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
                 desc: "Target Speed " + Units.speedUnits
             }, guiMenus.traverse))
     }
+
+
+
 
     // Traverse at constant GROUND speed (using the above)
     new CNodeLOSTraverseConstantSpeed({
