@@ -6,6 +6,8 @@ import {forceUpdateUIText} from "./CNodeViewUI";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {assert} from "../assert.js";
 import {calculateGST} from "../CelestialMath";
+import {updateGUIFrames} from "../JetGUI";
+import {updateFrameSlider} from "../FrameSlider";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West
@@ -177,6 +179,7 @@ export class CNodeDateTime extends CNode {
             }
         )
 
+
         this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
         this.dateTimeFolder.add(this, "resetNowTimeToCurrent").name("Sync to Current Time");
 
@@ -187,6 +190,23 @@ export class CNodeDateTime extends CNode {
         } else {
             this.dateTimeFolder.close();
         }
+
+        this.dateTimeFolder.add(Sit, "frames",1,10000,1).name("Sitch Frames").listen().onChange((v) => {
+            par.frames = Sit.frames;
+            NodeMan.updateSitFramesChanged();
+            updateGUIFrames();
+            updateFrameSlider();
+
+        });
+
+        this.dateTimeFolder.add(Sit, "fps",1,120,0.01).name("Video FPS").listen().onChange((v) => {
+            par.frames = Sit.frames;
+            NodeMan.updateSitFramesChanged();
+            updateGUIFrames();
+            updateFrameSlider();
+
+        });
+
 
         this.update(0);
 
