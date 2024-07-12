@@ -3,9 +3,20 @@ import {Sit} from "./Globals";
 import {isKeyHeld} from "./KeyBoardHandler";
 import {updateFrameSlider} from "./FrameSlider";
 import {Frame2Az, Frame2El, UpdatePRFromEA} from "./JetStuff";
+import {mebug} from "./utils";
 
-export function updateFrame() {
+var lastTime = 0;
+
+export function updateFrame(elapsed) {
     const lastFrame = par.frame;
+
+    // calculate the timestep since this was last called
+    // using the high precision timer
+    // const now = performance.now();
+    //const dt = now - lastTime;
+    // lastTime = now;
+
+    const dt = elapsed;
 
     const A = Sit.aFrame;
     let B = Sit.bFrame ?? Sit.frames-1;
@@ -30,7 +41,15 @@ export function updateFrame() {
         // so 1.0 is real time, 0.5 is half speed, 2.0 is double speed
         // par.frame is the frame number in the video
         // (par.frame * Sit.simSpeed) is the time (based on frame number) in reality
-        par.frame = Math.round(par.frame + par.direction);
+       //par.frame = Math.round(par.frame + par.direction);
+
+        // dt is in milliseconds, so divide by 1000 to get seconds
+        // then multiply by the frames per second to get the number of frames
+        // to advance
+        const advance = dt / 1000 * par.direction;
+        par.time = par.time + advance;
+        par.frame = Math.floor(par.time * Sit.fps);
+        //mebug("par.frame = "+par.frame+" par.time = "+par.time+" advance = "+advance+" dt = "+dt+" Sit.fps = "+Sit.fps+" par.direction = "+par.direction);
 
         // A-B wrapping
         if (par.frame > B) {
@@ -62,7 +81,7 @@ export function updateFrame() {
         const oldEl = par.el;
         par.az = Frame2Az(par.frame)
         par.el = Frame2El(par.frame)
-        if (par.az != oldAz || par.el != oldEl || par.needsGimbalBallPatch) {
+        if (par.az !== oldAz || par.el !== oldEl || par.needsGimbalBallPatch) {
             UpdatePRFromEA()
         }
 

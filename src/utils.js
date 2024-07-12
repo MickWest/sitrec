@@ -798,6 +798,6 @@ export function stripComments(expression) {
     return expression
 }
 
-// export function mebug(x) {
-//     infoDiv.innerHTML += x+"<br>";
-// }
+export function mebug(x) {
+    infoDiv.innerHTML += x+"<br>";
+}

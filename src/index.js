@@ -710,6 +710,9 @@ function animate(newtime) {
     now = newtime;
     elapsed = now - then;
 
+    // note te user can change Sit.fps (for example, if they are unsure of the framerate of the video)
+    fpsInterval = 1000 / Sit.fps;
+
     // if enough time has elapsed, draw the next frame
     if (elapsed > fpsInterval) {
 
@@ -717,14 +720,14 @@ function animate(newtime) {
         // Also, adjust for fpsInterval not being multiple of 16.67
         then = now - (elapsed % fpsInterval);
         // draw stuff here
-        renderMain()
+        renderMain(elapsed)
     } else {
         // It is not yet time for a new frame
         // so just render - which will allow smooth 60 fps motion moving the camera
        // const oldPaused = par.paused
         //par.paused = true;
         par.noLogic = true;
-        renderMain();
+        renderMain(elapsed);
         par.noLogic = false;
         //par.paused = oldPaused;
     }
@@ -737,14 +740,16 @@ function windowChanged() {
     updateSize();
 }
 
-function renderMain() {
+
+
+function renderMain(elapsed) {
 
     incrementMainLoopCount();
 
 
     if (Sit.animated) {
         var lastFrame = par.frame
-        updateFrame()
+        updateFrame(elapsed)
         if (lastFrame !== par.frame)
             par.renderOne = true;
     }
