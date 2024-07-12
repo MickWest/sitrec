@@ -157,7 +157,7 @@ export class CGuiMenuBar {
         }
 
         this.divs = [];
-        this.divWidth = 240; // width of a div in pixels
+        this.divWidth = 1 // 240; // width of a div in pixels
         this.totalWidth = 0; // total width of all the divs
         this.numSlots = 20; // number of empty slots in the menu bar
         this.slots = []; // array of GUI objects
