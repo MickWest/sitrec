@@ -184,7 +184,7 @@ sitch = {
 
     swapTargetAndCameraTracks: {}, // NOT IMPLEMENTED
 
-    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV",gui:"target"},
+    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV",gui:"camera"},
 
     fovSwitch: {
         kind: "Switch",
