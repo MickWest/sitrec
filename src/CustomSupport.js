@@ -307,9 +307,15 @@ export class CCustomManager {
             if (sitchData.mods) {
                 // apply the mods
                 for (let id in sitchData.mods) {
+
+                    if (!NodeMan.exists(id)) {
+                        console.warn("Node "+id+" does not exist in the current sitch (deprecated?), so cannot apply mod")
+                        continue;
+                    }
+
                     const node = NodeMan.get(id)
                     if (node.modDeserialize !== undefined) {
-                        console.log("Applying mod to node:" + id+ " with data:"+sitchData.mods[id]  )
+                        //console.log("Applying mod to node:" + id+ " with data:"+sitchData.mods[id]  )
                         node.modDeserialize(Sit.mods[id])
                     }
                 }

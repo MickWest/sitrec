@@ -140,7 +140,11 @@ class CNode {
     simpleDeserialize(v, list) {
         if (list === undefined) return;
         for (let key of list) {
-            this[key] = v[key]
+            // need to check for undefined, as older saves might not have all the values used in newer saves
+            // in which case we simply leave it as the default.
+            if (v[key] !== undefined) {
+                this[key] = v[key]
+            }
         }
     }
 

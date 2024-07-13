@@ -279,7 +279,7 @@ export class CRegionSelector {
         if (!this.useSkew) {
             // the corrections might result in accumulated errors
             // so we adjust the points on either side of the dragindex so they are at right angles
-            // so di and di+2 are unchanged, bbut di+1 and di+3 (aka di-1) are modified
+            // so di and di+2 are unchanged, but di+1 and di+3 (aka di-1) are modified
             const di = this.dragIndex
             makeBRight(this.dragpoints[(di)].point, this.dragpoints[(di + 1) & 3].point, this.dragpoints[(di + 2) & 3].point)
             makeBRight(this.dragpoints[(di + 2) & 3].point, this.dragpoints[(di + 3) & 3].point, this.dragpoints[di].point)

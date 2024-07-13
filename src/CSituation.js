@@ -13,7 +13,7 @@ import {makePositionLLA} from "./nodes/CNodePositionLLA";
 
 // These are some parameters used as defaults for a situation
 // NOTE: The order used here will override the order in any sitch that uses these
-// even if you overide the values.
+// even if you override the values.
 
 const situationDefaults = {
     name: "gimbal",
@@ -120,7 +120,7 @@ export class CSituation {
     // Most complex sitches will FULLY override this CSituation::setup() function
     // So don't rely on anything in here for things like Gimbal, Agua, etc....
     // setup() {
-    //     // more data-driven stuff that's indepent of type of situation
+    //     // more data-driven stuff that's independent of type of situation
     //
     //     // if (this.marks) this.marks.forEach(mark => {
     //     //     var enu = LLAToEUS(mark.LL.lat, mark.LL.lon)
