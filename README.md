@@ -4,13 +4,20 @@
 
 Sitrec (Situation recreation) is a web application that allows for the real-time interactive 3D recreation of various situations. It was created initially to analyze the US Navy UAP/UFO video (Gimbal, GoFast, and FLIR1/Nimitz), but has expanded to include several other situations (referred to as "sitches"). It's written mostly by Mick West, with a lot of input from the members of [Metabunk](https://www.metabunk.org).
 
+It's free and available to anyone. Here's a link to [Sitrec on Metabunk](https://www.metabunk.org/sitrec).
+
 My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch.  
 
-- [Sitrec on Metabunk](https://www.metabunk.org/sitrec).
-- [The Sitrec user interface](docs/UserInterface.md)
-- [Local custom Sitch with JSON files](./docs/LocalCustomSitches.md)
+### User Documentation [_NEW_]
+
+- [The Sitrec User Interface - How the menus work](docs/UserInterface.md)
+- [The Custom Sitch Tool - Drag and Drop Sitches](docs%2FCustomSitchTool.md)
+- [Custom Models and 3D Object - add your own planes](docs/CustomModels.md)
+
+### Technical Documentation (for coders and webmasters)
+
+- [Local custom Sitch with JSON files - More complex cusom sitches](./docs/LocalCustomSitches.md)
 - [File Rehosting and Server Configuration](./docs/FileRehosting.md)
-- [Custom Models and 3D Object](docs/CustomModels.md)
 
 The most common use case is to display three views:
 - A video of a UAP situation 
