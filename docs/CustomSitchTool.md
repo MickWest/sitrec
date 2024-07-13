@@ -140,4 +140,44 @@ In the scenario where we have a single complex track, we likely have a UAP that 
 Complex video is the original video file. This may need splitting into a data file (.CSV or .KLV, or .BIN) and a video files (.MP4). Once this is split, drag them both into Sitrec. Example: 
 ![truck-initial.jpg](docimages/truck-initial.jpg)
 
-Here's what you see immediately after dragging in a MISB file (split in to a .KLV and a .MP4)
+Here's what you see immediately after dragging in a MISB file (split in to a .KLV and a .MP4). Since the MISB file contain time code information, it is automatically synced to the correct start time. The video file is used to set the length. This assumes the KLV and the Video start at the same time. If the video is just showing a portion of the MISB data, then they may have to manually adjust the start time. 
+
+In this instance we see the road is correct, but a bit low resolution. We need to adjust the terrain
+
+## Adjusting the terrain
+
+"Terrain" in Sitrec is the background graphics - i.e. the ground. Sitrec currently only loads a small square section of the terrain. This is defined by the contents of the "Terrain" menu:
+
+![terrain-menu.jpg](docimages/terrain-menu.jpg)
+
+- lat and lon = Latitude and Longitude of the _center_ of the square of terrain
+- zoom = zoom level. Higher levels are higher resolution, and smaller squares. 15 is the highest currently available.
+- nTiles = Number of terrain tiles on the side of the square. Here 6 means a 6x6 square or 36 tiles. 
+
+We can adjust the lat/lon manually, of by pressing "T" while pointing at where we want it in the main view. 
+
+In this case we are already centered, and can simply change the zoom to 15, the smaller square of terrain still encompasses the track. 
+
+![MISB-zoomed-terrain.jpg](docimages/MISB-zoomed-terrain.jpg)
+
+We see here the perfect match between the video and the derived view. The center of both images is just below the road. We also see the shadow of the road sign in the upper left and the matching paths in the lower left. 
+
+### MISB Traverse and Targets
+
+This particular MISB file has a center track (meaning a track of the position of the ground behind the center crosshairs). Sitrec has taken this as the default target. Here's the setup immediately after dropping in the files:
+![truck-track-initial.jpg](docimages/truck-track-initial.jpg)
+
+The Camera track (the position of the camera) is set to the main position track in the MISB file, i.e. the "platform" (aircraft) position.
+
+The file also has FOV data, so this is automatically selected for "Camera FOV" - you can change this back to manual if you like
+
+Since we have a target track, then the Camera Heading is set to "To Target".
+
+The "Traverse" setup starts out as the default, "Constant Distance", and 1 NM. Since we don't have a UAP in this case, and we know we are sut following the truck, then it would actually make sense to change the traverse mode to "Target Object", and the traverse object would simply drive along the road. 
+
+However, if we _did_ have a suspected UAP in the frame, then we would select one of the various form of LOS traversal (ways of traversing the lines of sight). For example, constant altitude:
+
+![MISB-constant-altitude-traverse.jpg](docimages/MISB-constant-altitude-traverse.jpg)
+
+Here we still have a start distance of 1NM, and with the constraint that the altitude must remain constant, this creates the blue path seen here. We can then add a traverse model to see what it looks like (again, this is assuming your video has some unidentified object in it)
+![MISB-traverse-object.jpg](docimages/MISB-traverse-object.jpg)
