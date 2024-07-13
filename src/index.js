@@ -129,6 +129,9 @@ if (urlParams.get("custom")) {
         const sitchObject = textSitchToObject(data);
         setSit(new CSituation(sitchObject))
 
+        // when loading a custom sitch, we don't want to show the initial drop zone animation
+        Sit.initialDropZoneAnimation = false;
+
 
     });
 } else if (urlParams.get("mod")) {
@@ -157,6 +160,7 @@ if (urlParams.get("custom")) {
         // and that's it
         setSit(new CSituation(sitchObject))
         par.name = Sit.menuName;
+        Sit.initialDropZoneAnimation = false;
 
     });
 

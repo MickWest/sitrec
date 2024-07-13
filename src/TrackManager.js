@@ -421,9 +421,12 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
      //
      //    })
 
+
+        const sphereId = trackOb.menuText ?? trackFileName;
+
             // instead of a sphere, add a 3dObject sphere and follow controllers
         trackOb.displayTargetSphere = new CNode3DObject({
-            id: trackOb.menuText+"_ob",
+            id: sphereId+"_ob",
             object: "sphere",
             radius: 10,
 
