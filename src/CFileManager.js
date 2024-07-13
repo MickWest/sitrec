@@ -291,7 +291,7 @@ export class CFileManager extends CManager {
         // to find it we need to iterate over the files, and check the filename, not the id
         // as the id might be different
 
-        // shoudl we strip off "./" from the start, or just fix them in the original data <<<< HEY, FIX THIS
+        // should we strip off "./" from the start, or just fix them in the original data <<<< HEY, FIX THIS
 
         var duplicate = false;
         this.iterate( (key, parsed) => {
@@ -378,7 +378,7 @@ export class CFileManager extends CManager {
 
                 // if an array is returned, we just assume it's the first one
                 // because we are adding by id here, not by filename
-                // so if it's a zipped assest, it should only be one
+                // so if it's a zipped asset, it should only be one
                 if (Array.isArray(parsedAsset)) {
                     assert(parsedAsset.length === 1, "Zipped IDed asset contains multiple files")
                     parsedAsset = parsedAsset[0]
@@ -587,7 +587,7 @@ export class CFileManager extends CManager {
         const rehostPromises = [];
         const todayDateStr = new Date().toISOString().split('T')[0];
 
-        // first check for video reshosting
+        // first check for video rehosting
         if (rehostVideo) {
             // is there a video? if so we add it directly, so, like terrain, it starts loading normally
             if (NodeMan.exists("video")) {
@@ -654,7 +654,7 @@ export class CFileManager extends CManager {
 
 }
 
-// we have to returna  promise as the Image loading is async,
+// we have to return a promise as the Image loading is async,
 // even when from a blob/URL
 function createImageFromArrayBuffer(arrayBuffer, type) {
     return new Promise((resolve, reject) => {

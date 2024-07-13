@@ -1,5 +1,5 @@
 // CNode3DObject.js - CNode3DObject
-// a 3D object node - a sphere, cube, etc, with gnerated geometry and material from the input parameters
+// a 3D object node - a sphere, cube, etc., with generated geometry and material from the input parameters
 // encapsulates a THREE.Object3D object, like:
 // - THREE.Mesh (default)
 // - THREE.LineSegments (if wireframe or edges)
@@ -126,7 +126,7 @@ class TicTacGeometry {
         const leg1Start = V3(0, legOffset + legSpacing/2, radius*0.95);
         const leg2Start = V3(0, legOffset - legSpacing/2, radius*0.95);
 
-        // get realtive positions of the leg mid and end
+        // get relative positions of the leg mid and end
         const legMid = V3(0, 0,          legLength1);
         const legEnd = V3(0, legLength2, legLength1);
 

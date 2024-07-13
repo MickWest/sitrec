@@ -1,6 +1,6 @@
 // raDec2Celestial takes the ra and dec (in radians) of a celestial point (like a star)
 // and returns an x,y,z point on the equatorial celestial sphere of sphereRadius
-// in ECEF format, standard celestial coordiantes, centered on the center of the Earth
+// in ECEF format, standard celestial coordinates, centered on the center of the Earth
 // X axis - To vernal equinox
 // Y Axis - right angles to this, in the equatorial plane
 // Z Axis - Up through the North pole
@@ -176,7 +176,7 @@ export function getCelestialDirection(body, date, pos) {
     // ecef for the sun will give us a vector from the center to the earth towards the Sun (which, for our purposes
     // is considered to be infinitely far away
 
-    // roate this into the EUS coordinate system and normalize
+    // rotate this into the EUS coordinate system and normalize
     const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true).normalize();
     return eusDir;
 }

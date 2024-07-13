@@ -34,7 +34,7 @@ Color pickers let you edit the hex value of the color directly, or you can chang
 
 ## Views/Windows
 
-In Sitrec the screen is divided into windows called "Views". Typically this will consist of:
+In Sitrec the screen is divided into windows called "Views". Typically, this will consist of:
 
 - Main View: the "god's eye view" looking down at the world
 - Look View: the simulated view through the camera set to match the video
@@ -78,7 +78,7 @@ Now Time is the time at the current frame in the video. Essentially it's the sta
 
 The Time menu shows both the start time and the now time at the top (yellow text). When the Frame Time is set to zero they will both be the same. 
 
-The sliders for Year, Month, Day, etc show the Now Time. This is because when you want to sync the simulation and the video, you will adjust the frame time until there's something distinctive on screen (such as two objects lining up), and then you will adjust the Start Time of the video so that the even happens at the right time in the simulation. This is conceptually simpler if you are editing the Now Time, because that's the point in time that's being displayed (the Start Time is automatically adjusted)
+The sliders for Year, Month, Day, etc. show the Now Time. This is because when you want to sync the simulation and the video, you will adjust the frame time until there's something distinctive on screen (such as two objects lining up), and then you will adjust the Start Time of the video so that the even happens at the right time in the simulation. This is conceptually simpler if you are editing the Now Time, because that's the point in time that's being displayed (the Start Time is automatically adjusted)
 
 The look view displays the Now Time in UTC format and in the user-selected time zone. 
 
