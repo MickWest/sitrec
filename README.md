@@ -6,12 +6,12 @@ Sitrec (Situation recreation) is a web application that allows for the real-time
 
 It's free and available to anyone. Here's a link to [Sitrec on Metabunk](https://www.metabunk.org/sitrec).
 
-My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch.  
+My goal here is to create a tool to effectively analyze UAP/UFO cases, and to share that analysis in a way that people can understand it. Hence, I focused on making Sitrec run in real-time (30 fps or faster), and be interactive both in viewing, and in exploring the various parameters of a sitch.  
 
 ### User Documentation [_NEW_]
 
 - [The Sitrec User Interface - How the menus work](docs/UserInterface.md)
-- [The Custom Sitch Tool - Drag and Drop Sitches](docs%2FCustomSitchTool.md)
+- [The Custom Sitch Tool - Drag and Drop Sitches](docs/CustomSitchTool.md)
 - [Custom Models and 3D Object - add your own planes](docs/CustomModels.md)
 
 ### Technical Documentation (for coders and webmasters)
@@ -33,7 +33,7 @@ Sitrec uses or ingests a variety of data sources
 
 - ADS-B files in KML format
 - TLE files (for satellites, mostly Starlink)
-- Star catalogs (BSC, etc)
+- Star catalogs (BSC, etc.)
 - Video (mp4, limited support)
 - DJI Drone tracks from Airdata as .csv
 - GLB (Binary GLTF 3D models)
@@ -77,9 +77,9 @@ Node.js is used both for build tools (i.e. webpack) and for packages used by the
 ## Create Source file and sitrec project folder structure
 Sitrec is built from the "sitrec" project folder. Note this is NOT the same "sitrec" server folder you deploy to.  
 
-Clone Sitrec from Github, or download a release archive. This will give you the sitrec project folder with these sub-folders:
+Clone Sitrec from GitHub, or download a release archive. This will give you the sitrec project folder with these sub-folders:
 - `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
-- `readmeImages` - Documenation images used by this .md file, and maybe others
+- `readmeImages` - Documentation images used by this .md file, and maybe others
 - `sitrecServer` - The server-side PHP files, like cachemaps.php
 - `src` - The JavaScript source, with the entry point of index.js
 - `three.js` - The 3D engine, the largest library used
@@ -98,7 +98,7 @@ Then there are the project build files:
 Sitrec can exist at the server root, or in any path. I use the root, but it's maybe neater to have in a folder. Here I'll assume it's in a folder called "s". You do not have to use "s", you can put it in another folder, or in the web root (like I do)
 
 There are five folders in the server structure
-- `sitrec` - the folder containing the Webpacked app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
+- `sitrec` - the folder containing the Webpack compiled app and the data files (except videos). This is deleted and recreated when rebuilding, so don't edit anything in there, edit the 
 - `sitrec-config` - contains server-side PHP configuration files - you need to edit this. 
 - `sitrec-cache` - a server-side cache for terrain tiles, initially empty
 - `sitrec-upload` - for rehosting user files (like ADS-B or TLE). Initially empty
@@ -138,7 +138,7 @@ dev_path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/sitrec',
 prod_path: '/Users/mick/sitrec-deploy'
 ```
 
-`dev_path` is the path to the local server. Here `/Users/mick/Library/CloudStorage/Dropbox/Metabunk/` is the root of my local web server. A simple windows configuration might be:
+`dev_path` is the path to the local server. Here `/Users/mick/Library/CloudStorage/Dropbox/Metabunk/` is the root of my local web server. A simple Windows configuration might be:
 
 ```javascript
 dev_path: 'c:\\nginx\\html\\s\\sitrec',

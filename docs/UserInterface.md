@@ -23,9 +23,9 @@ Most values in Sitrec are edited via sliders. You can modify these in various wa
 - Dragging the slider will quickly adjust the value.
 - Editing the number directly - click on the number and type in a new value
 - Dragging the number _vertically_ will change it in small increments
-- Clicking on the number and then useing the up/down arrows will change the number in single steps
+- Clicking on the number and then using the up/down arrows will change the number in single steps
 
-Most sliders will stop at the left or right minumum or maximum values, but some, such as the hours/minutes, etc., will wrap around and increament/decrement the slider above them. 
+Most sliders will stop at the left or right minimum or maximum values, but some, such as the hours/minutes, etc., will wrap around and increment/decrement the slider above them. 
 
 ## Color Pickers
 ![Color Picker.jpg](docimages/Color Picker.jpg)
@@ -40,13 +40,13 @@ In Sitrec the screen is divided into windows called "Views". Typically this will
 - Look View: the simulated view through the camera set to match the video
 - Video View: the original video.
 - Overlay Views: Various overlays, things like compasses, or simulated HUDs, like the ATFLIR, 
-- Graph views: various graphs showing things like the speed and alltitude of the proposed target object. 
+- Graph views: various graphs showing things like the speed and altitude of the proposed target object. 
 - Editor views: things like spline editors used to make a custom curve for something like Azimuth or Bank Angle.
 - Simulator views: Thinks like the simulated SA page in the Gimbal Sims. 
 
 You can modify a view in various ways:
 
-- Double Click on a view to hide all the other views and make this one full-screen. 
+- Double-Click on a view to hide all the other views and make this one full-screen. 
 - Under the Show/Hide->Views menu, you can toggle individual views on and off.
 - Click and drag a view to move it on screen. You may have to hold down the shift key for this to work, as some views use the mouse for camera navigation. 
 - Click and drag the corners or sides of a view to resize it. Again, you may have to hold down the shift key.
@@ -55,14 +55,14 @@ All these modification to the views will be saved when you "Export Custom/Mod"
  
 # Time and Date User Interface
 
-Sitrec is simulating a period of time. This time has a start time and a duration. There's three concepts of time that you need to understand in Sirec:
+Sitrec is simulating a period of time. This time has a start time and a duration. There's three concepts of time that you need to understand in Sitrec:
 
 ## Frame Number/Time
 
 A video has a total number of frames, and a specific number for frames per second (fps). A frame number can also be expressed as a time since the start of the video. The slider at the bottom of the screen represents the the frame. You can modify this in various ways:
 
 - Drag the large slider
-- Drag the "Time (sec)" or "Frame in Video" siders in the "Time" menu (or adjust the sliders as described earlier)
+- Drag the "Time (sec)" or "Frame in Video" sliders in the "Time" menu (or adjust the sliders as described earlier)
 - Hold the Left or Right arrows to advance time forwards or backwards at the normal rate.
 - Hold the Up and Down arrows to advance time at 10x speed
 - Tap < or > (the , and . keys) to single step on frame backwards or forwards. 
@@ -80,27 +80,27 @@ The Time menu shows both the start time and the now time at the top (yellow text
 
 The sliders for Year, Month, Day, etc show the Now Time. This is because when you want to sync the simulation and the video, you will adjust the frame time until there's something distinctive on screen (such as two objects lining up), and then you will adjust the Start Time of the video so that the even happens at the right time in the simulation. This is conceptually simpler if you are editing the Now Time, because that's the point in time that's being displayed (the Start Time is automatically adjusted)
 
-The look view diplays the Now Time in UTC format and in the user-seleted time zone. 
+The look view displays the Now Time in UTC format and in the user-selected time zone. 
 
 For time-lapse videos, you can adjust the simulation speed. 
 
 ## Navigating the Main View in 3D
 
-The Main View is a 3D view on the world, very similar in concept to other 3D viewers like Google Earth. To move the camera around you use the mouse
+The Main View is a 3D view on the world, very similar in concept to other 3D viewers like Google Earth. To move the camera around, you use the mouse
 
 - Left Drag is like dragging the world around. The camera is what actually moves.   
 - Right Drag tilts the viewpoint without moving the camera
 - Center Drag rotates the camera around a point in the world
 - The mouse wheel zooms in and out.
 
-If you get lost, you can select "Reset Camera" from the View menu. This will put the camera back to the start position. In the custom sitch tool, it will put the camera back to the position calculated when you last imported a track. You can also get this by pressing "." on the numberic keypad. 
+If you get lost, you can select "Reset Camera" from the View menu. This will put the camera back to the start position. In the custom sitch tool, it will put the camera back to the position calculated when you last imported a track. You can also get this by pressing "." on the numeric keypad. 
 
 You can also set a default using "Snapshot camera".
 
 
 # Changing the Terrain
 
-Under the Terrain menu you can change "Map Type". This defaults to MapBox, but you can also choose a steet map view. The Settings EOX, Wireframe, and RGB Test are not particulalry useful, but EOX can be used if MapBox is not available - of if you just want a different satellite view time.  
+Under the Terrain menu you can change "Map Type". This defaults to MapBox, but you can also choose a street map view. The Settings EOX, Wireframe, and RGB Test are not particularly useful, but EOX can be used if MapBox is not available - of if you just want a different satellite view time.  
 
 There are more terrain editing options in the [Custom Sitch Tool](CustomSitchTool.md)
 

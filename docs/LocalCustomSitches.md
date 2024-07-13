@@ -8,11 +8,11 @@ Sitrec is primarily aimed  with recreating an event that happens over the course
 
 ### Time Series Data (TSD)
 
-Time series data is data that is recorded at specified intervals of time. The most obviousy example is a video, where indivual frames of the video are data, and they are recorded at regular interval, like 30 frames per second. 
+Time series data is data that is recorded at specified intervals of time. The most obvious example is a video, where individual frames of the video are data, and they are recorded at regular interval, like 30 frames per second. 
 
 TSD is often recorded at regular intervals, but can be at irregular intervals. The intervals can be small or large. 
 
-When we play a stich, we are essentially creating an interactive video. Sitrec will try to match the original video frame rate. So if there is TSD that has a different interval from the video, then we will need to interpolate intermediate data for the missing time intervals. 
+When we play a sitch, we are essentially creating an interactive video. Sitrec will try to match the original video frame rate. So if there is TSD that has a different interval from the video, then we will need to interpolate intermediate data for the missing time intervals. 
 
 Since matching source video is so fundamental to Sitrec, and since we often want to advance the simulation by individual frames matching the video, it's convenient that the unit of time used is **one frame**.  
 
@@ -40,7 +40,7 @@ The startTime value always has the format YYYY-MM-DDTHH:MM:SS:mmmZ (where mmm is
 
 ### Sitch File Format
 
-The above example is part of a sitch file. Notice each line has two fundamental parts, a key folllowed by a colon(:), and a value followed by a comma (,). This is a necessary part of each line, and omitting the colon or comma will result in errors.
+The above example is part of a sitch file. Notice each line has two fundamental parts, a key followed by a colon(:), and a value followed by a comma (,). This is a necessary part of each line, and omitting the colon or comma will result in errors.
 
 The simplest sitch file would look like:
 
@@ -126,7 +126,7 @@ Then save. **Saving should automatically reload the sitch**. This auto-reloading
 
 ### Including an existing sitch
 
-Instead of copying the entire file, you might want to just make a few changes to a complex sitch. The simplest way of doing that is to use "include_" follwed by the name of the sitch. The name here is the value defined in the sitch, e.g. "swr", and not the filename (so NOT "SitSWR.js").
+Instead of copying the entire file, you might want to just make a few changes to a complex sitch. The simplest way of doing that is to use "include_" followed by the name of the sitch. The name here is the value defined in the sitch, e.g. "swr", and not the filename (so NOT "SitSWR.js").
 
 The include_ directive will override anything that comes before it, and then any lines after will override that. So here we use the SWR sitch, but change the mainView to be half the width of the screen, and change the background (sky) color to grey. 
 
@@ -164,7 +164,7 @@ export const SitKansas = {
 }
 ```
 
-However it's still showing the location and tracks from the old sitch. So we need to get the two ADS-B tracks we are interested in and add them to the folder:
+However, it's still showing the location and tracks from the old sitch. So we need to get the two ADS-B tracks we are interested in and add them to the folder:
 ![Contents-of-custom-kansas.jpg](docimages%2FContents-of-custom-kansas.jpg)
 
 Then we modify the local sitch:

@@ -11,7 +11,7 @@ Sitrec has a JavaScript client (95% of the code) and a PHP backend. The Metabunk
 
 ## How the Client uploads
 
-Uploading is initiated from the client via a CRehoster object in CRehoster.js, this encapsulates a call to rehost.php on the server and handles retrning the response
+Uploading is initiated from the client via a CRehoster object in CRehoster.js, this encapsulates a call to rehost.php on the server and handles returning the response
 
 ```javascript
             let formData = new FormData();
@@ -37,10 +37,10 @@ This is called via Rehoster.rehostFile, which returns a promise
 
 You can use the promise returned by the function Rehoster.waitForAllRehosts() to ensure it has all been uploaded. 
 
-Currently error handling is minimal.
+Currently, error handling is minimal.
 
 
-Currently the uploading to the server is do with a simple POST, and so it is limited by two variables:
+The uploading to the server is done with a simple POST, and so it is limited by two variables:
  - **client_max_body_size** in the Nginx .conf file (or Apache equivalent)
  - **upload_max_filesize** in php.ini (e.g in /etc/php/8.3/fpm/phi.ini)
 

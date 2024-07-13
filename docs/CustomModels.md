@@ -4,7 +4,7 @@ To experiment with this functionality, start with the model inspector, found at 
 
 Once in the Model Inspector, you will get the default object, and two views on that object. You can double-click on a view to make it full screen. 
 
-Most of the object-specific adjsutments are done with the "Objects" menu. For convenience you can drag this off the menu bar to keep it open. Here I've also opened the "Time" menu, which is used for setting the sun direction.
+Most of the object-specific adjustments are done with the "Objects" menu. For convenience, you can drag this off the menu bar to keep it open. Here I've also opened the "Time" menu, which is used for setting the sun direction.
 
 ![model-inspector-with-menus.jpg](docimages/model-inspector-with-menus.jpg)
 
@@ -14,8 +14,8 @@ With "Model or Geometry" set to "Geometry" you can experiment with a variety of 
 
 You can also adjust the material (the surface appearance of the object). There are various different types.
 - Basic: No lighting, the object will simply appear all the same color
-- Lambert: Simple illumination where the object is affected by the sunlight. There's an additional color "emissive", which is how much light the object itself emits (i.e. if it's self-illuminating, like a lantern)
-- Phong: Similar to Lambert
+- Lambert: Simple illumination where the object is affected by the sunlight. There's an additional color "missive", which is how much light the object itself emits (i.e. if it's self-illuminating, like a lantern)
+- Phong: Similar to Lambert  
 - Physical: A more physically realistic material, with more parameters. 
 
 When experimenting with these settings, use the "Lighting" and "Time" menus to experiment with different lighting situations. For example, here's a very rough approximation of a lantern with an orange glow illuminated by low sun.
@@ -23,7 +23,7 @@ When experimenting with these settings, use the "Lighting" and "Time" menus to e
 
 ### Built-in Models
 
-There are also some built-in models. To use them, change the mode from "geomtery" to "model" and select a model from the drop-down.
+There are also some built-in models. To use them, change the mode from "geometry" to "model" and select a model from the drop-down.
 
 ![model-drop-down-with-f-15.jpg](docimages/model-drop-down-with-f-15.jpg)
 
@@ -40,20 +40,20 @@ The geometry specification are in meters. You can see the dimensions of the boun
 
 The geometries are only intended for simple tests. For more flexibility you can create or import a custom model.  
 
-Model are in OpenGL .glb format only. You don't need to use Blender to make them, but that's the only doumented pipeline. Other tools should be similar.
+Model are in OpenGL .glb format only. You don't need to use Blender to make them, but that's the only documented pipeline. Other tools should be similar.
 
 Internally, Sitrec used the metric system. So you need to set this in Blender if you want your models to be consistently sized.  
 ![blender-units.jpg](docimages/blender-units.jpg)
 
 ### Blender Orientation and scale
 
-When creating a model, such as an aircraft, the forward direction should be along the negative y-axis. This makes it consistent with the OpenGL coordinate system used by Sitrec. In blender you can see the directions of the axes with the axes widget. RGB, Red, Green, and Blue are X, Y, and Z. 
+When creating a model, such as an aircraft, the forward direction should be along the negative y-axis. This makes it consistent with the OpenGL coordinate system used by Sitrec. In Blender, you can see the directions of the axes with the axes widget. RGB, Red, Green, and Blue are X, Y, and Z. 
 
 The aircraft should be centered so its center of gravity is at the origin. This generally means the Y-axis will pass through the nose.
 
 The aircraft should be level, as if it is wheels down. Angle of attack adjustments are done at run-time. This usually means the wings and horizontal stabilizers are level.
 
-The size of the object can be seen in the bounding box dimensions. Ensure this matches expectations. The bounding box only works for single objects, so if your object is multi-parth then you'll have to use another method. 
+The size of the object can be seen in the bounding box dimensions. Ensure this matches expectations. The bounding box only works for single objects, so if your object is multi-part then you'll have to use another method. 
 
 ![blender-dimensions.jpg](docimages/blender-dimensions.jpg)
 
@@ -67,10 +67,11 @@ If you import a model from a format like FBX, Collada, or Wavefront/OBJ, you mig
 ### Blender Exporting
 
 You will edit the model in Blender and save to a .blend file. But Sitrec requires .glb files, which are binary versions of glTF, including both geometry and materials in single file. 
-To export a file, use File->Expoert-> glTF 2.0 (.glb/.gltf).
+To export a file, use File->Export-> glTF 2.0 (.glb/.gltf).
 
 Click on "Remember Export Settings" and then ensure the following are set:
 ![Blender-glb-export.jpg](docimages/Blender-glb-export.jpg)
+
 
 Then export the file. You should now be able to drag and drop this into the Sitrec model inspector, or any moddable sitch that supports it (e.g. FLIR1)
 

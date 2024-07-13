@@ -1,6 +1,6 @@
 # The Sitrec Custom Sitch Tool
 
-Sitrec is a powerful tool that allows you to set up sitchs (situations) by either coding them directly, or by setting up a custom JSON file. 
+Sitrec is a powerful tool that allows you to set up sitches (situations) by either coding them directly, or by setting up a custom JSON file. 
 
 Both those methods are powerful, but cumbersome. A simpler way that will work for many sitches is to use the _Custom Sitch Tool_.
 
@@ -27,7 +27,7 @@ To get a track into Sitrec, just import it (again, either via the "import" optio
 - CSV files. These currently need the relevant columns with headers matching the default MISB field names
 - MISB KLV files. This is MISB data, typically embedded in a .TS video file. To import this into Sitrec, you need to convert it to KLV format, for example with ffmpeg (e.g. ffmpeg -i truck.ts  -map 0:1 -c copy -f data output.klv ). These files can vary in format. 
 
-There are other ways a track can be created, for example from a file listing speed and bank angles of a plane over time. These are not currently supported in the Custom Sitch Tool as thye generally require custom code. 
+There are other ways a track can be created, for example from a file listing speed and bank angles of a plane over time. These are not currently supported in the Custom Sitch Tool as they generally require custom code. 
 
 (Sitrec is a work in progress, and I code largely around the data I have available. If there is a data format that is not supported that you have data available for, then I'd be happy to support it if you can give me the data. If you want it supported, but _can't_ give me the data, then that ,_might_ also be possible. Drop me a line: mick@mickwest.com )
 
@@ -36,14 +36,14 @@ There are other ways a track can be created, for example from a file listing spe
 So, you've got a track of a camera position, like an ADS-B track, just drag it in. You'll see something like this 
 ![Initial-drag-in-a-track.jpg](docimages/Initial-drag-in-a-track.jpg)
 
-Sitrec will center the main view over the track you just loaded. The Look View will initialy be pointing North, but the the camera will be locked to the start of the track you just loaded. The terrain around the start point will also be loaded (that's the small patch visible)
+Sitrec will center the main view over the track you just loaded. The Look View will initially be pointing North, but the the camera will be locked to the start of the track you just loaded. The terrain around the start point will also be loaded (that's the small patch visible)
 
 If you zoom in you'll see more of the initial setup:
 ![Close-up-of-single-track-defaults.jpg](docimages/Close-up-of-single-track-defaults.jpg)
 
-The Camera essentially has three sets of parameters: Position, Heading, and Field of View (FOV). You see these three listed in the Camera menu. Each one is a drop-down menu, becuase each one is a _data source_. 
+The Camera essentially has three sets of parameters: Position, Heading, and Field of View (FOV). You see these three listed in the Camera menu. Each one is a drop-down menu, because each one is a _data source_. 
 
-By default when you load a single simple track (i.e. a track with no heading or FOV info ebedded in it), you get the following setup:
+By default when you load a single simple track (i.e. a track with no heading or FOV info embedded in it), you get the following setup:
 
 - Camera position: Follow Track - meaning the camera will move along the track you just loaded
 - Camera FOV: userFOV - meaning you manually control the FOV with the slider above
@@ -53,11 +53,11 @@ By default when you load a single simple track (i.e. a track with no heading or 
 
 You can adjust the camera heading using the PTZ controls. These default to absolute values (the "Relative" check box is off). So a pan of 0° means north, and a tilt of 0° means level with the ground under the camera. A positive tilt goes up, negative goes down. 
 
-Changing the PTZ mode to "Relative" (check the box) means that the heading is relative to the ground track of the jet. This allows you to simulate looking fowards (Pan = 0°), or to the pilot's left or right. 
+Changing the PTZ mode to "Relative" (check the box) means that the heading is relative to the ground track of the jet. This allows you to simulate looking forward (Pan = 0°), or to the pilot's left or right. 
 
 In the above image you will see red lines. These are _lines of sight_ and essentially show where the plane's camera is looking. There's also a blue line, which is the _Traverse_ of the lines of sight. There are various ways of calculating a Traverse, but the default here is to stay a fixed distance from the camera. Mor on Traverses later. 
 
-In addition there is the Traverse Object, which defaults to a cube. You can change this in the Objects menu. For eacmple if you wanted to simulate a plane flying 1NM to the pilot's left, you could change:
+In addition, there is the Traverse Object, which defaults to a cube. You can change this in the Objects menu. For example if you wanted to simulate a plane flying 1NM to the pilot's left, you could change:
 
 - PTZ to "relative"
 - Pan to -90° (i.e. 90° left of the plane)
@@ -79,7 +79,7 @@ Here the target has been set to the end of the pier. The traverse object then ap
 
 ### Fixed camera
 
-You can fix the camera to a particula point by selecting "fixedCamera" from the "Camera Track" dropdown.  You can leave the target fixed to create a static scene, or you can change the target track to the plane's track.
+You can fix the camera to a particular point by selecting "fixedCamera" from the "Camera Track" dropdown.  You can leave the target fixed to create a static scene, or you can change the target track to the plane's track.
 
 Example:
 ![fixed-camera-red-ball.jpg](docimages/fixed-camera-red-ball.jpg)
@@ -113,7 +113,7 @@ Complex videos (later) often have exact time code embedded. Here were have a sim
 
 To sync the time manually, use the main slider to advance the the video to a distinctive point that will show up in the look view. 
 ![michigan-initial-sync-video-reservoir.jpg](docimages/michigan-initial-sync-video-reservoir.jpg)
-Here I moved it so the white object is over the boundry between to segments of a pond or reservoir. With that fixed, I now grab the "Seconds" or "Minutes" slider in the Time Menu and drag it until it matches. I also adjust the zoom, and fine tune the milliseconds
+Here I moved it so the white object is over the boundary between to segments of a pond or reservoir. With that fixed, I now grab the "Seconds" or "Minutes" slider in the Time Menu and drag it until it matches. I also adjust the zoom, and fine tune the milliseconds
 ![michigan-fine-tuned.jpg](docimages/michigan-fine-tuned.jpg)
 
 We now have an accurate recreation. With the time now synced you can scrub back and forth with the main slider and observer that the target lines up with other distinctive parts of the background 
@@ -123,13 +123,13 @@ With that you can adjust the effects to more closely match atmospheric, optical,
 
 Here I bring in the Tv Out Black and White to simulate the haze. I also defocus slightly and reduced the resolution. 
 
-Note in situation like this, the target is ofen darker than anticipated. That's due to the (current) lack of High Dynamic Range rending in Sitrec. 
+Note in situation like this, the target is often darker than anticipated. That's due to the (current) lack of High Dynamic Range rending in Sitrec. 
 
 ## Complex Tracks and Video
 
-Some platforms, like DJI or other drones, or commercial and military cameras, encode additional data besides the camera position. Typically this will include the direction the camera is pointing, possible a track of the ground positions below the cernter cross hairs, the field of view, and other things. 
+Some platforms, like DJI or other drones, or commercial and military cameras, encode additional data besides the camera position. Typically, this will include the direction the camera is pointing, possible a track of the ground positions below the center cross-hairs, the field of view, and other things. 
 
-The MISB format is commonly used in military and law enforcement applications, but is not widely used by the piublic. However MISB has a very rich data definition, covering everything you are likely to have in other formats. So I use MISB as an internal data representation. ADS-B tracks are converted to a MISB table (a spreadsheet) with just the position data. The DJI drone data contains FOV and heading data which likewise is converted into the relevant fields in an internal MISB table. 
+The MISB format is commonly used in military and law enforcement applications, but is not widely used by the public. However, MISB has a very rich data definition, covering everything you are likely to have in other formats. So I use MISB as an internal data representation. ADS-B tracks are converted to a MISB table (a spreadsheet) with just the position data. The DJI drone data contains FOV and heading data which likewise is converted into the relevant fields in an internal MISB table. 
 
 Native MISB is also supported in either KLV or CSV formats. I don't have many examples to work with, so if you've got any you can share, I'd appreciate it. Mick@mickwest.com
 
