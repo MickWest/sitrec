@@ -8,8 +8,8 @@ export const SitDume = {
     fps: 30,
     frames: 100,
 
-    flattening: true,
     terrain: {lat:  34.001856, lon:-118.806196, zoom:9, nTiles:8},
+    flattening: true,
 
     mainCamera: {
         startCameraPosition: [-43094.29665986946, 3824.242926331847, 422.4154566350642],

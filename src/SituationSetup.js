@@ -381,7 +381,13 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
         case "flattening":
             SSLog();
             node = new CNodeGUIValue({id: "flattening", value: 0, start: 0, end: 1, step: 0.005, desc: "Flattening"}, gui)
-            break
+            // terrain has likely already been set up, so we need to add this as an input manually
+            const terrain = NodeMan.get("TerrainModel",false);
+            if (terrain) {
+                terrain.addInput("flattening", node);
+            }
+
+            break;
 
         // case "terrain":
         //     SSLog();

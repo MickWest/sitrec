@@ -254,10 +254,10 @@ class Tile {
   // at this point we are Z-up
   recalculateCurve(radius) {
 
-    if (radius !== wgs84.RADIUS) {
-      console.error('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
-      console.error('Flat earth simulation will need a different calculation')
-    }
+    // if (radius !== wgs84.RADIUS) {
+    //   console.error('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
+    //   console.error('Flat earth simulation will need a different calculation')
+    // }
 
 
     var geometry = this.geometry;

@@ -100,10 +100,10 @@ export const SitNellis = {
 
     startConstantDistance: {kind:"GUIValue", value: 300, start: 0, end: 20000, step: 1, desc: "Tgt Start Dist (Meters)"},
 
-    LOSTraverseConstantDistance: {
-        kind: "LOSTraverse",
-        LOS: "JetLOS", startDist: "startConstantDistance",
-    },
+    // LOSTraverseConstantDistance: {
+    //     kind: "LOSTraverse",
+    //     LOS: "JetLOS", startDist: "startConstantDistance",
+    // },
 
     LOSTraverseSelect: { kind : "traverseNodes",
         menu: {

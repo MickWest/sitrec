@@ -37,6 +37,10 @@ export class CNodeLOSTraverse extends CNodeTrack {
 
         } else {
 
+            // Traverse based on distance. This is either a single fixed distance
+            // or a start distance and an end distance
+            // or a start distance and a closing velocity in MPH (which then gives an end distance)
+
             let start = this.in.startDist.v(0)
             let end = start;
             if (this.in.endDist !== undefined)
