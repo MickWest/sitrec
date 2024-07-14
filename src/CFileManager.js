@@ -44,11 +44,13 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
             }
 
-            let textSitches = [];
-            fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-//                console.log("Local files: " + data)
-                let localfiles = JSON.parse(data) // will give an array of local files
-            })
+            // TODO: this was for scanning saved files on the user's server, but it's not working with S3
+            console.warn("TODO: Implement scanning for saved files on the server")
+//             let textSitches = [];
+//             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+// //                console.log("Local files: " + data)
+//                 let localfiles = JSON.parse(data) // will give an array of local files
+//             })
 
         }
     }
