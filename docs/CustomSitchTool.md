@@ -8,6 +8,11 @@ The custom sitch tool is designed so you can simply import data (either via the 
 
 Before reading this, it's a good idea to familiarize yourself with the [User Interface](UserInterface.md) documentation. 
 
+
+Here's an informal video demonstrating many of the concepts described here:
+https://www.youtube.com/watch?v=EMjTDRKbK5U
+
+
 ## Custom Sitch Basics
 
 A Sitch is generally a recreation of a video involving a UAP (an unidentified object). As such there are some fundamental components
