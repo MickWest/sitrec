@@ -27,7 +27,7 @@ sitch = {
     startDistanceMin: 0.01,
     startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
 
-    startTime: "2012-09-19T20:50:26.970Z",
+    startTime: "2022-09-19T20:50:26.970Z",
     // default terrain covers some of the local area
     TerrainModel: {kind: "Terrain", lat: 31.5, lon: -118, zoom: 8, nTiles: 6},
     terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},

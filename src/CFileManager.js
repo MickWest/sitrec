@@ -579,6 +579,8 @@ export class CFileManager extends CManager {
         var fileExt;
         if (filename.startsWith(SITREC_SERVER + "proxy.php")) {
             fileExt = "txt"
+        } else if (filename.startsWith(SITREC_SERVER + "proxyStarlink.php")) {
+            fileExt = "txt"
         } else {
             fileExt = getFileExtension(filename);
         }

@@ -53,6 +53,8 @@ import {
     raDecToAltAz
 } from "../CelestialMath";
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
+import {SITREC_SERVER} from "../../config";
+import {DragDropHandler} from "../DragDropHandler";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -473,6 +475,10 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         guiMenus.view.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
         guiMenus.view.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
 
+        guiMenus.file.add(this,"updateStarlink").name("Update Starlink TLE For Date")
+            .onChange(function (x) {this.parent.close()})
+
+
 
         // Sun Direction will get recalculated based on data
         this.toSun = V3(0,0,1)
@@ -588,6 +594,28 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         console.log("Done with CNodeDisplayNightSky constructor")
     }
 
+    updateStarlink() {
+        // get the start time
+        const startTime = GlobalDateTimeNode.dateNow;
+        // convert to YYYY-MM-DD
+        const dateStr = startTime.toISOString().split('T')[0];
+        // get the file from the proxyStarlink URL
+        // note this is NOT a dynamic file
+        // it fixed based on the date
+        // so we don't need to rehost it
+        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr;
+
+        // TODO: remove the old starlink from the file manager.
+
+        console.log("Getting starlink from "+url)
+        const id = "starLink_"+dateStr+".tle";
+        FileManager.loadAsset(url, id).then( (data)=>{
+           // this.replaceTLE(data)
+            DragDropHandler.handleParsedFile(id, FileManager.list[id].data)
+        });
+
+    }
+
     updateVis() {
 
         this.equatorialSphereGroup.visible = this.showEquatorialGrid;
@@ -601,7 +629,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        // a guid value's .listn() only updates the gui, so we need to do it manually
+        // a guid value's .listen() only updates the gui, so we need to do it manually
         // perhaps better to flag the gui system to update it?
         this.updateVis();
     }
