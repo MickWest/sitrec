@@ -68,7 +68,7 @@ class CameraMapControls {
 	update() {
 
 		// Tru just keeping the camera up vector to local up
-		this.fixUp(true);
+		// this.fixUp(true);
 		// maintained for backwards compatibility with other Three.js controls
 	}
 
@@ -518,9 +518,10 @@ class CameraMapControls {
 			if (upAngle > 45) {
 
 				if (force) {
-					//console.log("Forcing up vector to local up")
+		//			console.log("Forcing up vector to local up")
 					this.camera.up.copy(up)
 				} else {
+		//			console.log("Lerping towards local up")
 					this.camera.up.lerp(up, 0.1);
 				}
 				var pointInFront = this.camera.position.clone().sub(zAxis)
