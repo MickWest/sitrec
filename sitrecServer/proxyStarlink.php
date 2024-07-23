@@ -9,11 +9,11 @@ require __DIR__ . '/../../sitrec-config/space-data-config.php';
 // $spaceDataPassword = 'somepassword';
 
 // need to ensure we are logged in first
-require __DIR__ . '/user.php';
-$userID = getUserID();
-if ($userID == "") {
-    exit("Not logged in");
-}
+//require __DIR__ . '/user.php';
+//$userID = getUserID();
+//if ($userID == "") {
+//    exit("Not logged in");
+//}
 
 if (!isset($cache_base_path)) {
     $cache_base_path = "../../sitrec-cache";
