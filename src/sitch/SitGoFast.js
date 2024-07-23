@@ -113,6 +113,16 @@ export var SitGoFast = {
 
     include_JetLabels: true,
 
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 1 , // so we can see the ocean
+        IRAmbientIntensity: 1.0,
+        sunIntensity: 0.7,
+        sunScattering: 0.6,
+        ambientOnly: false,
+
+    },
+
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")
         const jetNode = NodeMan.get("JetLOS")

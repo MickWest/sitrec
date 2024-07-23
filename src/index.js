@@ -327,7 +327,7 @@ async function initializeOnce() {
     SitchMan.iterate((key, sitch) =>{
         if (sitch.hidden !== true && sitch.menuName !== undefined ) {
 
-            if (isLocal && sitch.isSitKML)
+            if (isLocal && sitch.include_kml)
                 sitch.menuName = sitch.menuName + " (KML)"
 
             unsortedSitches[sitch.menuName] = key;

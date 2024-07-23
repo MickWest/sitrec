@@ -78,7 +78,7 @@ const GimbalDefaults = {
     },
 
     mainCamera: {},
-    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#404040' },
+    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#202020' },
 
     videoFile: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4",
     videoView: {left: 0.8250, top: 0.6666, width: -1, height: 0.3333,background:[1,0,0,0]},
@@ -99,6 +99,15 @@ const GimbalDefaults = {
         "Traverse Path (UFO)": "LOSTraverseSelect"
     },
 
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.35 , // so we can see the clouds
+        IRAmbientIntensity: 1.0,
+        sunIntensity: 0.7,
+        sunScattering: 0.6,
+        ambientOnly: false,
+
+    },
 
     include_JetLabels: (gui != null),
 

@@ -670,7 +670,7 @@ export function SetupTrackLOSNodes() {
             },
             //     highlightLines:{369:makeMatLine(0xff0000,2)}, // GoFast first frame with RNG
 
-            color: 0x404040,
+            color: 0x004040,
 
 
             // // @dimebag2 lines
