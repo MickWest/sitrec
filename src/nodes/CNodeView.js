@@ -426,7 +426,7 @@ class CNodeView extends CNode {
         } else {
             if (this.canvas) {
                 if (this.canvas.width !== this.widthPx
-                    && this.canvas.height !== this.heightPx) {
+                    || this.canvas.height !== this.heightPx) {
                     // this.canvas.width = this.widthPx * window.devicePixelRatio;
                     // this.canvas.height = this.heightPx * window.devicePixelRatio;
                     this.canvas.width = this.widthPx;
