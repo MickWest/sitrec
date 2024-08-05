@@ -27,8 +27,8 @@ export const SitAA2292 = {
 
     mainCamera: {
         fov:  32,
-        startCameraPosition: [94142.74587419331,13402.067238703776,-27360.90061964375],
-        startCameraTarget: [93181.8523901133,13269.122270956876,-27117.982222227354],
+        startCameraPositionLLA:[37.039114,-102.504946,14385.043681],
+        startCameraTargetLLA:[37.035931,-102.514934,14097.502965],
     },
 
     lookCamera: {
@@ -39,7 +39,7 @@ export const SitAA2292 = {
     lookView: { left: 0.5, top: 0.0, width: 0.5, height: 1,},
     mainView:{left:0.0, top:0, width:0.50,height:1},
 //    focusTracks: {},
-    ptz: {az: -104, el: 0, fov: 60, roll:0, showGUI: true},
+    ptz: {az: -111.8, el: 9.5, fov: 13, roll:0, showGUI: true},
 
     include_TrackAndCameraLabeled: true,
 

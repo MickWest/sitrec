@@ -288,13 +288,23 @@ sitch = {
         gui:"traverse",
     },
 
+
+    // traverseColor: {
+    //     kind: "GUIColor",
+    //     value: "#FF0000",
+    //     desc: "Traverse",
+    //     gui: "color"
+    // },
+
     // display the traverse track (Track)
     traverseDisplayTrack: {
         kind: "DisplayTrack",
         track: "LOSTraverseSelectTrack",
-        color: [0,0,1],
+        color: "#FFFF00",
         width: 1,
     },
+
+  //  traverseGUI: {kind: "TrackGUI", track: "traverseDisplayTrack"},
 
     traverseSmoothedTrack: {
         kind: "SmoothedPositionTrack",
@@ -312,12 +322,12 @@ sitch = {
     },
 
 
-    traverseSmoothedDisplayTrack: {
-        kind: "DisplayTrack",
-        track: "traverseSmoothedTrack",
-        color: [0,1,0],
-        width: 1,
-    },
+    // traverseSmoothedDisplayTrack: {
+    //     kind: "DisplayTrack",
+    //     track: "traverseSmoothedTrack",
+    //     color: [0,1,0],
+    //     width: 1,
+    // },
 
 
 
@@ -369,7 +379,15 @@ sitch = {
 // Standard useful things, eventually have them more configurable
 
     mirrorVideo: { transparency: 0.0, autoClear:false},
-    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "white"},
+
+    frustumColor: {
+        kind: "GUIColor",
+        value: "#00FFFF",
+        desc: "Frustum",
+        gui: "color"
+    },
+
+    DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "frustumColor"},
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
     altitudeLabel2: {kind: "MeasureAltitude", position: "traverseSmoothedTrack"},

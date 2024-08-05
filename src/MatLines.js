@@ -21,6 +21,7 @@ function makeMatLine(color, linewidth = 2, dashed = false) {
     const hex = color.getHexString()
     var key = hex + String(linewidth) + String(dashed)
     if (!matLines[key]) {
+//        console.warn("LEAK?: Creating new line material for key: ", key)
         var lineMaterial = new LineMaterial({
             color: color,
             linewidth: linewidth,
@@ -28,8 +29,30 @@ function makeMatLine(color, linewidth = 2, dashed = false) {
         })
         lineMaterial.resolution.set(window.innerWidth, window.innerHeight)
         matLines[key] = lineMaterial
+        matLines[key].usageCount = 0;
     }
+    matLines[key].usageCount++;
     return matLines[key]
+}
+
+// dispose of it if it's no longer needed
+// note that we need to keep track of the usage count
+// as identical materials can be used in multiple places
+// and we don't want to dispose of them until they're no longer needed
+export function disposeMatLine(matLine) {
+    if(typeof window == 'undefined')
+        return null;
+
+    Object.keys(matLines).forEach(key => {
+        if (matLines[key] === matLine) {
+            matLines[key].usageCount--;
+            if (matLines[key].usageCount <= 0) {
+//                console.warn("LEAK?: Disposing line material for key: ", key)
+                matLines[key].dispose()
+                delete matLines[key]
+            }
+        }
+    })
 }
 
 function updateMatLineResolution(windowWidth, windowHeight) {

@@ -12,7 +12,7 @@ export class CNodeController extends CNode {
     }
 
     enableController(enable) {
-        console.log(`CNodeController: enableController(${enable}) called for ${this.id}`)
+//        console.log(`CNodeController: enableController(${enable}) called for ${this.id}`)
         this.enabled = enable;
     }
 

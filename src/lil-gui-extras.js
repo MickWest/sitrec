@@ -387,7 +387,7 @@ export class CGuiMenuBar {
 
         // allow for opening menus when hovering over the title
         // (if we've already got a menu open)
-        // So the intial open is done by clicking, but subsequent opens are done by hovering
+        // So the initial open is done by clicking, but subsequent opens are done by hovering
         // like with Windows and Mac menus.
 
         // Bind the method and store the reference in a property (so we can unbind cleanly)

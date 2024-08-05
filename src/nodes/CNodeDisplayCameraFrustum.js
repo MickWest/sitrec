@@ -4,9 +4,9 @@ import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {dispose} from "../threeExt";
 import {NodeMan} from "../Globals";
-import {makeMatLine} from "../MatLines";
+import {disposeMatLine, makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
-import {Ray, Raycaster, Sphere, Vector3} from "three";
+import {Color, Ray, Raycaster, Sphere, Vector3} from "three";
 import {getLocalUpVector} from "../SphericalMath";
 import {wgs84} from "../LLA-ECEF-ENU";
 import * as LAYER from "../LayerMasks";
@@ -68,9 +68,11 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.cameraNode = cameraNode;
         this.camera = this.cameraNode.camera;
 
-        this.color = v.color.v();
+        //this.color = v.color.v();
+
+        this.input("color")
+        this.lastColor = {}
         this.lineWeigh = v.lineWeight ?? 1.5;
-        this.matLine = makeMatLine(this.color, this.lineWeigh);
 
         this.units = v.units ?? "meters";
         this.step = v.step ?? 0;
@@ -85,6 +87,23 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
     }
 
     rebuild() {
+
+        // TODO: This is rather messy in the way it handles colors and line materials
+        // a CNodeGUIColor is returning a hex string, as that's what lil-gui uses
+        // but would a CNodeConstant do the same?
+        // generally color handling is a bit of a mess, and needs to be cleaned up
+        // specifically the converting between various format. Can we settle on just one type for colors?
+        // what about HDR later?
+
+        // rebuild the matLine if the color or lineWeight has changed
+        // (only color for now, but if lightWeight becomes a node, add that here)
+        const color = this.in.color.v0;
+        if (this.matLine === undefined || color !== this.lastColor) {
+            disposeMatLine(this.matLine);
+            this.matLine = makeMatLine(this.in.color.v0, this.lineWeigh);
+            this.lastColor = color;
+        }
+
 
         this.group.remove(this.line)
         dispose(this.FrustumGeometry)

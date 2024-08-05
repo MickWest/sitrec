@@ -69,7 +69,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 layers: LAYER.MASK_HELPERS,
             })
         }
-
+        
         this.recalculate()
     }
 

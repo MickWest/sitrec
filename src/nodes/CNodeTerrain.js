@@ -13,6 +13,7 @@ import {Group} from "three";
 import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 import {V3} from "../threeUtils";
+import {assert} from "../assert";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -431,7 +432,12 @@ export class CNodeTerrain extends CNode {
 
     recalculate() {
 
-        console.log("recalculting terrain")
+        if (this.maps[local.mapType].map === undefined) {
+            console.warn("CNodeTerrain: map is undefined, called recalculate while still loading - ignoring")
+            return;
+        }
+
+        console.log("recalculating terrain")
         //var radius = metersFromMiles(this.in.radiusMiles.v0)
         var radius = this.radius;
         // flattening is 0 to 1, whenre 0=no flattening, 1=flat
@@ -443,6 +449,7 @@ export class CNodeTerrain extends CNode {
 
         }
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,radius)
+        assert(this.maps[local.mapType].map !== undefined, "CNodeTerrain: map is undefined")
         this.maps[local.mapType].map.recalculateCurveMap(radius)
 
         propagateLayerMaskObject(this.maps[local.mapType].group)

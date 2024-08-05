@@ -367,7 +367,7 @@ async function initializeOnce() {
 // But if it's local, we default to the local situation, defined in config.js
     if (isLocal) {
         situation = localSituation
-        console.log("LOCAL TEST MODE: " + situation + "\n")
+        console.log("LOCAL TEST MODE: " + situation + ", isLocal = " + isLocal)
     }
 
     // note in lil-gui.esm.js I changed
@@ -398,6 +398,7 @@ async function initializeOnce() {
     var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
     var _guiTweaks = addGUIMenu("effects", "Effects" );
     addGUIMenu("lighting", "Lighting")
+    addGUIMenu("color", "Color")
 
     // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)

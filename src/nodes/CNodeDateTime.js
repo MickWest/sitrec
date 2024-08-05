@@ -292,7 +292,7 @@ export class CNodeDateTime extends CNode {
         par.frame = 0;
         const timedTrackNode = NodeMan.get(trackID);
         const startTime = timedTrackNode.getTrackStartTime();
-        console.log(">>>"+startTime)
+//        console.log(">>>"+startTime)
 
         this.setStartDateTime(new Date(startTime));
 

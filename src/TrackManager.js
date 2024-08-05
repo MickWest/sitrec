@@ -20,11 +20,12 @@ import {getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "./Spher
 import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
 import {par} from "./par";
+import {CNodeTrackGUI} from "./nodes/CNodeControllerTrackGUI";
 
 
 export const TrackManager = new CManager();
 
-class CSitrecTrack {
+class CMetaTrack {
     constructor(trackFileName, trackDataNode, trackNode) {
         this.trackNode = trackNode;
         this.trackDataNode = trackDataNode;
@@ -160,6 +161,40 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         // just use the default MISB Columns, so no columns are specified
         makeTrackFromDataFile(trackFileName, trackDataID, trackID);
 
+
+        const trackNode = NodeMan.get(trackID);
+        const trackDataNode = NodeMan.get(trackDataID);
+        // this has the original data in common MISB format, regardless of the data type
+        // actual MISB (and possibly other CSV inputs) might have a center track
+        //
+        const misb = trackDataNode.misb;
+
+
+        // try to find the flight number as a shorter name
+        // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
+        let menuText = trackFileName
+        const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
+        if (match !== null) {
+            menuText = match[1];
+        } else {
+            // check for something like N121DZ-track-EGM96.kml
+            const match = trackFileName.match(/([A-Z0-9]+)-track-/);
+            if (match !== null) {
+                menuText = match[1];
+            } else {
+                // check if this has MISB data, and if so, use the platform tail
+                if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                    menuText = misb[0][MISB.PlatformTailNumber];
+                }
+            }
+        }
+        // TODO: might need more checks for uniqueness
+
+        // Create the track object
+        const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
+        trackOb.trackID = trackID;
+        trackOb.menuText = menuText;
+
         // This track will include FOV and angles
         // but if there's a center track, we make a separate track for that
         // in data it looks like
@@ -169,14 +204,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         //         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
         // },
 
-        const trackNode = NodeMan.get(trackID);
-        const trackDataNode = NodeMan.get(trackDataID);
-        const trackOb = TrackManager.add(trackID, new CSitrecTrack(trackFileName, trackDataNode, trackNode));
-        trackOb.trackID = trackID;
-        // this has the original data in common MISB format, regardless of the data type
-        // actual MISB (and possibly other CSV inputs) might have a center track
-        //
-        const misb = trackDataNode.misb;
+
         let centerID = null;
         if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
             hasCenter = true;
@@ -232,31 +260,6 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     // switchNode.addOptionToGUIMenu("KML Track", new CNodeControllerTrackPosition({
                     //     sourceTrack: trackID,
                     // }))
-
-                    let menuText = trackFileName
-
-                    // try to find the flight number as a shorter name
-                    // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
-                    const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
-                    if (match !== null) {
-                        menuText = match[1];
-                    } else {
-                        // check for something like N121DZ-track-EGM96.kml
-                        const match = trackFileName.match(/([A-Z0-9]+)-track-/);
-                        if (match !== null) {
-                            menuText = match[1];
-                        } else {
-                            // check if this has MISB data, and if so, use the platform tail
-                            if (misb[0][MISB.PlatformTailNumber] !== undefined) {
-                                menuText = misb[0][MISB.PlatformTailNumber];
-                            }
-                        }
-                    }
-
-                    // store the menu text so we can select it later
-                    trackOb.menuText = menuText;
-
-                    // TODO: might need more checks for uniqueness
 
 
                     if (Sit.dropAsController) {
@@ -599,6 +602,11 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             }
 
         }
+
+        new CNodeTrackGUI({
+            id: trackID + "_GUI",
+            metaTrack: trackOb,
+        })
 
 
     }
