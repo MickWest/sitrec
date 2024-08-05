@@ -8,23 +8,24 @@ export class CNodeTrack extends CNodeEmptyArray {
     }
 
     exportTrackCSV() {
-        let csv = "Frame,time,Lat,Lon,Alt\n"
-        let pos = this.v(0)
-        if (pos === undefined || pos.position === undefined) {
-            console.error("No position data to export")
-            return
-        }
-        for (let f=0;f<this.frames;f++) {
-
-            pos=this.v(f)
-            const LLA = EUSToLLA(pos.position)
-
-            const time = GlobalDateTimeNode.frameToMS(f)
-
-//        csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
-            csv += f + "," + time+ ","+LLA.x + "," + LLA.y + "," + LLA.z + "\n"
-        }
-        saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
+//         let csv = "Frame,time,Lat,Lon,Alt\n"
+//         let pos = this.v(0)
+//         if (pos === undefined || pos.position === undefined) {
+//             console.error("No position data to export")
+//             return
+//         }
+//         for (let f=0;f<this.frames;f++) {
+//
+//             pos=this.v(f)
+//             const LLA = EUSToLLA(pos.position)
+//
+//             const time = GlobalDateTimeNode.frameToMS(f)
+//
+// //        csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+//             csv += f + "," + time+ ","+LLA.x + "," + LLA.y + "," + LLA.z + "\n"
+//         }
+//         saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
+        this.exportArray();
     }
 
     // calculate min and max LLA extents of the track

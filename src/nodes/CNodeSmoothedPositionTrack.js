@@ -38,20 +38,24 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
 
     exportTrackCSV() {
-        let csv = "Frame,Time,Lat,Lon,Alt\n"
-        for (let f = 0; f < this.frames; f++) {
-            let pos = this.array[f].lla
-            if (pos === undefined) {
-                // don't have an LLA, so convert from EUS
-                const posEUS = this.array[f].position
-                const posLLA = EUSToLLA(posEUS);
-                pos = [posLLA.x, posLLA.y, posLLA.z]
-            }
-            const time = GlobalDateTimeNode.frameToMS(f)
+        // let csv = "Frame,Time,Lat,Lon,Alt\n"
+        // for (let f = 0; f < this.frames; f++) {
+        //
+        //     let pos = this.array[f].lla
+        //     if (pos === undefined) {
+        //         // don't have an LLA, so convert from EUS
+        //         const posEUS = this.array[f].position
+        //         const posLLA = EUSToLLA(posEUS);
+        //         pos = [posLLA.x, posLLA.y, posLLA.z]
+        //     }
+        //     const time = GlobalDateTimeNode.frameToMS(f)
+        //
+        //     csv += f + "," + time + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+        // }
+        // saveAs(new Blob([csv]), "trackSmoothed-" + this.id + ".csv")
 
-            csv += f + "," + time + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
-        }
-        saveAs(new Blob([csv]), "trackSmoothed-" + this.id + ".csv")
+        this.exportArray();
+
     }
 
     recalculate() {

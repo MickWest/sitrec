@@ -32,12 +32,13 @@ export class CNodeTrackFromMISB extends CNodeTrack {
     }
 
     exportTrackCSV() {
-        let csv = "Frame,Lat,Lon,Alt\n"
-        for (let f=0;f<this.frames;f++) {
-            const pos = this.array[f].lla
-            csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
-        }
-        saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
+        // let csv = "Frame,Lat,Lon,Alt\n"
+        // for (let f=0;f<this.frames;f++) {
+        //     const pos = this.array[f].lla
+        //     csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+        // }
+        // saveAs(new Blob([csv]), "trackFromMISB-"+this.id+".csv")
+        this.exportArray();
     }
 
 
