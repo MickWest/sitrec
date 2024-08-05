@@ -17,7 +17,7 @@ jobs:
     if: true  # the job can be disabled from here
     strategy:
       matrix:   # run a separate jub for all combinations of the following variables
-        node-version: [22]
+        node-version: [22.4]
         # it should typically be enough to build the web app on macOS
         # but allow building it on three platforms if the workflow is triggered manually
         os: ${{ fromJSON(github.event_name != 'workflow_dispatch' && '["macos-latest"]' ||
