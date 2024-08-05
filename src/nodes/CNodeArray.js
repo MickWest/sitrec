@@ -12,7 +12,7 @@ export class CNodeArray extends CNode {
 
         this.exportable = v.exportable ?? false;
         if (this.exportable) {
-            NodeMan.addExportButton(this, "exportArray", "Export Array ")
+            NodeMan.addExportButton(this, "exportArray", "Array ")
         }
     }
 

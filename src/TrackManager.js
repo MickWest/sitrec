@@ -131,6 +131,28 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         let hasCenter = false;
 
 
+        // try to find the flight number as a shorter name
+        // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
+        let shortName = trackFileName
+        const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
+        if (match !== null) {
+            shortName = match[1];
+        } else {
+            // check for something like N121DZ-track-EGM96.kml
+            const match = trackFileName.match(/([A-Z0-9]+)-track-/);
+            if (match !== null) {
+                shortName = match[1];
+            } else {
+                console.log("Need check for MISB file name")
+                // check if this has MISB data, and if so, use the platform tail
+                // if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                //     shortName = misb[0][MISB.PlatformTailNumber];
+                // }
+            }
+        }
+        // TODO: might need more checks for uniqueness
+        console.warn("Need check for uniqueness of track names")
+
 
         // removeDuplicates will be true if it's, for example, loaded via drag-and-drop
         // where the user might drag in the same file(s) twice
@@ -146,17 +168,17 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             // NodeMan.disposeRemove("TrackDisplay_" + trackFileName);
             // NodeMan.disposeRemove("TrackSphere_" + trackFileName);
             // WILL NEED TO REMOVE CENTER TRACKS TOO
-            if (TrackManager.exists("Track_" + trackFileName)) {
-                TrackManager.disposeRemove("Track_" + trackFileName);
+            if (TrackManager.exists("Track_" + shortName)) {
+                TrackManager.disposeRemove("Track_" + shortName);
                 // note that will also call         NodeMan.pruneUnusedConstants();
                 // which will remove any unused constants (CNodeConstants with no outputs)
             }
         }
 
-        const trackDataID = "TrackData_" + trackFileName;
-        const trackID = "Track_" + trackFileName;
+        const trackDataID = "TrackData_" + shortName;
+        const trackID = "Track_" + shortName;
 
-        console.log("Creating track with trackID", trackID, "in addTracks")
+        console.log("Creating track with trackID", shortName, "in addTracks")
 
         // just use the default MISB Columns, so no columns are specified
         makeTrackFromDataFile(trackFileName, trackDataID, trackID);
@@ -169,31 +191,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         //
         const misb = trackDataNode.misb;
 
-
-        // try to find the flight number as a shorter name
-        // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
-        let menuText = trackFileName
-        const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
-        if (match !== null) {
-            menuText = match[1];
-        } else {
-            // check for something like N121DZ-track-EGM96.kml
-            const match = trackFileName.match(/([A-Z0-9]+)-track-/);
-            if (match !== null) {
-                menuText = match[1];
-            } else {
-                // check if this has MISB data, and if so, use the platform tail
-                if (misb[0][MISB.PlatformTailNumber] !== undefined) {
-                    menuText = misb[0][MISB.PlatformTailNumber];
-                }
-            }
-        }
-        // TODO: might need more checks for uniqueness
-
         // Create the track object
-        const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
+        const trackOb = TrackManager.add(trackID, new CMetaTrack(shortName, trackDataNode, trackNode));
         trackOb.trackID = trackID;
-        trackOb.menuText = menuText;
+        trackOb.menuText = shortName;
 
         // This track will include FOV and angles
         // but if there's a center track, we make a separate track for that
@@ -209,8 +210,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
             hasCenter = true;
 
-            const centerDataID = "CenterData_" + trackFileName;
-            centerID = "Center_" + trackFileName;
+            const centerDataID = "CenterData_" + shortName;
+            centerID = "Center_" + shortName;
             // const centerTrack = new CNodeTrackFromMISB({
             //     id: centerTrackID,
             //     misb: trackDataNode,
@@ -218,7 +219,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             //     exportable: true,
             // })
 
-            makeTrackFromDataFile(trackFileName, centerDataID, centerID,
+            makeTrackFromDataFile(shortName, centerDataID, centerID,
                 ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
 
             trackOb.centerDataNode = NodeMan.get(centerDataID);
@@ -265,26 +266,26 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     if (Sit.dropAsController) {
                         // backwards compatibility for SitNightSky
                         // which expects dropped tracks to create a controller
-                        switchNode.addOption(menuText, new CNodeControllerTrackPosition({
+                        switchNode.addOption(shortName, new CNodeControllerTrackPosition({
                             id: "TrackController_" + trackID,
                             sourceTrack: trackID,
                         }))
                         // and select it
                         if (trackNUmber === selectNumber) {
-                            switchNode.selectOption(menuText)
+                            switchNode.selectOption(shortName)
                         }
                     } else {
                         // drag and drop default now just adds the data source track, not a controller
                         // this is more flexible, as the user can then add a controller if they want
-                        switchNode.removeOption(menuText)
-                        switchNode.addOption(menuText, NodeMan.get(trackID))
+                        switchNode.removeOption(shortName)
+                        switchNode.addOption(shortName, NodeMan.get(trackID))
                         // and select it (Quietly, as we don't want to zoom to it yet)
                         if (trackNUmber === selectNumber) {
-                            switchNode.selectOptionQuietly(menuText)
+                            switchNode.selectOptionQuietly(shortName)
                         }
                         // if there's a center point track, make that as well
                         if (centerID !== null) {
-                            const menuTextCenter = "Center " + trackFileName;
+                            const menuTextCenter = "Center " + shortName;
                             switchNode.removeOption(menuTextCenter)
                             switchNode.addOption(menuTextCenter, NodeMan.get(centerID))
                             // if it's being added to targetTrackSwitch then select it
@@ -364,7 +365,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             }
             let anglesNode = makeLOSNodeFromTrack(trackID, data);
             trackOb.anglesNode = anglesNode;
-            let anglesID = "Angles_" + trackFileName;
+            let anglesID = "Angles_" + shortName;
             let anglesController = new CNodeControllerMatrix({
                 id: anglesID,
                 source: anglesNode,
@@ -390,9 +391,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
         trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
-            id: "TrackDisplayData_" + trackFileName,
-            track: "TrackData_" + trackFileName,
-            color: new CNodeConstant({id: "colorData_"+trackFileName, value: new Color(1, 0, 0)}),
+            id: "TrackDisplayData_" + shortName,
+            track: "TrackData_" + shortName,
+            color: new CNodeConstant({id: "colorData_"+shortName, value: new Color(1, 0, 0)}),
             width: 0.5,
             //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
@@ -401,9 +402,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         })
 
         trackOb.trackDisplayNode = new CNodeDisplayTrack({
-            id: "TrackDisplay_" + trackFileName,
-            track: "Track_" + trackFileName,
-            color: new CNodeConstant({id: "colorTrack_"+trackFileName, value: new Color(1, 0, 1)}),
+            id: "TrackDisplay_" + shortName,
+            track: "Track_" + shortName,
+            color: new CNodeConstant({id: "colorTrack_"+shortName, value: new Color(1, 0, 1)}),
             width: 3,
             //  toGround: 1, // spacing for lines to ground
             ignoreAB: true,
@@ -413,7 +414,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
      //    trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
-     //        id: trackOb.menuText+"_ob",
+     //        id: trackOb.shortName+"_ob",
      //        inputs: {
      //            track: trackOb.trackNode,
      // //           size: "sizeTargetScaled",
@@ -425,7 +426,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
      //    })
 
 
-        const sphereId = trackOb.menuText ?? trackFileName;
+        const sphereId = trackOb.menuText ?? shortName;
 
             // instead of a sphere, add a 3dObject sphere and follow controllers
         trackOb.displayTargetSphere = new CNode3DObject({
@@ -436,7 +437,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         });
 
         trackOb.displayTargetSphere.addController("TrackPosition",{
-         //   id: trackOb.menuText+"_controller",
+         //   id: trackOb.shortName+"_controller",
             sourceTrack: trackID,
         });
 
@@ -450,9 +451,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         if (centerID !== null) {
 
             trackOb.displayCenterDataNode = new CNodeDisplayTrack({
-                id: "CenterDisplayData_" + trackFileName,
-                track: "CenterData_" + trackFileName,
-                color: new CNodeConstant({id: "colorCenterData_"+trackFileName, value: new Color(0, 1, 0)}),
+                id: "CenterDisplayData_" + shortName,
+                track: "CenterData_" + shortName,
+                color: new CNodeConstant({id: "colorCenterData_"+shortName, value: new Color(0, 1, 0)}),
                 width: 0.5,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
@@ -461,9 +462,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             })
 
             trackOb.displayCenterNode = new CNodeDisplayTrack({
-                id: "CenterDisplay_" + trackFileName,
+                id: "CenterDisplay_" + shortName,
                 track: centerID,
-                color: new CNodeConstant({id: "colorCenter_"+trackFileName, value: new Color(1, 1, 0)}),
+                color: new CNodeConstant({id: "colorCenter_"+shortName, value: new Color(1, 1, 0)}),
                 width: 3,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
@@ -473,7 +474,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
             // trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
-            //     id: "CenterSphere_" + trackFileName,
+            //     id: "CenterSphere_" + shortName,
             //     inputs: {
             //         track: trackOb.centerNode,
             //         size: "sizeTargetScaled",
@@ -493,7 +494,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             const mainCamera = mainCameraNode.camera;
             const mainView = NodeMan.get("mainView");
             const bbox = trackBoundingBox(trackOb.trackDataNode);
-            console.log(`Track ${trackFileName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
+            console.log(`Track ${shortName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
             const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
             // get point on sphere
             const ground = pointOnSphereBelow(center);

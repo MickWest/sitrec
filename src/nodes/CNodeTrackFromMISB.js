@@ -27,7 +27,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
         this.exportable = exportable;
         if (this.exportable) {
-            NodeMan.addExportButton(this, "exportTrackCSV", "Export Track CSV ")
+            NodeMan.addExportButton(this, "exportTrackCSV", "CSV ")
         }
     }
 

@@ -2,10 +2,11 @@
 // or other techniques
 // optionally copy any other data (like color, fov, etc) to the new array
 import {CNodeEmptyArray} from "./CNodeArray";
-import {NodeMan} from "../Globals";
+import {GlobalDateTimeNode, NodeMan} from "../Globals";
 import {f2m, RollingAverage, SlidingAverage} from "../utils";
 import {CatmullRomCurve3} from "three";
 import {V3} from "../threeUtils";
+import {EUSToLLA} from "../LLA-ECEF-ENU";
 
 export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -31,16 +32,24 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
         this.exportable = v.exportable ?? false;
         if (this.exportable) {
-            NodeMan.addExportButton(this, "exportTrackCSV", "Export Smoothed CSV ")
+            NodeMan.addExportButton(this, "exportTrackCSV", "Smoothed CSV ")
         }
     }
 
 
     exportTrackCSV() {
-        let csv = "Frame,Lat,Lon,Alt\n"
+        let csv = "Frame,Time,Lat,Lon,Alt\n"
         for (let f = 0; f < this.frames; f++) {
-            const pos = this.array[f].lla
-            csv += f + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
+            let pos = this.array[f].lla
+            if (pos === undefined) {
+                // don't have an LLA, so convert from EUS
+                const posEUS = this.array[f].position
+                const posLLA = EUSToLLA(posEUS);
+                pos = [posLLA.x, posLLA.y, posLLA.z]
+            }
+            const time = GlobalDateTimeNode.frameToMS(f)
+
+            csv += f + "," + time + "," + (pos[0]) + "," + (pos[1]) + "," + f2m(pos[2]) + "\n"
         }
         saveAs(new Blob([csv]), "trackSmoothed-" + this.id + ".csv")
     }

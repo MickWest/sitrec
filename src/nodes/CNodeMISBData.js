@@ -35,7 +35,7 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
         this.exportable = v.exportable ?? false;
         if (this.exportable) {
-            NodeMan.addExportButton(this, "exportMISBCSV", "Export MISB CSV ")
+            NodeMan.addExportButton(this, "exportMISBCSV", "MISB ")
         }
     }
 

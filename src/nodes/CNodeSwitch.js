@@ -70,7 +70,7 @@ class CNodeSwitch extends CNode {
 
         this.exportable = v.exportable
         if (this.exportable) {
-            NodeMan.addExportButton(this, "exportTrackCSV", "Export Traverse")
+            NodeMan.addExportButton(this, "exportTrackCSV", "Traverse ")
         }
 
     }
