@@ -41,6 +41,8 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
     exportMISBCSV() {
         let csv = ""
+        // MISB is an object of name -> index pairs, so we can get the column name from the index
+        // but have to search for it.
         for (let i=0;i<MISBFields;i++) {
             let name = "unknown";
             for (let key in MISB) {
@@ -54,7 +56,14 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
         for (let f=0;f<this.misb.length;f++) {
             for (let i=0;i<MISBFields;i++) {
-                csv = csv + this.misb[f][i] + (i<MISBFields-1?",":"\n");
+                let value = this.misb[f][i];
+                // if not null and an object, then replace with "COMPLEX"
+                // (null is considered an object - a quirk of JS)
+                if (value !== null && typeof value === "object") {
+                        value = "COMPLEX"
+                }
+
+                csv = csv + value + (i<MISBFields-1?",":"\n");
             }
         }
         saveAs(new Blob([csv]), "MISB-DATA"+this.id+".csv")
