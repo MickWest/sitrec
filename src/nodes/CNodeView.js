@@ -7,7 +7,7 @@
 import {CameraMapControls} from "../js/CameraControls";
 import {CNode} from './CNode.js'
 import {CManager} from "../CManager";
-import {guiShowHideViews, NodeMan, Sit} from "../Globals";
+import {Globals, guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {isConsole} from "../../config";
 
@@ -100,6 +100,25 @@ class CNodeView extends CNode {
         this.left = v.left;
         this.width = v.width;
         this.height = v.height;
+
+        // in initial setup, move windows to not go outside screen
+        // only on MetaQuest?
+        if (Globals.onMetaQuest) {
+            let w = this.width;
+            let h = this.height;
+            if (w < 0) w = -w * h;
+            if (h < 0) h = -h * w;
+
+            if (this.left + w > 0.99) {
+                this.left = 0.99 - w;
+            }
+
+            if (this.top + h > 0.99) {
+                this.top = 0.99 - h;
+            }
+        }
+
+
         if (v.visible !== undefined)
             this.visible = v.visible;
         this.background = v.background;
@@ -130,6 +149,10 @@ class CNodeView extends CNode {
 
             this.div = document.createElement('div')
             this.div.style.position = 'absolute';
+
+            // was recommended to fix Occulus overflow resizing.
+            // does not work
+            // this.div.style.contain = "layout size";
 
             this.div.style.top = this.topPx + 'px';
             this.div.style.left = this.leftPx + 'px';

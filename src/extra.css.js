@@ -178,5 +178,12 @@ body.hide-cursor {
     cursor: none;
 }
 
+html, body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
 
 `;

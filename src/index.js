@@ -62,7 +62,7 @@ import {CSitchFactory} from "./CSitchFactory";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
-import {checkLocal, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
+import {checkLocal, isConsole, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
 
 import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";
@@ -105,6 +105,8 @@ let container;
 var fpsInterval, startTime, now, then, elapsed;
 
 let animationFrameId;
+
+checkUserAgent();
 
 resetPar();
 await initializeOnce();
@@ -187,6 +189,17 @@ setTimeout( checkForNewSitchText, 500);
 // **************************************************************************************************
 // *********** That's it for top-level code. Functions follow ***************************************
 // **************************************************************************************************
+
+function checkUserAgent() {
+    if (!isConsole) {
+        const userAgent = navigator.userAgent;
+        console.log("User Agent = " + userAgent);
+        if (userAgent.includes("OculusBrowser") || userAgent.includes("Quest")) {
+            console.log("Running on MetaQuest")
+            Globals.onMetaQuest = true;
+        }
+    }
+}
 
 function checkForTest() {
     console.log("Testing = " + testing + " toTest = " + toTest)
@@ -469,6 +482,16 @@ async function initializeOnce() {
 
 
 
+    // add a meta tag to make the page responsive
+    // suggested as a fix for the font shrinking on Meta Quest
+    // var meta = document.createElement('meta');
+    // meta.name = 'viewport';
+    // meta.content = 'width=device-width, initial-scale=1.0';
+    // document.getElementsByTagName('head')[0].appendChild(meta);
+    //
+
+
+
     // after the gui has been created it will have injected its styles into the head
     // so we can now add our own styles
 
@@ -490,6 +513,9 @@ function initRendering() {
     console.log("Window inner size = " + window.innerWidth + "," + window.innerHeight)
 
     setInfoDiv(document.createElement('div'))
+
+    //give it a name so we can find it in the DOM
+    infoDiv.id = "infoDiv";
 
     infoDiv.style.position = 'absolute';
     infoDiv.style.width = 100;

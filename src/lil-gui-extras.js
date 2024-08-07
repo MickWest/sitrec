@@ -166,6 +166,7 @@ export class CGuiMenuBar {
 
         // create a div for the menu bar
         this.menuBar = document.createElement("div");
+        this.menuBar.id = "menuBar";
         // position it at the top left
         this.menuBar.style.position = "absolute";
         this.menuBar.style.top = "0px";
@@ -189,6 +190,7 @@ export class CGuiMenuBar {
         bar.style.backgroundColor = "black";
         bar.style.borderBottom = "1px solid grey";
         bar.style.zIndex = 400; // behind the other menus
+        bar.id = "menuBarBlackBar";
 
         document.body.appendChild(bar);
         this.bar = bar;
@@ -211,6 +213,7 @@ export class CGuiMenuBar {
 //        for (let i = 0; i < this.numSlots; i++) {
           for (let i = this.numSlots-1; i >= 0; i--) {
             const div = document.createElement("div");
+            div.id = "menuBarDiv_"+i;
             div.style.width = this.divWidth + "px";
             div.style.position = "absolute";
             div.style.left = (i * this.divWidth) + "px";
