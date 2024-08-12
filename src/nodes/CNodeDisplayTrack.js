@@ -91,6 +91,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const line_points = [];
         const toGround_points = [];
         const line_colors = [];
+        assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id="+this.id)
         for (var f = 0; f < this.frames; f++) {
             let trackPoint = this.in.track.v(f)
             assert(trackPoint !== undefined, "CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f)

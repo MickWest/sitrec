@@ -32,7 +32,7 @@ $isLocal = false;
 
 if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
     // for local testing
-    $storagePath = "http://localhost/sitrec-upload/";
+    $storagePath = "https://localhost/sitrec-upload/";
     $isLocal = true;
 } else {
     // This code is specific to the metabunk.org implementation.
