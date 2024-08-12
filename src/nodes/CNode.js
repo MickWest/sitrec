@@ -77,7 +77,7 @@ class CNode {
     dispose() {
 
         // Clean up export button (if it exists)
-         FileManager.removeExportButton(object)
+         FileManager.removeExportButton(this)
 
         // clear the inputs and outputs
 

@@ -106,7 +106,7 @@ export class CFileManager extends CManager {
 
     removeExportButton(object) {
         if (this.exportFolder !== undefined) {
-            if (this.exportUI !== undefined) {
+            if (object.exportUI !== undefined) {
                 this.exportFolder.remove(object.exportUI)
             }
         }
