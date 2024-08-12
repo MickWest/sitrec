@@ -98,10 +98,15 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         // rebuild the matLine if the color or lineWeight has changed
         // (only color for now, but if lightWeight becomes a node, add that here)
         const color = this.in.color.v0;
-        if (this.matLine === undefined || color !== this.lastColor) {
+        // we assume that the color is a THREE.Color
+        // but we need a hex string for lil-gui
+        // so we convert it to a hex string
+        const hexColor = "#"+color.getHexString();
+
+        if (this.matLine === undefined || hexColor !== this.lastColor) {
             disposeMatLine(this.matLine);
-            this.matLine = makeMatLine(this.in.color.v0, this.lineWeigh);
-            this.lastColor = color;
+            this.matLine = makeMatLine(hexColor, this.lineWeigh);
+            this.lastColor = hexColor;
         }
 
 

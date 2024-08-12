@@ -38,7 +38,9 @@ export class CNodeGUIColor extends CNodeGUIConstant {
         // assert it's not a number
         assert(typeof v.value !== "number", "CNodeGUIColor: value is a number")
 
-
+        // convert any hex string to a Color object
+        // if it's already a Color object, it will be left alone
+        this.value = new Color(this.value)
 
 
         this.guiEntry = this.gui.addColor(this, "value", this.start, this.end, this.step).onChange(
@@ -63,15 +65,19 @@ export class CNodeGUIColor extends CNodeGUIConstant {
 
     // this will need a little work, as it's a color RGBA
     modSerialize() {
-        return {
+        // converts this.value from a Color to a hex string
+        const hex = "#" + this.value.getHexString()
+        var out = {
             ...super.modSerialize(),
-            value: this.value
+            value: hex
         }
+     //   console.log("CNodeGUIColor.modSerialize: ", out)
+        return out
     }
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.value = v.value
+        this.value = new Color(v.value);
         this.guiEntry.setValue(this.value)
         this.recalculateCascade()
     }
