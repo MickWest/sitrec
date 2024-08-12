@@ -23,6 +23,12 @@ export class CNodeTrackGUI extends CNode {
 
     }
 
+    dispose() {
+        this.guiFolder.destroy();
+        super.dispose()
+    }
+
+
     addDisplayTrackColor(displayNode, displayDataNode) {
         return new CNodeGUIColor({
             id: displayNode.id + "_color",

@@ -17,12 +17,9 @@ class CNodeSwitch extends CNode {
 
         this.setGUI(v, _gui)
 
+
         if (this.choice === undefined) {
-            if (Object.keys(this.inputs).length > 0) {
-                this.choice = Object.keys(this.inputs)[0]
-            } else {
-                this.choice = null; // no choices avaialable, so allow a null value until later (for an empty menu)
-            }
+            this.selectValidChoice();
         }
 
         assert(this.choice === null || this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice)
@@ -75,6 +72,14 @@ class CNodeSwitch extends CNode {
 
     }
 
+    // The choice is not set, or invalid, so set it to the first available choice
+    selectValidChoice() {
+        if (Object.keys(this.inputs).length > 0) {
+            this.choice = Object.keys(this.inputs)[0]
+        } else {
+            this.choice = null; // no choices avaialable, so allow a null value until later (for an empty menu)
+        }
+    }
 
     serialize() {
 
@@ -129,11 +134,13 @@ class CNodeSwitch extends CNode {
 
     addOption(option, value) {
         this.addInput(option, value)
+        console.log("+++ ADDING   "+option+" to   "+this.id)
         addOptionToGUIMenu(this.controller, option, option)
     }
 
     removeOption(option) {
         if (this.inputs[option] !== undefined) {
+            console.log("--- REMOVING "+option+" from "+this.id)
             this.removeInput(option)
             removeOptionFromGUIMenu(this.controller, option)
         }
@@ -208,6 +215,7 @@ class CNodeSwitch extends CNode {
     // so that input can handle the number of frames
     getValue(frameFloat) {
         if (Object.keys(this.inputs).length > 0) {
+            assert(this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice+", Switch Node id = "+this.id)
             return this.inputs[this.choice].getValue(frameFloat)
         } else {
             return null

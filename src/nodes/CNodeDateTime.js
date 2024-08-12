@@ -283,12 +283,12 @@ export class CNodeDateTime extends CNode {
     }
 
     // meu callback funtion for the sync button (deprecated)
-    syncStartTimeTrack() {
-        this.syncToTrack(this.syncTrack)
+    syncStartTimeTrack(recalculating = true) {
+        this.syncToTrack(this.syncTrack, recalculating)
     }
 
     // sync the start time to the start time of a track given by trackID
-    syncToTrack(trackID) {
+    syncToTrack(trackID, recalculating = true) {
         par.frame = 0;
         const timedTrackNode = NodeMan.get(trackID);
         const startTime = timedTrackNode.getTrackStartTime();
@@ -297,7 +297,9 @@ export class CNodeDateTime extends CNode {
         this.setStartDateTime(new Date(startTime));
 
         // rebuild anything the depends on that track
-        timedTrackNode.recalculateCascade(0);
+        if (recalculating) {
+            timedTrackNode.recalculateCascade(0);
+        }
     }
 
     setStartDateTime(dateTime) {

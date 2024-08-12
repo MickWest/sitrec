@@ -34,21 +34,33 @@ class CMetaTrack {
 
     // TODO - call this when switching levels
     dispose() {
-        NodeMan.disposeRemove(this.trackNode);
-        NodeMan.disposeRemove(this.trackDataNode);
-        NodeMan.disposeRemove(this.centerNode);
-        NodeMan.disposeRemove(this.centerDataNode);
-        NodeMan.disposeRemove(this.trackDisplayDataNode);
-        NodeMan.disposeRemove(this.trackDisplayNode);
-        NodeMan.disposeRemove(this.displayCenterDataNode);
-        NodeMan.disposeRemove(this.displayCenterNode);
-        NodeMan.disposeRemove(this.displayTargetSphere);
-        NodeMan.disposeRemove(this.displayCenterSphere);
 
-        NodeMan.disposeRemove(this.anglesNode);
-        NodeMan.disposeRemove(this.anglesController);
+        // dispose data nodes before track nodes, as the track nodes have data nodes as inputs
+        // OH, BUT THEY LINK FORWARD AND BACKWARDS.... SO WE NEED TO UNLINK THEM FIRST
+        // BUT NOT ANYTHING ELSE, AS WE STILL WANT TO CHECK FOR UNANTICIPATED LINKS
+        //NodeMan.unlink(this.trackNode, this.trackDataNode); TODO
+        //OR  - change disposeRemove so it unlinks first
+        NodeMan.unlinkDisposeRemove(this.trackDataNode);
+        NodeMan.unlinkDisposeRemove(this.trackNode);
+        NodeMan.unlinkDisposeRemove(this.centerDataNode);
+        NodeMan.unlinkDisposeRemove(this.centerNode);
+        NodeMan.unlinkDisposeRemove(this.trackDisplayDataNode);
+        NodeMan.unlinkDisposeRemove(this.trackDisplayNode);
+        NodeMan.unlinkDisposeRemove(this.displayCenterDataNode);
+        NodeMan.unlinkDisposeRemove(this.displayCenterNode);
+        NodeMan.unlinkDisposeRemove(this.displayTargetSphere);
+        NodeMan.unlinkDisposeRemove(this.displayCenterSphere);
+        NodeMan.unlinkDisposeRemove(this.gui);
+
+        NodeMan.unlinkDisposeRemove(this.anglesNode);
+        NodeMan.unlinkDisposeRemove(this.anglesController);
         removeLOSNodeColumnNodes(this.trackID);
         NodeMan.pruneUnusedConstants();
+        NodeMan.pruneUnusedControllers();
+
+
+
+
     }
 
 }
@@ -143,37 +155,46 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             if (match !== null) {
                 shortName = match[1];
             } else {
-                console.log("Need check for MISB file name")
                 // check if this has MISB data, and if so, use the platform tail
                 // if (misb[0][MISB.PlatformTailNumber] !== undefined) {
                 //     shortName = misb[0][MISB.PlatformTailNumber];
                 // }
+                // get the file from the file manager
+                const ext = getFileExtension(trackFileName)
+                // is it a misb file?
+                if (ext === "srt" || ext === "csv" || ext === "klv")
+                {
+                    const misb = FileManager.get(trackFileName)
+                    if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                        shortName = misb[0][MISB.PlatformTailNumber];
+                    } else {
+                        // can't find a tail number, so just use the filename without the extension
+                        shortName = trackFileName.replace(/\.[^/.]+$/, "");
+                    }
+
+                }
+
             }
         }
-        // TODO: might need more checks for uniqueness
-        console.warn("Need check for uniqueness of track names")
-
 
         // removeDuplicates will be true if it's, for example, loaded via drag-and-drop
         // where the user might drag in the same file(s) twice
         // so if it exists, we call disposeRemove to free any buffers, and remove it from the manager
         // so then we can just reload it again
         if (removeDuplicates) {
-            // NodeMan.disposeRemove("TrackData_" + trackFileName);
-            // NodeMan.disposeRemove("Track_" + trackFileName);
-            // NodeMan.disposeRemove("CenterData_" + trackFileName);
-            // NodeMan.disposeRemove("Center_" + trackFileName);
-            //
-            // NodeMan.disposeRemove("TrackDisplayData_" + trackFileName);
-            // NodeMan.disposeRemove("TrackDisplay_" + trackFileName);
-            // NodeMan.disposeRemove("TrackSphere_" + trackFileName);
-            // WILL NEED TO REMOVE CENTER TRACKS TOO
-            if (TrackManager.exists("Track_" + shortName)) {
-                TrackManager.disposeRemove("Track_" + shortName);
-                // note that will also call         NodeMan.pruneUnusedConstants();
-                // which will remove any unused constants (CNodeConstants with no outputs)
-            }
+            // iterate over the tracks and find if there is one that has the same filename
+            // in trackFileName
+            TrackManager.iterate((key, trackOb) => {
+                if (trackOb.trackFileName === trackFileName) {
+                    // remove it from the track manager
+                    TrackManager.disposeRemove(key);
+
+                }
+            })
         }
+
+        // TODO - check short name for duplicates or being empty
+
 
         const trackDataID = "TrackData_" + shortName;
         const trackID = "Track_" + shortName;
@@ -192,7 +213,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         const misb = trackDataNode.misb;
 
         // Create the track object
-        const trackOb = TrackManager.add(trackID, new CMetaTrack(shortName, trackDataNode, trackNode));
+        const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
         trackOb.trackID = trackID;
         trackOb.menuText = shortName;
 
@@ -219,7 +240,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             //     exportable: true,
             // })
 
-            makeTrackFromDataFile(shortName, centerDataID, centerID,
+            makeTrackFromDataFile(trackFileName, centerDataID, centerID,
                 ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
 
             trackOb.centerDataNode = NodeMan.get(centerDataID);
@@ -299,7 +320,11 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                     // add to the "Sync Time to" menu
                     GlobalDateTimeNode.addSyncToTrack(trackDataID);
-                    // and call it
+                    // and call it to sync the time
+                    // we don't need to recalculate from this track
+                    // as it's only just been loaded. ????????
+                    // Actually, we do, as the change in time will change the
+                    // position of the per-frame track segment and the display
                     GlobalDateTimeNode.syncStartTimeTrack();
 
                 }
@@ -604,7 +629,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
         }
 
-        new CNodeTrackGUI({
+        trackOb.gui = new CNodeTrackGUI({
             id: trackID + "_GUI",
             metaTrack: trackOb,
         })

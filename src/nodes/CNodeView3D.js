@@ -39,6 +39,7 @@ import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShade
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {isLocal} from "../../config";
 import {CustomManager} from "../CustomSupport";
+import { VRButton } from 'three/addons/webxr/VRButton.js';
 
 
 function linearToSrgb(color) {
@@ -122,27 +123,33 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.recalculate(); // to set the effect pass uniforms
 
 
-        // Setup WebXR
-        this.renderer.xr.enabled = true;
-        this.xrSession = null;
+        if (Globals.canVR) {
 
-        // Bind event handlers
-        this.onXRSessionStarted = this.onXRSessionStarted.bind(this);
-        this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
+            // Setup WebXR
+            this.renderer.xr.enabled = true;
+            this.xrSession = null;
 
-        // Add WebXR button
-        // const xrButton = document.createElement('button');
-        // xrButton.textContent = 'Enter VR';
-        // xrButton.addEventListener('click', this.startXRSession.bind(this));
-        // // give it a high z-index so it's on top of everything
-        // xrButton.style.zIndex = 10003;
-        // // center it in the middle of the screen
-        // xrButton.style.position = 'absolute';
-        // xrButton.style.left = '50%';
-        // xrButton.style.top = '50%';
-        // xrButton.style.transform = 'translate(-50%, -50%)';
-        // document.body.appendChild(xrButton);
+            // Bind event handlers
+            this.onXRSessionStarted = this.onXRSessionStarted.bind(this);
+            this.onXRSessionEnded = this.onXRSessionEnded.bind(this);
 
+            // Add WebXR button
+            // const xrButton = document.createElement('button');
+            // xrButton.textContent = 'Enter VR';
+            // xrButton.addEventListener('click', this.startXRSession.bind(this));
+            // // give it a high z-index so it's on top of everything
+            // xrButton.style.zIndex = 10003;
+            // // center it in the middle of the screen
+            // xrButton.style.position = 'absolute';
+            // xrButton.style.left = '50%';
+            // xrButton.style.top = '50%';
+            // xrButton.style.transform = 'translate(-50%, -50%)';
+            // document.body.appendChild(xrButton);
+
+            const xrButton = VRButton.createButton(this.renderer);
+            xrButton.style.zIndex = 10003;
+            document.body.appendChild(xrButton);
+        }
     }
 
 

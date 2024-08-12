@@ -104,6 +104,14 @@ export class CFileManager extends CManager {
 
     }
 
+    removeExportButton(object) {
+        if (this.exportFolder !== undefined) {
+            if (this.exportUI !== undefined) {
+                this.exportFolder.remove(object.exportUI)
+            }
+        }
+    }
+
     async openDirectory() {
         try {
             // This will show the directory picker dialog.

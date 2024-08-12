@@ -16,7 +16,7 @@
 // a display node might also be an input, like something you can drag with the mouse
 
 import {par} from "../par";
-import {Globals, gui, guiMenus, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {FileManager, Globals, gui, guiMenus, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 
@@ -75,6 +75,10 @@ class CNode {
 
 
     dispose() {
+
+        // Clean up export button (if it exists)
+         FileManager.removeExportButton(object)
+
         // clear the inputs and outputs
 
         // remove this from the outputs of all the input nodes

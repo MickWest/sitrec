@@ -1,5 +1,6 @@
 import {CNodeConstant} from "./nodes/CNode";
 import {assert} from "./assert.js";
+import {CNodeController} from "./nodes/CNodeController";
 
 // A CManager is a simple class that manages a list of objects
 class CManager {
@@ -41,6 +42,15 @@ class CManager {
             id = id.id;
         }
         if (this.exists(id)) {
+
+            // the node should have no inputs or outputs
+            // otherwise, it's not safe to remove it (we'll get a dangling reference)
+            const node = this.list[id].data;
+            // node inputs is an object, it should be empty
+            assert(node.inputs === undefined || Object.keys(node.inputs).length === 0, "Trying to disposeRemove a node with inputs, id="+id);
+            // node outputs is an array, it should be empty
+            assert(node.outputs === undefined || node.outputs.length === 0, "Trying to disposeRemove a node with outputs, id="+id);
+
             if (this.list[id].data.dispose !== undefined) {
                 this.list[id].data.dispose()
             }
@@ -57,7 +67,7 @@ class CManager {
                     // is it not connected to anything?
                     if (node.outputs.length === 0) {
                         // remove it
-                        console.log("Removing unused constant " + key);
+//                        console.log("Removing unused constant " + key);
                         this.disposeRemove(key)
                     }
 
@@ -65,6 +75,25 @@ class CManager {
             }
         }
     }
+
+    pruneUnusedControllers() {
+        for (let key in this.list) {
+            if (this.list.hasOwnProperty(key)) {
+                const node = this.list[key].data;
+                // is it CNodeConstant class object?
+                if (node instanceof CNodeController) {
+                    // is it not connected to anything?
+                    if (node.outputs.length === 0) {
+                        // remove it
+                        console.log("Removing unused controller " + key);
+                        this.disposeRemove(key)
+                    }
+
+                }
+            }
+        }
+    }
+
 
     // returns just the data member object (a parsed arraybuffer, type varies)
     get(id, assertIfMissing=true) {

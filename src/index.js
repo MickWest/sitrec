@@ -191,12 +191,16 @@ setTimeout( checkForNewSitchText, 500);
 // **************************************************************************************************
 
 function checkUserAgent() {
+    Globals.canVR = false;
+    Globals.inVR = false;
+
     if (!isConsole) {
         const userAgent = navigator.userAgent;
         console.log("User Agent = " + userAgent);
         if (userAgent.includes("OculusBrowser") || userAgent.includes("Quest")) {
             console.log("Running on MetaQuest")
             Globals.onMetaQuest = true;
+            Globals.canVR = true;
         }
     }
 }

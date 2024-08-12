@@ -54,6 +54,13 @@ export class CNodeArray extends CNode {
         }
     }
 
+    dispose() {
+        super.dispose()
+        if (this.exportButton !== undefined) {
+            this.exportButton.dispose();
+        }
+    }
+
     getValueFrame(frame) {
         return this.array[frame]
     }

@@ -36,6 +36,55 @@ export class CNodeManager extends CManager{
         super.disposeRemove(id);
     }
 
+    // unlink a node from all outputs, and dispose of it
+    unlinkDisposeRemove(id) {
+        if (id === undefined)
+            return;
+        const node = this.get(id);
+        // node.outputs is an array of references to other nodes
+        // so we need to move this node as an input
+        // if it's a CNodeSwitch, we might need to ensure the choice is valid (i.e. not this node)
+        for (let outputNode of node.outputs) {
+
+
+            // iterate over the inputs of the output node
+            // find which one is this node
+            // and delete the reference
+            // this might be an issue if the node is actually needed by that node
+            // so you have to be careful
+            // asserts will catch any issues
+            for (let key in outputNode.inputs) {
+                if (outputNode.inputs[key] === node) {
+                    delete(outputNode.inputs[key]);
+                }
+            }
+
+            // if the output node is a switch, and the choice is this node, then we need to select a different choice
+            // we've already removed the input, so it's safe to select a different choice
+            // that will be the first one that is valid, or null if none are valid
+            if (outputNode.constructor.name === "CNodeSwitch") {
+                if (outputNode.choice === node.id) {
+                    outputNode.selectValidChoice();
+                }
+            }
+
+
+        }
+        node.outputs = [];
+
+        // similar with the inputs, but a bit simpler
+        // just iterate over the input keys, and unlike the node from the input node's outputs
+        let inputKeys = Object.keys(node.inputs);
+        for (let key of inputKeys) {
+            node.removeInput(key);
+        }
+        // and clear the inputs
+        node.inputs={}
+
+
+
+        this.disposeRemove(node);
+    }
 
 
     // rename a node without relinking any of the outputs
