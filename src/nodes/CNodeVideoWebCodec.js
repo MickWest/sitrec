@@ -353,6 +353,9 @@ export class CVideoWebCodecData extends CVideoData {
             // use the demuxer frame count, as it's more accurate
             Sit.videoFrames = demuxer.source.totalFrames * this.videoSpeed;
 
+            // also update the fps
+            Sit.fps = demuxer.source.fps;
+
             updateSitFrames()
         });
 

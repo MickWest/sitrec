@@ -59,14 +59,37 @@ export class MP4Source {
     //console.log("MP4Source onReady info = ", info)
     var videoTrack = info.tracks.find(track => track.type === 'video');
     if (videoTrack) {
-      // var duration = videoTrack.movie_duration; // Duration in timescale units
-      // var timescale = videoTrack.movie_timescale; // Timescale (units per second)
+      var duration = videoTrack.movie_duration; // Duration in timescale units
+      var timescale = videoTrack.movie_timescale; // Timescale (units per second)
+      this.durationInSeconds = duration / timescale;
+
+      console.log('Duration: ', duration, 'Timescale: ', timescale);
+      console.log('Duration in seconds = ' + this.durationInSeconds);
+
       // var frameRate = videoTrack.video.sample_entries[0].sample_rate || calculateFrameRate(videoTrack);
       //
       // var totalFrames = (frameRate * duration) / timescale;
 
       this.totalFrames = videoTrack.nb_samples;
       console.log('Estimated Number of Frames: ', this.totalFrames);
+
+      var framesPerSecond = this.totalFrames / this.durationInSeconds;
+      // we want whole numbers like 30,60,50,25,24, or NTSC 29.97
+      // so round to nearest 0.01
+      framesPerSecond = Math.round(framesPerSecond * 100) / 100;
+
+        console.log('Frames Per Second: ', framesPerSecond);
+
+      // is it something reasonable?
+        if (framesPerSecond > 0 && framesPerSecond < 100) {
+            this.fps = framesPerSecond;
+        } else {
+            console.warn('Invalid frame rate: ', framesPerSecond, " setting to 30");
+            this.fps = 30;
+        }
+
+
+
     }
 
     if (this._info_resolver) {

@@ -186,7 +186,18 @@ export class CNodeManager extends CManager{
                 node.frames = Sit.frames;
 //                console.log("Updating node.frames on "+node.id+"from "+node.frames+" to "+Sit.frames);
             }
+
+            // there's no current use case where any node fps is different from the global fps
+            // so set them all to the global fps
+            node.fps = Sit.fps;
         })
+
+        //
+        // NodeMan.iterate((key, node) => {
+        //     console.log(" node" + node.id+" fps = " + node.fps)
+        //
+        // })
+
 
         // NodeMan.iterate((key, node) => {
         //     if (node.useSitFrames) {
