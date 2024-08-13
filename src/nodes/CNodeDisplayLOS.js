@@ -9,6 +9,7 @@ import {CNode3DGroup} from "./CNode3DGroup";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import * as LAYER from "../LayerMasks";
+import {showHider} from "../KeyBoardHandler";
 
 var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // CNodeDisplayLOS display the Lines Of Sight
@@ -45,6 +46,8 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         this.displayFineDetail = false
 
         this.recalculate()
+
+        showHider(this, "LOS "+this.in.LOS.id, true)
     }
 
     // we update the positions of the spheres every frame
