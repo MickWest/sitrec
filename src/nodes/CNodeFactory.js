@@ -135,13 +135,16 @@ export class CNodeFactory {
 
         // if the old node had an export button, then the new node should too
         // and we need to rename the old export button to the _old name
-        if (oldNode.exportBaseName !== undefined) {
-            // copy over the old node's export button definition
-            //newNode.exportBaseName = oldNode.exportBaseName;
-            //newNode.exportFunction = oldNode.exportFunction;
+        if (oldNode.exportBaseName !== undefined && oldNode.exportButtons !== undefined) {
+            /// should only have one at most
+            assert(Object.keys(oldNode.exportButtons).length <= 1, "More than one export button in old node");
             // rename the old button
-            oldNode.exportUI.name(newNode.exportBaseName + oldNode.id)
-            //newNode.exportUI = FileManager.makeExportButton(newNode, newNode.exportFunction, newNode.exportBaseName + newNode.id)
+            // for (const button in oldNode.exportButtons) {
+            //     button.name(newNode.exportBaseName + oldNode.id)
+            // }
+
+            console.error("TODO: rename export button")
+
         }
 
         return newNode;

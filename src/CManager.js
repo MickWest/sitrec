@@ -166,7 +166,7 @@ class CManager {
     }
 
     disposeAll() {
-        // delete all entries in this.rawFiles and this.list
+        // delete all entries in this.list
         Object.keys(this.list).forEach(key => {
             this.disposeRemove(key);
         });

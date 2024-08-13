@@ -22,6 +22,12 @@ import {asyncCheckLogin} from "./login";
 import {par} from "./par";
 import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
+import {
+    removeControllerFromGUIFolder,
+    removeFromGUIFolder,
+    removeGUIChildByIndex,
+    removeObjectFromGUIFolder
+} from "./lil-gui-extras";
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
@@ -97,8 +103,12 @@ export class CFileManager extends CManager {
 
 
     makeExportButton(object, functionName, name) {
-        if (this.exportFolder === undefined)
+        if (this.exportFolder === undefined) {
             this.exportFolder = this.guiFolder.addFolder("Export").perm()
+        }
+
+      //  console.error("ADDING EXPORT BUTTON FOR "+object.id+" with function "+functionName+ "and name "+name)
+
 
         return this.exportFolder.add(object, functionName).name(name);
 
@@ -106,8 +116,13 @@ export class CFileManager extends CManager {
 
     removeExportButton(object) {
         if (this.exportFolder !== undefined) {
-            if (object.exportUI !== undefined) {
-                this.exportFolder.remove(object.exportUI)
+            if (object.exportButtons !== undefined) {
+        //        console.error("Removing export button for " + object.id)
+                for (let i = 0; i < object.exportButtons.length; i++) {
+                    object.exportButtons[i].destroy();
+                }
+                object.exportButtons = undefined;
+
             }
         }
     }

@@ -118,7 +118,10 @@ export class CNodeManager extends CManager{
         //note we store the base name so we can change it if
         node.exportBaseName = base;
         node.exportFunction = exportFunction;
-        node.exportUI = FileManager.makeExportButton(node, node.exportFunction, node.exportBaseName + node.id)
+        if (node.exportButtons === undefined) {
+            node.exportButtons = [];
+        }
+        node.exportButtons.push(FileManager.makeExportButton(node, node.exportFunction, node.exportBaseName + node.id))
     }
 
 
@@ -158,7 +161,16 @@ export class CNodeManager extends CManager{
 
     disposeAll() {
         console.log("Disposing all nodes")
-        super.disposeAll();
+//        super.disposeAll();
+
+        // delete all entries in this.list
+        // for the node manager we also need to unlink them from all outputs
+        // to avoid the assertion in disposeRemove
+        // safe as we are disposing all nodes
+        Object.keys(this.list).forEach(key => {
+            this.unlinkDisposeRemove(key);
+        });
+
         // a clean slate so we reset the UniqueNodeNumber
         // this is needed for modding, as the node names must be consistent.
         // still issues if the legacy sitch changes the number or order of nodes....
