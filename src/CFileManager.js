@@ -22,12 +22,7 @@ import {asyncCheckLogin} from "./login";
 import {par} from "./par";
 import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
-import {
-    removeControllerFromGUIFolder,
-    removeFromGUIFolder,
-    removeGUIChildByIndex,
-    removeObjectFromGUIFolder
-} from "./lil-gui-extras";
+
 
 // The file manager is a singleton that manages all the files
 // it is a subclass of CManager, which is a simple class that manages a list of objects
