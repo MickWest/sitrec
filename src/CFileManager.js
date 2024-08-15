@@ -12,7 +12,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
 import {Rehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {Globals, guiMenus, NodeMan} from "./Globals";
+import {Globals, guiMenus, NodeMan, Sit} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -705,11 +705,25 @@ export function detectCSVType(csv) {
     if (csv[0][0] === "time(millisecond)" && csv[0][1] === "datetime(utc)") {
         return "Airdata"
     } else if (csv[0][0] === "DPTS" && csv[0][1] === "Security:") {
+        // The DPTS and Security: columns are the first two columns of the MISB1 CSV sample header used for misb2 test sitch
+        // not sure if this is actually common
         return "MISB1"
     }
-    // not sure we need this warning, as some sitches have custom code to use
+
+    // a MISB file will have a header row with the column names
+    // and one of them will be "Sensor Latitude"
+    // so return true if "Sensor Latitude" is in the first row
+    // also return true for "SensorLatitude" as we want to allow the headers to be the tag ids as well as the full tag names
+    if (csv[0].includes("Sensor Latitude") || csv[0].includes("SensorLatitude")) {
+        return "MISB1";
+    }
+
+
+    // only give an error warning for custom, as some sitches have custom code to use
     // specific columns of CSV files.
-//    console.warn("Unhandled CSV type detected.  Please add to detectCSVType() function.")
+    if (Sit.isCustom) {
+        console.error("Unhandled CSV type detected.  Please add to detectCSVType() function.")
+    }
     return "Unknown";
 }
 

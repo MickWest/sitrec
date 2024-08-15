@@ -12,7 +12,7 @@ import {CManager} from "./CManager";
 import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
 import {MISB} from "./MISBUtils";
 import {isNumber} from "mathjs";
-import {CNodeMISBDataTrack, makeLOSNodeFromTrack, removeLOSNodeColumnNodes} from "./nodes/CNodeMISBData";
+import {CNodeMISBDataTrack, makeLOSNodeFromTrackAngles, removeLOSNodeColumnNodes} from "./nodes/CNodeMISBData";
 import {KMLToMISB} from "./KMLUtils";
 import {CNodeTrackFromMISB} from "./nodes/CNodeTrackFromMISB";
 import {assert} from "./assert.js";
@@ -378,7 +378,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         }
 
         // same type of thing for heading angles
-        if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.SensorVerticalFieldofView])) {
+        if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.PlatformPitchAngle])) {
             hasAngles = true;
         }
 
@@ -388,7 +388,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 id: trackID+"_LOS",
                 smooth: 120, // maybe GUI this?
             }
-            let anglesNode = makeLOSNodeFromTrack(trackID, data);
+            let anglesNode = makeLOSNodeFromTrackAngles(trackID, data);
             trackOb.anglesNode = anglesNode;
             let anglesID = "Angles_" + shortName;
             let anglesController = new CNodeControllerMatrix({

@@ -17,7 +17,7 @@
 //     SensorRelativeElevationAngle: 19,
 //     SensorRelativeRollAngle: 20,
 //
-// A CNodeLOSTrackMISB will reuting per-frame data like:
+// A CNodeLOSTrackMISB will return per-frame data like:
 // {position: Vector3, heading: Vector3, matrix: Matrix4}
 // where the matrix is the orientation of the sensor
 // and position heading are the usual LOS values

@@ -114,6 +114,144 @@ export const MISB = {
     SensorRelativeAltitude: 121,
 }
 
+// array of the full names and expected data types
+
+const misbTagInfo = [
+    {}, // Tag 0
+    { name: "Checksum", units: "None", isNumber: true },  // Tag 1
+    { name: "UNIX Time Stamp", units: "Microseconds", isNumber: true },  // Tag 2
+    { name: "Mission ID", units: "String", isNumber: false },  // Tag 3
+    { name: "Platform Tail Number", units: "String", isNumber: false },  // Tag 4
+    { name: "Platform Heading Angle", units: "Degrees", isNumber: true },  // Tag 5
+    { name: "Platform Pitch Angle", units: "Degrees", isNumber: true },  // Tag 6
+    { name: "Platform Roll Angle", units: "Degrees", isNumber: true },  // Tag 7
+    { name: "Platform True Airspeed", units: "Meters/Second", isNumber: true },  // Tag 8
+    { name: "Platform Indicated Airspeed", units: "Meters/Second", isNumber: true },  // Tag 9
+    { name: "Platform Designation", units: "String", isNumber: false },  // Tag 10
+    { name: "Image Source Sensor", units: "String", isNumber: false },  // Tag 11
+    { name: "Image Coordinate System", units: "String", isNumber: false },  // Tag 12
+    { name: "Sensor Latitude", units: "Degrees", isNumber: true },  // Tag 13
+    { name: "Sensor Longitude", units: "Degrees", isNumber: true },  // Tag 14
+    { name: "Sensor True Altitude", units: "Meters", isNumber: true },  // Tag 15
+    { name: "Sensor Horizontal Field of View", units: "Degrees", isNumber: true },  // Tag 16
+    { name: "Sensor Vertical Field of View", units: "Degrees", isNumber: true },  // Tag 17
+    { name: "Sensor Relative Azimuth Angle", units: "Degrees", isNumber: true },  // Tag 18
+    { name: "Sensor Relative Elevation Angle", units: "Degrees", isNumber: true },  // Tag 19
+    { name: "Sensor Relative Roll Angle", units: "Degrees", isNumber: true },  // Tag 20
+    { name: "Slant Range", units: "Meters", isNumber: true },  // Tag 21
+    { name: "Target Width", units: "Meters", isNumber: true },  // Tag 22
+    { name: "Frame Center Latitude", units: "Degrees", isNumber: true },  // Tag 23
+    { name: "Frame Center Longitude", units: "Degrees", isNumber: true },  // Tag 24
+    { name: "Frame Center Elevation", units: "Meters", isNumber: true },  // Tag 25
+    { name: "Offset Corner Latitude Point 1", units: "Degrees", isNumber: true },  // Tag 26
+    { name: "Offset Corner Longitude Point 1", units: "Degrees", isNumber: true },  // Tag 27
+    { name: "Offset Corner Latitude Point 2", units: "Degrees", isNumber: true },  // Tag 28
+    { name: "Offset Corner Longitude Point 2", units: "Degrees", isNumber: true },  // Tag 29
+    { name: "Offset Corner Latitude Point 3", units: "Degrees", isNumber: true },  // Tag 30
+    { name: "Offset Corner Longitude Point 3", units: "Degrees", isNumber: true },  // Tag 31
+    { name: "Offset Corner Latitude Point 4", units: "Degrees", isNumber: true },  // Tag 32
+    { name: "Offset Corner Longitude Point 4", units: "Degrees", isNumber: true },  // Tag 33
+    { name: "Icing Detected", units: "None", isNumber: false },  // Tag 34
+    { name: "Wind Direction", units: "Degrees", isNumber: true },  // Tag 35
+    { name: "Wind Speed", units: "Meters/Second", isNumber: true },  // Tag 36
+    { name: "Static Pressure", units: "Millibars", isNumber: true },  // Tag 37
+    { name: "Density Altitude", units: "Meters", isNumber: true },  // Tag 38
+    { name: "Outside Air Temperature", units: "Celsius", isNumber: true },  // Tag 39
+    { name: "Target Location Latitude", units: "Degrees", isNumber: true },  // Tag 40
+    { name: "Target Location Longitude", units: "Degrees", isNumber: true },  // Tag 41
+    { name: "Target Location Elevation", units: "Meters", isNumber: true },  // Tag 42
+    { name: "Target Track Gate Width", units: "Pixels", isNumber: true },  // Tag 43
+    { name: "Target Track Gate Height", units: "Pixels", isNumber: true },  // Tag 44
+    { name: "Target Error Estimate - CE90", units: "Meters", isNumber: true },  // Tag 45
+    { name: "Target Error Estimate - LE90", units: "Meters", isNumber: true },  // Tag 46
+    { name: "Generic Flag Data 01", units: "None", isNumber: true },  // Tag 47
+    { name: "Security Local Set", units: "None", isNumber: false },  // Tag 48
+    { name: "Differential Pressure", units: "Millibars", isNumber: true },  // Tag 49
+    { name: "Platform Angle of Attack", units: "Degrees", isNumber: true },  // Tag 50
+    { name: "Platform Vertical Speed", units: "Meters/Second", isNumber: true },  // Tag 51
+    { name: "Platform Side Slip Angle", units: "Degrees", isNumber: true },  // Tag 52
+    { name: "Airfield Barometric Pressure", units: "Millibars", isNumber: true },  // Tag 53
+    { name: "Airfield Elevation", units: "Meters", isNumber: true },  // Tag 54
+    { name: "Relative Humidity", units: "Percent", isNumber: true },  // Tag 55
+    { name: "Platform Ground Speed", units: "Meters/Second", isNumber: true },  // Tag 56
+    { name: "Ground Range", units: "Meters", isNumber: true },  // Tag 57
+    { name: "Platform Fuel Remaining", units: "Kilograms", isNumber: true },  // Tag 58
+    { name: "Platform Call Sign", units: "None", isNumber: false },  // Tag 59
+    { name: "Weapon Load", units: "None", isNumber: false },  // Tag 60
+    { name: "Weapon Fired", units: "None", isNumber: false },  // Tag 61
+    { name: "Laser PRF Code", units: "None", isNumber: false },  // Tag 62
+    { name: "Sensor Field of View Name", units: "None", isNumber: false },  // Tag 63
+    { name: "Platform Magnetic Heading", units: "Degrees", isNumber: true },  // Tag 64
+    { name: "UAS LDS Status", units: "None", isNumber: false },  // Tag 65
+    { name: "Sensor Ellipsoid Height", units: "Meters", isNumber: true },  // Tag 66
+    { name: "Alternate Platform Latitude", units: "Degrees", isNumber: true },  // Tag 67
+    { name: "Alternate Platform Longitude", units: "Degrees", isNumber: true },  // Tag 68
+    { name: "Alternate Platform Altitude", units: "Meters", isNumber: true },  // Tag 69
+    { name: "Alternate Platform Name", units: "String", isNumber: false },  // Tag 70
+    { name: "Alternate Platform Heading", units: "Degrees", isNumber: true },  // Tag 71
+    { name: "Event Start Time - UTC", units: "Microseconds", isNumber: true },  // Tag 72
+    { name: "RVT Local Set", units: "None", isNumber: false },  // Tag 73
+    { name: "VMTI Data Set", units: "None", isNumber: false },  // Tag 74
+    { name: "Sensor Ellipsoid Height", units: "Meters", isNumber: true },  // Tag 75
+    { name: "Alternate Platform Ellipsoid Height", units: "Meters", isNumber: true },  // Tag 76
+    { name: "Operational Mode", units: "None", isNumber: false },  // Tag 77
+    { name: "Frame Center Height Above Ellipsoid", units: "Meters", isNumber: true },  // Tag 78
+    { name: "Sensor North Velocity", units: "Meters/Second", isNumber: true },  // Tag 79
+    { name: "Sensor East Velocity", units: "Meters/Second", isNumber: true },  // Tag 80
+    { name: "Image Horizon Pixel Pack", units: "Pack", isNumber: false },  // Tag 81
+    { name: "Corner Latitude Point 1 (Full)", units: "Degrees", isNumber: true },  // Tag 82
+    { name: "Corner Longitude Point 1 (Full)", units: "Degrees", isNumber: true },  // Tag 83
+    { name: "Corner Latitude Point 2 (Full)", units: "Degrees", isNumber: true },  // Tag 84
+    { name: "Corner Longitude Point 2 (Full)", units: "Degrees", isNumber: true },  // Tag 85
+    { name: "Corner Latitude Point 3 (Full)", units: "Degrees", isNumber: true },  // Tag 86
+    { name: "Corner Longitude Point 3 (Full)", units: "Degrees", isNumber: true },  // Tag 87
+    { name: "Corner Latitude Point 4 (Full)", units: "Degrees", isNumber: true },  // Tag 88
+    { name: "Corner Longitude Point 4 (Full)", units: "Degrees", isNumber: true },  // Tag 89
+    { name: "Platform Pitch Angle (Full)", units: "Degrees", isNumber: true },  // Tag 90
+    { name: "Platform Roll Angle (Full)", units: "Degrees", isNumber: true },  // Tag 91
+    { name: "Platform Angle of Attack (Full)", units: "Degrees", isNumber: true },  // Tag 92
+    { name: "Platform Slipslide Angle Attack (Full)", units: "Degrees", isNumber: true },  // Tag 93
+
+    { name: "MIIS Core Identifieer", units: "String", isNumber: false },  // Tag 94
+    { name: "SARMotionImageryMetadata", units: "String", isNumber: false },  // Tag 95
+    { name: "TargetWidthExtended", units: "String", isNumber: false },  // Tag 96
+    {}, // 97
+    { name: "Geo_RegistrationLocalSet", units: "String", isNumber: false },  // Tag 98
+    {}, // 99
+    {}, // 100
+    {}, // 101
+    {}, // 102
+    {}, // 103
+
+    { name: "SensorEllipsoidHeightExtended", units: "Pixels", isNumber: true },  // Tag 104
+    {}, // 105
+    {}, // 106
+    {}, // 107
+    {}, // 108
+    {}, // 109
+    {}, // 110
+    {}, // 111
+    {}, // 112
+    { name: "Altitude AGL", units: "Meters", isNumber: true },  // Tag 113
+    {}, // 114
+    {}, // 115
+    { name: "ControlCommandVerificationList", units: "String", isNumber: false },  // Tag 116
+    { name: "SensorAzimuthRate", units: "Degrees", isNumber: true },  // Tag 117
+    { name: "SensorElevationRate", units: "Degrees", isNumber: true },  // Tag 118
+    { name: "SensorRollRate", units: "Degrees", isNumber: true },  // Tag 119
+    { name: "On_boardMIStoragePercentFull", units: "Number", isNumber: true },  // Tag 120
+    { name: "SensorRelativeAltitude", units: "Meters", isNumber: true },  // Tag 121
+];
+
+
+// test that is correct by iterating over the MISB keys, then logging the key and the info name
+
+// for (const key in MISB) {
+//     console.log(key, misbTagInfo[MISB[key]].name);
+// }
+// debugger;
+
+
 
 // Some additional fields are listed here:
 // https://impleotv.com/content/misbcore/help//user-guide/st601-supported.html
@@ -142,19 +280,36 @@ export function parseMISB1CSV(csv) {
     // then parse the values for the entire column and put them in the MISBArray
     // if the column header doesn't match a MISB field, ignore it
     for (let col = 0; col < csv[0].length; col++) {
+        // remove spaces and make it lowercase
         const header = csv[0][col].replace(/\s/g, "").toLowerCase();
 
-        //const field = MISB[header];
+        // find the MISB field that matches the header
+        // this will basically be the same thing, just ignoring case and spaces
         const field = Object.keys(MISB).find(key => key.toLowerCase() === header);
+
 
         if (field !== undefined) {
 //            console.log("MISB Data "+csv[0][col] + " - row 1 = " + csv[1][col] + " - field = " + field + " - col = " + col);
 //            console.log("MISB LAST ROW = " + csv[rows-1][col]);
             // got the MISB column, so just copy the values
+            const isNumber = misbTagInfo[MISB[field]].isNumber;
             for (let row = 1; row < rows; row++) {
                 // field is the name of the MISB field, and col is the column in the csv
                 // we use MISB[field] to get the index in the MISBArray
-                MISBArray[row - 1][MISB[field]] = csv[row][col];
+                var value = csv[row][col];
+                // handle missing values
+                if (value === "null" || value === null || value === "") {
+                    // convert or leave it as the null object, so all missing fields are consistent
+                    value = null;
+                } else {
+                    // all csv values com in as string
+                    // so we need to convert them to numbers, if a number is expected.
+                    if (isNumber) {
+                        value = Number(value);
+                    }
+                }
+
+                MISBArray[row - 1][MISB[field]] = value;
             }
         } else {
             console.warn("UNHANDLED MISB DATA: " + csv[0][col]);

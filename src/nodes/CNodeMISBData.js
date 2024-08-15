@@ -218,8 +218,10 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 }
 
 
-
-export function makeLOSNodeFromTrack(trackID, data) {
+// given a track with MISB style platform and sensor Az/El/Roll
+// extract them into arrays and then use those arrays
+// to create CNodeLOSTrackMISB
+export function makeLOSNodeFromTrackAngles(trackID, data) {
     const cameraTrackAngles = NodeMan.get(trackID);
     const smooth = data.smooth ?? 0;
 

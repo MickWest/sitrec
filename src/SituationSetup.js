@@ -30,7 +30,7 @@ import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
 import {DebugSphere, testColorCube, testTextureCube} from "./threeExt";
-import {makeLOSNodeFromTrack} from "./nodes/CNodeMISBData";
+import {makeLOSNodeFromTrackAngles} from "./nodes/CNodeMISBData";
 import {CNodeLOSTargetAtDistance} from "./nodes/CNodeLOSTargetAtDistance";
 import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 import {assert} from "./assert.js";
@@ -858,7 +858,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
         case "losTrackMISB":
             SSLog();
-            node = makeLOSNodeFromTrack(data.arrayNode ?? "cameraTrack", data);
+            node = makeLOSNodeFromTrackAngles(data.arrayNode ?? "cameraTrack", data);
             break;
 
         case "labelView":
