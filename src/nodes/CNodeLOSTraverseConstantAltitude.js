@@ -5,11 +5,13 @@ import {metersFromMiles} from "../utils";
 import {Color, Ray, Sphere} from "three";
 import {CNodeTrack} from "./CNodeTrack";
 import {intersectSphere2, V3} from "../threeUtils";
+import {wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
     constructor(v) {
         super(v);
-        this.checkInputs(["LOS", "radius"])
+        this.checkInputs(["LOS"])
+        this.optionalInputs(["radius"]);
         this.checkExclusiveInputs(["altitude", "startDist"])
         this.array = []
         this.recalculate()
@@ -18,7 +20,11 @@ export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
     recalculate() {
         this.array = [];
         this.frames = this.in.LOS.frames
-        var earthRadius = metersFromMiles(this.in.radius.v0)
+        var earthRadius = wgs84.RADIUS;
+        if (this.in.radius !== undefined) {
+            console.error("Radius deprecated, generally we assume fixed wgs84 radius")
+            earthRadius = (this.in.radius.v0)
+        }
         var startRadius = earthRadius;
         var position;
         var altitudeSphere;

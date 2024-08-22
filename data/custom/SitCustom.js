@@ -280,6 +280,7 @@ sitch = {
             "Target Object": "targetTrackSwitchSmooth",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
+            "Starting Altitude": "LOSTraverseStartingAltitude",
             "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
         },

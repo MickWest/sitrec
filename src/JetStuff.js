@@ -885,6 +885,39 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             radius: "radiusMiles",
         },
     })
+
+
+    new CNodeScale("startAltitude", Units.small2M, new CNodeGUIValue({
+        id: "startAltitudeGUI",
+        value: 1000,
+        start: 0,
+        end: 100000,
+        step: 1,
+        desc: "Tgt Start Altitude " + Units.smallUnitsAbbrev,
+        color: "#FFC0C0"
+    }, guiMenus.traverse))
+
+    // // we want another node to adjust the max altitude, to make it easier to change
+    // // like for some sitches, it will be withing 5000 feet, and other 100,000 feet?
+    // new CNodeGUIValue({
+    //     id: "maxAltitudeGUI",
+    //     value: 1000,
+    //     start: 0,
+    //     end: 100000,
+    //     step: 1,
+    //     desc: "Tgt Start Altitude " + Units.smallUnitsAbbrev,
+    //     color: "#FFC0C0"
+    // }, guiMenus.traverse))
+
+
+    new CNodeLOSTraverseConstantAltitude({
+        id: "LOSTraverseStartingAltitude"+idExtra,
+        inputs: {
+            LOS: los,
+            altitude: "startAltitude",
+        },
+    })
+
 }
 
 // IMPORTANT node here

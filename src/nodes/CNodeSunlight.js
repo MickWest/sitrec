@@ -114,7 +114,8 @@ export class CNodeSunlight extends CNode {
                 } else if (NodeMan.exists("mainCamera")) {
                     camera = NodeMan.get("mainCamera").camera;
                 } else {
-                    console.error("No camera found for sunlight")
+                    // some of the tool sitches have no camera, so we just return
+//                    console.error("No camera found for sunlight")
                     return;
                 }
 

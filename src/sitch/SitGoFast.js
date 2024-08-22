@@ -347,6 +347,7 @@ export var SitGoFast = {
             "Gofast RNG values": "LOSTraverseRNG",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
+            "Starting Altitude": "LOSTraverseStartingAltitude",
             "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
         })
