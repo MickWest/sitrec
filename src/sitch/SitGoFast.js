@@ -348,7 +348,7 @@ export var SitGoFast = {
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Starting Altitude": "LOSTraverseStartingAltitude",
-            "Constant Vc (closing vel)": "LOSTraverse1",
+      //      "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
         })
 
@@ -396,7 +396,7 @@ export var SitGoFast = {
             inputs: {
                 LOS: "JetLOS2",
                 altitude:"seaLevel",
-                radius: "radiusMiles",
+            //    radius: "radiusMiles",
             }
         })
 

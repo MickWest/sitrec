@@ -66,7 +66,7 @@ export function removeMeasurementUI() {
 export class CNodeLabel3D extends CNode3DGroup {
     constructor(v) {
         super(v)
-        this.unitSize = v.unitSize ?? "big";
+        this.unitType = v.unitType ?? "big";
         this.decimals = v.decimals ?? 2;
         this.size = v.size ?? 12;
         this.sprite = new SpriteText(v.text, this.size);
@@ -233,12 +233,12 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         let text;
         if (this.altitude) {
             // TODO: verify this is correct, use the fixed camera and target
-            text = Units.withUnits(length, this.decimals, this.unitSize) + " agl";
+            text = Units.withUnits(length, this.decimals, this.unitType) + " agl";
             var alt = altitudeAboveSphere(this.A)
-            text += "\n "+Units.withUnits(alt, this.decimals, this.unitSize)+ " msl";
-            //text += "\n "+Units.withUnits(alt, this.decimals, this.unitSize)+ " msl";
+            text += "\n "+Units.withUnits(alt, this.decimals, this.unitType)+ " msl";
+            //text += "\n "+Units.withUnits(alt, this.decimals, this.unitType)+ " msl";
         } else {
-            text = Units.withUnits(length, this.decimals, this.unitSize);
+            text = Units.withUnits(length, this.decimals, this.unitType);
         }
         this.changeText(text);
 
@@ -279,7 +279,7 @@ export class CNodeMeasureAltitude extends CNodeMeasureAB {
         // should handle this better
         v.size = 24;
 
-        v.unitSize ??= "small";
+        v.unitType ??= "small";
         v.decimals ??= 0;
 
         super(v);

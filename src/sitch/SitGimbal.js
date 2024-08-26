@@ -144,7 +144,7 @@ const GimbalDefaults = {
             "Const Air Spd": "LOSTraverseConstantAirSpeed",
             "Const Air AB": "LOSTraverseStraightConstantAir",
             "Constant Altitude": "LOSTraverseConstantAltitude",
-            "Constant Vc (closing vel)": "LOSTraverse1",
+      //      "Constant Vc (closing vel)": "LOSTraverse1",
         },this.defaultTraverse)
 
         new CNodeGUIValue({id:"fleetTurnStart", value:this.fleetTurnStart,start:0,end:35,step:0.1, desc: "Fleet Turn Start"},guiTweaks)

@@ -5,16 +5,116 @@
 // 2. Imperial / Statute
 // 3. Nautical
 
-import {guiPhysics, guiTweaks} from "./Globals";
+import {guiPhysics, guiTweaks, NodeMan} from "./Globals";
 import {assert} from "./assert.js";
 
 export class CUnits {
     constructor(_units = "metric", gui) {
+
+        this.factors = {
+            nautical: {
+                big: {
+                    name: "Nautical Miles",
+                    abbrev: "NM",
+                    toM: 1852
+                },
+                small: {
+                    name: "Feet",
+                    abbrev: "ft",
+                    toM: 0.3048
+                },
+                speed: {
+                    name: "Knots",
+                    abbrev: "kt",
+                    toM: 1852 / 3600
+                },
+                verticalSpeed: {
+                    name: "Feet per minute",
+                    abbrev: "fpm",
+                    toM: 0.00508
+                }
+            },
+            imperial: {
+                big: {
+                    name: "Miles",
+                    abbrev: "mi",
+                    toM: 1609.344
+                },
+                small: {
+                    name: "Feet",
+                    abbrev: "ft",
+                    toM: 0.3048
+                },
+                speed: {
+                    name: "Miles per hour",
+                    abbrev: "mph",
+                    toM: 1609.344 / 3600
+                },
+                verticalSpeed: {
+                    name: "Feet per minute",
+                    abbrev: "fpm",
+                    toM: 0.00508
+                }
+            },
+            metric: {
+                big: {
+                    name: "Kilometers",
+                    abbrev: "km",
+                    toM: 1000
+                },
+                small: {
+                    name: "Meters",
+                    abbrev: "m",
+                    toM: 1
+                },
+                speed: {
+                    name: "Kilometers per hour",
+                    abbrev: "km/h",
+                    toM: 1000 / 3600
+                },
+                verticalSpeed: {
+                    name: "Meters per second",
+                    abbrev: "m/s",
+                    toM: 1
+                }
+            },
+            feet: {
+                big: {
+                    name: "Feet",
+                    abbrev: "ft",
+                    toM: 0.3048
+
+                },
+                small: {
+                    name: "Feet",
+                    abbrev: "ft",
+                    toM: 0.3048
+                },
+                speed: {
+                    name: "Feet per hour",
+                    abbrev: "fph",
+                    toM: 0.3048 / 3600
+                },
+                verticalSpeed: {
+                    name: "Feet per minute",
+                    abbrev: "fpm",
+                    toM: 0.3048 / 60
+                }
+            }
+        }
+
         this.units = _units.toLowerCase();
-        this.selectableUnits = {"Metric": "metric", "Imperial/US":"imperial", "Nautical":"nautical", "Feet only":"feet"};
+        this.selectableUnits = {"Nautical":"nautical", "Imperial/US":"imperial",  "Metric": "metric","Feet only":"feet"};
         this.changeUnits(this.units);
         if(guiPhysics)
-            guiPhysics.add(this, "unitsName", this.selectableUnits).name("Units").listen().onChange(x => this.changeUnits(x,false));
+            guiPhysics.add(this, "unitsName", this.selectableUnits).name("Units")
+                .listen()
+                .perm()
+                .onChange(x => this.changeUnits(x,false));
+
+
+
+
     }
 
     modSerialize() {
@@ -25,88 +125,100 @@ export class CUnits {
         this.changeUnits(v.units);
     }
 
+
+
+
+    // toM conversion factors go to meters and meters per second
+
     changeUnits(_units, updateGUI=true) {
         console.log("CUnits: changeUnits: " + _units);
         this.units = _units.toLowerCase();
-        switch (this.units) {
-            case "nautical": // Nautical miles and feet
-                this.bigUnitsFull = "Nautical Miles";
-                this.bigUnitsAbbrev = "NM";
-                this.smallUnitsFull = "Feet"
-                this.smallUnitsAbbrev = "ft";
-                this.speedUnits = "Knots"
-                this.big2M = 1852;          // big units to meters
-                this.small2M = 0.3048       // scale small (feet) to meters 0.3048 is the EXACT international foot
-                break;
-            case "imperial": // Statute (ordinary) miles and feet
-                this.bigUnitsFull = "Miles";
-                this.bigUnitsAbbrev = "mi";
-                this.smallUnitsFull = "Feet"
-                this.smallUnitsAbbrev = "ft";
-                this.speedUnits = "mph"
-                this.big2M = 1609.344
-                this.small2M = 0.3048
-                break;
-            case "metric": // Kilometers and meters
-                this.bigUnitsFull = "Kilometers";
-                this.bigUnitsAbbrev = "km";
-                this.smallUnitsFull = "Meters"
-                this.smallUnitsAbbrev = "m";
-                this.big2M = 1000
-                this.small2M = 1
-                this.speedUnits = "km/h"
-                break;
-            case "feet": // Only feet
-                this.bigUnitsFull = "Feet";
-                this.bigUnitsAbbrev = "ft";
-                this.smallUnitsFull = "Feet"
-                this.smallUnitsAbbrev = "ft";
-                this.speedUnits = "fph"
-                this.big2M = 0.3048
-                this.small2M = 0.3048
-                break
-            default:
-                assert(0, "CUnits: unknown units: " + _units);
-        }
 
-        this.m2Big = 1 / this.big2M;
-        this.m2Small = 1 / this.small2M;
-        this.m2Speed = 3600 * this.m2Big; // m/s to big units. so 3600 m in one hour, convert 3600 m to big units
-        this.speed2M = 1 / this.m2Speed;
+        if (this.units !== this.lastUnits ) {
+            console.log("CUnits: changeUnits: to " + this.units + "from lastUnits: " + this.lastUnits);
 
-        if (updateGUI) {
-            // find the unitName from the units, setting it for the GUI
-            for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
+            // set current
+            this.big = this.factors[this.units].big;
+            this.small = this.factors[this.units].small;
+            this.speed = this.factors[this.units].speed;
+            this.verticalSpeed = this.factors[this.units].verticalSpeed;
+
+
+            // backwards compatibility, could replace these where
+            // but for now just set them to avoid major code changed
+            this.bigUnitsFull = this.big.name;
+            this.bigUnitsAbbrev = this.big.abbrev;
+            this.smallUnitsFull = this.small.name;
+            this.smallUnitsAbbrev = this.small.abbrev;
+            this.vsUnits = this.verticalSpeed.name;
+            this.speedUnits = this.speed.name;
+            this.big2M = this.big.toM;
+            this.small2M = this.small.toM;
+            this.vs2mps = this.verticalSpeed.toM;
+
+            this.m2Big = 1 / this.big2M;
+            this.m2Small = 1 / this.small2M;
+            this.m2Speed = 3600 * this.m2Big; // m/s to big units. so 3600 m in one hour, convert 3600 m to big units
+            this.speed2M = 1 / this.m2Speed;
+
+            if (this.lastUnits !== undefined) {
+                // now calculate a scaling factor from the old unitls to the new
+                // for each of the big, small, speed, and vertical speed
+                // this is used to convert old values to new values
+                const scaleFactors = {
+                    big:   this.factors[this.lastUnits].big.toM / this.big2M ,
+                    small: this.factors[this.lastUnits].small.toM / this.small2M,
+                    speed: this.factors[this.lastUnits].speed.toM / this.speed2M,
+                    verticalSpeed: this.factors[this.lastUnits].verticalSpeed.toM / this.vs2mps
+                }
+                console.log("CUnits: scaleFactors: ", scaleFactors);
+
+                // we now informany nodes that have a changeUnits method
+                // to update their values
+                NodeMan.iterate((id, node) => {
+                    if (node.changeUnits !== undefined) {
+                        node.changeUnits(this.units, scaleFactors);
+                    }
+                });
+
+
+            }
+
+            if (updateGUI) {
+                // find the unitName from the units, setting it for the GUI
+                for (let [unitName, unit] of Object.entries(this.selectableUnits)) {
 //                console.log("unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
-                if (unit.toLowerCase() === this.units) {
-                    this.unitsName = unitName;
+                    if (unit.toLowerCase() === this.units) {
+                        this.unitsName = unitName;
 //                    console.log("Found unitName: " + unitName + " unit: " + unit + " this.units: " + this.units)
-                    break;
+                        break;
+                    }
                 }
             }
+            this.lastUnits = this.units;
         }
     }
 
     // convert meters to the big units
-    big(m, decimals = 0) {
+    mToBig(m, decimals = 0) {
         return (m * this.m2Big).toFixed(decimals);
     }
 
     bigWithUnits(m, decimals = 0) {
-        return this.big(m,decimals) + " " + this.bigUnitsAbbrev;
+        return this.mToBig(m,decimals) + " " + this.bigUnitsAbbrev;
     }
 
     // convert meters to the small units
-    small(m, decimals = 0) {
+    mToSmall(m, decimals = 0) {
         return (m * this.m2Small).toFixed(decimals);
     }
 
     smallWithUnits(m, decimals = 0) {
-        return this.small(m,decimals) + " " + this.smallUnitsAbbrev;
+        return this.mToSmall(m,decimals) + " " + this.smallUnitsAbbrev;
     }
 
-    withUnits(m, decimals=0, unitSize="big") {
-        if (unitSize === "big")
+    withUnits(m, decimals=0, unitType="big") {
+        if (unitType === "big")
             return this.bigWithUnits(m, decimals);
         else
             return this.smallWithUnits(m, decimals);
@@ -118,7 +230,7 @@ export class CUnits {
         return m * this.m2Speed;
     }
 
-    convertMeters(m, unitSize="big", decimals=0) {
+    convertMeters(m, unitType="big", decimals=0) {
         switch (toUnits) {
             case "big":
                 return this.big(m);

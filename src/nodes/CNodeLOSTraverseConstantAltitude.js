@@ -11,7 +11,7 @@ export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
     constructor(v) {
         super(v);
         this.checkInputs(["LOS"])
-        this.optionalInputs(["radius"]);
+        this.optionalInputs(["radius", "verticalSpeed"])
         this.checkExclusiveInputs(["altitude", "startDist"])
         this.array = []
         this.recalculate()
@@ -30,7 +30,8 @@ export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
         var altitudeSphere;
 
         if (this.in.altitude !== undefined) {
-            altitudeSphere = new Sphere(V3(0, -earthRadius, 0), earthRadius + this.in.altitude.v0)
+            startRadius = earthRadius + this.in.altitude.v0;
+            altitudeSphere = new Sphere(V3(0, -earthRadius, 0), startRadius )
             position = this.in.LOS.v0.position.clone() // in case there's no initial intersection, default
         }
 
@@ -48,6 +49,15 @@ export class CNodeLOSTraverseConstantAltitude extends CNodeTrack {
                 startRadius = V3(0, -earthRadius, 0).sub(position).length()
                 altitudeSphere = new Sphere(V3(0, -earthRadius, 0), startRadius)
             } else {
+
+             //   if we have a vertical speed, then we increase the radius of the altitude sphere
+                if (this.in.verticalSpeed !== undefined) {
+                    let verticalSpeed = this.in.verticalSpeed.v(f)
+                    startRadius += verticalSpeed / this.fps;
+                    altitudeSphere.radius = startRadius
+                }
+
+
                 let losPosition = los.position.clone();
                 let losHeading = los.heading.clone()
                 // we have a line from losPosition, heading vector losHeading

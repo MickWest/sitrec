@@ -943,7 +943,7 @@ export class CNode3DObject extends CNode3DGroup {
                     B: BX,
                     color: "#ff8080",
                     text: "X",
-                    unitSize: "small"
+                    unitType: "small"
                 })
                 this.measureY = new CNodeMeasureAB({
                     id: this.id + "_AY",
@@ -951,7 +951,7 @@ export class CNode3DObject extends CNode3DGroup {
                     B: BY,
                     color: "#80ff80",
                     text: "X",
-                    unitSize: "small"
+                    unitType: "small"
                 })
                 this.measureZ = new CNodeMeasureAB({
                     id: this.id + "_AZ",
@@ -959,7 +959,7 @@ export class CNode3DObject extends CNode3DGroup {
                     B: BZ,
                     color: "#8080ff",
                     text: "X",
-                    unitSize: "small"
+                    unitType: "small"
                 })
             }
         }

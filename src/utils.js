@@ -801,3 +801,15 @@ export function stripComments(expression) {
 export function mebug(x) {
     infoDiv.innerHTML += x+"<br>";
 }
+
+// This function, roundIfClose, rounds the value to the nearest integer
+// only if the difference between the value and that integer is within
+// the specified epsilon (defaulted to 1e-9).
+// If the difference is greater than epsilon, it returns the original value unmodified.
+export function roundIfClose(value, epsilon = 1e-9) {
+    const roundedValue = Math.round(value);
+    if (Math.abs(value - roundedValue) < epsilon) {
+        return roundedValue;
+    }
+    return value;
+}

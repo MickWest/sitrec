@@ -343,7 +343,7 @@ sitch = {
         depth: 10,
 
         material: "lambert",
-        color: "#FFF00",
+        color: "#FFFF00",
         emissive: '#404040',
         widthSegments:20,
         heightSegments:20,

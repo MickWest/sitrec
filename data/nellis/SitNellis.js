@@ -112,7 +112,7 @@ export const SitNellis = {
             "Constant Air Speed": "LOSTraverseConstantAirSpeed",
             "Constant Ground Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
-            "Constant Vc (closing vel)": "LOSTraverse1",
+    //        "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
             "Fixed Line": "LOSTraverseStraightLineFixed",
         },

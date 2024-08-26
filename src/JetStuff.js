@@ -731,26 +731,40 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
     // A GUI variable for the start distance - this is one of the biggest variables
     // It's the distance of the start of the traverse along the first LOS
     if (!NodeMan.exists("startDistance")) {
-        new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
-            id: "startDistanceGUI",
+        // new CNodeScale("startDistance", Units.big2M, new CNodeGUIValue({
+        //     id: "startDistanceGUI",
+        //     value: Sit.startDistance,
+        //     start: Sit.startDistanceMin,
+        //     end: Sit.startDistanceMax,
+        //     step: 0.01,
+        //     desc: "Tgt Start Dist " + Units.bigUnitsAbbrev,
+        //     color: "#FFC0C0",
+        // }, guiMenus.traverse))
+
+        // new method, we supply the units, and return the value in SI units
+        new CNodeGUIValue({
+            id: "startDistance",
             value: Sit.startDistance,
             start: Sit.startDistanceMin,
             end: Sit.startDistanceMax,
             step: 0.01,
-            desc: "Tgt Start Dist " + Units.bigUnitsAbbrev,
-            color: "#FFC0C0"
-        }, guiMenus.traverse))
+            desc: "Tgt Start Dist",
+            color: "#FFC0C0",
+            unitType: "big",
+        }, guiMenus.traverse)
+
+
     }
 
 //    console.log("+++ LOSTraverse")
-    new CNodeLOSTraverse({
-        id: "LOSTraverse1"+idExtra,
-        LOS: los,
-        startDist: "startDistance",
-        VcMPH: new CNodeGUIValue({id: "targetVCGUI"+idExtra, value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"
-        },
-            guiMenus.traverse),
-    })
+//     new CNodeLOSTraverse({
+//         id: "LOSTraverse1"+idExtra,
+//         LOS: los,
+//         startDist: "startDistance",
+//         VcMPH: new CNodeGUIValue({id: "targetVCGUI"+idExtra, value: 20, start: -500, end: 500, step: 0.01, desc: "Target Vc MPH"
+//         },
+//             guiMenus.traverse),
+//     })
 
 
     new CNodeLOSTraverse({
@@ -760,20 +774,30 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         },
     guiMenus.traverse)
 
-    // GUI variable Target Speed in Knots (scaled to m/s)
+    // // GUI variable Target Speed in Knots (scaled to m/s)
+    // if (!NodeMan.exists("speedScaled")) {
+    //     new CNodeScale("speedScaled", 1 / Units.m2Speed,
+    //         new CNodeGUIValue({
+    //             id: "targetSpeedGUI"+idExtra,
+    //             value: Sit.targetSpeed,
+    //             start: Sit.targetSpeedMin,
+    //             end: Sit.targetSpeedMax,
+    //             step: Sit.targetSpeedStep,
+    //             desc: "Target Speed " + Units.speedUnits
+    //         }, guiMenus.traverse))
+    // }
+
     if (!NodeMan.exists("speedScaled")) {
-        new CNodeScale("speedScaled", 1 / Units.m2Speed,
-            new CNodeGUIValue({
-                id: "targetSpeedGUI"+idExtra,
-                value: Sit.targetSpeed,
-                start: Sit.targetSpeedMin,
-                end: Sit.targetSpeedMax,
-                step: Sit.targetSpeedStep,
-                desc: "Target Speed " + Units.speedUnits
-            }, guiMenus.traverse))
+        new CNodeGUIValue({
+            id: "speedScaled",
+            value: Sit.targetSpeed,
+            start: Sit.targetSpeedMin,
+            end: Sit.targetSpeedMax,
+            step: Sit.targetSpeedStep,
+            desc: "Target Speed",
+            unitType: "speed",
+        }, guiMenus.traverse)
     }
-
-
 
 
     // Traverse at constant GROUND speed (using the above)
@@ -882,20 +906,36 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         inputs: {
             LOS: los,
             startDist: "startDistance",
-            radius: "radiusMiles",
+         //   radius: "radiusMiles",
         },
     })
 
 
-    new CNodeScale("startAltitude", Units.small2M, new CNodeGUIValue({
-        id: "startAltitudeGUI",
-        value: 1000,
-        start: 0,
-        end: 100000,
-        step: 1,
-        desc: "Tgt Start Altitude " + Units.smallUnitsAbbrev,
-        color: "#FFC0C0"
-    }, guiMenus.traverse))
+    if (!NodeMan.exists("startAltitude")) {
+        new CNodeGUIValue({
+            id: "startAltitude",
+            value: 1000,
+            start: 0,
+            end: 100000,
+            step: 1,
+            desc: "Tgt Start Altitude",
+            unitType: "small",
+            color: "#FFC0C0"
+        }, guiMenus.traverse)
+
+
+        new CNodeGUIValue({
+            id: "verticalSpeed",
+            value: 0,
+            start: -1000,
+            end: 1000,
+            step: 1,
+            desc: "Tgt Vert Spd",
+            unitType: "verticalSpeed",
+            color: "#FFC0C0"
+        }, guiMenus.traverse)
+    }
+
 
     // // we want another node to adjust the max altitude, to make it easier to change
     // // like for some sitches, it will be withing 5000 feet, and other 100,000 feet?
@@ -915,6 +955,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         inputs: {
             LOS: los,
             altitude: "startAltitude",
+            verticalSpeed: "verticalSpeed",
         },
     })
 
