@@ -356,7 +356,7 @@ export function update_ERROR_circle(scence, circleCenter) {
 
 export var vizRadius = 100
 var debugText = ""; // stick text in here, and it's show instead of keyboard shortcuts
-export function UpdateHUD() {
+export function UpdateHUD(text="") {
     /*
      var pitch1, pitch2, startRoll, endRoll;
 
@@ -376,17 +376,30 @@ export function UpdateHUD() {
          "Roll Range   " + rollRange.toFixed(1) + "°<br>" +
          "Pod Pitch    "    + par.podPitchPhysical.toFixed(1) + "°<br>"
  */
-    var keyInfo = ""
+    var keyInfo = "";
 
     // keyInfo += navigator.userAgent+"<br>"
     // keyInfo += navigator.platform+"<br>"
 
     if (par.showKeyboardShortcuts) {
-        keyInfo += "[F]ull Screen<br>" +
-            "[1] Z Axis Snap<br>" +
-            "[7] Y Axis Snap<br>" +
-            "[3] X Axis Snap<br>" +
-            "[9] 180° view toggle<br>"
+        keyInfo = text + "F - Full Screen<br>" +
+            "Num-1 - Z Axis Snap<br>" +
+            "Num-7 - Y Axis Snap<br>" +
+            "Num-3 - X Axis Snap<br>" +
+            "Num-9 - 180° view toggle<br>" +
+            "Num-. - Reset Camera<br>" +
+            "< - Frame Back<br>" +
+            "> - Frame Forward<br>" +
+            "Space Play/Pause<br>" +
+            "Left - Backwards<br>" +
+            "Right - Forwards<br>" +
+            "Up - Faster Backwards<br>" +
+            "Down - Faster Forwards<br>" +
+            "U - Toggle UI (menus)<br>" +
+
+            ""
+
+
         ;
     }
     if (ViewMan.list.video.data.videoPercentLoaded > 0 && ViewMan.list.video.data.videoPercentLoaded < 100) {
@@ -396,9 +409,9 @@ export function UpdateHUD() {
 
     if (par.showKeyboardShortcuts) {
 
-        Object.keys(toggles).forEach(function (key) {
-            keyInfo += toggles[key]._name + "<br>"
-        })
+        // Object.keys(toggles).forEach(function (key) {
+        //     keyInfo += toggles[key]._name + "<br>"
+        // })
     }
 
     if (debugText != "")
@@ -976,7 +989,7 @@ export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra
     let nodeMenu = new CNodeSwitch({
         id: id,
         inputs: traverseInputs2,
-        desc: "LOS Traverse " + idExtra,
+        desc: "LOS Traverse Method " + idExtra,
         default: defaultTraverse,
         exportable: exportable,
 
@@ -1014,7 +1027,7 @@ export function updateSize(force) {
         ViewMan.updateSize();
 
         ViewMan.iterate((key, data) => data.updateWH())
-        infoDiv.style.fontSize = 12 * scale + "px"
+        infoDiv.style.fontSize = 16 * scale + "px"
         updateChartSize()
         par.renderOne = true;
     }

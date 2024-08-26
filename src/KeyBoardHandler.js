@@ -284,11 +284,13 @@ export function initKeyboard() {
                 par.frame--;
                 if (par.frame < 0) par.frame = 0;
              //   UIChangedFrame();
+                par.paused = true;
                 break;
 
             case 'Period':
                 par.frame++;
                 if (par.frame > Sit.frames - 1) par.frame = Sit.frames - 1;
+                par.paused = true;
               //  UIChangedFrame();
                 break;
 

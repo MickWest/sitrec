@@ -1,9 +1,9 @@
 // Support functions for the custom sitches and mods
 
-import {FileManager, Globals, gui, guiMenus, NodeMan, Sit, Units} from "./Globals";
+import {FileManager, Globals, gui, guiMenus, guiShowHide, infoDiv, NodeMan, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {TrackManager} from "./TrackManager";
-import {isKeyHeld} from "./KeyBoardHandler";
+import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
 import {Rehoster} from "./CRehoster";
@@ -16,6 +16,7 @@ import {measurementUIVars} from "./nodes/CNodeLabels3D";
 import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
+import {UpdateHUD} from "./JetStuff";
 
 
 export class CCustomManager {
@@ -46,6 +47,14 @@ export class CCustomManager {
             this.serializeButton = theGUI.add(this, "loginAttempt").name("Export Disabled (click to log in)").setLabelColor("#FF8080");
 
         this.serializeButton.moveToFirst();
+
+        toggler('k', guiShowHide.add(par, 'showKeyboardShortcuts').listen().name("[K]eyboard Shortcuts").onChange(value => {
+            if (value) {
+                infoDiv.style.display = 'block';
+            } else
+                infoDiv.style.display = 'none';
+
+        }))
 
     }
 
@@ -415,6 +424,20 @@ export class CCustomManager {
 
 // per-frame update code for custom sitches
     update(f) {
+
+
+        UpdateHUD(""
+            +"C - Move Camera<br>"
+            +"T - Move Terrain<br>"
+            +"; - Decrease Start Time<br>"
+            +"' - Increase Start Time<br>"
+            +"[ - Decrease Start Time+<br>"
+            +"] - Increase Start Time+<br>"
+            + (Globals.onMac ? "Shift/Ctrl/Opt/Cmd - speed<br>" : "Shift/Ctrl/Alt/Win - speed<br>")
+
+
+        )
+
 
         // if the camera is following a track, then turn off the object display for that track
         // in the lookView

@@ -193,6 +193,8 @@ setTimeout( checkForNewSitchText, 500);
 function checkUserAgent() {
     Globals.canVR = false;
     Globals.inVR = false;
+    Globals.onMetaQuest = false;
+    Globals.onMac = false;
 
     if (!isConsole) {
         const userAgent = navigator.userAgent;
@@ -202,6 +204,13 @@ function checkUserAgent() {
             Globals.onMetaQuest = true;
             Globals.canVR = true;
         }
+
+        // check for Mac
+        if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) {
+            Globals.onMac = true;
+        }
+
+
     }
 }
 
@@ -530,11 +539,14 @@ function initRendering() {
     infoDiv.style.left = 20 + 'px';
     infoDiv.style.fontSize = 20 + 'px';
     infoDiv.style.display = 'none';
+    // 5 px border
+    infoDiv.style.padding = 5 + 'px';
     if (isLocal) {
         infoDiv.style.display = 'block';
         infoDiv.style.zIndex = 10002;
     }
     infoDiv.style.background="black";
+    $(infoDiv).draggable();
     document.body.appendChild(infoDiv);
 
 
@@ -740,7 +752,7 @@ function animate(newtime) {
     // requestAnimationFrame( animate );
 
     Globals.stats.begin();
-    infoDiv.innerHTML = "";
+   // infoDiv.innerHTML = "";
 
     now = newtime;
     elapsed = now - then;
