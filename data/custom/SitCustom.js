@@ -354,7 +354,7 @@ sitch = {
     }, // bank
 
 
-    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5},
+    displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5, spacing : 30, maxLines: 500},
 
 
     focusTracks:{

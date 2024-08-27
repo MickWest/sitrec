@@ -19,6 +19,10 @@ var matLineGreyThin = makeMatLine(0x404040, 0.50);
 // clipSeaLevel = flag if to stop the LOS at sea level. Default = true, currently only FLIR1 sets it to false
 // highlightLines = object keyed on frame nubmers that need a different color
 // spacing = how many frames between each LOS to display
+
+// what gets displayed is all the LOS between frame 0 and the last frame
+// unless we use A/B frames to limit the display
+
 export class CNodeDisplayLOS extends CNode3DGroup {
     constructor(v) {
         v.layers ??= LAYER.MASK_HELPERS;
@@ -31,6 +35,7 @@ export class CNodeDisplayLOS extends CNode3DGroup {
         this.highlightLines = v.highlightLines ?? {};
         this.LOSLengthMiles = v.LOSLength ?? 200;
         this.spacing = v.spacing ?? 30;
+        this.maxLines = v.maxLines ?? 1000;
 
         let color = 0x808080;
         // at this point v.color will be a node, so we need to get the value
@@ -96,11 +101,26 @@ export class CNodeDisplayLOS extends CNode3DGroup {
             dispose(item.geometry)
         })
 
+
+
+
         this.Jet_LOS3D = []
-        for (var f = 0; f < this.in.LOS.frames; f++) {
+        let spacing = this.spacing;
+        let frames = this.in.LOS.frames;
+
+        // limit the number of lines to display
+        // if we have more than maxLines, then we need to space them out
+        // maxLines default is 1000, so anything over 1000 seconds (at 30 fps) will be spaced out
+
+        const numLines = frames/spacing;
+        if (numLines > this.maxLines) {
+            spacing = Math.floor(frames/this.maxLines);
+        }
+
+        for (var f = 0; f < frames; f++) {
 
             // one per second (assume 30 fps), plus arbitary lines to highlight
-            if (this.isFineDetail(f) || f % this.spacing === 0 || this.highlightLines[f] !== undefined) {
+            if (this.isFineDetail(f) || f % spacing === 0 || this.highlightLines[f] !== undefined) {
 
                 var los = this.in.LOS.v(f)
                 var A = los.position.clone();
