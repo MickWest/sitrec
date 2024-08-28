@@ -146,7 +146,7 @@ class CameraMapControls {
 			}
 
 
-			this.fixUp()
+			//this.fixUp() // fixup after zooming
 
 		}
 
@@ -490,14 +490,14 @@ class CameraMapControls {
 				this.camera.updateMatrixWorld();
 
 				// force up vector to be local up for camera
-				this.fixUp(true);
+				this.fixUp(true); // fixup after dragging
 
 				break;
 
 
 		}
 
-		this.fixUp()
+		this.fixUp() // fixup on any mouse move
 
 		this.mouseStart.copy( this.mouseEnd );
 
