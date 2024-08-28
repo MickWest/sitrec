@@ -56,6 +56,14 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
 
+        this.elastic = v.elastic ?? false;
+        if (this.elastic) {
+            this.elasticMin = v.elasticMin ?? 10;
+            this.elasticMax = v.elasticMax ?? 1000000;
+
+            this.guiEntry.elastic(this.elasticMin, this.elasticMax)
+        }
+
         // update the desc with the units
         this.updateDesc()
 
@@ -96,6 +104,12 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         // min and max need to be changed in the gui
         this.guiEntry._min = roundIfClose(this.guiEntry._min * scale);
         this.guiEntry._max = roundIfClose(this.guiEntry._max * scale);
+
+        // elastic bounds also need to be changed
+        if (this.guiEntry._elastic) {
+            this.guiEntry._elasticMin = roundIfClose(this.guiEntry._elasticMin * scale);
+            this.guiEntry._elasticMax = roundIfClose(this.guiEntry._elasticMax * scale);
+        }
         // this.guiEntry.step *= scale;
 
         this.updateDesc()

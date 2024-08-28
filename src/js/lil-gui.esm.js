@@ -1025,7 +1025,7 @@ class NumberController extends Controller {
                 assert(!this._canWrap, "elastic and wrap are mutually exclusive");
 
                 // gone off the right, so expand the range to encompass this
-                while (value >= this._max) {
+                while (value > this._max && this._max < this._elasticMax) {
                     this._max = Math.min(this._max * 2, this._elasticMax);
                 }
 
@@ -2582,7 +2582,7 @@ class GUI {
                         }
 
                         // if it's above the current max, then expand that in steps
-                        while (value >= controller._max) {
+                        while (value > controller._max && controller._max < controller._elasticMax) {
                             controller._max = Math.min(controller._max * 2, controller._elasticMax);
                         }
                     }

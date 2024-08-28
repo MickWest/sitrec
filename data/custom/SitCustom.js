@@ -25,7 +25,7 @@ sitch = {
 
     startDistance: 1,
     startDistanceMin: 0.01,
-    startDistanceMax: 25,  // this might need to be adjusted based on the terrain per sitch
+    startDistanceMax: 1,  // this will be elastic, so not an issue
 
     startTime: "2022-09-19T20:50:26.970Z",
     // default terrain covers some of the local area
@@ -184,7 +184,7 @@ sitch = {
 
     swapTargetAndCameraTracks: {}, // NOT IMPLEMENTED
 
-    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 170, step: 0.001, desc: "vFOV",gui:"camera"},
+    fovUI: {kind: "GUIValue", value: 30, start: 0.1, end: 40, step: 0.001, elastic: true, elasticMin: 5, elasticMax: 170, desc: "vFOV",gui:"camera"},
 
     fovSwitch: {
         kind: "Switch",

@@ -764,6 +764,7 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             desc: "Tgt Start Dist",
             color: "#FFC0C0",
             unitType: "big",
+            elastic: true,
         }, guiMenus.traverse)
 
 
