@@ -4,6 +4,8 @@
 import regression from './js/regression'
 
 import {assert} from "./assert.js";
+import {Sit} from "./Globals";
+import {findStep} from "./utils";
 
 //const result = regression.polynomial([[0, 1], [32, 67], [12, 79]], {order:2});
 //const gradient = result.equation[0];
@@ -253,6 +255,7 @@ class MetaBezierCurveEditor {
         this.compareNode = p.compareNode;
 
         this.dynamicY = p.dynamicY
+        this.dynamicX = p.dynamicX
 
         this.sortedY = false;
 
@@ -567,6 +570,36 @@ class MetaBezierCurveEditor {
         this.dirty = false;
 
 
+        if (this.dynamicX) {
+            // update to match the current frame count
+            // need in/out handling eventually
+            this.max.x = Sit.frames;
+
+            if (this.compareNode) {
+                // iterate over the nodes in the compareNode array
+                // and set the frames to Sit.frames
+                this.compareNode.forEach(node => {
+                    node.frames = Sit.frames;
+                })
+            }
+
+
+            // auto the x step
+            // it's something like 200, but we want to make it a power of 10
+            // that gives at most 10 steps across the graph
+            var rangeX = this.max.x - this.min.x;
+
+            // calculate the number of spaces available
+            // for the x axis labels
+            // using the width of the graph
+            // assume about 50 pixels per label
+            var spacesAvailable = this.g.w / 50;
+
+            this.xStep = findStep(rangeX, spacesAvailable);
+            console.log("Auto X step is " + this.xStep)
+        }
+
+
         if (this.yLabel === "Turn Rate") {
 //            console.log("Update dirty Turn Rate")
         }
@@ -574,6 +607,7 @@ class MetaBezierCurveEditor {
         if (this.yLabel === "Azimuth") {
 //            console.log("Update dirty Azimuth")
         }
+
 
 
 
@@ -604,21 +638,8 @@ class MetaBezierCurveEditor {
         var ctx = this.ctx;
 
 
-//        ctx.fillStyle = "rgba(255, 255, 255, 0.0)";  // transparent white (color should not be important, just alpha = 1.0)
-//        ctx.fillStyle = "white";
-//        ctx.clearRect(0, 0, this.c.clientWidth, this.c.clientHeight);
-
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-//        ctx.fillStyle = "red";
-//        ctx.fillRect(this.D2CX(this.min.x), this.D2CY(this.min.y), this.D2CX(this.max.x)-this.D2CX(this.min.x), this.D2CY(this.max.y)-this.D2CY(this.min.y));
-
-        /*
-        old green for ground
-        ctx.fillStyle = "#c0ffc0";
-        ctx.fillRect(this.D2CX(this.min.x), this.D2CY(this.min.y), this.D2CX(this.max.x) - this.D2CX(this.min.x), this.D2CY(0) - this.D2CY(this.min.y));
-*/
 
         // X axis
         ctx.fillStyle = "black";
@@ -683,15 +704,6 @@ class MetaBezierCurveEditor {
             valueColor = "red"
         }
 
-// /// LING LINE LONEMEKMDKFMKD F
-//         ctx.beginPath();
-//         ctx.strokeStyle = "#00FF00";
-//         ctx.moveTo(this.D2CX(par.frame), this.D2CY(0));
-//         ctx.lineTo(this.D2CX(par.frame), this.D2CY(20));
-//         ctx.stroke();
-
-
-
         if (this.disable) {
             valueColor = "red"
             ctx.lineWidth = 0.25
@@ -726,16 +738,6 @@ class MetaBezierCurveEditor {
             }
         }
 
-
-        /*
-        ctx.strokeStyle = valueColor;
-        ctx.beginPath();
-        for (var y = this.min.y; y < this.max.y; y += (this.max.y-this.min.y)/100) {
-            var x = this.getX(y)
-            ctx.lineTo(this.D2CX(x), this.D2CY(y));
-        }
-        ctx.stroke();
-        */
 
         if (this.curve.ps.length > 0) {
             ctx.strokeStyle = valueColor;

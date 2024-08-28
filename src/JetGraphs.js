@@ -196,6 +196,8 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
             //       dynamicY: true,
 
             minX: 0, maxX: Sit.frames, minY: minY, maxY: maxY,
+            dynamicX: true,
+
             onChange: function () {
 
             },
@@ -378,6 +380,7 @@ export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  =
             minX: 0, maxX: Sit.frames - 1, minY: min, maxY: max,
             xLabel: "Frame", xStep: xStep, yLabel: "Target Altitude", yStep: yStep,
             xLabel2: "Alititude",
+            dynamicX: true,
         },
         inputs: {
             compare: new CNodeGraphSeries({

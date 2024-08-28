@@ -813,3 +813,43 @@ export function roundIfClose(value, epsilon = 1e-9) {
     }
     return value;
 }
+
+
+/**
+ * Finds the largest step value (power of the given base) such that the quotient of range/step is less than the base.
+ *
+ * @param {number} range - The range value to be divided.
+ * @param {number} base - The base value, which determines the step increments. Default is 10.
+ * @returns {number} - The largest step value that satisfies the condition range/step < base.
+ *
+ * @example
+ * // Example usage with base 10:
+ * let range = 350;
+ * let step = findStep(range, 10);
+ * console.log(step); // Output: 100
+ *
+ * @example
+ * // Example usage with base 2:
+ * let range = 350;
+ * let step = findStep(range, 2);
+ * console.log(step); // Output: 256
+ */
+export function findStep(range, maxSteps = 10, steps = [1,2,3,4, 5]) {
+    let step;
+    let pow = 0; // Power of 10 to multiply the step value, increment when we cycle the steps array
+    let index = 0; // Index to iterate over the steps array
+
+
+    while (1) {
+        step = steps[index] * Math.pow(10, pow);
+        if (range / step < maxSteps) {
+            break;
+        }
+        index = (index + 1) % steps.length
+        if (index === 0) {
+            pow++;
+        }
+    }
+
+    return step; // Return the largest step value that meets the criteria
+}

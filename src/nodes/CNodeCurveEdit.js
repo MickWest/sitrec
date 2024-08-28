@@ -27,6 +27,19 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
 
     }
 
+    // renderCanvas is called every frame from the viewport rendering loop
+    // in index.js
+    // the super call will handle the canvas resizing
+    // the editor.update() will redraw the graph if it's dirty
+    // It gets set dirty if:
+    // - the points are changed in the editor
+    // - the data in a compare node is changed (i.e. the compare node is recalculated)
+    // compare nodes are inputs to this node
+    // so a change to a compare node will trigger a recalculation of this node
+    // A compare node itself is a CNodeGraphSeries
+    // which has a "source" input, generally a munge node (or could be a math node)
+    // For example, see AddSpeedGraph (in JetGraphs.js), which sets up three munge nodes
+    // for ground speed, air speed, and vertical speed
     renderCanvas(frame) {
         super.renderCanvas(frame)
         this.editor.update();
@@ -84,7 +97,7 @@ export class CNodeCurveEditor extends CNode {
         this.editorView = new CNodeCurveEditorView(v)
         this.editor = this.editorView.editor
         this.editor.onChange = x => this.recalculateCascade();
-        this.recalculate() // to hook up any compare nodes
+    //    this.recalculate() // to hook up any compare nodes
 
         if (!v.noFrameLine) {
             // add a line overlay - uses an overlay so we don't have to redraw the graph
@@ -95,6 +108,12 @@ export class CNodeCurveEditor extends CNode {
             })
         }
 
+    }
+
+    recalculate() {
+        super.recalculate();
+        // no real recalculation is needed here
+        // we don't redraw as that is handled by the editorView object
     }
 
     modSerialize() {

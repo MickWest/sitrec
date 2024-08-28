@@ -1142,6 +1142,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 },
                 {
                     maxY: data.maxY ?? 90,
+                    dynamicX: true,
                 }
 
             );
@@ -1162,6 +1163,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 },
                 {
                     maxY: data.maxY ?? 30,
+                    dynamicX: true,
                 }
 
             );
