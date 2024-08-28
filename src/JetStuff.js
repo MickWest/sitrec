@@ -930,11 +930,14 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             id: "startAltitude",
             value: 1000,
             start: 0,
-            end: 100000,
+            end: 10000,
             step: 1,
             desc: "Tgt Start Altitude",
             unitType: "small",
-            color: "#FFC0C0"
+            color: "#FFC0C0",
+            elastic: true,
+            elasticMin: 1000,
+            elasticMax: 100000,
         }, guiMenus.traverse)
 
 
