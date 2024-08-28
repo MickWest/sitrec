@@ -191,7 +191,7 @@ export class CNodeDateTime extends CNode {
             this.dateTimeFolder.close();
         }
 
-        this.dateTimeFolder.add(Sit, "frames",1,200000,1).name("Sitch Frames").listen().onChange((v) => {
+        this.dateTimeFolder.add(Sit, "frames",1,2000,1).name("Sitch Frames").listen().elastic().onChange((v) => {
             par.frames = Sit.frames;
             NodeMan.updateSitFramesChanged();
             updateGUIFrames();

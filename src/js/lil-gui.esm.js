@@ -10,6 +10,8 @@
 // MICK: Note modifications by me, labled "MICK"
 // If you upgrade version, then you will probably want to carry over the modifications
 
+import {assert} from "../assert";
+
 /**
  * Base class for all controllers.
  */
@@ -98,7 +100,7 @@ class Controller {
 
         this.parent.$children.appendChild( this.domElement );
 
-        this._listenCallback = this._listenCallback.bind( this );
+//        this._listenCallback = this._listenCallback.bind( this );
 
         this.name( property );
 
@@ -382,23 +384,25 @@ class Controller {
 
     }
 
-    _listenCallback() {
-
-        this._listenCallbackID = requestAnimationFrame( this._listenCallback );
-
-        // To prevent framerate loss, make sure the value has changed before updating the display.
-        // Note: save() is used here instead of getValue() only because of ColorController. The !== operator
-        // won't work for color objects or arrays, but ColorController.save() always returns a string.
-
-        const curValue = this.save();
-
-        if ( curValue !== this._listenPrevValue ) {
-            this.updateDisplay();
-        }
-
-        this._listenPrevValue = curValue;
-
-    }
+    // _listenCallback() {
+    //
+    //     this._listenCallbackID = requestAnimationFrame( this._listenCallback );
+    //
+    //     // To prevent framerate loss, make sure the value has changed before updating the display.
+    //     // Note: save() is used here instead of getValue() only because of ColorController. The !== operator
+    //     // won't work for color objects or arrays, but ColorController.save() always returns a string.
+    //
+    //     const curValue = this.save();
+    //
+    //     if ( curValue !== this._listenPrevValue ) {
+    //
+    //
+    //         this.updateDisplay();
+    //     }
+    //
+    //     this._listenPrevValue = curValue;
+    //
+    // }
 
     /**
      * Returns `object[ property ]`.
@@ -765,9 +769,20 @@ class NumberController extends Controller {
         return this;
     }
 
+    // MICK: added wrapping and elastic sliders
+    // wrapping will wrap the value around the min/max
+    // and add (or subtract)  1 to the wrapReceiver
     wrap( wrapReceiver ) {
         this._canWrap = true;
         this._wrapReceiver = wrapReceiver;
+        return this;
+    }
+
+    // elastic will expand or contract the range if you push against the min or max
+    elastic( min = 100, max = 1000000 ) {
+        this._elastic = true;
+        this._elasticMin = min;
+        this._elasticMax = max;
         return this;
     }
 
@@ -999,7 +1014,33 @@ class NumberController extends Controller {
         const setValueFromX = ((clientX, allowWrapping=true) => {
             const rect = this.$slider.getBoundingClientRect();
             const sliderWidth = rect.right - rect.left;
-            let value = map(clientX, rect.left, rect.right, this._min, this._max);
+
+            // MICK: To support elastic sliders, we need to expand the range
+            // but the value should be calculated based on the original range
+            // when clicked
+            let value = map(clientX, rect.left, rect.right, this._minClick, this._maxClick);
+
+            // MICK: added elastic and wrapping
+            if (this._elastic) {
+                assert(!this._canWrap, "elastic and wrap are mutually exclusive");
+
+                // gone off the right, so expand the range to encompass this
+                while (value >= this._max) {
+                    this._max = Math.min(this._max * 2, this._elasticMax);
+                }
+
+                // off the left, compress the max range?
+                // (_elasticMin is the minimum of _max, not _min)
+                if (clientX < rect.left) {
+                    this._max = Math.max(this._max / 2, this._elasticMin);
+
+                    // need to reset _maxClick to the new max
+                    // so if we drag back to the right, we don't jump
+                    this._maxClick = this._max;
+                 //   value = this._min;
+                }
+
+            }
 
             if (allowWrapping && this._canWrap) {
                 if (clientX < rect.left) {
@@ -1041,6 +1082,10 @@ class NumberController extends Controller {
 
         const mouseDown = e => {
             this._setDraggingStyle( true );
+            // MICK: added minClick and maxClick to support elastic sliders
+            this._minClick = this._min;
+            this._maxClick = this._max;
+
             setValueFromX( e.clientX , false); // don't allow wrapping on initial click
             this.prevDragX = e.clientX;
             window.addEventListener( 'mousemove', mouseMove );
@@ -1068,6 +1113,7 @@ class NumberController extends Controller {
         const beginTouchDrag = e => {
             e.preventDefault();
             this._setDraggingStyle( true );
+
             setValueFromX( e.touches[ 0 ].clientX );
             testingForScroll = false;
         };
@@ -1075,6 +1121,10 @@ class NumberController extends Controller {
         const onTouchStart = e => {
 
             if ( e.touches.length > 1 ) return;
+
+            // MICK: added minClick and maxClick to support elastic sliders
+            this._minClick = this._min;
+            this._maxClick = this._max;
 
             // If we're in a scrollable container, we should wait for the first
             // touchmove to see if the user is trying to slide or scroll.
@@ -2517,7 +2567,26 @@ class GUI {
             if (controller._listening) {
                 const curValue = controller.save();
 
+
+
                 if (curValue !== controller._listenPrevValue) {
+
+                // MICK: expand the slider range AND the elastic range if we are outside them
+                    if (controller._elastic) {
+
+                        let value = curValue;
+
+                        // if it gets set above the elastic max, then expand that to match
+                        if (value > controller._elasticMax) {
+                            controller._elasticMax = value;
+                        }
+
+                        // if it's above the current max, then expand that in steps
+                        while (value >= controller._max) {
+                            controller._max = Math.min(controller._max * 2, controller._elasticMax);
+                        }
+                    }
+
                     controller._listenPrevValue = curValue;
                     controller.updateDisplay();
                  //   controller._callOnChange();
