@@ -550,7 +550,7 @@ function initRendering() {
     infoDiv.style.padding = 5 + 'px';
     if (isLocal) {
         infoDiv.style.display = 'block';
-        infoDiv.style.zIndex = 10002;
+        infoDiv.style.zIndex = 4000; // behind the gui menus
     }
     infoDiv.style.background="black";
     $(infoDiv).draggable();
