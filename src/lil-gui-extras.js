@@ -118,6 +118,20 @@ GUI.prototype.destroyChildren = function() {
 
 }
 
+// Extend the GUI prototype to add a new method
+GUI.prototype.addExternalLink = function(text, url) {
+    // Create an object to hold the button action
+    const obj = {};
+
+    // Add a method to the object that opens the link
+    obj[text] = function() {
+        window.open(url, '_blank');
+    };
+
+    // Add the button to the GUI
+    this.add(obj, text);
+};
+
 var injectedLILGUICode = false;
 
 export class CGuiMenuBar {

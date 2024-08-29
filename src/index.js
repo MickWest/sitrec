@@ -7,7 +7,7 @@ import {
     addGUIMenu,
     FileManager,
     GlobalDateTimeNode,
-    Globals,
+    Globals, guiMenus,
     guiTweaks,
     incrementMainLoopCount,
     infoDiv,
@@ -426,11 +426,18 @@ async function initializeOnce() {
     addGUIMenu("lighting", "Lighting")
     addGUIMenu("color", "Color")
 
+    addGUIMenu("help", "Help");
+    guiMenus.help.addExternalLink("Github Sitrec ReadMe", "https://github.com/MickWest/sitrec?tab=readme-ov-file#readme");
+    guiMenus.help.addExternalLink("User Interface (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/UserInterface.md");
+
+    guiMenus.help.addExternalLink("Custom Sitch Tool (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomSitchTool.md");
+    guiMenus.help.addExternalLink("Custom Models (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomModels.md");
+
+
     // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)
     setUnits(new CUnits("Nautical"));
     setFileManager(new CFileManager())
-
     Globals.menuBar.infoGUI.title(process.env.BUILD_VERSION_STRING);
 
     const unselectedText = "-Select-";

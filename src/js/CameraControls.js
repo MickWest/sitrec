@@ -19,6 +19,7 @@ import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
 import {onDocumentMouseMove} from "../mouseMoveView";
+import {isKeyHeld} from "../KeyBoardHandler";
 
 const STATE = {
 	NONE: - 1,
@@ -70,6 +71,17 @@ class CameraMapControls {
 		// Tru just keeping the camera up vector to local up
 		// this.fixUp(true);
 		// maintained for backwards compatibility with other Three.js controls
+
+		const zoomSpeed = 0.03
+
+		if (isKeyHeld("-")) {
+			this.zoomBy(zoomSpeed)
+		}
+		if (isKeyHeld("=") || isKeyHeld("+")) {
+			this.zoomBy(-zoomSpeed)
+		}
+
+
 	}
 
 
@@ -101,22 +113,31 @@ class CameraMapControls {
 
 		event.preventDefault();
 
-		const ptzControls= getPTZController(this.view.cameraNode);
+		this.zoomBy(Math.sign(event.deltaY));
+
+
+		par.renderOne = true;
+	}
+
+
+	zoomBy(delta) {
+		const ptzControls = getPTZController(this.view.cameraNode);
 
 		if (ptzControls !== undefined) {
-			ptzControls.fov += event.deltaY/10
-			if (ptzControls.fov<0.1) ptzControls.fov = 0.1;
-			if (ptzControls.fov>120) ptzControls.fov = 120;
+			ptzControls.fov += delta / 10
+			if (ptzControls.fov < 0.1) ptzControls.fov = 0.1;
+			if (ptzControls.fov > 120) ptzControls.fov = 120;
 		} else {
 
 			var target2Camera = this.camera.position.clone().sub(this.target)
 			var length = target2Camera.length()
 
-			const zoomScale = Math.pow(0.95, this.zoomSpeed);
-			if (event.deltaY < 0) {
+			console.log(delta)
+			const zoomScale = Math.pow(0.95, this.zoomSpeed * Math.abs(delta));
+			if (delta < 0) {
 				length *= zoomScale;
 
-			} else if (event.deltaY > 0) {
+			} else if (delta > 0) {
 
 				length /= zoomScale
 			}
@@ -138,7 +159,7 @@ class CameraMapControls {
 			if (Sit.useGlobe) {
 				maxDistance = this.camera.far - 2.5 * wgs84.RADIUS;
 			} else {
-				maxDistance = this.camera.far / 2 ;
+				maxDistance = this.camera.far / 2;
 			}
 			if (maxDistance > 0 && toCamera.length() > maxDistance) {
 				toCamera.normalize().multiplyScalar(maxDistance).add(this.target)
@@ -147,12 +168,9 @@ class CameraMapControls {
 
 
 			//this.fixUp() // fixup after zooming
-
 		}
-
-
-		par.renderOne = true;
 	}
+
 
 
 	updateStateFromEvent(event) {

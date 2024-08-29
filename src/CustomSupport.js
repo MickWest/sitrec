@@ -48,7 +48,7 @@ export class CCustomManager {
 
         this.serializeButton.moveToFirst();
 
-        toggler('k', guiShowHide.add(par, 'showKeyboardShortcuts').listen().name("[K]eyboard Shortcuts").onChange(value => {
+        toggler('k', guiMenus.help.add(par, 'showKeyboardShortcuts').listen().name("[K]eyboard Shortcuts").onChange(value => {
             if (value) {
                 infoDiv.style.display = 'block';
             } else
@@ -427,6 +427,7 @@ export class CCustomManager {
 
 
         UpdateHUD(""
+            +"+/- - Zoom in/out<br>"
             +"C - Move Camera<br>"
             +"T - Move Terrain<br>"
             +"; - Decrease Start Time<br>"
