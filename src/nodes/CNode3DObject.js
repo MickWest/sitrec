@@ -70,6 +70,8 @@ export const ModelFiles = {
    // "WhiteCube":            { file: 'data/models/white-cube.glb',},
    // "PinkCube":             { file: 'data/models/pink-cube.glb',},
    // "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
+    "MQ-9 (loaded)":        { file: 'data/models/MQ9.glb',},
+    "MQ-9 (clean)":         { file: 'data/models/MQ9-clean.glb',},
 
     "X-37":                 { file: 'data/models/X-37.glb',},
     "Saucer":               { file: 'data/models/saucer01a.glb',},
