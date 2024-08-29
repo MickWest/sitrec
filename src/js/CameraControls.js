@@ -72,11 +72,15 @@ class CameraMapControls {
 		// this.fixUp(true);
 		// maintained for backwards compatibility with other Three.js controls
 
+
+		// zooming with the keyboard + and - keys
 		const zoomSpeed = 0.03
 
 		if (isKeyHeld("-")) {
 			this.zoomBy(zoomSpeed)
 		}
+		// + key is actually the = key (shifted to +) on main keyboard
+		// but the + key on the numeric keypad
 		if (isKeyHeld("=") || isKeyHeld("+")) {
 			this.zoomBy(-zoomSpeed)
 		}
