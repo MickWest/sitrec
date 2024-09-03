@@ -143,37 +143,91 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
         let hasCenter = false;
 
 
+
         // try to find the flight number as a shorter name
         // For check for format like: FlightAware_DAL2158_KCHS_KBOS_20230218.kml
         let shortName = trackFileName
-        const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
-        if (match !== null) {
-            shortName = match[1];
-        } else {
-            // check for something like N121DZ-track-EGM96.kml
-            const match = trackFileName.match(/([A-Z0-9]+)-track-/);
+        let found = false;
+
+        // if it's a KML file, then we might have the flight number in the data
+        // check there first, which gives more flexibility in filenames (which might get changed by the user, or the system)
+
+        const ext = getFileExtension(trackFileName);
+        if (ext === "kml") {
+            const kml = FileManager.get(trackFileName);
+
+            // adsBX flight number will be in
+            // kml.kml.Folder.Folder.name in the format "Flightnumber track"
+            // so first check that exits, along with intermedia objects
+            // kml is NOT an array, so we need to check for the existence of the object
+            if (kml.kml !== undefined && kml.kml.Folder !== undefined && kml.kml.Folder.Folder !== undefined
+                && kml.kml.Folder.Folder.name !== undefined) {
+                const match = kml.kml.Folder.Folder.name['#text'].match(/([A-Z0-9]+) track/);
+                if (match !== null) {
+                    shortName = match[1];
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                if (kml.kml !== undefined && kml.kml.Document !== undefined && kml.kml.Document.name !== undefined) {
+                    // example: FlightAware ✈ RYR5580 15-Oct-2022 (EDI / EGPH-ALC / LEAL)
+                    // so we want the RYR5580 part
+                    const match = kml.kml.Document.name['#text'].match(/FlightAware ✈ ([A-Z0-9]+) /);
+                    if (match !== null) {
+                        shortName = match[1];
+                        found = true;
+                    }
+                }
+            }
+
+        }
+
+
+        if (!found) {
+            const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);
             if (match !== null) {
                 shortName = match[1];
             } else {
-                // check if this has MISB data, and if so, use the platform tail
-                // if (misb[0][MISB.PlatformTailNumber] !== undefined) {
-                //     shortName = misb[0][MISB.PlatformTailNumber];
-                // }
-                // get the file from the file manager
-                const ext = getFileExtension(trackFileName)
-                // is it a misb file?
-                if (ext === "srt" || ext === "csv" || ext === "klv")
-                {
-                    const misb = FileManager.get(trackFileName)
-                    if (misb[0][MISB.PlatformTailNumber] !== undefined) {
-                        shortName = misb[0][MISB.PlatformTailNumber];
+                // check for something like N121DZ-track-EGM96.kml
+                const match = trackFileName.match(/([A-Z0-9]+)-track-/);
+                if (match !== null) {
+                    shortName = match[1];
+                } else {
+                    // check if this has MISB data, and if so, use the platform tail
+                    // if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                    //     shortName = misb[0][MISB.PlatformTailNumber];
+                    // }
+                    // get the file from the file manager
+
+                    // is it a misb file?
+                    if (ext === "srt" || ext === "csv" || ext === "klv") {
+                        const misb = FileManager.get(trackFileName)
+                        if (misb[0][MISB.PlatformTailNumber] !== undefined) {
+                            shortName = misb[0][MISB.PlatformTailNumber];
+                        } else {
+                            // MISB, but can't find a tail number, so just use the filename without the extension
+                            shortName = trackFileName.replace(/\.[^/.]+$/, "");
+                        }
+
                     } else {
-                        // can't find a tail number, so just use the filename without the extension
-                        shortName = trackFileName.replace(/\.[^/.]+$/, "");
+                        // some KLM files are like
+                        // DL4113-3376e834.kml
+                        // so we just want the DL4113 part
+                        // but we need to check first to see if it:
+                        // alphanum hexnum.kml
+                        const match = trackFileName.match(/([A-Z0-9]+)-[0-9a-f]+\.kml/);
+                        if (match !== null) {
+                            shortName = match[1];
+                        } else {
+                            // not a misb file, but no filename format found
+                            // just use the filename without the extension
+                            shortName = trackFileName.replace(/\.[^/.]+$/, "");
+                        }
+
                     }
 
                 }
-
             }
         }
 

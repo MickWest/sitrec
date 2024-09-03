@@ -55,6 +55,17 @@ export class CNode3DGroup extends CNode3D {
         }
     }
 
+
+    // set the layer bit for this object to the passed value (or 1 if undefined)
+    setLayerBit(layer, value=1) {
+        if (value) {
+            this.group.layers.enable(layer);
+        } else {
+            this.group.layers.disable(layer);
+        }
+        this.propagateLayerMask()
+    }
+
     // Layer masks are on a per-object level, and don't affect child objects
     // so we need to propagate it if there's any chenge
     propagateLayerMask() {

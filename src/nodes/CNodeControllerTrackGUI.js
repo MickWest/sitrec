@@ -1,6 +1,11 @@
 import {CNodeGUIColor} from "./CNodeGUIColor";
-import {guiMenus, NodeMan} from "../Globals";
+import {guiMenus, guiShowHide, NodeMan} from "../Globals";
 import {CNode} from "./CNode";
+import {par} from "../par";
+import * as LAYERS from "../LayerMasks";
+
+
+
 
 // Common GUI Elements for a CMetaTrack
 export class CNodeTrackGUI extends CNode {
@@ -20,6 +25,21 @@ export class CNodeTrackGUI extends CNode {
         this.guiFolder = guiMenus[this.gui].addFolder(this.metaTrack.menuText).close();
 
         this.guiColor = this.addDisplayTrackColor(this.metaTrack.trackDisplayNode, this.metaTrack.trackDisplayDataNode)
+
+        this.showTrackInLook = false;
+        this.guiShowInLook = guiMenus.showhide.add(this, "showTrackInLook").listen().onChange(()=>{
+            par.renderOne=true;
+            // this.metaTrack has a trackDisplayNode and a trackDisplayDataNode and a displayTargetSphere
+            // need to set their group mask bit corresponding to VIEW.LOOK
+
+            this.metaTrack.trackDisplayNode.setLayerBit(LAYERS.LOOK, this.showTrackInLook);
+            this.metaTrack.trackDisplayDataNode.setLayerBit(LAYERS.LOOK, this.showTrackInLook);
+
+            // the sphere is the object that is always displayed in the look window
+            //this.metaTrack.displayTargetSphere.setLayerBit(LAYERS.LOOK, this.showTrackInLook);
+
+
+        }).name(this.metaTrack.menuText + " track in look view")
 
     }
 
