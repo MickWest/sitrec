@@ -173,10 +173,27 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 if (kml.kml !== undefined && kml.kml.Document !== undefined && kml.kml.Document.name !== undefined) {
                     // example: FlightAware ✈ RYR5580 15-Oct-2022 (EDI / EGPH-ALC / LEAL)
                     // so we want the RYR5580 part
-                    const match = kml.kml.Document.name['#text'].match(/FlightAware ✈ ([A-Z0-9]+) /);
+                    const name = kml.kml.Document.name['#text']
+
+                    const match = name.match(/FlightAware ✈ ([A-Z0-9]+) /);
                     if (match !== null) {
                         shortName = match[1];
                         found = true;
+                    }
+                    else {
+                        // another format is like:
+                        // "DL4113/SKW4113"
+                        // check to see if we have an alphanumeric string followed by a slash then another alphanumeric string
+                        // and use the first one if so
+                        const match = name.match(/([A-Z0-9]+)\/[A-Z0-9]+/);
+                        if (match !== null) {
+                            shortName = match[1];
+                            found = true;
+                        } else {
+                            // just use the Document name
+                            shortName = name;
+                            found = true;
+                        }
                     }
                 }
             }
