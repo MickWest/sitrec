@@ -172,8 +172,12 @@ export class CSituation {
                 await FileManager.loadAsset(assets[key], key)
             }
         }
-        if(!isConsole)
-            infoDiv.innerHTML += "done loading"
+        if(!isConsole) {
+//            infoDiv.innerHTML += "done loading"
+            infoDiv.innerHTML = "";
+            // and hide it
+            infoDiv.style.display = "none";
+        }
     }
 
     makeCameraTrack()

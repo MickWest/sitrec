@@ -98,6 +98,15 @@ export const Sit29Palms = {
 
     DisplayCameraFrustum: {radius:100000},
 
+    lighting: {
+        kind: "Lighting",
+        ambientIntensity: 0.25,
+        IRAmbientIntensity: 0.85,
+        sunIntensity: 1.2,
+        ambientOnly: false,
+
+    },
+
     nightSky: true,
     useGlobe: true,
     useDayNightGlobe: true,

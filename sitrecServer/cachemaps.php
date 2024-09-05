@@ -34,7 +34,8 @@ $acceptable_domains = [
     'c.tile.openstreetmap.org',
     'api.mapbox.com',
     'tiles.maps.eox.at',
-    's3.amazonaws.com'
+    's3.amazonaws.com',
+    'geoint.nrlssc.org',
     // Add more domains as needed
 ];
 

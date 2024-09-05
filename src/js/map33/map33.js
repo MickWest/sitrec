@@ -1,10 +1,8 @@
  import {getPixels} from '../get-pixels-mick.js'
-import {Mesh, MeshNormalMaterial, PlaneGeometry, SRGBColorSpace, Vector3,} from "three";
+import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_ROOT, SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
-import {DebugSphere} from "../../threeExt";
- import {MeshBasicMaterial, RepeatWrapping, TextureLoader} from "three";
  import {assert} from "../../assert.js";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
@@ -71,43 +69,11 @@ class Utils {
 
   // Calculate the world position of a tile.
   static tile2position(z, x, y, center, tileSize) {
-
-
-/*
-// original code incorporate the zoom level, unnecessary and implemented wrong so position was off is zoom < 10
-    const offsetAtZ = (z) => {
-      return {
-        x: center.x / Math.pow(2, 10 - z),
-        y: center.y / Math.pow(2, 10 - z),
-      };
-    };
-    const offset = offsetAtZ(z);
-    const result = {
-      x: (x - center.x - (offset.x % 1) + (center.x % 1)) * tileSize,
-      y: (-y + center.y + (offset.y % 1) - (center.y % 1)) * tileSize,
-      z: 0
-    }
-
- */
-
     const result = {
       x: (x - center.x) * tileSize,
       y: (-y + center.y) * tileSize,
       z: 0
     }
-
-
-    //    console.log("zoom:"+z+" x:"+x+" y:"+y+"  center.xy=("+center.x+","+center.y+")")
-    /*
-        console.log("tileSize = "+tileSize)
-        console.log("(offset.x) = " + (offset.x));
-        console.log("(offset.y) = " + (offset.y));
-        console.log("(offset.x % 1) = " + (offset.x % 1));
-        console.log("(offset.y % 1) = " + (offset.y % 1));
-        console.log("(center.x % 1) = " + (center.x % 1));
-        console.log("(center.y % 1) = " + (center.y % 1));
-    */
-//    console.log("Result=("+result.x+","+result.y+")")
     return result
   }
 
@@ -127,9 +93,11 @@ class Source {
       'osm': this.mapUrlOSM.bind(this),
       'mapbox': this.mapUrlMapbox.bind(this),
       'eox': this.mapUrlSentinel2Cloudless.bind(this),
-      'maptiler': this.mapUrlmapTiler.bind(this),
+   //   'maptiler': this.mapMaptiler.bind(this),
       'wireframe': this.mapUrlmapWireframe.bind(this),
       'RGBTest': this.mapUrlmapRGBTest.bind(this),
+      'NRL' : this.mapNRLTileScheme.bind(this),
+      'TEST' : this.mapTEST.bind(this),
     }
     if (!(api in this.supportedApis)) {
       throw new Error('Unknown source api');
@@ -138,6 +106,53 @@ class Source {
     this.token = token
     this.options = options
   }
+
+  mapUrl(z, x, y) {
+    return this.supportedApis[this.api](z, x, y)
+  }
+
+
+  mapMaptiler(z, x, y) {
+    return `https://api.maptiler.com/tiles/satellite-v2/${z}/${x}/${y}.jpg?key=NEEDSAKEY`
+  }
+
+
+  // given a urlBase like: https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?
+  // and name,
+  wmsGetMapURLFromTile(urlBase, name, z, x, y) {
+
+    // convert z,x,y to lat/lon
+    const lat0 = getNorthLatitude(y, z);
+    const lon0 = getLeftLongitude(x, z);
+    const lat1 = getNorthLatitude(y+1, z);
+    const lon1 = getLeftLongitude(x+1, z);
+
+    const url =
+        "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?"+
+        "SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1"+
+        "&LAYERS="+name+
+        "&FORMAT=image/jpeg"+
+        "&CRS=EPSG:4326"+
+        `&BBOX=${lon0},${lat1},${lon1},${lat0}`+
+        "&WIDTH=256&HEIGHT=256"+
+        "&STYLES=";
+
+    console.log("URL = "+url);
+    return url;
+
+  }
+
+
+  // https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/13/3187/1500
+  mapTEST(z, x, y) {
+    return this.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?","ImageryMosaic",z,x,y);
+  }
+
+  // https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/5/2/2.jpg
+  mapNRLTileScheme(z, x, y) {
+    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/${z}/${y}/${x}.jpg`)
+  }
+
 
   // returns a single image for testing color consistency
   mapUrlmapRGBTest(z, x, y) {
@@ -160,17 +175,11 @@ class Source {
     return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
   }
 
-  mapUrlmapTiler(z, x, y) {
-    return `https://api.maptiler.com/tiles/satellite/${z}/${x}/${y}.jpg?key=${this.token}`
-  }
-
   mapUrlmapWireframe(z, x, y) {
     return null;
   }
 
-  mapUrl(z, x, y) {
-    return this.supportedApis[this.api](z, x, y)
-  }
+
 
 }
 

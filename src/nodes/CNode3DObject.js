@@ -619,6 +619,10 @@ export class CNode3DObject extends CNode3DGroup {
 
             } else if (Array.isArray(geometryParams[key])) {
 
+                const elastic = ["radius", "length", "height", "width", "depth", "tube", "innerRadius", "outerRadius", "height", "totalLength", "radiusTop", "radiusBottom",];
+                const isElastic = elastic.includes(key);
+
+
                 // is the firsts value in the array a number?
                 if (typeof geometryParams[key][0] === "number") {
                     // and make a gui slider for the parameter
@@ -627,6 +631,13 @@ export class CNode3DObject extends CNode3DGroup {
                             this.rebuild();
                             par.renderOne = true
                         })
+                    if (isElastic) {
+                        // elastic means the range will expand 2x when you go of the right end
+                        // and reset to the minimum when you go off the left end
+                        // Upper limit not too important, so we just set it to 1000x the default
+                        controller.elastic(geometryParams[key][2], geometryParams[key][2] * 1000)
+                    }
+
                 } else {
                     // assume it's a string, so a drop-down
                     // make a drop-down for the parameter
