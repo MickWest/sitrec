@@ -20,16 +20,6 @@ const terrainGUIColor = "#c0ffc0";
 
 let local = {}
 
-// const mapTypes = {"MapBox":"mapbox",
-//     "Open Streetmap":"osm",
-//     "MapTiler:":"maptiler",
-//     "EOX":"eox",
-//     "Wireframe":"wireframe",
-//     "RGB Test":"RGBTest",
-//     "NRL":"NRL",
-//     "TEST":"TEST"};
-
-
 export class CNodeTerrainUI extends CNode {
     constructor(v) {
         super(v);
@@ -43,19 +33,27 @@ export class CNodeTerrainUI extends CNode {
         this.refresh = false;
 
 
-        this.mapTypes = {
+        this.mapSources = {
             mapbox: {
                 name: "MapBox",
                 mapURL: (z,x,y) => {
                     return SITREC_SERVER+"cachemaps.php?url=" +
-                        encodeURIComponent(`https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}@2x.jpg80`)
+                        encodeURIComponent(`https://api.mapbox.com/v4/mapbox.${this.layer}/${z}/${x}/${y}@2x.jpg80`)
                 },
+                layers: [
+                    "satellite",
+                ],
+                layer: "satellite"
             },
             osm: {
                 name: "Open Streetmap",
                 mapURL: (z,x,y) => {
                     return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
-                }
+                },
+                // layers: [
+                //     "a","b","c"
+                // ],
+                // layer: "c"
             },
             maptiler: {
                 name: "MapTiler",
@@ -88,12 +86,7 @@ export class CNodeTerrainUI extends CNode {
                     return SITREC_ROOT+"data/images/colour_bars_srgb-255-128-64.png?v=1";
                 },
             },
-            NRL: {
-                name: "NRL",
-                mapURL: (z,x,y) => {
-                    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/${z}/${y}/${x}.jpg`)
-                },
-            },
+
             NRL_WMS: {
                 name: "Naval Research Laboratory WMS",
                 mapURL: (z,x,y) => {
@@ -102,22 +95,52 @@ export class CNodeTerrainUI extends CNode {
                 capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
                 layer: "ImageryMosaic",
             },
+/*
+            NRL_WMTS: {
+                name: "Naval Research Laboratory WMS Tile",
+                mapURL: (z,x,y) => {
+                    return wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",this.layer,z,x,y);
+                },
+                capabilities: "https://geoint.nrlssc.org/nrltileserver/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS",
+                layer: "ImageryMosaic",
+            },
 
+            NationalMap: {
+                name: "National Map",
+                mapURL: (z,x,y) => {
+                    return wmsGetMapURLFromTile("https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer?",this.layer,z,x,y);
+                },
+                capabilities: "https://basemap.nationalmap.gov/arcgis/services/USGSImageryOnly/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+                layer: "0",
+            },
 
+            NRL_Chart_WMS: {
+                name: "Naval Research Laboratory Chart WMS",
+                mapURL: (z,x,y) => {
+                    return wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/layeruse?",this.layer,z,x,y);
+                },
+                capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/layeruse?REQUEST=GetCapabilities&SERVICE=WMS",
+                layer: "ECRG_AUTO",
+            },
+*/
         };
 
-        // extract a K/V pair from the mapTypes
+        // extract a K/V pair from the mapSources
         // for use in the GUI.
         // key is the name, value is the id
         this.mapTypesKV = {}
-        for (const mapType in this.mapTypes) {
-            const mapDef = this.mapTypes[mapType]
+        for (const mapType in this.mapSources) {
+            const mapDef = this.mapSources[mapType]
             this.mapTypesKV[mapDef.name] = mapType
 
         }
 
         this.gui = guiMenus.terrain;
         this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).setLabelColor(terrainGUIColor).listen().name("Map Type")
+
+
+        // WHY local???
+        this.setMapType(local.mapType)
 
 
         if (v.terrain) {
@@ -140,50 +163,7 @@ export class CNodeTerrainUI extends CNode {
 
         this.mapTypeMenu.onChange( v => {
 
-            const mapType = v;
-            const mapDef = this.mapTypes[mapType];
-            this.mapDef = mapDef;
-            // Pick a layer if defined
-            this.layer = this.mapDef.layer;
-
-            // Remove any layer menu now, as this might not have on
-            this.layersMenu?.destroy()
-            this.layersMenu = null;
-
-            // does it have pre-listed layers in the mapDef?
-            if (mapDef.layers !== undefined) {
-                // add the layers to the GUI
-//
-                this.updateLayersMenu(mapDef.layers);
-            } else {
-                // no layers, so we check for WMS capabilities
-                // if there's one, then we load it
-                // and extract the layers from it
-
-                // also, if we have a capabilities URL, then start loading it
-                if (mapDef.capabilities !== undefined) {
-                    fetch(mapDef.capabilities)
-                        .then(response => response.text())
-                        .then(data => {
-                            console.log("Capabilities for "+mapType)
-                            //console.log(data)
-                            // convert XML to object
-                            const parser = new DOMParser();
-                            const xmlDoc = parser.parseFromString(data,"text/xml");
-                            const layers = xmlDoc.getElementsByTagName("Layer");
-                            console.log("Layers:")
-                            for (let layer of layers) {
-                                console.log(layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue)
-                            }
-                            mapDef.layers = layers;
-                            this.updateLayersMenu(mapDef.layers);
-                        });
-                }
-
-            }
-
-
-
+            this.setMapType(v);
             this.terrainNode.loadMap(v)
         })
 
@@ -226,13 +206,66 @@ export class CNodeTerrainUI extends CNode {
 
     }
 
+
+    setMapType(v)
+    {
+        const mapType = v;
+        const mapDef = this.mapSources[mapType];
+        this.mapDef = mapDef;
+        // Pick a layer if defined
+        this.layer = this.mapDef.layer;
+
+        // Remove any layer menu now, as this might not have on
+        this.layersMenu?.destroy()
+        this.layersMenu = null;
+
+        // does it have pre-listed layers in the mapDef?
+        if (mapDef.layers !== undefined) {
+            // add the layers to the GUI
+//
+            this.updateLayersMenu(mapDef.layers);
+        } else {
+            // no layers, so we check for WMS capabilities
+            // if there's one, then we load it
+            // and extract the layers from it
+
+            // also, if we have a capabilities URL, then start loading it
+            if (mapDef.capabilities !== undefined) {
+                fetch(mapDef.capabilities)
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log("Capabilities for " + mapType)
+                        //console.log(data)
+                        // convert XML to object
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(data, "text/xml");
+                        const layers = xmlDoc.getElementsByTagName("Layer");
+                        console.log("Layers:")
+                        for (let layer of layers) {
+                            console.log(layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue)
+                        }
+                        mapDef.layers = layers;
+                        this.updateLayersMenu(mapDef.layers);
+                    });
+            }
+
+        }
+    }
+
+
     updateLayersMenu(layers) {
         // layers is an array of layer names
         // we want a KV pair for the GUI
         // where both K and V are the layer name
         this.localLayers = {}
         for (let layer of layers) {
-            const name = layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue;
+            let name;
+            if (layer.getElementsByTagName !== undefined) {
+                name = layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue;
+            } else {
+                name = layer;
+            }
+            assert(typeof name === "string", "Layer name must be a string")
             this.localLayers[name] = name
         }
 
@@ -356,7 +389,7 @@ export class CNodeTerrainUI extends CNode {
                 id: terrainID, lat: this.lat, lon: this.lon,
                 zoom: this.zoom, nTiles: this.nTiles, deferLoad: true,
                 mapTypeMenu: this.mapTypeMenu, terrainGUI: this.gui,
-                mapTypes: this.mapTypes,
+                mapTypes: this.mapSources,
                 mapType: local.mapType,
                 UINode: this,
             }
@@ -453,6 +486,7 @@ export class CNodeTerrain extends CNode {
             Sit.lon = lon0
         }
 
+        local.mapType = v.mapType ?? "mapbox"
 
         // always create a terrainUI, just with limited options for the legacy sitches
         // but for now, everything is include (will need to flag "everything" in custom)
@@ -471,7 +505,7 @@ export class CNodeTerrain extends CNode {
                 // "source" here is a map33 Source object, which is the source of the map tiles (bitmaps)
                 // or more correcture, the source of a function that returns the URL of the map tiles
                 // for a given z,x,y
-                source: new Source(mapID, this.UINode.mapTypes[mapID]),
+                source: new Source(mapID, this.UINode.mapSources[mapID]),
                 // this is where we would add a terrain source
 
             }
@@ -479,7 +513,7 @@ export class CNodeTerrain extends CNode {
         }
 
 
-        local.mapType = v.mapType ?? "mapbox"
+
         this.deferLoad = v.deferLoad;
         this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
 
