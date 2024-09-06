@@ -16,7 +16,7 @@ import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 // it can be floating point which indicates a position inside the tile
 // if no fraction, then it's the left edge of the tile. If 0.5, then the middle.
 // 1.0 the right edge, coincident with the next tile
-function getLeftLongitude(x, z) {
+export function getLeftLongitude(x, z) {
   // Calculate the number of horizontal tiles at zoom level z
   let numTiles = Math.pow(2, z);
 
@@ -26,7 +26,7 @@ function getLeftLongitude(x, z) {
 }
 
 // convert a tile y position to latitude
-function getNorthLatitude(y, z) {
+export function getNorthLatitude(y, z) {
   // Calculate the number of vertical tiles at zoom level z
   let numTiles = Math.pow(2, z);
 
@@ -88,98 +88,16 @@ class Utils {
 
 
 class Source {
-  constructor(api, token, options) {
-    this.supportedApis = {
-      'osm': this.mapUrlOSM.bind(this),
-      'mapbox': this.mapUrlMapbox.bind(this),
-      'eox': this.mapUrlSentinel2Cloudless.bind(this),
-   //   'maptiler': this.mapMaptiler.bind(this),
-      'wireframe': this.mapUrlmapWireframe.bind(this),
-      'RGBTest': this.mapUrlmapRGBTest.bind(this),
-      'NRL' : this.mapNRLTileScheme.bind(this),
-      'TEST' : this.mapTEST.bind(this),
-    }
-    if (!(api in this.supportedApis)) {
-      throw new Error('Unknown source api');
-    }
-    this.api = api
-    this.token = token
-    this.options = options
+  // now the creation of a URL is done in the sourceDef
+  // which is handled by the CNodeTerrainUI class
+  // and passed in here.
+  constructor (sourceID, sourceDef) {
+    this.sourceDef = sourceDef;
   }
 
   mapUrl(z, x, y) {
-    return this.supportedApis[this.api](z, x, y)
+    return this.sourceDef.mapURL(z, x, y);
   }
-
-
-  mapMaptiler(z, x, y) {
-    return `https://api.maptiler.com/tiles/satellite-v2/${z}/${x}/${y}.jpg?key=NEEDSAKEY`
-  }
-
-
-  // given a urlBase like: https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?
-  // and name,
-  wmsGetMapURLFromTile(urlBase, name, z, x, y) {
-
-    // convert z,x,y to lat/lon
-    const lat0 = getNorthLatitude(y, z);
-    const lon0 = getLeftLongitude(x, z);
-    const lat1 = getNorthLatitude(y+1, z);
-    const lon1 = getLeftLongitude(x+1, z);
-
-    const url =
-        "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?"+
-        "SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1"+
-        "&LAYERS="+name+
-        "&FORMAT=image/jpeg"+
-        "&CRS=EPSG:4326"+
-        `&BBOX=${lon0},${lat1},${lon1},${lat0}`+
-        "&WIDTH=256&HEIGHT=256"+
-        "&STYLES=";
-
-    console.log("URL = "+url);
-    return url;
-
-  }
-
-
-  // https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/13/3187/1500
-  mapTEST(z, x, y) {
-    return this.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?","ImageryMosaic",z,x,y);
-  }
-
-  // https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/5/2/2.jpg
-  mapNRLTileScheme(z, x, y) {
-    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/${z}/${y}/${x}.jpg`)
-  }
-
-
-  // returns a single image for testing color consistency
-  mapUrlmapRGBTest(z, x, y) {
-    return SITREC_ROOT+"data/images/colour_bars_srgb-255-128-64.png?v=1";
-  }
-
-  mapUrlOSM(z, x, y) {
-//    return `https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`
-    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
-  }
-
-  mapUrlMapbox(z, x, y) {
-//    return `https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}@2x.jpg80?access_token=${this.token}`
-    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}@2x.jpg80`)
-  }
-
-  mapUrlSentinel2Cloudless(z, x, y) {
-    // cf. https://tiles.maps.eox.at/wmts/1.0.0/WMTSCapabilities.xml
-//    return `https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`
-    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
-  }
-
-  mapUrlmapWireframe(z, x, y) {
-    return null;
-  }
-
-
 
 }
 

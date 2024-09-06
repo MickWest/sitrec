@@ -1,6 +1,6 @@
 // loader object for a
 import {CNode} from "./CNode";
-import {Map, Source} from '../js/map33/map33.js'
+import {getLeftLongitude, getNorthLatitude, Map, Source} from '../js/map33/map33.js'
 import {propagateLayerMaskObject} from "../threeExt";
 import {cos, metersFromMiles, radians} from "../utils";
 import {Globals, gui, guiMenus, NodeMan, Sit} from "../Globals";
@@ -14,7 +14,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
-import {SITREC_SERVER} from "../../config";
+import {SITREC_ROOT, SITREC_SERVER} from "../../config";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -46,39 +46,61 @@ export class CNodeTerrainUI extends CNode {
         this.mapTypes = {
             mapbox: {
                 name: "MapBox",
-                mapURL: (x,y,z) => {
+                mapURL: (z,x,y) => {
                     return SITREC_SERVER+"cachemaps.php?url=" +
                         encodeURIComponent(`https://api.mapbox.com/v4/mapbox.satellite/${z}/${x}/${y}@2x.jpg80`)
                 },
             },
             osm: {
                 name: "Open Streetmap",
+                mapURL: (z,x,y) => {
+                    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
+                }
             },
             maptiler: {
                 name: "MapTiler",
-                types: [
+                layers: [
                     "Contours",
                     "Countries",
                     "Hillshading",
                     "satellite-mediumres",
                     "satellite-mediumres-2018",
                     "satellite-v2",
-                ]
+                ],
+                mapURL: (z,x,y) => {
+                },
             },
             eox: {
                 name: "EOX",
+                mapURL: (z,x,y) => {
+                    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
+                },
             },
             wireframe: {
                 name: "Wireframe",
+                mapURL: (z,x,y) => {
+                    return null;
+                },
             },
             RGBTest: {
                 name: "RGB Test",
+                mapURL: (z,x,y) => {
+                    return SITREC_ROOT+"data/images/colour_bars_srgb-255-128-64.png?v=1";
+                },
             },
             NRL: {
                 name: "NRL",
+                mapURL: (z,x,y) => {
+                    return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://geoint.nrlssc.org/nrltileserver/wmts/1.0.0/ASTER_DEM_SLOPE_VALUE/default/NRLTileScheme/${z}/${y}/${x}.jpg`)
+                },
             },
-            TEST: {
-                name: "TEST",
+            NRL_WMS: {
+                name: "Naval Research Laboratory WMS",
+                mapURL: (z,x,y) => {
+                    return wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",this.layer,z,x,y);
+                },
+                capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
+                layer: "ImageryMosaic",
             },
 
 
@@ -89,7 +111,9 @@ export class CNodeTerrainUI extends CNode {
         // key is the name, value is the id
         this.mapTypesKV = {}
         for (const mapType in this.mapTypes) {
-            this.mapTypesKV[this.mapTypes[mapType].name] = mapType
+            const mapDef = this.mapTypes[mapType]
+            this.mapTypesKV[mapDef.name] = mapType
+
         }
 
         this.gui = guiMenus.terrain;
@@ -115,6 +139,51 @@ export class CNodeTerrainUI extends CNode {
 
 
         this.mapTypeMenu.onChange( v => {
+
+            const mapType = v;
+            const mapDef = this.mapTypes[mapType];
+            this.mapDef = mapDef;
+            // Pick a layer if defined
+            this.layer = this.mapDef.layer;
+
+            // Remove any layer menu now, as this might not have on
+            this.layersMenu?.destroy()
+            this.layersMenu = null;
+
+            // does it have pre-listed layers in the mapDef?
+            if (mapDef.layers !== undefined) {
+                // add the layers to the GUI
+//
+                this.updateLayersMenu(mapDef.layers);
+            } else {
+                // no layers, so we check for WMS capabilities
+                // if there's one, then we load it
+                // and extract the layers from it
+
+                // also, if we have a capabilities URL, then start loading it
+                if (mapDef.capabilities !== undefined) {
+                    fetch(mapDef.capabilities)
+                        .then(response => response.text())
+                        .then(data => {
+                            console.log("Capabilities for "+mapType)
+                            //console.log(data)
+                            // convert XML to object
+                            const parser = new DOMParser();
+                            const xmlDoc = parser.parseFromString(data,"text/xml");
+                            const layers = xmlDoc.getElementsByTagName("Layer");
+                            console.log("Layers:")
+                            for (let layer of layers) {
+                                console.log(layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue)
+                            }
+                            mapDef.layers = layers;
+                            this.updateLayersMenu(mapDef.layers);
+                        });
+                }
+
+            }
+
+
+
             this.terrainNode.loadMap(v)
         })
 
@@ -154,6 +223,34 @@ export class CNodeTerrainUI extends CNode {
                 this.zoomToTrack(track)
             })
         }
+
+    }
+
+    updateLayersMenu(layers) {
+        // layers is an array of layer names
+        // we want a KV pair for the GUI
+        // where both K and V are the layer name
+        this.localLayers = {}
+        for (let layer of layers) {
+            const name = layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue;
+            this.localLayers[name] = name
+        }
+
+        // set the layer to the specified default, or the first one in the capabilities
+        if (this.mapDef.layer !== undefined) {
+            this.layer = this.mapDef.layer;
+        } else {
+            this.layer = Object.keys(this.localLayers)[0]
+        }
+        this.layersMenu = this.gui.add(this, "layer", this.localLayers).setLabelColor(terrainGUIColor).listen().name("Layer")
+
+        // if the layer has changed, then unload the map and reload it
+        // new layer will be handled by the mapDef.layer
+        this.layersMenu.onChange( v => {
+
+            this.terrainNode.unloadMap(local.mapType)
+            this.terrainNode.loadMap(local.mapType)
+        })
 
     }
 
@@ -370,7 +467,13 @@ export class CNodeTerrain extends CNode {
             const mapID = this.UINode.mapTypesKV[mapName]
             this.maps[mapID] = {
                 group: new Group(),
-                source: new Source(mapID, ''), // << Todo - allow the user to access it directly with their own token
+
+                // "source" here is a map33 Source object, which is the source of the map tiles (bitmaps)
+                // or more correcture, the source of a function that returns the URL of the map tiles
+                // for a given z,x,y
+                source: new Source(mapID, this.UINode.mapTypes[mapID]),
+                // this is where we would add a terrain source
+
             }
             GlobalScene.add(this.maps[mapID].group)
         }
@@ -427,6 +530,16 @@ export class CNodeTerrain extends CNode {
         super.dispose();
     }
 
+    unloadMap(mapID) {
+        if (this.maps[mapID].map !== undefined) {
+            this.maps[mapID].map.clean()
+            this.maps[mapID].map = undefined
+        }
+        // we are just unloading it, so the group remains
+        // might be better to not create all the groups at the start
+        // GlobalScene.remove(this.maps[mapID].group)
+        // this.maps[mapID].group = undefined;
+    }
 
     loadMap(id, deferLoad) {
 
@@ -555,3 +668,29 @@ export class CNodeTerrain extends CNode {
     }
 }
 
+
+
+// given a urlBase like: https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?
+// and name,
+function wmsGetMapURLFromTile(urlBase, name, z, x, y) {
+
+    // convert z,x,y to lat/lon
+    const lat0 = getNorthLatitude(y, z);
+    const lon0 = getLeftLongitude(x, z);
+    const lat1 = getNorthLatitude(y+1, z);
+    const lon1 = getLeftLongitude(x+1, z);
+
+    const url =
+        "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?"+
+        "SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1"+
+        "&LAYERS="+name+
+        "&FORMAT=image/jpeg"+
+        "&CRS=EPSG:4326"+
+        `&BBOX=${lon0},${lat1},${lon1},${lat0}`+
+        "&WIDTH=256&HEIGHT=256"+
+        "&STYLES=";
+
+    console.log("URL = "+url);
+    return url;
+
+}
