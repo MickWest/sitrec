@@ -16,7 +16,7 @@ import {V3} from "../threeUtils";
 import {assert} from "../assert";
 import {SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {configParams} from "../login";
-import {wmsGetMapURLFromTile, wmtsGetMapURLFromTile} from "../WMSUtils";
+import {mapProjection, wmsGetMapURLFromTile, wmtsGetMapURLFromTile} from "../WMSUtils";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -348,6 +348,7 @@ export class CNodeTerrainUI extends CNode {
 
         // find the zoom level that fits the track, ignore altitude
         // clamp to maxZoom
+        // NOTE THIS IS NOT ACCOUNTING FOR WEB MERCATOR PROJECTION
         const latDiff = maxLat - minLat;
         const lonDiff = maxLon - minLon;
         if (latDiff < 0.0001 || lonDiff < 0.0001) {
@@ -454,6 +455,9 @@ export class CNodeTerrain extends CNode {
         // so maybe want to snap this to a grid?
         this.position = [this.lat, this.lon]
 
+        // TEMP
+        this.mapProjection = mapProjection;
+
         // Tile resolution = length of line of latitude / (2^zoom)
         // ref: https://docs.mapbox.com/help/glossary/zoom-level/
         // Tiles in Mapbox GL are 512x512
@@ -477,32 +481,11 @@ export class CNodeTerrain extends CNode {
         // so we need to find the latitude and longitude of this tile center
         // this is all a bit dodgy
 
-        function lon2tile (lon, zoom) {
-            return (lon + 180) / 360 * Math.pow(2, zoom)
-        }
 
-        function lat2tile (lat, zoom) {
-            return (
-                (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)
-            )
-        }
-
-        const d2r = Math.PI / 180
-        const r2d = 180 / Math.PI;
-
-        function tile2lon(x, z) {
-            return x / Math.pow(2, z) * 360 - 180;
-        }
-
-        function tile2lat(y, z) {
-            var n = Math.PI - 2 * Math.PI * y / Math.pow(2, z);
-            return r2d * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
-        }
-
-        var tilex = Math.floor(lon2tile(this.position[1],this.zoom))+0.5 // this is probably correct
-        var tiley = Math.floor(lat2tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
-        var lon0 = tile2lon(tilex,this.zoom)
-        var lat0 = tile2lat(tiley,this.zoom)
+        var tilex = Math.floor(this.mapProjection.lon2Tile(this.position[1],this.zoom))+0.5 // this is probably correct
+        var tiley = Math.floor(this.mapProjection.lat2Tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
+        var lon0 = this.mapProjection.tile2Lon(tilex,this.zoom)
+        var lat0 = this.mapProjection.tile2Lat(tiley,this.zoom)
         console.log("LL Tile"+tilex+","+tiley+" = (Lat,Lon)"+lat0+","+lon0)
 
         // we need to adjust the LL origin to match the 3D map

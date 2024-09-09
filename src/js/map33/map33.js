@@ -4,7 +4,7 @@ import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
-import {getLeftLongitude, getNorthLatitude} from "../../WMSUtils";
+import {mapProjection} from "../../WMSUtils";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
@@ -18,13 +18,11 @@ const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
 class Utils {
   static long2tile (lon, zoom) {
-    return (lon + 180) / 360 * Math.pow(2, zoom)
+    return mapProjection.lon2Tile(lon, zoom);
   }
 
   static lat2tile (lat, zoom) {
-    return (
-      (1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom)
-      )
+    return mapProjection.lat2Tile(lat, zoom);
   }
 
   static geo2tile (geoLocation, zoom) {
@@ -214,8 +212,8 @@ class Tile {
       const yWorld = yTile + yTileFraction;
 
       // convert that to lat/lon
-      const lat = getNorthLatitude(yWorld, zoomTile);
-      const lon = getLeftLongitude(xWorld, zoomTile);
+      const lat = mapProjection.getNorthLatitude(yWorld, zoomTile);
+      const lon = mapProjection.getLeftLongitude(xWorld, zoomTile);
 
       // get elevation
       const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
