@@ -25,6 +25,8 @@ class Utils {
     return mapProjection.lat2Tile(lat, zoom);
   }
 
+  // note the Y calculation her might not be right
+  // as it's not linear in the EPSG3857 projection (Web Mercator or Google Maps)
   static geo2tile (geoLocation, zoom) {
     const maxTile = Math.pow(2, zoom);
     return {
@@ -60,7 +62,7 @@ class Utils {
   }
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////
 class Source {
   // now the creation of a URL is done in the sourceDef
   // which is handled by the CNodeTerrainUI class
@@ -77,6 +79,8 @@ class Source {
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 class Tile {
   constructor(map, z, x, y, size) {
     // check values are within range
@@ -90,7 +94,7 @@ class Tile {
     this.x = x
     this.y = y
     this.size = size || this.map.options.tileSize
-    this.baseURL = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium"
+    this.elevationURLString = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium"
     this.shape = null
     this.elevation = null
     this.seamX = false
@@ -114,8 +118,8 @@ class Tile {
     return `${this.z}/${this.x}/${this.y + 1}`
   }
 
-  url() {
-    return `${this.baseURL}/${this.z}/${this.x}/${this.y}.png`
+  elevationURL() {
+    return `${this.elevationURLString}/${this.z}/${this.x}/${this.y}.png`
   }
 
   mapUrl() {
@@ -218,7 +222,11 @@ class Tile {
       // get elevation
       const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
 
-      let elevation = elevationMap[elevationIndex] * this.map.options.zScale;
+      // OLD: Look op the matching point
+    //  let elevation = elevationMap[elevationIndex] * this.map.options.zScale;
+
+      // get the elevation, independent of the display map coordinate system
+      let elevation = this.map.getElevationInterpolated(lat, lon);
 
       // clamp to sea level to avoid z-fighting with ocean tiles
       if (elevation < 0 ) elevation = 0;
@@ -252,7 +260,7 @@ class Tile {
   // this is used to build the QuadTextureMaterial
   // and all we do is get the four URLs of the children's textures
   // and then combine them in
-  childrens() {
+  children() {
     return [
       new Tile(this.map, this.z + 1, this.x * 2, this.y * 2),
       new Tile(this.map, this.z + 1, this.x * 2, this.y * 2 + 1),
@@ -266,7 +274,7 @@ class Tile {
   // there's a custom shader to combine them together
   //
   buildMaterial() {
-    const urls = this.childrens().map(tile => tile.mapUrl())
+    const urls = this.children().map(tile => tile.mapUrl())
     return QuadTextureMaterial(urls)
 
 
@@ -301,7 +309,7 @@ class Tile {
   }
 
   fetch(signal) {
-    var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.url())
+    var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.elevationURL())
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
         reject(new Error('Aborted'));
@@ -356,19 +364,12 @@ class Tile {
     }
 
     // the positions are relative to the tile centers
-    // so we need to adjust by they offset
+    // so we need to adjust by the offset
     const tileCenter = this.mesh.position;
     const neighborCenter = neighbor.mesh.position;
     const offset = neighborCenter.clone().sub(tileCenter);
 
     for (let i = tPosition - nPosition; i < tPosition; i++) {
-      // Mick - here I changed Z to Y, as we've rotated
-      // this.mesh.geometry.attributes.position.setY(
-      //   i,
-      //   neighbor.mesh.geometry.attributes.position.getY(
-      //     i - (tPosition - nPosition) + offset.y
-      //   )
-      // )
       // copy the entire position vector
         this.mesh.geometry.attributes.position.setXYZ(
             i,  // this is the index of the vertex in the mesh
@@ -623,24 +624,28 @@ class Map {
   }
 
   // MICK - added to get elevation at a lat/lon
-  getElevation(lat, lon) {
-    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
-    const intX = Math.floor(x)
-    const intY = Math.floor(y)
-    const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
-    if (tile && tile.elevation) {
-      const nElevation = Math.sqrt(tile.elevation.length)
-      const xIndex = Math.floor((x - tile.x) * nElevation)
-      const yIndex = Math.floor((y - tile.y) * nElevation)
-      const elevation = tile.elevation[yIndex * nElevation + xIndex]
-      return elevation
-    }
-    return 0  // default to sea level if elevation data not loaded
-  }
+  // getElevation(lat, lon) {
+  //   const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
+  //   const intX = Math.floor(x)
+  //   const intY = Math.floor(y)
+  //   const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
+  //   if (tile && tile.elevation) {
+  //     const nElevation = Math.sqrt(tile.elevation.length)
+  //     const xIndex = Math.floor((x - tile.x) * nElevation)
+  //     const yIndex = Math.floor((y - tile.y) * nElevation)
+  //     const elevation = tile.elevation[yIndex * nElevation + xIndex]
+  //     return elevation
+  //   }
+  //   return 0  // default to sea level if elevation data not loaded
+  // }
 
   // interpolate the elevation at a lat/lon
-  // does not handle interpolating between tiles.
+  // does not handle interpolating between tiles (i.e. crossing tile boundaries)
   getElevationInterpolated(lat, lon) {
+    // using geo2tileFraction to get the position in tile coordinates
+    // i.e. the coordinates on the 2D grid source texture
+    // TODO - altitude map might be different format to the source texture
+    // even diferent coordinate system. So this might not work.
     const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
     const intX = Math.floor(x)
     const intY = Math.floor(y)
@@ -649,14 +654,28 @@ class Map {
       const nElevation = Math.sqrt(tile.elevation.length)
       const xIndex = (x - tile.x) * nElevation
       const yIndex = (y - tile.y) * nElevation
-      const x0 = Math.floor(xIndex)
-      const x1 = Math.ceil(xIndex)
-      const y0 = Math.floor(yIndex)
-      const y1 = Math.ceil(yIndex)
+      let x0 = Math.floor(xIndex)
+      let x1 = Math.ceil(xIndex)
+      let y0 = Math.floor(yIndex)
+      let y1 = Math.ceil(yIndex)
+
+      // clamp to the bounds of the elevation map 0..nElevation-1
+        x0 = Math.max(0, Math.min(nElevation - 1, x0))
+        x1 = Math.max(0, Math.min(nElevation - 1, x1))
+        y0 = Math.max(0, Math.min(nElevation - 1, y0))
+        y1 = Math.max(0, Math.min(nElevation - 1, y1))
+
+
+
+
+
       const f00 = tile.elevation[y0 * nElevation + x0]
       const f01 = tile.elevation[y0 * nElevation + x1]
       const f10 = tile.elevation[y1 * nElevation + x0]
       const f11 = tile.elevation[y1 * nElevation + x1]
+
+
+
       const f0 = f00 + (f01 - f00) * (xIndex - x0)
       const f1 = f10 + (f11 - f10) * (xIndex - x0)
       const elevation = f0 + (f1 - f0) * (yIndex - y0)

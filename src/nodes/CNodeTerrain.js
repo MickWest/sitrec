@@ -477,22 +477,22 @@ export class CNodeTerrain extends CNode {
         let circumfrence = 40075000*cos(radians(this.lat));
         this.tileSize = circumfrence/Math.pow(2,this.zoom) // tileSize is the width and height of the tile in meters
 
-        // the origin is in the middle of the first tile
-        // so we need to find the latitude and longitude of this tile center
-        // this is all a bit dodgy
-
-
-        var tilex = Math.floor(this.mapProjection.lon2Tile(this.position[1],this.zoom))+0.5 // this is probably correct
-        var tiley = Math.floor(this.mapProjection.lat2Tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
-        var lon0 = this.mapProjection.tile2Lon(tilex,this.zoom)
-        var lat0 = this.mapProjection.tile2Lat(tiley,this.zoom)
-        console.log("LL Tile"+tilex+","+tiley+" = (Lat,Lon)"+lat0+","+lon0)
+        // THIS WAS NEEDED WHEN THE MAP COORDINATE SYSTEM WAS MORE COUPLED TO THE 3D COORDINATE SYSTEM
+        // I.E. THE ORIGIN OF THE 3D COORDINATE SYSTEM WAS THE CENTER OF THE FIRST MIDDLE TILE
+        // NOW THE ORIGIN IS ARBRITARY, SO THIS IS NOT NEEDED
+        // var tilex = Math.floor(this.mapProjection.lon2Tile(this.position[1],this.zoom))+0.5 // this is probably correct
+        // var tiley = Math.floor(this.mapProjection.lat2Tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
+        // var lon0 = this.mapProjection.tile2Lon(tilex,this.zoom)
+        // var lat0 = this.mapProjection.tile2Lat(tiley,this.zoom)
+        // console.log("LL Tile"+tilex+","+tiley+" = (Lat,Lon)"+lat0+","+lon0)
 
         // we need to adjust the LL origin to match the 3D map
         // but only if it's not already set
         if (Sit.lat === undefined) {
-            Sit.lat = lat0
-            Sit.lon = lon0
+            // Sit.lat = lat0
+            // Sit.lon = lon0
+            Sit.lat = this.lat
+            Sit.lon = this.lon
         }
 
         local.mapType = v.mapType ?? "mapbox"
@@ -501,7 +501,7 @@ export class CNodeTerrain extends CNode {
         // but for now, everything is include (will need to flag "everything" in custom)
         this.UINode = v.UINode ?? null;
         if (!this.UINode) {
-            this.UINode = new CNodeTerrainUI({id: "TerrainUI", terrain: v.id, fullUI: v.fullUI})
+            this.UINode = new CNodeTerrainUI({id: "terrainUI", terrain: v.id, fullUI: v.fullUI})
         }
 
 
@@ -695,12 +695,10 @@ export class CNodeTerrain extends CNode {
 
     getPointBelow(A) {
         // given a point in ENU, return the point on the terrain
-        // by casting a ray from the point to the center of the earth
+
+
+        // OLD: casting a ray from the point to the center of the earth
         // and finding the intersection with the terrain
-
-        // TODO - altitude above ground is very slow
-        // redo it using the tiles, not the geometry
-
         // const down = getLocalDownVector(A)
         // const rayCaster = new Raycaster(A, down);
         // const intersect = this.getClosestIntersect(rayCaster);
@@ -711,7 +709,12 @@ export class CNodeTerrain extends CNode {
         //         return intersect.point;
         // }
 
-        // we use LLA to get the data from the terrain maps
+        // NEW: using the terrain map to get the elevation
+        // we use LL (Lat and Lon) to get the data from the terrain maps
+        // using LL ensure the results are consistent with the display of the map
+        // even if the map is distorted slightly in latitude dud to non-linear scaling
+        // it's also WAY faster than using raycasting
+
         const LLA = EUSToLLA(A)
         // elevation is the height above the wgs84 sphere
         let elevation = 0; // 0 if map not loaded

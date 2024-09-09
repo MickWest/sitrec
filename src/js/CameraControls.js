@@ -9,7 +9,7 @@ import {
 
 } from "three";
 import {degrees, f2m, radians, vdump} from "../utils";
-import {DebugArrow, DebugArrowAB} from "../threeExt";
+import {DebugArrow, DebugArrowAB, DebugSphere, pointAbove} from "../threeExt";
 import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
@@ -20,6 +20,7 @@ import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
 import {onDocumentMouseMove} from "../mouseMoveView";
 import {isKeyHeld} from "../KeyBoardHandler";
+import {isLocal} from "../../config";
 
 const STATE = {
 	NONE: - 1,
@@ -279,6 +280,23 @@ class CameraMapControls {
 			this.state = STATE.NONE
 			return;
 		}
+
+		// debug trail of droppings if 'p' key is held
+		if (isKeyHeld('p') && isLocal) {
+			const cursprPos = this.view.cursorSprite.position.clone();
+
+			DebugSphere("Mouse"+event.clientX*1000+event.clientY, cursprPos, 5, 0x00FF00)
+
+			// check intersection with the terrain
+			// red sphere should be 2.5m above the green sphere
+			const groundPoint = pointAbove(cursprPos, 5,)
+
+			DebugSphere("Mouse2"+event.clientX*1000+event.clientY, groundPoint, 5, 0xFF0000)
+
+
+
+		}
+
 		if (this.state === STATE.NONE) return;
 	//	console.log ("CameraMapControls Mouse MOVE, with non-zero state, enabled = "+this.enabled)
 		this.updateStateFromEvent(event)

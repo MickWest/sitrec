@@ -136,10 +136,10 @@ export const mapProjection = new CTileMappingGoogleMapsCompatible();
 export function wmsGetMapURLFromTile(urlBase, name, z, x, y) {
 
     // convert z,x,y to lat/lon
-    const lat0 = getNorthLatitude(y, z);
-    const lon0 = getLeftLongitude(x, z);
-    const lat1 = getNorthLatitude(y + 1, z);
-    const lon1 = getLeftLongitude(x + 1, z);
+    const lat0 = mapProjection.getNorthLatitude(y, z);
+    const lon0 = mapProjection.getLeftLongitude(x, z);
+    const lat1 = mapProjection.getNorthLatitude(y + 1, z);
+    const lon1 = mapProjection.getLeftLongitude(x + 1, z);
 
     const url =
         "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?" +
