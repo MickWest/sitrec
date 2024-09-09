@@ -8,7 +8,7 @@ import {Globals} from "./Globals";
 import {SITREC_SERVER} from "../config";
 
 // we want to import configParams from config.js
-// but it might not exists, so we'll use a try/catch
+// but it might not exist, so need to check
 export let configParams;
 
 console.log("REQUIRING _configParams in config.js")

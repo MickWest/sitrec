@@ -1,40 +1,16 @@
- import {getPixels} from '../get-pixels-mick.js'
+import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
-import {SITREC_ROOT, SITREC_SERVER} from "../../../config";
+import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
- import {assert} from "../../assert.js";
+import {assert} from "../../assert.js";
+import {getLeftLongitude, getNorthLatitude} from "../../WMSUtils";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
 
 //////////////////////////////////////////////////////////////////////////////
 // MICK utils
-
-// convert a tile x position to longitude
-// x is the horizontal tile position
-// it can be floating point which indicates a position inside the tile
-// if no fraction, then it's the left edge of the tile. If 0.5, then the middle.
-// 1.0 the right edge, coincident with the next tile
-export function getLeftLongitude(x, z) {
-  // Calculate the number of horizontal tiles at zoom level z
-  let numTiles = Math.pow(2, z);
-
-  // Calculate the left longitude (west edge)
-  let leftLongitude = (x / numTiles) * 360 - 180;
-  return leftLongitude;
-}
-
-// convert a tile y position to latitude
-export function getNorthLatitude(y, z) {
-  // Calculate the number of vertical tiles at zoom level z
-  let numTiles = Math.pow(2, z);
-
-  // Calculate the latitude of the northern edge of the tile
-  let latNorthRad = Math.atan(Math.sinh(Math.PI * (1 - 2 * y / numTiles)));
-  let latNorth = latNorthRad * 180 / Math.PI;
-  return latNorth;
-}
 
 
 
@@ -91,12 +67,14 @@ class Source {
   // now the creation of a URL is done in the sourceDef
   // which is handled by the CNodeTerrainUI class
   // and passed in here.
-  constructor (sourceID, sourceDef) {
+  constructor (sourceID, mapDefFunction, sourceDef) {
+    this.mapDefFunction = mapDefFunction;
     this.sourceDef = sourceDef;
   }
 
   mapUrl(z, x, y) {
-    return this.sourceDef.mapURL(z, x, y);
+//    return this.sourceDef.mapURL(z, x, y);
+    return this.mapDefFunction(z, x, y, this.sourceDef);
   }
 
 }
