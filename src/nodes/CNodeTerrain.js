@@ -1,6 +1,6 @@
 // loader object for a
 import {CNode} from "./CNode";
-import {Map, Source} from '../js/map33/map33.js'
+import {Map33, CMapTextureSource} from '../js/map33/map33.js'
 import {propagateLayerMaskObject} from "../threeExt";
 import {cos, radians} from "../utils";
 import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
@@ -14,7 +14,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
-import {SITREC_ROOT, SITREC_SERVER} from "../../config";
+import {isLocal, SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {configParams} from "../login";
 import {mapProjection, wmsGetMapURLFromTile, wmtsGetMapURLFromTile} from "../WMSUtils";
 
@@ -36,74 +36,41 @@ export class CNodeTerrainUI extends CNode {
 
 
         if (configParams.customMapSources !== undefined) {
+            // start with the custom map sources
             this.mapSources = configParams.customMapSources;
         } else {
+            this.mapSources = {};
+        }
 
+        // add the default map sources, wireframe and flat shading
+        this.mapSources = {
+            ...this.mapSources,
+            wireframe: {
+                name: "Wireframe",
+                mapURL: (z, x, y) => {
+                    return null;
+                },
+            },
+            FlatShading: {
+                name: "Flat Shading",
+                mapURL: (z, x, y) => {
+                    return SITREC_ROOT + "data/images/grey-256x256.png?v=1";
+                },
+            },
+        }
+
+        // local debugging, add a color test map
+        if (isLocal) {
             this.mapSources = {
-                osm: {
-                    name: "Open Streetmap",
-                    mapURL: (z, x, y) => {
-                        return SITREC_SERVER + "cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
-                    },
-                    // layers: [
-                    //     "a","b","c"
-                    // ],
-                    // layer: "c"
-                },
-                // maptiler: {
-                //     name: "MapTiler",
-                //     layers: [
-                //         "Contours",
-                //         "Countries",
-                //         "Hillshading",
-                //         "satellite-mediumres",
-                //         "satellite-mediumres-2018",
-                //         "satellite-v2",
-                //     ],
-                //     mapURL: (z, x, y) => {
-                //     },
-                // },
-                eox: {
-                    name: "EOX",
-                    mapURL: (z, x, y) => {
-                        return SITREC_SERVER + "cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
-                    },
-                },
-                wireframe: {
-                    name: "Wireframe",
-                    mapURL: (z, x, y) => {
-                        return null;
-                    },
-                },
+                ...this.mapSources,
                 RGBTest: {
                     name: "RGB Test",
                     mapURL: (z, x, y) => {
                         return SITREC_ROOT + "data/images/colour_bars_srgb-255-128-64.png?v=1";
                     },
                 },
-
-                // Try make this just use the base url https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery
-                // or perhaps just the capabilities URL?
-
-                NRL_WMS: {
-                    name: "Naval Research Laboratory WMS",
-                    mapURL: (z, x, y) => {
-                        return wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?", this.layer, z, x, y);
-                    },
-                    capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
-                    layer: "ImageryMosaic",
-                },
-                NRL_WMTS: {
-                    name: "Naval Research Laboratory WMS Tile",
-                    mapURL: (z, x, y) => {
-                        return wmtsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wmts", this.layer, z, x, y);
-                    },
-                    capabilities: "https://geoint.nrlssc.org/nrltileserver/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS",
-                    layer: "ASTER_DEM",
-                },
-            };
+            }
         }
-
 
 
         // extract a K/V pair from the mapSources
@@ -505,6 +472,10 @@ export class CNodeTerrain extends CNode {
         }
 
 
+        // Create a single elevation source here
+        // ....
+
+
         this.maps = []
         for (const mapName in this.UINode.mapTypesKV) {
             const mapID = this.UINode.mapTypesKV[mapName]
@@ -514,7 +485,7 @@ export class CNodeTerrain extends CNode {
                 // "source" here is a map33 Source object, which is the source of the map tiles (bitmaps)
                 // or, more correctly, the source of a function that returns the URL of the map tiles
                 // for a given z,x,y
-                source: new Source(mapID,
+                source: new CMapTextureSource(mapID,
                     (z,x,y, sourceDef) => this.mapURLFunction(z,x,y, sourceDef),
                     this.UINode.mapSources[mapID]),
 
@@ -534,9 +505,14 @@ export class CNodeTerrain extends CNode {
     }
 
     // a single point for map33 to get the URL of the map tiles
-    // somewhat roundabout, as we pass in the sopurceDef, and this function to all the sources
+    // somewhat roundabout, as we pass in the sourceDef, and this function to all the sources
 
     mapURLFunction(z, x, y, sourceDef) {
+       // if no layers, then don't pass any layers into the mapURL function
+        if (sourceDef.layers === undefined) {
+            return sourceDef.mapURL(z, x,y)
+        }
+
         const layerName = this.UINode.layer;
         const layerDef  = sourceDef.layers[layerName];
         assert(layerDef !== undefined, "CNodeTerrain: layer def for " + layerName + " not found in sourceDef")
@@ -609,11 +585,11 @@ export class CNodeTerrain extends CNode {
 
         for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === id);
 
-
+        // check to see if the map has already been loaded
         if (this.maps[id].map === undefined) {
             Globals.loadingTerrain = true;
             console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
-            this.maps[id].map = new Map(this.maps[id].group, this.maps[id].source, this.position, {
+            this.maps[id].map = new Map33(this.maps[id].group, this.maps[id].source, this.position, {
                 nTiles: this.nTiles,
                 zoom: this.zoom,
                 tileSize: this.tileSize,

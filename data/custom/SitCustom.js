@@ -436,6 +436,6 @@ sitch = {
 
     // a marker for checking the map is rendered in the right position. This is the
     // intersection of beach and the MDR marina. Which, coincidentally, is where I got married.
-    mark1: {kind:"LineMarker", lat:  33.963052, lon: -118.457019, height: 10000, color: "#FF00FF" }
+    // mark1: {kind:"LineMarker", lat:  33.963052, lon: -118.457019, height: 10000, color: "#FF00FF" }
 
 }

@@ -63,7 +63,7 @@ class Utils {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-class Source {
+class CMapTextureSource {
   // now the creation of a URL is done in the sourceDef
   // which is handled by the CNodeTerrainUI class
   // and passed in here.
@@ -437,7 +437,7 @@ class Tile {
   }
 }
 
-class Map {
+class Map33 {
   constructor (scene,  source, geoLocation, options={}) {
     this.scene = scene
   //  this.camera = camera
@@ -452,6 +452,8 @@ class Map {
     this.radius = wgs84.RADIUS; // force this
     this.loadedCallback = options.loadedCallback; // function to call when map is all loaded
     this.loaded = false; // mick flag to indicate loading is finished
+
+    this.elevationOnly = options.elevationOnly ?? false;
 
     this.tileCache = {};
 
@@ -686,4 +688,4 @@ class Map {
 
 }
 
-export {Map, Source}
+export {Map33, CMapTextureSource}
