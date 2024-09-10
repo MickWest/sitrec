@@ -9,33 +9,6 @@ import {assert} from "../../assert.js";
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
 class Utils {
-  // static long2tile (lon, zoom, mapProjection) {
-  //   assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
-  //   return mapProjection.lon2Tile(lon, zoom);
-  // }
-  //
-  // static lat2tile (lat, zoom, mapProjection) {
-  //   assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
-  //   return mapProjection.lat2Tile(lat, zoom);
-  // }
-
-  // note the Y calculation her might not be right
-  // as it's not linear in the EPSG3857 projection (Web Mercator or Google Maps)
-  // static geo2tile (geoLocation, zoom, mapProjection) {
-  //   const maxTile = Math.pow(2, zoom);
-  //   return {
-  //     x: Math.abs(Math.floor(mapProjection.lon2Tile(geoLocation[1], zoom)) % maxTile),
-  //     y: Math.abs(Math.floor(mapProjection.lat2Tile(geoLocation[0], zoom)) % maxTile)
-  //   }
-  // }
-  //
-  // static geo2tileFraction (geoLocation, zoom, mapProjection) {
-  //   const maxTile = Math.pow(2, zoom);
-  //   return {
-  //     x: Math.abs(mapProjection.lon2Tile(geoLocation[1], zoom) % maxTile),
-  //     y: Math.abs(mapProjection.lat2Tile(geoLocation[0], zoom) % maxTile)
-  //   }
-  // }
 
   // Calculate the world position of a tile.
   // these are used for positioning the tiles in the scene
