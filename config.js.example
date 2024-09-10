@@ -23,14 +23,15 @@ export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location
 //const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
 const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.host + window.location.pathname));
 
-const SITREC_LOCAL = "http://localhost"+port+"/sitrec/"
+const SITREC_LOCAL = "https://"+SITREC_DOMAIN+port+"/sitrec/"
 
 // console applications are often run from just outside the source tree
 const SITREC_CONSOLE_ROOT = "./sitrec/"
 
 // regular expression that allows us to detect if we are local
 // for http://localhost, or https://localhost
-const SITREC_LOCAL_RE = '^https?:\/\/localhost'
+// or https://192.168.*
+const SITREC_LOCAL_RE = '^https?:\/\/(localhost|192\.168)'
 
 // For the various php based servers in sitrecServer it's different,
 // as it's not included in the dist folder
@@ -40,7 +41,7 @@ const SITREC_LOCAL_RE = '^https?:\/\/localhost'
 export const SITREC_DEV_DOMAIN = "www.metabunk.org"
 const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
 const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
-const SITREC_LOCAL_SERVER = "http://localhost"+port+"/sitrec/sitRecServer/"
+const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/sitrec/sitRecServer/"
 
 // local host might not have a capability to act as a php server,
 // so we can tell Sitrec to use the remote for the proxies
@@ -84,16 +85,110 @@ export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL
     (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
 export const SITREC_UPLOAD = SITREC_HOST + "../sitrec-upload/"
 
+console.log(`SITREC_DOMAIN = ${SITREC_DOMAIN}`)
 console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
 console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
 
+// note, don't use this _configParams in the code, use configParams from login.js
+// as it's a global variable that is set up in login.js
+// and that handles the case where _configParams is not defined
 export const _configParams = {
-   rehostRequiresLogin: false,      // if true, rehosting requires login - currently only supported for Metabunk/Xenforo
+   rehostRequiresLogin: true,
+
+    customMapSources: {
+
+        mapbox: {
+            name: "MapBox",
+            mapURL: (z, x, y, layer) => {
+                return SITREC_SERVER + "cachemaps.php?url=" +
+                    encodeURIComponent(`https://api.mapbox.com/v4/mapbox.${layer}/${z}/${x}/${y}@2x.jpg80`)
+            },
+            layers: {
+                "satellite": {
+                    type: "jpg", //not used here yet
+                }
+            },
+            layer: "satellite"
+        },
+        osm: {
+            name: "Open Streetmap",
+            mapURL: (z,x,y) => {
+                return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
+            },
+            // layers: [
+            //     "a","b","c"
+            // ],
+            // layer: "c"
+        },
+        maptiler: {
+            name: "MapTiler",
+
+            // TODO - layers NEED TO include more info, like
+            // MinZoom, MaxZoom, image format (png, jpg, etc)
+            // e.g. here basic-v2 is png, 0-22, etc.
+            // but satellite-v2 is jpg, so we need to have the correct extension in the URL
+
+            layers: {
+                "satellite-v2": {
+                    minZoom: 0,
+                    maxZoom: 22,
+                    type: "jpg",
+                },
+                "satellite-mediumres": {
+                    minZoom: 0,
+                    maxZoom: 22,
+                    type: "jpg",
+                },
+
+
+            },
+
+            mapURL: (z,x,y, layerName, layerType) => {
+                    return(`https://api.maptiler.com/tiles/${layerName}/${z}/${x}/${y}.${layerType}?key=cnVJFChj7wZSQz7jBJvR`); // key is metabunk specific - replace with your own
+            },
+        },
+        eox: {
+            name: "EOX",
+            mapURL: (z,x,y) => {
+                return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
+            },
+        },
+
+        // Try make this just use the base url https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery
+        // or perhaps just the capabilities URL?
+
+        NRL_WMS: {
+            name: "Naval Research Laboratory WMS",
+            mapURL: function (z,x,y, layerName, layerType) {
+                return this.mapProjection.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",layerName,z,x,y);
+            },
+            capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
+            layer: "ImageryMosaic",
+
+        },
+
+        NRL_WMTS: {
+            name: "Naval Research Laboratory WMS Tile",
+
+            mapURL: function (z,x,y,  layerName, layerType) {
+                return this.mapProjection.wmtsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wmts",layerName,z,x,y);
+            },
+            capabilities: "https://geoint.nrlssc.org/nrltileserver/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS",
+            layer: "BlueMarble_AUTO",
+            mapping: 4326,
+
+        },
+
+    },
+
+
+
 };
 
 ////////////////////////////////////////////////
 // / Gimbal, GoFast, flir1, agua, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, porterville, folsomlake, n14aq, swr, swrcss, etc
+// aa2292, lakemichigan, chilean, porterville, folsomlake, n14aq, swr, swrcss
+// modelinspector, custom
 // This is the sitch that is loaded when running on local
 export const localSituation = "custom";
 //////////////////////////////////////////////
