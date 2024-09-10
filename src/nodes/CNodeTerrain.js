@@ -16,7 +16,7 @@ import {V3} from "../threeUtils";
 import {assert} from "../assert";
 import {isLocal, SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {configParams} from "../login";
-import {mapProjection} from "../WMSUtils";
+import {CTileMappingGoogleCRS84Quad, CTileMappingGoogleMapsCompatible} from "../WMSUtils";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -390,9 +390,6 @@ export class CNodeTerrain extends CNode {
         // so maybe want to snap this to a grid?
         this.position = [this.lat, this.lon]
 
-        // TEMP
-        this.mapProjection = mapProjection;
-
         // Tile resolution = length of line of latitude / (2^zoom)
         // ref: https://docs.mapbox.com/help/glossary/zoom-level/
         // Tiles in Mapbox GL are 512x512
@@ -411,15 +408,6 @@ export class CNodeTerrain extends CNode {
         // this circumference is for the tile APIs, and does NOT change with radius
         let circumfrence = 40075000*cos(radians(this.lat));
         this.tileSize = circumfrence/Math.pow(2,this.zoom) // tileSize is the width and height of the tile in meters
-
-        // THIS WAS NEEDED WHEN THE MAP COORDINATE SYSTEM WAS MORE COUPLED TO THE 3D COORDINATE SYSTEM
-        // I.E. THE ORIGIN OF THE 3D COORDINATE SYSTEM WAS THE CENTER OF THE FIRST MIDDLE TILE
-        // NOW THE ORIGIN IS ARBRITARY, SO THIS IS NOT NEEDED
-        // var tilex = Math.floor(this.mapProjection.lon2Tile(this.position[1],this.zoom))+0.5 // this is probably correct
-        // var tiley = Math.floor(this.mapProjection.lat2Tile(this.position[0],this.zoom))+0.5 // this might be a bit off, as not linear?
-        // var lon0 = this.mapProjection.tile2Lon(tilex,this.zoom)
-        // var lat0 = this.mapProjection.tile2Lat(tiley,this.zoom)
-        // console.log("LL Tile"+tilex+","+tiley+" = (Lat,Lon)"+lat0+","+lon0)
 
         // we need to adjust the LL origin to match the 3D map
         // but only if it's not already set
@@ -536,6 +524,14 @@ export class CNodeTerrain extends CNode {
 
         assert(Object.keys(this.maps).length > 0, "CNodeTerrain: no maps found")
         assert(this.maps[id] !== undefined, "CNodeTerrain: map type " + id + " not found")
+
+        const mapDef = this.maps[id].sourceDef;
+        if (mapDef.mapping === 4326) {
+            this.mapProjection = new CTileMappingGoogleCRS84Quad()
+        } else {
+            this.mapProjection = new CTileMappingGoogleMapsCompatible();
+        }
+
 
         // make the correct group visible
         for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === id);

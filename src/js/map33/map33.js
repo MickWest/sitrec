@@ -4,36 +4,37 @@ import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
-import {mapProjection} from "../../WMSUtils";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
 class Utils {
-  static long2tile (lon, zoom) {
+  static long2tile (lon, zoom, mapProjection) {
+    assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
     return mapProjection.lon2Tile(lon, zoom);
   }
 
-  static lat2tile (lat, zoom) {
+  static lat2tile (lat, zoom, mapProjection) {
+    assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
     return mapProjection.lat2Tile(lat, zoom);
   }
 
   // note the Y calculation her might not be right
   // as it's not linear in the EPSG3857 projection (Web Mercator or Google Maps)
-  static geo2tile (geoLocation, zoom) {
+  static geo2tile (geoLocation, zoom, mapProjection) {
     const maxTile = Math.pow(2, zoom);
     return {
-      x: Math.abs(Math.floor(Utils.long2tile(geoLocation[1], zoom)) % maxTile),
-      y: Math.abs(Math.floor(Utils.lat2tile(geoLocation[0], zoom)) % maxTile)
+      x: Math.abs(Math.floor(Utils.long2tile(geoLocation[1], zoom, mapProjection)) % maxTile),
+      y: Math.abs(Math.floor(Utils.lat2tile(geoLocation[0], zoom, mapProjection)) % maxTile)
     }
   }
 
-  static geo2tileFraction (geoLocation, zoom) {
+  static geo2tileFraction (geoLocation, zoom, mapProjection) {
     const maxTile = Math.pow(2, zoom);
     return {
-      x: Math.abs(Utils.long2tile(geoLocation[1], zoom) % maxTile),
-      y: Math.abs(Utils.lat2tile(geoLocation[0], zoom) % maxTile)
+      x: Math.abs(Utils.long2tile(geoLocation[1], zoom, mapProjection) % maxTile),
+      y: Math.abs(Utils.lat2tile(geoLocation[0], zoom, mapProjection) % maxTile)
     }
   }
 
@@ -191,8 +192,8 @@ class Tile {
       const yWorld = yTile + yTileFraction;
 
       // convert that to lat/lon
-      const lat = mapProjection.getNorthLatitude(yWorld, zoomTile);
-      const lon = mapProjection.getLeftLongitude(xWorld, zoomTile);
+      const lat = this.map.terrainNode.mapProjection.getNorthLatitude(yWorld, zoomTile);
+      const lon = this.map.terrainNode.mapProjection.getLeftLongitude(xWorld, zoomTile);
 
       // get elevation
       const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
@@ -431,7 +432,7 @@ class Map33 {
   }
 
   init(deferLoad=false) {
-    this.center = Utils.geo2tile(this.geoLocation, this.zoom)
+    this.center = Utils.geo2tile(this.geoLocation, this.zoom, this.terrainNode.mapProjection)
     const tileOffset = Math.floor(this.nTiles / 2)
     this.controller = new AbortController();
 
@@ -602,8 +603,8 @@ class Map33 {
     // using geo2tileFraction to get the position in tile coordinates
     // i.e. the coordinates on the 2D grid source texture
     // TODO - altitude map might be different format to the source texture
-    // even diferent coordinate system. So this might not work.
-    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
+    // even different coordinate system. So this might not work.
+    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom, this.terrainNode.mapProjection)
     const intX = Math.floor(x)
     const intY = Math.floor(y)
     const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]

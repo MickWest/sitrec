@@ -2,7 +2,7 @@
 // and name,
 
 
-class CTileMapping {
+export class CTileMapping {
 
 // Latitude is common to both GoogleMapsCompatible and GoogleCRS84Quad
 // convert a tile x position to longitude
@@ -72,7 +72,7 @@ class CTileMapping {
 // The zoom level is the same as the TMS standard.
 // The tile size is 256x256 pixels.
 // Use EPSG:3857 for the projection.
-class CTileMappingGoogleMapsCompatible extends CTileMapping {
+export class CTileMappingGoogleMapsCompatible extends CTileMapping {
     constructor() {
         super();
         this.name = "GoogleMapsCompatible";
@@ -118,7 +118,7 @@ class CTileMappingGoogleMapsCompatible extends CTileMapping {
 // at each zoom level.
 // so calculations of latitude essentially use half the zoom level
 
-class CTileMappingGoogleCRS84Quad extends CTileMapping {
+export class CTileMappingGoogleCRS84Quad extends CTileMapping {
     constructor() {
         super();
         this.name = "GoogleCRS84Quad";
@@ -158,11 +158,4 @@ class CTileMappingGoogleCRS84Quad extends CTileMapping {
     // }
 
 }
-
-
-
-
-// temp for switching between the two
-// export const mapProjection = new CTileMappingGoogleCRS84Quad();
-export const mapProjection = new CTileMappingGoogleMapsCompatible();
 
