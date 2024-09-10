@@ -29,6 +29,39 @@ class CTileMapping {
     }
 
 
+    wmsGetMapURLFromTile(urlBase, name, z, x, y) {
+
+        // convert z,x,y to lat/lon
+        const lat0 = this.getNorthLatitude(y, z);
+        const lon0 = this.getLeftLongitude(x, z);
+        const lat1 = this.getNorthLatitude(y + 1, z);
+        const lon1 = this.getLeftLongitude(x + 1, z);
+
+        // if the urlBase does not end in a ?, then add one
+        if (urlBase[urlBase.length-1] !== '?') {
+            urlBase += '?';
+        }
+
+        const url =
+            urlBase+
+            "SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1" +
+            "&LAYERS=" + name +
+            "&FORMAT=image/jpeg" +
+            "&CRS=EPSG:4326" +
+            `&BBOX=${lon0},${lat1},${lon1},${lat0}` +
+            "&WIDTH=256&HEIGHT=256" +
+            "&STYLES=";
+
+        console.log("URL = " + url);
+        return url;
+
+    }
+
+    wmtsGetMapURLFromTile(urlBase, name, z, x, y) {
+        return `${urlBase}/1.0.0/${name}/default/GoogleCRS84Quad/${z}/${y}/${x}.jpg`
+    }
+
+
 }
 
 // GoogleMapsCompatible is the standard Google Maps tile format
@@ -133,30 +166,3 @@ class CTileMappingGoogleCRS84Quad extends CTileMapping {
 // export const mapProjection = new CTileMappingGoogleCRS84Quad();
 export const mapProjection = new CTileMappingGoogleMapsCompatible();
 
-export function wmsGetMapURLFromTile(urlBase, name, z, x, y) {
-
-    // convert z,x,y to lat/lon
-    const lat0 = mapProjection.getNorthLatitude(y, z);
-    const lon0 = mapProjection.getLeftLongitude(x, z);
-    const lat1 = mapProjection.getNorthLatitude(y + 1, z);
-    const lon1 = mapProjection.getLeftLongitude(x + 1, z);
-
-    const url =
-        "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?" +
-        "SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1" +
-        "&LAYERS=" + name +
-        "&FORMAT=image/jpeg" +
-        "&CRS=EPSG:4326" +
-        `&BBOX=${lon0},${lat1},${lon1},${lat0}` +
-        "&WIDTH=256&HEIGHT=256" +
-        "&STYLES=";
-
-    console.log("URL = " + url);
-    return url;
-
-}
-
-export function wmtsGetMapURLFromTile(urlBase, name, z, x, y) {
-
-    return `${urlBase}/1.0.0/${name}/default/GoogleCRS84Quad/${z}/${y}/${x}.jpg`
-}

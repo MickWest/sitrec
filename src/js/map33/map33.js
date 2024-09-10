@@ -8,12 +8,6 @@ import {mapProjection} from "../../WMSUtils";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 //
 
-
-//////////////////////////////////////////////////////////////////////////////
-// MICK utils
-
-
-
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
 class Utils {

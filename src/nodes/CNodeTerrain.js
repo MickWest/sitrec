@@ -460,10 +460,12 @@ export class CNodeTerrain extends CNode {
     }
 
     // a single point for map33 to get the URL of the map tiles
-    // somewhat roundabout, as we pass in the sourceDef, and this function to all the sources
 
-    mapURLFunction(z, x, y, sourceDef) {
-       // if no layers, then don't pass any layers into the mapURL function
+    mapURLDirect(z, x, y) {
+        // get the mapSource for the current mapType
+        const sourceDef = this.UINode.mapSources[local.mapType];
+
+        // if no layers, then don't pass any layers into the mapURL function
         if (sourceDef.layers === undefined) {
             return sourceDef.mapURL(z, x,y)
         }
@@ -471,13 +473,8 @@ export class CNodeTerrain extends CNode {
         const layerName = this.UINode.layer;
         const layerDef  = sourceDef.layers[layerName];
         assert(layerDef !== undefined, "CNodeTerrain: layer def for " + layerName + " not found in sourceDef")
-        return sourceDef.mapURL(z, x,y, layerName, layerDef.type)
-    }
-
-    mapURLDirect(z, x, y) {
-        // get the mapSource for the current mapType
-        const mapSource = this.UINode.mapSources[local.mapType];
-        return this.mapURLFunction(z, x, y, mapSource);
+        // run it bound to this, so we can access the terrain node
+        return sourceDef.mapURL.bind(this)(z, x,y, layerName, layerDef.type)
     }
 
     serialize() {
