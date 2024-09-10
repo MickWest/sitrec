@@ -16,7 +16,7 @@ import {V3} from "../threeUtils";
 import {assert} from "../assert";
 import {isLocal, SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {configParams} from "../login";
-import {mapProjection, wmsGetMapURLFromTile, wmtsGetMapURLFromTile} from "../WMSUtils";
+import {mapProjection} from "../WMSUtils";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -164,9 +164,7 @@ export class CNodeTerrainUI extends CNode {
 
         // does it have pre-listed layers in the mapDef?
         if (mapDef.layers !== undefined) {
-            // add the layers to the GUI
-//
-          //  this.updateLayersMenu(mapDef.layers);
+            // nothing needed here
         } else {
             // no layers, so we check for WMS capabilities
             // if there's one, then we load it
@@ -194,10 +192,9 @@ export class CNodeTerrainUI extends CNode {
                      for (let layer of layers) {
                          const layerName = layer.getElementsByTagName("ows:Identifier")[0].textContent;
                          mapDef.layers[layerName] = {
-                          // nothingng yet
+                          // nothing yet, extract more later
                          }
                      }
-                   // this.updateLayersMenu(mapDef.layers);
                 } else {
                     const layers = xmlDoc.getElementsByTagName("Layer");
                     for (let layer of layers) {
@@ -206,12 +203,8 @@ export class CNodeTerrainUI extends CNode {
                         }
                     }
                 }
-
-
-
             }
         }
-
 
         // use either the passed in mapDef, or the one we just extracted from the capabilities
         this.mapDef = mapDef;
@@ -220,47 +213,18 @@ export class CNodeTerrainUI extends CNode {
         this.layersMenu?.destroy()
         this.layersMenu = null;
         this.updateLayersMenu(mapDef.layers);
-
     }
-
 
     updateLayersMenu(layers) {
         // layers is an array of layer names
         // we want a KV pair for the GUI
         // where both K and V are the layer name
         this.localLayers = {}
-        // layers is KV now, like:
-        // layers: {
-        //     "basic-v2": {
-        //         minZoom: 0,
-        //             maxZoom: 22,
-        //             type: "png",
-        //     },
-        //     "satellite-v2": {
-        //         minZoom: 0,
-        //             maxZoom: 22,
-        //             type: "jpg",
-        //     }
-        // },
 
         // iterate over keys (layer names) to make the identicak KV pair for the GUI
         for (let layer in layers) {
             this.localLayers[layer] = layer
         }
-
-        // for (let layer of layers) {
-        //     // let name;
-        //     // if (layer.getElementsByTagName !== undefined) {
-        //     //     name = layer.getElementsByTagName("Name")[0].childNodes[0].nodeValue;
-        //     // } else {
-        //     //     name = layer;
-        //     // }
-        //
-        //
-        //
-        //     assert(typeof name === "string", "Layer name must be a string")
-        //     this.localLayers[name] = name
-        // }
 
         // set the layer to the specified default, or the first one in the capabilities
         if (this.mapDef.layer !== undefined) {
@@ -397,7 +361,11 @@ export class CNodeTerrainUI extends CNode {
     }
 
 }
-
+//////////////////////////////////////////////////////////////////////////////////////
+//                                                                                  //
+// CNodeTerrain                                                                     //
+//                                                                                  //
+//////////////////////////////////////////////////////////////////////////////////////
 
 export class CNodeTerrain extends CNode {
     constructor(v) {
@@ -495,13 +463,6 @@ export class CNodeTerrain extends CNode {
 
         this.deferLoad = v.deferLoad;
         this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
-
-
-        // NOTE
-        // this call to console.table was passed the globalscene's children
-        // which seemed to create a extra references to them
-        // and caused a memory leak
-        // console.table(GlobalScene.children)
     }
 
     // a single point for map33 to get the URL of the map tiles
@@ -570,22 +531,20 @@ export class CNodeTerrain extends CNode {
     }
 
     loadMap(id, deferLoad) {
-
-
         // TODO - More graceful handling of errors
         // currently it seems to never load another map if we get errors
         // maybe the global loadingTerrain should be set to false, eventually, if loading fails
 
-
-        // make the correct group visible
         console.log("CNodeTerraina: loadMap, expecting  this.maps")
 
         assert(Object.keys(this.maps).length > 0, "CNodeTerrain: no maps found")
         assert(this.maps[id] !== undefined, "CNodeTerrain: map type " + id + " not found")
 
+        // make the correct group visible
         for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === id);
 
         // check to see if the map has already been loaded
+        // and if so we do nothing (other than the visibility setting)
         if (this.maps[id].map === undefined) {
             Globals.loadingTerrain = true;
             console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
@@ -595,7 +554,6 @@ export class CNodeTerrain extends CNode {
                 tileSize: this.tileSize,
                 tileSegments: this.tileSegments,   // this can go up to 256, with no NETWORK bandwidth.
                 zScale: 1,
-//                radius: metersFromMiles(this.in.radiusMiles.v0),
                 radius: this.radius,
                 loadedCallback:  ()=> {
                     // first check to see if it has been disposed
@@ -671,21 +629,7 @@ export class CNodeTerrain extends CNode {
 
     getPointBelow(A) {
         // given a point in ENU, return the point on the terrain
-
-
-        // OLD: casting a ray from the point to the center of the earth
-        // and finding the intersection with the terrain
-        // const down = getLocalDownVector(A)
-        // const rayCaster = new Raycaster(A, down);
-        // const intersect = this.getClosestIntersect(rayCaster);
-        //
-        // if (intersect !== null) {
-        //     // only return the point if it's above sea level
-        //     if (altitudeAboveSphere(intersect.point) >= 0)
-        //         return intersect.point;
-        // }
-
-        // NEW: using the terrain map to get the elevation
+        // We use the terrain map to get the elevation
         // we use LL (Lat and Lon) to get the data from the terrain maps
         // using LL ensure the results are consistent with the display of the map
         // even if the map is distorted slightly in latitude dud to non-linear scaling
@@ -697,13 +641,13 @@ export class CNodeTerrain extends CNode {
         if (this.maps[local.mapType].map !== undefined)
             elevation = this.maps[local.mapType].map.getElevationInterpolated(LLA.x, LLA.y)
 
-        // then
+        // then we scale a vector from the center of the earth to the point
+        // so that its length is the radius of the earth plus the elevation
+        // then the end of this vector (added to the center) is the point on the terrain
         const earthCenterENU = V3(0,-wgs84.RADIUS,0)
         const centerToA = A.clone().sub(earthCenterENU)
         const scale = (wgs84.RADIUS + elevation) / centerToA.length()
         return earthCenterENU.add(centerToA.multiplyScalar(scale))
-
-
     }
 }
 
