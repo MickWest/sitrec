@@ -131,7 +131,7 @@ class Tile {
     //
 
     const nPosition = Math.sqrt(geometry.attributes.position.count) // size of side of mesh in points
-x
+
     const xTile = this.x;
     const yTile = this.y;
     const zoomTile = this.z;
@@ -217,7 +217,7 @@ x
     this.mesh = new Mesh(this.geometry, tileMaterial)
   }
 
-  fetchTile(signal) {
+  fetchElevationTile(signal) {
     var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.elevationURL())
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
@@ -225,7 +225,7 @@ x
         return;
       }
       getPixels(url, (err, pixels) => {
-        if (err) console.error("fetchTile() -> "+ err)
+        if (err) console.error("fetchElevationTile() -> "+ err)
         this.computeElevation(pixels)
         this.applyMaterial()
         resolve(this)
@@ -407,7 +407,7 @@ class Map33 {
   startLoadingTiles() {
     const promises = Object.values(this.tileCache).map(tile => {
 
-          return tile.fetchTile(this.controller.signal).then(tile => {
+          return tile.fetchElevationTile(this.controller.signal).then(tile => {
             if (this.controller.signal.aborted) {
               // flag that it's aborted, so we can filter it out later
               return Promise.resolve('Aborted');
@@ -468,7 +468,7 @@ class Map33 {
     if (tile.key() in this.tileCache) return
 
     this.tileCache[tile.key()] = tile
-    tile.fetchTile().then(tile => {
+    tile.fetchElevationTile().then(tile => {
       tile.setPosition(this.center)
       this.scene.add(tile.mesh)
       console.log("Adding "+posX+","+posY)
