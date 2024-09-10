@@ -129,18 +129,9 @@ class Tile {
     // but an extra row and column of vertices
     // so 101x101 points = 10201 points
     //
-    // the elevation map is 256x256 points = 65536 points
 
     const nPosition = Math.sqrt(geometry.attributes.position.count) // size of side of mesh in points
-
-    const elevationMap = this.elevation ?? new Float32Array(16) // elevation map
-    
-    const nElevation = Math.sqrt(elevationMap.length) // size of side of elevation map (probably 256)
-
-    // we need to calculate the ratio of the elevation map to the mesh
-    // 0 maps to 0, 100 maps to 255, so we are multiplying by 2.55 (255/100), or (256-1)/100
-    const ratio = (nElevation - 1) / (nPosition)
-
+x
     const xTile = this.x;
     const yTile = this.y;
     const zoomTile = this.z;
@@ -150,7 +141,7 @@ class Tile {
       const xIndex = i % nPosition
       const yIndex = Math.floor(i / nPosition)
 
-      // calculate the fraction of the tile that the vertext is in
+      // calculate the fraction of the tile that the vertex is in
       const yTileFraction = yIndex / (nPosition - 1)
       const xTileFraction = xIndex / (nPosition - 1)
 
@@ -226,7 +217,7 @@ class Tile {
     this.mesh = new Mesh(this.geometry, tileMaterial)
   }
 
-  fetch(signal) {
+  fetchTile(signal) {
     var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.elevationURL())
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
@@ -234,10 +225,8 @@ class Tile {
         return;
       }
       getPixels(url, (err, pixels) => {
-        if (err) console.error("fetch() -> "+ err)
+        if (err) console.error("fetchTile() -> "+ err)
         this.computeElevation(pixels)
-        // this.buildGeometry()
-        // this.buildmesh()
         this.applyMaterial()
         resolve(this)
       })
@@ -418,7 +407,7 @@ class Map33 {
   startLoadingTiles() {
     const promises = Object.values(this.tileCache).map(tile => {
 
-          return tile.fetch(this.controller.signal).then(tile => {
+          return tile.fetchTile(this.controller.signal).then(tile => {
             if (this.controller.signal.aborted) {
               // flag that it's aborted, so we can filter it out later
               return Promise.resolve('Aborted');
@@ -479,7 +468,7 @@ class Map33 {
     if (tile.key() in this.tileCache) return
 
     this.tileCache[tile.key()] = tile
-    tile.fetch().then(tile => {
+    tile.fetchTile().then(tile => {
       tile.setPosition(this.center)
       this.scene.add(tile.mesh)
       console.log("Adding "+posX+","+posY)
