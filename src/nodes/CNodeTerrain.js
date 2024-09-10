@@ -449,13 +449,7 @@ export class CNodeTerrain extends CNode {
             const mapID = this.UINode.mapTypesKV[mapName]
             this.maps[mapID] = {
                 group: new Group(),
-
-                // "source" here is a map33 Source object, which is the source of the map tiles (bitmaps)
-                // or, more correctly, the source of a function that returns the URL of the map tiles
-                // for a given z,x,y
-                source: new CMapTextureSource(mapID,
-                    (z,x,y, sourceDef) => this.mapURLFunction(z,x,y, sourceDef),
-                    this.UINode.mapSources[mapID]),
+                sourceDef:this.UINode.mapSources[mapID],
 
             }
             GlobalScene.add(this.maps[mapID].group)
@@ -478,6 +472,12 @@ export class CNodeTerrain extends CNode {
         const layerDef  = sourceDef.layers[layerName];
         assert(layerDef !== undefined, "CNodeTerrain: layer def for " + layerName + " not found in sourceDef")
         return sourceDef.mapURL(z, x,y, layerName, layerDef.type)
+    }
+
+    mapURLDirect(z, x, y) {
+        // get the mapSource for the current mapType
+        const mapSource = this.UINode.mapSources[local.mapType];
+        return this.mapURLFunction(z, x, y, mapSource);
     }
 
     serialize() {
@@ -548,7 +548,7 @@ export class CNodeTerrain extends CNode {
         if (this.maps[id].map === undefined) {
             Globals.loadingTerrain = true;
             console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
-            this.maps[id].map = new Map33(this.maps[id].group, this.maps[id].source, this.position, {
+            this.maps[id].map = new Map33(this.maps[id].group, this, this.position, {
                 nTiles: this.nTiles,
                 zoom: this.zoom,
                 tileSize: this.tileSize,

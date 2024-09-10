@@ -62,25 +62,6 @@ class Utils {
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-class CMapTextureSource {
-  // now the creation of a URL is done in the sourceDef
-  // which is handled by the CNodeTerrainUI class
-  // and passed in here.
-  constructor (sourceID, mapDefFunction, sourceDef) {
-    this.mapDefFunction = mapDefFunction;
-    this.sourceDef = sourceDef;
-  }
-
-  mapUrl(z, x, y) {
-//    return this.sourceDef.mapURL(z, x, y);
-    return this.mapDefFunction(z, x, y, this.sourceDef);
-  }
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 class Tile {
   constructor(map, z, x, y, size) {
     // check values are within range
@@ -123,7 +104,7 @@ class Tile {
   }
 
   mapUrl() {
-    return this.map.source.mapUrl(this.z, this.x, this.y)
+    return this.map.terrainNode.mapURLDirect(this.z, this.x, this.y)
   }
 
   // takes a 2D array of pixel RBGA and computes the elevation
@@ -276,24 +257,6 @@ class Tile {
   buildMaterial() {
     const urls = this.children().map(tile => tile.mapUrl())
     return QuadTextureMaterial(urls)
-
-
-
-
-
-//     // instead of that, just make one texture from this tile
-//     const url = this.mapUrl()
-//     return new Promise((resolve, reject) => {
-//       const texture = new TextureLoader().load(url, resolve, undefined, reject)
-//       texture.colorSpace = SRGBColorSpace;
-// //      const material = new MeshBasicMaterial({map: texture})
-//       const material = new MeshBasicMaterial({map: texture, fog: false})
-//
-//
-//       resolve(material)
-//     })
-
-
   }
 
   applyMaterial() {
@@ -438,12 +401,10 @@ class Tile {
 }
 
 class Map33 {
-  constructor (scene,  source, geoLocation, options={}) {
+  constructor (scene,  terrainNode, geoLocation, options={}) {
     this.scene = scene
-  //  this.camera = camera
-    this.source = source
+    this.terrainNode = terrainNode
     this.geoLocation = geoLocation
-
 
     this.options = this.getOptions(options)
     this.nTiles = this.options.nTiles
@@ -688,4 +649,4 @@ class Map33 {
 
 }
 
-export {Map33, CMapTextureSource}
+export {Map33}
