@@ -5,40 +5,42 @@ import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
-//
 
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
 
 class Utils {
-  static long2tile (lon, zoom, mapProjection) {
-    assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
-    return mapProjection.lon2Tile(lon, zoom);
-  }
-
-  static lat2tile (lat, zoom, mapProjection) {
-    assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
-    return mapProjection.lat2Tile(lat, zoom);
-  }
+  // static long2tile (lon, zoom, mapProjection) {
+  //   assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
+  //   return mapProjection.lon2Tile(lon, zoom);
+  // }
+  //
+  // static lat2tile (lat, zoom, mapProjection) {
+  //   assert(mapProjection !== undefined, 'mapProjection is undefined in map33.js')
+  //   return mapProjection.lat2Tile(lat, zoom);
+  // }
 
   // note the Y calculation her might not be right
   // as it's not linear in the EPSG3857 projection (Web Mercator or Google Maps)
-  static geo2tile (geoLocation, zoom, mapProjection) {
-    const maxTile = Math.pow(2, zoom);
-    return {
-      x: Math.abs(Math.floor(Utils.long2tile(geoLocation[1], zoom, mapProjection)) % maxTile),
-      y: Math.abs(Math.floor(Utils.lat2tile(geoLocation[0], zoom, mapProjection)) % maxTile)
-    }
-  }
-
-  static geo2tileFraction (geoLocation, zoom, mapProjection) {
-    const maxTile = Math.pow(2, zoom);
-    return {
-      x: Math.abs(Utils.long2tile(geoLocation[1], zoom, mapProjection) % maxTile),
-      y: Math.abs(Utils.lat2tile(geoLocation[0], zoom, mapProjection) % maxTile)
-    }
-  }
+  // static geo2tile (geoLocation, zoom, mapProjection) {
+  //   const maxTile = Math.pow(2, zoom);
+  //   return {
+  //     x: Math.abs(Math.floor(mapProjection.lon2Tile(geoLocation[1], zoom)) % maxTile),
+  //     y: Math.abs(Math.floor(mapProjection.lat2Tile(geoLocation[0], zoom)) % maxTile)
+  //   }
+  // }
+  //
+  // static geo2tileFraction (geoLocation, zoom, mapProjection) {
+  //   const maxTile = Math.pow(2, zoom);
+  //   return {
+  //     x: Math.abs(mapProjection.lon2Tile(geoLocation[1], zoom) % maxTile),
+  //     y: Math.abs(mapProjection.lat2Tile(geoLocation[0], zoom) % maxTile)
+  //   }
+  // }
 
   // Calculate the world position of a tile.
+  // these are used for positioning the tiles in the scene
+  // each tile is a mesh, and the mesh is positioned in the scene
+  // the actual 3D points will be realtive to this.
   static tile2position(z, x, y, center, tileSize) {
     const result = {
       x: (x - center.x) * tileSize,
@@ -63,7 +65,6 @@ class Tile {
     assert(z >= 0 && z <= 16, 'z is out of range, z='+z)
  //   assert(x >= 0 && x < Math.pow(2, z), 'x is out of range, x='+x)
     assert(y >= 0 && y < Math.pow(2, z), 'y is out of range, y='+y)
-
 
     this.map = map
     this.z = z
@@ -136,13 +137,6 @@ class Tile {
   // recalculate the X,Y, Z values for all the verticles of a tile
   // at this point we are Z-up
   recalculateCurve(radius) {
-
-    // if (radius !== wgs84.RADIUS) {
-    //   console.error('recalculateCurve() - radius is not the default WGS84 radius, so the curve will be incorrect')
-    //   console.error('Flat earth simulation will need a different calculation')
-    // }
-
-
     var geometry = this.geometry;
     if (this.mesh !== undefined){
       geometry = this.mesh.geometry;
@@ -153,7 +147,7 @@ class Tile {
 
     assert(geometry !== undefined, 'Geometry not defined in map33.js')
 
-    // we will be calculating the tile vertext positions in EUS
+    // we will be calculating the tile vertex positions in EUS
     // but they will be relative to the tileCenter
     //
     const tileCenter = this.mesh.position;
@@ -195,12 +189,6 @@ class Tile {
       const lat = this.map.terrainNode.mapProjection.getNorthLatitude(yWorld, zoomTile);
       const lon = this.map.terrainNode.mapProjection.getLeftLongitude(xWorld, zoomTile);
 
-      // get elevation
-      const elevationIndex = Math.round(Math.round(yIndex * ratio) * nElevation + xIndex * ratio)
-
-      // OLD: Look op the matching point
-    //  let elevation = elevationMap[elevationIndex] * this.map.options.zScale;
-
       // get the elevation, independent of the display map coordinate system
       let elevation = this.map.getElevationInterpolated(lat, lon);
 
@@ -226,7 +214,6 @@ class Tile {
 
     geometry.computeBoundingBox()
     geometry.computeBoundingSphere()
-
 
     geometry.attributes.position.needsUpdate = true;
   }
@@ -262,7 +249,7 @@ class Tile {
     }
   }
 
-  buildmesh() {
+  buildMesh() {
     this.mesh = new Mesh(this.geometry, tileMaterial)
   }
 
@@ -293,15 +280,8 @@ class Tile {
       center,
       this.size
     )
-//    console.log ("Tile position ZXY = "+position.z+","+position.x+","+position.y)
-  //  this.mesh.position.set(...Object.values(position))
-
     const correctPosition = new Vector3(position.x, position.z,-position.y) // MICK
-
     this.mesh.position.set(correctPosition.x, correctPosition.y,correctPosition.z) // MICK
-
-    // this is in the center of the tile
-    // DebugSphere("Tile"+this.x+","+this.y,correctPosition,100)
 
     // we need to update the matrices, otherwise collision will not work until rendered
     // which can lead to odd asynchronous bugs where the last tiles loaded
@@ -338,7 +318,6 @@ class Tile {
     }
   }
 
-
   // TODO: this fixes the seams, but is not quite right, there are angular and texture discontinuities:
   // http://localhost/sitrec/?custom=http://localhost/sitrec-upload/99999999/Custom-8c549374795aec6f133bfde7f25bad93.json
   resolveSeamX(neighbor) {
@@ -359,10 +338,6 @@ class Tile {
     const offset = neighborCenter.clone().sub(tileCenter);
 
     for (let i = nPosition - 1; i < tPosition; i += nPosition) {
-      // this.mesh.geometry.attributes.position.setY(
-      //   i,
-      //   neighbor.mesh.geometry.attributes.position.getY(i - nPosition + 1)  + offset.y
-      // )
       // copy the entire position vector
       this.mesh.geometry.attributes.position.setXYZ(
           i,  // this is the index of the vertex in the mesh
@@ -413,7 +388,6 @@ class Map33 {
 
     this.tileCache = {};
 
-
     this.init(this.options.deferLoad)
   }
 
@@ -432,7 +406,7 @@ class Map33 {
   }
 
   init(deferLoad=false) {
-    this.center = Utils.geo2tile(this.geoLocation, this.zoom, this.terrainNode.mapProjection)
+    this.center = this.terrainNode.mapProjection.geo2Tile(this.geoLocation, this.zoom)
     const tileOffset = Math.floor(this.nTiles / 2)
     this.controller = new AbortController();
 
@@ -449,7 +423,7 @@ class Map33 {
           // make the meshes immediately instead of when the tile is loaded
           // because we want to display something while waiting
           tile.buildGeometry()
-          tile.buildmesh()
+          tile.buildMesh()
           tile.setPosition(this.center)
           tile.recalculateCurve(wgs84.RADIUS)
           this.scene.add(tile.mesh)
@@ -516,11 +490,6 @@ class Map33 {
     Object.values(this.tileCache).forEach(tile => {
       tile.recalculateCurve(radius)
     })
-    // Object.values(this.tileCache).reverse().forEach(tile => {
-    //   tile.seamY = false
-    //   tile.seamX = false
-    //   tile.resolveSeams(this.tileCache, false) // fix seams, but normals are fine
-    // })
   }
 
 
@@ -539,8 +508,6 @@ class Map33 {
     this.tileCache[tile.key()] = tile
     tile.fetch().then(tile => {
       tile.setPosition(this.center)
-//      tile.recalculateCurve(6371000)
-//      tile.mesh.geometry.needsUpdate = true;
       this.scene.add(tile.mesh)
       console.log("Adding "+posX+","+posY)
     }).then(() => {
@@ -562,13 +529,10 @@ class Map33 {
       if (tile.mesh !== undefined) {
         this.scene.remove(tile.mesh)
         tile.mesh.geometry.dispose();
-      //  console.log("Disposing "+tile.key())
-
         if (tile.mesh.material.uniforms !== undefined) {
             assert(tile.mesh.material.uniforms !== undefined, 'Uniforms not defined');
 
           ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => {
-//            console.log("Disposing "+key)
             tile.mesh.material.uniforms[key].value.dispose();
           });
 
@@ -581,22 +545,6 @@ class Map33 {
     this.scene = null; // MICK - added to help with memory management
   }
 
-  // MICK - added to get elevation at a lat/lon
-  // getElevation(lat, lon) {
-  //   const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom)
-  //   const intX = Math.floor(x)
-  //   const intY = Math.floor(y)
-  //   const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
-  //   if (tile && tile.elevation) {
-  //     const nElevation = Math.sqrt(tile.elevation.length)
-  //     const xIndex = Math.floor((x - tile.x) * nElevation)
-  //     const yIndex = Math.floor((y - tile.y) * nElevation)
-  //     const elevation = tile.elevation[yIndex * nElevation + xIndex]
-  //     return elevation
-  //   }
-  //   return 0  // default to sea level if elevation data not loaded
-  // }
-
   // interpolate the elevation at a lat/lon
   // does not handle interpolating between tiles (i.e. crossing tile boundaries)
   getElevationInterpolated(lat, lon) {
@@ -604,7 +552,7 @@ class Map33 {
     // i.e. the coordinates on the 2D grid source texture
     // TODO - altitude map might be different format to the source texture
     // even different coordinate system. So this might not work.
-    const {x, y} = Utils.geo2tileFraction([lat, lon], this.zoom, this.terrainNode.mapProjection)
+    const {x, y} = this.terrainNode.mapProjection.geo2TileFraction([lat, lon], this.zoom)
     const intX = Math.floor(x)
     const intY = Math.floor(y)
     const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
@@ -617,23 +565,16 @@ class Map33 {
       let y0 = Math.floor(yIndex)
       let y1 = Math.ceil(yIndex)
 
-      // clamp to the bounds of the elevation map 0..nElevation-1
-        x0 = Math.max(0, Math.min(nElevation - 1, x0))
-        x1 = Math.max(0, Math.min(nElevation - 1, x1))
-        y0 = Math.max(0, Math.min(nElevation - 1, y0))
-        y1 = Math.max(0, Math.min(nElevation - 1, y1))
-
-
-
-
+      // clamp to the bounds of the elevation map 0 ... nElevation-1
+      x0 = Math.max(0, Math.min(nElevation - 1, x0))
+      x1 = Math.max(0, Math.min(nElevation - 1, x1))
+      y0 = Math.max(0, Math.min(nElevation - 1, y0))
+      y1 = Math.max(0, Math.min(nElevation - 1, y1))
 
       const f00 = tile.elevation[y0 * nElevation + x0]
       const f01 = tile.elevation[y0 * nElevation + x1]
       const f10 = tile.elevation[y1 * nElevation + x0]
       const f11 = tile.elevation[y1 * nElevation + x1]
-
-
-
       const f0 = f00 + (f01 - f00) * (xIndex - x0)
       const f1 = f10 + (f11 - f10) * (xIndex - x0)
       const elevation = f0 + (f1 - f0) * (yIndex - y0)

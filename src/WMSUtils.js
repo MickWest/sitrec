@@ -28,6 +28,22 @@ export class CTileMapping {
         return x / Math.pow(2, z) * 360 - 180;
     }
 
+    geo2Tile(geoLocation, zoom) {
+        const maxTile = Math.pow(2, zoom);
+        return {
+            x: Math.abs(Math.floor(this.lon2Tile(geoLocation[1], zoom)) % maxTile),
+            y: Math.abs(Math.floor(this.lat2Tile(geoLocation[0], zoom)) % maxTile)
+        }
+    }
+
+    geo2TileFraction (geoLocation, zoom, mapProjection) {
+        const maxTile = Math.pow(2, zoom);
+        return {
+            x: Math.abs(this.lon2Tile(geoLocation[1], zoom) % maxTile),
+            y: Math.abs(this.lat2Tile(geoLocation[0], zoom) % maxTile)
+        }
+    }
+
 
     wmsGetMapURLFromTile(urlBase, name, z, x, y) {
 
