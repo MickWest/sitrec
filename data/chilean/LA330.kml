@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>LA330</name>
+	<Style id="default">
+	</Style>
+	<StyleMap id="default0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#default</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="hl">
+		<IconStyle>
+			<scale>1.2</scale>
+		</IconStyle>
+	</Style>
+	<Placemark>
+		<name>LA330</name>
+		<description>Converted by Metabunk</description>
+		<styleUrl>#default0</styleUrl>
+		<gx:Track>
+			<extrude>1</extrude>
+			<tessellate>1</tessellate>
+			<altitudeMode>absolute</altitudeMode>
+			<when>2014-11-11T16:53:41Z</when>
+			<when>2014-11-11T16:54:41Z</when>
+			<when>2014-11-11T16:55:40Z</when>
+			<when>2014-11-11T16:56:41Z</when>
+			<when>2014-11-11T16:57:39Z</when>
+			<when>2014-11-11T16:58:42Z</when>
+			<when>2014-11-11T16:59:42Z</when>
+			<when>2014-11-11T17:00:42Z</when>
+			<when>2014-11-11T17:01:39Z</when>
+			<when>2014-11-11T17:02:38Z</when>
+			<when>2014-11-11T17:03:42Z</when>
+			<when>2014-11-11T17:04:40Z</when>
+			<when>2014-11-11T17:05:38Z</when>
+			<when>2014-11-11T17:06:21Z</when>
+			<when>2014-11-11T17:07:41Z</when>
+			<when>2014-11-11T17:08:43Z</when>
+			<when>2014-11-11T17:09:41Z</when>
+			<when>2014-11-11T17:10:43Z</when>
+			<when>2014-11-11T17:11:42Z</when>
+			<when>2014-11-11T17:12:24Z</when>
+			<when>2014-11-11T17:12:24Z</when>
+			<gx:coord>-70.7837 -33.4453 853.4399726899209</gx:coord>
+			<gx:coord>-70.7882 -33.5091 1600.199948793602</gx:coord>
+			<gx:coord>-70.8608 -33.5097 2331.719925384963</gx:coord>
+			<gx:coord>-70.949 -33.4831 3027.679903114243</gx:coord>
+			<gx:coord>-71.00790000000001 -33.4168 3723.639880843524</gx:coord>
+			<gx:coord>-71.04519999999999 -33.3201 4419.599858572805</gx:coord>
+			<gx:coord>-71.08280000000001 -33.2248 5052.059838334085</gx:coord>
+			<gx:coord>-71.1225 -33.1227 5661.659818826885</gx:coord>
+			<gx:coord>-71.1621 -33.0209 6271.259799319688</gx:coord>
+			<gx:coord>-71.1906 -32.9131 6781.799782982408</gx:coord>
+			<gx:coord>-71.1925 -32.7896 7292.339766645127</gx:coord>
+			<gx:coord>-71.1948 -32.6703 7833.359749332489</gx:coord>
+			<gx:coord>-71.1969 -32.5552 8374.379732019848</gx:coord>
+			<gx:coord>-71.1985 -32.4729 8747.759720071688</gx:coord>
+			<gx:coord>-71.2015 -32.3155 9136.37970763585</gx:coord>
+			<gx:coord>-71.2032 -32.2002 8321.039733726728</gx:coord>
+			<gx:coord>-71.206 -32.0918 7505.699759817607</gx:coord>
+			<gx:coord>-71.20820000000001 -31.963 6690.359785908487</gx:coord>
+			<gx:coord>-71.2101 -31.8439 6088.379805171846</gx:coord>
+			<gx:coord>-71.2102 -31.7618 3044.189902585923</gx:coord>
+			<gx:coord>-71.2102 -31.7618 0</gx:coord>
+		</gx:Track>
+	</Placemark>
+</Document>
+</kml>

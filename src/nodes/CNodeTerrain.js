@@ -321,6 +321,7 @@ export class CNodeTerrainUI extends CNode {
         if (this.startLoading) {
             this.startLoading = false;
             this.terrainNode.maps[local.mapType].map.startLoadingTiles();
+            this.terrainNode.elevationMap.startLoadingTiles();
         }
     }
 
@@ -532,6 +533,28 @@ export class CNodeTerrain extends CNode {
             this.mapProjection = new CTileMappingGoogleMapsCompatible();
         }
 
+        // we do a single elevation map for all the maps
+        // they will use this to get the elevation for the meshes via lat/lon
+        // so the elevation map can use a different coordinate system to the textured geometry map
+        if (this.elevationMap === undefined) {
+            this.elevationMap = new Map33(this.maps[id].group, this, this.position, {
+                nTiles: this.nTiles,
+                zoom: this.zoom,
+                tileSize: this.tileSize,
+                tileSegments: this.tileSegments,
+                zScale: 1,
+                radius: this.radius,
+                loadedCallback: ()=> {
+                    console.log("CNodeTerrain: elevation map loaded")
+                    this.recalculate();
+                },
+                deferLoad: deferLoad,
+                mapURL: this.mapURLDirect.bind(this),
+                mapProjection: new CTileMappingGoogleMapsCompatible(),
+                elOnly: true,
+            })
+        }
+
 
         // make the correct group visible
         for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === id);
@@ -548,6 +571,7 @@ export class CNodeTerrain extends CNode {
                 tileSegments: this.tileSegments,   // this can go up to 256, with no NETWORK bandwidth.
                 zScale: 1,
                 radius: this.radius,
+                elevationMap: this.elevationMap,
                 loadedCallback:  ()=> {
                     // first check to see if it has been disposed
                     // this happnes and need fixing, but for now just warn and
@@ -599,7 +623,7 @@ export class CNodeTerrain extends CNode {
         }
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,radius)
         assert(this.maps[local.mapType].map !== undefined, "CNodeTerrain: map is undefined")
-        this.maps[local.mapType].map.recalculateCurveMap(radius)
+        this.maps[local.mapType].map.recalculateCurveMap(radius, true)
 
         propagateLayerMaskObject(this.maps[local.mapType].group)
 

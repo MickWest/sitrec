@@ -224,12 +224,19 @@ class Tile {
         reject(new Error('Aborted'));
         return;
       }
-      getPixels(url, (err, pixels) => {
-        if (err) console.error("fetchElevationTile() -> "+ err)
-        this.computeElevation(pixels)
-        this.applyMaterial()
-        resolve(this)
-      })
+      if (this.map.elOnly) {
+        getPixels(url, (err, pixels) => {
+          if (err) console.error("fetchElevationTile() -> " + err)
+          this.computeElevation(pixels)
+          //this.applyMaterial()
+          resolve(this)
+        })
+      } else {
+        // if it's not elOnly, then we can immediately apply the material.
+        // as elevation is handled later
+        this.applyMaterial();
+        resolve(this);
+      }
     })
   }
 
@@ -346,7 +353,8 @@ class Map33 {
     this.loadedCallback = options.loadedCallback; // function to call when map is all loaded
     this.loaded = false; // mick flag to indicate loading is finished
 
-    this.elevationOnly = options.elevationOnly ?? false;
+    this.elOnly = options.elOnly ?? false;
+    this.elevationMap = options.elevationMap;
 
     this.tileCache = {};
 
@@ -384,11 +392,13 @@ class Map33 {
           this.tileCache[tile.key()] = tile
           // make the meshes immediately instead of when the tile is loaded
           // because we want to display something while waiting
-          tile.buildGeometry()
-          tile.buildMesh()
-          tile.setPosition(this.center)
-          tile.recalculateCurve(wgs84.RADIUS)
-          this.scene.add(tile.mesh)
+          if (!this.elOnly) {
+            tile.buildGeometry()
+            tile.buildMesh()
+            tile.setPosition(this.center)
+            tile.recalculateCurve(wgs84.RADIUS)
+            this.scene.add(tile.mesh)
+          }
         }
       }
     }
@@ -416,8 +426,9 @@ class Map33 {
             // do an initial setting of the vertex positions
             // to accurate EGS84 positions
             // the height map should be loaded by now.
-            tile.recalculateCurve(wgs84.RADIUS)
-
+            if (!this.elOnly) {
+              tile.recalculateCurve(wgs84.RADIUS)
+            }
             return tile
           })
 
@@ -428,18 +439,20 @@ class Map33 {
       // Filter out the 'Aborted' values
       tiles = tiles.filter(tile => tile !== 'Aborted');
 
-      tiles.reverse().forEach(tile => {
-        tile.recalculateCurve(this.radius)
-        tile.resolveSeams(this.tileCache)
-      })
+      if (!this.elOnly) {
+        tiles.reverse().forEach(tile => {
+          tile.recalculateCurve(this.radius)
+          tile.resolveSeams(this.tileCache)
+        })
+      }
       if (this.loadedCallback) this.loadedCallback();
       this.loaded = true; // mick flag loading is finished
     })
   }
 
-  recalculateCurveMap(radius) {
+  recalculateCurveMap(radius, force=false) {
 
-    if (radius == this.radius) {
+    if (!force && radius == this.radius) {
       console.log('map33 recalculateCurveMap Radius is the same - no need to recalculate, radius = '+radius);
       return;
     }
@@ -510,6 +523,11 @@ class Map33 {
   // interpolate the elevation at a lat/lon
   // does not handle interpolating between tiles (i.e. crossing tile boundaries)
   getElevationInterpolated(lat, lon) {
+
+    if (this.elevationMap !== undefined) {
+      return this.elevationMap.getElevationInterpolated(lat, lon);
+    }
+
     // using geo2tileFraction to get the position in tile coordinates
     // i.e. the coordinates on the 2D grid source texture
     // TODO - altitude map might be different format to the source texture
