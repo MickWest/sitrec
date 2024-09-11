@@ -12,10 +12,19 @@ $2: { kind: "$1",\n$3},
 
 export const commonTargetTrack = {
     targetTrack: {kind: "trackFromDataFile", file: "TargetTrack", dataID: "TargetTrackData",},
-    displayTargetTrack: {kind: "DisplayTrack", track: "TargetTrackData", color: [1,0,0], width: 1,},
+    displayTargetTrack: {kind: "DisplayTrack", track: "TargetTrackData", color: [1,0,0], width: 1},
     displaySmoothedTarget: {kind: "DisplayTrack", track: "targetTrack", color: [1,0,0], width: 4,},
     targetSphereBig: {kind: "DisplayTargetSphere", track: "targetTrack", size: 1000, color: [1,0,0],},
 }
+
+export const commonOtherTrack = {
+    otherTrack: {kind: "trackFromDataFile", file: "OtherTrack", dataID: "OtherTrackData",},
+    displayOtherTrack: {kind: "DisplayTrack", track: "OtherTrackData", color: [1,1,0], width: 1},
+    displayOtherSmoothedTarget: {kind: "DisplayTrack", track: "otherTrack", color: [1,1,0], width: 4,},
+    otherSphereBig: {kind: "DisplayTargetSphere", track: "otherTrack", size: 1000, color: [1,1,0],},
+}
+
+
 
 export const commonTrackedCamera = {
     cameraTrack: {},

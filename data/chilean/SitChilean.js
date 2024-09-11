@@ -16,6 +16,7 @@ export const SitChilean = {
 //        TargetObjectFile: 'models/A340-600-F18Engine.glb',
         TargetObjectFile: 'models/A340-600.glb',
         DataFile: 'chilean/Chilean Navy Extracted Data 720.csv', // 720p version as videos have slight differences
+        OtherTrack: 'chilean/LA330.kml',
     },
     videoFile: "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 720p.mp4",
     startTime: "2014-11-11T16:51:55Z",
@@ -75,6 +76,8 @@ export const SitChilean = {
     // setup of common tracks, cameras, labels, etc
     include_TrackToTrack: true,
 
+    include_OtherTrack: true,
+
     // // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
 
@@ -99,11 +102,24 @@ export const SitChilean = {
 
     // Adds a graph of the distance from the camera to the target
     targetDistanceGraph: {targetTrack: "targetTrack", cameraTrack: "cameraTrack",
-                          left: 0.0, top: 0.25, width: .15, height: .33,},
+                          left: 0.0, top: 0.25, width: .15, height: .33,
+                          maxY:120,
+    },
+
+    altitudeGraph: {
+        targetTrack: "targetTrack",
+        left: 0.0, top: 0.58, width: .15, height: .33,
+        max: 30000,
+    },
+
+
 
     // Adds a sphere of selectable size at the target's position
-    targetSizedSphere: { track: "targetTrack", size: 3, color: "#000000",},
+    IB6830Sphere:{ kind: "targetSizedSphere", track: "targetTrack", size: 3, color: "#000000",},
+    LA330Sphere:{ kind: "targetSizedSphere", track: "otherTrack", size: 3, color: "#000000",},
 
+    IB6830TrackToggle: { kind: "ToggleInLookView", object:"displayTargetTrack", name:"IB6830 Track",},
+    LA330TrackToggle: { kind: "ToggleInLookView", object:"displayOtherTrack", name:"LA330 Track",},
 
     shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
         frequency: {kind: "GUIValue", value: 0.276, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"effects"},
