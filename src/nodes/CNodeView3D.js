@@ -644,7 +644,7 @@ export class CNodeView3D extends CNodeViewCanvas {
                 // otherwise we generate one from the node id and the effect id
                 effectID = def.id ?? (this.id + "_" + effectID);
 
-                console.log("Adding effect kind" + effectKind+" id="+effectID+"  to "+this.id)
+//                console.log("Adding effect kind" + effectKind+" id="+effectID+"  to "+this.id)
 
                 // create the node, which will wrap a .pass member which is the ShaderPass
                 this.effectPasses.push(new CNodeEffect({
