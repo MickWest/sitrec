@@ -702,7 +702,7 @@ async function setupFunctions() {
         await requestGeoLocation()
     }
 
-    console.log("Finalizing....")
+//    console.log("Finalizing....")
 
     GlobalDateTimeNode.populateStartTimeFromUTCString(Sit.startTime)
 

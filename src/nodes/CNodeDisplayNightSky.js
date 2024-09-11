@@ -591,7 +591,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
 
-        console.log("Done with CNodeDisplayNightSky constructor")
+//        console.log("Done with CNodeDisplayNightSky constructor")
     }
 
     updateStarlink() {
@@ -1223,7 +1223,7 @@ void main() {
     addConstellationNames(scene) {
         const constellations = FileManager.get("constellations");
         const features = constellations.features;
-        console.log(features)
+//        console.log(features)
 
     }
 
