@@ -13,10 +13,15 @@ export const SitChilean = {
     files: {
         cameraFile: 'chilean/Chile Chopper Track from video GPSTime.kml',
         TargetTrack: "chilean/IB6830 - Incorporating Radar Positions.kml",
-//        TargetObjectFile: 'models/A340-600-F18Engine.glb',
-        TargetObjectFile: 'models/A340-600.glb',
-        DataFile: 'chilean/Chilean Navy Extracted Data 720.csv', // 720p version as videos have slight differences
         OtherTrack: 'chilean/LA330.kml',
+
+//        OtherTrack: "chilean/IB6830 - Incorporating Radar Positions.kml",
+//        TargetTrack: 'chilean/LA330.kml',
+
+
+        TargetObjectFile: 'models/A340-600.glb',
+        OtherObjectFile: 'models/737 MAX 8 BA.glb',
+        DataFile: 'chilean/Chilean Navy Extracted Data 720.csv', // 720p version as videos have slight differences
     },
     videoFile: "../sitrec-videos/public/Chilean Navy 13-51-55 from HD 720p.mp4",
     startTime: "2014-11-11T16:51:55Z",
@@ -84,7 +89,8 @@ export const SitChilean = {
     // the target object is the model of the plane, as specified by the file
     // tiltType of "banking" will cause the model to bank in turns
     // wind is used to adjust the model's orientation (i.e it has to head more into the wind)
-    targetObject:{file: "TargetObjectFile", tiltType: "banking", wind: "targetWind",},
+    targetObject:{file: "TargetObjectFile", track: "targetTrack", tiltType: "banking", wind: "targetWind",},
+//    targetObject:{file: "OtherObjectFile", track: "targetTrack", tiltType: "banking", wind: "targetWind",},
 
     // wesCamFOV replicates the field of view of the camera that took the video
     // This is specific to this case in that there's adjustments for the "mode" (IR or EOW/EON)
