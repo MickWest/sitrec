@@ -69,6 +69,7 @@ class Tile {
   }
 
   elevationURL() {
+    if (this.elevationURLString === null || this.elevationURLString==="") return null
     return `${this.elevationURLString}/${this.z}/${this.x}/${this.y}.png`
   }
 
@@ -218,7 +219,14 @@ class Tile {
   }
 
   fetchElevationTile(signal) {
-    var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(this.elevationURL())
+    const elevationURL = this.elevationURL()
+    if (elevationURL === null) {
+      // no elevation URL, so we can't load the elevation
+      // this would be either in install with no elevation data avaialble
+      // or when the user has selected the "flat" option
+      return;
+    }
+    var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(elevationURL)
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
         reject(new Error('Aborted'));
