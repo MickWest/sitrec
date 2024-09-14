@@ -44,7 +44,7 @@ class Tile {
     this.x = x
     this.y = y
     this.size = size || this.map.options.tileSize
-    this.elevationURLString = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium"
+ //   this.elevationURLString = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium"
     this.shape = null
     this.elevation = null
     this.seamX = false
@@ -69,8 +69,11 @@ class Tile {
   }
 
   elevationURL() {
-    if (this.elevationURLString === null || this.elevationURLString==="") return null
-    return `${this.elevationURLString}/${this.z}/${this.x}/${this.y}.png`
+    //if (this.elevationURLString === null || this.elevationURLString==="") return null
+    //return `${this.elevationURLString}/${this.z}/${this.x}/${this.y}.png`
+
+    return this.map.terrainNode.elevationURLDirect(this.z, this.x, this.y)
+
   }
 
   mapUrl() {
@@ -220,12 +223,7 @@ class Tile {
 
   fetchElevationTile(signal) {
     const elevationURL = this.elevationURL()
-    if (elevationURL === null) {
-      // no elevation URL, so we can't load the elevation
-      // this would be either in install with no elevation data avaialble
-      // or when the user has selected the "flat" option
-      return;
-    }
+
     var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(elevationURL)
     return new Promise((resolve, reject) => {
       if (signal.aborted) {
@@ -233,6 +231,15 @@ class Tile {
         return;
       }
       if (this.map.elOnly) {
+
+        if (elevationURL === null) {
+          // no elevation URL, so we can't load the elevation
+          // this would be either be in installs with no elevation data avaialble
+          // or when the user has selected the "flat" option
+          resolve(this);
+          return;
+        }
+
         getPixels(url, (err, pixels) => {
           if (err) console.error("fetchElevationTile() -> " + err)
           this.computeElevation(pixels)

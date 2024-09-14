@@ -86,11 +86,61 @@ export class CNodeTerrainUI extends CNode {
         this.gui = guiMenus.terrain;
         this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).setLabelColor(terrainGUIColor).listen().name("Map Type")
 
-
         // WHY local???
         this.setMapType(local.mapType)
+//////////////////////////////////////////////////////////////////////////////////////////
+        // same for elevation sources
+        if (configParams.customElevationSources !== undefined) {
+            this.elevationSources = configParams.customElevationSources;
+        }
+        else {
+            this.elevationSources = {};
+        }
+
+        this.elevationSources = {
+            ...this.elevationSources,
+            // and some defaults
+            Flat: {
+                name: "Flat",
+                url: "",
+                maxZoom: 14,
+                minZoom: 0,
+                tileSize: 256,
+                attribution: "",
+            },
+        }
+        // and the KV pair for the GUI
+        this.elevationTypesKV = {}
+        for (const elevationType in this.elevationSources) {
+            const elevationDef = this.elevationSources[elevationType]
+            this.elevationTypesKV[elevationDef.name] = elevationType
+        }
+        // set the type to the first one to the
+//        local.elevationType = Object.keys(this.elevationTypesKV)[0]
+        local.elevationType = Object.keys(this.elevationSources)[0]
+        // add the menu
+        this.elevationTypeMenu = this.gui.add(local, "elevationType", this.elevationTypesKV).setLabelColor(terrainGUIColor).listen().name("Elevation Type")
+
+        this.elevationTypeMenu.onChange( v => {
+
+            // elevation map has changed, so kill the old one
+            this.terrainNode.elevationMap = undefined;
 
 
+            // bit brute force, but just unload and reload the terrain
+            this.terrainNode.unloadMap(local.mapType);
+
+            // for now, just reload the terrain
+            // which will reload the elevation map (as it's null)
+            // TODO: split loading of elevation and terrain maps
+         //  this.setMapType(local.mapType).then(() => {
+                this.terrainNode.loadMap(local.mapType)
+         //   })
+        })
+
+
+
+/////////////////////////////////////////////////////
         if (v.terrain) {
             this.terrainNode = NodeMan.get(v.terrain);
             this.lat = this.terrainNode.lat;
@@ -466,6 +516,18 @@ export class CNodeTerrain extends CNode {
         return sourceDef.mapURL.bind(this)(z, x,y, layerName, layerDef.type)
     }
 
+
+    elevationURLDirect(z, x, y) {
+        // get the elevation source for the current type
+        const sourceDef = this.UINode.elevationSources[local.elevationType];
+        if (sourceDef.url === "" || sourceDef.url === undefined) {
+            return null;
+        }
+        return sourceDef.url + "/" + z + "/" + x + "/" + y + ".png";
+    }
+
+
+
     serialize() {
         let out = super.serialize();
         out = {
@@ -549,7 +611,8 @@ export class CNodeTerrain extends CNode {
                     this.recalculate();
                 },
                 deferLoad: deferLoad,
-                mapURL: this.mapURLDirect.bind(this),
+              //  mapURL: this.mapURLDirect.bind(this),
+                elevationULR: this.elevationURLDirect.bind(this),
                 mapProjection: new CTileMappingGoogleMapsCompatible(),
                 elOnly: true,
             })
