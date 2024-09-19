@@ -18,8 +18,8 @@ export const SitDAL2158 = {
     videoFile: "../sitrec-videos/private/Blatant-enhanced.mp4",
     skyColor: 'skyblue',
     mainCamera: {
-        startCameraPosition: [-475.76, 83065.85, -135001.17],
-        startCameraTarget: [-585.88, 82459.73, -134213.45],
+        startCameraPositionLLA:[38.489577,-76.801253,29169.575490],
+        startCameraTargetLLA:[38.483602,-76.795820,28597.349958],
     },
     lookCamera:{ fov: 30},
 

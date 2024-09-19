@@ -40,6 +40,8 @@ export const SitAguadilla = {
     menuName: "Aguadilla",
     isTextable: false,
 
+    legacyOrigin: true, // patch to use the old method of setting the origin form the map center
+
     fps: 29.97,
     frames: 7028,  // note, old CSV was 7027, so duplicated the last line to match the video at 7028
     aFrame: 0,

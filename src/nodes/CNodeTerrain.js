@@ -502,13 +502,43 @@ export class CNodeTerrain extends CNode {
         let circumfrence = 40075000*cos(radians(this.lat));
         this.tileSize = circumfrence/Math.pow(2,this.zoom) // tileSize is the width and height of the tile in meters
 
-        // we need to adjust the LL origin to match the 3D map
-        // but only if it's not already set
-        if (Sit.lat === undefined) {
-            // Sit.lat = lat0
-            // Sit.lon = lon0
-            Sit.lat = this.lat
-            Sit.lon = this.lon
+
+
+        // the origin is in the middle of the first tile
+        // so we need to find the latitude and longitude of this tile center
+        // this is all a bit dodgy
+
+
+        if (Sit.legacyOrigin) {
+            // legacy for some old sitches
+            // that use world coordinates based on this origin
+            // like the splines in Agua
+            // these all use GoogleMapsCompatible projection
+            const mapProjection = new CTileMappingGoogleMapsCompatible();
+            var tilex = Math.floor(mapProjection.lon2Tile(this.position[1], this.zoom)) + 0.5 // this is probably correct
+            var tiley = Math.floor(mapProjection.lat2Tile(this.position[0], this.zoom)) + 0.5 // this might be a bit off, as not linear?
+            var lon0 = mapProjection.tile2Lon(tilex, this.zoom)
+            var lat0 = mapProjection.tile2Lat(tiley, this.zoom)
+            console.log("LL Tile" + tilex + "," + tiley + " = (Lat,Lon)" + lat0 + "," + lon0)
+
+            // we need to adjust the LL origin to match the 3D map
+            // but only if it's not already set
+            if (Sit.lat === undefined) {
+                Sit.lat = lat0
+                Sit.lon = lon0
+            }
+
+        } else {
+
+
+            // we need to adjust the LL origin to match the 3D map
+            // but only if it's not already set
+            if (Sit.lat === undefined) {
+                // Sit.lat = lat0
+                // Sit.lon = lon0
+                Sit.lat = this.lat
+                Sit.lon = this.lon
+            }
         }
 
         local.mapType = v.mapType ?? "mapbox"
