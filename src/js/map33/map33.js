@@ -4,6 +4,8 @@ import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
+import {DebugArrowAB, removeDebugArrow} from "../../threeExt";
+import {GlobalScene} from "../../LocalFrame";
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
@@ -111,6 +113,78 @@ class Tile {
   }
 
 
+
+  removeDebugGeometry() {
+    if (this.debugArrows !== undefined) {
+        this.debugArrows.forEach(arrow => {
+            removeDebugArrow(arrow)
+        })
+    }
+    this.debugArrows = []
+  }
+
+  buildDebugGeometry() {
+    // patch in a debug rectangle around the tile using arrows
+    // this is useful for debugging the tile positions - especially elevation vs map
+    // arrows are good as they are more visible than lines
+
+    this.removeDebugGeometry()
+
+    if (!this.map.terrainNode.UINode.debugElevationGrid) return;
+
+
+    const xTile = this.x;
+    const yTile = this.y;
+    const zoomTile = this.z;
+
+
+    console.log ("Building Debug Geometry for tile "+xTile+","+yTile+" at zoom "+zoomTile)
+    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
+    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
+
+
+    // get LLA of the tile corners
+    const latSW = this.map.options.mapProjection.getNorthLatitude(yTile, zoomTile);
+    const lonSW = this.map.options.mapProjection.getLeftLongitude(xTile, zoomTile);
+    const latNW = this.map.options.mapProjection.getNorthLatitude(yTile + 1, zoomTile);
+    const lonNW = this.map.options.mapProjection.getLeftLongitude(xTile, zoomTile);
+    const latSE = this.map.options.mapProjection.getNorthLatitude(yTile, zoomTile);
+    const lonSE = this.map.options.mapProjection.getLeftLongitude(xTile + 1, zoomTile);
+    const latNE = this.map.options.mapProjection.getNorthLatitude(yTile + 1, zoomTile);
+    const lonNE = this.map.options.mapProjection.getLeftLongitude(xTile + 1, zoomTile);
+
+    // convert to EUS
+    const alt = 10000;
+    const vertexSW = LLAToEUS(latSW,lonSW,alt)
+    const vertexNW = LLAToEUS(latNW,lonNW,alt)
+    const vertexSE = LLAToEUS(latSE,lonSE,alt)
+    const vertexNE = LLAToEUS(latNE,lonNE,alt)
+
+    // use these four points to draw debug lines at 10000m above the tile
+    //DebugArrowAB("UFO Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
+
+
+    const id1 = "DebugTile"+(xTile*1000+yTile)+"_1"
+    const id2 = "DebugTile"+(xTile*1000+yTile)+"_2"
+    const id3 = "DebugTile"+(xTile*1000+yTile)+"_3"
+    const id4 = "DebugTile"+(xTile*1000+yTile)+"_4"
+    this.debugArrows.push(id1)
+    this.debugArrows.push(id2)
+    this.debugArrows.push(id3)
+    this.debugArrows.push(id4)
+
+
+
+    DebugArrowAB(id1, vertexSW, vertexNW, "#ff0000", true, GlobalScene) // red = north/south
+    DebugArrowAB(id2, vertexSW, vertexSE, "#0000FF", true, GlobalScene) // blue = east/west
+    DebugArrowAB(id3, vertexNW, vertexNE, "#0000FF", true, GlobalScene)
+    DebugArrowAB(id4, vertexSE, vertexNE, "#ff0000", true, GlobalScene)
+
+
+
+  }
+
+
   // recalculate the X,Y, Z values for all the verticles of a tile
   // at this point we are Z-up
   recalculateCurve(radius) {
@@ -140,6 +214,7 @@ class Tile {
     const yTile = this.y;
     const zoomTile = this.z;
 
+
     for (let i = 0; i < geometry.attributes.position.count;i++) {
 
       const xIndex = i % nPosition
@@ -154,8 +229,8 @@ class Tile {
       const yWorld = yTile + yTileFraction;
 
       // convert that to lat/lon
-      const lat = this.map.terrainNode.mapProjection.getNorthLatitude(yWorld, zoomTile);
-      const lon = this.map.terrainNode.mapProjection.getLeftLongitude(xWorld, zoomTile);
+      const lat = this.map.options.mapProjection.getNorthLatitude(yWorld, zoomTile);
+      const lon = this.map.options.mapProjection.getLeftLongitude(xWorld, zoomTile);
 
       // get the elevation, independent of the display map coordinate system
       let elevation = this.map.getElevationInterpolated(lat, lon);
@@ -178,7 +253,7 @@ class Tile {
     }
 
     // Removed this as it's expensive. And seems not needed for just curve flattenog.
-    // geometry.computeVertexNormals()
+    geometry.computeVertexNormals()
 
     geometry.computeBoundingBox()
     geometry.computeBoundingSphere()
@@ -381,7 +456,7 @@ class Map33 {
     zoom: 11,
     tileSize: 600,
     tileSegments: 100,
-    zScale: 0.045,
+    zScale: 1,
   }
 
   getOptions(providedOptions) {
@@ -391,7 +466,7 @@ class Map33 {
   }
 
   init(deferLoad=false) {
-    this.center = this.terrainNode.mapProjection.geo2Tile(this.geoLocation, this.zoom)
+    this.center = this.options.mapProjection.geo2Tile(this.geoLocation, this.zoom)
     const tileOffset = Math.floor(this.nTiles / 2)
     this.controller = new AbortController();
 
@@ -413,6 +488,8 @@ class Map33 {
             tile.setPosition(this.center)
             tile.recalculateCurve(wgs84.RADIUS)
             this.scene.add(tile.mesh)
+          } else {
+            tile.buildDebugGeometry();
           }
         }
       }
@@ -482,6 +559,11 @@ class Map33 {
     })
   }
 
+  refreshDebugGrid() {
+    Object.values(this.tileCache).forEach(tile => {
+      tile.buildDebugGeometry()
+    })
+  }
 
 
   addFromPosition(posX, posY) {
@@ -516,6 +598,7 @@ class Map33 {
     this.controller.abort();
 
     Object.values(this.tileCache).forEach(tile => {
+      tile.removeDebugGeometry(); // any debug arrows, etc
       if (tile.mesh !== undefined) {
         this.scene.remove(tile.mesh)
         tile.mesh.geometry.dispose();
@@ -547,7 +630,7 @@ class Map33 {
     // i.e. the coordinates on the 2D grid source texture
     // TODO - altitude map might be different format to the source texture
     // even different coordinate system. So this might not work.
-    const {x, y} = this.terrainNode.mapProjection.geo2TileFraction([lat, lon], this.zoom)
+    const {x, y} = this.options.mapProjection.geo2TileFraction([lat, lon], this.zoom)
     const intX = Math.floor(x)
     const intY = Math.floor(y)
     const tile = this.tileCache[`${this.zoom}/${intX}/${intY}`]
@@ -573,7 +656,7 @@ class Map33 {
       const f0 = f00 + (f01 - f00) * (xIndex - x0)
       const f1 = f10 + (f11 - f10) * (xIndex - x0)
       const elevation = f0 + (f1 - f0) * (yIndex - y0)
-      return elevation
+      return elevation * this.options.zScale;
     }
     return 0  // default to sea level if elevation data not loaded
   }

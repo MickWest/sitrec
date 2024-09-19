@@ -27,11 +27,29 @@ export class CNodeTerrainUI extends CNode {
         super(v);
 
         this.adjustable = v.adjustable ?? true;
-        
-        this.lat = 40;
-        this.lon = -110;
-        this.zoom = 10;
-        this.nTiles = 4;
+        //
+        // this.lat = 40;
+        // this.lon = -110;
+        // this.zoom = 10;
+        // this.nTiles = 4;
+
+
+        // terrain UI should always be called with the initial terrain node
+        // even though it might make a new one later
+        // this is a bit backwards
+        if (v.terrain) {
+            this.terrainNode = NodeMan.get(v.terrain);
+            this.lat = this.terrainNode.lat;
+            this.lon = this.terrainNode.lon;
+            this.zoom = this.terrainNode.zoom;
+            this.nTiles = this.terrainNode.nTiles;
+            this.elevationScale = this.terrainNode.elevationScale;
+        } else {
+            assert(0, "CNodeTerrainUI: no terrain node specified, addTerrain is deprecated")
+            this.gui.add(this, "addTerrain")
+        }
+
+
         this.refresh = false;
 
 
@@ -84,7 +102,7 @@ export class CNodeTerrainUI extends CNode {
         }
 
         this.gui = guiMenus.terrain;
-        this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).setLabelColor(terrainGUIColor).listen().name("Map Type")
+        this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).listen().name("Map Type")
 
         // WHY local???
         this.setMapType(local.mapType)
@@ -119,11 +137,12 @@ export class CNodeTerrainUI extends CNode {
 //        local.elevationType = Object.keys(this.elevationTypesKV)[0]
         local.elevationType = Object.keys(this.elevationSources)[0]
         // add the menu
-        this.elevationTypeMenu = this.gui.add(local, "elevationType", this.elevationTypesKV).setLabelColor(terrainGUIColor).listen().name("Elevation Type")
+        this.elevationTypeMenu = this.gui.add(local, "elevationType", this.elevationTypesKV).listen().name("Elevation Type")
 
         this.elevationTypeMenu.onChange( v => {
 
             // elevation map has changed, so kill the old one
+            console.log("Elevation type changed to " + v+ " so unloading the elevation map")
             this.terrainNode.elevationMap = undefined;
 
 
@@ -141,22 +160,13 @@ export class CNodeTerrainUI extends CNode {
 
 
 /////////////////////////////////////////////////////
-        if (v.terrain) {
-            this.terrainNode = NodeMan.get(v.terrain);
-            this.lat = this.terrainNode.lat;
-            this.lon = this.terrainNode.lon;
-            this.zoom = this.terrainNode.zoom;
-            this.nTiles = this.terrainNode.nTiles;
-        } else {
-            this.gui.add(this, "addTerrain")
-        }
-
 
 
         this.oldLat = this.lat;
         this.oldLon = this.lon;
         this.oldZoom = this.zoom;
         this.oldNTiles = this.nTiles;
+        this.oldElevationScale = this.elevationScale;
 
 
         this.mapTypeMenu.onChange( v => {
@@ -167,34 +177,46 @@ export class CNodeTerrainUI extends CNode {
             })
         })
 
+        this.debugElevationGrid = false;
+
         if (v.fullUI) {
 
             this.latController = this.gui.add(this, "lat", -85, 85, .001).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            }).setLabelColor(terrainGUIColor)
+            })
 
             this.lonController = this.gui.add(this, "lon", -180, 180, .001).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            }).setLabelColor(terrainGUIColor)
+            })
 
             this.zoomController = this.gui.add(this, "zoom", 0, 15, 1).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            }).setLabelColor(terrainGUIColor)
+            })
 
             this.nTilesController = this.gui.add(this, "nTiles", 1, 8, 1).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            }).setLabelColor(terrainGUIColor)
+            })
+
+
+
 
             // adds a button to refresh the terrain
-            this.gui.add(this, "doRefresh").name("Refresh").setLabelColor(terrainGUIColor);
+            this.gui.add(this, "doRefresh").name("Refresh");
+
+            // a toggle to show or hide the debug elevation grid
+
+            this.gui.add(this, "debugElevationGrid").name("Debug Elevation Grid").onChange(v => {
+                this.terrainNode.elevationMap.refreshDebugGrid();
+            });
+
 
             this.zoomToTrackSwitchObject = new CNodeSwitch({
                 id: "zoomToTrack", kind: "Switch",
@@ -203,6 +225,13 @@ export class CNodeTerrainUI extends CNode {
                 this.zoomToTrack(track)
             })
         }
+
+        this.elevationScaleController = this.gui.add(this, "elevationScale", 0, 10, 0.1).onChange(v => {
+            this.flagForRecalculation()
+        }).onFinishChange(v => {
+            this.startLoading = true
+        })
+
 
     }
 
@@ -282,7 +311,7 @@ export class CNodeTerrainUI extends CNode {
         } else {
             this.layer = Object.keys(this.localLayers)[0]
         }
-        this.layersMenu = this.gui.add(this, "layer", this.localLayers).setLabelColor(terrainGUIColor).listen().name("Layer")
+        this.layersMenu = this.gui.add(this, "layer", this.localLayers).listen().name("Layer")
 
         // if the layer has changed, then unload the map and reload it
         // new layer will be handled by the mapDef.layer
@@ -377,13 +406,24 @@ export class CNodeTerrainUI extends CNode {
 
     recalculate() {
         // if the values have changed, then we need to make a new terrain node
-        if (this.lat === this.oldLat && this.lon === this.oldLon && this.zoom === this.oldZoom && this.nTiles === this.oldNTiles && !this.refresh) {
-            return;
+        if (this.lat === this.oldLat && this.lon === this.oldLon && this.zoom === this.oldZoom
+            && this.nTiles === this.oldNTiles
+            && !this.refresh) {
+
+            if (this.elevationScale === this.oldElevationScale)
+                return;
+
+            // // so JUST the elevation scale has changed, so we can just update the elevation map
+            // this.terrainNode.elevationMap.elevationScale = this.elevationScale;
+            // // and recalculate the curves for the tiles in the current map
+            // this.maps[local.mapType].map.recalculateCurveMap(this.radius, true)
+
         }
         this.oldLat = this.lat;
         this.oldLon = this.lon;
         this.oldZoom = this.zoom;
         this.oldNTiles = this.nTiles;
+        this.oldElevationScale = this.elevationScale;
         this.refresh = false;
 
 
@@ -397,6 +437,7 @@ export class CNodeTerrainUI extends CNode {
         this.terrainNode = new CNodeTerrain({
                 id: terrainID, lat: this.lat, lon: this.lon,
                 zoom: this.zoom, nTiles: this.nTiles, deferLoad: true,
+                elevationScale: this.elevationScale,
                 mapTypeMenu: this.mapTypeMenu, terrainGUI: this.gui,
                 mapTypes: this.mapSources,
                 mapType: local.mapType,
@@ -446,6 +487,7 @@ export class CNodeTerrain extends CNode {
         // Tiles in Mapbox GL are 512x512
         this.zoom = v.zoom;
         this.nTiles = v.nTiles;
+        this.elevationScale = v.elevationScale ?? 1;
         this.tileSegments = v.tileSegments ?? 100;
 
 
@@ -477,11 +519,6 @@ export class CNodeTerrain extends CNode {
         if (!this.UINode) {
             this.UINode = new CNodeTerrainUI({id: "terrainUI", terrain: v.id, fullUI: v.fullUI})
         }
-
-
-        // Create a single elevation source here
-        // ....
-
 
         this.maps = []
         for (const mapName in this.UINode.mapTypesKV) {
@@ -564,6 +601,9 @@ export class CNodeTerrain extends CNode {
             this.maps[mapID].group = undefined;
         }
 
+        this.elevationMap.clean()
+        this.elevationMap = undefined;
+
         super.dispose();
     }
 
@@ -588,11 +628,27 @@ export class CNodeTerrain extends CNode {
         assert(Object.keys(this.maps).length > 0, "CNodeTerrain: no maps found")
         assert(this.maps[id] !== undefined, "CNodeTerrain: map type " + id + " not found")
 
+        let elevationNTiles = this.nTiles;
+
+
+
+
         const mapDef = this.maps[id].sourceDef;
         if (mapDef.mapping === 4326) {
-            this.mapProjection = new CTileMappingGoogleCRS84Quad()
+            this.mapProjection = new CTileMappingGoogleCRS84Quad();
+            elevationNTiles += 2;
         } else {
             this.mapProjection = new CTileMappingGoogleMapsCompatible();
+        }
+
+        // if we have an elevation map, then we need to check if it's the right size
+        // if not, then we need to unload it
+        // this can happen if we change the number of tiles due to the projection
+        if (this.elevationMap !== undefined) {
+            if (elevationNTiles !== this.elevationMap.nTiles) {
+                this.elevationMap.clean()
+                this.elevationMap = undefined;
+            }
         }
 
         // we do a single elevation map for all the maps
@@ -600,11 +656,11 @@ export class CNodeTerrain extends CNode {
         // so the elevation map can use a different coordinate system to the textured geometry map
         if (this.elevationMap === undefined) {
             this.elevationMap = new Map33(this.maps[id].group, this, this.position, {
-                nTiles: this.nTiles,
+                nTiles: elevationNTiles,  // +2 to ensure we cover the image map areas when using different projections
                 zoom: this.zoom,
                 tileSize: this.tileSize,
                 tileSegments: this.tileSegments,
-                zScale: 1,
+                zScale: this.elevationScale,
                 radius: this.radius,
                 loadedCallback: ()=> {
                     console.log("CNodeTerrain: elevation map loaded")
@@ -634,6 +690,7 @@ export class CNodeTerrain extends CNode {
                 tileSegments: this.tileSegments,   // this can go up to 256, with no NETWORK bandwidth.
                 zScale: 1,
                 radius: this.radius,
+                mapProjection: this.mapProjection,
                 elevationMap: this.elevationMap,
                 loadedCallback:  ()=> {
                     // first check to see if it has been disposed
@@ -686,7 +743,7 @@ export class CNodeTerrain extends CNode {
         }
         Sit.originECEF = RLLAToECEFV_Sphere(radians(Sit.lat),radians(Sit.lon),0,radius)
         assert(this.maps[local.mapType].map !== undefined, "CNodeTerrain: map is undefined")
-        this.maps[local.mapType].map.recalculateCurveMap(radius, true)
+        this.maps[local.mapType].map.recalculateCurveMap(this.radius, true)
 
         propagateLayerMaskObject(this.maps[local.mapType].group)
 

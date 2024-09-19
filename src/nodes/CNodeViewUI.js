@@ -203,9 +203,11 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
             this.ctx.font = Math.floor(this.sx(t.size*100)) + 'px' + " " + t.font
 
             this.ctx.fillStyle = t.color;
-            this.ctx.strokeStyle = t.color;
+            this.ctx.strokeStyle = "black"; // t.color;
             this.ctx.textAlign = t.align;
             this.ctx.fillText(t.text, x, y)
+            // this.ctx.lineWidth = Math.floor(this.sx(0.2));                 // Set the width of the outline
+            // this.ctx.strokeText(t.text, x, y);
             t.bbox = getTextBBox(this.ctx, t.text)
             const w = t.bbox.width
             const h = t.bbox.height
