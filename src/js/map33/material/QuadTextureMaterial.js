@@ -15,6 +15,7 @@ const loader = new TextureLoader()
 export const sharedUniforms = {
   nearPlane: { value: 0.1 },
   farPlane: { value: 1000 },
+  cameraFocalLength: { value: 300 },
   // ... other shared uniforms
 };
 

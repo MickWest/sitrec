@@ -748,6 +748,13 @@ export class CNodeView3D extends CNodeViewCanvas {
         sharedUniforms.nearPlane.value = this.camera.near;
         sharedUniforms.farPlane.value = this.camera.far;
 
+        // calculate the focal length in pixels
+        // to pass in a a uniform (cameraFocalLength) to the shader
+        const fov = this.camera.fov * Math.PI / 180;
+        const focalLength = this.heightPx / (2 * Math.tan(fov / 2));
+        sharedUniforms.cameraFocalLength.value = focalLength;
+
+
         // const windowWidth  = window.innerWidth;
         // const windowHeight = window.innerHeight;
         //

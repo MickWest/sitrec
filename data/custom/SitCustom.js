@@ -440,6 +440,6 @@ sitch = {
     // intersection of beach and the MDR marina. Which, coincidentally, is where I got married.
     // mark1: {kind:"LineMarker", lat:  33.963052, lon: -118.457019, height: 10000, color: "#FF00FF" }
 
-    sprites: {kind: "FlowSprites", nSprites:1000, wind: "targetWind", camera: "lookCamera", visible: false},
+    sprites: {kind: "FlowSprites", nSprites:1000, wind: "targetWind", camera: "lookCamera", visible: true},
 
 }

@@ -100,7 +100,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         for (let i = 0; i < this.nSprites; i++) {
             this.orbs.push(new CFlowSprite({
                 position: new Vector3(0, 0, 0),
-                startDistance: 50 + 1000 * Math.random(), // initial distance from camera
+                startDistance: 50 + 2200 * Math.random(), // initial distance from camera
             }));
             this.orbs[i].reset(lookVector, this.camera, true, i);  // initial reset is inside the frustum
         }
@@ -170,9 +170,10 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         let inside = false;
         // see if the camera has moved significantly (>1km)
         if (this.camera.position.distanceTo(this.lastCameraPosition) > 1000) {
-            this.lastCameraPosition = this.camera.position.clone();
+            console.log("camera has moved significantly, resetting all d = " + this.camera.position.distanceTo(this.lastCameraPosition));
             inside = true;
         }
+        this.lastCameraPosition = this.camera.position.clone();
 
         // get the camera look vector
         const lookVector = new Vector3();

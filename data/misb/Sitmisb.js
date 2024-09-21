@@ -269,6 +269,9 @@ sitch = {
 
     useGlobe: true,
 
-    dragDropHandler: {}
+    dragDropHandler: {},
+
+    sprites: {kind: "FlowSprites", nSprites:1000, wind: "targetWind", camera: "lookCamera", visible: true},
+
 
 }
