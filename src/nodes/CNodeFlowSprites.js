@@ -82,6 +82,12 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         this.cameraNode = cameraNode;
         this.camera = this.cameraNode.camera;
 
+        this.near = v.near ?? 100;
+        this.far = v.far ?? 1000;
+
+        this.oldNear = this.near;
+        this.oldFar = this.far;
+
         // wind is an input, but changng wind will not change the sprites
         // on the existing frame
         // so we don't need to watch it
@@ -102,7 +108,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         for (let i = 0; i < this.nSprites; i++) {
             this.orbs.push(new CFlowSprite({
                 position: new Vector3(0, 0, 0),
-                startDistance: 50 + 2200 * Math.random(), // initial distance from camera
+                startDistance: this.randomDistance(), // initial distance from camera
             }));
             this.orbs[i].reset(lookVector, this.camera, true, i);  // initial reset is inside the frustum
         }
@@ -120,7 +126,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
             } else if (this.nSprites > this.oldNSprites) {
                 // add new ones
                 for (let i = this.oldNSprites; i < this.nSprites; i++) {
-                    const newSprite = new CFlowSprite({startDistance: 50 + 1000 * Math.random()})
+                    const newSprite = new CFlowSprite({starDistance: this.randomDistance()});
                     newSprite.reset(lookVector, this.camera, true, i);
                     this.orbs.push(newSprite);
                 }
@@ -181,7 +187,72 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
 
         }).elastic(100, 2000);
 
+        // add near ad far sliders
+        this.gui.add(this, "near", 0.1, 1000, 1).name("Near").onChange(() => {
+            this.adjustNearFar()
+        }).elastic(10, 100000);
+
+        // same for far
+        this.gui.add(this, "far", 1, 10000, 1).name("Far").onChange(() => {
+            this.adjustNearFar()
+        }).elastic(100, 100000);
+
+
+
     }
+
+    randomDistance() {
+        return this.near + (this.far-this.near) * Math.random();
+    }
+
+
+    adjustDistance(d) {
+        return this.near + (d - this.oldNear) * (this.far - this.near) / (this.oldFar - this.oldNear);
+    }
+
+    adjustNearFar() {
+        // we are adjusting distances from the range oldNear..oldFar to newNear..newFar
+        // so we need to adjust the startDistance of each sprite
+        // so that the distance from the camera is the same
+        // the equation is
+        // newStartDistance = near + (oldStartDistance-oldNear) * (newFar - newNear) / (oldFar - oldNear)
+
+        if (this.far <= this.near) {
+            this.far = this.near + 1;
+        }
+
+        for (let i = 0; i < this.nSprites; i++) {
+          //  this.orbs[i].startDistance = this.adjustDistance(this.orbs[i].startDistance);
+
+            // do ensure a consistent even distribution of distances
+            // we randomize the next start distance
+            this.orbs[i].startDistance = this.randomDistance();
+
+        }
+
+        // now adjust all the distance along the look vector
+        const lookVector = new Vector3();
+        this.camera.getWorldDirection(lookVector);
+        for (let i = 0; i < this.nSprites; i++) {
+            // get the vector from the camera to the sprite
+            const v = this.orbs[i].position.clone().sub(this.camera.position);
+            // devolve in into parallel and perpendicular components
+            const parallel = v.clone().projectOnVector(lookVector);
+            const perpendicular = v.clone().sub(parallel);
+            // get and scale the original parallel component
+            const oldParallel = parallel.length();
+            const newParallel = this.adjustDistance(oldParallel);
+            // adjust the parallel component
+            parallel.normalize().multiplyScalar(newParallel);
+            // and add the perpendicular component
+            this.orbs[i].position = this.camera.position.clone().add(parallel).add(perpendicular);
+        }
+
+
+        this.oldFar = this.far;
+        this.oldNear = this.near;
+    }
+
 
     update(frame) {
         

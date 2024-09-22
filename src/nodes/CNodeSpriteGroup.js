@@ -11,8 +11,7 @@ constructor(v) {
     super(v);
 
     this.size = v.size ?? 2;
-    this.near = v.near ?? 0.1;
-    this.far = v.far ?? 100;
+
 
     this.texture = new TextureLoader().load('data/images/WhiteDiskWithAlpha128px.png');
 
