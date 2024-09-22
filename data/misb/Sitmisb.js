@@ -31,7 +31,7 @@ sitch = {
     //files: {misb: "https://sitrec.metabunk.org/misb2-agua.csv"},
 
     files: {
-     //   misb: "https://sitrec.s3.us-west-2.amazonaws.com/misb2-agua.csv",
+        //   misb: "https://sitrec.s3.us-west-2.amazonaws.com/misb2-agua.csv",
         klv: "misb/Truck.klv",
         videoFile: "../sitrec-videos/public/Truck.mp4",
     },
@@ -50,10 +50,9 @@ sitch = {
     startTime: "2012-09-19T20:50:26.970Z",  // start time maybe not from track data, as we might want a portion
 
 
-
     fps: 29.97,
 
-   // lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
+    // lat: 18.499617, lon: -67.113636, // this gives the origin of the ESU coordinate system, but terrain overrides
 //    lat: 41.0957, lon: -104.8702,
     frames: 4438,  // from video
 
@@ -78,8 +77,8 @@ sitch = {
         // startCameraTargetLLA:[40.952762,-104.915401,16026.513301],
 
         // for Half height view
-        startCameraPositionLLA:[41.066436,-104.905044,4514.047550],
-        startCameraTargetLLA:[41.070221,-104.895292,4124.752328],
+        startCameraPositionLLA: [41.066436, -104.905044, 4514.047550],
+        startCameraTargetLLA: [41.070221, -104.895292, 4124.752328],
     },
 
     // lookCamera is the camera used for the look view, typically on the right
@@ -92,7 +91,7 @@ sitch = {
 
 
     // added back the smoothing
-    smoothTrackCamera: {kind: "smoothTrack", method:"moving", track: "cameraTrack", window: 20},
+    smoothTrackCamera: {kind: "smoothTrack", method: "moving", track: "cameraTrack", window: 20},
 
     followTrack: {},            // camera follows the camera track
 
@@ -102,12 +101,12 @@ sitch = {
         misb: "cameraTrackData",
         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
     },
- //   smoothTrack: {track: "targetTrack", smooth: 20},
+    //   smoothTrack: {track: "targetTrack", smooth: 20},
     targetTrackDisplay: {kind: "DisplayTrack", track: "targetTrack", color: [1, 0, 0], width: 4,},
 
     lookAtTrack: {},  // and look at targetTrack
-    fovController:    {source: "cameraTrack"},
-    losTrackMISB: {kind: "losTrackMISB", arrayNode: "cameraTrack", smooth:120},
+    fovController: {source: "cameraTrack"},
+    losTrackMISB: {kind: "losTrackMISB", arrayNode: "cameraTrack", smooth: 120},
 
     // This is all for the second view, angles
     // lookCamera2:  {kind: "lookCamera", fov:10, far:8000000},
@@ -117,18 +116,17 @@ sitch = {
     // lookView2: {kind:"lookView", camera:"lookCamera2", left: 0.0, top: 0.5, width: -1.7927, height: 0.5, background: '#000030'},
 
 
-
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#000000'},
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000000'},
-    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear: false},
 
 //    videoView2: {kind: "videoView", left: 0.4, top: .25, width: -1.7927, height: 0.5, transparency: 0.5 },
 //    videoView2: {kind: "videoView", overlayView: "lookView", transparency: 0.15 },
 
-  //  MirrorVideoView:{id: "mirrorView", mirror: "video", overlayView: "lookView", transparency: 0.15},
+    //  MirrorVideoView:{id: "mirrorView", mirror: "video", overlayView: "lookView", transparency: 0.15},
 
-    mirrorVideo: { transparency: 0.15, autoClear:false},
- //   mirrorVideo2: { kind: "mirrorVideo", overlayView:"lookView2", transparency: 0.15, autoClear:false},
+    mirrorVideo: {transparency: 0.15, autoClear: false},
+    //   mirrorVideo2: { kind: "mirrorVideo", overlayView:"lookView2", transparency: 0.15, autoClear:false},
 
     // startTime:  "auto", // auto means we get it from the data file, ie, the first frame of the camera track
     // location:   "auto",
@@ -136,8 +134,8 @@ sitch = {
     // we'd also want to get the fps from the video file
 
 
-     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
-     distanceLabel: {kind: "MeasureAB", A: "cameraTrack", B: "targetTrack", defer: true},
+    altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
+    distanceLabel: {kind: "MeasureAB", A: "cameraTrack", B: "targetTrack", defer: true},
 
 
 //    DisplayCameraFrustum: {targetTrack: "targetTrack"},
@@ -193,19 +191,24 @@ sitch = {
     // here we are smoothing the generated traversal tracks
 
     // WHY IS THE GREEN SPHere moving around if the camera should fixed on it????
-    smoothTrackTrack: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectTrack", window: 100},
- //   smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
+    smoothTrackTrack: {kind: "smoothTrack", method: "moving", track: "LOSTraverseSelectTrack", window: 100},
+    //   smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
 
     //    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", radius: 1000, color: "yellow"},
-    frustum1: {kind: "DisplayCameraFrustum", camera: "lookCamera", targetTrack: "LOSTraverseSelectTrack", color: "magenta"},
- //   frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", targetTrack: "LOSTraverseSelectAngles" , color: "yellow"},
+    frustum1: {
+        kind: "DisplayCameraFrustum",
+        camera: "lookCamera",
+        targetTrack: "LOSTraverseSelectTrack",
+        color: "magenta"
+    },
+    //   frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", targetTrack: "LOSTraverseSelectAngles" , color: "yellow"},
 
     focusTracks: {
         "Ground (No Track)": "default",
         "Camera track": "cameraTrack",
         "Ground track": "targetTrack",
-        "Traverse Track (Track)":  "LOSTraverseSelectTrack",
-   //     "Traverse Track (Angles)":  "LOSTraverseSelectAngles",
+        "Traverse Track (Track)": "LOSTraverseSelectTrack",
+        //     "Traverse Track (Angles)":  "LOSTraverseSelectAngles",
     },
 
     // display the traverse track (Angles)
@@ -220,7 +223,7 @@ sitch = {
     traverseDisplayTrack: {
         kind: "DisplayTrack",
         track: "LOSTraverseSelectTrack",
-        color: [0,0,1],
+        color: [0, 0, 1],
         width: 1,
     },
 
@@ -246,7 +249,8 @@ sitch = {
     //     color: [1,1,0],
     // },
 
-    sphereCamera: { kind: "3DObject",
+    sphereCamera: {
+        kind: "3DObject",
         geometry: "capsule",
         size: 1,
         layers: "LOOKRENDER",
@@ -259,21 +263,23 @@ sitch = {
     moveTargetAlongPath: {kind: "TrackPosition", object: "sphereCamera", sourceTrack: "cameraTrack"},
 
 
-
-    sphereCameraOld: { kind: "DisplayTargetSphere",
+    sphereCameraOld: {
+        kind: "DisplayTargetSphere",
         track: "cameraTrack_old",
         size: 5,
         layers: "MAINRENDER",
-        color: [1,0,1],
+        color: [1, 0, 1],
     },
 
     useGlobe: true,
 
     dragDropHandler: {},
 
-    flowOrbs: {kind: "FlowOrbs", size:0.5 , nSprites:250, wind: "targetWind",
-        near:90, far: 2000,
-        camera: "lookCamera", visible: true},
-
-
+    flowOrbs: {
+        kind: "FlowOrbs", size: 0.5, nSprites: 250, wind: "targetWind",
+        near: 90, far: 2000,
+        camera: "lookCamera", visible: true,
+        colorMethod: "Hue From Altitude",
+        hueAltitudeMax: 1400,
+    },
 }

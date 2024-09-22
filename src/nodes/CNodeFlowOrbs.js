@@ -31,9 +31,6 @@ class CFlowOrb {
         const frustumHeight = Math.tan(radians(camera.fov) / 2) * this.startDistance;
         const frustumWidth = frustumHeight * camera.aspect;
         const angle = Math.random() * Math.PI * 2;
-//        const up = camera.up;
-        // right is the cross product of up and lookVector
-//        const right = up.clone().cross(lookVector);
 
         var right = new Vector3()
         var up = new Vector3()
@@ -44,7 +41,6 @@ class CFlowOrb {
         // get newpos as the offset from the center line
         // (i.e. not yet a point)
         const newPos = up.clone().multiplyScalar(frustumHeight).add(right.clone().multiplyScalar(frustumWidth));
-//        const newPos = right.clone().multiplyScalar(frustumWidth) //.add(right.clone().multiplyScalar(frustumWidth));
 
         if (inside) {
             // random position inside and outside the frustum
@@ -60,10 +56,7 @@ class CFlowOrb {
         // and add the center position to get the world point
         newPos.add(centerPos);
 
-        //   DebugArrowAB("sprite" + index, centerPos, newPos, 0xff0000);
-
         this.position = newPos;
-//        this.lifeTime = 10000
         this.lifeTime = 100 + 500 * Math.random();
 
         // get the distance from the look vector ray
@@ -86,6 +79,12 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
         this.near = v.near ?? 100;
         this.far = v.far ?? 1000;
+
+        this.colorMethods = ["Random", "User", "Hue From Altitude"];
+
+        this.colorMethod = v.colorMethod ?? "Random";
+        this.userColor = v.userColor ?? "#FFFFFF";
+        this.hueAltitudeMax = v.hueAltitudeMax ?? 10000;
 
         this.oldNear = this.near;
         this.oldFar = this.far;
@@ -133,57 +132,10 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                     this.orbs.push(newSprite);
                 }
             }
-            // recreate the positions array
-            this.positions = new Float32Array(this.nSprites * 3);
-            // and set the positions
-            for (let i = 0; i < this.nSprites; i++) {
-                this.positions[i * 3] = this.orbs[i].position.x;
-                this.positions[i * 3 + 1] = this.orbs[i].position.y;
-                this.positions[i * 3 + 2] = this.orbs[i].position.z;
-            }
 
-            // and sizes
-            this.sizes = new Float32Array(this.nSprites);
-            for (let i = 0; i < this.nSprites; i++) {
-                this.sizes[i] = this.size;
-            }
-
-            // and colors
-            this.colors = new Float32Array(this.nSprites * 3);
-            for (let i = 0; i < this.nSprites; i++) {
-                const color = this.orbs[i].color;
-                this.colors[i * 3] = color.r;
-                this.colors[i * 3 + 1] = color.g;
-                this.colors[i * 3 + 2] = color.b;
-            }
-
-            // recreate the geometry
-            this.geometry.dispose();
-            this.geometry = new BufferGeometry();
-
-            // update the attributes
-            this.geometry.setAttribute('position', new BufferAttribute(this.positions, 3));
-            this.geometry.setAttribute('color', new BufferAttribute(this.colors, 3));
-            this.geometry.setAttribute('size', new BufferAttribute(this.sizes, 1));
-
-
-            this.geometry.computeBoundingBox();
-            this.geometry.computeBoundingSphere();
-
-            this.geometry.attributes.position.needsUpdate = true;
-
-            // dispose the old sprites
-            this.group.remove(this.sprites);
-
-
-            this.sprites = new Points(this.geometry, this.material);
-            this.sprites.updateMatrix();
-            this.sprites.updateMatrixWorld();
-
-            this.group.add(this.sprites);
+            this.rebuildSprites();
 
             this.oldNSprites = this.nSprites;
-
 
 
         }).elastic(100, 2000);
@@ -205,6 +157,104 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         }).elastic(100, 100000);
 
 
+        this.gui.add(this, "colorMethod", this.colorMethods).name("Color Method").onChange(() => {
+            this.updateColors();
+        })
+
+
+        this.gui.addColor(this, "userColor").name("User Color").onChange(() => {
+            this.updateColors();
+        })
+
+        this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Altitude Max").onChange(() => {
+            this.updateColors();
+        }).elastic(1000, 100000)
+
+
+        this.rebuildSprites();
+
+    }
+
+
+    rebuildSprites()
+    {
+        // recreate the positions array
+        this.positions = new Float32Array(this.nSprites * 3);
+        // and set the positions
+        for (let i = 0; i < this.nSprites; i++) {
+            this.positions[i * 3] = this.orbs[i].position.x;
+            this.positions[i * 3 + 1] = this.orbs[i].position.y;
+            this.positions[i * 3 + 2] = this.orbs[i].position.z;
+        }
+
+        // and sizes
+        this.sizes = new Float32Array(this.nSprites);
+        for (let i = 0; i < this.nSprites; i++) {
+            this.sizes[i] = this.size;
+        }
+
+        // and colors
+        this.colors = new Float32Array(this.nSprites * 3);
+
+        this.updateColors()
+        this.updateColorsAttribute()
+
+        // recreate the geometry
+        this.geometry.dispose();
+        this.geometry = new BufferGeometry();
+
+        // update the attributes
+        this.geometry.setAttribute('position', new BufferAttribute(this.positions, 3));
+        this.geometry.setAttribute('color', new BufferAttribute(this.colors, 3));
+        this.geometry.setAttribute('size', new BufferAttribute(this.sizes, 1));
+
+
+        this.geometry.computeBoundingBox();
+        this.geometry.computeBoundingSphere();
+
+        this.geometry.attributes.position.needsUpdate = true;
+
+        // dispose the old sprites
+        this.group.remove(this.sprites);
+
+        this.sprites = new Points(this.geometry, this.material);
+        this.sprites.updateMatrix();
+        this.sprites.updateMatrixWorld();
+
+        this.group.add(this.sprites);
+    }
+
+
+    updateColorsAttribute() {
+        for (let i = 0; i < this.nSprites; i++) {
+            const color = this.orbs[i].color;
+            this.colors[i * 3] = color.r;
+            this.colors[i * 3 + 1] = color.g;
+            this.colors[i * 3 + 2] = color.b;
+        }
+        this.geometry.attributes.color.needsUpdate = true;
+    }
+
+    updateColors() {
+        for (let i = 0; i < this.nSprites; i++) {
+            const orb = this.orbs[i];
+            let color;
+
+            if (this.colorMethod === "Random") {
+                const colorHex = Math.random() * 0x808080 + 0x808080;
+                color = new Color(colorHex);
+            } else if (this.colorMethod === "User") {
+                color = new Color(this.userColor)
+            } else if (this.colorMethod === "Hue From Altitude") {
+                const hue = orb.position.y / this.hueAltitudeMax;
+                color = new Color().setHSL(hue, 1, 0.5);
+        }
+
+
+            orb.color = color;
+        }
+
+        this.updateColorsAttribute();
 
     }
 
@@ -293,6 +343,8 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         frustum.setFromProjectionMatrix(matrix);
 
 
+        let didReset = false;
+
         // update the sprite positions if needed
         for (let i = 0; i < this.nSprites; i++) {
             const orb = this.orbs[i];
@@ -324,6 +376,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 if (orb.lifeTime < 0 || inside) {
                     console.log("resetting sprite as time is up")
                     orb.reset(lookVector, this.camera, inside, i);
+                    didReset = true;
                 }
             }
 
@@ -334,6 +387,12 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
 
             orb.awayDistance = distance;
+        }
+
+        // if any sprite was reset it might change altitude
+        // so we need to rebuild the colors if we are using altitude for color
+        if (didReset && this.colorMethod === "Hue From Altitude") {
+            this.updateColors();
         }
 
         // now set all the positions in the geometry
