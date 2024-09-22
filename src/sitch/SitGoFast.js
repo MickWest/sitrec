@@ -123,6 +123,29 @@ export var SitGoFast = {
 
     },
 
+
+    targetWind: { kind:"Wind",
+        from: 274,
+        knots: 65,
+        name: "Target",
+        arrowColor: "cyan"
+    },
+
+    // similar to Gimbal
+    localWind: { kind:"Wind",
+        from: 270,
+        knots: 120,  // was 120 knots from the west
+        name: "Local",
+        arrowColor: "cyan"
+    },
+
+
+    sprites: {kind: "FlowSprites", nSprites:100, wind: "targetWind",
+        size: 1,
+        near: 7132,
+        far: 8422,
+        camera: "lookCamera", visible: false},
+
     updateFunction: function (f) {
         const targetNode = NodeMan.get("LOSTraverseSelect")
         const jetNode = NodeMan.get("JetLOS")
@@ -134,6 +157,7 @@ export var SitGoFast = {
         var Vc = NMFromMeters(this.fps*60*60*closingSpeed( targetNode, jetNode, f))
         par.Vc = Vc
     },
+
 
     setup: function () {
 
@@ -264,24 +288,24 @@ export var SitGoFast = {
 
 // GOFAST
 
-        new CNodeWind({
-            id: "targetWind",
-            from: 274,
-            knots: 65,
-            name: "Target",
-            arrowColor: "cyan"
-
-        }, gui)
-
-        // similar to Gimbal
-        new CNodeWind({
-            id: "localWind",
-            from: 270,
-            knots: 120,  // was 120 knots from the west
-            name: "Local",
-            arrowColor: "cyan"
-
-        }, gui)
+        // new CNodeWind({
+        //     id: "targetWind",
+        //     from: 274,
+        //     knots: 65,
+        //     name: "Target",
+        //     arrowColor: "cyan"
+        //
+        // }, gui)
+        //
+        // // similar to Gimbal
+        // new CNodeWind({
+        //     id: "localWind",
+        //     from: 270,
+        //     knots: 120,  // was 120 knots from the west
+        //     name: "Local",
+        //     arrowColor: "cyan"
+        //
+        // }, gui)
 
 
 

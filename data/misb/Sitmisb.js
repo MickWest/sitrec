@@ -107,18 +107,18 @@ sitch = {
 
     lookAtTrack: {},  // and look at targetTrack
     fovController:    {source: "cameraTrack"},
+    losTrackMISB: {kind: "losTrackMISB", arrayNode: "cameraTrack", smooth:120},
 
     // This is all for the second view, angles
-    lookCamera2:  {kind: "lookCamera", fov:10, far:8000000},
-    followTrack2: {kind: "followTrack", object: "lookCamera2"},            // camera follows the camera track
-    losTrackMISB: {kind: "losTrackMISB", arrayNode: "cameraTrack", smooth:120},
-    matrixController: {object: "lookCamera2", source: "losTrackMISB"},
-    fovController2:    {kind: "fovController", object: "lookCamera2", source: "cameraTrack"},
-    lookView2: {kind:"lookView", camera:"lookCamera2", left: 0.0, top: 0.5, width: -1.7927, height: 0.5, background: '#000030'},
+    // lookCamera2:  {kind: "lookCamera", fov:10, far:8000000},
+    // followTrack2: {kind: "followTrack", object: "lookCamera2"},            // camera follows the camera track
+    // matrixController: {object: "lookCamera2", source: "losTrackMISB"},
+    // fovController2:    {kind: "fovController", object: "lookCamera2", source: "cameraTrack"},
+    // lookView2: {kind:"lookView", camera:"lookCamera2", left: 0.0, top: 0.5, width: -1.7927, height: 0.5, background: '#000030'},
 
 
 
-    mainView: {left: 0.0, top: 0, width: 0.5, height: 0.5, background: '#000000'},
+    mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#000000'},
     lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5, background: '#000000'},
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
 
@@ -128,7 +128,7 @@ sitch = {
   //  MirrorVideoView:{id: "mirrorView", mirror: "video", overlayView: "lookView", transparency: 0.15},
 
     mirrorVideo: { transparency: 0.15, autoClear:false},
-    mirrorVideo2: { kind: "mirrorVideo", overlayView:"lookView2", transparency: 0.15, autoClear:false},
+ //   mirrorVideo2: { kind: "mirrorVideo", overlayView:"lookView2", transparency: 0.15, autoClear:false},
 
     // startTime:  "auto", // auto means we get it from the data file, ie, the first frame of the camera track
     // location:   "auto",
@@ -147,9 +147,9 @@ sitch = {
 
     // fromX: {kind:"math", math: "270 - 15"},
     // Wind1: {kind: "Wind", from: "fromX", knots: 20},
-    Wind1: {kind: "Wind", from: 270, knots: 20},
+    Wind1: {kind: "Wind", from: 270, knots: 0},
 
-    Wind2: {kind: "Wind", from: 90, knots: 20},
+    Wind2: {kind: "Wind", from: 90, knots: 0},
     targetWind: {
         kind: "Switch", gui: "main", desc: "Target Wind", inputs: {
             "Wind from West": "Wind1",
@@ -194,27 +194,27 @@ sitch = {
 
     // WHY IS THE GREEN SPHere moving around if the camera should fixed on it????
     smoothTrackTrack: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectTrack", window: 100},
-    smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
+ //   smoothTrackAngles: {kind: "smoothTrack", method:"moving", track: "LOSTraverseSelectAngles", window: 100},
 
     //    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", radius: 1000, color: "yellow"},
     frustum1: {kind: "DisplayCameraFrustum", camera: "lookCamera", targetTrack: "LOSTraverseSelectTrack", color: "magenta"},
-    frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", targetTrack: "LOSTraverseSelectAngles" , color: "yellow"},
+ //   frustum2: {kind: "DisplayCameraFrustum", camera: "lookCamera2", targetTrack: "LOSTraverseSelectAngles" , color: "yellow"},
 
     focusTracks: {
         "Ground (No Track)": "default",
         "Camera track": "cameraTrack",
         "Ground track": "targetTrack",
         "Traverse Track (Track)":  "LOSTraverseSelectTrack",
-        "Traverse Track (Angles)":  "LOSTraverseSelectAngles",
+   //     "Traverse Track (Angles)":  "LOSTraverseSelectAngles",
     },
 
     // display the traverse track (Angles)
-    traverseDisplayAngles: {
-        kind: "DisplayTrack",
-        track: "LOSTraverseSelectAngles",
-        color: [0,1,0],
-        width: 1,
-    },
+    // traverseDisplayAngles: {
+    //     kind: "DisplayTrack",
+    //     track: "LOSTraverseSelectAngles",
+    //     color: [0,1,0],
+    //     width: 1,
+    // },
 
     // display the traverse track 9(Track)
     traverseDisplayTrack: {
@@ -225,12 +225,12 @@ sitch = {
     },
 
 
-    sphereAngles: { kind: "DisplayTargetSphere",
-        track: "LOSTraverseSelectAngles",
-        size: 5,
-        layers: "MAINRENDER",
-        color: [0,1,0],
-    },
+    // sphereAngles: { kind: "DisplayTargetSphere",
+    //     track: "LOSTraverseSelectAngles",
+    //     size: 5,
+    //     layers: "MAINRENDER",
+    //     color: [0,1,0],
+    // },
 
     // sphereTrack: { kind: "DisplayTargetSphere",
     //     track: "LOSTraverseSelectTrack",

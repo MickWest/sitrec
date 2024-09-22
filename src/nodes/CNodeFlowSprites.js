@@ -188,12 +188,18 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         }).elastic(100, 2000);
 
         // add near ad far sliders
-        this.gui.add(this, "near", 0.1, 1000, 1).name("Near").onChange(() => {
+        this.gui.add(this, "near", 1, 1000, 1).listen().name("Near").onChange(() => {
+            if (this.far <= this.near) {
+                this.far = this.near + 10;
+            }
             this.adjustNearFar()
         }).elastic(10, 100000);
 
         // same for far
-        this.gui.add(this, "far", 1, 10000, 1).name("Far").onChange(() => {
+        this.gui.add(this, "far", 100, 10000, 1).listen().name("Far").onChange(() => {
+            if (this.far <= this.near) {
+                this.near = this.far - 10;
+            }
             this.adjustNearFar()
         }).elastic(100, 100000);
 
@@ -217,9 +223,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         // the equation is
         // newStartDistance = near + (oldStartDistance-oldNear) * (newFar - newNear) / (oldFar - oldNear)
 
-        if (this.far <= this.near) {
-            this.far = this.near + 1;
-        }
+
 
         for (let i = 0; i < this.nSprites; i++) {
           //  this.orbs[i].startDistance = this.adjustDistance(this.orbs[i].startDistance);
