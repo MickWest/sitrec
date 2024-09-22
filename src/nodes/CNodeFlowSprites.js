@@ -1,9 +1,10 @@
 // a simple container for a sprites
 import {radians} from "../utils";
-import {BufferAttribute, BufferGeometry, Frustum, Matrix4, Points, Ray, Sphere, Vector3} from "three";
+import {BufferAttribute, BufferGeometry, Color, Frustum, Matrix4, Points, Ray, Sphere, Vector3} from "three";
 import {NodeMan, Sit} from "../Globals";
 import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
+import {DebugArrow} from "../threeExt";
 
 class CFlowSprite {
     constructor(v) {
@@ -44,8 +45,8 @@ class CFlowSprite {
 //        const newPos = right.clone().multiplyScalar(frustumWidth) //.add(right.clone().multiplyScalar(frustumWidth));
 
         if (inside) {
-            // random position inside the frustum
-            newPos.multiplyScalar(Math.random());
+            // random position inside and outside the frustum
+            newPos.multiplyScalar(2 * Math.random());
         } else {
             // random position outside the frustum (but close)
             newPos.multiplyScalar(1 + Math.random());
@@ -95,6 +96,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         const lookVector = new Vector3();
         this.camera.getWorldDirection(lookVector);
 
+
         // create all the sprites
         this.orbs = [];
         for (let i = 0; i < this.nSprites; i++) {
@@ -108,6 +110,10 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
 
         this.oldNSprites = this.nSprites;
         this.gui.add(this, "nSprites", 1, 2000, 1).name("Number").onChange(() => {
+
+            const lookVector = new Vector3();
+            this.camera.getWorldDirection(lookVector);
+
             if (this.nSprites < this.oldNSprites) {
                 // remove the last ones
                 this.orbs.splice(this.nSprites);
@@ -128,12 +134,32 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
                 this.positions[i * 3 + 2] = this.orbs[i].position.z;
             }
 
+            // and sizes
+            this.sizes = new Float32Array(this.nSprites);
+            for (let i = 0; i < this.nSprites; i++) {
+                this.sizes[i] = this.size;
+            }
+
+            // and colors
+            this.colors = new Float32Array(this.nSprites * 3);
+            for (let i = 0; i < this.nSprites; i++) {
+                const colorHex = Math.random() * 0x808080 + 0x808080;
+                const color = new Color(colorHex);
+                this.colors[i * 3] = color.r;
+                this.colors[i * 3 + 1] = color.g;
+                this.colors[i * 3 + 2] = color.b;
+            }
+
             // recreate the geometry
             this.geometry.dispose();
             this.geometry = new BufferGeometry();
 
-            // update the attribute
+            // update the attributes
             this.geometry.setAttribute('position', new BufferAttribute(this.positions, 3));
+            this.geometry.setAttribute('color', new BufferAttribute(this.colors, 3));
+            this.geometry.setAttribute('size', new BufferAttribute(this.sizes, 1));
+
+
             this.geometry.computeBoundingBox();
             this.geometry.computeBoundingSphere();
 
@@ -217,7 +243,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
                 }
 
                 // if inside is set them the camera has moved a lot
-                // so we immediately reset everything outside the frustum
+                // so we immediately reset everything to inside the frustum
                 if (orb.lifeTime < 0 || inside) {
                     console.log("resetting sprite as time is up")
                     orb.reset(lookVector, this.camera, inside, i);
