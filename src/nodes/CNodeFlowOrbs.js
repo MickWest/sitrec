@@ -171,6 +171,9 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         }).elastic(1000, 100000)
 
 
+        this.windWhilePaused = v.windWhilePaused ?? false;
+        this.gui.add(this, "windWhilePaused").name("Wind While Paused");
+
         this.rebuildSprites();
 
     }
@@ -311,9 +314,13 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     update(frame) {
         
-        const deltaFrames = frame - this.lastFrame;
+        let deltaFrames = frame - this.lastFrame;
         this.lastFrame = frame;
-        
+
+
+        if (deltaFrames === 0 && this.windWhilePaused) {
+            deltaFrames = 1;
+        }
         
         if (!this.visible) {
             return;
@@ -374,7 +381,6 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 // if inside is set them the camera has moved a lot
                 // so we immediately reset everything to inside the frustum
                 if (orb.lifeTime < 0 || inside) {
-                    console.log("resetting sprite as time is up")
                     orb.reset(lookVector, this.camera, inside, i);
                     didReset = true;
                 }

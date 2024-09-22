@@ -11,7 +11,7 @@ constructor(v) {
     super(v);
 
     this.size = v.size ?? 2;
-
+    this.mainSizeMultiplier = 1;
 
     this.texture = new TextureLoader().load('data/images/WhiteDiskWithAlpha128px.png');
 
@@ -21,6 +21,7 @@ constructor(v) {
     
     // uniforms passed in from the material
         uniform float cameraFocalLength;
+        uniform float magnify;
     
     // per-vertex attributes in addition to the standard position supplied by three.js
         attribute float size;
@@ -34,7 +35,7 @@ constructor(v) {
         void main() {
             vColor = color;
             vPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * (cameraFocalLength / -vPosition.z); // Adjust 300.0 as needed
+            gl_PointSize = magnify * size * (cameraFocalLength / -vPosition.z); // Adjust 300.0 as needed
             gl_Position = projectionMatrix * vPosition;
             vDepth = gl_Position.w;
         }
@@ -69,6 +70,7 @@ constructor(v) {
     this.material = new ShaderMaterial({
         uniforms: {
             pointTexture: {value: this.texture},
+            magnify: {value: 1.0}, // this varies based on the viewport
             ...sharedUniforms,
         },
         vertexShader: vertexShader,
@@ -137,15 +139,21 @@ constructor(v) {
         }
         this.geometry.attributes.size.needsUpdate = true;
     }).elastic(10, 1000); // elastic is the range of max values for the slider
+
+
+    this.gui.add(this, "mainSizeMultiplier", 1, 100).name("View Size Multiplier");
+
 }
 
 
     preViewportUpdate(view) {
 
-        // scale the material size based on the viewport's FOV
-        //this.material.size = this.size / Math.tan(radians(view.camera.fov/2)) * view.widthPx/1600;
-
+        if (view.id === "mainView") {
+            // Adjust magnification based on user input
+            this.material.uniforms.magnify.value = this.mainSizeMultiplier;
+        } else {
+            this.material.uniforms.magnify.value = 1;
+        }
     }
-
 }
 

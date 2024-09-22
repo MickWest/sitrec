@@ -443,6 +443,6 @@ sitch = {
     sprites: {kind: "FlowOrbs", nSprites:1000, wind: "targetWind",
         colorMethod: "Hue From Altitude",
         hueAltitudeMax: 1400,
-        camera: "lookCamera", visible: true},
+        camera: "lookCamera", visible: false},
 
 }
