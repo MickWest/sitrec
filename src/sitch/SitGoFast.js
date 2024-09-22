@@ -140,7 +140,7 @@ export var SitGoFast = {
     },
 
 
-    sprites: {kind: "FlowSprites", nSprites:100, wind: "targetWind",
+    sprites: {kind: "FlowOrbs", nSprites:100, wind: "targetWind",
         size: 1,
         near: 7132,
         far: 8422,

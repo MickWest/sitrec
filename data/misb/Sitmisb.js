@@ -271,7 +271,9 @@ sitch = {
 
     dragDropHandler: {},
 
-    sprites: {kind: "FlowSprites", nSprites:1000, wind: "targetWind", camera: "lookCamera", visible: true},
+    flowOrbs: {kind: "FlowOrbs", size:0.5 , nSprites:250, wind: "targetWind",
+        near:90, far: 2000,
+        camera: "lookCamera", visible: true},
 
 
 }

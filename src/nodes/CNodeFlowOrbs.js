@@ -6,7 +6,7 @@ import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
 import {DebugArrow} from "../threeExt";
 
-class CFlowSprite {
+class CFlowOrb {
     constructor(v) {
         this.position = v.position ?? new Vector3();
         this.lifeTime = v.lifeTime ?? 1000;
@@ -14,6 +14,8 @@ class CFlowSprite {
         this.awayDistance = 0;
 
 
+        const colorHex = Math.random() * 0x808080 + 0x808080;
+        this.color = new Color(colorHex);
 
 
     }
@@ -72,7 +74,7 @@ class CFlowSprite {
     }
 }
 
-export class CNodeFlowSprites extends CNodeSpriteGroup {
+export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     constructor(v) {
         super(v);
@@ -106,7 +108,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         // create all the sprites
         this.orbs = [];
         for (let i = 0; i < this.nSprites; i++) {
-            this.orbs.push(new CFlowSprite({
+            this.orbs.push(new CFlowOrb({
                 position: new Vector3(0, 0, 0),
                 startDistance: this.randomDistance(), // initial distance from camera
             }));
@@ -126,7 +128,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
             } else if (this.nSprites > this.oldNSprites) {
                 // add new ones
                 for (let i = this.oldNSprites; i < this.nSprites; i++) {
-                    const newSprite = new CFlowSprite({starDistance: this.randomDistance()});
+                    const newSprite = new CFlowOrb({startDistance: this.randomDistance()});
                     newSprite.reset(lookVector, this.camera, true, i);
                     this.orbs.push(newSprite);
                 }
@@ -149,8 +151,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
             // and colors
             this.colors = new Float32Array(this.nSprites * 3);
             for (let i = 0; i < this.nSprites; i++) {
-                const colorHex = Math.random() * 0x808080 + 0x808080;
-                const color = new Color(colorHex);
+                const color = this.orbs[i].color;
                 this.colors[i * 3] = color.r;
                 this.colors[i * 3 + 1] = color.g;
                 this.colors[i * 3 + 2] = color.b;
@@ -296,7 +297,7 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
         for (let i = 0; i < this.nSprites; i++) {
             const orb = this.orbs[i];
 
-            assert(orb instanceof CFlowSprite, "Sprite is not a CFlowSprite, i=" + i)
+            assert(orb instanceof CFlowOrb, "Sprite is not a CFlowOrb, i=" + i)
 
             // Add wind vector to the sprite position
             // this is a one frame update
