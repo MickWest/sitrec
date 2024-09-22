@@ -307,9 +307,10 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
             if (frustum.intersectsSphere(sphere)) {
                 //orb.lifeTime = 5000 + 1000 * Math.random(); // patch
             } else {
-                // decrement time by the frame time
+                // if the orb is moving away from the centerline
+                // then decrement time by the frame time
                 // and check for reset
-                if (deltaFrames !== 0) {
+                if (deltaFrames !== 0 && distance > orb.awayDistance) {
                     orb.lifeTime -= 1000 / Sit.fps;
                 }
 
@@ -322,12 +323,12 @@ export class CNodeFlowSprites extends CNodeSpriteGroup {
             }
 
             // // if it's moving too far away, reset it
-            // if (distance > sprite.awayDistance + 10 || inside) {
+            // if (distance > orb.awayDistance + 10 || inside) {
             //     orb.reset(lookVector, this.camera, inside, i);
             // }
 
 
-
+            orb.awayDistance = distance;
         }
 
         // now set all the positions in the geometry
