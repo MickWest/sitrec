@@ -14,7 +14,7 @@ import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNo
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
-import {altitudeAboveSphere, getLocalUpVector} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalDownVector, getLocalUpVector} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
@@ -367,7 +367,7 @@ class CameraMapControls {
 
 				const oldUp = yAxis
 
-				// use this.canvas.heightx for both to keep it square
+				// use this.canvas.heightPx for both to keep it square
 				this.rotateLeft( 2 * Math.PI * this.mouseDelta.x / this.view.heightPx);
 
 //				console.log("Rotating up by "+(2 * Math.PI * this.mouseDelta.y / this.view.heightPx))
@@ -486,10 +486,6 @@ class CameraMapControls {
 				const originToStart = start3D.clone().sub(origin)
 				const originToEnd   = end3D.clone().sub(origin)
 
-				// const originToStart = V3(-122483.52202405069,6375044.910254984,-87907.9147814633)
-				// const originToEnd = V3(-122483.52202405069,6375044.910254984,-87907.9147814633)
-
-
 				// we now have three points that define the plane of rotation
 				// the origin, and the start and end point
 
@@ -584,18 +580,32 @@ class CameraMapControls {
 
 	}
 
+	// given the camera position and forward vector, how far is is from vertically down
+	getVerticalAngleDegrees() {
+		const down = getLocalDownVector(this.camera.position)
+		const lookVector = new Vector3();
+		this.camera.getWorldDirection(lookVector);
+		return degrees(down.angleTo(lookVector))
+	}
+
 	// rotate the camera around the target, so we rotate
 	rotateUp(angle) {
+
+		const downAngleStart = this.getVerticalAngleDegrees();
+		//console.log("angle = "+angle+" Down angle start: "+downAngleStart)
+
+		if (angle > 0 && (downAngleStart - degrees(angle)) < 5) return; // don't go below the horizon
+
+
 		this.camera.position.sub(this.target) // make relative to the target
 		// need to get the local right vector
 		var rotationMatrix = new Matrix4().extractRotation(this.camera.matrixWorld);
 		var right = new Vector3(1, 0, 0).applyMatrix4(rotationMatrix).normalize();
 
-
 		this.camera.position.applyAxisAngle(right,-angle) // rotate around origin (around target)
 		this.camera.position.add(this.target) // back into world space
-		this.camera.rotateOnWorldAxis(right,-angle) // rotate the camere as well, so target stays in same spot
 
+		this.camera.rotateOnWorldAxis(right, -angle) // rotate the camere as well, so target stays in same spot
 
 	}
 
