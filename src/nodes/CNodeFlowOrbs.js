@@ -4,7 +4,8 @@ import {BufferAttribute, BufferGeometry, Color, Frustum, Matrix4, Points, Ray, S
 import {NodeMan, Sit} from "../Globals";
 import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
-import {DebugArrow} from "../threeExt";
+import {DebugArrow, removeDebugArrow} from "../threeExt";
+import * as LAYER from "../LayerMasks";
 
 class CFlowOrb {
     constructor(v) {
@@ -88,6 +89,8 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
         this.oldNear = this.near;
         this.oldFar = this.far;
+
+        this.numArrows = 100;
 
         // wind is an input, but changng wind will not change the sprites
         // on the existing frame
@@ -178,9 +181,40 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     }
 
+    rebuildWindArrows() {
+        // get the wind direction
+        if (this.wind && this.wind.v0.length() > 0) {
+            const wind = this.wind.v0.clone();
+            const windSpeed = wind.length();
+            // create or update
+            for (let i = 0; i < Math.min(this.numArrows, this.nSprites); i++) {
+                const orb = this.orbs[i];
+                DebugArrow("orb_" + i, wind, orb.position, this.size * 2 + windSpeed, 0xFFFF00, true, this.group, 20, LAYER.MASK_LOOKRENDER);
+            }
+
+            // any extra arrows we remove
+            for (let i=this.nSprites; i<this.numArrows;i++) {
+                removeDebugArrow("orb_"+i);
+            }
+            this.hasArrows = true;
+
+        } else {
+            if (this.hasArrows) {
+                // any extra arrows we remove
+                for (let i = 0; i < this.numArrows; i++) {
+                    removeDebugArrow("orb_" + i);
+                }
+            }
+        }
+    }
+
 
     rebuildSprites()
     {
+
+
+
+
         // recreate the positions array
         this.positions = new Float32Array(this.nSprites * 3);
         // and set the positions
@@ -415,6 +449,9 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
         // and flag the geometry as changed
         this.geometry.attributes.position.needsUpdate = true;
+
+
+        this.rebuildWindArrows();
 
     }
 }
