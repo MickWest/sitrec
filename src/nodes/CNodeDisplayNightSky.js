@@ -581,6 +581,17 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }).name("Equatorial Grid in Look View")
         this.addSimpleSerial("showEquatorialGridLook")
 
+        // same for the flare region
+        this.showFlareRegionLook =  false;
+        guiShowHide.add(this,"showFlareRegionLook" ).listen().onChange(()=>{
+            if (this.showFlareRegionLook) {
+                this.flareRegionGroup.layers.mask=LAYER.MASK_LOOKRENDER;
+            } else {
+                this.flareRegionGroup.layers.mask=LAYER.MASK_HELPERS;
+            }
+            propagateLayerMaskObject(this.flareRegionGroup);
+        }).name("Flare Region in Look View");
+
 
         this.updateVis()
 
