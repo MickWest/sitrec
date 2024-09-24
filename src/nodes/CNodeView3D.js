@@ -40,6 +40,7 @@ import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {isLocal} from "../../config";
 import {CustomManager} from "../CustomSupport";
 import { VRButton } from 'three/addons/webxr/VRButton.js';
+import {SITREC_ROOT} from "../../config.js";
 
 
 function linearToSrgb(color) {
@@ -586,7 +587,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         assert(this.scene, "CNodeView3D needs global GlobalScene")
 
         const spriteCrosshairMaterial = new SpriteMaterial({
-            map: new TextureLoader().load('data/images/crosshairs.png'),
+            map: new TextureLoader().load(SITREC_ROOT+'data/images/crosshairs.png'),
             color: 0xffffff, sizeAttenuation: false,
             depthTest: false, // no depth buffer, so it's always on top
             depthWrite: false,

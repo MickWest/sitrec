@@ -4,6 +4,7 @@ import {guiMenus} from "../Globals";
 import * as LAYER from "../LayerMasks";
 import {radians} from "../utils";
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
+import {SITREC_ROOT} from "../../config";
 
 export class CNodeSpriteGroup extends CNode3DGroup {
 
@@ -13,7 +14,7 @@ constructor(v) {
     this.size = v.size ?? 2;
     this.mainSizeMultiplier = 1;
 
-    this.texture = new TextureLoader().load('data/images/WhiteDiskWithAlpha128px.png');
+    this.texture = new TextureLoader().load(SITREC_ROOT+'data/images/WhiteDiskWithAlpha128px.png');
 
     // Define the vertex and fragment shaders
     // note "projectionMatrix" is the camera's projection matrix supplied as a uniform by three.js

@@ -53,7 +53,7 @@ import {
     raDecToAltAz
 } from "../CelestialMath";
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
-import {SITREC_SERVER} from "../../config";
+import {SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {DragDropHandler} from "../DragDropHandler";
 
 // npm install satellite.js --save-dev
@@ -1125,7 +1125,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         //  loadStarDataWithNames();
 
         // Setup the sprite material
-        const spriteMap = new TextureLoader().load("data/images/nightsky/MickStar.png"); // Load a star texture
+        const spriteMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickStar.png'); // Load a star texture
         const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0xffffff});
 
         const numStars = this.BSC_NumStars;
@@ -1214,7 +1214,7 @@ void main() {
                 maxMagnitude: { value: this.BSC_MaxMag },
                 minSize: { value: 1.0 },
                 maxSize: { value: 20.0 },
-                starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
+                starTexture: { value: new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30},
                 starScale: { value: Sit.starScale/window.devicePixelRatio}
             },
@@ -1295,11 +1295,11 @@ void main() {
 
         // Setup the sprite material
 
-        const starMap = new TextureLoader().load('data/images/nightsky/MickStar.png'); // Load a star texture
+        const starMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickStar.png'); // Load a star texture
 
-        const sunMap = new TextureLoader().load('data/images/nightsky/MickSun.png'); // Load a star texture
+        const sunMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickSun.png'); // Load a star texture
 
-        const moonMap = new TextureLoader().load('data/images/nightsky/MickMoon.png'); // Load a star texture
+        const moonMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickMoon.png'); // Load a star texture
 //        const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0x00ff00});
 
         const sphereRadius = 100; // 100m radius
@@ -1391,7 +1391,7 @@ void main() {
 //         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon")
 //
 //         // Setup the sprite material
-//         const spriteMap = new TextureLoader().load('data/MickStar.png'); // Load a star texture
+//         const spriteMap = new TextureLoader().load(SITREC_ROOT+'data/MickStar.png'); // Load a star texture
 //
 //         const spriteMaterial = new SpriteMaterial({
 //             map: spriteMap,
@@ -1534,7 +1534,7 @@ void main() {
                 maxMagnitude: { value: this.BSC_MaxMag },
                 minSize: { value: 1.0 },
                 maxSize: { value: 20.0 },
-                starTexture: { value: new TextureLoader().load('data/images/nightsky/MickStar.png') },
+                starTexture: { value: new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30 },
                 satScale: { value: Sit.satScale/window.devicePixelRatio },
                 ...sharedUniforms,

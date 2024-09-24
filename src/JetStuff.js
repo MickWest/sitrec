@@ -52,7 +52,7 @@ import {
     Vector3
 } from "three";
 import {CNodeDisplayLOS} from "./nodes/CNodeDisplayLOS";
-import {isLocal} from "../config";
+import {isLocal, SITREC_ROOT} from "../config";
 import {CNodeATFLIRUI} from "./nodes/CNodeATFLIRUI";
 import {CNodeView3D} from "./nodes/CNodeView3D";
 import {CNodeChartView} from "./nodes/CNodeChartView";
@@ -98,7 +98,7 @@ export function initJetVariables() {
     glareSphere.name = "glareSphere"
 
     if (Sit.showGlare) {
-        const mapt = new TextureLoader().load('data/images/GlareSprite.png?v=1');
+        const mapt = new TextureLoader().load(SITREC_ROOT+'data/images/GlareSprite.png?v=1');
         const spriteMaterial = new SpriteMaterial({map: mapt, color: 0xffffff, sizeAttenuation: false});
 
         glareSprite = new Sprite(spriteMaterial);

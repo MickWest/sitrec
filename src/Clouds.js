@@ -20,7 +20,7 @@ export function SetupCloudNodes() {
         }
     })
 
-    const cloudTexture = new TextureLoader().load('data/images/cloud-sprite-flatter.png?v=2');
+    const cloudTexture = new TextureLoader().load(SITREC_ROOT+'data/images/cloud-sprite-flatter.png?v=2');
     const cloudMaterial = new MeshStandardMaterial({
         map: cloudTexture,
         transparent: true,

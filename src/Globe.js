@@ -5,16 +5,17 @@ import {radians} from "./utils";
 import {Globals, Sit} from "./Globals";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
 import {renderOne} from "./par";
+import {SITREC_ROOT} from "../config";
 
 export function createSphere(radius, radius1, segments) {
     const sphere = new Mesh(
         new SphereGeometry(radius, segments, segments),
         new MeshPhongMaterial({
-            map: new TextureLoader().load('data/images/2_no_clouds_4k.jpg',renderOne),
-     //       map: new TextureLoader().load('data/images/Earthlights_2002.jpg'),
-            bumpMap: new TextureLoader().load('data/images/elev_bump_4k.jpg',renderOne),
+            map: new TextureLoader().load(SITREC_ROOT+'data/images/2_no_clouds_4k.jpg',renderOne),
+     //       map: new TextureLoader().load(SITREC_ROOT+'data/images/Earthlights_2002.jpg'),
+            bumpMap: new TextureLoader().load(SITREC_ROOT+'data/images/elev_bump_4k.jpg',renderOne),
             bumpScale: 0.005,
-            specularMap: new TextureLoader().load('data/images/water_4k.png',renderOne),
+            specularMap: new TextureLoader().load(SITREC_ROOT+'data/images/water_4k.png',renderOne),
             //           specular:    new Color('grey'),
             specular: new Color('#222222'),
             color: new Color('white'),
