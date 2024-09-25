@@ -5,6 +5,7 @@ import * as LAYER from "./LayerMasks";
 import {CNodeLOSHorizonTrack} from "./nodes/CNodeLOSHorizonTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {MeshStandardMaterial, TextureLoader} from "three";
+import {SITREC_ROOT} from "../config";
 
 // Wrapper for the cloud node setup - used by Gimbal
 export function SetupCloudNodes() {
