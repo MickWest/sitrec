@@ -137,7 +137,6 @@ class CameraMapControls {
 			var target2Camera = this.camera.position.clone().sub(this.target)
 			var length = target2Camera.length()
 
-			console.log(delta)
 			const zoomScale = Math.pow(0.95, this.zoomSpeed * Math.abs(delta));
 			if (delta < 0) {
 				length *= zoomScale;
