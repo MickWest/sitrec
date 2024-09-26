@@ -14,10 +14,12 @@ My goal here is to create a tool to effectively analyze UAP/UFO cases, and to sh
 - [The Custom Sitch Tool - Drag and Drop Sitches](docs/CustomSitchTool.md)
 - [Custom Models and 3D Object - add your own planes](docs/CustomModels.md)
 
+
 ### Technical Documentation (for coders and webmasters)
 
 - [Local custom Sitch with JSON files - More complex cusom sitches](./docs/LocalCustomSitches.md)
 - [File Rehosting and Server Configuration](./docs/FileRehosting.md)
+- [Custom Terrain and Elevation Sources, WMS, etc.](docs/CustomTerrainSources.md)
 
 The most common use case is to display three views:
 - A video of a UAP situation 
