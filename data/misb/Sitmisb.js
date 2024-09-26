@@ -278,8 +278,12 @@ sitch = {
     flowOrbs: {
         kind: "FlowOrbs", size: 0.5, nSprites: 250, wind: "targetWind",
         near: 90, far: 2000,
-        camera: "lookCamera", visible: true,
+        camera: "lookCamera", visible: false,
         colorMethod: "Hue From Altitude",
         hueAltitudeMax: 1400,
     },
+
+
+   // trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
+
 }
