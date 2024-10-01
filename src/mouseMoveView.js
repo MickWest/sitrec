@@ -36,15 +36,17 @@ export function onDocumentMouseDown(event) {
 
 //        console.log("Mouse Down, checking exclusive")
 
-        vm.iterateVisible((name, view) => {
-            if (mouseInViewOnly(view, mouseX, mouseY)) {
-                //console.log("onDocumentMouseDown has mouseInViewOnly true for" + view.id)
+        vm.iterateVisibleIncludingOverlays((name, view) => {
+//            console.log("onDocumentMouseDown checking" + view.id)
+
+            if (mouseInViewOnly(view, mouseX, mouseY, false)) {
+  //              console.log("onDocumentMouseDown has mouseInViewOnly true for" + view.id)
                 if (view.onMouseDown != undefined) {
-             //       console.log("Calling onMouseDown for" + view.id)
+                  //  console.log("Calling onMouseDown for" + view.id)
                     view.onMouseDown(event, mouseX, mouseY)
                     mouseDragView = view;
                 } else {
-             //       console.log("No callback onMouseDown for" + view.id)
+                   // console.log("No callback onMouseDown for" + view.id)
                 }
 
 
@@ -79,7 +81,7 @@ export function onDocumentMouseMove(event) {
         }
     } else {
         // otherwise, send to the view we are inside
-        ViewMan.iterateVisible((name, view) => {
+        ViewMan.iterateVisibleIncludingOverlays((name, view) => {
 
             if (mouseInViewOnly(view, mouseX, mouseY) && view.onMouseMove != undefined) {
                 // console.log("Mouse Move (no drag) in view "+view.id)
@@ -113,7 +115,7 @@ export function onDocumentDoubleClick(event) {
 
     let done=false;
     ViewMan.iterate((key, view) => {
-        if (!done && view.visible && !view.overlayView) {
+        if (!done && view.visible) {
             if (mouseInViewOnly(view, mouseX, mouseY)) {
                 //  console.log("Dbl " + key)
                 view.doubleClick();

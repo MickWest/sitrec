@@ -315,10 +315,16 @@ class CNodeView extends CNode {
             this.height = this.overlayView.height
             this.widthPx = this.overlayView.widthPx
             this.heightPx = this.overlayView.heightPx
-            this.top = 0
-            this.left = 0
-            this.topPx = 0
-            this.leftPx = 0
+            // this.top = 0
+            // this.left = 0
+            // this.topPx = 0
+            // this.leftPx = 0
+            // and inherit the position, as we need that for UI mouse calculations
+            this.top = this.overlayView.top
+            this.left = this.overlayView.left
+            this.topPx = this.overlayView.topPx
+            this.leftPx = this.overlayView.leftPx
+
         }
     }
 
@@ -694,28 +700,42 @@ export function mouseToCanvas(view, x, y) {
     return [x,y]
 }
 
-export function mouseInView(view, x, y) {
+export function mouseInView(view, x, y, debug = false) {
     assert(view !== undefined)
     assert(x !== undefined)
     assert(y !== undefined)
     // localize to the view window
     const [vx,vy] = mouseToView(view,x,y)
 
-    if (view.ignoreMouse)
+    if (view.ignoreMouse) {
+        if (debug) console.log(`Mouse (${x},${y}) Ignored in view(${view.id})`)
         return false;
-    if (!view.visible)
+    }
+    if (!view.visible) {
+        if (debug) console.log(`Mouse (${x},${y}) NOT visible in view(${view.id})`)
         return false;
+    }
 
-    return (vx >= 0 && vy >= 0 && vx < view.widthPx && vy < view.heightPx);
+    const inside =  (vx >= 0 && vy >= 0 && vx < view.widthPx && vy < view.heightPx);
+    if (debug) {
+        if (inside)
+            console.log(`Mouse (${x},${y}) In view(${view.id})`)
+        else
+            console.log(`Mouse (${x},${y}) NOT in view(${view.id})`)
+    }
+    return inside;
 }
 
-export function mouseInViewOnly(view, x, y) {
+export function mouseInViewOnly(view, x, y, debug = false) {
     // if NOT in the view, then immediately return false, no need to check.
-    if (!mouseInView(view, x, y)) return false;
+    if (!mouseInView(view, x, y, debug)) {
+        if (debug) console.log(`Mouse (${x},${y}) NOT in view(${view.id})`)
+        return false;
+    }
 
     var past = false;
     var inView = true;
-    ViewMan.iterateVisible((key, otherView) => {
+    ViewMan.iterateVisibleIncludingOverlays((key, otherView) => {
 
         // we only check for views that are AFTER this view in the view manager
         // so wait until we find it, and then set he "past" flag
@@ -723,8 +743,18 @@ export function mouseInViewOnly(view, x, y) {
             past = true;
         } else {
             if (past && mouseInView(otherView, x, y)) {
-        //              console.log(`Mouse (${x},${y}) In OTHER view(${otherView.id})`)
-                inView = false;
+
+
+
+                if (debug) {
+                    console.log(`Mouse (${x},${y}) In OTHER view(${otherView.id})`)
+                }
+
+                // only clear it if otherView has an onMouseDown
+                if (otherView.onMouseDown !== undefined) {
+                    inView = false;
+                }
+
             }
         }
     })

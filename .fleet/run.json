@@ -1,0 +1,17 @@
+{
+    "configurations": [
+
+{
+    "type": "npm",
+    "name": "npm configuration",
+    "command": "run",
+    "scripts": "build",
+},
+{
+    "type": "browser",
+    "name": "Browser configuration",
+    "url": "https://localhost/sitrec",
+},
+
+    ]
+}

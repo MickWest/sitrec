@@ -89,7 +89,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
             this.Video.flushEntireCache()
             this.Video = undefined;
         }
-        this.positioned = false;
+        this.positioned = false; 
     }
 
 

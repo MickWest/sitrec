@@ -7,6 +7,7 @@ import {updateGUIFrames} from "../JetGUI";
 import {updateFrameSlider} from "../FrameSlider";
 import {isLocal} from "../../config";
 import {assert} from "../assert.js";
+import { CNodeATFLIRUI } from "./CNodeATFLIRUI.js";
 
 // Working, including with drag-and-drop, but there are some videos where
 // the MOOV chunk seems not to load, or something, and so

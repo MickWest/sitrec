@@ -284,6 +284,6 @@ sitch = {
     },
 
 
-   // trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
+    trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
 
 }

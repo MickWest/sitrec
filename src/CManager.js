@@ -142,7 +142,15 @@ class CManager {
     iterateVisible (callback) {
         Object.keys(this.list).forEach(key => {
             const view = this.list[key].data
-            if (view.visible  && ! view.overlayView)
+            if (view.visible && !view.overlayView)
+                callback(key, view);
+        })
+    }
+
+    iterateVisibleIncludingOverlays (callback) {
+        Object.keys(this.list).forEach(key => {
+            const view = this.list[key].data
+            if (view.visible)
                 callback(key, view);
         })
     }
