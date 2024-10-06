@@ -4,6 +4,7 @@
 
 import {CNodeViewUI} from "./CNodeViewUI";
 import {mouseToCanvas} from "./CNodeView";
+import {assert} from "../assert";
 
 
 export class CDraggableItem {
@@ -43,7 +44,7 @@ export class CDraggableItem {
 export class CDraggableCircle extends CDraggableItem {
      constructor(v) {
         super(v);
-        this.radius = v.radius;
+        this.radius = v.radius ?? 5;
     }
 
 
@@ -62,6 +63,10 @@ export class CDraggableCircle extends CDraggableItem {
         const v = this.view
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1.5
+        if (par.frame === this.frame) {
+            ctx.strokeStyle = '#FF0000'
+            ctx.lineWidth = 2.5
+        }
         ctx.beginPath();
         ctx.arc(this.cX, this.cY, this.cR, 0, 2 * Math.PI);
         ctx.stroke();
@@ -78,12 +83,17 @@ export class CNodeActiveOverlay extends CNodeViewUI {
 
         this.draggable  = []
 
-        this.add(new CDraggableCircle({view:this, x:100, y:100, radius:10}))
 
+    }
+
+
+    c2p(x) {
+        return x * 100 / this.heightPx
     }
 
     add(draggable) {
         this.draggable.push(draggable)
+        return draggable;
     }
 
 
@@ -92,7 +102,12 @@ export class CNodeActiveOverlay extends CNodeViewUI {
         const ctx = this.ctx
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1.5
-        this.draggable.forEach(d => d.render(ctx))
+        this.draggable.forEach(
+                  d => {
+                        d.render(ctx)
+                  }
+
+        )
 
     }
 
@@ -101,12 +116,14 @@ export class CNodeActiveOverlay extends CNodeViewUI {
         const [x, y] = mouseToCanvas(this, mouseX, mouseY)
         this.lastMouseX = x
         this.lastMouseY = y
-        this.draggable.forEach(d => {
+        for (const d of this.draggable) {
             if (d.isWithin(x, y)) {
                 console.log("Clicked on draggable item")
                 d.startDrag(x, y)
+                return true;
             }
-        })
+        }
+        return false;
     }
 
     onMouseUp(e, mouseX, mouseY) {
@@ -142,18 +159,221 @@ export class CNodeActiveOverlay extends CNodeViewUI {
 }
 
 
+class CNodeVideoTrackKeyframe extends CDraggableCircle{
+    constructor(v) {
+        super(v);
+        this.frame = v.frame;
+        this.view = v.view
+    }
+
+    startDrag() {
+
+        par.frame = this.frame;
+        par.paused = true;
+        super.startDrag();
+    }
+}
+
+
 export class CNodeTrackingOverlay extends CNodeActiveOverlay {
     constructor(v) {
         super(v);
 
+        this.keyframes = [];
 
-        this.addText("tracking", "TRACKING VIEW OVERLAY", 14.8, 3.1)
+        this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:50, y:50, frame:0})))
+   //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:60, y:55, frame:1000})))
+   //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:80, y:52, frame:2000})))
+
+
+        // the track will overlay a video, so we can get the number of frames from that
+        this.frames = this.overlayView.frames;
+       // console.log ("Setting up a CNodeTrackingOverlay with Frames = ", this.frames)
+
+    }
+
+    updateCurve() {
+        // sort keyframes by frame
+        this.keyframes.sort((a, b) => a.frame - b.frame)
+
+        // create a new curve, first as an empty array of points
+        this.pointsXY = new Array(this.frames).fill(0).map(() => [0, 0])
+
+        // we have a spline based on the keyframes
+        // if just one keyframe, then it's all the same point
+        // two keyframes, then it's a straight line
+        // more than two, then it's a spline
+        // so fill the XY points with the keyframes
+        // we iterate over the POINTS, not the keyframes
+        // and find the point on the curve for that frame
+        // and set the XY point to that
+
+// Helper function for Catmull-Rom spline interpolation
+        function catmullRom(t, p0, p1, p2, p3) {
+            const t2 = t * t;
+            const t3 = t2 * t;
+            return (
+                0.5 *
+                ((2 * p1) +
+                    (-p0 + p2) * t +
+                    (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+                    (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
+            );
+        }
+
+        for (let i = 0; i < this.frames; i++) {
+            if (this.keyframes.length === 1) {
+                this.pointsXY[i] = [this.keyframes[0].x, this.keyframes[0].y];
+            } else if (this.keyframes.length === 2) {
+                // Handle two keyframes with simple linear interpolation
+                const k1 = this.keyframes[0];
+                const k2 = this.keyframes[1];
+                const t = (i - k1.frame) / (k2.frame - k1.frame);
+                this.pointsXY[i] = [
+                    k1.x + t * (k2.x - k1.x),
+                    k1.y + t * (k2.y - k1.y)
+                ];
+            } else {
+                let k0, k1, k2, k3;
+                let t = 0;
+
+                if (i < this.keyframes[0].frame) {
+                    // Extrapolate before the first keyframe using the first two keyframes (linear extension)
+                    k1 = this.keyframes[0];
+                    k2 = this.keyframes[1];
+                    const slopeX = k2.x - k1.x;
+                    const slopeY = k2.y - k1.y;
+                    t = (i - k1.frame) / (k2.frame - k1.frame);
+
+                    this.pointsXY[i] = [
+                        k1.x + t * slopeX,  // Linear extrapolation for X
+                        k1.y + t * slopeY   // Linear extrapolation for Y
+                    ];
+                } else if (i > this.keyframes[this.keyframes.length - 1].frame) {
+                    // Extrapolate after the last keyframe using the last two keyframes (linear extension)
+                    k1 = this.keyframes[this.keyframes.length - 2];
+                    k2 = this.keyframes[this.keyframes.length - 1];
+                    const slopeX = k2.x - k1.x;
+                    const slopeY = k2.y - k1.y;
+                    t = (i - k2.frame) / (k2.frame - k1.frame);
+
+                    this.pointsXY[i] = [
+                        k2.x + t * slopeX,  // Linear extrapolation for X
+                        k2.y + t * slopeY   // Linear extrapolation for Y
+                    ];
+                } else {
+                    // Interpolation within the range of keyframes
+                    for (let j = 1; j < this.keyframes.length; j++) {
+                        if (this.keyframes[j].frame >= i) {
+                            k2 = this.keyframes[j];
+                            k1 = this.keyframes[j - 1];
+
+                            k0 = this.keyframes[j - 2] ?? k1;
+                            k3 = this.keyframes[j + 1] ?? k2;
+
+                            t = (i - k1.frame) / (k2.frame - k1.frame);
+                            break;
+                        }
+                    }
+
+                    // Apply Catmull-Rom spline interpolation for frames within the keyframes
+                    this.pointsXY[i] = [
+                        catmullRom(t, k0.x, k1.x, k2.x, k3.x),
+                        catmullRom(t, k0.y, k1.y, k2.y, k3.y)
+                    ];
+                }
+            }
+        }
+
+
+
+
+
+
+
+    }
+
+    onMouseDown(e, mouseX, mouseY) {
+
+        if (super.onMouseDown(e, mouseX, mouseY)) {
+            return true;
+        }
+
+        const [x, y] = mouseToCanvas(this, mouseX, mouseY)
+
+
+        // if (e.shiftKey) {
+            // shift key means we add a new one at this frame
+
+            // interate over keyframes and find if there is one at this frame
+            let found = false;
+            for (const k of this.keyframes) {
+                if (k.frame === par.frame) {
+                    found = true;
+
+                    // move it to the new position
+                    k.x = this.c2p(x);
+                    k.y = this.c2p(y);
+
+
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({
+                    view: this,
+                    x: this.c2p(x),
+                    y: this.c2p(y),
+                    frame: par.frame
+                })))
+            }
+
+        // }
 
 
     }
 
     renderCanvas(frame) {
         super.renderCanvas(frame) // will be CNodeViewCanvas2D
+
+        this.updateCurve();
+
+        // iterate over keyframes and render lines between them
+        const ctx = this.ctx
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.5
+        // for (let i = 0; i < this.keyframes.length - 1; i++) {
+        //     const k1 = this.keyframes[i]
+        //     const k2 = this.keyframes[i + 1]
+        //
+        //     ctx.beginPath();
+        //     ctx.moveTo(k1.cX, k1.cY);
+        //     ctx.lineTo(k2.cX, k2.cY);
+        //     ctx.stroke();
+        // }
+
+        // iterate over points and render the curve
+        ctx.strokeStyle = '#FF0000';
+        ctx.lineWidth = 2.5
+        ctx.beginPath();
+        ctx.moveTo(this.keyframes[0].cX, this.keyframes[0].cY);
+        for (let i = 0; i < this.frames; i++) {
+            const [x, y] = this.pointsXY[i]
+            ctx.lineTo(this.sy(x), this.sy(y))
+        }
+        ctx.stroke();
+
+        // find the XY position for the current frame
+        // and render a circle there
+        const [x, y] = this.pointsXY[frame];
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.5
+        ctx.beginPath();
+        ctx.arc(this.sy(x), this.sy(y), 5, 0, 2 * Math.PI);
+
+        ctx.stroke();
+
     }
 
 }

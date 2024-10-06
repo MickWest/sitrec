@@ -143,7 +143,7 @@ export class CNodeFactory {
             //     button.name(newNode.exportBaseName + oldNode.id)
             // }
 
-            console.error("TODO: rename export button")
+            console.warn("TODO: rename export button")
 
         }
 
