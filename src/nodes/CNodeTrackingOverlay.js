@@ -179,6 +179,13 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
     constructor(v) {
         super(v);
 
+
+        document.addEventListener('contextmenu', function (event) {
+            if (event.ctrlKey) {
+                event.preventDefault();
+            }
+        });
+
         this.keyframes = [];
 
         this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:50, y:50, frame:0})))
@@ -222,7 +229,13 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         }
 
         for (let i = 0; i < this.frames; i++) {
-            if (this.keyframes.length === 1) {
+            // if no keyframes, then just set to 50,50
+            // the middle of the screen (vertically), and the same distance in the horizontal
+            if (this.keyframes.length === 0) {
+                this.pointsXY[i] = [50, 50];
+            }
+            // if one keyframe, then set to that
+            else if (this.keyframes.length === 1) {
                 this.pointsXY[i] = [this.keyframes[0].x, this.keyframes[0].y];
             } else if (this.keyframes.length === 2) {
                 // Handle two keyframes with simple linear interpolation
@@ -285,25 +298,37 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
             }
         }
 
-
-
-
-
-
-
     }
 
     onMouseDown(e, mouseX, mouseY) {
 
-        if (super.onMouseDown(e, mouseX, mouseY)) {
-            return true;
+        // if we clicked on a draggable item, then we return true
+        // we don't need to check this
+        if (!e.ctrlKey && super.onMouseDown(e, mouseX, mouseY)) {
+            // this means we clicked on a draggable item
+            // check to see if the alt key is down
+            // if so, we remove the item from the lists
+            if (e.altKey) {
+                this.draggable = this.draggable.filter(d => !d.dragging)
+
+                // remove the keyframe from the keyframes array
+                this.keyframes = this.keyframes.filter(k => !k.dragging)
+
+                // no dispose is needed
+            }
+
+
+           // if (!e.ctrlKey)
+           //     return true;
         }
 
         const [x, y] = mouseToCanvas(this, mouseX, mouseY)
 
 
-        // if (e.shiftKey) {
-            // shift key means we add a new one at this frame
+         if (e.ctrlKey) {
+            // control key means we add a new one at this frame
+             // we disable the default action
+                e.preventDefault();
 
             // interate over keyframes and find if there is one at this frame
             let found = false;
@@ -321,6 +346,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
             }
 
             if (!found) {
+                console.log("Adding a new keyframe at frame ", par.frame)
                 this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({
                     view: this,
                     x: this.c2p(x),
@@ -329,7 +355,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
                 })))
             }
 
-        // }
+         }
 
 
     }
