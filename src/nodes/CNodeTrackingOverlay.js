@@ -402,4 +402,29 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
 
     }
 
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+            keyframes: this.keyframes.map(k => {
+                return {
+                    x: k.x,
+                    y: k.y,
+                    frame: k.frame
+                }
+            })
+        }
+    }
+
+    modDeserialize(v) {
+       // super.modDeserialize(v);
+        this.keyframes = v.keyframes.map(k => {
+            return this.add(new CNodeVideoTrackKeyframe({
+                view: this,
+                x: k.x,
+                y: k.y,
+                frame: k.frame
+            }))
+        })
+    }
+
 }

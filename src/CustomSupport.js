@@ -71,7 +71,13 @@ export class CCustomManager {
 
         FileManager.rehostDynamicLinks(true).then(() => {
 
-            let out = {}
+            // the output object
+            // since we are going to use JSON.stringify, then when it is loaded again we do NOT need
+            // the ad-hox parse functions that we used to have
+            // and can just use JSON.parse directly on the string
+            // any existing one that loads already will continue to work
+            // but this allows us to use more complex objects without updating the parser
+            let out = {stringified: "true"}
 
             // merge in the current Sit object
             // which might have some changes?
@@ -79,12 +85,15 @@ export class CCustomManager {
             if (Sit.canMod) {
                 // for a modded sitch, we just need to store the name of the sitch we are modding
                 // TODO: are there some things in the Sit object that we need to store?????
-                out = {modding: Sit.name }
+                out = {...out,
+                       modding: Sit.name }
             }
             else
             {
                 // but for a custom sitch, we need to store the whole Sit object (which automatically stores changes)
-                out = {...Sit}
+                out = {
+                    ...out,
+                    ...Sit}
             }
 
             // the custom sitch is a special case

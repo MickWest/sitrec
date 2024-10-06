@@ -2,11 +2,11 @@
 // const estraverse = require("estraverse");
 // const escodegen = require("escodegen");
 
-function removeQuotesFromKeys(jsonString) {
-    // This regular expression matches property names in quotes followed by a colon,
-    // which is the JSON format for keys.
-    return jsonString.replace(/"([^"]+)":/g, '$1:');
-}
+// function removeQuotesFromKeys(jsonString) {
+//     // This regular expression matches property names in quotes followed by a colon,
+//     // which is the JSON format for keys.
+//     return jsonString.replace(/"([^"]+)":/g, '$1:');
+// }
 
 
 // This takes a string of a javascript object and adds quotes to the keys
@@ -362,16 +362,38 @@ class JSParser {
 // syntax errors are not handled, but get reported in the console
 // note you can't use expressions in the object (like 1/2), only literals (0.5)
 export function parseJavascriptObject(jsObjectString) {
-    // add quotes to the keys. We need the parentheses to make sure it's evaulated as an object
-    const parser = new JSParser(jsObjectString);
-    parser.parseStructure();
-    const requoted = parser.out;
 
-    // console.log(requoted)
-    // const lines = requoted.split("\n");
-    // for (let i = 0; i < lines.length; i++) {
-    //    console.log((i+1) + ": " + lines[i]);
-    // }
+    // if jsObjectString contains the string '  "stringified": "true",'
+    // then skip the "requoted" process
+    // as it's already been done
+
+    let requoted;
+    if (jsObjectString.includes('"stringified": "true",')) {
+        requoted = jsObjectString;
+    } else {
+
+
+        // add quotes to the keys. We need the parentheses to make sure it's evaulated as an object
+        // Note JSParser is ad hoc and not a full parser, so it's not perfect
+        const parser = new JSParser(jsObjectString);
+        parser.parseStructure();
+        requoted = parser.out;
+
+        console.log(requoted)
+        const lines = requoted.split("\n");
+        for (let i = 0; i < lines.length; i++) {
+            console.log((i + 1) + ": " + lines[i]);
+        }
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of requoted lines: " + lines.length);
+
+
+        const linesBefore = jsObjectString.split("\n");
+        for (let i = 0; i < linesBefore.length; i++) {
+            console.log((i + 1) + ": " + linesBefore[i]);
+        }
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of lines BEFORE: " + linesBefore.length);
+
+    }
 
     const parsed = JSON.parse(requoted);
     return parsed;

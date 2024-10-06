@@ -445,4 +445,8 @@ sitch = {
         hueAltitudeMax: 1400,
         camera: "lookCamera", visible: false},
 
+
+    trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
+
+
 }
