@@ -416,6 +416,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
     }
 
     modDeserialize(v) {
+        this.draggable = [];
        // super.modDeserialize(v);
         this.keyframes = v.keyframes.map(k => {
             return this.add(new CNodeVideoTrackKeyframe({
