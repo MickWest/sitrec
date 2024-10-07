@@ -263,8 +263,23 @@ sitch = {
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
     // for other uses, such as a target track generated for LOS traversal
     recordLos: {kind: "RecordLOS"},
+
+//    JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
     JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
-//    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera"},
+
+
+    trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
+
+
+    // // the actual LOS source can be the camera or the tracking overlay
+    // // (or maybe others later)
+    JetLOSx: {kind: "Switch", inputs: {
+            "Camera Center": "JetLOS",
+            "Camera Tracking": "trackingOverlay", //  <<< NOT WORKING, MAYBE as NOT RETURNING LOS
+        },
+        desc: "LOS Source",
+        gui: "traverse"
+    },
 
 
     // camera changes after this point will not be recorded for LOS generation
@@ -446,7 +461,6 @@ sitch = {
         camera: "lookCamera", visible: false},
 
 
-    trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
 
 
 }

@@ -180,6 +180,8 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         super(v);
 
 
+        this.seperateVisibilty = true; // don't propagate visibility to the overlaid view
+
         document.addEventListener('contextmenu', function (event) {
             if (event.ctrlKey) {
                 event.preventDefault();
@@ -193,13 +195,16 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
    //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:80, y:52, frame:2000})))
 
 
-        // the track will overlay a video, so we can get the number of frames from that
-        this.frames = this.overlayView.frames;
-       // console.log ("Setting up a CNodeTrackingOverlay with Frames = ", this.frames)
+        this.updateCurve();
 
     }
 
     updateCurve() {
+
+        // the track will overlay a video, so we can get the number of frames from that
+        this.frames = this.overlayView.frames;
+        // console.log ("Setting up a CNodeTrackingOverlay with Frames = ", this.frames)
+
         // sort keyframes by frame
         this.keyframes.sort((a, b) => a.frame - b.frame)
 

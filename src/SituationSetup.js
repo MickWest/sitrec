@@ -1101,7 +1101,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
             );
             if (data.visible === false) {
-                speedGraph.editorView.visible = false;
+                speedGraph.editorView.hide();
             }
             break;
 
@@ -1122,7 +1122,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
             );
             if (data.visible === false) {
-                altitudeGraph.editorView.visible = false;
+                altitudeGraph.editorView.hide();
             }
             break;
 
@@ -1168,7 +1168,7 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
             );
             if (data.visible === false) {
-                tdGraph.editorView.visible = false;
+                tdGraph.editorView.hide();
             }
             break;
 

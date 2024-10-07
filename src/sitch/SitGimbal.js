@@ -616,7 +616,7 @@ function SetupAzInputs() {
             frames: Sit.frames,
         }
     )
-    azEditorNode.editorView.visible = false;
+    azEditorNode.editorView.hide();
 
     azSourceInputs = {
         ...azSourceInputs,

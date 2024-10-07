@@ -379,19 +379,19 @@ export function parseJavascriptObject(jsObjectString) {
         parser.parseStructure();
         requoted = parser.out;
 
-        console.log(requoted)
-        const lines = requoted.split("\n");
-        for (let i = 0; i < lines.length; i++) {
-            console.log((i + 1) + ": " + lines[i]);
-        }
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of requoted lines: " + lines.length);
-
-
-        const linesBefore = jsObjectString.split("\n");
-        for (let i = 0; i < linesBefore.length; i++) {
-            console.log((i + 1) + ": " + linesBefore[i]);
-        }
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of lines BEFORE: " + linesBefore.length);
+        // console.log(requoted)
+        // const lines = requoted.split("\n");
+        // for (let i = 0; i < lines.length; i++) {
+        //     console.log((i + 1) + ": " + lines[i]);
+        // }
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of requoted lines: " + lines.length);
+        //
+        //
+        // const linesBefore = jsObjectString.split("\n");
+        // for (let i = 0; i < linesBefore.length; i++) {
+        //     console.log((i + 1) + ": " + linesBefore[i]);
+        // }
+        // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Number of lines BEFORE: " + linesBefore.length);
 
     }
 

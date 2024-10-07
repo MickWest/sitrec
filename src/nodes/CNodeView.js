@@ -119,8 +119,9 @@ class CNodeView extends CNode {
         }
 
 
-        if (v.visible !== undefined)
-            this.visible = v.visible;
+  //      if (v.visible !== undefined)
+        this.visible = v.visible ?? true;
+
         this.background = v.background;
         this.up = v.up;
         this.fov = v.fov;
@@ -168,7 +169,7 @@ class CNodeView extends CNode {
             //this.div.style.borderStyle = 'solid'
             //this.div.style.color = '#404040';
 
-            this.setVisible(this.visible)
+
 
             if (this.container === window) {
                 this.divParent = document.body;
@@ -205,6 +206,10 @@ class CNodeView extends CNode {
                 }).data("CView",this);
             }
 
+            const visibleToSet = this.visible;
+            this.visible = undefined; // force update
+            this.setVisible(visibleToSet)
+
         }
 
         assert(!ViewMan.exists(v.id),"Adding "+v.id+" to ViewMan twice")
@@ -214,6 +219,7 @@ class CNodeView extends CNode {
             const name = v.menuName ?? this.id;
             // menu entry to show/hide this view
             guiShowHideViews.add(this, 'visible').listen().name(name).onChange(value => {
+                this.visible = undefined; // force update
                 this.setVisible(value);
             })
         }
@@ -579,14 +585,34 @@ class CNodeView extends CNode {
     }
 
     setVisible(visible) {
+
+         if (this.visible === visible)
+              return;
+
+        // if (this.id === "trackingOverlay" && visible !== this.visible) {
+        //         console.log("Setting "+this.id+" to "+visible + " from "+this.visible)
+        // }
+
         this.visible = visible
-        if (!this.overlayView && this.div)
-            if (this.visible)
-                this.div.style.display = 'block'
-            else
-                this.div.style.display = 'none'
-        if (this.overlayView) {
-            this.overlayView.setVisible(visible);
+
+        // if this is NOT an overlay view, then we can set the div visibility directly
+        if (!this.overlayView) {
+            if (this.div) {
+                if (this.visible)
+                    this.div.style.display = 'block'
+                else
+                    this.div.style.display = 'none'
+            }
+        }
+        else {
+           // console.warn("Overlaying view "+this.id+" set visible propagating to the overlaid view" + this.overlayView.id)
+            if (!this.seperateVisibilty) {
+                this.overlayView.setVisible(visible);
+            } else {
+               console.log("Overlaying view " + this.id + " set visible using canvas")
+                this.canvas.style.visibility = this.visible ? 'visible' : 'hidden';
+
+            }
         }
     }
 

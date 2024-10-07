@@ -126,7 +126,7 @@ if (urlParams.get("custom")) {
     // fetch it, and then use that as the sitch
     await fetch(customSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
         console.log("Custom sitch = "+customSitch)
-        console.log("Result = "+data)
+//        console.log("Result = "+data)
 
         const sitchObject = textSitchToObject(data);
         setSit(new CSituation(sitchObject))
@@ -870,7 +870,7 @@ function renderMain(elapsed) {
     ViewMan.iterate((key, view) => {
 
         // if this is an overlay view, then inherit the "visible" flag from the parent view (this this view overlays)
-        if (view.overlayView) {
+        if (view.overlayView && !view.seperateVisibilty) {
             view.setVisible(view.overlayView.visible);
         }
 

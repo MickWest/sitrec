@@ -1,5 +1,5 @@
 import {CNode} from "./CNode";
-import {guiShowHide, mainLoopCount, NodeFactory} from "../Globals";
+import {guiShowHide, mainLoopCount, NodeFactory, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert.js";
 import {normalizeLayerType} from "../utils";
@@ -29,17 +29,26 @@ export class CNode3D extends CNode {
         // if it's new, then reset count to zero
         // if not new, increment count
         // if count > 100, then it's an inifite loop
-        if (mainLoopCount !== this.lastF) {
+        if (mainLoopCount !== this.lastMLC || f !== this.lastF) {
 //            console.log("Resetting applyControllersCount for " + this.id + " at mainLoop " + mainLoopCount);
-            this.lastF = mainLoopCount;
+            this.lastF = f;
+            this.lastMLC = mainLoopCount;
             this.applyControllersCount = 0
         } else {
 //            console.log("Incrementing applyControllersCount to " + this.applyControllersCount+ " for " + this.id + " at mainLoop " + mainLoopCount);
             this.applyControllersCount++
-            if (this.applyControllersCount === 100) {
-                console.log("ApplyControllersCount reached 100 for " + this.id + " at mainLoop " + mainLoopCount)
+ //           console.log("Inc applyControllersCount to" + this.applyControllersCount + " for " + this.id + " at mainLoop " + mainLoopCount)
+            if (this.applyControllersCount === 1000) {
+                console.log("ApplyControllersCount reached 1000 for " + this.id + " at mainLoop " + mainLoopCount)
             }
-            if (this.applyControllersCount > 100) {
+            if (this.applyControllersCount > 1000) {
+
+
+                // // Dump nodes
+                // console.log("DUMPING NODES")
+                // console.log(NodeMan.dumpNodes())
+
+
                 console.warn("Infinite loop detected in controllers for " + this.id + " at mainLoop " + mainLoopCount);
                 for (const inputID in this.inputs) {
                     const input = this.inputs[inputID]
@@ -50,10 +59,7 @@ export class CNode3D extends CNode {
                     }
                 }
 
-                // Dump nodes
-             //   console.log("DUMPING NODES")
-             //   console.log(NodeMan.dumpNodes())
-
+                console.log (" f="+f, "depth="+depth, "lastF="+this.lastF, "applyControllersCount="+this.applyControllersCount)
 
                 debugger;
                 return
