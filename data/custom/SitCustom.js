@@ -264,18 +264,27 @@ sitch = {
     // for other uses, such as a target track generated for LOS traversal
     recordLos: {kind: "RecordLOS"},
 
-//    JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
-    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+    JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+//    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
 
 
-    trackingOverlay: {kind: "TrackingOverlay", overlayView: "video", cameraTrack: "cameraTrack"},
+    // a tracking overlay allows the user to track an object in the video
+    // using a simple spline editor
+    // the tracking overlay will then modify the LOS LOSFromCamera node
+    //
+    trackingOverlay: {kind: "TrackingOverlay",
+        overlayView: "video",
+        cameraLOSNode: "JetLOSCameraCenter",
+        fovNode: "fovSwitch",
+
+    },
 
 
     // // the actual LOS source can be the camera or the tracking overlay
     // // (or maybe others later)
-    JetLOSx: {kind: "Switch", inputs: {
-            "Camera Center": "JetLOS",
-            "Camera Tracking": "trackingOverlay", //  <<< NOT WORKING, MAYBE as NOT RETURNING LOS
+    JetLOS: {kind: "Switch", inputs: {
+            "Camera Center": "JetLOSCameraCenter",
+            "Camera + Object Track": "trackingOverlay",
         },
         desc: "LOS Source",
         gui: "traverse"

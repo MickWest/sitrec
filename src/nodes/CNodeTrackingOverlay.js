@@ -5,6 +5,7 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {mouseToCanvas} from "./CNodeView";
 import {assert} from "../assert";
+import {Sit} from "../Globals";
 
 
 export class CDraggableItem {
@@ -179,6 +180,8 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
     constructor(v) {
         super(v);
 
+        this.input("cameraLOSNode")
+        this.input("fovNode")
 
         this.seperateVisibilty = true; // don't propagate visibility to the overlaid view
 
@@ -199,10 +202,30 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
 
     }
 
+    getValueFrame(f) {
+        const cameraLOSNode = this.in.cameraLOSNode
+        const fovNode = this.in.fovNode
+        const los = cameraLOSNode.getValueFrame(f)
+        const vFOV = fovNode.getValueFrame(f)
+
+        // the los is a position (of the camera) and heading (centerline of the camera)
+        // we will take the XY position of the camera and the heading
+        // and the vertical FOV, and the width and height of the video
+        // and modify the heading to pass through the XY position
+
+
+
+        return los;
+
+    }
+
     updateCurve() {
 
         // the track will overlay a video, so we can get the number of frames from that
-        this.frames = this.overlayView.frames;
+        //this.frames = this.overlayView.frames;
+
+        this.frames = Sit.videoFrames;
+
         // console.log ("Setting up a CNodeTrackingOverlay with Frames = ", this.frames)
 
         // sort keyframes by frame
