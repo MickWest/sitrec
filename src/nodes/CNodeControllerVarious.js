@@ -262,6 +262,21 @@ export class CNodeControllerLookAtLLA extends CNodeController {
 
 }
 
+export function extractFOV(value) {
+
+    // if it's a number then use that directly as the FOV
+    if (typeof value === "number") {
+        return value;
+    } else if (value.misbRow !== undefined) {
+        return value.misbRow[MISB.SensorVerticalFieldofView];
+    } else if (value.vFOV !== undefined) {
+        // it's a track with a vFOV member
+        return  value.vFOV;
+    } else {
+        assert(0, "extractFOV: no vFOV or misbRow member in value, can't find FOV")
+    }
+}
+
 // control FOV directly with a source node that can be a value, an object with a vFOV, or a track with MISB data
 export class CNodeControllerFOV extends CNodeController {
     constructor(v) {
@@ -272,20 +287,9 @@ export class CNodeControllerFOV extends CNodeController {
     apply(f, objectNode) {
         const camera = objectNode.camera
         const value = this.in.source.v(f);
-
         assert(value !== undefined, "CNodeControllerFOV: source.v(f) is undefined, id = "+this.id+ " f="+f);
 
-        // if it's a number then use that directly as the FOV
-        if (typeof value === "number") {
-            camera.fov = value;
-        } else if (value.misbRow !== undefined) {
-            camera.fov = value.misbRow[MISB.SensorVerticalFieldofView];
-        } else if (value.vFOV !== undefined) {
-            // it's a track with a vFOV member
-            camera.fov = value.vFOV;
-        } else {
-            assert(0, "CNodeControllerFOV: no vFOV or misbRow member in source track, can't set FOV")
-        }
+        camera.fov = extractFOV(value);
 
         assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${this.fov}` )
 
@@ -511,7 +515,13 @@ export class CNodeControllerRecordLOS extends CNodeController {
         var fwd = new Vector3();
         fwd.setFromMatrixColumn(camera.matrixWorld, 2);
         fwd.multiplyScalar(-1)
-        objectNode.recordedLOS = {position: position, heading: fwd}
+        // also record the up and right vectors
+        var up = new Vector3();
+        up.setFromMatrixColumn(camera.matrixWorld, 1);
+        var right = new Vector3();
+        right.setFromMatrixColumn(camera.matrixWorld, 0);
+
+        objectNode.recordedLOS = {position: position, heading: fwd, up: up, right: right}
     }
 }
 

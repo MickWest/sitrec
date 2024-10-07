@@ -6,6 +6,8 @@ import {CNodeViewUI} from "./CNodeViewUI";
 import {mouseToCanvas} from "./CNodeView";
 import {assert} from "../assert";
 import {Sit} from "../Globals";
+import {radians} from "../utils";
+import {extractFOV} from "./CNodeControllerVarious";
 
 
 export class CDraggableItem {
@@ -149,6 +151,7 @@ export class CNodeActiveOverlay extends CNodeViewUI {
 
                 d.x = px;
                 d.y = py;
+                this.recalculateCascade();
 
             }
         })
@@ -193,7 +196,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
 
         this.keyframes = [];
 
-        this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:50, y:50, frame:0})))
+   //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:50, y:50, frame:0})))
    //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:60, y:55, frame:1000})))
    //     this.keyframes.push(this.add(new CNodeVideoTrackKeyframe({view:this, x:80, y:52, frame:2000})))
 
@@ -206,17 +209,59 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         const cameraLOSNode = this.in.cameraLOSNode
         const fovNode = this.in.fovNode
         const los = cameraLOSNode.getValueFrame(f)
-        const vFOV = fovNode.getValueFrame(f)
+        const vFOV = extractFOV(fovNode.getValueFrame(f));
 
         // the los is a position (of the camera) and heading (centerline of the camera)
         // we will take the XY position of the camera and the heading
         // and the vertical FOV, and the width and height of the video
         // and modify the heading to pass through the XY position
 
+        // x and y are percentages of the height
+        const [x, y] = this.pointsXY[f];
+
+        // get aspect ratio of the video
+        // so width = height * aspect
+        // (hence aspect will be > 1 for landscape, < 1 for portrait, and = 1 for square)
+        const aspect = this.widthPx / this.heightPx;
+
+        // make it relative to the center of the screen
+        // adjusting X for the aspect ratio
+        const yoff = y - 50;
+        const xoff = x - 50*aspect;
+
+        // get focal length in pixel, given that the Y nominally spans 100.
+        const fpx = 100 / (2 * Math.tan(radians(vFOV) / 2));
+
+        // get the Y angle from the centerline
+        const yangle = -Math.atan(yoff / fpx);
+        // same for X
+        const xangle = -Math.atan(xoff / fpx);
+
+
+        const up = los.up;
+        const right = los.right;
+        const heading = los.heading;
+
+        // rotate the heading and right vector by xangle about the up vector
+        // and then the new headin by yangle about the new right vector
+        const newHeading = heading.clone().applyAxisAngle(up, xangle)
+        const newRight = right.clone().applyAxisAngle(up, xangle)
+        newHeading.applyAxisAngle(newRight, yangle)
+
+        los.heading = newHeading;
+
+        // up and right are no longer valid
+        // could update them, but they are not used.
+        los.up = undefined;
+        los.right = undefined;
 
 
         return los;
 
+    }
+
+    recalculate() {
+        this.updateCurve();
     }
 
     updateCurve() {
@@ -342,6 +387,8 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
                 // remove the keyframe from the keyframes array
                 this.keyframes = this.keyframes.filter(k => !k.dragging)
 
+                this.recalculateCascade();
+
                 // no dispose is needed
             }
 
@@ -367,6 +414,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
                     // move it to the new position
                     k.x = this.c2p(x);
                     k.y = this.c2p(y);
+                    this.recalculateCascade();
 
 
                     break;
@@ -381,6 +429,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
                     y: this.c2p(y),
                     frame: par.frame
                 })))
+                this.recalculateCascade();
             }
 
          }
@@ -411,7 +460,8 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         ctx.strokeStyle = '#FF0000';
         ctx.lineWidth = 2.5
         ctx.beginPath();
-        ctx.moveTo(this.keyframes[0].cX, this.keyframes[0].cY);
+        const [x0, y0] = this.pointsXY[0]
+        ctx.moveTo(this.sy(x0), this.sy(y0));
         for (let i = 0; i < this.frames; i++) {
             const [x, y] = this.pointsXY[i]
             ctx.lineTo(this.sy(x), this.sy(y))

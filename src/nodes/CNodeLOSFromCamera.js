@@ -54,6 +54,11 @@ export class CNodeLOSFromCamera extends CNodeEmptyArray {
         var fwd = new Vector3();
         fwd.setFromMatrixColumn(camera.matrixWorld, 2);
         fwd.multiplyScalar(-1)
-        return {position: position, heading: fwd};
+        // also return the up and right vectors of the camera
+        var up = new Vector3();
+        up.setFromMatrixColumn(camera.matrixWorld, 1);
+        var right = new Vector3();
+        right.setFromMatrixColumn(camera.matrixWorld, 0);
+        return {position: position, heading: fwd, up: up, right: right};
     }
 }
