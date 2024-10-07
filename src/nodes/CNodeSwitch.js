@@ -28,7 +28,9 @@ class CNodeSwitch extends CNode {
         if (this.choice === null || this.inputs[this.choice].frames === 0) {
             this.frames = Sit.frames
             this.useSitFrames = true;
+            //console.log("Using Sit.frames for CNodeSwitch"+this.id)
         } else {
+            //console.warn("CNodeSwitch: setting frames to "+this.inputs[this.choice].frames)
             this.frames = this.inputs[this.choice].frames
         }
 
@@ -184,7 +186,10 @@ class CNodeSwitch extends CNode {
     }
 
     recalculate() {
- //       console.log("CNodeSwitch:recalculate "+this.id)
+        // ensure frames are up to date for this switch, setting it to the selected input's frames
+        if (!this.useSitFrames) {
+            this.frames = this.inputs[this.choice].frames;
+        }
 
         this.enableController(true);
 

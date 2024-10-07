@@ -224,7 +224,7 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         // the track will overlay a video, so we can get the number of frames from that
         //this.frames = this.overlayView.frames;
 
-        this.frames = Sit.videoFrames;
+        this.frames = Sit.frames;
 
         // console.log ("Setting up a CNodeTrackingOverlay with Frames = ", this.frames)
 
@@ -417,6 +417,8 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
             ctx.lineTo(this.sy(x), this.sy(y))
         }
         ctx.stroke();
+
+        assert (this.pointsXY[frame] !== undefined, "CNodeTrackingOverlay:renderCanvas: pointsXY[frame] is undefined, this.frames = "+this.frames+", frame = "+frame, "Sit.frames = "+Sit.frames)
 
         // find the XY position for the current frame
         // and render a circle there

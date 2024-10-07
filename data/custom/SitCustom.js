@@ -265,7 +265,7 @@ sitch = {
     recordLos: {kind: "RecordLOS"},
 
     JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
-//    JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+   // JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
 
 
     // a tracking overlay allows the user to track an object in the video
@@ -280,14 +280,14 @@ sitch = {
     },
 
 
-    // // the actual LOS source can be the camera or the tracking overlay
-    // // (or maybe others later)
+    // // // the actual LOS source can be the camera or the tracking overlay
+    // // // (or maybe others later)
     JetLOS: {kind: "Switch", inputs: {
             "Camera Center": "JetLOSCameraCenter",
             "Camera + Object Track": "trackingOverlay",
         },
         desc: "LOS Source",
-        gui: "traverse"
+        gui: "traverse",
     },
 
 
