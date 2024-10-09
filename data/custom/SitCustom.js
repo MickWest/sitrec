@@ -10,7 +10,6 @@
 // - SitMISB.js (MISB track)
 // - SitJellyfish (simple user spline track) (MAYBE)
 
-
 sitch = {
     name: "custom",
     menuName: "Custom (Drag and Drop)",
@@ -145,11 +144,49 @@ sitch = {
     },
 
 
+    // target wind is the wind at the target location, which isn't always known
+    targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
+
+    // local wind is the wind at the camera location
+    localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
+
+    // we can lock them so they are the same, defaults to not locked
+    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind", gui:"physics"},
+
+
+
+    // this is the fixed camera position that you can move around while holding C, or edit in the camera GUI
     fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "camera", key:"C"},
+
+    // Parameters for the JetTrack node, which is a simple flight simulator creating a jet track, as used in Gimbal, FLIR1, and GoFast
+
+    // true airspeed in knots, note this is NOT ground speed
+    // so the absolute ground speed will vary with the wind
+    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "traverse", unitType: "speed"},
+
+    // probably doen't need this if we can get it from the origin, but dummy in for now
+    jetAltitude: {kind: "GUIValue", value: 5000, start: 0, end: 60000, step: 1, desc: "Altitude", gui: "traverse", unitType: "small"},
+
+    // turnRate should really be derived from the bank angle, but we'll use it for now
+    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.1, desc: "Turn Rate", gui: "traverse"},
+
+    jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 1, desc: "Jet Heading", gui: "traverse"},
+
+    flightSimCameraPosition: {
+        kind: "JetTrack",
+        speed: "jetTAS",
+        altitude: "jetAltitude", // << shoould not use, get from origin
+        turnRate: "turnRate",
+        wind: "localWind",
+        heading: "jetHeading",
+        origin: "fixedCameraPosition",
+        useSitFrames: true,
+    },
 
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
-           "fixedCamera": "fixedCameraPosition",
+            "fixedCamera": "fixedCameraPosition",
+            "flightSimCamera": "flightSimCameraPosition",
         },
         desc: "Camera Track",
         gui: "camera",
@@ -163,6 +200,16 @@ sitch = {
         window: {kind: "GUIValue", value: 20, start:0, end:1000, step:1, desc:"Camera Smooth Window", gui:"camera"},
         // iterations: {kind: "GUIValue", value: 6, start:1, end:100, step:1, desc:"Target Smooth Iterations", gui:"traverse"}
     },
+
+
+    // display the traverse track (Track)
+    cameraDisplayTrack: {
+        kind: "DisplayTrack",
+        track: "cameraTrackSwitchSmooth",
+        color: "#00FFFF",
+        width: 1,
+    },
+
 
     fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "target", key:"X"},
 
@@ -216,6 +263,9 @@ sitch = {
         desc: "Camera Position",
         gui:"camera"
     },
+
+
+
 
 
     // we orient the camera to the track by default
@@ -294,8 +344,6 @@ sitch = {
     // camera changes after this point will not be recorded for LOS generation
 
 
-    // Wind is needed to adjust the target planes heading relative to motion in the TailAngleGraph and for the model angle
-    targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
 
     // The "Track" traverse node uses the ground track
     LOSTraverseSelectTrack: {

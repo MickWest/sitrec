@@ -439,6 +439,8 @@ export class CCustomManager {
             +"+/- - Zoom in/out<br>"
             +"C - Move Camera<br>"
             +"T - Move Terrain<br>"
+            +"Shift-C - Ground Camera<br>"
+            +"Shift-T - Ground Terrain<br>"
             +"; - Decrease Start Time<br>"
             +"' - Increase Start Time<br>"
             +"[ - Decrease Start Time+<br>"

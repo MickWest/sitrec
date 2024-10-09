@@ -19,6 +19,8 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
         }
 
         this.frames = this.in.source.frames;
+        this.useSitFrames = this.in.source.useSitFrames;
+
 
         if (this.method === "catmull") {
             // this.intervals = v.intervals ?? 10

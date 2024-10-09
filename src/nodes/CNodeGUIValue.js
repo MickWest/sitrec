@@ -30,6 +30,10 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         
         this.setGUI(v, _guiMenu)
 
+        // unitType is "none", "big", "small", "vs", "speed"
+        // where vs is vertical speed
+        // converstions are always to return in SI units:
+        // i.e. meters, meters, m/s, m/s
         this.unitType = v.unitType ?? "none";
 
         this.start = v.start ?? 0
@@ -95,6 +99,8 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             return;
         }
 
+        assert(Units[this.unitType] !== undefined, "CNodeGUIValue: unknown unit type " + this.unitType);
+
         const scale = scaleFactors[this.unitType];
         // we just need to change the value, start, and end in the GUI
 
@@ -120,6 +126,8 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         if (this.unitType === "none") {
             return;
         }
+        assert(Units[this.unitType] !== undefined, "CNodeGUIValue: unknown unit type " + this.unitType);
+
         // update the desc with the units
         const unitsAbbrev = Units[this.unitType].abbrev;
         this.guiEntry.name(this.desc + " (" + unitsAbbrev + ")");

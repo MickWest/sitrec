@@ -5,6 +5,7 @@ import {CNode} from "./CNode";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
+import {wgs84} from "../LLA-ECEF-ENU";
 
 export class CNodeJetTrack extends CNodeTrack {
     constructor(v) {
@@ -15,14 +16,34 @@ export class CNodeJetTrack extends CNodeTrack {
         } else {
             super(v);
         }
-        this.checkInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading", "origin"])
+
+        // if radius is not defined, use the earth's radius
+        // this is just for backwards compatibility
+        if (v.radius === undefined) {
+            v.radius = wgs84.RADIUS;
+        } else {
+            console.warn("CNodeJetTrack: radius is deprecated, id = " + v.id)
+        }
+
+        this.requireInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading", "origin"])
         this.isNumber = false;
         this.recalculate()
     }
 
     recalculate() {
         this.array = []
-        var jetHeading = this.in.heading.getHeading()
+
+        // get the initial heading angle
+        // if the heading is a CNodeHeading, then use the getHeading function (legacy)
+        // of we can just supply a number or GUIValue
+        var jetHeading
+        if (this.in.heading.getHeading !== undefined) {
+            jetHeading = this.in.heading.getHeading(0)
+        } else {
+            jetHeading = this.in.heading.getValueFrame(0)
+        }
+
+
         var radius = metersFromMiles(this.in.radius.v0)
 
         var jetPos = this.in.origin.p(0)
