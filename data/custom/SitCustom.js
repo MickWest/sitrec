@@ -31,8 +31,9 @@ sitch = {
     TerrainModel: {kind: "Terrain", lat: 31.5, lon: -118, zoom: 8, nTiles: 6, fullUI: true},
    // terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
-    // default to 30 seconds. Loading a video will change this (also need manual, eventually)
+    // default to 30 seconds. Loading a video will change this (also can set in the Time menu)
     frames: 900,
+    bFrame: 899,
     fps: 30,
 
     ambientLight: 0.0,
@@ -162,15 +163,15 @@ sitch = {
 
     // true airspeed in knots, note this is NOT ground speed
     // so the absolute ground speed will vary with the wind
-    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "traverse", unitType: "speed"},
+    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed"},
 
-    // probably doen't need this if we can get it from the origin, but dummy in for now
-    jetAltitude: {kind: "GUIValue", value: 5000, start: 0, end: 60000, step: 1, desc: "Altitude", gui: "traverse", unitType: "small"},
+    // probably doesn't need this if we can get it from the origin, but dummy in for now
+    jetAltitude: {kind: "GUIValue", value: 5000, start: 0, end: 60000, step: 1, desc: "Altitude", gui: "physics", unitType: "small"},
 
     // turnRate should really be derived from the bank angle, but we'll use it for now
-    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.1, desc: "Turn Rate", gui: "traverse"},
+    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.1, desc: "Turn Rate", gui: "physics"},
 
-    jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 1, desc: "Jet Heading", gui: "traverse"},
+    jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 1, desc: "Jet Heading", gui: "physics"},
 
     flightSimCameraPosition: {
         kind: "JetTrack",

@@ -223,7 +223,7 @@ export class CNodeManager extends CManager{
         return depth;
     }
 
-    recalculateAllRootFirst() {
+    recalculateAllRootFirst(withTerrain = false) {
         // we will creat an array indexed by how deep the node is in the tree
         // a node with no inputs is at depth 0
         // a node with inputs that are all at depth 0 is at depth 1, etc
@@ -244,8 +244,12 @@ export class CNodeManager extends CManager{
             let nodes = depthMap[i];
             if (nodes !== undefined) {
                 for (let node of nodes) {
-                    node.recalculate();
+                    // we do not want to recalculate terrain nodes
+
+                    if (withTerrain || node.id !== "TerrainModel") {
+                        node.recalculate();
 //                    console.log("Recalculated " + node.constructor.name + ":" + node.id + " at depth " + i + ", node.frames = " + node.frames + (node.frameless?" (frameless)":""));
+                    }
                 }
             }
         }

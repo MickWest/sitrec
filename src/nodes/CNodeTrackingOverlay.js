@@ -5,7 +5,7 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {mouseToCanvas} from "./CNodeView";
 import {assert} from "../assert";
-import {Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 import {radians} from "../utils";
 import {extractFOV} from "./CNodeControllerVarious";
 
@@ -186,6 +186,24 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
         this.input("cameraLOSNode")
         this.input("fovNode")
 
+        this.setGUI(v,"traverse");
+
+        this.limitAB = true;
+        this.gui.add(this, "limitAB").name("Limit AB to Video Tracking").listen().onChange(() => {
+
+            if (this.limitAB && this.keyframes.length > 0) {
+                this.applyLimitAB();
+            } else {
+                Sit.aFrame = 0;
+                Sit.bFrame = Sit.frames - 1;
+            }
+
+            NodeMan.recalculateAllRootFirst();
+
+        })
+
+
+
         this.seperateVisibilty = true; // don't propagate visibility to the overlaid view
 
         document.addEventListener('contextmenu', function (event) {
@@ -203,6 +221,23 @@ export class CNodeTrackingOverlay extends CNodeActiveOverlay {
 
         this.updateCurve();
 
+
+    }
+
+    applyLimitAB() {
+        // get the frame of the first keyframe
+        const A = this.keyframes[0].frame;
+        // get the frame of the last keyframe
+        const B = this.keyframes[this.keyframes.length - 1].frame;
+        // 10% of that span
+        const tenPercent = (B - A) / 10;
+        // set the A frame to 10% before
+        Sit.aFrame = Math.floor(A - tenPercent);
+        // set the B frame to 10% after
+        Sit.bFrame = Math.floor(B + tenPercent);
+        // check for limits
+        if (Sit.aFrame < 0) Sit.aFrame = 0;
+        if (Sit.bFrame >= Sit.frames) Sit.bFrame = Sit.frames - 1;
     }
 
     getValueFrame(f) {

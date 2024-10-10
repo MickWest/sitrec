@@ -199,6 +199,26 @@ export class CNodeDateTime extends CNode {
 
         });
 
+        this.dateTimeFolder.add(Sit, "aFrame",1,Sit.frames,1).name("A Frame").listen().onChange((v) => {
+
+            if (Sit.aFrame > Sit.bFrame) Sit.bFrame = Sit.aFrame
+            updateFrameSlider();
+            NodeMan.recalculateAllRootFirst(); // really just need to redraw things..
+
+        });
+
+        if (Sit.bFrame === undefined) {
+            Sit.bFrame = Sit.frames-1
+        }
+
+        this.dateTimeFolder.add(Sit, "bFrame",1,Sit.frames,1).name("B Frame").listen().onChange((v) => {
+            if (Sit.bFrame < Sit.aFrame) Sit.aFrame = Sit.bFrame
+            updateFrameSlider();
+            NodeMan.recalculateAllRootFirst();
+
+
+        });
+
         this.dateTimeFolder.add(Sit, "fps",1,120,0.01).name("Video FPS").listen().onChange((v) => {
             par.frames = Sit.frames;
             NodeMan.updateSitFramesChanged();
