@@ -122,7 +122,8 @@ export function getHumanHorizonFromPitchRollAzEl(jetPitch, jetRoll, az, el) {
 //             .rotate(vec3d { 1, 0, 0 }, -radians(jetPitch)) // reverse both the order and sign of these rotations
 //              .rotate(vec3d { 0, 0, 1 }, radians(jetRoll));
 
-    var relative_AzElHeading = EA2XYZ(el, az, 1)
+    var AzElHeading = EA2XYZ(el, az, 1)
+    var relative_AzElHeading = AzElHeading
         .applyAxisAngle(V3(1, 0, 0), -radians(jetPitch))
         .applyAxisAngle(V3(0, 0, 1), radians(jetRoll))
 
@@ -167,7 +168,15 @@ export function getHumanHorizonFromPitchRollAzEl(jetPitch, jetRoll, az, el) {
 //         // it can be shown that the real horizon vector is already in the camera plane
 //         // so return the angle between the camera horizon and the real horizon
 //         return -degrees(camera_horizon.angleTo(real_horizon));
-    return -degrees(camera_horizon.angleTo(real_horizon));
+    
+    var horizon_angle = -degrees(camera_horizon.angleTo(real_horizon))
+
+    var cross = camera_horizon.clone().cross(real_horizon)
+    var dot = cross.dot(AzElHeading)
+    if(dot < 0)
+        return -horizon_angle
+
+    return horizon_angle
 //     }
 // }
 }
