@@ -192,14 +192,11 @@ export class CNodeDateTime extends CNode {
         }
 
         this.dateTimeFolder.add(Sit, "frames",1,2000,1).name("Sitch Frames").listen().elastic().onChange((v) => {
-            par.frames = Sit.frames;
-            NodeMan.updateSitFramesChanged();
-            updateGUIFrames();
-            updateFrameSlider();
+            this.changedFrames();
 
         });
 
-        this.dateTimeFolder.add(Sit, "aFrame",1,Sit.frames,1).name("A Frame").listen().onChange((v) => {
+        this.guiAFrame = this.dateTimeFolder.add(Sit, "aFrame",1,Sit.frames,1).name("A Frame").listen().onChange((v) => {
 
             if (Sit.aFrame > Sit.bFrame) Sit.bFrame = Sit.aFrame
             updateFrameSlider();
@@ -211,7 +208,7 @@ export class CNodeDateTime extends CNode {
             Sit.bFrame = Sit.frames-1
         }
 
-        this.dateTimeFolder.add(Sit, "bFrame",1,Sit.frames,1).name("B Frame").listen().onChange((v) => {
+        this.guiBFrame = this.dateTimeFolder.add(Sit, "bFrame",1,Sit.frames,1).name("B Frame").listen().onChange((v) => {
             if (Sit.bFrame < Sit.aFrame) Sit.aFrame = Sit.bFrame
             updateFrameSlider();
             NodeMan.recalculateAllRootFirst();
@@ -220,15 +217,28 @@ export class CNodeDateTime extends CNode {
         });
 
         this.dateTimeFolder.add(Sit, "fps",1,120,0.01).name("Video FPS").listen().onChange((v) => {
-            par.frames = Sit.frames;
-            NodeMan.updateSitFramesChanged();
-            updateGUIFrames();
-            updateFrameSlider();
-
+            this.changedFrames()
         });
 
 
         this.update(0);
+
+    }
+    
+    changedFrames() {
+        par.frames = Sit.frames;
+        NodeMan.updateSitFramesChanged();
+        updateGUIFrames();
+        updateFrameSlider();
+
+        this.guiAFrame.max(Sit.frames-1);
+        this.guiBFrame.max(Sit.frames-1);
+
+        // and set the bFrame to the new max
+        Sit.bFrame = Sit.frames-1;
+
+        // if aFrame is greater than bFrame, then sit it to zero
+        if (Sit.aFrame > Sit.bFrame) Sit.aFrame = 0;
 
     }
 

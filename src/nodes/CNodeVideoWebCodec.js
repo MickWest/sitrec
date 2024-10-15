@@ -1,6 +1,6 @@
 import {CVideoData} from "./CNodeVideoView";
 import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
-import {FileManager, infoDiv, NodeMan, Sit} from "../Globals";
+import {FileManager, GlobalDateTimeNode, infoDiv, NodeMan, Sit} from "../Globals";
 import {loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
@@ -31,9 +31,10 @@ function updateSitFrames() {
         Sit.aFrame = 0;
         Sit.bFrame = Sit.frames - 1;
     }
-    NodeMan.updateSitFramesChanged();
-    updateGUIFrames();
-    updateFrameSlider();
+    // NodeMan.updateSitFramesChanged();
+    // updateGUIFrames();
+    // updateFrameSlider();
+    GlobalDateTimeNode.changedFrames();
 }
 
 
