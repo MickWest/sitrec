@@ -19,13 +19,14 @@ export class CNodeJetTrack extends CNodeTrack {
 
         // if radius is not defined, use the earth's radius
         // this is just for backwards compatibility
-        if (v.radius === undefined) {
-            v.radius = wgs84.RADIUS;
-        } else {
-            console.warn("CNodeJetTrack: radius is deprecated, id = " + v.id)
+        if (v.radius !== undefined) {
+            console.error("CNodeJetTrack: radius is deprecated, id = " + v.id)
+        }
+        if (v.altitude !== undefined) {
+            console.error("CNodeJetTrack: altitude is deprecated, id = " + v.id)
         }
 
-        this.requireInputs(["speed", "altitude", "radius", "turnRate", "wind", "heading", "origin"])
+        this.requireInputs(["speed", "turnRate", "wind", "heading", "origin"])
         this.isNumber = false;
         this.recalculate()
     }
@@ -44,7 +45,7 @@ export class CNodeJetTrack extends CNodeTrack {
         }
 
 
-        var radius = metersFromMiles(this.in.radius.v0)
+        var radius = wgs84.RADIUS
 
         var jetPos = this.in.origin.p(0)
 
@@ -83,6 +84,7 @@ export class CNodeJetTrack extends CNodeTrack {
             // z = cross(x,y)
 
             // normalize fwd is at right angles to up
+            // meaning it will be parallel to the surface of the earth
             var rightAxis = V3()
             rightAxis.crossVectors(upAxis, jetFwd)  // right is calculated as being at right angles to up and fwd
             jetFwd.crossVectors(rightAxis, upAxis) // then fwd is a right angles to right and up

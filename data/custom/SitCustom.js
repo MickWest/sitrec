@@ -165,9 +165,6 @@ sitch = {
     // so the absolute ground speed will vary with the wind
     jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed"},
 
-    // probably doesn't need this if we can get it from the origin, but dummy in for now
-    jetAltitude: {kind: "GUIValue", value: 5000, start: 0, end: 60000, step: 1, desc: "Altitude", gui: "physics", unitType: "small"},
-
     // turnRate should really be derived from the bank angle, but we'll use it for now
     turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.1, desc: "Turn Rate", gui: "physics"},
 
@@ -176,7 +173,6 @@ sitch = {
     flightSimCameraPosition: {
         kind: "JetTrack",
         speed: "jetTAS",
-        altitude: "jetAltitude", // << shoould not use, get from origin
         turnRate: "turnRate",
         wind: "localWind",
         heading: "jetHeading",
