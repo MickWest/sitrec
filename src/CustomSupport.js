@@ -51,9 +51,9 @@ export class CCustomManager {
         toggler('k', guiMenus.help.add(par, 'showKeyboardShortcuts').listen().name("[K]eyboard Shortcuts").onChange(value => {
             if (value) {
                 infoDiv.style.display = 'block';
-            } else
+            } else {
                 infoDiv.style.display = 'none';
-
+            }
         }))
 
     }

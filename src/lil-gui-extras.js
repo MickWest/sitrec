@@ -129,7 +129,7 @@ GUI.prototype.addExternalLink = function(text, url) {
     };
 
     // Add the button to the GUI
-    this.add(obj, text);
+    return this.add(obj, text);
 };
 
 var injectedLILGUICode = false;

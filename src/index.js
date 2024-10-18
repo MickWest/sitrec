@@ -428,11 +428,11 @@ async function initializeOnce() {
     addGUIMenu("color", "Color")
 
     addGUIMenu("help", "Help");
-    guiMenus.help.addExternalLink("Github Sitrec ReadMe", "https://github.com/MickWest/sitrec?tab=readme-ov-file#readme");
-    guiMenus.help.addExternalLink("User Interface (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/UserInterface.md");
+    guiMenus.help.addExternalLink("Github Sitrec ReadMe", "https://github.com/MickWest/sitrec?tab=readme-ov-file#readme").perm();
+    guiMenus.help.addExternalLink("User Interface (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/UserInterface.md").perm();
 
-    guiMenus.help.addExternalLink("Custom Sitch Tool (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomSitchTool.md");
-    guiMenus.help.addExternalLink("Custom Models (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomModels.md");
+    guiMenus.help.addExternalLink("Custom Sitch Tool (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomSitchTool.md").perm();
+    guiMenus.help.addExternalLink("Custom Models (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomModels.md").perm();
 
 
     // legacy accessor variables. can also use guiMenus.physics, etc
@@ -549,10 +549,10 @@ function initRendering() {
     infoDiv.style.display = 'none';
     // 5 px border
     infoDiv.style.padding = 5 + 'px';
-    if (isLocal) {
+   // if (isLocal) {
         infoDiv.style.display = 'block';
-        infoDiv.style.zIndex = 4000; // behind the gui menus
-    }
+        infoDiv.style.zIndex = 4000; // behind the gui menus, but in front of everything else
+   // }
     infoDiv.style.background="black";
     $(infoDiv).draggable();
     document.body.appendChild(infoDiv);
