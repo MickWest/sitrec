@@ -1,5 +1,5 @@
 import { par } from "../par";
-import {NodeMan, Sit} from "../Globals";
+import { NodeMan, Sit } from "../Globals";
 import { CNode } from "./CNode";
 
 export class CNodeFrameSlider extends CNode {
@@ -12,6 +12,11 @@ export class CNodeFrameSlider extends CNode {
         this.frameAdvanceButton = null;
         this.frameBackButton = null;
         this.playInterval = null;
+        this.advanceHeld = false;
+        this.backHeld = false;
+        this.advanceHoldFrames = 0;
+        this.backHoldFrames = 0;
+        this.holdThreshold = 10; // Number of frames the button needs to be held before starting repeated actions
 
         this.setupFrameSlider();
     }
@@ -55,12 +60,34 @@ export class CNodeFrameSlider extends CNode {
         frameBackContainer.appendChild(this.frameBackButton);
         controlContainer.appendChild(frameBackContainer);
 
+        // Handle back button hold
+        this.frameBackButton.addEventListener('mousedown', () => {
+            this.backHeld = true;
+            this.backHoldFrames = 0; // Reset the hold count on mouse down
+        });
+
+        this.frameBackButton.addEventListener('mouseup', () => {
+            this.backHeld = false;
+            this.backHoldFrames = 0; // Clear the hold count on mouse up
+        });
+
         // Single Frame Advance Button
         const frameAdvanceContainer = this.createButtonContainer();
         this.frameAdvanceButton = this.createSpriteDiv(spriteLocations.frameAdvance.row, spriteLocations.frameAdvance.col, this.advanceOneFrame.bind(this));
         this.frameAdvanceButton.title = 'Step Forward';
         frameAdvanceContainer.appendChild(this.frameAdvanceButton);
         controlContainer.appendChild(frameAdvanceContainer);
+
+        // Handle advance button hold
+        this.frameAdvanceButton.addEventListener('mousedown', () => {
+            this.advanceHeld = true;
+            this.advanceHoldFrames = 0; // Reset the hold count on mouse down
+        });
+
+        this.frameAdvanceButton.addEventListener('mouseup', () => {
+            this.advanceHeld = false;
+            this.advanceHoldFrames = 0; // Clear the hold count on mouse up
+        });
 
         // Start Button (Jump to start)
         const startContainer = this.createButtonContainer();
@@ -147,7 +174,20 @@ export class CNodeFrameSlider extends CNode {
     }
 
     update(frame) {
-        // Dummy implementation of update
+        // Called every frame
+        if (this.advanceHeld) {
+            this.advanceHoldFrames++;
+            if (this.advanceHoldFrames > this.holdThreshold) {
+                this.advanceOneFrame();
+            }
+        }
+
+        if (this.backHeld) {
+            this.backHoldFrames++;
+            if (this.backHoldFrames > this.holdThreshold) {
+                this.backOneFrame();
+            }
+        }
     }
 
     updateFrameSlider() {
@@ -258,7 +298,6 @@ const spriteLocations = {
 // Exported function to create an instance of CNodeFrameSlider
 export function SetupFrameSlider() {
     return new CNodeFrameSlider({id: "FrameSlider"});
-
 }
 
 export function updateFrameSlider() {
