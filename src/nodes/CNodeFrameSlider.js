@@ -11,6 +11,8 @@ export class CNodeFrameSlider extends CNode {
         this.endButton = null;
         this.frameAdvanceButton = null;
         this.frameBackButton = null;
+        this.fastForwardButton = null;
+        this.fastRewindButton = null;
 
         this.advanceHeld = false;
         this.backHeld = false;
@@ -40,17 +42,17 @@ export class CNodeFrameSlider extends CNode {
         });
 
         // Create control buttons container
-        const controlContainer = document.createElement('div');
-        controlContainer.style.display = 'flex';
-        controlContainer.style.marginRight = '10px';
-        controlContainer.style.width = '240px'; // Adjusted width to accommodate the new button
+        this.controlContainer = document.createElement('div');
+        this.controlContainer.style.display = 'flex';
+        this.controlContainer.style.marginRight = '10px';
+        this.controlContainer.style.width = '360px'; // Adjusted width to accommodate the new buttons
 
         // Play/Pause Button
         const playPauseContainer = this.createButtonContainer();
         this.playPauseButton = this.createSpriteDiv(spriteLocations.play.row, spriteLocations.play.col, this.togglePlayPause.bind(this));
         this.playPauseButton.title = 'Play/Pause';
         playPauseContainer.appendChild(this.playPauseButton);
-        controlContainer.appendChild(playPauseContainer);
+        this.controlContainer.appendChild(playPauseContainer);
         this.updatePlayPauseButton();
 
         // Single Frame Back Button
@@ -58,7 +60,7 @@ export class CNodeFrameSlider extends CNode {
         this.frameBackButton = this.createSpriteDiv(spriteLocations.frameBack.row, spriteLocations.frameBack.col, this.backOneFrame.bind(this));
         this.frameBackButton.title = 'Step Back';
         frameBackContainer.appendChild(this.frameBackButton);
-        controlContainer.appendChild(frameBackContainer);
+        this.controlContainer.appendChild(frameBackContainer);
 
         // Handle back button hold
         this.frameBackButton.addEventListener('mousedown', () => {
@@ -76,7 +78,7 @@ export class CNodeFrameSlider extends CNode {
         this.frameAdvanceButton = this.createSpriteDiv(spriteLocations.frameAdvance.row, spriteLocations.frameAdvance.col, this.advanceOneFrame.bind(this));
         this.frameAdvanceButton.title = 'Step Forward';
         frameAdvanceContainer.appendChild(this.frameAdvanceButton);
-        controlContainer.appendChild(frameAdvanceContainer);
+        this.controlContainer.appendChild(frameAdvanceContainer);
 
         // Handle advance button hold
         this.frameAdvanceButton.addEventListener('mousedown', () => {
@@ -89,22 +91,57 @@ export class CNodeFrameSlider extends CNode {
             this.advanceHoldFrames = 0; // Clear the hold count on mouse up
         });
 
+        // Fast Rewind Button
+        const fastRewindContainer = this.createButtonContainer();
+        this.fastRewindButton = this.createSpriteDiv(spriteLocations.fastRewind.row, spriteLocations.fastRewind.col, () => {});
+        this.fastRewindButton.title = 'Fast Rewind';
+        fastRewindContainer.appendChild(this.fastRewindButton);
+        this.controlContainer.appendChild(fastRewindContainer);
+
+        // Handle fast rewind button hold
+        this.fastRewindButton.addEventListener('mousedown', () => {
+            this.fastRewindButton.held = true;
+            par.paused = true;
+
+        });
+
+        this.fastRewindButton.addEventListener('mouseup', () => {
+            this.fastRewindButton.held = false;
+        });
+
+        // Fast Forward Button
+        const fastForwardContainer = this.createButtonContainer();
+        this.fastForwardButton = this.createSpriteDiv(spriteLocations.fastForward.row, spriteLocations.fastForward.col, () => {});
+        this.fastForwardButton.title = 'Fast Forward';
+        fastForwardContainer.appendChild(this.fastForwardButton);
+        this.controlContainer.appendChild(fastForwardContainer);
+
+        // Handle fast forward button hold
+        this.fastForwardButton.addEventListener('mousedown', () => {
+            this.fastForwardButton.held = true;
+            par.paused = true;
+        });
+
+        this.fastForwardButton.addEventListener('mouseup', () => {
+            this.fastForwardButton.held = false;
+        });
+
         // Start Button (Jump to start)
         const startContainer = this.createButtonContainer();
         this.startButton = this.createSpriteDiv(spriteLocations.start.row, spriteLocations.start.col, () => this.setFrame(0));
         this.startButton.title = 'Jump to Start';
         startContainer.appendChild(this.startButton);
-        controlContainer.appendChild(startContainer);
+        this.controlContainer.appendChild(startContainer);
 
         // End Button (Jump to end)
         const endContainer = this.createButtonContainer();
         this.endButton = this.createSpriteDiv(spriteLocations.end.row, spriteLocations.end.col, () => this.setFrame(parseInt(this.sliderDiv.max, 10)));
         this.endButton.title = 'Jump to End';
         endContainer.appendChild(this.endButton);
-        controlContainer.appendChild(endContainer);
+        this.controlContainer.appendChild(endContainer);
 
-        controlContainer.style.opacity = "0"; // Initially hidden
-        sliderContainer.appendChild(controlContainer);
+        this.controlContainer.style.opacity = "0"; // Initially hidden
+        sliderContainer.appendChild(this.controlContainer);
 
         // Create the slider input element
         this.sliderDiv = document.createElement('input');
@@ -154,8 +191,9 @@ export class CNodeFrameSlider extends CNode {
             if (!sliderDragging) {
                 this.sliderDiv.style.opacity = "0";
                 setTimeout(() => { this.sliderDiv.style.opacity = "1"; }, 200); // fade in
-                controlContainer.style.opacity = "0";
-                setTimeout(() => { controlContainer.style.opacity = "1"; }, 200); // fade in
+                this.controlContainer.style.opacity = "0";
+                setTimeout(() => { this.controlContainer.style.opacity = "1"; }, 200); // fade in
+                this.sliderFadeOutCounter = undefined; // Reset fade counter on mouse enter
             }
             sliderFade = false;
         });
@@ -164,22 +202,46 @@ export class CNodeFrameSlider extends CNode {
             if (sliderDragging) {
                 sliderFade = true;
             } else {
-                this.sliderDiv.style.opacity = "1";
-                setTimeout(() => { this.sliderDiv.style.opacity = "0"; }, 200); // fade out
-                controlContainer.style.opacity = "1";
-                setTimeout(() => { controlContainer.style.opacity = "0"; }, 200); // fade out
-                sliderFade = false;
+                this.sliderFadeOutCounter = 0; // Start fade counter on mouse leave
             }
         });
     }
 
     update(frame) {
         // Called every frame
+        if (this.sliderFadeOutCounter !== undefined && this.sliderFadeOutCounter < 100) {
+            this.sliderFadeOutCounter++;
+            const fadeProgress = Math.max(0, (this.sliderFadeOutCounter - 70) / 30);
+            this.sliderDiv.style.opacity = `${1 - fadeProgress}`;
+            this.controlContainer.style.opacity = `${1 - fadeProgress}`;
+        }
+
+        if (this.sliderFadeOutCounter >= 100) {
+            this.sliderDiv.style.opacity = "0";
+            this.controlContainer.style.opacity = "0";
+            this.sliderFadeOutCounter = undefined;
+        }
+
         if (this.advanceHeld) {
             this.advanceHoldFrames++;
             if (this.advanceHoldFrames > this.holdThreshold) {
                 this.advanceOneFrame();
             }
+        }
+
+        if (this.backHeld) {
+            this.backHoldFrames++;
+            if (this.backHoldFrames > this.holdThreshold) {
+                this.backOneFrame();
+            }
+        }
+
+        if (this.fastForwardButton && this.fastForwardButton.held) {
+            par.frame = Math.min(parseInt(par.frame, 10) + 10, parseInt(this.sliderDiv.max, 10));
+        }
+
+        if (this.fastRewindButton && this.fastRewindButton.held) {
+            par.frame = Math.max(parseInt(par.frame, 10) - 10, 0);
         }
 
         if (this.backHeld) {
@@ -274,7 +336,9 @@ const spriteLocations = {
     frameBack: { row: 1, col: 3 }, // Step one frame back
     frameAdvance: { row: 1, col: 2 }, // Step one frame forward
     start: { row: 1, col: 1 }, // Jump to start
-    end: { row: 1, col: 0 } // Jump to end
+    end: { row: 1, col: 0 }, // Jump to end
+    fastRewind: { row: 2, col: 1 }, // Fast rewind
+    fastForward: { row: 2, col: 0 } // Fast forward
 };
 
 // Exported function to create an instance of CNodeFrameSlider
@@ -286,3 +350,4 @@ export function updateFrameSlider() {
     // Dummy implementation of updateFrameSlider
     NodeMan.get("FrameSlider").updateFrameSlider();
 }
+
