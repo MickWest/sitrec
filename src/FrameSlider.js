@@ -4,6 +4,16 @@ import { Sit } from "./Globals";
 let sliderDiv, playPauseButton, startButton, endButton, frameAdvanceButton, frameBackButton;
 let playInterval = null;
 
+// Define the sprite locations by button name
+const spriteLocations = {
+    play: { row: 0, col: 0 }, // Play button
+    pause: { row: 0, col: 1 }, // Pause button
+    frameBack: { row: 1, col: 3 }, // Step one frame back
+    frameAdvance: { row: 1, col: 2 }, // Step one frame forward
+    start: { row: 1, col: 1 }, // Jump to start
+    end: { row: 1, col: 0 } // Jump to end
+};
+
 // This is the slider at the bottom of the screen
 export function SetupFrameSlider() {
     const sliderContainer = document.createElement('div');
@@ -31,31 +41,32 @@ export function SetupFrameSlider() {
 
     // Play/Pause Button
     const playPauseContainer = createButtonContainer();
-    playPauseButton = createButtonWithIcon('▶️', '⏸', togglePlayPause);
+    playPauseButton = createSpriteDiv(spriteLocations.play.row, spriteLocations.play.col, togglePlayPause);
     playPauseContainer.appendChild(playPauseButton);
     controlContainer.appendChild(playPauseContainer);
+    updatePlayPauseButton();
 
     // Single Frame Back Button
     const frameBackContainer = createButtonContainer();
-    frameBackButton = createButton('|<', backOneFrame);
+    frameBackButton = createSpriteDiv(spriteLocations.frameBack.row, spriteLocations.frameBack.col, backOneFrame);
     frameBackContainer.appendChild(frameBackButton);
     controlContainer.appendChild(frameBackContainer);
 
     // Single Frame Advance Button
     const frameAdvanceContainer = createButtonContainer();
-    frameAdvanceButton = createButton('>|', advanceOneFrame);
+    frameAdvanceButton = createSpriteDiv(spriteLocations.frameAdvance.row, spriteLocations.frameAdvance.col, advanceOneFrame);
     frameAdvanceContainer.appendChild(frameAdvanceButton);
     controlContainer.appendChild(frameAdvanceContainer);
 
     // Start Button (Jump to start)
     const startContainer = createButtonContainer();
-    startButton = createButton('|<<', () => setFrame(0));
+    startButton = createSpriteDiv(spriteLocations.start.row, spriteLocations.start.col, () => setFrame(0));
     startContainer.appendChild(startButton);
     controlContainer.appendChild(startContainer);
 
     // End Button (Jump to end)
     const endContainer = createButtonContainer();
-    endButton = createButton('>>|', () => setFrame(parseInt(sliderDiv.max, 10)));
+    endButton = createSpriteDiv(spriteLocations.end.row, spriteLocations.end.col, () => setFrame(parseInt(sliderDiv.max, 10)));
     endContainer.appendChild(endButton);
     controlContainer.appendChild(endContainer);
 
@@ -143,29 +154,18 @@ export function updateFrameSlider() {
     }
 }
 
-// Utility function to create a button
-function createButton(label, onClickHandler) {
-    const button = document.createElement('button');
-    button.innerText = label;
-    button.style.marginRight = '5px';
-    button.style.cursor = 'pointer';
-    button.addEventListener('click', onClickHandler);
-    return button;
-}
-
-// Utility function to create a button with toggleable icons
-function createButtonWithIcon(playIcon, pauseIcon, onClickHandler) {
-    const button = document.createElement('button');
-    button.innerHTML = playIcon;
-    button.style.marginRight = '5px';
-    button.style.cursor = 'pointer';
-    button.addEventListener('click', (event) => {
-        onClickHandler();
-        button.dataset.state = button.dataset.state === 'play' ? 'pause' : 'play';
-        button.innerHTML = button.dataset.state === 'play' ? playIcon : pauseIcon;
-    });
-    button.dataset.state = 'play'; // Initial state set to play
-    return button;
+// Utility function to create a div using a sprite from a sprite sheet
+function createSpriteDiv(row, column, onClickHandler) {
+    const div = document.createElement('div');
+    div.style.width = '40px';
+    div.style.height = '40px';
+    div.style.backgroundImage = 'url(./data/images/video-sprites-40px-5x3.png)'; // Replace with the actual sprite sheet path
+    div.style.backgroundSize = '200px 120px'; // Updated to match the actual sprite sheet size
+    div.style.backgroundPosition = `-${column * 40}px -${row * 40}px`; // Corrected to reflect sprite size in 200x120 image
+    div.style.backgroundRepeat = 'no-repeat'; // Ensure only one sprite is displayed
+    div.style.cursor = 'pointer';
+    div.addEventListener('click', onClickHandler);
+    return div;
 }
 
 // Utility function to create a button container
@@ -179,10 +179,20 @@ function createButtonContainer() {
     return container;
 }
 
+// Function to update the play/pause button based on the state of par.paused
+function updatePlayPauseButton() {
+    if (par.paused) {
+        playPauseButton.style.backgroundPosition = `-${spriteLocations.play.col * 40}px -${spriteLocations.play.row * 40}px`;
+    } else {
+        playPauseButton.style.backgroundPosition = `-${spriteLocations.pause.col * 40}px -${spriteLocations.pause.row * 40}px`;
+    }
+}
+
 // Play/Pause toggle function
 function togglePlayPause() {
     if (playInterval === null) {
         par.paused = false;
+        updatePlayPauseButton();
         playInterval = setInterval(() => {
             let currentFrame = parseInt(sliderDiv.value, 10);
             if (currentFrame < parseInt(sliderDiv.max, 10)) {
@@ -190,16 +200,15 @@ function togglePlayPause() {
             } else {
                 clearInterval(playInterval);
                 playInterval = null;
-                playPauseButton.dataset.state = 'play';
-                playPauseButton.innerHTML = '▶️';
+                par.paused = true;
+                updatePlayPauseButton();
             }
         }, 100); // Adjust speed as needed
     } else {
         clearInterval(playInterval);
         playInterval = null;
         par.paused = true;
-        playPauseButton.dataset.state = 'play';
-        playPauseButton.innerHTML = '▶️';
+        updatePlayPauseButton();
     }
 }
 
