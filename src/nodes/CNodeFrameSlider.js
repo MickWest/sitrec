@@ -13,7 +13,9 @@ export class CNodeFrameSlider extends CNode {
         this.frameBackButton = null;
         this.fastForwardButton = null;
         this.fastRewindButton = null;
+        this.pinButton = null;
 
+        this.pinned = false;
         this.advanceHeld = false;
         this.backHeld = false;
         this.advanceHoldFrames = 0;
@@ -45,7 +47,14 @@ export class CNodeFrameSlider extends CNode {
         this.controlContainer = document.createElement('div');
         this.controlContainer.style.display = 'flex';
         this.controlContainer.style.marginRight = '10px';
-        this.controlContainer.style.width = '360px'; // Adjusted width to accommodate the new buttons
+        this.controlContainer.style.width = '400px'; // Adjusted width to accommodate the new buttons
+
+        // Pin Button
+        const pinContainer = this.createButtonContainer();
+        this.pinButton = this.createSpriteDiv(spriteLocations.pin.row, spriteLocations.pin.col, this.togglePin.bind(this));
+        this.pinButton.title = 'Pin/Unpin';
+        pinContainer.appendChild(this.pinButton);
+        this.controlContainer.appendChild(pinContainer);
 
         // Play/Pause Button
         const playPauseContainer = this.createButtonContainer();
@@ -102,7 +111,7 @@ export class CNodeFrameSlider extends CNode {
         this.fastRewindButton.addEventListener('mousedown', () => {
             this.fastRewindButton.held = true;
             par.paused = true;
-
+            this.updatePlayPauseButton();
         });
 
         this.fastRewindButton.addEventListener('mouseup', () => {
@@ -120,6 +129,7 @@ export class CNodeFrameSlider extends CNode {
         this.fastForwardButton.addEventListener('mousedown', () => {
             this.fastForwardButton.held = true;
             par.paused = true;
+            this.updatePlayPauseButton();
         });
 
         this.fastForwardButton.addEventListener('mouseup', () => {
@@ -208,18 +218,28 @@ export class CNodeFrameSlider extends CNode {
     }
 
     update(frame) {
-        // Called every frame
-        if (this.sliderFadeOutCounter !== undefined && this.sliderFadeOutCounter < 100) {
-            this.sliderFadeOutCounter++;
-            const fadeProgress = Math.max(0, (this.sliderFadeOutCounter - 70) / 30);
-            this.sliderDiv.style.opacity = `${1 - fadeProgress}`;
-            this.controlContainer.style.opacity = `${1 - fadeProgress}`;
-        }
-
-        if (this.sliderFadeOutCounter >= 100) {
-            this.sliderDiv.style.opacity = "0";
-            this.controlContainer.style.opacity = "0";
+        // If pinned, ensure the bar stays visible
+        if (this.pinned) {
+            this.sliderDiv.style.opacity = "1";
+            this.controlContainer.style.opacity = "1";
             this.sliderFadeOutCounter = undefined;
+        } else {
+
+            // Called every frame
+            if (this.sliderFadeOutCounter !== undefined && this.sliderFadeOutCounter < 100) {
+                this.sliderFadeOutCounter++;
+                if (this.sliderFadeOutCounter >= 70) {
+                    const fadeProgress = (this.sliderFadeOutCounter - 70) / 30;
+                    this.sliderDiv.style.opacity = `${1 - fadeProgress}`;
+                    this.controlContainer.style.opacity = `${1 - fadeProgress}`;
+                }
+            }
+
+            if (this.sliderFadeOutCounter >= 100) {
+                this.sliderDiv.style.opacity = "0";
+                this.controlContainer.style.opacity = "0";
+                this.sliderFadeOutCounter = undefined;
+            }
         }
 
         if (this.advanceHeld) {
@@ -243,13 +263,6 @@ export class CNodeFrameSlider extends CNode {
         if (this.fastRewindButton && this.fastRewindButton.held) {
             par.frame = Math.max(parseInt(par.frame, 10) - 10, 0);
         }
-
-        if (this.backHeld) {
-            this.backHoldFrames++;
-            if (this.backHoldFrames > this.holdThreshold) {
-                this.backOneFrame();
-            }
-        }
     }
 
     updateFrameSlider() {
@@ -271,7 +284,7 @@ export class CNodeFrameSlider extends CNode {
         const div = document.createElement('div');
         div.style.width = '40px';
         div.style.height = '40px';
-        div.style.backgroundImage = 'url(./data/images/video-sprites-40px-5x3.png)'; // Replace with the actual sprite sheet path
+        div.style.backgroundImage = 'url(./data/images/video-sprites-40px-5x3.png?v=1)';
         div.style.backgroundSize = '200px 120px'; // Updated to match the actual sprite sheet size
         div.style.backgroundPosition = `-${column * 40}px -${row * 40}px`; // Corrected to reflect sprite size in 200x120 image
         div.style.backgroundRepeat = 'no-repeat'; // Ensure only one sprite is displayed
@@ -306,8 +319,16 @@ export class CNodeFrameSlider extends CNode {
         this.updatePlayPauseButton();
     }
 
+    // Pin/Unpin toggle function
+    togglePin() {
+        this.pinned = !this.pinned;
+        this.pinButton.style.backgroundPosition = this.pinned ? `-${spriteLocations.unpin.col * 40}px -${spriteLocations.unpin.row * 40}px` : `-${spriteLocations.pin.col * 40}px -${spriteLocations.pin.row * 40}px`;
+    }
+
     // Advance a single frame function
     advanceOneFrame() {
+        par.paused = true;
+        this.updatePlayPauseButton()
         let currentFrame = parseInt(this.sliderDiv.value, 10);
         if (currentFrame < parseInt(this.sliderDiv.max, 10)) {
             this.setFrame(currentFrame + 1);
@@ -316,6 +337,8 @@ export class CNodeFrameSlider extends CNode {
 
     // Back a single frame function
     backOneFrame() {
+        par.paused = true;
+        this.updatePlayPauseButton()
         let currentFrame = parseInt(this.sliderDiv.value, 10);
         if (currentFrame > 0) {
             this.setFrame(currentFrame - 1);
@@ -338,16 +361,16 @@ const spriteLocations = {
     start: { row: 1, col: 1 }, // Jump to start
     end: { row: 1, col: 0 }, // Jump to end
     fastRewind: { row: 2, col: 1 }, // Fast rewind
-    fastForward: { row: 2, col: 0 } // Fast forward
+    fastForward: { row: 2, col: 0 }, // Fast forward
+    pin: { row: 2, col: 2 }, // Pin button
+    unpin: { row: 2, col: 3 } // Unpin button
 };
 
 // Exported function to create an instance of CNodeFrameSlider
 export function SetupFrameSlider() {
-    return new CNodeFrameSlider({id: "FrameSlider"});
+    return new CNodeFrameSlider({ id: "FrameSlider" });
 }
 
 export function updateFrameSlider() {
-    // Dummy implementation of updateFrameSlider
     NodeMan.get("FrameSlider").updateFrameSlider();
 }
-
