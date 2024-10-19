@@ -199,9 +199,7 @@ export class CNodeFrameSlider extends CNode {
         sliderContainer.addEventListener('mouseenter', () => {
             console.log("Hover Start");
             if (!sliderDragging) {
-                this.sliderDiv.style.opacity = "0";
                 setTimeout(() => { this.sliderDiv.style.opacity = "1"; }, 200); // fade in
-                this.controlContainer.style.opacity = "0";
                 setTimeout(() => { this.controlContainer.style.opacity = "1"; }, 200); // fade in
                 this.sliderFadeOutCounter = undefined; // Reset fade counter on mouse enter
             }
