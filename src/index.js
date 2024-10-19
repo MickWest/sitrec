@@ -33,7 +33,7 @@ import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
 
 import * as LAYER from "./LayerMasks.js"
-import {SetupFrameSlider} from "./FrameSlider";
+import {SetupFrameSlider} from "./nodes/CNodeFrameSlider";
 import {registerNodes} from "./RegisterNodes";
 import {registerSitches, textSitchToObject} from "./RegisterSitches";
 import {SetupMouseHandler} from "./mouseMoveView";

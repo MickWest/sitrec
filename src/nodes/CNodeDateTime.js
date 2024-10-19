@@ -7,7 +7,7 @@ import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {assert} from "../assert.js";
 import {calculateGST} from "../CelestialMath";
 import {updateGUIFrames} from "../JetGUI";
-import {updateFrameSlider} from "../FrameSlider";
+import {updateFrameSlider} from "./CNodeFrameSlider";
 
 const timeZoneOffsets = {
     "IDLW UTC-12": -12,     // International Date Line West

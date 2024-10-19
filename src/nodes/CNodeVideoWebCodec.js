@@ -4,7 +4,7 @@ import {FileManager, GlobalDateTimeNode, infoDiv, NodeMan, Sit} from "../Globals
 import {loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
-import {updateFrameSlider} from "../FrameSlider";
+import {updateFrameSlider} from "./CNodeFrameSlider";
 import {isLocal} from "../../config";
 import {assert} from "../assert.js";
 import { CNodeATFLIRUI } from "./CNodeATFLIRUI.js";
