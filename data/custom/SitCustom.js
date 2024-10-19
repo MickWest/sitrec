@@ -503,7 +503,7 @@ sitch = {
     include_Compasses: true,
 
     // labelView defaults to adding an overlay to lookView, and adds the time and date
-    labelView: {},
+    labelView: {dateTimeY:93},
 
     // a marker for checking the map is rendered in the right position. This is the
     // intersection of beach and the MDR marina. Which, coincidentally, is where I got married.

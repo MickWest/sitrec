@@ -62,8 +62,8 @@ export const commonTrackToTrack = {
 }
 
 export const commonCompasses = {
-    compassMain: {kind: "CompassUI", camera: "mainCamera", relativeTo: "mainView", left: 0.0, top: 0.90, width: -1, height: 0.1},
-    compassLook: {kind: "CompassUI", camera: "lookCamera", relativeTo: "lookView", left: 0.0, top: 0.85, width: -1, height: 0.15},
+    compassMain: {kind: "CompassUI", camera: "mainCamera", relativeTo: "mainView", left: 0.0, top: 0.87, width: -1, height: 0.1},
+    compassLook: {kind: "CompassUI", camera: "lookCamera", relativeTo: "lookView", left: 0.0, top: 0.80, width: -1, height: 0.15},
 
 }
 

@@ -11,7 +11,7 @@ export class CNodeFrameSlider extends CNode {
         this.endButton = null;
         this.frameAdvanceButton = null;
         this.frameBackButton = null;
-        this.playInterval = null;
+
         this.advanceHeld = false;
         this.backHeld = false;
         this.advanceHoldFrames = 0;
@@ -240,26 +240,8 @@ export class CNodeFrameSlider extends CNode {
 
     // Play/Pause toggle function
     togglePlayPause() {
-        if (this.playInterval === null) {
-            par.paused = false;
-            this.updatePlayPauseButton();
-            this.playInterval = setInterval(() => {
-                let currentFrame = parseInt(this.sliderDiv.value, 10);
-                if (currentFrame < parseInt(this.sliderDiv.max, 10)) {
-                    this.setFrame(currentFrame + 1);
-                } else {
-                    clearInterval(this.playInterval);
-                    this.playInterval = null;
-                    par.paused = true;
-                    this.updatePlayPauseButton();
-                }
-            }, 100); // Adjust speed as needed
-        } else {
-            clearInterval(this.playInterval);
-            this.playInterval = null;
-            par.paused = true;
-            this.updatePlayPauseButton();
-        }
+        par.paused = !par.paused;
+        this.updatePlayPauseButton();
     }
 
     // Advance a single frame function
