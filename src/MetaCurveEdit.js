@@ -224,11 +224,99 @@ function BezierYfromX(ps, x) {
 
 
 // class for bezier curves
-function BezierCurve() {
-    this.ps = []
+class MetaBezierCurve {
+    constructor(p) {
+        this.useRegression = p.useRegression
+        
+        this.clampFirstY = false
+        this.sortedY = false;
+        this.override = false;
+
+        this.topGradient = 0        //-0.00198;   //  -1.98°C per 1000 feet, ICAO https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere
+
+        this.ps = []
+    }
+
+    recalculate() {
+        if (this.useRegression) {
+            var data = []
+            var n = 0;
+            for (var i=0;i<this.ps.length;i+=2) {
+                data.push([this.ps[i].x,this.ps[i].y])
+                n++
+            }
+            this.poly = regression.polynomial(data,{order: n-1, precision:16})
+            //    var p = result.predict(x)
+            //    if (x===10)
+            //        console.log(result)
+            //    return p[1];
+        }
+    }
+
+    update() {
+
+        var len = this.ps.length;
+
+        // clamp to three digits of precision
+        for (var i = 0; i < len; i++) {
+            this.ps[i].x = +this.ps[i].x.toFixed(3)
+            this.ps[i].y = +this.ps[i].y.toFixed(3)
+        }
+
+        if (this.clampFirstY)
+            this.ps[0].y = 0;
+
+        if (this.topGradient !== 0) {
+
+            this.ps[len - 1].x = this.ps[len - 2].x + this.topGradient * (this.ps[len - 1].y - this.ps[len - 2].y);
+        }
+    }
+
+    // return X from Y for current editing curve.
+    getX(y) {
+
+        if (this.override) {
+            return this.ps[0].x + (y - this.ps[0].y) * this.topGradient;
+        }
+
+        var l = this.ps.length;
+        if (y > this.ps[l - 2].y) {
+            var x = this.ps[l - 2].x + (y - this.ps[l - 2].y) * this.topGradient;
+            return x;
+        } else {
+            return BezierXfromY(this.ps, y);
+        }
+    }
+
+    getY(x) {
+        if (this.useRegression) {
+            return this.poly.predict(x)[1]
+        } else {
+            return BezierYfromX(this.ps, x);
+        }
+    }
+
+    setPointsFromFlatArray(a) {
+        var l = a.length;
+        this.ps = []
+        for (var i = 0; i < l; i += 2) {
+            this.ps.push(new Point(a[i], a[i + 1]));
+        }
+        if (this.sortedY) {
+            sortPointsY(this.ps);
+        }
+    }
+
+    getProfile() {
+        var profile = []
+        var len = this.ps.length;
+        for (var i = 0; i < len; i++) {
+            profile[i * 2] = this.ps[i].x
+            profile[i * 2 + 1] = this.ps[i].y
+        }
+        return profile;
+    }
 }
-
-
 
 class MetaBezierCurveEditor {
 
@@ -250,18 +338,12 @@ class MetaBezierCurveEditor {
 
         this.fillCanvas = p.fillCanvas
 
-        this.useRegression = p.useRegression;
-
         this.compareNode = p.compareNode;
 
         this.dynamicY = p.dynamicY
         this.dynamicX = p.dynamicX
 
-        this.sortedY = false;
-
         this.keepYOrder = false;  // if this is true then don't let the user drag points verticaly past adjacent points
-
-        this.clampFirstY = false;
 
         this.clampXEnds = true
 
@@ -293,9 +375,6 @@ class MetaBezierCurveEditor {
             this.xStep = minXStep;
         }
 
-
-        this.topGradient = 0        //-0.00198;   //  -1.98°C per 1000 feet, ICAO https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere
-        this.override = false;
         this.disable = false;
 
 
@@ -353,19 +432,18 @@ class MetaBezierCurveEditor {
         this.selectedPoint = null;
         this.selectedPointIndex = 0;
 
-        this.curve = new BezierCurve();
+        this.curve = new MetaBezierCurve(p);
 
-        this.curve.ps.push(new Point(this.C2DX(this.c.clientWidth / 2 - 15), this.C2DY(this.c.clientHeight / 2 - 80))); //
-        this.curve.ps.push(new Point(this.C2DX(this.c.clientWidth / 2 - 10), this.C2DY(this.c.clientHeight / 2 - 60)));
-        this.curve.ps.push(new Point(this.C2DX(this.c.clientWidth / 2 + 5), this.C2DY(this.c.clientHeight / 2 + 30)));
-        this.curve.ps.push(new Point(this.C2DX(this.c.clientWidth / 2 - 5), this.C2DY(this.c.clientHeight / 2)));
-
-        if (p.points) this.setPointsFromFlatArray(p.points)
-
-
-        if (this.sortedY) {
-            sortPointsY(this.curve.ps);
+        if(!p.points) {
+            p.points = [
+                this.C2DX(this.c.clientWidth / 2 - 15), this.C2DY(this.c.clientHeight / 2 - 80),
+                this.C2DX(this.c.clientWidth / 2 - 10), this.C2DY(this.c.clientHeight / 2 - 60),
+                this.C2DX(this.c.clientWidth / 2 + 5), this.C2DY(this.c.clientHeight / 2 + 30),
+                this.C2DX(this.c.clientWidth / 2 - 5), this.C2DY(this.c.clientHeight / 2)
+            ]
         }
+        
+        this.setPointsFromFlatArray(p.points)
 
         // Note use of .bind(this) on the event handler functions declared here
         // this makes them be called in the context of this object
@@ -482,31 +560,13 @@ class MetaBezierCurveEditor {
         }
     }
 
-
-    // return X from Y for current editing curve.
     getX(y) {
-
-        if (this.override) {
-            return this.curve.ps[0].x + (y - this.curve.ps[0].y) * this.topGradient;
-        }
-
-        var l = this.curve.ps.length;
-        if (y > this.curve.ps[l - 2].y) {
-            var x = this.curve.ps[l - 2].x + (y - this.curve.ps[l - 2].y) * this.topGradient;
-            return x;
-        } else {
-            return BezierXfromY(this.curve.ps, y);
-        }
+        return this.curve.getX(y)
     }
 
     getY(x) {
-        if (this.useRegression) {
-            return this.poly.predict(x)[1]
-        } else {
-            return BezierYfromX(this.curve.ps, x);
-        }
+        return this.curve.getY(x)
     }
-
 
     insideGraph(x, y) {
         // note y is inverted data vs context
@@ -515,19 +575,7 @@ class MetaBezierCurveEditor {
     }
 
     recalculate() {
-        if (this.useRegression) {
-            var data = []
-            var n = 0;
-            for (var i=0;i<this.curve.ps.length;i+=2) {
-                data.push([this.curve.ps[i].x,this.curve.ps[i].y])
-                n++
-            }
-            this.poly = regression.polynomial(data,{order: n-1, precision:16})
-            //    var p = result.predict(x)
-            //    if (x===10)
-            //        console.log(result)
-            //    return p[1];
-        }
+        this.curve.recalculate()
     }
 
 
@@ -608,32 +656,10 @@ class MetaBezierCurveEditor {
 //            console.log("Update dirty Azimuth")
         }
 
-
-
-
-
         this.recalculate()
         this.resize();
 
-        var realMinY =  10000000000
-        var realMaxY = -10000000000
-
-        var len = this.curve.ps.length;
-
-        // clamp to three digits of precision
-        for (var i = 0; i < len; i++) {
-            this.curve.ps[i].x = +this.curve.ps[i].x.toFixed(3)
-            this.curve.ps[i].y = +this.curve.ps[i].y.toFixed(3)
-        }
-
-        if (this.clampFirstY)
-            this.curve.ps[0].y = 0;
-
-        if (this.topGradient !== 0) {
-
-            this.curve.ps[len - 1].x = this.curve.ps[len - 2].x + this.topGradient * (this.curve.ps[len - 1].y - this.curve.ps[len - 2].y);
-        }
-
+        this.curve.update()
 
         var ctx = this.ctx;
 
@@ -700,7 +726,7 @@ class MetaBezierCurveEditor {
         ctx.lineWidth = 2
         var bezierColor = "red";
         var valueColor = "grey"
-        if (this.override) {
+        if (this.curve.override) {
             valueColor = "red"
         }
 
@@ -709,13 +735,14 @@ class MetaBezierCurveEditor {
             ctx.lineWidth = 0.25
         }
 
+        var len = this.curve.ps.length;
         var pointsToDraw = len;
-        if (this.override) {
+        if (this.curve.override) {
             pointsToDraw = 1;
         }
         for (var i = 0; i < pointsToDraw; i++) {
             if (i % 2 === 0) {
-                if (!this.override && !this.useRegression) {
+                if (!this.curve.override && !this.curve.useRegression) {
                     ctx.beginPath();
                     ctx.strokeStyle = "#90b091";
                     ctx.moveTo(this.D2CX(this.curve.ps[i].x), this.D2CY(this.curve.ps[i].y));
@@ -726,7 +753,7 @@ class MetaBezierCurveEditor {
                 this.drawPoint(this.curve.ps[i], color);
 
             } else {
-                if (!this.useRegression) {
+                if (!this.curve.useRegression) {
                     color = "green";
                     var p1 = this.curve.ps[i];  // control point
                     this.drawPoint(p1, color);
@@ -738,6 +765,8 @@ class MetaBezierCurveEditor {
             }
         }
 
+        var realMinY =  10000000000
+        var realMaxY = -10000000000
 
         if (this.curve.ps.length > 0) {
             ctx.strokeStyle = valueColor;
@@ -749,7 +778,7 @@ class MetaBezierCurveEditor {
             ctx.stroke();
 
 
-            if (!this.override && !this.useRegression) {
+            if (!this.curve.override && !this.curve.useRegression) {
                 ctx.strokeStyle = bezierColor;
                 ctx.beginPath();
                 for (var t = 0; t <= 1; t += 0.05 / this.curve.ps.length) {
@@ -927,7 +956,7 @@ class MetaBezierCurveEditor {
 
 
         this.mouseIsDown = true;
-        if (!this.override && !this.disable) {
+        if (!this.curve.override && !this.disable) {
             this.selectPointAt(e.layerX, e.layerY);
 
             // adding and deleteing point is now done with right click
@@ -981,7 +1010,7 @@ class MetaBezierCurveEditor {
 
 
     mouseMove(e) {
-        if (!this.override && !this.disable) {
+        if (!this.curve.override && !this.disable) {
             // only allow dragging a selected point inside the graph area
             if (this.selectedPoint /* && this.insideGraph(e.layerX, e.layerY)*/) {
                 this.moved = true;
@@ -989,7 +1018,7 @@ class MetaBezierCurveEditor {
 //                var move_y = (this.C2DY(e.layerY) - this.selectedPoint.y);
                 var move_x = (this.C2DX(e.layerX) - this.C2DX(this.lastMouseX))/1;
                 var move_y = (this.C2DY(e.layerY) - this.C2DY(this.lastMouseY))/1;
-                if (this.clampFirstY && this.selectedPointIndex == 0) {
+                if (this.curve.clampFirstY && this.selectedPointIndex == 0) {
 
                     move_y = 0;
                 }
@@ -1015,8 +1044,8 @@ class MetaBezierCurveEditor {
                     }
                 }
 
-                if (this.topGradient != 0 && this.selectedPointIndex == this.curve.ps.length - 1) {
-                    move_x = move_y * this.topGradient
+                if (this.curve.topGradient != 0 && this.selectedPointIndex == this.curve.ps.length - 1) {
+                    move_x = move_y * this.curve.topGradient
                 }
 
 
@@ -1062,7 +1091,7 @@ class MetaBezierCurveEditor {
             // highlight the one we are hovering over
             var len = this.curve.ps.length;
             for (var i = 0; i < len; i++) {
-                if (i%2 == 0 || !this.useRegression) {
+                if (i%2 == 0 || !this.curve.useRegression) {
                     var d = Math.sqrt(Math.pow(this.D2CX(this.curve.ps[i].x) - e.layerX, 2) + Math.pow(this.D2CY(this.curve.ps[i].y) - e.layerY, 2));
                     if (d <= 10) {
                         ctx.fillStyle = "green";
@@ -1082,25 +1111,13 @@ class MetaBezierCurveEditor {
     }
 
     setPointsFromFlatArray(a) {
-        var l = a.length;
-        this.curve = new BezierCurve();
-        for (var i = 0; i < l; i += 2) {
-            this.curve.ps.push(new Point(a[i], a[i + 1]));
-        }
-        if (this.sortedY) {
-            sortPointsY(this.curve.ps);
-        }
+        this.curve.setPointsFromFlatArray(a)
         this.update()
     }
 
     getProfile() {
-        var profile = []
-        var len = this.curve.ps.length;
-        for (var i = 0; i < len; i++) {
-            profile[i * 2] = this.curve.ps[i].x
-            profile[i * 2 + 1] = this.curve.ps[i].y
-        }
-        return profile;
+        return this.curve.getProfile()
     }
 }
-export {MetaBezierCurveEditor}
+
+export {MetaBezierCurveEditor, MetaBezierCurve}

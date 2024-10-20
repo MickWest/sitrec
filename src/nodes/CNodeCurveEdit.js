@@ -1,9 +1,9 @@
-import {MetaBezierCurveEditor} from "../MetaCurveEdit";
+import {MetaBezierCurveEditor, MetaBezierCurve} from "../MetaCurveEdit";
 import {Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {CNodeGraphLine} from "./CNodeGraphLine";
-
+import {isConsole} from "../../config";
 
 // The CurveEditorView can have inputs from the curve editor (i.e. the compare nodes)
 // it's a view, so should not be used as in input
@@ -94,20 +94,24 @@ export class CNodeCurveEditor extends CNode {
         if (v.editorConfig.maxX === "Sit.frames")
             v.editorConfig.maxX = Sit.frames;
 
-        this.editorView = new CNodeCurveEditorView(v)
-        this.editor = this.editorView.editor
-        this.editor.onChange = x => this.recalculateCascade();
-    //    this.recalculate() // to hook up any compare nodes
+        if(!isConsole) {
+            this.editorView = new CNodeCurveEditorView(v)
+            this.editor = this.editorView.editor
+            this.editor.onChange = x => this.recalculateCascade();
+        //    this.recalculate() // to hook up any compare nodes
 
-        if (!v.noFrameLine) {
-            // add a line overlay - uses an overlay so we don't have to redraw the graph
-            new CNodeGraphLine({
-                id: this.id + "_GraphLine",
-                overlayView: this.editorView,
-                color: "#800000"
-            })
+            if (!v.noFrameLine) {
+                // add a line overlay - uses an overlay so we don't have to redraw the graph
+                new CNodeGraphLine({
+                    id: this.id + "_GraphLine",
+                    overlayView: this.editorView,
+                    color: "#800000"
+                })
+            }
+            this.curve = this.editor.curve
+        } else {
+            this.curve = new MetaBezierCurve(v.editorConfig)
         }
-
     }
 
     recalculate() {
@@ -119,20 +123,22 @@ export class CNodeCurveEditor extends CNode {
     modSerialize() {
         return {
             ...super.modSerialize(),
-            editorConfig: this.editor.getProfile(),
+            editorConfig: this.curve.getProfile(),
         }
     }
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.editor.setPointsFromFlatArray(v.editorConfig)
-        this.editorView.recalculate()
+        if(!isConsole) {
+            this.editor.setPointsFromFlatArray(v.editorConfig)
+            this.editorView.recalculate()
+        } else {
+            this.curve.setPointsFromFlatArray(v.editorConfig)
+        }
     }
-
 
     getValueFrame(f) {
-        return this.editor.getY(f)
+        return this.curve.getY(f)
     }
-
 }
 

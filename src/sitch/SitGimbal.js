@@ -698,9 +698,6 @@ export function SetupGimbal() {
 
     new CNodeNegate({id: "recordedCueAz", node: new CNodeArray({id: "recordedCueAzArray", array: Sit.CSV.map(row => parseFloat(row[9]))})})
 
-    if(!gui) // the rest is unsupported for now in console mode
-        return;
-
     console.log("+++ turnRateBS Node")
     new CNodeTurnRateBS({
         id: "turnRateBS",
@@ -729,6 +726,9 @@ export function SetupGimbal() {
             visible: true,
         }
     )
+
+    if(!gui) // the rest is unsupported for now in console mode
+        return;
 
     var turnRateFromCloudsNode = new CNodeTurnRateFromClouds({
         id: "turnRateFromClouds",
