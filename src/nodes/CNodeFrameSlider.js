@@ -47,10 +47,10 @@ export class CNodeFrameSlider extends CNode {
         this.controlContainer = document.createElement('div');
         this.controlContainer.style.display = 'flex';
         this.controlContainer.style.marginRight = '10px';
-        this.controlContainer.style.width = '350px'; // Adjusted width to accommodate the new buttons
+        this.controlContainer.style.width = '400px'; // Adjusted width to accommodate the new buttons
 
         // Create Buttons
-        this.createButton(
+        this.pinButton = this.createButton(
             this.controlContainer,
             spriteLocations.pin.row,
             spriteLocations.pin.col,
