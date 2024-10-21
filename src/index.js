@@ -529,7 +529,6 @@ function initRendering() {
     container = document.createElement('div');
     document.body.append(container)
 
-    SetupFrameSlider();
 
     console.log("Window inner size = " + window.innerWidth + "," + window.innerHeight)
 
@@ -595,10 +594,14 @@ function legacySetup() {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // At this point Sit is set up.
+// setup common nodes and other things that get set up when a sitch is loaded
 
     setGlobalDateTimeNode(new CNodeDateTime({
         id:"dateTimeStart",
     }))
+
+    SetupFrameSlider(); // this is the slider and buttons for frame control
+
 
 //    NodeFactory.create("Sunlight", {id: "sunlight"})
 
