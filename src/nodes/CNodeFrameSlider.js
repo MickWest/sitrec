@@ -47,108 +47,105 @@ export class CNodeFrameSlider extends CNode {
         this.controlContainer = document.createElement('div');
         this.controlContainer.style.display = 'flex';
         this.controlContainer.style.marginRight = '10px';
-        this.controlContainer.style.width = '400px'; // Adjusted width to accommodate the new buttons
+        this.controlContainer.style.width = '350px'; // Adjusted width to accommodate the new buttons
 
-        // Pin Button
-        const pinContainer = this.createButtonContainer();
-        this.pinButton = this.createSpriteDiv(spriteLocations.pin.row, spriteLocations.pin.col, this.togglePin.bind(this));
-        this.pinButton.title = 'Pin/Unpin';
-        pinContainer.appendChild(this.pinButton);
-        this.controlContainer.appendChild(pinContainer);
+        // Create Buttons
+        this.createButton(
+            this.controlContainer,
+            spriteLocations.pin.row,
+            spriteLocations.pin.col,
+            this.togglePin.bind(this),
+            'Pin/Unpin'
+        );
 
-        // Play/Pause Button
-        const playPauseContainer = this.createButtonContainer();
-        this.playPauseButton = this.createSpriteDiv(spriteLocations.play.row, spriteLocations.play.col, this.togglePlayPause.bind(this));
-        this.playPauseButton.title = 'Play/Pause';
-        playPauseContainer.appendChild(this.playPauseButton);
-        this.controlContainer.appendChild(playPauseContainer);
+        this.playPauseButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.play.row,
+            spriteLocations.play.col,
+            this.togglePlayPause.bind(this),
+            'Play/Pause'
+        );
         this.updatePlayPauseButton();
 
-        // Single Frame Back Button
-        const frameBackContainer = this.createButtonContainer();
-        this.frameBackButton = this.createSpriteDiv(spriteLocations.frameBack.row, spriteLocations.frameBack.col, this.backOneFrame.bind(this));
-        this.frameBackButton.title = 'Step Back';
-        frameBackContainer.appendChild(this.frameBackButton);
-        this.controlContainer.appendChild(frameBackContainer);
+        this.frameBackButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.frameBack.row,
+            spriteLocations.frameBack.col,
+            this.backOneFrame.bind(this),
+            'Step Back',
+            () => {
+                this.backHeld = true;
+                this.backHoldFrames = 0; // Reset the hold count on mouse down
+            },
+            () => {
+                this.backHeld = false;
+                this.backHoldFrames = 0; // Clear the hold count on mouse up
+            }
+        );
 
-        // Handle back button hold
-        this.frameBackButton.addEventListener('mousedown', () => {
-            this.backHeld = true;
-            this.backHoldFrames = 0; // Reset the hold count on mouse down
-        });
+        this.frameAdvanceButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.frameAdvance.row,
+            spriteLocations.frameAdvance.col,
+            this.advanceOneFrame.bind(this),
+            'Step Forward',
+            () => {
+                this.advanceHeld = true;
+                this.advanceHoldFrames = 0; // Reset the hold count on mouse down
+            },
+            () => {
+                this.advanceHeld = false;
+                this.advanceHoldFrames = 0; // Clear the hold count on mouse up
+            }
+        );
 
-        this.frameBackButton.addEventListener('mouseup', () => {
-            this.backHeld = false;
-            this.backHoldFrames = 0; // Clear the hold count on mouse up
-        });
+        this.fastRewindButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.fastRewind.row,
+            spriteLocations.fastRewind.col,
+            () => {},
+            'Fast Rewind',
+            () => {
+                this.fastRewindButton.held = true;
+                par.paused = true;
+                this.updatePlayPauseButton();
+            },
+            () => {
+                this.fastRewindButton.held = false;
+            }
+        );
 
-        // Single Frame Advance Button
-        const frameAdvanceContainer = this.createButtonContainer();
-        this.frameAdvanceButton = this.createSpriteDiv(spriteLocations.frameAdvance.row, spriteLocations.frameAdvance.col, this.advanceOneFrame.bind(this));
-        this.frameAdvanceButton.title = 'Step Forward';
-        frameAdvanceContainer.appendChild(this.frameAdvanceButton);
-        this.controlContainer.appendChild(frameAdvanceContainer);
+        this.fastForwardButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.fastForward.row,
+            spriteLocations.fastForward.col,
+            () => {},
+            'Fast Forward',
+            () => {
+                this.fastForwardButton.held = true;
+                par.paused = true;
+                this.updatePlayPauseButton();
+            },
+            () => {
+                this.fastForwardButton.held = false;
+            }
+        );
 
-        // Handle advance button hold
-        this.frameAdvanceButton.addEventListener('mousedown', () => {
-            this.advanceHeld = true;
-            this.advanceHoldFrames = 0; // Reset the hold count on mouse down
-        });
+        this.startButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.start.row,
+            spriteLocations.start.col,
+            () => this.setFrame(0),
+            'Jump to Start'
+        );
 
-        this.frameAdvanceButton.addEventListener('mouseup', () => {
-            this.advanceHeld = false;
-            this.advanceHoldFrames = 0; // Clear the hold count on mouse up
-        });
-
-        // Fast Rewind Button
-        const fastRewindContainer = this.createButtonContainer();
-        this.fastRewindButton = this.createSpriteDiv(spriteLocations.fastRewind.row, spriteLocations.fastRewind.col, () => {});
-        this.fastRewindButton.title = 'Fast Rewind';
-        fastRewindContainer.appendChild(this.fastRewindButton);
-        this.controlContainer.appendChild(fastRewindContainer);
-
-        // Handle fast rewind button hold
-        this.fastRewindButton.addEventListener('mousedown', () => {
-            this.fastRewindButton.held = true;
-            par.paused = true;
-            this.updatePlayPauseButton();
-        });
-
-        this.fastRewindButton.addEventListener('mouseup', () => {
-            this.fastRewindButton.held = false;
-        });
-
-        // Fast Forward Button
-        const fastForwardContainer = this.createButtonContainer();
-        this.fastForwardButton = this.createSpriteDiv(spriteLocations.fastForward.row, spriteLocations.fastForward.col, () => {});
-        this.fastForwardButton.title = 'Fast Forward';
-        fastForwardContainer.appendChild(this.fastForwardButton);
-        this.controlContainer.appendChild(fastForwardContainer);
-
-        // Handle fast forward button hold
-        this.fastForwardButton.addEventListener('mousedown', () => {
-            this.fastForwardButton.held = true;
-            par.paused = true;
-            this.updatePlayPauseButton();
-        });
-
-        this.fastForwardButton.addEventListener('mouseup', () => {
-            this.fastForwardButton.held = false;
-        });
-
-        // Start Button (Jump to start)
-        const startContainer = this.createButtonContainer();
-        this.startButton = this.createSpriteDiv(spriteLocations.start.row, spriteLocations.start.col, () => this.setFrame(0));
-        this.startButton.title = 'Jump to Start';
-        startContainer.appendChild(this.startButton);
-        this.controlContainer.appendChild(startContainer);
-
-        // End Button (Jump to end)
-        const endContainer = this.createButtonContainer();
-        this.endButton = this.createSpriteDiv(spriteLocations.end.row, spriteLocations.end.col, () => this.setFrame(parseInt(this.sliderDiv.max, 10)));
-        this.endButton.title = 'Jump to End';
-        endContainer.appendChild(this.endButton);
-        this.controlContainer.appendChild(endContainer);
+        this.endButton = this.createButton(
+            this.controlContainer,
+            spriteLocations.end.row,
+            spriteLocations.end.col,
+            () => this.setFrame(parseInt(this.sliderDiv.max, 10)),
+            'Jump to End'
+        );
 
         this.controlContainer.style.opacity = "0"; // Initially hidden
         sliderContainer.appendChild(this.controlContainer);
@@ -213,6 +210,23 @@ export class CNodeFrameSlider extends CNode {
                 this.sliderFadeOutCounter = 0; // Start fade counter on mouse leave
             }
         });
+    }
+
+    createButton(container, row, column, clickHandler, title, mouseDownHandler = null, mouseUpHandler = null) {
+        const buttonContainer = this.createButtonContainer();
+        const button = this.createSpriteDiv(row, column, clickHandler);
+        button.title = title;
+        buttonContainer.appendChild(button);
+        container.appendChild(buttonContainer);
+
+        if (mouseDownHandler) {
+            button.addEventListener('mousedown', mouseDownHandler);
+        }
+        if (mouseUpHandler) {
+            button.addEventListener('mouseup', mouseUpHandler);
+        }
+
+        return button;
     }
 
     update(frame) {
