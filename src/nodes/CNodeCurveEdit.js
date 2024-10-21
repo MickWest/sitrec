@@ -111,6 +111,8 @@ export class CNodeCurveEditor extends CNode {
             this.curve = this.editor.curve
         } else {
             this.curve = new MetaBezierCurve(v.editorConfig)
+            this.curve.recalculate()
+            this.curve.update()
         }
     }
 
@@ -134,6 +136,8 @@ export class CNodeCurveEditor extends CNode {
             this.editorView.recalculate()
         } else {
             this.curve.setPointsFromFlatArray(v.editorConfig)
+            this.curve.recalculate()
+            this.curve.update()
         }
     }
 

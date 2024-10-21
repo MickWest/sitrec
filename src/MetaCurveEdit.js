@@ -234,7 +234,10 @@ class MetaBezierCurve {
 
         this.topGradient = 0        //-0.00198;   //  -1.98°C per 1000 feet, ICAO https://en.wikipedia.org/wiki/International_Standard_Atmosphere#ICAO_Standard_Atmosphere
 
-        this.ps = []
+        if(p.points)
+            this.setPointsFromFlatArray(p.points)
+        else
+            this.ps = []
     }
 
     recalculate() {
@@ -432,8 +435,6 @@ class MetaBezierCurveEditor {
         this.selectedPoint = null;
         this.selectedPointIndex = 0;
 
-        this.curve = new MetaBezierCurve(p);
-
         if(!p.points) {
             p.points = [
                 this.C2DX(this.c.clientWidth / 2 - 15), this.C2DY(this.c.clientHeight / 2 - 80),
@@ -442,8 +443,8 @@ class MetaBezierCurveEditor {
                 this.C2DX(this.c.clientWidth / 2 - 5), this.C2DY(this.c.clientHeight / 2)
             ]
         }
-        
-        this.setPointsFromFlatArray(p.points)
+
+        this.curve = new MetaBezierCurve(p);
 
         // Note use of .bind(this) on the event handler functions declared here
         // this makes them be called in the context of this object
