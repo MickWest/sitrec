@@ -141,7 +141,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         showHider(this.AzElGrid, "[A]zimuth/Elevation Grid", false, 'a')
         // helper object camera frustum
 
-        if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
+        if (Sit.name.startsWith("gimbal")) {
             this.cameraFrustum = new CNodeDisplayCameraFrustumATFLIR({
                 id: "cameraFrustumATFLIR",
                 container: LocalFrame,

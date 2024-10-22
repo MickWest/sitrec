@@ -416,8 +416,7 @@ export const SitGimbal = {
         GimbalCSV: 'gimbal/GimbalData.csv',
         GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
-        // TargetObjectFile: 'models/FA-18F.glb',
-        TargetObjectFile: 'models/SR-71.glb',
+        TargetObjectFile: 'models/FA-18F.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
     },
 
@@ -463,6 +462,8 @@ export const SitGimbal = {
     },
 
 }
+
+
 
 
 export const SitGimbalNear = {
@@ -591,6 +592,35 @@ export const SitGimbalNear = {
     },
 
 }
+
+export const SitGimbalSR71 = {
+    ...SitGimbal,
+    name: "gimbalsr71",
+    menuName: "Gimbal (SR-71)",
+    // brighter background, so we can see the black SR-71
+    mainView: { left: 0.00, top: 0, width: 1, height: 1, fov: 10, background:'#404040' },
+    files: {
+        FA18Model: 'models/FA-18F.glb',             // used for the platform model
+        GimbalCSV: 'gimbal/GimbalData.csv',
+        GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
+        GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
+        TargetObjectFile: 'models/SR-71.glb',
+        ATFLIRModel: 'models/ATFLIR.glb',
+    },
+
+    startDistance: 19,
+    targetSpeed: 160,
+
+    setup3: function () {
+        // hide things we don't want to see
+        ViewMan.setVisibleByName("Object g-force",false);
+        ViewMan.setVisibleByName("Cloud Speed",false);
+        ViewMan.setVisibleByName("SAPage",false);
+        ViewMan.setVisibleByName("Fleet Speed Knots",false);
+
+    }
+}
+
 
 function SetupAzInputs() {
     new CNodeArray({id: "azMarkus", array: Sit.CSV.map(row => -row[5])})
@@ -857,3 +887,6 @@ export function SetupGimbal() {
     })
 
 }
+
+
+

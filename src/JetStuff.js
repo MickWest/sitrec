@@ -684,7 +684,7 @@ export function SetupTrackLOSNodes() {
 
 //    console.log("+++ JetLOSDisplayNode")
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
+    if (Sit.name.startsWith("gimbal")) {
         new CNodeDisplayLOS({
             id: "JetLOSDisplayNode",
             inputs: {
@@ -1072,7 +1072,7 @@ export function initViews() {
 
 
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear" || Sit.name === "flir1") {
+    if (Sit.name.startsWith("gimbal") || Sit.name === "flir1") {
 
         // a grid spaced one Nautical mile square
         const gridSquaresGround = 200
@@ -1135,7 +1135,7 @@ export function initViews() {
 
     });
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
+    if (Sit.name.startsWith("gimbal")) {
         var dragMesh = new Mesh(geometry, material);
         dragMesh.visible = false;
         dragMesh.name = "dragMesh"
@@ -1145,7 +1145,7 @@ export function initViews() {
     // These are Az, El, so the numbers read on screen
 
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear" && Sit.showGlare) {
+    if (Sit.name.startsWith("gimbal") && Sit.showGlare) {
         LocalFrame.add(glareSprite);
         showHider(glareSprite, "Glare Spr[I]te", false, 'i')
     }
@@ -1163,7 +1163,7 @@ export function initViews() {
     }
 
 
-    if (Sit.name === "gimbal" || Sit.name === "gimbalnear") {
+    if (Sit.name.startsWith("gimbal")) {
         // this is calculated at the start, and when glareAngle switch node is changed
         calculateGlareStartAngle();
 

@@ -52,10 +52,20 @@ class CViewManager extends CManager {
         }
     }
 
+    setVisibleByName(name, visible) {
+        this.iterate((id, v) => {
+            if (v.showHideName === name || v.id === name) {
+                v.setVisible(visible);
+            }
+        })
+    }
+
 }
 
 
 export var ViewMan = new CViewManager()
+
+
 
 
 const defaultCViewParams = {
@@ -217,6 +227,7 @@ class CNodeView extends CNode {
 
         if (!this.overlayView) {
             const name = v.menuName ?? this.id;
+            this.showHideName = name;
             // menu entry to show/hide this view
             guiShowHideViews.add(this, 'visible').listen().name(name).onChange(value => {
                 this.visible = undefined; // force update
