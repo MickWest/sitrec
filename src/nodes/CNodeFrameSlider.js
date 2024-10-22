@@ -256,6 +256,14 @@ export class CNodeFrameSlider extends CNode {
         });
     }
 
+    dispose() {
+        super.dispose()
+        // safely remove the slider
+        this.sliderDiv.remove();
+
+
+    }
+
     createButton(container, row, column, clickHandler, title, mouseDownHandler = null, mouseUpHandler = null) {
         const buttonContainer = this.createButtonContainer();
         const button = this.createSpriteDiv(row, column, clickHandler);
@@ -338,6 +346,13 @@ export class CNodeFrameSlider extends CNode {
         ctx.lineTo(this.canvas.width * Sit.aFrame / Sit.frames, this.canvas.height);
         ctx.stroke();
 
+        // and a red one for Sit.bFrame
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(this.canvas.width * Sit.bFrame / Sit.frames, 0);
+        ctx.lineTo(this.canvas.width * Sit.bFrame / Sit.frames, this.canvas.height);
+        ctx.stroke();
 
 
     }
