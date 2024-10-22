@@ -608,6 +608,17 @@ export const SitGimbalSR71 = {
         ATFLIRModel: 'models/ATFLIR.glb',
     },
 
+    mainCamera: {
+        startCameraPosition:[8485.70,11640.47,2794.97],
+        startCameraTarget:[7548.47,11387.54,2554.90]
+    },
+
+    videoView: {left: 0.66, top: 0.45, width: -1, height: 0.5,background:[1,0,0,0]},
+
+    lookView: {left: 0.03, top: 0.45, width: -1, height: 0.5,
+        draggable:true,resizable:true,shiftDrag:true,freeAspect:false, noOrbitControls:true,
+    },
+
     startDistance: 19,
     targetSpeed: 160,
 
@@ -616,7 +627,6 @@ export const SitGimbalSR71 = {
         ViewMan.setVisibleByName("Object g-force",false);
         ViewMan.setVisibleByName("Cloud Speed",false);
         ViewMan.setVisibleByName("SAPage",false);
-        ViewMan.setVisibleByName("Fleet Speed Knots",false);
 
     }
 }
