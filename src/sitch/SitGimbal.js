@@ -412,11 +412,12 @@ export const SitGimbal = {
     localWindKnots: 120,
 
     files: {
-        FA18Model: 'models/FA-18F.glb',
+        FA18Model: 'models/FA-18F.glb',             // used for the platform model
         GimbalCSV: 'gimbal/GimbalData.csv',
         GimbalCSV2: 'gimbal/GimbalRotKeyframes.csv',
         GimbalCSV_Pip: 'gimbal/GimbalPIPKeyframes.csv',
-        TargetObjectFile: 'models/FA-18F.glb',
+        // TargetObjectFile: 'models/FA-18F.glb',
+        TargetObjectFile: 'models/SR-71.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
     },
 

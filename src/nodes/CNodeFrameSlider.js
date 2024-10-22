@@ -6,6 +6,7 @@ export class CNodeFrameSlider extends CNode {
     constructor(v) {
         super(v);
         this.sliderDiv = null;
+        this.sliderInput = null;
         this.playPauseButton = null;
         this.startButton = null;
         this.endButton = null;
@@ -57,6 +58,8 @@ export class CNodeFrameSlider extends CNode {
             this.togglePin.bind(this),
             'Pin/Unpin'
         );
+
+        this.togglePin();
 
         this.playPauseButton = this.createButton(
             this.controlContainer,
@@ -143,7 +146,7 @@ export class CNodeFrameSlider extends CNode {
             this.controlContainer,
             spriteLocations.end.row,
             spriteLocations.end.col,
-            () => this.setFrame(parseInt(this.sliderDiv.max, 10)),
+            () => this.setFrame(parseInt(this.sliderInput.max, 10)),
             'Jump to End'
         );
 
@@ -151,13 +154,17 @@ export class CNodeFrameSlider extends CNode {
         sliderContainer.appendChild(this.controlContainer);
 
         // Create the slider input element
-        this.sliderDiv = document.createElement('input');
-        this.sliderDiv.type = "range";
-        this.sliderDiv.className = "flat-slider";
-        this.sliderDiv.style.flexGrow = '1';
-        this.sliderDiv.min = "0";
-        this.sliderDiv.max = "100"; // Initial max, can be updated later
-        this.sliderDiv.value = "0";
+        this.sliderInput = document.createElement('input');
+        this.sliderInput.type = "range";
+        this.sliderInput.className = "flat-slider";
+        this.sliderInput.style.position = 'absolute';
+        this.sliderInput.style.top = '0';
+        this.sliderInput.style.left = '0';
+        this.sliderInput.style.width = '100%';
+        this.sliderInput.style.height = '100%';
+        this.sliderInput.min = "0";
+        this.sliderInput.max = "100"; // Initial max, can be updated later
+        this.sliderInput.value = "0";
 
         let sliderDragging = false;
         let sliderFade = false;
@@ -168,35 +175,72 @@ export class CNodeFrameSlider extends CNode {
         };
 
         const getFrameFromSlider = () => {
-            const frame = parseInt(this.sliderDiv.value, 10);
+            const frame = parseInt(this.sliderInput.value, 10);
             newFrame(frame);
         };
 
+        // create a div to hold the slider
+        this.sliderDiv = document.createElement('div');
+        this.sliderDiv.style.width = '100%';
+        this.sliderDiv.style.height = '40px';
+        this.sliderDiv.style.display = 'flex';
+        this.sliderDiv.style.alignItems = 'center';
+        this.sliderDiv.style.justifyContent = 'center';
+        this.sliderDiv.style.position = 'relative';
+        this.sliderDiv.style.zIndex = '1002';
+        this.sliderDiv.style.opacity = "0"; // Initially hidden
+        this.sliderDiv.style.transition = "opacity 0.2s";
+
+
+        this.sliderDiv.appendChild(this.sliderInput);
         sliderContainer.appendChild(this.sliderDiv);
         document.body.appendChild(sliderContainer);
 
+        // add a canvas to the slider div
+        this.canvas = document.createElement('canvas');
+        this.canvas.style.position = 'absolute';
+        this.canvas.style.top = '0';
+        this.canvas.style.left = '0';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.canvas.style.zIndex = '1003'; // Ensure it overlays the input
+        this.canvas.style.pointerEvents = 'none'; // Allow mouse events to pass through
+        this.sliderDiv.appendChild(this.canvas);
+        // get the context
+        const ctx = this.canvas.getContext('2d');
+        // red line
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 5;
+        // draw a test line
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(this.canvas.width, this.canvas.height);
+        ctx.stroke();
+
+
         // Event listeners for slider interactions
-        this.sliderDiv.addEventListener('input', () => {
-            newFrame(parseInt(this.sliderDiv.value, 10));
+        this.sliderInput.addEventListener('input', () => {
+            newFrame(parseInt(this.sliderInput.value, 10));
             sliderDragging = true;
             par.paused = true;
         });
 
-        this.sliderDiv.addEventListener('change', () => {
+        this.sliderInput.addEventListener('change', () => {
             if (sliderFade) {
-                this.sliderDiv.style.opacity = "1";
-                setTimeout(() => { this.sliderDiv.style.opacity = "0"; }, 200); // fade out
+                this.sliderInput.style.opacity = "1";
+                setTimeout(() => { this.sliderInput.style.opacity = "0"; }, 200); // fade out
                 sliderFade = false;
             }
             sliderDragging = false;
         });
 
-        this.sliderDiv.style.opacity = "0"; // Initially hidden
+        this.sliderInput.style.opacity = "0"; // Initially hidden
 
         sliderContainer.addEventListener('mouseenter', () => {
             console.log("Hover Start");
             if (!sliderDragging) {
                 setTimeout(() => { this.sliderDiv.style.opacity = "1"; }, 200); // fade in
+                setTimeout(() => { this.sliderInput.style.opacity = "1"; }, 200); // fade in
                 setTimeout(() => { this.controlContainer.style.opacity = "1"; }, 200); // fade in
                 this.sliderFadeOutCounter = undefined; // Reset fade counter on mouse enter
             }
@@ -233,6 +277,7 @@ export class CNodeFrameSlider extends CNode {
         // If pinned, ensure the bar stays visible
         if (this.pinned) {
             this.sliderDiv.style.opacity = "1";
+            this.sliderInput.style.opacity = "1";
             this.controlContainer.style.opacity = "1";
             this.sliderFadeOutCounter = undefined;
         } else {
@@ -242,6 +287,7 @@ export class CNodeFrameSlider extends CNode {
                 this.sliderFadeOutCounter++;
                 if (this.sliderFadeOutCounter >= 70) {
                     const fadeProgress = (this.sliderFadeOutCounter - 70) / 30;
+                    this.sliderInput.style.opacity = `${1 - fadeProgress}`;
                     this.sliderDiv.style.opacity = `${1 - fadeProgress}`;
                     this.controlContainer.style.opacity = `${1 - fadeProgress}`;
                 }
@@ -249,6 +295,7 @@ export class CNodeFrameSlider extends CNode {
 
             if (this.sliderFadeOutCounter >= 100) {
                 this.sliderDiv.style.opacity = "0";
+                this.sliderInput.style.opacity = "0";
                 this.controlContainer.style.opacity = "0";
                 this.sliderFadeOutCounter = undefined;
             }
@@ -269,24 +316,42 @@ export class CNodeFrameSlider extends CNode {
         }
 
         if (this.fastForwardButton && this.fastForwardButton.held) {
-            par.frame = Math.min(parseInt(par.frame, 10) + 10, parseInt(this.sliderDiv.max, 10));
+            par.frame = Math.min(parseInt(par.frame, 10) + 10, parseInt(this.sliderInput.max, 10));
         }
 
         if (this.fastRewindButton && this.fastRewindButton.held) {
             par.frame = Math.max(parseInt(par.frame, 10) - 10, 0);
         }
+
+        // resize the canvas to the actualy pixels of the div
+        const ctx = this.canvas.getContext('2d');
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+
+
+        // draw vertical line at Sit.aFrame,
+        // green, one pixel wide
+        ctx.strokeStyle = 'green';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(this.canvas.width * Sit.aFrame / Sit.frames, 0);
+        ctx.lineTo(this.canvas.width * Sit.aFrame / Sit.frames, this.canvas.height);
+        ctx.stroke();
+
+
+
     }
 
     updateFrameSlider() {
-        if (this.sliderDiv.style.opacity === "1") {
-            const currentValue = parseInt(this.sliderDiv.value, 10);
+        if (this.sliderInput.style.opacity === "1") {
+            const currentValue = parseInt(this.sliderInput.value, 10);
             if (currentValue !== par.frame) {
-                this.sliderDiv.value = par.frame;
+                this.sliderInput.value = par.frame;
             }
 
-            const max = parseInt(this.sliderDiv.max, 10);
+            const max = parseInt(this.sliderInput.max, 10);
             if (max !== Sit.frames) {
-                this.sliderDiv.max = Sit.frames;
+                this.sliderInput.max = Sit.frames;
             }
         }
     }
@@ -341,8 +406,8 @@ export class CNodeFrameSlider extends CNode {
     advanceOneFrame() {
         par.paused = true;
         this.updatePlayPauseButton()
-        let currentFrame = parseInt(this.sliderDiv.value, 10);
-        if (currentFrame < parseInt(this.sliderDiv.max, 10)) {
+        let currentFrame = parseInt(this.sliderInput.value, 10);
+        if (currentFrame < parseInt(this.sliderInput.max, 10)) {
             this.setFrame(currentFrame + 1);
         }
     }
@@ -351,7 +416,7 @@ export class CNodeFrameSlider extends CNode {
     backOneFrame() {
         par.paused = true;
         this.updatePlayPauseButton()
-        let currentFrame = parseInt(this.sliderDiv.value, 10);
+        let currentFrame = parseInt(this.sliderInput.value, 10);
         if (currentFrame > 0) {
             this.setFrame(currentFrame - 1);
         }
@@ -359,7 +424,7 @@ export class CNodeFrameSlider extends CNode {
 
     // Set frame helper function
     setFrame(frame) {
-        this.sliderDiv.value = frame;
+        this.sliderInput.value = frame;
         par.frame = frame;
     }
 }

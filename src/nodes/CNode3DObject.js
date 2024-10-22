@@ -57,21 +57,22 @@ import {CManager} from "../CManager";
 // Note these files are CASE SENSIVE. Mac OS is case insensitive, so be careful. (e.g. F-15.glb will not work on my deployed server)
 export const ModelFiles = {
 // TODO: X1-B
+    "737 MAX 8 BA":         { file: 'data/models/737 MAX 8 BA.glb',},
+    "A340-600":             { file: 'data/models/A340-600.glb',},
+    "A-10":                 { file: 'data/models/A-10.glb',},
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/f-15.glb',},
-    "A-10":                 { file: 'data/models/A-10.glb',},
-    "MiG-29":               { file: 'data/models/MiG-29.glb',},
-    "737 MAX 8 BA":         { file: 'data/models/737 MAX 8 BA.glb',},
     "Lear 75":              { file: 'data/models/Lear-75.glb',},
+    "MiG-29":               { file: 'data/models/MiG-29.glb',},
+    "MQ-9 (loaded)":        { file: 'data/models/MQ9.glb',},
+    "MQ-9 (clean)":         { file: 'data/models/MQ9-clean.glb',},
+    "SR-71":                { file: 'data/models/SR-71.glb',},
  //   "737 MAX 8 (White)":    { file: 'data/models/737_MAX_8_White.glb',},
  //   "777-200ER (Malyasia)": { file: 'data/models/777-200ER-Malaysia.glb',},
-    "A340-600":             { file: 'data/models/A340-600.glb',},
 //    "DC-10":                { file: 'data/models/DC-10.glb',},
    // "WhiteCube":            { file: 'data/models/white-cube.glb',},
    // "PinkCube":             { file: 'data/models/pink-cube.glb',},
    // "ATFLIR":               { file: 'data/models/ATFLIR.glb',},
-    "MQ-9 (loaded)":        { file: 'data/models/MQ9.glb',},
-    "MQ-9 (clean)":         { file: 'data/models/MQ9-clean.glb',},
 
     "X-37":                 { file: 'data/models/X-37.glb',},
     "Saucer":               { file: 'data/models/saucer01a.glb',},
