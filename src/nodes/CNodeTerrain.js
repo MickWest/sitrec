@@ -580,17 +580,24 @@ export class CNodeTerrain extends CNode {
         const layerDef  = sourceDef.layers[layerName];
         assert(layerDef !== undefined, "CNodeTerrain: layer def for " + layerName + " not found in sourceDef")
         // run it bound to this, so we can access the terrain node
-        return sourceDef.mapURL.bind(this)(z, x,y, layerName, layerDef.type)
+        return sourceDef.mapURL.bind(this)(z, x, y, layerName, layerDef.type)
     }
 
 
     elevationURLDirect(z, x, y) {
         // get the elevation source for the current type
         const sourceDef = this.UINode.elevationSources[local.elevationType];
-        if (sourceDef.url === "" || sourceDef.url === undefined) {
-            return null;
+
+        if (!sourceDef.mapURL) {
+            if (sourceDef.url === "" || sourceDef.url === undefined) {
+                return null;
+            }
+            return sourceDef.url + "/" + z + "/" + x + "/" + y + ".png";
         }
-        return sourceDef.url + "/" + z + "/" + x + "/" + y + ".png";
+
+        // no layers yet, so just call the mapURL function with nulls
+        return sourceDef.mapURL.bind(this)(z, x, y, null, null)
+
     }
 
 

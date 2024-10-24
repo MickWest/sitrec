@@ -28,7 +28,7 @@ sitch = {
 
     startTime: "2022-09-19T20:50:26.970Z",
     // default terrain covers some of the local area
-    TerrainModel: {kind: "Terrain", lat: 31.5, lon: -118, zoom: 8, nTiles: 6, fullUI: true},
+    TerrainModel: {kind: "Terrain", lat: 34, lon: -118.3, zoom: 7, nTiles: 3, fullUI: true},
    // terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
     // default to 30 seconds. Loading a video will change this (also can set in the Time menu)

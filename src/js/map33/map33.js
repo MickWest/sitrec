@@ -6,6 +6,12 @@ import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
 import {DebugArrowAB, removeDebugArrow} from "../../threeExt";
 import {GlobalScene} from "../../LocalFrame";
+
+import { fromArrayBuffer } from 'geotiff';
+import {convertTIFFToElevationArray} from "../../TIFFUtils";
+
+
+
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 
 const tileMaterial = new MeshNormalMaterial({wireframe: true})
@@ -82,24 +88,6 @@ class Tile {
     return this.map.terrainNode.mapURLDirect(this.z, this.x, this.y)
   }
 
-  // takes a 2D array of pixel RBGA and computes the elevation
-  // note the A value is not used, as the source data is a PNG with no alpha.
-  computeElevation(pixels) {
-    this.shape = pixels.shape
-    const elevation = new Float32Array(pixels.shape[0] * pixels.shape[1])
-    for (let i = 0; i < pixels.shape[0]; i++) {
-      for (let j = 0; j < pixels.shape[1]; j++) {
-        const ij = i + pixels.shape[0] * j
-        const rgba = ij * 4
-        elevation[ij] =
-          pixels.data[rgba] * 256.0 +
-          pixels.data[rgba + 1] +
-          pixels.data[rgba + 2] / 256.0 -
-          32768.0
-      }
-    }
-    this.elevation = elevation
-  }
 
   buildGeometry() {
     const geometry = new PlaneGeometry(
@@ -296,40 +284,125 @@ class Tile {
     this.mesh = new Mesh(this.geometry, tileMaterial)
   }
 
-  fetchElevationTile(signal) {
-    const elevationURL = this.elevationURL()
 
-    var url = SITREC_SERVER+"cachemaps.php?url="+encodeURIComponent(elevationURL)
-    return new Promise((resolve, reject) => {
-      if (signal.aborted) {
-        reject(new Error('Aborted'));
-        return;
-      }
-      if (this.map.elOnly) {
+////////////////////////////////////////////////////////////////////////////////////
+  async fetchElevationTile(signal) {
+    const elevationURL = this.elevationURL();
 
-        if (elevationURL === null) {
-          // no elevation URL, so we can't load the elevation
-          // this would be either be in installs with no elevation data avaialble
-          // or when the user has selected the "flat" option
-          resolve(this);
-          return;
-        }
+    if (signal?.aborted) {
+      throw new Error('Aborted');
+    }
 
-        getPixels(url, (err, pixels) => {
-          if (err) console.error("fetchElevationTile() -> " + err)
-          this.computeElevation(pixels)
-          //this.applyMaterial()
-          resolve(this)
-        })
+    if (!this.map.elOnly) {
+      this.applyMaterial();
+      return this;
+    }
+
+    if (!elevationURL) {
+      return this;
+    }
+
+    try {
+      if (elevationURL.endsWith('.png')) {
+        await this.handlePNGElevation(elevationURL);
       } else {
-        // if it's not elOnly, then we can immediately apply the material.
-        // as elevation is handled later
-        this.applyMaterial();
-        resolve(this);
+        await this.handleGeoTIFFElevation(elevationURL);
       }
-    })
+      return this;
+    } catch (error) {
+      console.error('Error fetching elevation data:', error);
+      throw error;
+    }
   }
 
+  async handleGeoTIFFElevation(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const tiff = await fromArrayBuffer(arrayBuffer); // Use GeoTIFF library to parse the array buffer
+    const image = await tiff.getImage();
+
+    const width = image.getWidth();
+    const height = image.getHeight();
+    console.log(`GeoTIFF image dimensions: width=${width}, height=${height}`);
+
+    const processedElevation = convertTIFFToElevationArray(image);
+    this.computeElevationFromGeoTIFF(processedElevation, width, height);
+
+
+  }
+
+  async handlePNGElevation(url) {
+    return new Promise((resolve, reject) => {
+      getPixels(url, (err, pixels) => {
+        if (err) {
+          reject(new Error(`PNG processing error: ${err.message}`));
+          return;
+        }
+        this.computeElevationFromRGBA(pixels);
+        resolve();
+      });
+    });
+  }
+
+  computeElevationFromRGBA(pixels) {
+    this.shape = pixels.shape;
+    const elevation = new Float32Array(pixels.shape[0] * pixels.shape[1]);
+    for (let i = 0; i < pixels.shape[0]; i++) {
+      for (let j = 0; j < pixels.shape[1]; j++) {
+        const ij = i + pixels.shape[0] * j;
+        const rgba = ij * 4;
+        elevation[ij] =
+            pixels.data[rgba] * 256.0 +
+            pixels.data[rgba + 1] +
+            pixels.data[rgba + 2] / 256.0 -
+            32768.0;
+      }
+    }
+    this.elevation = elevation;
+  }
+
+  computeElevationFromGeoTIFF(elevationData, width, height) {
+    if (!elevationData || elevationData.length !== width * height) {
+      throw new Error('Invalid elevation data dimensions');
+    }
+
+    this.shape = [width, height];
+    this.elevation = elevationData;
+
+    // Validate elevation data
+    const stats = {
+      min: Infinity,
+      max: -Infinity,
+      nanCount: 0
+    };
+
+    for (let i = 0; i < elevationData.length; i++) {
+      const value = elevationData[i];
+      if (Number.isNaN(value)) {
+        stats.nanCount++;
+      } else {
+        stats.min = Math.min(stats.min, value);
+        stats.max = Math.max(stats.max, value);
+      }
+    }
+
+    // Log statistics for debugging
+    console.log('Elevation statistics:', {
+      width,
+      height,
+      min: stats.min,
+      max: stats.max,
+      nanCount: stats.nanCount,
+      totalPoints: elevationData.length
+    });
+  }
+
+
+//////////////////////////////////////////////////////////////////////////////////
 
   setPosition(center) {
     const position = Utils.tile2position(

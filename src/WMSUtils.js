@@ -46,12 +46,7 @@ export class CTileMapping {
 
 
     wmsGetMapURLFromTile(urlBase, name, z, x, y) {
-
-        // convert z,x,y to lat/lon
-        const lat0 = this.getNorthLatitude(y, z);
-        const lon0 = this.getLeftLongitude(x, z);
-        const lat1 = this.getNorthLatitude(y + 1, z);
-        const lon1 = this.getLeftLongitude(x + 1, z);
+        const {lat0, lon0, lat1, lon1} = this.getCorners(y, z, x);
 
         // if the urlBase does not end in a ?, then add one
         if (urlBase[urlBase.length-1] !== '?') {
@@ -71,6 +66,34 @@ export class CTileMapping {
         console.log("URL = " + url);
         return url;
 
+    }
+
+    getWMSGeoTIFFURLFromTile(urlBase, z, x, y) {
+        const {lat0, lon0, lat1, lon1} = this.getCorners(y, z, x);
+
+        // if the urlBase does not end in a ?, then add one
+        if (urlBase[urlBase.length-1] !== '?') {
+            urlBase += '?';
+        }
+
+        const url =
+            urlBase +
+            "&f=image&format=tiff" +
+            `&bbox=${lon0},${lat1},${lon1},${lat0}` +
+            "&bboxSR=4326&imageSR=4326&size=512,512";
+
+        console.log("getWMSGeoTIFFURLFromTile URL = " + url);
+        return url;
+    }
+
+
+    getCorners(y, z, x) {
+        // convert z,x,y to lat/lon
+        const lat0 = this.getNorthLatitude(y, z);
+        const lon0 = this.getLeftLongitude(x, z);
+        const lat1 = this.getNorthLatitude(y + 1, z);
+        const lon1 = this.getLeftLongitude(x + 1, z);
+        return {lat0, lon0, lat1, lon1};
     }
 
     wmtsGetMapURLFromTile(urlBase, name, z, x, y) {
