@@ -28,7 +28,7 @@ export function convertTIFFToElevationArray(image) {
     const numTilesX = Math.ceil(width / tileWidth);
     const numTilesY = Math.ceil(height / tileHeight);
     // iterate over the tiles by row and column
-    for (let tileX = 0; tileX < numTilesX; tileX += 1) {
+    for (let tileX = 0; tileX < numTilesX ; tileX += 1) {
         for (let tileY = 0; tileY< numTilesY; tileY+=1) {
             const tileIndex = tileY * numTilesX + tileX;
             const tileOffset = tileOffsets[tileIndex];
@@ -54,7 +54,9 @@ export function convertTIFFToElevationArray(image) {
                         const outputX = tileX * tileWidth + x;
                         const outputY = tileY * tileHeight + y;
                         const outputIndex = outputY * width + outputX;
-                        output[outputIndex] = value;
+                        if (outputX < width && outputY < height) {
+                            output[outputIndex] = value;
+                        }
                     }
                 }
             }

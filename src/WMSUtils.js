@@ -79,13 +79,14 @@ export class CTileMapping {
             urlBase += '?';
         }
 
+
         const url =
             urlBase +
             "&f=image&format=tiff" +
             `&bbox=${lon0},${lat1},${lon1},${lat0}` +
-            "&bboxSR=4326&imageSR=4326&size=512,512";
+            "&bboxSR=4326&imageSR=4326&size=256,256";
 
-     //   console.log("getWMSGeoTIFFURLFromTile URL = " + url);
+        console.log("getWMSGeoTIFFURLFromTile URL = " + url);
            console.log("Point 0 " + lon0 + "," + lat0);
      //    console.log("Point 1 " + lon1 + "," + lat1);
         return url;

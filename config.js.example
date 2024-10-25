@@ -115,10 +115,6 @@ export const _configParams = {
             mapURL: (z,x,y) => {
                 return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
             },
-            // layers: [
-            //     "a","b","c"
-            // ],
-            // layer: "c"
         },
         maptiler: {
             name: "MapTiler",
@@ -144,7 +140,7 @@ export const _configParams = {
             },
 
             mapURL: (z,x,y, layerName, layerType) => {
-                    return(`https://api.maptiler.com/tiles/${layerName}/${z}/${x}/${y}.${layerType}?key=cnVJFChj7wZSQz7jBJvR`); // key is metabunk specific - replace with your own
+                return(`https://api.maptiler.com/tiles/${layerName}/${z}/${x}/${y}.${layerType}?key=cnVJFChj7wZSQz7jBJvR`); // key is metabunk specific - replace with your own
             },
         },
         eox: {
@@ -160,7 +156,7 @@ export const _configParams = {
         NRL_WMS: {
             name: "Naval Research Laboratory WMS",
             mapURL: function (z,x,y, layerName, layerType) {
-                return this.mapProjection.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",layerName,z,x,y);
+                return this.mapProjectionTextures.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",layerName,z,x,y);
             },
             capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
             layer: "ImageryMosaic",
@@ -171,7 +167,7 @@ export const _configParams = {
             name: "Naval Research Laboratory WMS Tile",
 
             mapURL: function (z,x,y,  layerName, layerType) {
-                return this.mapProjection.wmtsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wmts",layerName,z,x,y);
+                return this.mapProjectionTextures.wmtsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wmts",layerName,z,x,y);
             },
             capabilities: "https://geoint.nrlssc.org/nrltileserver/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS",
             layer: "BlueMarble_AUTO",
@@ -180,6 +176,38 @@ export const _configParams = {
         },
 
     },
+
+    customElevationSources: {
+        AWS_Terrarium: {
+            name: "AWS Terrarium",
+
+            mapURL: (z,x,y) => {
+                return `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`
+            },
+
+            maxZoom: 14,
+            minZoom: 0,
+            tileSize: 256,
+            attribution: "AWS Terrarium Elevation Data",
+        },
+
+        NationalMap: {
+            name: "National Map 3DEP GeoTIFF",
+            // here's a working example URL
+            // https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?f=image&format=tiff&bbox=-118.5,33.3,-118.3,33.5&bboxSR=4326&imageSR=4326&size=500,500
+            mapURL: function (z,x,y, layerName, layerType) {
+                return this.mapProjectionElevation.getWMSGeoTIFFURLFromTile("https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",z,x,y);
+            },
+            maxZoom: 14,
+            minZoom: 0,
+            tileSize: 257,
+            attribution: "National Map 3DEP GeoTIFF",
+            mapping: 4326,
+
+
+        }
+
+    }
 
 
 
