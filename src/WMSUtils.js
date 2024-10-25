@@ -2,6 +2,8 @@
 // and name,
 
 
+import {assert} from "./assert";
+
 export class CTileMapping {
 
 // Latitude is common to both GoogleMapsCompatible and GoogleCRS84Quad
@@ -30,10 +32,11 @@ export class CTileMapping {
 
     geo2Tile(geoLocation, zoom) {
         const maxTile = Math.pow(2, zoom);
-        return {
-            x: Math.abs(Math.floor(this.lon2Tile(geoLocation[1], zoom)) % maxTile),
-            y: Math.abs(Math.floor(this.lat2Tile(geoLocation[0], zoom)) % maxTile)
-        }
+
+        var x = Math.abs(Math.floor(this.lon2Tile(geoLocation[1], zoom)) % maxTile);
+        var y = Math.abs(Math.floor(this.lat2Tile(geoLocation[0], zoom)) % maxTile);
+        return {x, y};
+
     }
 
     geo2TileFraction (geoLocation, zoom, mapProjection) {
@@ -82,13 +85,16 @@ export class CTileMapping {
             `&bbox=${lon0},${lat1},${lon1},${lat0}` +
             "&bboxSR=4326&imageSR=4326&size=512,512";
 
-        console.log("getWMSGeoTIFFURLFromTile URL = " + url);
+     //   console.log("getWMSGeoTIFFURLFromTile URL = " + url);
+           console.log("Point 0 " + lon0 + "," + lat0);
+     //    console.log("Point 1 " + lon1 + "," + lat1);
         return url;
     }
 
 
     getCorners(y, z, x) {
         // convert z,x,y to lat/lon
+//        console.log("z,x,y = " + z + "," + x + "," + y);
         const lat0 = this.getNorthLatitude(y, z);
         const lon0 = this.getLeftLongitude(x, z);
         const lat1 = this.getNorthLatitude(y + 1, z);
@@ -125,6 +131,7 @@ export class CTileMappingGoogleMapsCompatible extends CTileMapping {
         // Calculate the latitude of the northern edge of the tile
         let latNorthRad = Math.atan(Math.sinh(Math.PI * (1 - 2 * y / numTiles)));
         let latNorth = latNorthRad * 180 / Math.PI;
+//        console.log("EPSG:3857 y = " + y + " z = " + z +" latNorth = " + latNorth);
         return latNorth;
     }
 
@@ -167,19 +174,23 @@ export class CTileMappingGoogleCRS84Quad extends CTileMapping {
 // convert a tile y position to latitude
     // GoogleCRS84Quad is equirectangular, EPSG:4326
     // so latitude is linear;y mapped to y
-    getNorthLatitude(y, zoom) {
+    getNorthLatitude(y, z) {
         // Calculate the number of vertical tiles at zoom level z
-        let numTiles = Math.pow(2, zoom-1);
+        let numTiles = Math.pow(2, z-1);
         // Calculate the latitude of the northern edge of the tile
-        return 90 - ( y / numTiles) * 180;
+
+
+
+        const latNorth =  90 - ( y / numTiles) * 180;
+        return latNorth;
 
     }
 
     // simple linear mapping of y to latitude
     // y of 0 is 90 (north pole), y numTiles is -90 (south pole)
-    tile2Lat(y, zoom) {
+    tile2Lat(y, z) {
         // it's the same as getNorthLatitude
-        return this.getNorthLatitude(y, zoom);
+        return this.getNorthLatitude(y, z);
     }
 
     // simple linear mapping of latitude to y
@@ -198,3 +209,24 @@ export class CTileMappingGoogleCRS84Quad extends CTileMapping {
 
 }
 
+// test the conversions
+//     let tileMapping = new CTileMappingGoogleMapsCompatible();
+//     let tileMapping2 = new CTileMappingGoogleCRS84Quad();
+//     let lat = 34.0522;
+//     let lon = -118.4194;
+//     let zoom = 12;
+//
+//     let x = tileMapping.lon2Tile(lon, zoom);
+//     let y = tileMapping.lat2Tile(lat, zoom);
+//     console.log("lat = " + lat + " lon = " + lon + " x = " + x + " y = " + y);
+//     let lat2 = tileMapping.tile2Lat(y, zoom);
+//     let lon2 = tileMapping.tile2Lon(x, zoom);
+//     console.log("x = " + x + " y = " + y + " lat = " + lat2 + " lon = " + lon2);
+//
+//     let x2 = tileMapping2.lon2Tile(lon, zoom);
+//     let y2 = tileMapping2.lat2Tile(lat, zoom);
+//     console.log("lat = " + lat + " lon = " + lon + " x = " + x2 + " y = " + y2);
+//     let lat3 = tileMapping2.tile2Lat(y2, zoom);
+//     let lon3 = tileMapping2.tile2Lon(x2, zoom);
+//     console.log("x = " + x2 + " y = " + y2 + " lat = " + lat3 + " lon = " + lon3);
+//     debugger;

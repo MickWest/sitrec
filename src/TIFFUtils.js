@@ -34,7 +34,7 @@ export function convertTIFFToElevationArray(image) {
             const tileOffset = tileOffsets[tileIndex];
             const tileByteCount = tileByteCounts[tileIndex];
 
-            console.log("tileOffset = " + tileOffset + " tileByteCount = " + tileByteCount);
+//            console.log("tileOffset = " + tileOffset + " tileByteCount = " + tileByteCount);
 
             if (tileByteCount !== 0) {
                 // read the tile data from the buffer

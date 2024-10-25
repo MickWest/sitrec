@@ -672,10 +672,17 @@ export class CNodeTerrain extends CNode {
 
         const mapDef = this.maps[id].sourceDef;
         if (mapDef.mapping === 4326) {
-            this.mapProjection = new CTileMappingGoogleCRS84Quad();
+            this.mapProjectionTextures = new CTileMappingGoogleCRS84Quad();
             elevationNTiles += 2;
         } else {
-            this.mapProjection = new CTileMappingGoogleMapsCompatible();
+            this.mapProjectionTextures = new CTileMappingGoogleMapsCompatible();
+        }
+
+        const elevationDef = this.UINode.elevationSources[local.elevationType];
+        if (elevationDef.mapping === 4326) {
+            this.mapProjectionElevation = new CTileMappingGoogleCRS84Quad();
+        } else {
+            this.mapProjectionElevation = new CTileMappingGoogleMapsCompatible();
         }
 
         // if we have an elevation map, then we need to check if it's the right size
@@ -706,7 +713,12 @@ export class CNodeTerrain extends CNode {
                 deferLoad: deferLoad,
               //  mapURL: this.mapURLDirect.bind(this),
                 elevationULR: this.elevationURLDirect.bind(this),
-                mapProjection: new CTileMappingGoogleMapsCompatible(),
+
+                // //mapProjection: new CTileMappingGoogleCRS84Quad(),
+                // mapProjection: new CTileMappingGoogleMapsCompatible(), // works with AWS
+
+                mapProjection: this.mapProjectionElevation,
+
                 elOnly: true,
             })
         }
@@ -727,7 +739,7 @@ export class CNodeTerrain extends CNode {
                 tileSegments: this.tileSegments,   // this can go up to 256, with no NETWORK bandwidth.
                 zScale: 1,
                 radius: this.radius,
-                mapProjection: this.mapProjection,
+                mapProjection: this.mapProjectionTextures,
                 elevationMap: this.elevationMap,
                 loadedCallback:  ()=> {
                     // first check to see if it has been disposed

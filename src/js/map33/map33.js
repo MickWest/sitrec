@@ -9,6 +9,7 @@ import {GlobalScene} from "../../LocalFrame";
 
 import { fromArrayBuffer } from 'geotiff';
 import {convertTIFFToElevationArray} from "../../TIFFUtils";
+import {pointOnSphereBelow} from "../../SphericalMath";
 
 
 
@@ -162,11 +163,32 @@ class Tile {
     this.debugArrows.push(id4)
 
 
-
     DebugArrowAB(id1, vertexSW, vertexNW, "#ff0000", true, GlobalScene) // red = north/south
     DebugArrowAB(id2, vertexSW, vertexSE, "#0000FF", true, GlobalScene) // blue = east/west
     DebugArrowAB(id3, vertexNW, vertexNE, "#0000FF", true, GlobalScene)
     DebugArrowAB(id4, vertexSE, vertexNE, "#ff0000", true, GlobalScene)
+
+    // and down arrows at the corners
+    const vertexSWD = pointOnSphereBelow(vertexSW)
+    const vertexNWD = pointOnSphereBelow(vertexNW)
+    const vertexSED = pointOnSphereBelow(vertexSE)
+    const vertexNED = pointOnSphereBelow(vertexNE)
+
+    const id5 = "DebugTile"+(xTile*1000+yTile)+"_5"
+    const id6 = "DebugTile"+(xTile*1000+yTile)+"_6"
+    const id7 = "DebugTile"+(xTile*1000+yTile)+"_7"
+    const id8 = "DebugTile"+(xTile*1000+yTile)+"_8"
+
+    this.debugArrows.push(id5)
+    this.debugArrows.push(id6)
+    this.debugArrows.push(id7)
+    this.debugArrows.push(id8)
+
+    // all down arrows in yellow
+    DebugArrowAB(id5, vertexSW, vertexSWD, "#FF0000", true, GlobalScene)
+    DebugArrowAB(id6, vertexNW, vertexNWD, "#FF0000", true, GlobalScene)
+    DebugArrowAB(id7, vertexSE, vertexSED, "#FF0000", true, GlobalScene)
+    DebugArrowAB(id8, vertexNE, vertexNED, "#FF0000", true, GlobalScene)
 
 
 
@@ -327,7 +349,7 @@ class Tile {
 
     const width = image.getWidth();
     const height = image.getHeight();
-    console.log(`GeoTIFF image dimensions: width=${width}, height=${height}`);
+    console.log(`GeoTIFF x = ${this.x} y = ${this.y}, z = ${this.z}, width=${width}, height=${height}`);
 
     const processedElevation = convertTIFFToElevationArray(image);
     this.computeElevationFromGeoTIFF(processedElevation, width, height);
