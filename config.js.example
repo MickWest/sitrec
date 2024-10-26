@@ -200,7 +200,7 @@ export const _configParams = {
             },
             maxZoom: 14,
             minZoom: 0,
-            tileSize: 257,
+            tileSize: 256,
             attribution: "National Map 3DEP GeoTIFF",
             mapping: 4326,
 

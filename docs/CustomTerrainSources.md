@@ -114,25 +114,88 @@ Tile sources can specify one of two mappings, which specify the projection of th
             mapping: 4326,
 ```
 
-The above example are all for map sources (i.e. the textures or bitmaps used to cover the terrain). Elevation is currently more limited. 
+The above example are all for map sources (i.e. the textures or bitmaps used to cover the terrain). Elevation is simpliar
 
-The default terrain source used by Metabunk Sitrec is:
+# Custom Elevation Sources
+
+The default terrain source used by Metabunk Sitrec is a public domain EPSG:3857 tile source from MapZen that encodes elevation data into the RGB values of a PNG tile. This govers the entire globe. See:
+https://registry.opendata.aws/terrain-tiles/
+
+The second source seen in the example below is the National Map 3DEP GeoTIFF. This is a US only source that provides elevation data in GeoTIFF format. This is a WMS source that returns a GeoTIFF file with the elevation data in 32 bit floats. Decoding this is a bit more complex than the PNG source, but it is more accurate and has a higher resolution. However it is limited to the US. 
+
+Note that the NationalMap source used a 4326 mapping, equirectangular projection.
+
 ```javascript
     customElevationSources: {
         AWS_Terrarium: {
             name: "AWS Terrarium",
-//            url: "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.tif",
-            url: "https://s3.amazonaws.com/elevation-tiles-prod/terrarium",
+
+            mapURL: (z,x,y) => {
+                return `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`
+            },
+
             maxZoom: 14,
             minZoom: 0,
             tileSize: 256,
             attribution: "AWS Terrarium Elevation Data",
         },
 
+        NationalMap: {
+            name: "National Map 3DEP GeoTIFF",
+            // here's a working example URL
+            // https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?f=image&format=tiff&bbox=-118.5,33.3,-118.3,33.5&bboxSR=4326&imageSR=4326&size=500,500
+            mapURL: function (z,x,y, layerName, layerType) {
+                return this.mapProjectionElevation.getWMSGeoTIFFURLFromTile("https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",z,x,y);
+            },
+            maxZoom: 14,
+            minZoom: 0,
+            tileSize: 256,
+            attribution: "National Map 3DEP GeoTIFF",
+            mapping: 4326,
+
+
+        }
+
     }
 ```
 
-This is a public domain EPSG:3857 tile source from MapZen that encodes elevation data into the RGB values of a PNG tile. See: 
-https://registry.opendata.aws/terrain-tiles/
+The function getWMSGeoTIFFURLFromTile is in WMSUtils.js.  
+
+```javascript
+    getWMSGeoTIFFURLFromTile(urlBase, z, x, y) {
+
+        // convert z,x,y to lat/lon
+        const lat0 = this.getNorthLatitude(y, z);
+        const lon0 = this.getLeftLongitude(x, z);
+        const lat1 = this.getNorthLatitude(y + 1, z);
+        const lon1 = this.getLeftLongitude(x + 1, z);
+
+        // if the urlBase does not end in a ?, then add one
+        if (urlBase[urlBase.length-1] !== '?') {
+            urlBase += '?';
+        }
+
+        const url =
+            urlBase+
+            "f=image&format=tiff" +
+            "&bbox=" + lon0 + "," + lat1 + "," + lon1 + "," + lat0 +
+            "&bboxSR=4326&imageSR=4326" +
+            "&size=256,256";
+
+        console.log("URL = " + url);
+        return url;
+
+    }
+```
+
+Note it currently has the size and other parameters hard coded. You may need to adjust this to match the capabilities of the server you are using. I'd be happy to add support for other formats if you can provide a working example.
+
+The decoding of the GeoTIFF is done in the Terrain.js file. This is a bit more complex than the PNG decoding as the data is in 32 bit floats and is arranged in 128x128 tiles within the TIFF file. Other formats like 16 bit integer elevations, different internal tilings, no tiling, different projections (3857 vs 4326) etc could easily be supported, but this is the only one I have implemented as it's the only good public dataset I've found.
+
+When testing elevation sources, adjust the elevationScale in the Terrain menu to 10 to make the terrain more visible.
+
+![elevationScale-demo.jpg](docimages%2Fterrain%2FelevationScale-demo.jpg)
+
+
 
 
