@@ -1,6 +1,6 @@
 // loader object for a
 import {CNode} from "./CNode";
-import {Map33, CMapTextureSource} from '../js/map33/map33.js'
+import {Map33, CMapTextureSource, ElevationMap} from '../js/map33/map33.js'
 import {propagateLayerMaskObject} from "../threeExt";
 import {cos, radians} from "../utils";
 import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
@@ -718,7 +718,7 @@ export class CNodeTerrain extends CNode {
         // they will use this to get the elevation for the meshes via lat/lon
         // so the elevation map can use a different coordinate system to the textured geometry map
         if (this.elevationMap === undefined) {
-            this.elevationMap = new Map33(this.maps[id].group, this, this.position, {
+            this.elevationMap = new ElevationMap( this, this.position, {
                 nTiles: elevationNTiles,  // +2 to ensure we cover the image map areas when using different projections
                 zoom: this.zoom,
                 tileSize: this.tileSize,

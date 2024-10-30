@@ -129,9 +129,9 @@ class Tile {
     const zoomTile = this.z;
 
 
-    console.log ("Building Debug Geometry for tile "+xTile+","+yTile+" at zoom "+zoomTile)
-    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
-    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
+//    console.log ("Building Debug Geometry for tile "+xTile+","+yTile+" at zoom "+zoomTile)
+//    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
+//    console.log ("Constructor of this.map.options.mapProjection = "+this.map.options.mapProjection.constructor.name)
 
 
     // get LLA of the tile corners
@@ -317,10 +317,12 @@ class Tile {
       throw new Error('Aborted');
     }
 
-    if (!this.map.elOnly) {
-      this.applyMaterial();
-      return this;
-    }
+  //  NEED TO CALL THIS DIFFERNLY FOR Map33, why is it even in here?
+  //   if (!this.map.elOnly) {
+  //     this.applyMaterial();
+  //    console.log("WHY fetchElevationTile: "+elevationURL)
+  //     return this;
+  //   }
 
     if (!elevationURL) {
       return this;
@@ -525,13 +527,10 @@ class Tile {
     }
   }
 }
-
-class Map33 {
-  constructor (scene,  terrainNode, geoLocation, options={}) {
-    this.scene = scene
-    this.terrainNode = terrainNode
-    this.geoLocation = geoLocation
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TileMap is the base class of a Map33 and a ElevationMap
+class TiledMap {
+  constructor (terrainNode, geoLocation, options) {
     this.options = this.getOptions(options)
     this.nTiles = this.options.nTiles
     this.zoom = this.options.zoom
@@ -539,121 +538,12 @@ class Map33 {
     this.radius = wgs84.RADIUS; // force this
     this.loadedCallback = options.loadedCallback; // function to call when map is all loaded
     this.loaded = false; // mick flag to indicate loading is finished
-
-    this.elOnly = options.elOnly ?? false;
-    this.elevationMap = options.elevationMap;
-
     this.tileCache = {};
+    this.terrainNode = terrainNode
+    this.geoLocation = geoLocation
 
-    this.init(this.options.deferLoad)
-  }
 
-  defaultOptions = {
-    nTiles: 3,
-    zoom: 11,
-    tileSize: 600,
-    tileSegments: 100,
-    zScale: 1,
-  }
-
-  getOptions(providedOptions) {
-    const options = Object.assign({}, this.defaultOptions, providedOptions)
-    options.tileSegments = Math.min(256, Math.round(options.tileSegments))
-    return options
-  }
-
-  init(deferLoad=false) {
-    this.center = this.options.mapProjection.geo2Tile(this.geoLocation, this.zoom)
-    const tileOffset = Math.floor(this.nTiles / 2)
-    this.controller = new AbortController();
-
-    for (let i = 0; i < this.nTiles; i++) {
-      for (let j = 0; j < this.nTiles; j++) {
-        const x = this.center.x + i - tileOffset;
-        const y = this.center.y + j - tileOffset;
-        // only add tiles that are within the bounds of the map
-        // we allow the x values out of range
-        // because longitude wraps around
-        if (y>0 && y<Math.pow(2,this.zoom)) {
-          const tile = new Tile(this, this.zoom, x, y)
-          this.tileCache[tile.key()] = tile
-          // make the meshes immediately instead of when the tile is loaded
-          // because we want to display something while waiting
-          if (!this.elOnly) {
-            tile.buildGeometry()
-            tile.buildMesh()
-            tile.setPosition(this.center)
-            tile.recalculateCurve(wgs84.RADIUS)
-            this.scene.add(tile.mesh)
-          } else {
-           // tile.buildDebugGeometry();
-          }
-        }
-      }
-    }
-
-    // we might want to defer this to a later time
-    // so we can move the mesh around
-    // like, allow the user to drag it, or change the UI values
-    if (!deferLoad) {
-      this.startLoadingTiles()
-    }
-
-    // To abort the loading of tiles, call controller.abort()
-    // controller.abort();
-  }
-
-  startLoadingTiles() {
-    const promises = Object.values(this.tileCache).map(tile => {
-
-          return tile.fetchElevationTile(this.controller.signal).then(tile => {
-            if (this.controller.signal.aborted) {
-              // flag that it's aborted, so we can filter it out later
-              return Promise.resolve('Aborted');
-            }
-
-            // do an initial setting of the vertex positions
-            // to accurate EGS84 positions
-            // the height map should be loaded by now.
-            if (!this.elOnly) {
-              tile.recalculateCurve(wgs84.RADIUS)
-            }
-            return tile
-          })
-
-        }
-    )
-
-    Promise.all(promises).then(tiles => {
-      // Filter out the 'Aborted' values
-      tiles = tiles.filter(tile => tile !== 'Aborted');
-
-      if (!this.elOnly) {
-        tiles.reverse().forEach(tile => {
-          tile.recalculateCurve(this.radius)
-          tile.resolveSeams(this.tileCache)
-        })
-      }
-      if (this.loadedCallback) this.loadedCallback();
-      this.loaded = true; // mick flag loading is finished
-    })
-  }
-
-  recalculateCurveMap(radius, force=false) {
-
-    if (!force && radius == this.radius) {
-      console.log('map33 recalculateCurveMap Radius is the same - no need to recalculate, radius = '+radius);
-      return;
-    }
-
-    if (!this.loaded) {
-      console.warn('Map not loaded yet - only call recalculateCurveMap after loadedCallback')
-      return;
-    }
-    this.radius = radius
-    Object.values(this.tileCache).forEach(tile => {
-      tile.recalculateCurve(radius)
-    })
+    this.initTilePositions(this.options.deferLoad)
   }
 
   refreshDebugGrid(color) {
@@ -669,71 +559,100 @@ class Map33 {
     })
   }
 
-
-  addFromPosition(posX, posY) {
-    const {
-      x,
-      y,
-      z
-    } = Utils.position2tile(this.zoom, posX, posY, this.center, this.tileSize)
-    console.log({x, y, z})
-    const tile = new Tile(this, this.zoom, x, y)
-
-    if (tile.key() in this.tileCache) return
-
-    this.tileCache[tile.key()] = tile
-    tile.fetchElevationTile().then(tile => {
-      tile.setPosition(this.center)
-      this.scene.add(tile.mesh)
-      console.log("Adding "+posX+","+posY)
-    }).then(() => {
-      Object.values(this.tileCache).forEach(tile => {
-        tile.recalculateCurve(this.radius)
-        tile.resolveSeams(this.tileCache)
-      })
-    })
+  getOptions(providedOptions) {
+    const options = Object.assign({}, this.defaultOptions, providedOptions)
+    options.tileSegments = Math.min(256, Math.round(options.tileSegments))
+    return options
   }
 
-  clean() {
-      console.log("map33 clean()");
+  defaultOptions = {
+    nTiles: 3,
+    zoom: 11,
+    tileSize: 600,
+    tileSegments: 100,
+    zScale: 1,
+  }
 
-
-    // abort the pending loading of tiles
-    this.controller.abort();
-
-    Object.values(this.tileCache).forEach(tile => {
-      tile.removeDebugGeometry(); // any debug arrows, etc
-      if (tile.mesh !== undefined) {
-        this.scene.remove(tile.mesh)
-        tile.mesh.geometry.dispose();
-        if (tile.mesh.material.uniforms !== undefined) {
-            assert(tile.mesh.material.uniforms !== undefined, 'Uniforms not defined');
-
-          ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => {
-            tile.mesh.material.uniforms[key].value.dispose();
-          });
-
+  initTilePositions(deferLoad=false) {
+    this.center = this.options.mapProjection.geo2Tile(this.geoLocation, this.zoom)
+    const tileOffset = Math.floor(this.nTiles / 2)
+    this.controller = new AbortController();
+    for (let i = 0; i < this.nTiles; i++) {
+      for (let j = 0; j < this.nTiles; j++) {
+        const x = this.center.x + i - tileOffset;
+        const y = this.center.y + j - tileOffset;
+        // only add tiles that are within the bounds of the map
+        // we allow the x values out of range
+        // because longitude wraps around
+        if (y>0 && y<Math.pow(2,this.zoom)) {
+          const tile = new Tile(this, this.zoom, x, y)
+          this.tileCache[tile.key()] = tile
+          // make the meshes immediately instead of when the tile is loaded
+          // because we want to display something while waiting
+          // if (!this.elOnly) {
+          //   tile.buildGeometry()
+          //   tile.buildMesh()
+          //   tile.setPosition(this.center)
+          //   tile.recalculateCurve(wgs84.RADIUS)
+          //   this.scene.add(tile.mesh)
+          // } else {
+          //  // tile.buildDebugGeometry();
+          // }
         }
-
-        tile.mesh.material.dispose()
       }
-    })
-    this.tileCache = {}
-    this.scene = null; // MICK - added to help with memory management
-  }
-
-  // interpolate the elevation at a lat/lon
-  // does not handle interpolating between tiles (i.e. crossing tile boundaries)
-  getElevationInterpolated(lat, lon) {
-
-    if (this.elevationMap !== undefined) {
-      return this.elevationMap.getElevationInterpolated(lat, lon);
     }
 
-    // using geo2tileFraction to get the position in tile coordinates
-    // i.e. the coordinates on the 2D grid source texture
-    // TODO - altitude map might be different format to the source texture
-    // even different coordinate system. So this might not work.
+    // this.generateTileGeometry();
+    //
+    // we might want to defer this to a later time
+    // so we can move the mesh around
+    // like, allow the user to drag it, or change the UI values
+    // if (!deferLoad) {
+    //   this.startLoadingTiles()
+    // }
+
+    // To abort the loading of tiles, call controller.abort()
+    // controller.abort();
+  }
+
+}
+
+export class ElevationMap extends TiledMap {
+  constructor(terrainNode, geoLocation, options = {}) {
+    super(terrainNode, geoLocation, options)
+
+    if (!this.options.deferLoad) {
+      this.startLoadingTiles()
+    }
+  }
+
+  startLoadingTiles() {
+    // First load the elevation tiles
+    const promises = Object.values(this.tileCache).map(tile => {
+
+          return tile.fetchElevationTile(this.controller.signal).then(tile => {
+            if (this.controller.signal.aborted) {
+              // flag that it's aborted, so we can filter it out later
+              return Promise.resolve('Aborted');
+            }
+            return tile
+          })
+
+        }
+    )
+
+    // when all the elevation tiles are loaded, then call the callback
+    Promise.all(promises).then(tiles => {
+       if (this.loadedCallback) this.loadedCallback();
+
+    })
+  }
+
+  // using geo2tileFraction to get the position in tile coordinates
+  // i.e. the coordinates on the 2D grid source texture
+  // TODO - altitude map might be different format to the source texture
+  // even different coordinate system. So this might not work.
+  getElevationInterpolated(lat, lon) {
     const {x, y} = this.options.mapProjection.geo2TileFraction([lat, lon], this.zoom)
     const intX = Math.floor(x)
     const intY = Math.floor(y)
@@ -764,6 +683,156 @@ class Map33 {
     }
     return 0  // default to sea level if elevation data not loaded
   }
+
+
+
+  clean() {
+    console.log("elevationMap clean()");
+
+    // abort the pending loading of tiles
+    this.controller.abort();
+
+    Object.values(this.tileCache).forEach(tile => {
+      tile.removeDebugGeometry(); // any debug arrows, etc
+    })
+    this.tileCache = {}
+  }
+
+}
+
+class Map33 extends TiledMap {
+  constructor (scene,  terrainNode, geoLocation, options={}) {
+    super(terrainNode, geoLocation, options)
+
+    this.scene = scene
+
+    this.elOnly = options.elOnly ?? false;
+    this.elevationMap = options.elevationMap;
+
+   // this.initTilePositions(this.options.deferLoad) // now in super
+
+    this.generateTileGeometry();  // was in init
+
+    if (!this.options.deferLoad) {
+      this.startLoadingTiles()
+    }
+  }
+
+
+
+  generateTileGeometry() {
+    Object.values(this.tileCache).forEach(tile => {
+      tile.buildGeometry()
+      tile.buildMesh()
+      tile.setPosition(this.center)
+      tile.recalculateCurve(wgs84.RADIUS)
+      this.scene.add(tile.mesh)
+    })
+  }
+
+
+  startLoadingTiles() {
+
+
+    // for each tile call applyMaterial
+    // that will asynchronously fetch the map tile then apply the material to the mesh
+
+    Object.values(this.tileCache).forEach(tile => {
+        tile.applyMaterial()
+    })
+
+    // not really loaded, this is a patch.
+    // really would need to collate the promises from applyMaterial and then await them.
+    if (this.loadedCallback) {
+     // wait a loop and call the callback
+        setTimeout(() => {
+            this.loadedCallback();
+            this.loaded = true;
+        }, 0) // execute after the current event loop
+    }
+
+
+  }
+
+  recalculateCurveMap(radius, force=false) {
+
+    if (!force && radius == this.radius) {
+      console.log('map33 recalculateCurveMap Radius is the same - no need to recalculate, radius = '+radius);
+      return;
+    }
+
+    if (!this.loaded) {
+      console.warn('Map not loaded yet - only call recalculateCurveMap after loadedCallback')
+      return;
+    }
+    this.radius = radius
+    Object.values(this.tileCache).forEach(tile => {
+      tile.recalculateCurve(radius)
+    })
+  }
+
+
+
+
+  addFromPosition(posX, posY) {
+    const {
+      x,
+      y,
+      z
+    } = Utils.position2tile(this.zoom, posX, posY, this.center, this.tileSize)
+    console.log({x, y, z})
+    const tile = new Tile(this, this.zoom, x, y)
+
+    if (tile.key() in this.tileCache) return
+
+    this.tileCache[tile.key()] = tile
+    tile.fetchElevationTile().then(tile => {
+      tile.setPosition(this.center)
+      this.scene.add(tile.mesh)
+      console.log("Adding "+posX+","+posY)
+    }).then(() => {
+      Object.values(this.tileCache).forEach(tile => {
+        tile.recalculateCurve(this.radius)
+        tile.resolveSeams(this.tileCache)
+      })
+    })
+  }
+
+  clean() {
+      console.log("map33 clean()");
+
+    // abort the pending loading of tiles
+    this.controller.abort();
+
+    Object.values(this.tileCache).forEach(tile => {
+      tile.removeDebugGeometry(); // any debug arrows, etc
+      if (tile.mesh !== undefined) {
+        this.scene.remove(tile.mesh)
+        tile.mesh.geometry.dispose();
+        if (tile.mesh.material.uniforms !== undefined) {
+            assert(tile.mesh.material.uniforms !== undefined, 'Uniforms not defined');
+
+          ['mapSW', 'mapNW', 'mapSE', 'mapNE'].forEach(key => {
+            tile.mesh.material.uniforms[key].value.dispose();
+          });
+
+        }
+
+        tile.mesh.material.dispose()
+      }
+    })
+    this.tileCache = {}
+    this.scene = null; // MICK - added to help with memory management
+  }
+
+  // interpolate the elevation at a lat/lon
+  // does not handle interpolating between tiles (i.e. crossing tile boundaries)
+  getElevationInterpolated(lat, lon) {
+
+    return this.elevationMap.getElevationInterpolated(lat, lon);
+  }
+
+
 
 }
 
