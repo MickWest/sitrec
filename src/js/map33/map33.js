@@ -117,6 +117,8 @@ class Tile {
     // this is useful for debugging the tile positions - especially elevation vs map
     // arrows are good as they are more visible than lines
 
+    const color = this.debugColor || "#ff00ff"
+
     this.removeDebugGeometry()
 
     if (!this.map.terrainNode.UINode.debugElevationGrid) return;
@@ -153,20 +155,20 @@ class Tile {
     //DebugArrowAB("UFO Ground V", jetPosition, groundVelocityEnd, "#00ff00", displayWindArrows, GlobalScene) // green = ground speed
 
 
-    const id1 = "DebugTile"+(xTile*1000+yTile)+"_1"
-    const id2 = "DebugTile"+(xTile*1000+yTile)+"_2"
-    const id3 = "DebugTile"+(xTile*1000+yTile)+"_3"
-    const id4 = "DebugTile"+(xTile*1000+yTile)+"_4"
+    const id1 = "DebugTile"+color+(xTile*1000+yTile)+"_1"
+    const id2 = "DebugTile"+color+(xTile*1000+yTile)+"_2"
+    const id3 = "DebugTile"+color+(xTile*1000+yTile)+"_3"
+    const id4 = "DebugTile"+color+(xTile*1000+yTile)+"_4"
     this.debugArrows.push(id1)
     this.debugArrows.push(id2)
     this.debugArrows.push(id3)
     this.debugArrows.push(id4)
 
 
-    DebugArrowAB(id1, vertexSW, vertexNW, "#ff0000", true, GlobalScene) // red = north/south
-    DebugArrowAB(id2, vertexSW, vertexSE, "#0000FF", true, GlobalScene) // blue = east/west
-    DebugArrowAB(id3, vertexNW, vertexNE, "#0000FF", true, GlobalScene)
-    DebugArrowAB(id4, vertexSE, vertexNE, "#ff0000", true, GlobalScene)
+    DebugArrowAB(id1, vertexSW, vertexNW, color, true, GlobalScene)
+    DebugArrowAB(id2, vertexSW, vertexSE, color, true, GlobalScene)
+    DebugArrowAB(id3, vertexNW, vertexNE, color, true, GlobalScene)
+    DebugArrowAB(id4, vertexSE, vertexNE, color, true, GlobalScene)
 
     // and down arrows at the corners
     const vertexSWD = pointOnSphereBelow(vertexSW)
@@ -174,10 +176,10 @@ class Tile {
     const vertexSED = pointOnSphereBelow(vertexSE)
     const vertexNED = pointOnSphereBelow(vertexNE)
 
-    const id5 = "DebugTile"+(xTile*1000+yTile)+"_5"
-    const id6 = "DebugTile"+(xTile*1000+yTile)+"_6"
-    const id7 = "DebugTile"+(xTile*1000+yTile)+"_7"
-    const id8 = "DebugTile"+(xTile*1000+yTile)+"_8"
+    const id5 = "DebugTile"+color+(xTile*1000+yTile)+"_5"
+    const id6 = "DebugTile"+color+(xTile*1000+yTile)+"_6"
+    const id7 = "DebugTile"+color+(xTile*1000+yTile)+"_7"
+    const id8 = "DebugTile"+color+(xTile*1000+yTile)+"_8"
 
     this.debugArrows.push(id5)
     this.debugArrows.push(id6)
@@ -185,10 +187,10 @@ class Tile {
     this.debugArrows.push(id8)
 
     // all down arrows in yellow
-    DebugArrowAB(id5, vertexSW, vertexSWD, "#FF0000", true, GlobalScene)
-    DebugArrowAB(id6, vertexNW, vertexNWD, "#FF0000", true, GlobalScene)
-    DebugArrowAB(id7, vertexSE, vertexSED, "#FF0000", true, GlobalScene)
-    DebugArrowAB(id8, vertexNE, vertexNED, "#FF0000", true, GlobalScene)
+    DebugArrowAB(id5, vertexSW, vertexSWD, color, true, GlobalScene)
+    DebugArrowAB(id6, vertexNW, vertexNWD, color, true, GlobalScene)
+    DebugArrowAB(id7, vertexSE, vertexSED, color, true, GlobalScene)
+    DebugArrowAB(id8, vertexNE, vertexNED, color, true, GlobalScene)
 
 
 
@@ -584,7 +586,7 @@ class Map33 {
             tile.recalculateCurve(wgs84.RADIUS)
             this.scene.add(tile.mesh)
           } else {
-            tile.buildDebugGeometry();
+           // tile.buildDebugGeometry();
           }
         }
       }
@@ -654,9 +656,16 @@ class Map33 {
     })
   }
 
-  refreshDebugGrid() {
+  refreshDebugGrid(color) {
     Object.values(this.tileCache).forEach(tile => {
+      tile.debugColor = color
       tile.buildDebugGeometry()
+    })
+  }
+
+  removeDebugGrid() {
+    Object.values(this.tileCache).forEach(tile => {
+      tile.removeDebugGeometry()
     })
   }
 

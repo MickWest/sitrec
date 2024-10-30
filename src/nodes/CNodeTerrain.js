@@ -143,6 +143,7 @@ export class CNodeTerrainUI extends CNode {
 
             // elevation map has changed, so kill the old one
             console.log("Elevation type changed to " + v+ " so unloading the elevation map")
+            this.terrainNode.elevationMap.clean()
             this.terrainNode.elevationMap = undefined;
 
 
@@ -214,7 +215,7 @@ export class CNodeTerrainUI extends CNode {
             // a toggle to show or hide the debug elevation grid
 
             this.gui.add(this, "debugElevationGrid").name("Debug Elevation Grid").onChange(v => {
-                this.terrainNode.elevationMap.refreshDebugGrid();
+                this.terrainNode.refreshDebugGrids();
             });
 
 
@@ -230,7 +231,7 @@ export class CNodeTerrainUI extends CNode {
             this.flagForRecalculation()
         }).onFinishChange(v => {
             this.startLoading = true
-        })
+        }).elastic(10,100);
 
 
     }
@@ -565,6 +566,18 @@ export class CNodeTerrain extends CNode {
         this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
     }
 
+    refreshDebugGrids() {
+        this.elevationMap.refreshDebugGrid("#4040FF"); // sky blue for elevation
+
+        // we might have multiple maps, so remove any existing debug grids
+        for (const mapID in this.maps) {
+            if (this.maps[mapID].map !== undefined) {
+                this.maps[mapID].map.removeDebugGrid();
+            }
+        }
+        this.maps[local.mapType].map.refreshDebugGrid("#00ff00"); // green for ground
+    }
+
     // a single point for map33 to get the URL of the map tiles
 
     mapURLDirect(z, x, y) {
@@ -673,9 +686,9 @@ export class CNodeTerrain extends CNode {
         const mapDef = this.maps[id].sourceDef;
         if (mapDef.mapping === 4326) {
             this.mapProjectionTextures = new CTileMappingGoogleCRS84Quad();
-            elevationNTiles += 2;
         } else {
             this.mapProjectionTextures = new CTileMappingGoogleMapsCompatible();
+
         }
 
         const elevationDef = this.UINode.elevationSources[local.elevationType];
@@ -684,6 +697,12 @@ export class CNodeTerrain extends CNode {
         } else {
             this.mapProjectionElevation = new CTileMappingGoogleMapsCompatible();
         }
+
+        // if they are different projections, add two tiles to the elevation map (adding a border of one tile)
+        if (mapDef.mapping !== elevationDef.mapping) {
+            elevationNTiles += 2;
+        }
+
 
         // if we have an elevation map, then we need to check if it's the right size
         // if not, then we need to unload it
@@ -709,6 +728,7 @@ export class CNodeTerrain extends CNode {
                 loadedCallback: ()=> {
                     console.log("CNodeTerrain: elevation map loaded")
                     this.recalculate();
+                    this.refreshDebugGrids()
                 },
                 deferLoad: deferLoad,
               //  mapURL: this.mapURLDirect.bind(this),
@@ -765,6 +785,8 @@ export class CNodeTerrain extends CNode {
                     })
 
                     Globals.loadingTerrain = false;
+
+                    this.refreshDebugGrids()
 
                 },
                 deferLoad: deferLoad,
