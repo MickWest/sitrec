@@ -6,7 +6,6 @@ import {TrackManager} from "./TrackManager";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
-import {Rehoster} from "./CRehoster";
 import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
@@ -62,7 +61,203 @@ export class CCustomManager {
         FileManager.loginAttempt(this.serialize, this.serializeButton, this.buttonText, this.buttonColor);
     };
 
-    serialize() {
+
+
+    getCustomSitchString() {
+        // the output object
+        // since we are going to use JSON.stringify, then when it is loaded again we do NOT need
+        // the ad-hox parse functions that we used to have
+        // and can just use JSON.parse directly on the string
+        // any existing one that loads already will continue to work
+        // but this allows us to use more complex objects without updating the parser
+        let out = {stringified: "true"}
+
+        // merge in the current Sit object
+        // which might have some changes?
+
+        if (Sit.canMod) {
+            // for a modded sitch, we just need to store the name of the sitch we are modding
+            // TODO: are there some things in the Sit object that we need to store?????
+            out = {...out,
+                modding: Sit.name }
+        }
+        else
+        {
+            // but for a custom sitch, we need to store the whole Sit object (which automatically stores changes)
+            out = {
+                ...out,
+                ...Sit}
+        }
+
+        // the custom sitch is a special case
+        // and allows dropped videos and other files
+        // (we might want to allow this for modded sitches too, later)
+        if (Sit.isCustom) {
+            // if there's a dropped video url
+            if (NodeMan.exists("video")) {
+                const videoNode = NodeMan.get("video")
+                if (videoNode.staticURL) {
+                    out.videoFile = videoNode.staticURL;
+                }
+            }
+
+
+            // modify the terrain model directly, as we don't want to load terrain twice
+            // For a modded sitch this has probably not changed
+            if (out.TerrainModel !== undefined) {
+                const terrainModel = NodeMan.get("TerrainModel");
+                out.TerrainModel = {
+                    ...out.TerrainModel,
+                    lat: terrainModel.lat,
+                    lon: terrainModel.lon,
+                    zoom: terrainModel.zoom,
+                    nTiles: terrainModel.nTiles,
+                    tileSegments: terrainModel.tileSegments,
+                }
+            }
+
+            // the files object is the rehosted files
+            // files will be reference in sitches using their original file names
+            // we have rehosted them, so we need to create a new "files" object
+            // that uses the rehosted file names
+            // maybe special case for the video file ?
+            let files = {}
+            for (let id in FileManager.list) {
+                const file = FileManager.list[id]
+                files[id] = file.staticURL
+            }
+            out.loadedFiles = files;
+        }
+
+        // calculate the modifications to be applied to nodes AFTER the files are loaded
+        // anything with a modSerialize function will be serialized
+        let mods = {}
+        NodeMan.iterate((id, node) => {
+
+            if (node.modSerialize !== undefined) {
+                const nodeMod = node.modSerialize()
+
+                // check it has rootTestRemove, and remove it if it's empty
+                // this is a test to ensure serialization of an object incorporates he parents in the hierarchy
+                assert(nodeMod.rootTestRemove !== undefined, "Not incorporating ...super.modSerialzie.  rootTestRemove is not defined for node:" + id+ "Class name "+node.constructor.name)
+                // remove it
+                delete nodeMod.rootTestRemove
+
+                // check if empty {} object, don't need to store that
+                if (Object.keys(nodeMod).length > 0) {
+                    mods[node.id] = nodeMod;
+                }
+            }
+        })
+        out.mods = mods;
+
+        // now the "par" values, which are deprecated, but still used in some places
+        // so we need to serialize some of them
+        const parNeeded = [
+            "frame",
+            "paused",
+            "mainFOV",
+
+
+            // these are JetGUI.js specific, form SetupJetGUI
+            // VERY legacy stuff which most sitching will not have
+            "pingPong",
+
+            "podPitchPhysical",
+            "podRollPhysical",
+            "deroFromGlare",
+            "jetPitch",
+
+            "el",
+            "glareStartAngle",
+            "initialGlareRotation",
+            "scaleJetPitch",
+            "speed",  // this is the video speed
+            "podWireframe",
+            "showVideo",
+            "showChart",
+            "showKeyboardShortcuts",
+            "showPodHead",
+            "showPodsEye",
+            "showCueData",
+
+            "jetOffset",
+            "TAS",
+            "integrate",
+        ]
+
+        const SitNeeded = [
+            "file",
+            "starScale",
+            "satScale",
+            "satCutOff",
+            "markerIndex",
+            "sitchName",  // the same for the save file of the custom sitch
+        ]
+
+        const globalsNeeded = [
+            "showMeasurements"
+        ]
+
+        let pars = {}
+        for (let key of parNeeded) {
+            if (par[key] !== undefined) {
+                pars[key] = par[key]
+            }
+        }
+
+        // add any "showHider" par toggles
+        // see KeyBoardHandler.js, function showHider
+        // these are three.js objects that can be toggled on and off
+        // so iterate over all the objects in the scene, and if they have a showHiderID
+        // then store the visible state using that ID (which is what the variable in pars will be)
+        // traverse GlobalScene.children recursively to do the above
+        const traverse = (object) => {
+            if (object.showHiderID !== undefined) {
+                pars[object.showHiderID] = object.visible;
+            }
+            for (let child of object.children) {
+                traverse(child);
+            }
+        }
+
+        traverse(GlobalScene);
+        out.pars = pars;
+
+        let globals = {}
+        for (let key of globalsNeeded) {
+            if (Globals[key] !== undefined) {
+                globals[key] = Globals[key]
+            }
+        }
+        out.globals = globals;
+
+        // this will be accessible in Sit.Sit, eg. Sit.Sit.file
+        let SitVars = {}
+        for (let key of SitNeeded) {
+            if (Sit[key] !== undefined) {
+                SitVars[key] = Sit[key]
+            }
+        }
+        out.Sit = SitVars;
+
+
+
+
+
+        // MORE STUFF HERE.......
+
+        out.modUnits = Units.modSerialize()
+
+        out.guiMenus = Globals.menuBar.modSerialize()
+
+
+        // convert to a string
+        const str = JSON.stringify(out, null, 2)
+        return str;
+    }
+
+    serialize(name, version) {
         console.log("Serializing custom sitch")
 
         assert (Sit.canMod || Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be true to serialize a sitch")
@@ -71,213 +266,29 @@ export class CCustomManager {
 
         FileManager.rehostDynamicLinks(true).then(() => {
 
-            // the output object
-            // since we are going to use JSON.stringify, then when it is loaded again we do NOT need
-            // the ad-hox parse functions that we used to have
-            // and can just use JSON.parse directly on the string
-            // any existing one that loads already will continue to work
-            // but this allows us to use more complex objects without updating the parser
-            let out = {stringified: "true"}
 
-            // merge in the current Sit object
-            // which might have some changes?
-
-            if (Sit.canMod) {
-                // for a modded sitch, we just need to store the name of the sitch we are modding
-                // TODO: are there some things in the Sit object that we need to store?????
-                out = {...out,
-                       modding: Sit.name }
-            }
-            else
-            {
-                // but for a custom sitch, we need to store the whole Sit object (which automatically stores changes)
-                out = {
-                    ...out,
-                    ...Sit}
-            }
-
-            // the custom sitch is a special case
-            // and allows dropped videos and other files
-            // (we might want to allow this for modded sitches too, later)
-            if (Sit.isCustom) {
-                // if there's a dropped video url
-                if (NodeMan.exists("video")) {
-                    const videoNode = NodeMan.get("video")
-                    if (videoNode.staticURL) {
-                        out.videoFile = videoNode.staticURL;
-                    }
-                }
-
-
-                // modify the terrain model directly, as we don't want to load terrain twice
-                // For a modded sitch this has probably not changed
-                if (out.TerrainModel !== undefined) {
-                    const terrainModel = NodeMan.get("TerrainModel");
-                    out.TerrainModel = {
-                        ...out.TerrainModel,
-                        lat: terrainModel.lat,
-                        lon: terrainModel.lon,
-                        zoom: terrainModel.zoom,
-                        nTiles: terrainModel.nTiles,
-                        tileSegments: terrainModel.tileSegments,
-                    }
-                }
-
-                // the files object is the rehosted files
-                // files will be reference in sitches using their original file names
-                // we have rehosted them, so we need to create a new "files" object
-                // that uses the rehosted file names
-                // maybe special case for the video file ?
-                let files = {}
-                for (let id in FileManager.list) {
-                    const file = FileManager.list[id]
-                    files[id] = file.staticURL
-                }
-                out.loadedFiles = files;
-            }
-
-            // calculate the modifications to be applied to nodes AFTER the files are loaded
-            // anything with a modSerialize function will be serialized
-            let mods = {}
-            NodeMan.iterate((id, node) => {
-
-                if (node.modSerialize !== undefined) {
-                    const nodeMod = node.modSerialize()
-
-                    // check it has rootTestRemove, and remove it if it's empty
-                    // this is a test to ensure serialization of an object incorporates he parents in the hierarchy
-                    assert(nodeMod.rootTestRemove !== undefined, "Not incorporating ...super.modSerialzie.  rootTestRemove is not defined for node:" + id+ "Class name "+node.constructor.name)
-                    // remove it
-                    delete nodeMod.rootTestRemove
-
-                    // check if empty {} object, don't need to store that
-                    if (Object.keys(nodeMod).length > 0) {
-                        mods[node.id] = nodeMod;
-                    }
-                }
-            })
-            out.mods = mods;
-
-            // now the "par" values, which are deprecated, but still used in some places
-            // so we need to serialize some of them
-            const parNeeded = [
-                "frame",
-                "paused",
-                "mainFOV",
-
-
-                // these are JetGUI.js specific, form SetupJetGUI
-                // VERY legacy stuff which most sitching will not have
-                "pingPong",
-
-                "podPitchPhysical",
-                "podRollPhysical",
-                "deroFromGlare",
-                "jetPitch",
-
-                "el",
-                "glareStartAngle",
-                "initialGlareRotation",
-                "scaleJetPitch",
-                "speed",  // this is the video speed
-                "podWireframe",
-                "showVideo",
-                "showChart",
-                "showKeyboardShortcuts",
-                "showPodHead",
-                "showPodsEye",
-                "showCueData",
-
-                "jetOffset",
-                "TAS",
-                "integrate",
-            ]
-
-            const SitNeeded = [
-                "file",
-                "starScale",
-                "satScale",
-                "satCutOff",
-                "markerIndex",
-            ]
-
-            const globalsNeeded = [
-                "showMeasurements"
-            ]
-
-            let pars = {}
-            for (let key of parNeeded) {
-                if (par[key] !== undefined) {
-                    pars[key] = par[key]
-                }
-            }
-
-            // add any "showHider" par toggles
-            // see KeyBoardHandler.js, function showHider
-            // these are three.js objects that can be toggled on and off
-            // so iterate over all the objects in the scene, and if they have a showHiderID
-            // then store the visible state using that ID (which is what the variable in pars will be)
-            // traverse GlobalScene.children recursively to do the above
-            const traverse = (object) => {
-                if (object.showHiderID !== undefined) {
-                    pars[object.showHiderID] = object.visible;
-                }
-                for (let child of object.children) {
-                    traverse(child);
-                }
-            }
-
-            traverse(GlobalScene);
-            out.pars = pars;
-
-            let globals = {}
-            for (let key of globalsNeeded) {
-                if (Globals[key] !== undefined) {
-                    globals[key] = Globals[key]
-                }
-            }
-            out.globals = globals;
-
-            // this will be accessible in Sit.Sit, eg. Sit.Sit.file
-            let SitVars = {}
-            for (let key of SitNeeded) {
-                if (Sit[key] !== undefined) {
-                    SitVars[key] = Sit[key]
-                }
-            }
-            out.Sit = SitVars;
-
-
-
-
-
-            // MORE STUFF HERE.......
-
-            out.modUnits = Units.modSerialize()
-
-            out.guiMenus = Globals.menuBar.modSerialize()
-
-
-            // convert to a string
-            let str = JSON.stringify(out, null, 2)
+            const str = this.getCustomSitchString();
 
             console.log(str)
 
-            let name = "Custom.js"
-            let paramName = "custom"
-            if (Sit.canMod) {
-                name = Sit.name + "_mod.js"
-                paramName = "mod"
+
+            if (name === undefined) {
+                name = "Custom.js"
             }
 
-
             // and rehost it, showing a link
-            Rehoster.rehostFile(name, str).then((staticURL) => {
+            FileManager.rehoster.rehostFile(name, str, version + ".js").then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
 
                 // and make a URL that points to the new sitch
+                let paramName = "custom"
+                if (Sit.canMod) {
+                    name = Sit.name + "_mod.js"
+                    paramName = "mod"
+                }
                 let customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
 
+                // convert to a short URL
                 getShortURL(customLink).then((shortURL) => {
                     // if short url does not start with http, then add https://
                     // this is the case for the local server which does not shorten URLS

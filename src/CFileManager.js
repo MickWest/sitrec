@@ -10,7 +10,7 @@ import {
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
 import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
-import {Rehoster} from "./CRehoster";
+import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {Globals, guiMenus, NodeMan, Sit} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
@@ -22,6 +22,7 @@ import {asyncCheckLogin} from "./login";
 import {par} from "./par";
 import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
+import {CustomManager} from "./CustomSupport";
 
 
 // The file manager is a singleton that manages all the files
@@ -35,11 +36,15 @@ export class CFileManager extends CManager {
         this.rawFiles = [];
         this.rehostedStarlink = false;
 
+        this.rehoster = new CRehoster();
+
         if (!isConsole) {
             this.guiFolder = guiMenus.file;
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
+                this.guiFolder.add(this, "saveSitch").name("Save").perm();
+                this.guiFolder.add(this, "saveSitchAs").name("Save As").perm();
                 this.guiFolder.add(this, "importFile").name("Import File").perm();
                 this.guiFolder.add(this, "rehostFile").name("Rehost File").perm();
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
@@ -47,14 +52,98 @@ export class CFileManager extends CManager {
 
             // TODO: this was for scanning saved files on the user's server, but it's not working with S3
             console.warn("TODO: Implement scanning for saved files on the server")
-//             let textSitches = [];
-//             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-// //                console.log("Local files: " + data)
-//                 let localfiles = JSON.parse(data) // will give an array of local files
-//             })
+            let textSitches = [];
+            fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+                console.log("Local files: " + data)
+                this.userSaves = JSON.parse(data) // will give an array of local files
+
+                // add a selector for loading a file
+                this.loadName = this.userSaves[0];
+                this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
+                    this.loadSavedFile(value)
+                });
+
+            })
 
         }
     }
+
+
+    getVersions() {
+        return fetch((SITREC_SERVER + "getsitches.php?get=versions&name="+this.loadName), {mode: 'cors'}).then(response => response.text()).then(data => {
+            console.log("versions: " + data)
+            this.versions = JSON.parse(data) // will give an array of local files
+            return this.versions;
+        })
+    }
+
+
+    loadSavedFile(value) {
+        console.log("Load Local File")
+        console.log(value);
+
+        this.getVersions(value).then((versions) => {
+            // the last version is the most recent
+            const latestVersion = versions[versions.length - 1];
+            console.log("Loading " + value + " version " + latestVersion)
+
+
+
+        })
+
+
+    }
+
+
+    saveSitch() {
+        if (Sit.sitchName === undefined) {
+            this.inputSitchName().then(() => {
+                this.saveSitchNamed(Sit.sitchName);
+            }).catch((error) => {
+                console.log("Failed to input sitch name:", error);
+            });
+        }
+    }
+
+    saveSitchAs() {
+        Sit.sitchName = undefined;
+        this.saveSitch();
+    }
+
+
+    inputSitchName() {
+        return new Promise((resolve, reject) => {
+            const sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
+            if (sitchName !== null) {
+                Sit.sitchName = sitchName;
+                // will need to check if the sitch already exists
+                // server side, and if so, ask if they want to overwrite
+                console.log("Sitch name set to " + Sit.sitchName)
+                resolve();
+            } else {
+                reject();
+            }
+        })
+    }
+
+    saveSitchNamed(sitchName) {
+
+        // and then save the sitch to the server where it will be versioned by data in a folder named for this sitch, for this user
+        console.log("Saving sitch as " + sitchName)
+        // get date and time into a string, so long as you don't save more than one a second
+        // then this will be unique
+        const todayDateStr = new Date().toISOString().split('T')[0];
+        const todayTimeStr = new Date().toISOString().split('T')[1].split('.')[0];
+        const todayDateTimeStr = todayDateStr + "_" + todayTimeStr;
+        // strip out - and : so it's a valid filename (leave the underscore)
+        const todayDateTimeFilename = todayDateTimeStr.replaceAll("-", "").replaceAll(":", "");
+        console.log("Unique date time string: " + todayDateTimeFilename)
+
+
+        CustomManager.serialize(sitchName, todayDateTimeFilename)
+
+    }
+
 
     exportSitch() {
         //
@@ -188,7 +277,7 @@ export class CFileManager extends CManager {
                 if (parse) {
                       DragDropHandler.parseResult(file.name, reader.result);
                 } else {
-                    Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
+                    this.rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
                         console.log("Imported File Rehosted as " + rehostResult);
                         // display an alert with the new URL so the user can copy it
                         //alert(rehostResult);
@@ -217,7 +306,9 @@ export class CFileManager extends CManager {
     }
 
 
-
+    // this is DEPRECATED, as all it does is rehost a sitch file
+    // with no mods.  It's been replaced by CustomSupport::serialize()
+    // which will do the same thing, but also serialize the modifications
     rehostSitch() {
         // rehosting a sitch is done when we have a local sitch file
         // and (possibly) local assets that need to be rehosted
@@ -235,7 +326,7 @@ export class CFileManager extends CManager {
             const f = this.list[key];
             assert(f.staticURL !== undefined, "File " + key + " has undefined staticURL");
             if (f.staticURL === null) {
-                Rehoster.rehostFile(f.filename, f.original).then((staticURL) => {
+                this.rehoster.rehostFile(f.filename, f.original).then((staticURL) => {
                     f.staticURL = staticURL;
 
                     // now replace the original filename in this.localSitchBuffer
@@ -259,11 +350,11 @@ export class CFileManager extends CManager {
         // wait for all the files to be rehosted
         // then rehost the sitch
 
-        Rehoster.waitForAllRehosts().then(() => {
+        this.rehoster.waitForAllRehosts().then(() => {
             this.localSitchBuffer = stringToArrayBuffer(sitchString);
 
             // all files have been rehosted, so now we can rehost the sitch
-            Rehoster.rehostFile(this.localSitchEntry.name, this.localSitchBuffer).then((staticURL) => {
+            this.rehoster.rehostFile(this.localSitchEntry.name, this.localSitchBuffer).then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
 
                 // and make a URL that points to the new sitch
@@ -622,7 +713,7 @@ export class CFileManager extends CManager {
                         // do we also needs something similar for URLs?
 
                         // // start rehosting
-                        rehostPromises.push(Rehoster.rehostFile(rehostFilename, videoDroppedData).then((staticURL) => {
+                        rehostPromises.push(this.rehoster.rehostFile(rehostFilename, videoDroppedData).then((staticURL) => {
                             console.log("VIDEO REHOSTED AS PROMISED: " + staticURL)
                             videoNode.staticURL = staticURL;
                         }))
@@ -658,7 +749,7 @@ export class CFileManager extends CManager {
                 }
 
                 console.log("Dynamic Rehost: " + rehostFilename)
-                const rehostPromise = Rehoster.rehostFile(rehostFilename, f.original).then((staticURL) => {
+                const rehostPromise = this.rehoster.rehostFile(rehostFilename, f.original).then((staticURL) => {
                     console.log("AS PROMISED: " + staticURL)
                     f.staticURL = staticURL;
                 })

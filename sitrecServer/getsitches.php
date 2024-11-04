@@ -99,31 +99,45 @@ if (count($_GET) == 0) {
 // if it's "myfiles", then return a list of the files in the local folder
 
 if (isset($_GET['get'])) {
+    require('./user.php');
+
+    $userID = getUserID();
+    $dir = getUserDir($userID);
+
+    if ($dir == "") {
+        echo json_encode(array());
+        exit();
+    }
 
 
     if ($_GET['get'] == "myfiles") {
-        require('./user.php');
 
-        $userID = getUserID();
-        $dir = getUserDir($userID);
+        $files = scandir($dir);
+        $folders = array();
+        foreach ($files as $file) {
+            if (is_dir($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
+                $folders[] = $file;
+            }
+        }
+        echo json_encode($folders);
+        exit();
 
-        if ($dir == "") {
-            echo json_encode(array());
-            exit();
-        } else {
+    } else {
+        if ($_GET['get'] == "versions") {
+            $name = $_GET['name'];
+            $dir .= "/" . $name;
+            $versions = array();
             $files = scandir($dir);
-            $folders = array();
             foreach ($files as $file) {
-                if (!is_dir($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
-                    $folders[] = $file;
+                if (is_file($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
+                    $versions[] = $file;
                 }
             }
-            echo json_encode($folders);
+            echo json_encode($versions);
             exit();
+
         }
     }
 }
-
-
 
 

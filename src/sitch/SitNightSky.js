@@ -221,7 +221,7 @@ export const SitNightSky = {
 
             // Wait just in case a file is still uploading
             // unlikely, but possible with a slow connection and.or large file
-            Rehoster.waitForAllRehosts().then(() => {
+            FileManager.rehoster.waitForAllRehosts().then(() => {
 
                 var rehostedFiles = []
 
@@ -361,7 +361,7 @@ export const SitNightSky = {
         }
 
         if (p.rehostedFiles !== undefined) {
-           // Rehoster.rehostedFiles = p.rehostedFiles;
+           // FileManger.rehoster.rehostedFiles = p.rehostedFiles;
             /// we need a list of used URLs that are not in the sitch
             for (const url of p.rehostedFiles) {
                 console.log(`Calling DragDropHandler.uploadURL(url) for ${url}`)

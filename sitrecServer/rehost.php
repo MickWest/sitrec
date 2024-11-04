@@ -66,6 +66,7 @@ if (!isset($_FILES['fileContent']) || !isset($_POST['filename'])) {
 // Retrieve the file and filename
 $fileName = $_POST['filename'];
 $fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);//    require 'vendor/autoload.php';
+$version = $_POST['version'] ?? null;
 
 
 writeLog(print_r($_FILES, true));
@@ -137,20 +138,35 @@ if (!$isLocal && file_exists($s3_config_path)) {
 
 // No AWS credentials, so we'll just upload to the local server
 
-// Check if file exists, if not, write the file
+// Create the BASE directory for the user if it doesn't exist
+if (!file_exists($userDir)) {
+    mkdir($userDir, 0755, true);
+}
+
+
+if ($version) {
+    // versioned files sit in a folder based on the file name
+    // like /sitrec-upload/99999998/MyFile/versionnumber.jpg
+    $userDir = $userDir . $baseName . '/';
+    $newFileName = $version;  // note we are assuming the front end has supplied a unique version number with the correct extension
+    // Create a files specific folder for the user if it doesn't exist
+    if (!file_exists($userDir)) {
+        mkdir($userDir, 0755, true);
+    }
+}
+
 $userFilePath = $userDir . $newFileName;
 
 
+// Move the file to the user's directory
 if (!file_exists($userFilePath)) {
-
-    // Create a directory for the user if it doesn't exist
-    if (!file_exists($userDir)) {
-        mkdir($userDir, 0555, true);
-    }
-
     move_uploaded_file($_FILES['fileContent']['tmp_name'], $userFilePath);
 }
 
 // Return the URL of the rehosted file
-echo $storagePath . $user_id. '/' . $newFileName;
+if ($version) {
+    echo $storagePath . $user_id . '/' . $baseName . '/' . $newFileName;
+} else {
+    echo $storagePath . $user_id . '/' . $newFileName;
+}
 ?>

@@ -23,6 +23,9 @@ class Utils {
   // these are used for positioning the tiles in the scene
   // each tile is a mesh, and the mesh is positioned in the scene
   // the actual 3D points will be realtive to this.
+  // Note this is and APPROXIMATE position, and varies with tile size
+  // maybe better to use the LatLon center of the tile, and then calculate the
+  // position of the vertices relative to that.
   static tile2position(z, x, y, center, tileSize) {
     const result = {
       x: (x - center.x) * tileSize,
@@ -762,7 +765,7 @@ class Map33 extends TiledMap {
     }
 
     if (!this.loaded) {
-      console.warn('Map not loaded yet - only call recalculateCurveMap after loadedCallback')
+      console.error('Map not loaded yet - only call recalculateCurveMap after loadedCallback')
       return;
     }
     this.radius = radius

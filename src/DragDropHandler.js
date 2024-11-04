@@ -150,7 +150,7 @@ class CDragDropHandler {
             reader.readAsArrayBuffer(file);
             reader.onloadend = () => {
                // // console.log("Started rehost of dropped file"+file.name)
-               //  Rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
+               //  FileManager.rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
                //      console.log("Rehosted as " + rehostResult);
                //      resolve(rehostResult); // Resolve the promise
                //  }).catch(error => {

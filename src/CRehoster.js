@@ -2,7 +2,7 @@ import {SITREC_SERVER} from "../config";
 import {assert} from "./assert.js";
 
 
-class CRehoster {
+export class CRehoster {
 
     constructor() {
         // this.rehostedFiles = [];
@@ -11,12 +11,18 @@ class CRehoster {
 
     // Function to promise to rehostFile the file from the client to the server
     //
-    async rehostFilePromise(filename, data) {
+    async rehostFilePromise(filename, data, version) {
         assert(filename !== undefined, "rehostFile needs a filename")
         try {
             let formData = new FormData();
             formData.append('fileContent', new Blob([data]));
             formData.append('filename', filename);
+            if (version !== undefined) {
+                // if we pass in a version number, then the backend (rehost.php) will save the file to
+                // a folder with the file name, and the version within that folder
+                // it will use the extension of the filename for the version
+                formData.append('version', version);
+            }
 
             const serverURL = SITREC_SERVER +'rehost.php'
 
@@ -58,15 +64,18 @@ class CRehoster {
         }
     }
 
-    rehostFile(filename, data) {
-        var promise = this.rehostFilePromise(filename, data)
+    rehostFile(filename, data, version) {
+        var promise = this.rehostFilePromise(filename, data, version)
         this.rehostPromises.push(promise);
         return promise;
     }
 
+
     waitForAllRehosts() {
         return Promise.all(this.rehostPromises).then(() => {
             console.log("All files have been successfully rehosted.");
+            // delete the promises
+            this.rehostPromises = [];
             // Perform any action after all files are uploaded
         }).catch(error => {
             console.error("An error occurred during file upload for rehost: ", error);
@@ -75,4 +84,4 @@ class CRehoster {
     }
 }
 
-export const Rehoster = new CRehoster();
+// export const Rehoster = new CRehoster();
