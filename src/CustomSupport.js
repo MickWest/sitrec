@@ -264,13 +264,9 @@ export class CCustomManager {
         assert (!Sit.canMod || !Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be false to serialize a sitch")
 
 
-        FileManager.rehostDynamicLinks(true).then(() => {
-
-
+        return FileManager.rehostDynamicLinks(true).then(() => {
             const str = this.getCustomSitchString();
-
 //            console.log(str)
-
 
             if (name === undefined) {
                 name = "Custom.js"
@@ -280,8 +276,10 @@ export class CCustomManager {
             // TODO:  Note, if the file is unchanged from the last time it was rehosted,
             // TODO: then the URL will be the same
 
-            FileManager.rehoster.rehostFile(name, str, version + ".js").then((staticURL) => {
+            return FileManager.rehoster.rehostFile(name, str, version + ".js").then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
+
+                this.staticURL = staticURL;
 
                 // and make a URL that points to the new sitch
                 let paramName = "custom"
@@ -289,21 +287,23 @@ export class CCustomManager {
                     name = Sit.name + "_mod.js"
                     paramName = "mod"
                 }
-                let customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
-
-                // convert to a short URL
-                getShortURL(customLink).then((shortURL) => {
-                    // if short url does not start with http, then add https://
-                    // this is the case for the local server which does not shorten URLS
-                    if (!shortURL.startsWith("http")) {
-                        shortURL = "https://"+shortURL;
-                    }
-                    createCustomModalWithCopy(shortURL)();
-                })
+                this.customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
             })
-
-
         })
+    }
+
+
+    getPermalink() {
+        // Return the Promise chain
+        return getShortURL(this.customLink).then((shortURL) => {
+            // Ensure the short URL starts with 'http' or 'https'
+            if (!shortURL.startsWith("http")) {
+                shortURL = "https://" + shortURL;
+            }
+            createCustomModalWithCopy(shortURL)();
+        }).catch((error) => {
+            console.log("Error in getting permalink:", error);
+        });
     }
 
 

@@ -47,6 +47,7 @@ export class CFileManager extends CManager {
             if (Globals.userID > 0) {
                 this.guiFolder.add(this, "saveSitch").name("Save").perm();
                 this.guiFolder.add(this, "saveSitchAs").name("Save As").perm();
+                this.guiFolder.add(this, "saveWithPermalink").name("Save with Permalink").perm();
                 this.guiFolder.add(this, "importFile").name("Import File").perm();
                 this.guiFolder.add(this, "rehostFile").name("Rehost File").perm();
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
@@ -58,11 +59,17 @@ export class CFileManager extends CManager {
             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
                 console.log("Local files: " + data)
                 this.userSaves = JSON.parse(data) // will give an array of local files
+                // add a "-" to the start of the userSaves array, so we can have a blank entry
+                this.userSaves.unshift("-");
 
                 // add a selector for loading a file
                 this.loadName = this.userSaves[0];
                 this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
                     this.loadSavedFile(value)
+                });
+                this.deleteName = this.userSaves[0];
+                this.guiDelete = this.guiFolder.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
+                    this.deleteSitch(value)
                 });
 
             })
@@ -71,7 +78,8 @@ export class CFileManager extends CManager {
     }
 
 
-    // getversion
+    // getVersions returns a promise that resolves to an array of versions of a sitch
+    // which it gets from the server via getsitches.php
     getVersions(name) {
         return fetch((SITREC_SERVER + "getsitches.php?get=versions&name="+name), {mode: 'cors'}).then(response => response.text()).then(data => {
             console.log("versions: " + data)
@@ -82,16 +90,29 @@ export class CFileManager extends CManager {
     }
 
 
-    loadSavedFile(value) {
+    // unimlemented
+    deleteSitch(value) {
+        console.log("UNIPLEMENTED: Delete Sitch " + value)
+    }
+
+
+    // given a name, load the most recent version of that sitch
+    // from the server (user specific)
+    loadSavedFile(name) {
+        this.loadName = name;
         console.log("Load Local File")
         console.log(this.loadName);
+
+        if (this.loadName === "-") {
+            return;
+        }
 
         this.getVersions(this.loadName).then((versions) => {
             // the last version is the most recent
             const latestVersion = versions[versions.length - 1].url;
             console.log("Loading " + value + " version " + latestVersion)
 
-    /// load the file, convert to an object, and call setNewSitchObject with it.
+            /// load the file, convert to an object, and call setNewSitchObject with it.
             fetch(latestVersion).then(response => response.arrayBuffer()).then(data => {
                 console.log("Loaded " + value + " version " + latestVersion)
 
@@ -102,15 +123,12 @@ export class CFileManager extends CManager {
 
                 setNewSitchObject(sitchObject);
             })
-
-
-
         })
-
-
     }
 
 
+    // Returns a promise that resolves to the name of the sitch
+    // input by the user
     inputSitchName() {
         return new Promise((resolve, reject) => {
             const sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
@@ -131,25 +149,40 @@ export class CFileManager extends CManager {
     // if there's no name, then input a name
     // if there is a name, then use that.
 
-
+    // Returns a promise that resolves when the sitch is saved
     saveSitch() {
         if (Sit.sitchName === undefined) {
-            this.inputSitchName().then(() => {
-                this.saveSitchNamed(Sit.sitchName);
-                addOptionToGUIMenu(this.guiLoad, Sit.sitchName)
+            return this.inputSitchName().then(() => {
+                return this.saveSitchNamed(Sit.sitchName);  // return the Promise here
+            }).then(() => {
+                addOptionToGUIMenu(this.guiLoad, Sit.sitchName);
+                addOptionToGUIMenu(this.guiDelete, Sit.sitchName);
             }).catch((error) => {
                 console.log("Failed to input sitch name:", error);
             });
         } else {
-            this.saveSitchNamed(Sit.sitchName);
+            return this.saveSitchNamed(Sit.sitchName);  // return the Promise here
         }
     }
 
+    // The "Save with Permalink" button on the file menu.
+    // saves the sitch, and then gets the permalink
+    // and displays it in a modal dialog
+    saveWithPermalink() {
+        return this.saveSitch().then(() => {
+            // Wait until the custom link is fully set before calling getPermalink
+            return CustomManager.getPermalink();
+        }).catch((error) => {
+            console.log("Error in saving with permalink:", error);
+        });
+    }
+
     // The "Save As" button on the file menu.
-    // just delete the current sitch name, and then call saveSitch, which will force a new name
+    // just delete the current sitch name, and then call saveSitch,
+    // which will force a new name
     saveSitchAs() {
         Sit.sitchName = undefined;
-        this.saveSitch();
+        return this.saveSitch();
     }
 
     // given a name, save at version to that
@@ -167,9 +200,13 @@ export class CFileManager extends CManager {
         console.log("Unique date time string: " + todayDateTimeFilename)
 
 
-        CustomManager.serialize(sitchName, todayDateTimeFilename)
+        return CustomManager.serialize(sitchName, todayDateTimeFilename).then((serialized) => {
+            this.guiFolder.close();
+        })
 
     }
+
+
 
 
     exportSitch() {
