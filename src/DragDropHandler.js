@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
 import {addTracks} from "./TrackManager";
-import {FileManager, NodeMan, setNewSitchText, Sit} from "./Globals";
+import {FileManager, NodeMan, setNewSitchObject, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "../config";
 import {getFileExtension, isSubdomain} from "./utils";
 import {par} from "./par";
@@ -264,7 +264,7 @@ class CDragDropHandler {
                 const decodedString = decoder.decode(copy);
                 copy = textSitchToObject(decodedString);
             }
-            setNewSitchText(copy)
+            setNewSitchObject(copy)
         } else if (fileExt === "glb") {
             // it's a model, so we can replace the model used in targetModel
             // we have filename, and we can just set

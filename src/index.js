@@ -184,7 +184,7 @@ startAnimating(Sit.fps);
 
 const testCheckInterval = 1000;
 setTimeout( checkForTest, Globals.quickTerrain?1:testCheckInterval);
-setTimeout( checkForNewSitchText, 500);
+setTimeout( checkFornewSitchObject, 500);
 
 // **************************************************************************************************
 // *********** That's it for top-level code. Functions follow ***************************************
@@ -238,15 +238,15 @@ function checkForTest() {
     }
 }
 
-Globals.newSitchText = undefined;
+Globals.newSitchObject = undefined;
 
-function checkForNewSitchText() {
-    if (Globals.newSitchText !== undefined) {
-        console.log("New Sitch Text = " + Globals.newSitchText)
-        newSitch(Globals.newSitchText, true);
-        Globals.newSitchText = undefined;
+function checkFornewSitchObject() {
+    if (Globals.newSitchObject !== undefined) {
+        console.log("New Sitch Text = " + Globals.newSitchObject)
+        newSitch(Globals.newSitchObject, true);
+        Globals.newSitchObject = undefined;
     }
-    setTimeout( checkForNewSitchText, 500);
+    setTimeout( checkFornewSitchObject, 500);
 }
 
 

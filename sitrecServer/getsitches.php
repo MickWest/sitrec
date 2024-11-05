@@ -1,5 +1,24 @@
 <?php
 
+//////////////////////////////////////////////////////
+/// TODO: This is duplicated code from rehost.php
+/// should be refactored into a common file
+/// and not be metabunk specific
+$isLocal = false;
+
+if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
+    // for local testing
+    $storagePath = "https://localhost/sitrec-upload/";
+    $isLocal = true;
+} else {
+    // This code is specific to the metabunk.org implementation.
+    // if you want to use this code on your own site, you'll need to modify it.
+    // or use the local testing code above
+    $storagePath = "https://www.metabunk.org/sitrec-upload/";
+}
+/////////////////////////////////////////////////////////////////
+
+
 // find all the sitches in the sitrec/data folder and return them as a json object
 // a sitchs is a folder with a file inside it with the same name with a .sitch.js extension
 // The file contains a text description of the sitch in javascript object notation
@@ -130,7 +149,11 @@ if (isset($_GET['get'])) {
             $files = scandir($dir);
             foreach ($files as $file) {
                 if (is_file($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
-                    $versions[] = $file;
+                   // $versions[] = $file;
+                    $url = $storagePath . $userID . '/' . $name. '/' . $file;
+                    // add to the array and object that contains the url and the version
+                    $versions[] = array('version' => $file, 'url' => $url);
+
                 }
             }
             echo json_encode($versions);

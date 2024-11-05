@@ -12,7 +12,7 @@ import {parseSRT, parseXml} from "./KMLUtils";
 import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
 import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
-import {Globals, guiMenus, NodeMan, Sit} from "./Globals";
+import {Globals, guiMenus, NodeMan, setNewSitchObject, Sit} from "./Globals";
 import {DragDropHandler} from "./DragDropHandler";
 import {parseAirdataCSV} from "./ParseAirdataCSV";
 import {parseKLVFile, parseMISB1CSV} from "./MISBUtils";
@@ -23,6 +23,7 @@ import {par} from "./par";
 import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {CustomManager} from "./CustomSupport";
+import {textSitchToObject} from "./RegisterSitches";
 
 
 // The file manager is a singleton that manages all the files
@@ -73,6 +74,7 @@ export class CFileManager extends CManager {
         return fetch((SITREC_SERVER + "getsitches.php?get=versions&name="+this.loadName), {mode: 'cors'}).then(response => response.text()).then(data => {
             console.log("versions: " + data)
             this.versions = JSON.parse(data) // will give an array of local files
+            console.log("Parsed Versions url \n" + this.versions[0].url)
             return this.versions;
         })
     }
@@ -84,8 +86,20 @@ export class CFileManager extends CManager {
 
         this.getVersions(value).then((versions) => {
             // the last version is the most recent
-            const latestVersion = versions[versions.length - 1];
+            const latestVersion = versions[versions.length - 1].url;
             console.log("Loading " + value + " version " + latestVersion)
+
+    /// load the file and call setNewSitchObject with it.
+            fetch(latestVersion).then(response => response.arrayBuffer()).then(data => {
+                console.log("Loaded " + value + " version " + latestVersion)
+
+                const decoder = new TextDecoder('utf-8');
+                const decodedString = decoder.decode(data);
+
+                const sitchObject = textSitchToObject(decodedString);
+
+                setNewSitchObject(sitchObject);
+            })
 
 
 
