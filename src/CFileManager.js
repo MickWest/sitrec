@@ -24,6 +24,7 @@ import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {CustomManager} from "./CustomSupport";
 import {textSitchToObject} from "./RegisterSitches";
+import {addOptionToGUIMenu} from "./lil-gui-extras";
 
 
 // The file manager is a singleton that manages all the files
@@ -60,7 +61,7 @@ export class CFileManager extends CManager {
 
                 // add a selector for loading a file
                 this.loadName = this.userSaves[0];
-                this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
+                this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
                     this.loadSavedFile(value)
                 });
 
@@ -70,8 +71,9 @@ export class CFileManager extends CManager {
     }
 
 
-    getVersions() {
-        return fetch((SITREC_SERVER + "getsitches.php?get=versions&name="+this.loadName), {mode: 'cors'}).then(response => response.text()).then(data => {
+    // getversion
+    getVersions(name) {
+        return fetch((SITREC_SERVER + "getsitches.php?get=versions&name="+name), {mode: 'cors'}).then(response => response.text()).then(data => {
             console.log("versions: " + data)
             this.versions = JSON.parse(data) // will give an array of local files
             console.log("Parsed Versions url \n" + this.versions[0].url)
@@ -82,14 +84,14 @@ export class CFileManager extends CManager {
 
     loadSavedFile(value) {
         console.log("Load Local File")
-        console.log(value);
+        console.log(this.loadName);
 
-        this.getVersions(value).then((versions) => {
+        this.getVersions(this.loadName).then((versions) => {
             // the last version is the most recent
             const latestVersion = versions[versions.length - 1].url;
             console.log("Loading " + value + " version " + latestVersion)
 
-    /// load the file and call setNewSitchObject with it.
+    /// load the file, convert to an object, and call setNewSitchObject with it.
             fetch(latestVersion).then(response => response.arrayBuffer()).then(data => {
                 console.log("Loaded " + value + " version " + latestVersion)
 
@@ -109,22 +111,6 @@ export class CFileManager extends CManager {
     }
 
 
-    saveSitch() {
-        if (Sit.sitchName === undefined) {
-            this.inputSitchName().then(() => {
-                this.saveSitchNamed(Sit.sitchName);
-            }).catch((error) => {
-                console.log("Failed to input sitch name:", error);
-            });
-        }
-    }
-
-    saveSitchAs() {
-        Sit.sitchName = undefined;
-        this.saveSitch();
-    }
-
-
     inputSitchName() {
         return new Promise((resolve, reject) => {
             const sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
@@ -140,6 +126,33 @@ export class CFileManager extends CManager {
         })
     }
 
+
+    // The "Save" button on the file menu.
+    // if there's no name, then input a name
+    // if there is a name, then use that.
+
+
+    saveSitch() {
+        if (Sit.sitchName === undefined) {
+            this.inputSitchName().then(() => {
+                this.saveSitchNamed(Sit.sitchName);
+                addOptionToGUIMenu(this.guiLoad, Sit.sitchName)
+            }).catch((error) => {
+                console.log("Failed to input sitch name:", error);
+            });
+        } else {
+            this.saveSitchNamed(Sit.sitchName);
+        }
+    }
+
+    // The "Save As" button on the file menu.
+    // just delete the current sitch name, and then call saveSitch, which will force a new name
+    saveSitchAs() {
+        Sit.sitchName = undefined;
+        this.saveSitch();
+    }
+
+    // given a name, save at version to that
     saveSitchNamed(sitchName) {
 
         // and then save the sitch to the server where it will be versioned by data in a folder named for this sitch, for this user

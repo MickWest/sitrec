@@ -269,7 +269,7 @@ export class CCustomManager {
 
             const str = this.getCustomSitchString();
 
-            console.log(str)
+//            console.log(str)
 
 
             if (name === undefined) {
@@ -277,6 +277,9 @@ export class CCustomManager {
             }
 
             // and rehost it, showing a link
+            // TODO:  Note, if the file is unchanged from the last time it was rehosted,
+            // TODO: then the URL will be the same
+
             FileManager.rehoster.rehostFile(name, str, version + ".js").then((staticURL) => {
                 console.log("Sitch rehosted as " + staticURL);
 

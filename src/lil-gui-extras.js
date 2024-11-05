@@ -18,7 +18,7 @@ const Stats = require("stats.js");
 // note for usage with CNodeSwitch, optionName and optionValue will be the same
 // as we use it as in index into the this.inputs object
 // so adding and deleting also has to modify this.inputs (where "this" is a CNodeSwitch
-export function addOptionToGUIMenu(controller, optionName, optionValue) {
+export function addOptionToGUIMenu(controller, optionName, optionValue = optionName) {
     const index = controller._names.indexOf(optionName);
     if (index !== -1) {
         console.warn("Option "+ optionName +"  already exists in controller, skipping re-add");
