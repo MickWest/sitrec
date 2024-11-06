@@ -82,14 +82,20 @@ $baseName = pathinfo($fileName, PATHINFO_FILENAME);
 // Append MD5 checksum before the extension
 $newFileName = $baseName . '-' . $md5Checksum . '.' . $extension;
 
+if ($version) {
+    // versioned files sit in a folder based on the file name
+    // like /sitrec-upload/99999998/MyFile/versionnumber.jpg
+    $userDir = $userDir . $baseName . '/';
+    $newFileName = $version;  // note we are assuming the front end has supplied a unique version number with the correct extension
+    // Create a files specific folder for the user if it doesn't exist
+}
 
 // if there's an aws_credentials.json file, then we'll use that to upload to S3
-
-// Using upload instead of putObject to allow for larger files
-// putObject was giving odd timeout errors.
 $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
+//$useAWS = !$isLocal && file_exists($s3_config_path);
+$useAWS = file_exists($s3_config_path);
 
-if (!$isLocal && file_exists($s3_config_path)) {
+if ($useAWS) {
     require 'vendor/autoload.php';
     require $s3_config_path;
 
@@ -111,11 +117,19 @@ if (!$isLocal && file_exists($s3_config_path)) {
     $filePath = $_FILES['fileContent']['tmp_name'];  // Path to the temporary uploaded file
     $fileStream = fopen($filePath, 'r');  // Open a file stream
 
+
+    $s3Path = $user_id . '/' . $newFileName;
+    if ($version) {
+        $s3Path = $user_id . '/' . $fileName . '/' . $newFileName;
+    }
+
     // Upload the file using the high-level upload method
+    // Using upload instead of putObject to allow for larger files
+    // putObject was giving odd timeout errors.
     try {
         $result = $s3->upload(
             $aws['bucket'],
-            $user_id . '/' . $newFileName,
+            $s3Path,
             $fileStream,
             $aws['acl']  // Access control list (e.g., 'public-read')
         );
@@ -139,21 +153,17 @@ if (!$isLocal && file_exists($s3_config_path)) {
 // No AWS credentials, so we'll just upload to the local server
 
 // Create the BASE directory for the user if it doesn't exist
+//if (!file_exists($userDir)) {
+//    mkdir($userDir, 0755, true);
+//}
+
+
+
 if (!file_exists($userDir)) {
     mkdir($userDir, 0755, true);
 }
 
 
-if ($version) {
-    // versioned files sit in a folder based on the file name
-    // like /sitrec-upload/99999998/MyFile/versionnumber.jpg
-    $userDir = $userDir . $baseName . '/';
-    $newFileName = $version;  // note we are assuming the front end has supplied a unique version number with the correct extension
-    // Create a files specific folder for the user if it doesn't exist
-    if (!file_exists($userDir)) {
-        mkdir($userDir, 0755, true);
-    }
-}
 
 $userFilePath = $userDir . $newFileName;
 
@@ -165,7 +175,7 @@ if (!file_exists($userFilePath)) {
 
 // Return the URL of the rehosted file
 if ($version) {
-    echo $storagePath . $user_id . '/' . $baseName . '/' . $newFileName;
+    echo $storagePath . $user_id . '/' . $fileName . '/' . $newFileName;
 } else {
     echo $storagePath . $user_id . '/' . $newFileName;
 }
