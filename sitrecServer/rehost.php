@@ -94,6 +94,7 @@ if ($version) {
 $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
 //$useAWS = !$isLocal && file_exists($s3_config_path);
 $useAWS = file_exists($s3_config_path);
+//$useAWS = false;
 
 if ($useAWS) {
     require 'vendor/autoload.php';

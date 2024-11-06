@@ -124,41 +124,141 @@ if (isset($_GET['get'])) {
     $dir = getUserDir($userID);
 
     if ($dir == "") {
+        // return an empty array if the user is not logged in
         echo json_encode(array());
         exit();
     }
 
+    // if there's an aws_credentials.json file, then we'll use that to upload to S3
+    $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
+    $useAWS = file_exists($s3_config_path);
+
+    //$useAWS = false;
+
+    if ($useAWS) {
+        require 'vendor/autoload.php';
+        require $s3_config_path;
+
+        // Load the credentials from ../../../sitrec-keys/aws_credentials.json
+        //$aws = json_decode(file_get_contents($awsCredentials), true);
+
+        $aws = getS3Credentials();
+
+        // Get it into the right format
+        $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
+
+        // Create an S3 client
+        $s3 = new Aws\S3\S3Client([
+            'version' => 'latest',
+            'region' => $aws['region'],
+            'credentials' => $credentials
+        ]);
+
+        // convert the dir to an S3 path
+        // dir will be like '../../sitrec-upload/99999998/'
+        // we want to convert it to '99999998/'
+        $dir = getShortDir($userID);
+
+    }
+
+
+    // myfiles will return a list of files in the user's root directory
+    //
+
+//    wht;at's tigetting? dirs? files'
 
     if ($_GET['get'] == "myfiles") {
 
-        $files = scandir($dir);
-        $folders = array();
-        foreach ($files as $file) {
-            if (is_dir($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
-                $folders[] = $file;
+
+        if (!$useAWS) {
+            $files = scandir($dir);
+            $folders = array();
+            foreach ($files as $file) {
+                if (is_dir($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
+                    $folders[] = $file;
+                }
             }
+            echo json_encode($folders);
+            exit();
+        } else {
+            // get the list of files in the S3 bucket
+            $objects = $s3->getIterator('ListObjects', array(
+                "Bucket" => $aws['bucket'],
+                "Prefix" => $dir . '/'
+            ));
+            $folders = array();
+            foreach ($objects as $object) {
+                $key = $object['Key'];
+
+                // strip off the full dir prefix to get the filename
+                // eg. if the dir is 99999998/ then we want to strip off the 99999998/
+                // check that it actually starts with this dir, including the slash
+                $startText = $dir . '/';
+                if (substr($key, 0, strlen($startText)) === $startText) {
+                    $key = str_replace($dir .'/' , "", $key);
+                }
+
+
+                if ($key != "") {
+                    // if $key is a folder, then add it to the array
+                    // we can tell if it's a folder because it will contain a /
+                    if (strpos($key, "/") !== false) {
+                        // strip off everything from the first / onwards
+                        $key = strtok($key, "/");
+                        // if it does not already exist in the array, then add it
+                        if (!in_array($key, $folders)) {
+                            $folders[] = $key;
+                        }
+                    }
+                }
+
+
+            }
+            echo json_encode($folders);
+            exit();
         }
-        echo json_encode($folders);
-        exit();
+
 
     } else {
+
         if ($_GET['get'] == "versions") {
             $name = $_GET['name'];
             $dir .= "/" . $name;
             $versions = array();
-            $files = scandir($dir);
-            foreach ($files as $file) {
-                if (is_file($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
-                   // $versions[] = $file;
-                    $url = $storagePath . $userID . '/' . $name. '/' . $file;
-                    // add to the array and object that contains the url and the version
-                    $versions[] = array('version' => $file, 'url' => $url);
-
+            if (!$useAWS) {
+                $files = scandir($dir);
+                foreach ($files as $file) {
+                    if (is_file($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
+                        $url = $storagePath . $userID . '/' . $name. '/' . $file;
+                        // add to the array and object that contains the url and the version
+                        $versions[] = array('version' => $file, 'url' => $url);
+                    }
                 }
-            }
-            echo json_encode($versions);
-            exit();
+                echo json_encode($versions);
+                exit();
+            } else {
+                // get the list of files in the S3 bucket
 
+                $objects = $s3->getIterator('ListObjects', array(
+                    "Bucket" => $aws['bucket'],
+                    "Prefix" => $dir
+                ));
+                foreach ($objects as $object) {
+                    $key = $object['Key'];
+                    // we need to strip off the full dir prefix to get the filename (the version)
+                    $key = str_replace($dir, "", $key);
+                    if ($key != "") {
+                        // get the url to the file in the bucket
+                        $url = $s3->getObjectUrl($aws['bucket'], $dir . $key);
+
+                        // add to the array and object that contains the url and the version
+                        $versions[] = array('version' => $key, 'url' => $url);
+
+                    }
+                }
+                echo json_encode($versions);
+                exit();
+            }
         }
     }
 }

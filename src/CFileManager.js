@@ -53,8 +53,8 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
             }
 
-            // TODO: this was for scanning saved files on the user's server, but it's not working with S3
-            console.warn("TODO: Implement scanning for saved files on the server")
+            // get the list of files saved on the server
+            // this is basically a list of the folders in the user's directory
             let textSitches = [];
             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
                 console.log("Local files: " + data)
@@ -110,11 +110,11 @@ export class CFileManager extends CManager {
         this.getVersions(this.loadName).then((versions) => {
             // the last version is the most recent
             const latestVersion = versions[versions.length - 1].url;
-            console.log("Loading " + value + " version " + latestVersion)
+            console.log("Loading " + name + " version " + latestVersion)
 
             /// load the file, convert to an object, and call setNewSitchObject with it.
             fetch(latestVersion).then(response => response.arrayBuffer()).then(data => {
-                console.log("Loaded " + value + " version " + latestVersion)
+                console.log("Loaded " + name + " version " + latestVersion)
 
                 const decoder = new TextDecoder('utf-8');
                 const decodedString = decoder.decode(data);
