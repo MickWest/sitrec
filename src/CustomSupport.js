@@ -288,6 +288,10 @@ export class CCustomManager {
                     paramName = "mod"
                 }
                 this.customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
+
+                //
+                window.history.pushState({}, null, this.customLink);
+
             })
         })
     }

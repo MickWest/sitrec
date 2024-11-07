@@ -112,6 +112,7 @@ export class CFileManager extends CManager {
             const latestVersion = versions[versions.length - 1].url;
             console.log("Loading " + name + " version " + latestVersion)
 
+            this.loadURL = latestVersion;
             /// load the file, convert to an object, and call setNewSitchObject with it.
             fetch(latestVersion).then(response => response.arrayBuffer()).then(data => {
                 console.log("Loaded " + name + " version " + latestVersion)

@@ -255,7 +255,15 @@ function checkFornewSitchObject() {
 
 async function newSitch(situation, customSetup = false ) {
 
-    var url = SITREC_ROOT+"?sitch=" + situation
+
+    // for the built-in sitches, we change the url, but we don't reload the page
+    // that way the user can share the url direct to this sitch
+    if (!customSetup) {
+        var url = SITREC_ROOT + "?sitch=" + situation
+    } else {
+        // set the URL to the default
+        var url = SITREC_ROOT + "?custom=" + FileManager.loadURL;
+    }
     window.history.pushState({}, null, url);
 
     // close all the menus, and reattach them to the bar
