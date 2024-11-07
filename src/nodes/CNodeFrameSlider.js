@@ -464,5 +464,7 @@ export function SetupFrameSlider() {
 }
 
 export function updateFrameSlider() {
-    NodeMan.get("FrameSlider").updateFrameSlider();
+    const slider = NodeMan.get("FrameSlider");
+    slider.updateFrameSlider();
+    slider.updatePlayPauseButton();
 }
