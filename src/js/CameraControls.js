@@ -532,7 +532,7 @@ class CameraMapControls {
 
 		}
 
-	//	this.fixUp() // fixup on any mouse move
+		this.fixUp() // fixup on any mouse move
 
 		this.mouseStart.copy( this.mouseEnd );
 
@@ -548,7 +548,7 @@ class CameraMapControls {
 		this.camera.matrix.extractBasis(xAxis, yAxis, zAxis)
 		const up = getLocalUpVector(this.camera.position, wgs84.RADIUS)
 		const alt = altitudeAboveSphere(this.camera.position);
-		if (alt < 10000000 || force) {
+		if (alt < 100000 || force) {
 			const upAngle = degrees(up.angleTo(xAxis))
 			if (upAngle > 45) {
 
@@ -557,7 +557,7 @@ class CameraMapControls {
 					this.camera.up.copy(up)
 				} else {
 		//			console.log("Lerping towards local up")
-					this.camera.up.lerp(up, 0.1);
+					this.camera.up.lerp(up, 0.05);
 				}
 				var pointInFront = this.camera.position.clone().sub(zAxis)
 				this.camera.lookAt(pointInFront);
