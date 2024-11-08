@@ -320,7 +320,7 @@ class CameraMapControls {
 		
 		switch (this.state) {
 
-			case STATE.PAN:
+			case STATE.PAN: // Rotate the camera about itself
 
 				const xRotate = 2 * Math.PI * this.mouseDelta.x / this.view.heightPx / 4;
 				const yRotate = 2 * Math.PI * this.mouseDelta.y / this.view.heightPx / 4
@@ -353,7 +353,7 @@ class CameraMapControls {
 				}
 				break;
 
-			case STATE.ROTATE:
+			case STATE.ROTATE: // Rotate the camera about a point on the ground,
 				// Here we want to rotate the camera
 				// about a point in the gorund
 				var xAxis = new Vector3()
@@ -411,7 +411,7 @@ class CameraMapControls {
 
 
 
-			case STATE.DRAG:
+			case STATE.DRAG: // LEFT BUTTON - DRAG THE WORLD AROUND
 				// Dragging is done either on a local plane, or on the full globe
 				// based on the value of useGlobe
 				// if !useGlobe, then use the plane as before
@@ -525,14 +525,14 @@ class CameraMapControls {
 				this.camera.updateMatrixWorld();
 
 				// force up vector to be local up for camera
-				this.fixUp(true); // fixup after dragging
+				//this.fixUp(true); // fixup after dragging
 
 				break;
 
 
 		}
 
-		this.fixUp() // fixup on any mouse move
+	//	this.fixUp() // fixup on any mouse move
 
 		this.mouseStart.copy( this.mouseEnd );
 
