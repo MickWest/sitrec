@@ -1,8 +1,6 @@
 // Support functions for the custom sitches and mods
 
 import {FileManager, Globals, gui, guiMenus, guiShowHide, infoDiv, NodeMan, Sit, Units} from "./Globals";
-import * as LAYER from "./LayerMasks";
-import {TrackManager} from "./TrackManager";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
@@ -20,8 +18,6 @@ import {UpdateHUD} from "./JetStuff";
 
 export class CCustomManager {
     constructor() {
-
-
     }
 
 

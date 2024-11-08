@@ -2,7 +2,7 @@ import {Camera, PerspectiveCamera, Vector3} from "three";
 import {f2m, m2f, vdump} from "../utils";
 import {guiMenus, NodeMan} from "../Globals";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAVToEUS} from "../LLA-ECEF-ENU";
-import {raisePoint} from "../SphericalMath";
+import {getLocalUpVector, raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
 import {MV3} from "../threeUtils";
 
@@ -76,17 +76,25 @@ export class CNodeCamera extends CNode3D {
     }
 
     resetCamera() {
+
+
         if (this.startPos !== undefined) {
             this._object.position.copy(MV3(this.startPos));  // MV3 converts from array to a Vector3
-        }
-
-        if (this.lookAt !== undefined) {
-            this._object.lookAt(MV3(this.lookAt));
         }
 
         if (this.startPosLLA !== undefined) {
             this._object.position.copy(LLAVToEUS(MV3(this.startPosLLA)));  // MV3 converts from array to a Vector3
         }
+
+        // set the up vector to be the local up vector at the camera position
+        const localUp = getLocalUpVector(this._object.position);
+        this._object.up.copy(localUp);
+
+
+        if (this.lookAt !== undefined) {
+            this._object.lookAt(MV3(this.lookAt));
+        }
+
 
         if (this.lookAtLLA !== undefined) {
             this._object.lookAt(LLAVToEUS(MV3(this.lookAtLLA)));
