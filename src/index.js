@@ -433,7 +433,7 @@ async function initializeOnce() {
     var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
     var _guiTweaks = addGUIMenu("effects", "Effects" );
     addGUIMenu("lighting", "Lighting")
-    addGUIMenu("color", "Color")
+    addGUIMenu("contents", "Contents")
 
     addGUIMenu("help", "Help");
     guiMenus.help.addExternalLink("Github Sitrec ReadMe", "https://github.com/MickWest/sitrec?tab=readme-ov-file#readme").perm();

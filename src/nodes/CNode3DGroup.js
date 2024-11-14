@@ -48,6 +48,11 @@ export class CNode3DGroup extends CNode3D {
         return this._object;
     }
 
+    show(visible) {
+        super.show(visible);
+        this.group.visible = visible
+    }
+
     update(f) {
         super.update(f);
         if (this.visibleCheck !== undefined) {

@@ -366,6 +366,9 @@ export class CNodeView3D extends CNodeViewCanvas {
                 let skyOpacity = 1;
 
 
+     //           why is main view dark when look view camera is in darkness
+     //           is it not useing the main view camera here?
+
                 const sunNode = NodeMan.get("theSun",true);
                 if (sunNode !== undefined) {
 //                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))

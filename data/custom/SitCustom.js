@@ -456,7 +456,7 @@ sitch = {
         kind: "GUIColor",
         value: "#00FFFF",
         desc: "Frustum",
-        gui: "color"
+        gui: "contents"
     },
 
     DisplayCameraFrustum: {radius: 500000, lineWeight: 1.0, color: "frustumColor"},

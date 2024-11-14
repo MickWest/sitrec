@@ -17,7 +17,7 @@ export class CNodeTrackGUI extends CNode {
         this.metaTrack = v.metaTrack;
         this.displayNode = this.metaTrack.trackDisplayNode;
         this.trackNode = this.displayNode.in.track;
-        this.gui = v.gui ?? "color";
+        this.gui = v.gui ?? "contents";
 
         console.log("CNodeTrackGUI constructor called for ", this.metaTrack.menuText);
 
@@ -25,6 +25,14 @@ export class CNodeTrackGUI extends CNode {
         this.guiFolder = guiMenus[this.gui].addFolder(this.metaTrack.menuText).close();
 
         this.guiColor = this.addDisplayTrackColor(this.metaTrack.trackDisplayNode, this.metaTrack.trackDisplayDataNode)
+
+
+        this.visible = true;
+        this.guiShow = this.guiFolder.add(this, "visible").listen().onChange(()=>{
+            this.metaTrack.trackDisplayNode.show(this.visible);
+            this.metaTrack.trackDisplayDataNode.show(this.visible);
+
+        });
 
         this.showTrackInLook = false;
         this.guiShowInLook = guiMenus.showhide.add(this, "showTrackInLook").listen().onChange(()=>{
