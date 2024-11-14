@@ -69,8 +69,6 @@ const situationDefaults = {
     cameraSphereSize: 2000,
     targetSphereSize: 2000,
 
-    //defaultLights: {brightness: 100},
-
     lighting: {
         kind: "Lighting",
         ambientIntensity: 0.05,

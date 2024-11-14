@@ -29,7 +29,7 @@ function processQueue() {
   // Process the next request if we have capacity
   if (activeRequests < MAX_CONCURRENT_REQUESTS && requestQueue.length > 0) {
     const nextRequest = requestQueue.shift();
-    activeRequests++
+    activeRequests++;
     nextRequest();
   }
 }
@@ -38,13 +38,11 @@ function processQueue() {
 function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt = 0, urlIndex = 0) {
   // we expect url to be an array of 1 or more urls which we try in sequence until one works
   // if we are passed in a single string, convert it to an array
-    if (typeof url === 'string') {
-        url = [url];
-    }
-
+  if (typeof url === 'string') {
+    url = [url];
+  }
 
   return new Promise((resolve, reject) => {
-
     const attemptLoad = () => {
       loader.load(url[urlIndex],
           // On load
@@ -57,20 +55,15 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
           undefined,
           // On error
           (err) => {
-
-            // this is no loger an active request
-            // so free up the slot (not really a slot, just a limit on the number of requests)
+            // this is no longer an active request
             activeRequests--;
 
             // If we have more urls to try, try the next one
             if (urlIndex < url.length - 1) {
-                console.log(`Failed to load ${url[urlIndex]}, trying next url`);
-                urlIndex++;
-                // don't count this as a retry, that will just be for the last URL
-                currentAttempt--;
-            }
-
-            if (currentAttempt < maxRetries) {
+//              console.log(`Failed to load ${url[urlIndex]}, trying next url`);
+              urlIndex++;
+              attemptLoad();
+            } else if (currentAttempt < maxRetries) {
               console.log(`Retry ${currentAttempt + 1}/${maxRetries} for ${url} after delay`);
               setTimeout(() => {
                 loadTextureWithRetries(url, maxRetries, delay, currentAttempt + 1)
@@ -80,7 +73,6 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
             } else {
               console.log(`Failed to load ${url} after ${maxRetries} attempts`);
               reject(err);
-              activeRequests--;
               processQueue();
             }
           }
@@ -96,7 +88,6 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
     }
   });
 }
-
 
 
 const QuadTextureMaterial = (urls) => {

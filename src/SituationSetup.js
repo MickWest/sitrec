@@ -19,7 +19,6 @@ import {par} from "./par";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "./UIHelpers";
 import {SetupGUIFrames} from "./JetGUI";
-import {addDefaultLights} from "./lighting";
 import {addTracks, makeTrackFromDataFile, TrackManager} from "./TrackManager";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, Frame2Az, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
@@ -879,11 +878,6 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                 id:data.id,
                 tilt: makeCNodeGUIValue("tilt", data, -30, 30, 0.01, "Tilt", gui),
             })
-            break;
-
-        case "defaultLights":
-            SSLog();
-            addDefaultLights(data.brightness ?? 100);
             break;
 
         case "addTracks":
