@@ -295,6 +295,10 @@ class CNode {
 
     // resolve a gui name or a menubar lil-gui object into a lil-gui object
     setGUI(v, _gui) {
+
+        // patch for legacy saves that have the contents gui as "color"
+        if (v.gui === "color") v.gui = "contents";
+
         //_gui ??= v.gui;
         if (v.gui !== undefined) _gui = v.gui; // we want the data to override the code, not the other way around. Code is default.
         if (_gui) {
