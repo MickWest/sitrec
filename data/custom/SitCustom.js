@@ -137,6 +137,8 @@ sitch = {
 
     dragDropHandler: true,
     useGlobe: true,
+    useDayNightGlobe: true,
+
 
     nightSky: {
         showEquatorialGrid: false,

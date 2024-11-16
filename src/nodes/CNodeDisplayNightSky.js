@@ -769,21 +769,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         let starScale = Sit.starScale/window.devicePixelRatio;
 
-        let sunScale = 1.0;
-        // scale based on sun angle
-        let sun = Globals.sunAngle;
-        if (sun != undefined) {
-            const minSun = -10 // below this level, sunScale is 1
-            const maxSun = 1 // above this level, sunScale is 0
-            if (sun < minSun) {
-                sunScale = 1.0;
-            } else if (sun > maxSun) {
-                sunScale = 0.0;
-            } else {
-                sunScale = 1 - (sun - minSun) / (maxSun - minSun)
-            }
-            starScale *= sunScale;
-        }
+        // scale based on sky brightness at camera location
+        const sunNode = NodeMan.get("theSun",true);
+        const skyBrightness = sunNode.calculateSkyBrightness(camera.position);
+        //console.log("skyBrightness = "+skyBrightness)
+        let attentuation = Math.max(0, 1 - skyBrightness);
+        starScale *= attentuation
 
         this.starMaterial.uniforms.starScale.value = starScale;
 
