@@ -49,14 +49,6 @@ export class CNodeEffect extends CNode {
             guiOnOffFolder = Globals.defaultGui.addFolder("Effects On/Off").close().perm();
         }
 
-        // if there are inputs that CNode definitions we need to resolve them
-        // meaning create the object
-        // (should we be doing this at the CNode level? and also removing it from SituationSetup)
-        if (v.inputs !== undefined) {
-            resolveAnonObjects(v.inputs);
-        }
-
-
         // the call to super will handle setting up the inputs
         // which can be other nodes, or values
         super(v);
