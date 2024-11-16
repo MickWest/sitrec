@@ -349,6 +349,16 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
             await resolveAnonObjects(data.inputs);
         }
 
+        // if it has an "effects" object then parse each effect's inputs and resolve any anonymous objects
+        // for example usage, see the effects structure in SitCustom.js
+        const effects = data.effects;
+        if (effects !== undefined) {
+            for (let effectKey in effects) {
+                if (effects[effectKey].inputs !== undefined) {
+                    await resolveAnonObjects(effects[effectKey].inputs);
+                }
+            }
+        }
 
     } else {
         // if not an object (e.g. a number, boolean, or string), then just use _data
