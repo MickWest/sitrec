@@ -22,7 +22,8 @@ export class CNodeHeading extends CNode {
         this.name = v.name ?? ""
         this.arrowColor = v.arrowColor ?? "white"
 
-        this.headingController = this.gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
+        if(this.gui)
+            this.headingController = this.gui.add (this, "heading", 0,359,1).name(this.name+" Heading").onChange(x =>this.recalculateCascade())
 
         this.recalculate()
     }
@@ -60,7 +61,8 @@ export class CNodeHeading extends CNode {
         var A = this.in.jetOrigin.p(0);
 
         var B = A.clone().add(this.p().multiplyScalar(10000))
-        DebugArrowAB(this.name+" Heading",A,B,this.arrowColor,true,GlobalScene)
+        if(this.gui)
+            DebugArrowAB(this.name+" Heading",A,B,this.arrowColor,true,GlobalScene)
     }
 
 

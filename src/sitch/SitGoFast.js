@@ -112,7 +112,7 @@ export var SitGoFast = {
 
     targetSizedSphere: { defer: true, size:3, track: "LOSTraverseSelect" },
 
-    include_JetLabels: true,
+    include_JetLabels: (gui != null),
 
     lighting: {
         kind: "Lighting",
@@ -380,8 +380,6 @@ export var SitGoFast = {
         // NOTE: diplay LOS are wrong if you pick LOSTwoPoint,
         // as it does not actually traverse all the LOS, just start and end
 
-        SetupTrackLOSNodes()
-
         // So we creata a new LOS set using the selected traverse track as a target
         new CNodeLOSTrackTarget({
             id:"JetLOS2",
@@ -390,19 +388,6 @@ export var SitGoFast = {
         })
 
         // TODO: Az and El in the display will need updating..
-
-        new CNodeDisplayLOS({
-            id: "DisplayJetLOS2",
-            inputs: {
-                LOS: "JetLOS2",
-            },
-            highlightLines:{
-                375:makeMatLine(0xff0000,2), // red start
-                1030:makeMatLine(0x00ff00,2), // green end
-            },
-            color: 0x606060,
-        })
-
 
         // no clouds in GoFast, but instead of the cloud horizon line we have a ground (sea) track line
 
@@ -423,6 +408,23 @@ export var SitGoFast = {
                 altitude:"seaLevel",
             //    radius: "radiusMiles",
             }
+        })
+    },
+
+    // GUI related setup
+    setup2: function() {
+        SetupTrackLOSNodes()
+        
+        new CNodeDisplayLOS({
+            id: "DisplayJetLOS2",
+            inputs: {
+                LOS: "JetLOS2",
+            },
+            highlightLines:{
+                375:makeMatLine(0xff0000,2), // red start
+                1030:makeMatLine(0x00ff00,2), // green end
+            },
+            color: 0x606060,
         })
 
         // different comparison nodes in AZ graph

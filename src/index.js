@@ -682,7 +682,7 @@ async function setupFunctions() {
 // Now that the assets are loaded, we can setup the situation
 // First we do the data-driven stuff by expanding and then parsing the Sit object
     console.log("SituationSetup()")
-    SituationSetup(false);
+    await SituationSetup(false);
 
 // jetStuff is set in Gimbal, GoFast, Agua, and FLIR1
     if (Sit.jetStuff) {
@@ -705,7 +705,7 @@ async function setupFunctions() {
 
 // Redo the data-driven setup, but this is for any deferred setup
 // i.e data members that have defer: true
-    SituationSetup(true);
+    await SituationSetup(true);
 
 // We can get the local lat/lon (i.e. the user's location)
 // get only get the local lat/lon if we don't have URL data and if we are not testing

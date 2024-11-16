@@ -35,9 +35,10 @@ import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 import {assert} from "./assert.js";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
 import {MV3} from "./threeUtils";
+import {isConsole} from "../config";
+import {registerNodeConsole} from "./RegisterNodes.js"
 
-
-export function SituationSetup(runDeferred = false) {
+export async function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
 
     // a good test is Jellyfish as it fails on jetOrigin, which is a Vector in Sit
@@ -54,7 +55,7 @@ export function SituationSetup(runDeferred = false) {
     if (!runDeferred)
         new CNodeConstant({id:"radiusMiles", value: wgs84.radiusMiles});
 
-    SituationSetupFromData(Sit, runDeferred);
+    await SituationSetupFromData(Sit, runDeferred);
 
 }
 
@@ -135,7 +136,7 @@ export async function startLoadingInlineAssets(sitData) {
 }
 
 
-export function SituationSetupFromData(sitData, runDeferred) {
+export async function SituationSetupFromData(sitData, runDeferred) {
 
     // const sitDataExpanded = expandSitData(sitData); // see CSituation constructor
     const sitDataExpanded = sitData;  //
@@ -180,7 +181,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
             runTests = false;
         }
 
-        let node = SetupFromKeyAndData(key, _data);
+        let node = await SetupFromKeyAndData(key, _data);
 //         if (runTests && node !== null && node.canSerialize && isLocal) {
 //
 //             // remember how many nodes there are, as these tests should not alter that
@@ -219,7 +220,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 //             // remove it
 //             NodeMan.disposeRemove(node.id);
 //             // create it again
-//             node = SetupFromKeyAndData(key, _data);
+//             node = await SetupFromKeyAndData(key, _data);
 //             // and get text from that
 //             //const nodeAsText2 = JSON.stringify(node, null, 2);
 //             const nodeAsText2 = objectHash(node);
@@ -260,7 +261,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
 //             // remove the node
 //             NodeMan.disposeRemove(node.id);
 //             // and re-create it from the serialized data
-//             node = SetupFromKeyAndData(key, serialized);
+//             node = await SetupFromKeyAndData(key, serialized);
 //             // get that as text
 //             //const nodeAsText3 = JSON.stringify(node, null, 2);
 //             const nodeAsText3 = objectHash(node);
@@ -274,7 +275,7 @@ export function SituationSetupFromData(sitData, runDeferred) {
     }
 }
 
-export function resolveAnonObjects(data, depth=0) {
+export async function resolveAnonObjects(data, depth=0) {
     // iterate over the keys in data
     // if the value for that key is an object
     // and that object has a "kind" key, then recursively call SetupFromKeyAndData
@@ -285,7 +286,7 @@ export function resolveAnonObjects(data, depth=0) {
                 // so we can't use it as a node id
                 // so instead we pass in undefined,
                 // so the node system will generate an id for it
-                const anonResult = SetupFromKeyAndData(undefined, data[subKey], depth+1);
+                const anonResult = await SetupFromKeyAndData(undefined, data[subKey], depth+1);
                 // assert it's a CNode derived object
                 assert(anonResult instanceof CNode, "SituationSetup: anonymous object must be a CNode derived object. Kind = "+data[subKey].kind+"\n"+JSON.stringify(data));
                 // replace the object with the id of the newly created node
@@ -295,12 +296,36 @@ export function resolveAnonObjects(data, depth=0) {
     }
 }
 
+// information about which nodes/keys are allowed/needed in console mode
+var consoleKeys = null
+
+function initConsoleKeys() {
+    if(consoleKeys)
+        return
+
+    // The keys here refer to either nodes of a certain kind
+    // or keys from the sitch data that are allowed/needed in console mode.
+    // Nodes/keys which are not mentioned here will be ignored in console mode.
+    // By default a node of a certain Kind will be loaded from CNodeKind.js,
+    // but some CNode source files export more than one node class
+    // so the optional 'file' property defines which file a node should be loaded from.
+    const keyInfo = {
+        Constant: { file: "CNode.js" },
+        Origin: { file: "CNode.js" },
+        TrackFromLLA: {},
+        Wind: {},
+        inputFeet: {}
+    }
+
+    consoleKeys = new Map(Object.entries(keyInfo))
+}
+
 
 // given a key and some data, execute the appropiate setup
 // this is often a node, but can be a GUI element, or some other setup
 // setup commands start with lower case and are handled in the switch statement
 // nodes start with upper case and that's handled in the default case
-export function SetupFromKeyAndData(key, _data, depth=0) {
+export async function SetupFromKeyAndData(key, _data, depth=0) {
     let data;
     // if _data is an object, then make data be a clone of _data, so we can modify it (adding defaults, etc)
     if (typeof _data === "object") {
@@ -316,12 +341,12 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
         // resolve any anonymous objects at the top level
         // which will recursively call SetupFromKeyAndData as needed
         // so you can nest anonymous objects as deep as you like
-        resolveAnonObjects(data, depth);
+        await resolveAnonObjects(data, depth);
 
         // if it has an "inputs" object then do the same with that
         // inputs (as a parameter) is largely legacy, but still required for a couple of things
         if (data.inputs !== undefined) {
-            resolveAnonObjects(data.inputs);
+            await resolveAnonObjects(data.inputs);
         }
 
 
@@ -368,7 +393,13 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
 
     let node = null;
 
-
+    // only certain nodes work in console mode
+    if(isConsole) {
+        initConsoleKeys()
+        var consoleKeyInfo = consoleKeys.get(key)
+        if(!consoleKeyInfo)
+            return null
+    }
 
     switch (key) {
 
@@ -1305,11 +1336,18 @@ export function SetupFromKeyAndData(key, _data, depth=0) {
                     console.error("SituationSetup: controller " + key + " needs an object/camera")
                 }
             } else {
-
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
                 // passing in the data as the constructor
-                if (NodeFactory.validType(key)) {
+                let valid = NodeFactory.validType(key)
+
+                // in console mode the nodes many not already be registered
+                // so attempt to register them if they're not already known to be valid
+                if(isConsole && !valid && data.kind !== undefined) {
+                    valid = await registerNodeConsole(key, consoleKeyInfo.file)
+                }
+                
+                if (valid) {
                     SSLog();
                     // otherwise it's just a regular node
                     node = NodeFactory.create(key, data);

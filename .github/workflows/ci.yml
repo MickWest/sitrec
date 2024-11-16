@@ -81,10 +81,10 @@ jobs:
         cp config.js.example config.js
         # custom console tools will often be run from outside the source tree
         # so by default the config assumes that sitrec's root is "./sitrec/"
-        mv ./test/console/test.js ../
+        mv ./test/console/*.js ../
         # note: by default, without remapping imports, bun uses the three.js version from package-lock.json 
     - name: run console test
-      run: cd ../ && bun test.js
+      run: cd ../ && for i in ./*.js; do bun $i; done
     - name: run tests
       # jsdom does not work with bun, so skip tests whose name contains 'jsdom'
       run: cd tests && bun test -t "^((?!jsdom).)*$"

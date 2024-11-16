@@ -135,9 +135,6 @@ const GimbalDefaults = {
         SetupCommon()
         SetupGimbal();
 
-        if(!gui) // the rest is unsupported for now in console mode
-            return;
-
         SetupTraverseNodes("LOSTraverseSelect",{
             "Straight Line": "LOSTraverseStraightLine",
             "Const Ground Spd": "LOSTraverseConstantSpeed",
@@ -146,6 +143,15 @@ const GimbalDefaults = {
             "Constant Altitude": "LOSTraverseConstantAltitude",
       //      "Constant Vc (closing vel)": "LOSTraverse1",
         },this.defaultTraverse)
+
+        new CNodeTrackAir({
+            id:"airTrack",
+            source:"LOSTraverseSelect",
+            wind:"targetWind"
+        })
+
+        if(!gui) // the rest is unsupported for now in console mode
+            return;
 
         new CNodeGUIValue({id:"fleetTurnStart", value:this.fleetTurnStart,start:0,end:35,step:0.1, desc: "Fleet Turn Start"},guiTweaks)
         new CNodeGUIValue({id:"fleetTurnRate", value:this.fleetTurnRate,start:0,end:50,step:0.1, desc: "Fleet Turn Rate"},guiTweaks)
@@ -351,12 +357,6 @@ const GimbalDefaults = {
 
             ]
         )
-
-        new CNodeTrackAir({
-            id:"airTrack",
-            source:"LOSTraverseSelect",
-            wind:"targetWind"
-        })
 
         new CNodeDisplayTrack({
             id:"AirTrackDisplay",
@@ -639,9 +639,6 @@ function SetupAzInputs() {
         'Az Markus Smoothed': "azMarkus"
     }
 
-    if(!gui) // the rest is unsupported for now in console mode
-        return azSourceInputs;
-
     console.log("+++ azEditor Node")
     var azEditorNode = new CNodeCurveEditor({
             id: "azEditor",
@@ -657,7 +654,8 @@ function SetupAzInputs() {
             frames: Sit.frames,
         }
     )
-    azEditorNode.editorView.hide();
+    if(gui)
+        azEditorNode.editorView.hide();
 
     azSourceInputs = {
         ...azSourceInputs,
@@ -768,9 +766,6 @@ export function SetupGimbal() {
         }
     )
 
-    if(!gui) // the rest is unsupported for now in console mode
-        return;
-
     var turnRateFromCloudsNode = new CNodeTurnRateFromClouds({
         id: "turnRateFromClouds",
         inputs: {
@@ -872,18 +867,20 @@ export function SetupGimbal() {
         frames: Sit.frames,
     })
 
-    console.log("vvvv CNodeSAPage")
-    // this goes where the Cloud Speed Editor was before
-    new CNodeSAPage({
-        id: "SAPage",
-        jetTrack: "jetTrack",
-        windLocal: "localWind",
-        windTarget: "targetWind",
-        left: 0.0, top: 1 - 0.5, width: -1, height: 0.5,
-        background: new Color().setRGB(0.0, 0.0, 0.0),
-        draggable: true, resizable: true,
+    if(gui) {
+        console.log("vvvv CNodeSAPage")
+        // this goes where the Cloud Speed Editor was before
+        new CNodeSAPage({
+            id: "SAPage",
+            jetTrack: "jetTrack",
+            windLocal: "localWind",
+            windTarget: "targetWind",
+            left: 0.0, top: 1 - 0.5, width: -1, height: 0.5,
+            background: new Color().setRGB(0.0, 0.0, 0.0),
+            draggable: true, resizable: true,
+        })
+    }
 
-    })
     LocalFrame.position.copy(jetTrack.v0.position.clone())
     console.log("Setting LocalFrame Position to " + LocalFrame.position.x + "," + LocalFrame.position.y + "," + LocalFrame.position.z)
     console.log("+++ JetLOS Node")

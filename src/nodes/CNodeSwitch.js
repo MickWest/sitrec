@@ -62,16 +62,15 @@ class CNodeSwitch extends CNode {
                     }
 
                 })
+
+            this.exportable = v.exportable
+            if (this.exportable) {
+                NodeMan.addExportButton(this, "exportTrackCSV", "Traverse ")
+            }
         } else if(!isConsole) {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
         this.recalculate()
-
-        this.exportable = v.exportable
-        if (this.exportable) {
-            NodeMan.addExportButton(this, "exportTrackCSV", "Traverse ")
-        }
-
     }
 
     // The choice is not set, or invalid, so set it to the first available choice
@@ -190,6 +189,10 @@ class CNodeSwitch extends CNode {
         if (!this.useSitFrames) {
             this.frames = this.inputs[this.choice].frames;
         }
+
+        // showing/hiding nodes has no effect in console mode
+        if(isConsole)
+            return
 
         this.enableController(true);
 

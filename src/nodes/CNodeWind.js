@@ -23,8 +23,10 @@ export class CNodeWind extends CNode {
         // this.input("pos")
         // this.input("radius")
 
-        this.guiFrom = this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
-        this.guiKnots = this.gui.add (this, "knots", 0, this.max, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+        if(this.gui) {
+            this.guiFrom = this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
+            this.guiKnots = this.gui.add (this, "knots", 0, this.max, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+        }
 
         this.optionalInputs(["originTrack"])
         // wind defaults to being in the frame of reference of the EUS origin (0,0,0)
