@@ -853,3 +853,51 @@ export function findStep(range, maxSteps = 10, steps = [1,2,3,4, 5]) {
 
     return step; // Return the largest step value that meets the criteria
 }
+
+
+// Function to globally disable all input
+export function disableAllInput() {
+    // Create an overlay if it doesn't exist
+    if (!document.getElementById('input-blocker')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'input-blocker';
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Optional for visual feedback
+        overlay.style.zIndex = 20000; // High z-index to cover everything
+        overlay.style.pointerEvents = 'auto'; // Block interactions
+        document.body.appendChild(overlay);
+    }
+
+    // Add global event blockers
+    document.addEventListener('keydown', preventDefaultHandler, true);
+    document.addEventListener('keyup', preventDefaultHandler, true);
+    document.addEventListener('mousedown', preventDefaultHandler, true);
+    document.addEventListener('mouseup', preventDefaultHandler, true);
+    document.addEventListener('click', preventDefaultHandler, true);
+}
+
+// Function to enable input
+export function enableAllInput() {
+    const overlay = document.getElementById('input-blocker');
+    if (overlay) {
+        overlay.remove(); // Remove the overlay
+    }
+
+    // Remove global event blockers
+    document.removeEventListener('keydown', preventDefaultHandler, true);
+    document.removeEventListener('keyup', preventDefaultHandler, true);
+    document.removeEventListener('mousedown', preventDefaultHandler, true);
+    document.removeEventListener('mouseup', preventDefaultHandler, true);
+    document.removeEventListener('click', preventDefaultHandler, true);
+}
+
+// Event handler to prevent default behavior
+function preventDefaultHandler(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+

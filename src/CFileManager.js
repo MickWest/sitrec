@@ -1,7 +1,7 @@
 import {
     areArrayBuffersEqual,
     arrayBufferToString,
-    cleanCSVText,
+    cleanCSVText, disableAllInput, enableAllInput,
     getFileExtension,
     isHttpOrHttps,
     stringToArrayBuffer,
@@ -203,13 +203,13 @@ export class CFileManager extends CManager {
         const oldPaused = par.paused;
         par.paused = true;
         DragDropHandler.showDropZone("SAVING");
-        Globals.disableInput = true;
+        disableAllInput();
 
         return CustomManager.serialize(sitchName, todayDateTimeFilename).then((serialized) => {
             this.guiFolder.close();
             DragDropHandler.hideDropZone();
             par.paused = oldPaused
-            Globals.disableInput = false;
+            enableAllInput();
         })
 
     }

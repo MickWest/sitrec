@@ -160,21 +160,18 @@ class CMouseHandler {
     }
 
     handleMouseLeave(e) {
-        if (Globals.disableInput) return;
     // does not seem like it makes a diference
         //       e.preventDefault();
 
     }
 
     handleMouseWheel(e) {
-        if (Globals.disableInput) return;
         e.preventDefault();
         this.newPosition(e,true)
         if (this.handlers.wheel) this.handlers.wheel(e)
     }
 
     handleMouseMove(e) {
-        if (Globals.disableInput) return;
 //        console.log("Move, dragging = "+this.dragging)
 //        e.preventDefault();
         this.newPosition(e)
@@ -203,7 +200,6 @@ class CMouseHandler {
     }
 
     handleMouseDown(e) {
-        if (Globals.disableInput) return;
 //        e.preventDefault();
         this.view.canvas.setPointerCapture(e.pointerId)
 
@@ -215,7 +211,6 @@ class CMouseHandler {
     }
 
     handleMouseUp(e) {
-        if (Globals.disableInput) return;
 //        e.preventDefault();
         this.view.canvas.releasePointerCapture(e.pointerId)
 
@@ -227,14 +222,12 @@ class CMouseHandler {
     }
 
     handleMouseDblClick(e) {
-        if (Globals.disableInput) return;
         e.preventDefault();
         this.newPosition(e)
         if (this.handlers.dblClick) this.handlers.dblClick(e)
     }
 
     handleContextMenu( event ) {
-        if (Globals.disableInput) return;
 
 //		console.log("onConrxt")
 
@@ -254,10 +247,12 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         super(v);
         // this.canvas.addEventListener( 'wheel', e => this.handleMouseWheel(e) );
 
-        this.optionalInputs(["brightness", "contrast", "blur", "greyscale"])
-
-        if (this.overlayView !== undefined)
-            addFiltersToVideoNode(this)
+        // these no longer work with the new rendering pipeline
+        // TODO: reimplement them as effects?
+        // this.optionalInputs(["brightness", "contrast", "blur", "greyscale"])
+        //
+        // if (this.overlayView !== undefined)
+        //     addFiltersToVideoNode(this)
 
         this.positioned = false;
         this.autoFill = v.autoFill ?? true; // default to autofill
