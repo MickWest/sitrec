@@ -856,7 +856,7 @@ export function findStep(range, maxSteps = 10, steps = [1,2,3,4, 5]) {
 
 
 // Function to globally disable all input
-export function disableAllInput() {
+export function disableAllInput(message) {
     // Create an overlay if it doesn't exist
     if (!document.getElementById('input-blocker')) {
         const overlay = document.createElement('div');
@@ -866,9 +866,16 @@ export function disableAllInput() {
         overlay.style.left = 0;
         overlay.style.width = '100vw';
         overlay.style.height = '100vh';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Optional for visual feedback
+        overlay.style.display = 'flex';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fade 50% for visual feedback
         overlay.style.zIndex = 20000; // High z-index to cover everything
         overlay.style.pointerEvents = 'auto'; // Block interactions
+        overlay.style.fontSize = '48px';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.color = '#fff'; // Text color
+        overlay.style.transition = 'background-color 0.2s, opacity 5s';
+        overlay.innerHTML = message;
         document.body.appendChild(overlay);
     }
 

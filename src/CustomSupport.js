@@ -23,25 +23,24 @@ export class CCustomManager {
 
     setup() {
 
-        if (Sit.canMod)
+        if (Sit.canMod) {
+            // we have "SAVE MOD", but "SAVE CUSTOM" is no more, replaced by standard "Save", "Save As", etc.
             this.buttonText = "SAVE MOD"
-        else
-            this.buttonText = "SAVE CUSTOM"
 
+            // add a lil-gui button linked ot the serialize function
+            //FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
 
-        // add a lil-gui button linked ot the serialize function
-        //FileManager.guiFolder.add(this, "serialize").name("Export Custom Sitch")
+            const theGUI = guiMenus.file;
 
-        const theGUI = guiMenus.file;
+            this.buttonColor = "#80ff80"
 
-        this.buttonColor = "#80ff80"
+            if (Globals.userID > 0)
+                this.serializeButton = theGUI.add(this, "serialize").name(this.buttonText).setLabelColor(this.buttonColor)
+            else
+                this.serializeButton = theGUI.add(this, "loginAttempt").name("Export Disabled (click to log in)").setLabelColor("#FF8080");
 
-        if (Globals.userID > 0)
-            this.serializeButton = theGUI.add(this, "serialize").name(this.buttonText).setLabelColor(this.buttonColor)
-        else
-            this.serializeButton = theGUI.add(this, "loginAttempt").name("Export Disabled (click to log in)").setLabelColor("#FF8080");
-
-        this.serializeButton.moveToFirst();
+            this.serializeButton.moveToFirst();
+        }
 
         toggler('k', guiMenus.help.add(par, 'showKeyboardShortcuts').listen().name("[K]eyboard Shortcuts").onChange(value => {
             if (value) {
