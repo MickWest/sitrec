@@ -73,7 +73,10 @@ class CDragDropHandler {
         document.body.addEventListener('drop', this.onDrop.bind(this));
     }
 
-    showDropZone() {
+    showDropZone(message) {
+        if (message !== undefined) {
+            this.dropZone.innerHTML = message;
+        }
         this.dropZone.style.opacity = '1';
         this.dropZone.style.transition = 'background-color 0.2s, opacity 0.2s';
         this.dropZone.style.visibility = 'visible';

@@ -200,9 +200,16 @@ export class CFileManager extends CManager {
         const todayDateTimeFilename = todayDateTimeStr.replaceAll("-", "").replaceAll(":", "");
         console.log("Unique date time string: " + todayDateTimeFilename)
 
+        const oldPaused = par.paused;
+        par.paused = true;
+        DragDropHandler.showDropZone("SAVING");
+        Globals.disableInput = true;
 
         return CustomManager.serialize(sitchName, todayDateTimeFilename).then((serialized) => {
             this.guiFolder.close();
+            DragDropHandler.hideDropZone();
+            par.paused = oldPaused
+            Globals.disableInput = false;
         })
 
     }
