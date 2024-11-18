@@ -13,6 +13,38 @@ require('./user.php');
 
 $user_id = getUserID();
 
+// if there's an aws_credentials.json file, then we'll use that to upload to S3
+$s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
+//$useAWS = !$isLocal && file_exists($s3_config_path);
+$useAWS = file_exists($s3_config_path);
+//$useAWS = false;
+if ($useAWS) {
+    require $s3_config_path;
+}
+
+$aws=null;
+
+function startS3() {
+    require 'vendor/autoload.php';
+    global $aws;
+
+    // Load the credentials from ../../../sitrec-keys/aws_credentials.json
+    //$aws = json_decode(file_get_contents($awsCredentials), true);
+
+    $aws = getS3Credentials();
+
+    // Get it into the right format
+    $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
+
+    // Create an S3 client
+    $s3 = new Aws\S3\S3Client([
+        'version' => 'latest',
+        'region' => $aws['region'],
+        'credentials' => $credentials
+    ]);
+    return $s3;
+}
+
 
 // if we were passed the parameter "getuser", then we just return the user_id
 if (isset($_GET['getuser'])) {
@@ -58,6 +90,61 @@ function writeLog($message) {
 //    file_put_contents($logPath, $logEntry, FILE_APPEND);
 }
 
+// check to see if we have delete = true
+if (isset($_POST['delete']) && $_POST['delete'] == 'true') {
+    $filename = $_POST['filename'];
+    $version = $_POST['version'] ?? null;
+
+    // exit if the filename contains a path
+    if (strpos($filename, '/') !== false) {
+        exit(0);
+    }
+
+    if ($useAWS) {
+        // delete the entire folder from s3
+        require 'vendor/autoload.php';
+        $s3 = startS3();
+    }
+
+    // if no version name is supplied, then we delete the entire folder
+    if (!$version) {
+        if ($useAWS) {
+            $s3Path = $user_id . '/' . $filename . '/';
+            $s3->deleteMatchingObjects($aws['bucket'], $s3Path);
+        }
+        else {
+
+            $dir = $userDir . $filename;
+            if (file_exists($dir)) {
+                $files = glob($dir . '/*'); // get all file names
+                foreach ($files as $file) { // iterate files
+                    if (is_file($file)) {
+                        unlink($file); // delete file
+                    }
+                }
+                rmdir($dir);
+            }
+        }
+
+    } else {
+        if ($useAWS) {
+            // delete the specific version from s3
+            $s3Path = $user_id . '/' . $filename . '/' . $version;
+            $s3->deleteMatchingObjects($aws['bucket'], $s3Path);
+        } else {
+
+            // otherwise we delete the specific version
+            $file = $userDir . $filename . '/' . $version;
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    exit(0);
+}
+
+
 // Check if file and filename are provided
 if (!isset($_FILES['fileContent']) || !isset($_POST['filename'])) {
     die("File or filename not provided");
@@ -90,30 +177,10 @@ if ($version) {
     // Create a files specific folder for the user if it doesn't exist
 }
 
-// if there's an aws_credentials.json file, then we'll use that to upload to S3
-$s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
-//$useAWS = !$isLocal && file_exists($s3_config_path);
-$useAWS = file_exists($s3_config_path);
-//$useAWS = false;
+
 
 if ($useAWS) {
-    require 'vendor/autoload.php';
-    require $s3_config_path;
-
-    // Load the credentials from ../../../sitrec-keys/aws_credentials.json
-    //$aws = json_decode(file_get_contents($awsCredentials), true);
-
-    $aws = getS3Credentials();
-
-    // Get it into the right format
-    $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
-
-    // Create an S3 client
-    $s3 = new Aws\S3\S3Client([
-        'version' => 'latest',
-        'region' => $aws['region'],
-        'credentials' => $credentials
-    ]);
+    $s3 = startS3();
 
     $filePath = $_FILES['fileContent']['tmp_name'];  // Path to the temporary uploaded file
     $fileStream = fopen($filePath, 'r');  // Open a file stream

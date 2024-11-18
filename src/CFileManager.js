@@ -24,7 +24,7 @@ import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {CustomManager} from "./CustomSupport";
 import {textSitchToObject} from "./RegisterSitches";
-import {addOptionToGUIMenu} from "./lil-gui-extras";
+import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
 
 
 // The file manager is a singleton that manages all the files
@@ -92,7 +92,25 @@ export class CFileManager extends CManager {
 
     // unimlemented
     deleteSitch(value) {
-        console.log("UNIPLEMENTED: Delete Sitch " + value)
+        // get confirmation from the user
+        if (!confirm("Are you sure you want to delete " + value + " from the server?")) {
+            return;
+        }
+
+
+        console.log("Staring to deletet " + value + " from the server");
+        this.rehoster.deleteFilePromise(value).then(() => {
+            console.log("Deleted " + value)
+            this.deleteName = "-";
+            if (this.loadName === value) {
+                this.loadName = "-";
+            }
+            // the remove calls will also update the GUI
+            // to account for the "-" selection
+            removeOptionFromGUIMenu(this.guiLoad, value);
+            removeOptionFromGUIMenu(this.guiDelete, value);
+        });
+
     }
 
 

@@ -64,6 +64,23 @@ export class CRehoster {
         }
     }
 
+    async deleteFilePromise(filename) {
+        let formData = new FormData();
+        formData.append('filename', filename);
+        formData.append('delete', 'true');
+        const serverURL = SITREC_SERVER +'rehost.php'
+        console.log("Deleting file: ", filename, " with URL: ", serverURL);
+        let response = await fetch(serverURL, {
+            method: 'POST',
+            body: formData  // Send FormData with file and filename
+        });
+        if (!response.ok) {
+            throw new Error('Server responded with ' + response.status);
+        }
+        return response;
+    }
+
+
     rehostFile(filename, data, version) {
         var promise = this.rehostFilePromise(filename, data, version)
         this.rehostPromises.push(promise);
