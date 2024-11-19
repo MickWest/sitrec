@@ -27,7 +27,7 @@ import {
     Sit,
     SitchMan,
 } from "./Globals";
-import {disableScroll, stripComments} from './utils.js'
+import {checkForModding, disableScroll, stripComments} from './utils.js'
 import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
@@ -120,15 +120,29 @@ if (!initRendering()) {
 }
 
 
-if (urlParams.get("custom")) {
-    const customSitch = urlParams.get("custom")
+let customSitch = null
+
+// for legacy reasons either "custom" or "mod" can be used
+// and we'll check for the modding parameter in the sitch object
+if (urlParams.get("custom")) customSitch = urlParams.get("custom");
+if (urlParams.get("mod")) customSitch = urlParams.get("mod");
+
+
+
+if (customSitch !== null) {
     // customSitch is the URL of a sitch definition file
     // fetch it, and then use that as the sitch
     await fetch(customSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
-        console.log("Custom sitch = "+customSitch)
+        console.log("Custom sitch = " + customSitch)
 //        console.log("Result = "+data)
 
-        const sitchObject = textSitchToObject(data);
+
+        let sitchObject = textSitchToObject(data);
+
+        // do we need this if it's in CustomSupport's deserialize function?
+        sitchObject = checkForModding(sitchObject);
+
+
         setSit(new CSituation(sitchObject))
 
         // when loading a custom sitch, we don't want to show the initial drop zone animation
@@ -136,35 +150,38 @@ if (urlParams.get("custom")) {
 
 
     });
-} else if (urlParams.get("mod")) {
-    // a mod has a "modding" parameter which is the name of a legacy sitch
-    // so we get the object for that sitch and then add the mod
-    // removing the "modding" parameter
-    const modSitch = urlParams.get("mod")
-    // customSitch is the URL of a sitch definition file
-    // fetch it, and then use that as the sitch
-    await fetch(modSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
-        console.log("Mod sitch = "+modSitch)
-        console.log("Result = "+data)
-
-        const modObject = textSitchToObject(data);
-
-        let sitchObject = SitchMan.findFirstData(s => {return s.data.name === modObject.modding;})
-
-        assert(sitchObject !== undefined, "Modding sitch not found: "+modObject.modding)
-
-        // merge the two objects into a new one
-        sitchObject = {...sitchObject, ...modObject}
-
-        // remove the modding parameter to be tidy
-        delete sitchObject.modding
-
-        // and that's it
-        setSit(new CSituation(sitchObject))
-        par.name = Sit.menuName;
-        Sit.initialDropZoneAnimation = false;
-
-    });
+// }
+//
+//
+// } else if (urlParams.get("mod")) {
+//     // a mod has a "modding" parameter which is the name of a legacy sitch
+//     // so we get the object for that sitch and then add the mod
+//     // removing the "modding" parameter
+//     const modSitch = urlParams.get("mod")
+//     // customSitch is the URL of a sitch definition file
+//     // fetch it, and then use that as the sitch
+//     await fetch(modSitch, {mode: 'cors'}).then(response => response.text()).then(data => {
+//         console.log("Mod sitch = "+modSitch)
+//         console.log("Result = "+data)
+//
+//         const modObject = textSitchToObject(data);
+//
+//         let sitchObject = SitchMan.findFirstData(s => {return s.data.name === modObject.modding;})
+//
+//         assert(sitchObject !== undefined, "Modding sitch not found: "+modObject.modding)
+//
+//         // merge the two objects into a new one
+//         sitchObject = {...sitchObject, ...modObject}
+//
+//         // remove the modding parameter to be tidy
+//         delete sitchObject.modding
+//
+//         // and that's it
+//         setSit(new CSituation(sitchObject))
+//         par.name = Sit.menuName;
+//         Sit.initialDropZoneAnimation = false;
+//
+//     });
 
 } else {
     selectInitialSitch();

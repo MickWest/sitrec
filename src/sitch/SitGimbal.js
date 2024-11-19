@@ -114,6 +114,7 @@ const GimbalDefaults = {
 
     include_Compasses: true,
 
+
     setup: function () {
         setupOpts();
 
@@ -422,6 +423,9 @@ export const SitGimbal = {
         TargetObjectFile: 'models/FA-18F.glb',
         ATFLIRModel: 'models/ATFLIR.glb',
     },
+
+
+  //  DisplayWindArrow: {id: "windArrow", source: "targetWind"},
 
 
     setup2: function () {

@@ -1,6 +1,6 @@
 import {
     areArrayBuffersEqual,
-    arrayBufferToString,
+    arrayBufferToString, checkForModding,
     cleanCSVText, disableAllInput, enableAllInput,
     getFileExtension,
     isHttpOrHttps,
@@ -138,7 +138,10 @@ export class CFileManager extends CManager {
                 const decoder = new TextDecoder('utf-8');
                 const decodedString = decoder.decode(data);
 
-                const sitchObject = textSitchToObject(decodedString);
+                let sitchObject = textSitchToObject(decodedString);
+
+                sitchObject = checkForModding(sitchObject);
+
 
                 setNewSitchObject(sitchObject);
             })

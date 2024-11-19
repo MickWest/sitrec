@@ -16,7 +16,7 @@ import {makePositionLLA} from "./nodes/CNodePositionLLA";
 // even if you override the values.
 
 const situationDefaults = {
-    name: "gimbal",
+    name: "default-ERROR",
     isTextable: false,
 
     // most everything should be moddable

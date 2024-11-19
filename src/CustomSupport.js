@@ -14,6 +14,7 @@ import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
 import {UpdateHUD} from "./JetStuff";
+import {checkForModding} from "./utils";
 
 
 export class CCustomManager {
@@ -312,7 +313,10 @@ export class CCustomManager {
     deserialize(sitchData) {
         console.log("Deserializing text-base sitch")
 
-
+        // check for modding, meaning that we just have the name of an existing sitch
+        // and some mods to apply to it
+        // if so, then load the sitch and append the mods, etc
+        sitchData = checkForModding(sitchData)
 
         const loadingPromises = [];
         if (sitchData.loadedFiles) {
@@ -332,8 +336,9 @@ export class CCustomManager {
         // wait for the files to load
         Promise.all(loadingPromises).then(() => {
 
-            // now
 
+
+            // now we've either got
             console.log("Promised files loaded in Custom Manager deserialize")
             if (sitchData.mods) {
                 // apply the mods
