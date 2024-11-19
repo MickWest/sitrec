@@ -111,6 +111,9 @@ const GimbalDefaults = {
 
     include_JetLabels: (gui != null),
 
+
+    include_Compasses: true,
+
     setup: function () {
         setupOpts();
 
