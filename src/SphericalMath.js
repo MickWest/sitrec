@@ -184,12 +184,17 @@ export function getLocalDownVector(position, radius=wgs84.RADIUS) {
 }
 
 
+export function getNorthPole(radius=wgs84.RADIUS) {
+    const northPoleECEF = V3(0, 0, radius)
+    const northPoleEUS = ECEF2EUS(northPoleECEF, radians(Sit.lat), radians(Sit.lon), radius)
+    return northPoleEUS;
+}
+
 export function getLocalNorthVector(position, radius=wgs84.RADIUS) {
     assert(Sit.lat !== undefined && Sit.lon !== undefined, "Sit.lat and Sit.lon must be defined for getLocalNorthVector() to work.");
     // to get a northish direction we get the vector from here to the north pole.
     // to get the north pole in EUS, we take the north pole's position in ECEF
-    const northPoleECEF = V3(0,0,radius)
-    const northPoleEUS = ECEF2EUS(northPoleECEF,radians(Sit.lat),radians(Sit.lon),radius)
+    const northPoleEUS = getNorthPole(radius);
     const toNorth = northPoleEUS.clone().sub(position).normalize()
     // take only the component perpendicular to the local up vector
     const up = getLocalUpVector(position, radius);
@@ -280,4 +285,30 @@ export function pointOnSphereBelow(p) {
 export function altitudeAboveSphere(p) {
     const center = V3(0,-wgs84.RADIUS, 0);
     return p.clone().sub(center).length() - wgs84.RADIUS;
+}
+
+// given a psotion and an orientatioin maxtrix, return the Azimuth and Elevation (heading and pitch)
+// of the camera or object
+export function getAzElFromPositionAndMatrix(position, matrix) {
+    const up = getLocalUpVector(position);
+    const north = getLocalNorthVector(position);
+    // calculat the heading as the andle between the forward vector and the north vector
+    // in the horizontal plane
+    // account for the sign of the angle
+    const forward = new Vector3();
+    matrix.extractBasis(new Vector3(), new Vector3(), forward);
+    const forwardH = forward.clone().sub(up.clone().multiplyScalar(forward.dot(up)));
+    const northH = north.clone().sub(up.clone().multiplyScalar(north.dot(up)));
+    let heading = Math.PI - forwardH.angleTo(northH);
+    const east = north.clone().cross(up);
+    if (forwardH.dot(east) > 0) {
+        heading = -heading;
+    }
+    const headingDeg = heading * 180 / Math.PI;
+    const headingPos = (headingDeg + 360) % 360;
+
+    // calculate the elevation as the angle between the forward vector and the global up vector
+    const elevation = forward.angleTo(up);
+    const elevationDeg = elevation * 180 / Math.PI - 90;
+    return [headingPos, elevationDeg];
 }

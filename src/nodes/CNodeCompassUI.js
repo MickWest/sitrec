@@ -5,6 +5,7 @@ import {CNodeViewUI} from "./CNodeViewUI";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {Vector3} from "three";
 import {MV3} from "../threeUtils";
+import {ViewMan} from "./CNodeView";
 
 export class   CNodeCompassUI extends CNodeViewUI {
 
@@ -18,6 +19,21 @@ export class   CNodeCompassUI extends CNodeViewUI {
         this.cx = 50;
         this.cy = 60;
         this.doubleClickFullScreen = false;
+    }
+
+
+    onMouseDown(e, mouseX, mouseY) {
+        // clicking on the compass in the main view should rotate the view to north
+        // There's a plane defined by the camera's position and the local up vector and the north pole
+        // the camera shoudl end up with it up and forward vectors in that plane
+        // and the right vector pointing east
+        // so the camera's rotation matrix should be set to that
+
+        const mainView = ViewMan.get("mainView");
+        mainView.controls.fixUp(true);
+        mainView.controls.fixHeading(0)
+
+
     }
 
 

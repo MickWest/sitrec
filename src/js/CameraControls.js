@@ -14,7 +14,13 @@ import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNo
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
-import {altitudeAboveSphere, getLocalDownVector, getLocalUpVector} from "../SphericalMath";
+import {
+	altitudeAboveSphere,
+	getAzElFromPositionAndMatrix,
+	getLocalDownVector, getLocalEastVector, getLocalNorthVector,
+	getLocalUpVector,
+	getNorthPole
+} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
@@ -567,6 +573,36 @@ class CameraMapControls {
 		}
 
 	}
+
+
+	// fix the heading of the camera to the given heading
+	fixHeading(heading) {
+
+		// from the camera's matrix, calculate pan, tilt, and roll
+		// then set the pan to the heading
+		// and recalculate the matrix
+
+		// calculate tilt from the camera's matrix
+		const [az, el] = getAzElFromPositionAndMatrix(this.camera.position, this.camera.matrix)
+
+		// just set pan/az to the heading, roll to zero, and recalculate the matrix
+
+		console.log("Fixing heading to "+heading+" from az,el = "+az+","+el)
+
+
+		let fwd = getLocalNorthVector(this.camera.position);
+		let right = getLocalEastVector(this.camera.position);
+		let up = getLocalUpVector(this.camera.position);
+		fwd.applyAxisAngle(right,radians(el))
+		fwd.applyAxisAngle(up,-radians(heading))
+
+		fwd.add(this.camera.position);
+		this.camera.up = up;
+		this.camera.lookAt(fwd)
+
+
+	}
+
 
 	// rotate the camera around the target, so we rotate
 	rotateLeft(angle) {
