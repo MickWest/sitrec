@@ -66,11 +66,12 @@ export class CFileManager extends CManager {
                 this.loadName = this.userSaves[0];
                 this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
                     this.loadSavedFile(value)
-                });
+                }).moveAfter("Save with Permalink");
+
                 this.deleteName = this.userSaves[0];
                 this.guiDelete = this.guiFolder.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
                     this.deleteSitch(value)
-                });
+                }).moveAfter("Load");
 
             })
 
@@ -279,7 +280,7 @@ export class CFileManager extends CManager {
 
     makeExportButton(object, functionName, name) {
         if (this.exportFolder === undefined) {
-            this.exportFolder = this.guiFolder.addFolder("Export").perm()
+            this.exportFolder = this.guiFolder.addFolder("Export").perm().close();
         }
 
       //  console.error("ADDING EXPORT BUTTON FOR "+object.id+" with function "+functionName+ "and name "+name)

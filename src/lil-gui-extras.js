@@ -103,13 +103,31 @@ Controller.prototype.setLabelColor = function(color) {
     return this; // Return the controller to allow method chaining
 };
 
-// Move a controller to the of its parent
+// Move a controller to the top of its parent
 Controller.prototype.moveToFirst = function() {
     const parentElement = this.domElement.parentElement;
     if (parentElement) {
         parentElement.insertBefore(this.domElement, parentElement.firstChild);
     }
 };
+
+Controller.prototype.moveAfter = function(name) {
+    const parentElement = this.domElement.parentElement;
+    if (parentElement) {
+        // find the child with the name
+        const children = Array.from(parentElement.children);
+        const child = children.find(c => c.querySelector('.name').innerText === name);
+        if (child) {
+            parentElement.insertBefore(this.domElement, child.nextSibling);
+        } else {
+            console.warn("moveAfter: Could not find child with name " + name);
+        }
+
+    }
+}
+
+
+
 
 // delete all the children of a GUI
 GUI.prototype.destroyChildren = function() {
