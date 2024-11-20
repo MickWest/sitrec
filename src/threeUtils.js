@@ -1,7 +1,6 @@
 // Utlity functions to make vectors, 2 or 3 size.
-import {Color, Vector2, Vector3} from "three";
-import {CNodeConstant} from "./nodes/CNode";
-import {assert} from "./assert";
+import {Vector2, Vector3} from "three";
+
 
 export function V2(x = 0, y = 0) {
     return new Vector2(x, y);

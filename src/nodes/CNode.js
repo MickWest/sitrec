@@ -16,7 +16,7 @@
 // a display node might also be an input, like something you can drag with the mouse
 
 import {par} from "../par";
-import {FileManager, Globals, gui, guiMenus, guiPhysics, guiShowHide, guiTweaks, NodeMan, Sit} from "../Globals";
+import {FileManager, guiMenus, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 
