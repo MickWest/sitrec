@@ -29,13 +29,15 @@ export class   CNodeCompassUI extends CNodeViewUI {
         // and the right vector pointing east
         // so the camera's rotation matrix should be set to that
 
-        const mainView = ViewMan.get("mainView");
-        mainView.controls.fixUp(true);
-        mainView.controls.fixHeading(0)
-        mainView.controls.fixHeading(0)
-        mainView.controls.fixHeading(0)
-        mainView.controls.fixHeading(0)
+        const mainView = this.in.relativeTo;
+        if (mainView?.id === "mainView") {
 
+            mainView.controls.fixUp(true);
+            mainView.controls.fixHeading(0)
+            mainView.controls.fixHeading(0)
+            mainView.controls.fixHeading(0)
+            mainView.controls.fixHeading(0)
+        }
 
 
     }
