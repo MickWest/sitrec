@@ -469,9 +469,9 @@ export class DEBUGGroup extends Group {
 
 // get intersection of a point/heading ray with the Mean Sea Level
 
-export function intersectMSL(point, heading) {
+export function intersectMSL(point, headingVector) {
     const globe = new Sphere(new Vector3(0, -wgs84.RADIUS, 0), wgs84.RADIUS);
-    const ray = new Ray(point, heading.clone().normalize());
+    const ray = new Ray(point, headingVector.clone().normalize());
     const sphereCollision = new Vector3();
     if (intersectSphere2(ray, globe, sphereCollision))
         return sphereCollision;

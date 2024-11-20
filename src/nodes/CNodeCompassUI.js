@@ -32,6 +32,10 @@ export class   CNodeCompassUI extends CNodeViewUI {
         const mainView = ViewMan.get("mainView");
         mainView.controls.fixUp(true);
         mainView.controls.fixHeading(0)
+        mainView.controls.fixHeading(0)
+        mainView.controls.fixHeading(0)
+        mainView.controls.fixHeading(0)
+
 
 
     }

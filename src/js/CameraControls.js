@@ -8,9 +8,9 @@ import {
 	Raycaster
 
 } from "three";
-import {degrees, f2m, radians, vdump} from "../utils";
-import {DebugArrow, DebugArrowAB, DebugSphere, pointAbove} from "../threeExt";
-import {mouseInViewOnly, mouseToCanvas, mouseToView, ViewMan} from "../nodes/CNodeView";
+import {degrees, radians, vdump} from "../utils";
+import {DebugSphere, intersectMSL, pointAbove} from "../threeExt";
+import {mouseInViewOnly, mouseToView, ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
@@ -19,8 +19,7 @@ import {
 	getAzElFromPositionAndMatrix,
 	getLocalDownVector, getLocalEastVector, getLocalNorthVector,
 	getLocalUpVector,
-	getNorthPole
-} from "../SphericalMath";
+	} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
@@ -585,21 +584,55 @@ class CameraMapControls {
 		// calculate tilt from the camera's matrix
 		const [az, el] = getAzElFromPositionAndMatrix(this.camera.position, this.camera.matrix)
 
-		// just set pan/az to the heading, roll to zero, and recalculate the matrix
 
-		console.log("Fixing heading to "+heading+" from az,el = "+az+","+el)
+		// decide what tyoe of rotation to do
+		// if the camera's forward vector instersect the ground, then we can just rotate the camera
+		// about that point
+
+		const camPos = this.camera.position.clone()
+		const camFwd = new Vector3();
+		this.camera.getWorldDirection(camFwd);
+
+		const ground = intersectMSL(camPos, camFwd);
 
 
-		let fwd = getLocalNorthVector(this.camera.position);
-		let right = getLocalEastVector(this.camera.position);
-		let up = getLocalUpVector(this.camera.position);
-		fwd.applyAxisAngle(right,radians(el))
-		fwd.applyAxisAngle(up,-radians(heading))
+		if (ground) {
 
-		fwd.add(this.camera.position);
-		this.camera.up = up;
-		this.camera.lookAt(fwd)
+			// console.log("Rotate about ground to " + heading + " from az,el = " + az + "," + el)
 
+			// get the up vector at the ground point
+			const groundUp = getLocalUpVector(ground, wgs84.RADIUS)
+
+			// find angle needed to rotate the camera to the heading
+			const angle = radians(heading - az);
+
+			// rotate the camera about the ground up vector
+			this.camera.position.sub(ground)
+			this.camera.position.applyAxisAngle(groundUp, - angle)
+			this.camera.position.add(ground)
+			this.camera.up.copy(groundUp)
+			this.camera.lookAt(ground);
+
+			this.camera.updateMatrix();
+
+		} else {
+
+
+			// just set pan/az to the heading, roll to zero, and recalculate the matrix
+
+			console.log("Fixing heading to " + heading + " from az,el = " + az + "," + el)
+
+
+			let fwd = getLocalNorthVector(this.camera.position);
+			let right = getLocalEastVector(this.camera.position);
+			let up = getLocalUpVector(this.camera.position);
+			fwd.applyAxisAngle(right, radians(el))
+			fwd.applyAxisAngle(up, -radians(heading))
+
+			fwd.add(this.camera.position);
+			this.camera.up = up;
+			this.camera.lookAt(fwd)
+		}
 
 	}
 
