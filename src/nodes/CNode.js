@@ -29,7 +29,6 @@ var debugNodeNumber = 0;
  * It has a list of inputs, and a list of outputs
  * It has a value for each frame, and a function to calculate that value
  * It has a unique id
- * It has a list of inputs, and a list of outputs
  * @class
  * @type {CNode}    - the base class for all nodes in the graph
  */
@@ -65,11 +64,6 @@ class CNode {
             assert(0, "anonymous nodes not supported!")
         }
 
-    //    this.debugNodeNumber = debugNodeNumber++;
-
-        // Add call stack property
-        // this.callStack = (new Error()).stack;
-
         NodeMan.add(this.id, this)
     }
 
@@ -95,7 +89,7 @@ class CNode {
         this.outputs = [];
 
 
-    }  // any garbage collection
+    }
 
 
     // maybe this should be in the base class
@@ -211,8 +205,6 @@ class CNode {
         // a switch node counds as visible if it has this as an input
         let count = 0;
 
-        // let visibleOutputs = "";
-
         for (let output of this.outputs) {
             if (output.visible) {
                 // if it's a switch node, then it's visible if it has this as an input
@@ -222,17 +214,13 @@ class CNode {
                     if (output.inputs[output.choice] === this) {
                         count++;
                         count += output.countVisibleOutputs(depth+1);
-          //              visibleOutputs += output.id + " ";
                     }
                 } else {
                     count++;
                     count += output.countVisibleOutputs(depth+1);
-          //          visibleOutputs += output.id + " ";
                 }
             }
         }
-        //if (depth === 0) console.log("Node " + this.id + " has " + count + " visible outputs: " + visibleOutputs);
-        //console.log("Node " + this.id + " has " + count + " visible outputs: " + visibleOutputs);
         return count;
     }
 
@@ -272,10 +260,6 @@ class CNode {
         // breadth first search
         for (let key in this.inputs) {
             let input = this.inputs[key];
-
-            //    console.log("(Show)" + input.id +" has "+input.countVisibleOutputs() + " visible outputs")
-
-
             if (input.countVisibleOutputs() > 0) {
                 if (!this.visible) console.log("showActiveSources: Showing "+input.id)
                 input.show();
@@ -299,7 +283,6 @@ class CNode {
         // patch for legacy saves that have the contents gui as "color"
         if (v.gui === "color") v.gui = "contents";
 
-        //_gui ??= v.gui;
         if (v.gui !== undefined) _gui = v.gui; // we want the data to override the code, not the other way around. Code is default.
         if (_gui) {
             // if it's a string, then it's from the data driven setup
@@ -314,13 +297,6 @@ class CNode {
             }
         } else {
             this.gui = guiMenus.physics;
-
-            // if (gui) {
-            //     if (Globals.defaultGui !== undefined && Globals.defaultGui !== null)
-            //         this.gui = Globals.defaultGui;
-            //     else
-            //         this.gui = gui;
-            // }
         }
     }
 
@@ -653,9 +629,6 @@ class CNode {
             console.log(`Test node (${v}) = ${this.v(v)}`)
         }
     }
-
-
-
 
 }
 
