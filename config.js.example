@@ -99,6 +99,8 @@ export const _configParams = {
 
     customMapSources: {
 
+        mapbox: {
+            name: "MapBox",
             mapURL: (z, x, y, layer) => {
                 // let's try get the md5 hash of the URL
 
