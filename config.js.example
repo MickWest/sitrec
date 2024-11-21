@@ -3,7 +3,7 @@
 // LOCAL = My dev machine, for development and debugging
 // note my local is in dist, one level deeper than the HOST because I run directly from the dev build
 
-//import { md5 } from 'js-md5';
+import { md5 } from 'js-md5';
 
 export const isConsole = (typeof window == 'undefined');
 
@@ -105,21 +105,21 @@ export const _configParams = {
                 // let's try get the md5 hash of the URL
 
                 const url = `https://api.mapbox.com/v4/mapbox.${layer}/${z}/${x}/${y}@2x.jpg80`;
-//               const urlMD5 = md5(url);
+               const urlMD5 = md5(url);
 
 
                 // This calculates the correct DIRECT URL for the cache
                 // so we can try this first and if it fails, then try the server
                 // this is much faster than trying the server first
-//                const url1 = SITREC_CACHE + urlMD5 + ".jpg";
+                const url1 = SITREC_CACHE + urlMD5 + ".jpg";
 
                 // and this the the request to the server to cache it
                 // if url1 does not exist then try url2
                 const url2 = SITREC_SERVER + "cachemaps.php?url=" +
                     encodeURIComponent(url)
 
-//                return[url1, url2];
-                return url2;
+                return[url1, url2];
+//                return url2;
             },
             layers: {
                 "satellite": {
