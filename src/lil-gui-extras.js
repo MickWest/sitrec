@@ -109,6 +109,7 @@ Controller.prototype.moveToFirst = function() {
     if (parentElement) {
         parentElement.insertBefore(this.domElement, parentElement.firstChild);
     }
+    return this; // Return the controller to allow method chaining
 };
 
 Controller.prototype.moveAfter = function(name) {
@@ -124,6 +125,7 @@ Controller.prototype.moveAfter = function(name) {
         }
 
     }
+    return this; // Return the controller to allow method chaining
 }
 
 
@@ -133,6 +135,7 @@ Controller.prototype.moveAfter = function(name) {
 GUI.prototype.destroyChildren = function() {
     Array.from( this.children ).forEach( c => c.destroy() );
 
+    return this; // Return the controller to allow method chaining
 
 }
 
