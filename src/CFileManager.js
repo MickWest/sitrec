@@ -45,6 +45,7 @@ export class CFileManager extends CManager {
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
+                this.guiFolder.add(this, "newSitch").name("New Sitch").perm();
                 this.guiFolder.add(this, "saveSitch").name("Save").perm();
                 this.guiFolder.add(this, "saveSitchAs").name("Save As").perm();
                 this.guiFolder.add(this, "saveWithPermalink").name("Save with Permalink").perm();
@@ -64,18 +65,26 @@ export class CFileManager extends CManager {
 
                 // add a selector for loading a file
                 this.loadName = this.userSaves[0];
-                this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Load").perm().onChange((value) => {
+                this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Open").perm().onChange((value) => {
                     this.loadSavedFile(value)
                 }).moveAfter("Save with Permalink");
 
                 this.deleteName = this.userSaves[0];
                 this.guiDelete = this.guiFolder.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
                     this.deleteSitch(value)
-                }).moveAfter("Load");
+                }).moveAfter("Open");
 
             })
 
         }
+    }
+
+
+    newSitch() {
+        // we just jump to the "custom" sitch, which is a blank sitch
+        // that the user can modify and save
+        // doing it as a URL to ensure a clean slate
+        window.location = SITREC_ROOT + "?sitch=custom";
     }
 
 
