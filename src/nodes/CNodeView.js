@@ -239,11 +239,11 @@ class CNodeView extends CNode {
 
     // virtual functions for mouseMouveView.js onDocumentMouseMove
     onMouseMove(event, x, y, dx, dy) {
-        // console.log("Mouse Move in view "+this.id)
+   //      console.log("UNIMPLEMENTED Mouse Move in view "+this.id)
     }
 
     onMouseDrag(event, x, y, dx, dy) {
-        // console.log("Mouse Drag in view "+this.id)
+   //      console.log("UNIMPLEMENTED Mouse Drag in view "+this.id)
     }
 
     // debug_v() {

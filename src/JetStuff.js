@@ -22,7 +22,11 @@ import {CNodeGUIValue} from "./nodes/CNodeGUIValue";
 import {CNodeLOSTraverse} from "./nodes/CNodeLOSTraverse";
 import {CNodeLOSTraverseConstantSpeed} from "./nodes/CNodeLOSTraverseConstantSpeed";
 import {CNodeMunge} from "./nodes/CNodeMunge";
-import {CNodeLOSTraverseStraightLine, CNodeLOSTraverseStraightLineFixed} from "./nodes/CNodeLOSTraverseStraightLine";
+import {
+    CNodeLOSTraverseStraightLine,
+    CNodeLOSTraverseStraightLineFixed,
+    CNodeLOSTraverseWind
+} from "./nodes/CNodeLOSTraverseStraightLine";
 import {CNodeLOSTraverseConstantAltitude} from "./nodes/CNodeLOSTraverseConstantAltitude";
 import {CNodeSwitch} from "./nodes/CNodeSwitch";
 import {makeMatLine, updateMatLineResolution} from "./MatLines";
@@ -920,6 +924,13 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         lineHeading: "targetActualHeading",
         speed: "speedScaled",
     })
+
+    new CNodeLOSTraverseWind({
+        id: "LOSTraverseWind"+idExtra,
+            LOS: los,
+            startDist: "startDistance",
+            wind: "targetWind"
+    });
 
 
     // Constant altitude

@@ -356,6 +356,7 @@ sitch = {
             "Starting Altitude": "LOSTraverseStartingAltitude",
             "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
+            "Windblown Object": "LOSTraverseWind",
         },
         default: "Constant Distance",
         exportable: true,

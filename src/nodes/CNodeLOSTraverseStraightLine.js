@@ -185,3 +185,59 @@ export class CNodeLOSTraverseStraightLineFixed extends CNodeTrack {
 
 
 
+// just start at the given start distance on the first LOS
+// and then move at wind speed (ignoring the other LOS)
+export class CNodeLOSTraverseWind extends CNodeTrack {
+    constructor(v) {
+        super(v);
+        this.requireInputs(["LOS", "startDist", "wind"])
+        this.array = []
+        this.recalculate()
+    }
+
+    recalculate() {
+        this.array = [];
+        this.frames = this.in.LOS.frames
+        let startDistance = this.in.startDist.v(0)
+        var position, startPosition;
+        var oldDistance;
+        for (var f = 0; f < this.frames; f++) {
+
+            const los = this.in.LOS.v(f)
+
+            var result = {}
+            if (f === 0) {
+                // First frame, we just take the start Distance
+                position = los.position.clone();
+                let heading = los.heading.clone();
+                heading.multiplyScalar(startDistance)
+                position.add(heading)
+                startPosition = position.clone();
+            } else {
+
+                // we need to set the wind position
+                // otherswise we get the wind at the origin
+                // and that can be a long way away, and the angle
+                this.in.wind.setPosition(startPosition);
+
+                // just add the wind to the position
+                position.add(this.in.wind.v(f))
+            }
+            result.position = position.clone()
+            this.array.push(result)
+        }
+
+    }
+
+    getValueFrame(f) {
+        return this.array[f]
+    }
+
+}
+
+
+
+
+
+
+

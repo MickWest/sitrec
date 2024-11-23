@@ -1,10 +1,12 @@
 <?php
 
 // Directory to store shortened URLs
+
+// Make configurable
 $storageDir = '../../u/';
-
-
 $fileDir = '../../';  # relative path from this script to the Xenforo root
+
+
 require($fileDir . '/src/XF.php');
 XF::start($fileDir);
 $app = XF::setupApp('XF\Pub\App');

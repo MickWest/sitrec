@@ -11,6 +11,7 @@
 // so ../../sitrec-cache will point to it.
 
 
+// TODO: Make configgable
 require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
 
 if(!isset($cache_base_path)) {

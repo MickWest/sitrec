@@ -79,10 +79,16 @@ export class CDraggableCircle extends CDraggableItem {
 
 
 // An active overlay is a view that contains draggable and clickable items
-
+// such as the object tracking spline editor
 export class CNodeActiveOverlay extends CNodeViewUI {
     constructor(v) {
         super(v);
+
+        // disable double clicking to full-screen or resize, as it does not
+        // work well with the active overlay
+        this.doubleClickResizes = false;
+        this.doubleClickFullScreen = false
+
 
         this.draggable  = []
 
@@ -121,7 +127,7 @@ export class CNodeActiveOverlay extends CNodeViewUI {
         this.lastMouseY = y
         for (const d of this.draggable) {
             if (d.isWithin(x, y)) {
-                console.log("Clicked on draggable item")
+                console.log("Clicked on draggable item, starting drag")
                 d.startDrag(x, y)
                 return true;
             }
@@ -130,12 +136,13 @@ export class CNodeActiveOverlay extends CNodeViewUI {
     }
 
     onMouseUp(e, mouseX, mouseY) {
+        console.log("Mouse up, stopping drag")
         this.draggable.forEach(d => {
             d.dragging = false
         })
     }
 
-    onMouseMove(e, mouseX, mouseY) {
+    onMouseDrag(e, mouseX, mouseY) {
         const [x, y] = mouseToCanvas(this, mouseX, mouseY)
 
         // delta x and y in canvas pixels
@@ -145,6 +152,7 @@ export class CNodeActiveOverlay extends CNodeViewUI {
 
         this.draggable.forEach(d => {
             if (d.dragging) {
+                console.log("Dragging item to ", x, y)
                 // convert canvas to percentages of the height
                 const px = d.c2p(d.cX+dx)
                 const py = d.c2p(d.cY+dy)
@@ -170,11 +178,11 @@ class CNodeVideoTrackKeyframe extends CDraggableCircle{
         this.view = v.view
     }
 
-    startDrag() {
+    startDrag(x, y) {
 
         par.frame = this.frame;
         par.paused = true;
-        super.startDrag();
+        super.startDrag(x,y);
     }
 }
 
