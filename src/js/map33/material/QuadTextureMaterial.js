@@ -58,20 +58,22 @@ function loadTextureWithRetries(url, maxRetries = 3, delay = 100, currentAttempt
             // this is no longer an active request
             activeRequests--;
 
-            // If we have more urls to try, try the next one
+            // If we have more urls to try, immediately try the next one
             if (urlIndex < url.length - 1) {
 //              console.log(`Failed to load ${url[urlIndex]}, trying next url`);
               urlIndex++;
+          //    console.log(`urlIndex=${urlIndex}, new url=${url[urlIndex]}`);
+              activeRequests++;
               attemptLoad();
             } else if (currentAttempt < maxRetries) {
-              console.log(`Retry ${currentAttempt + 1}/${maxRetries} for ${url} after delay`);
+              console.log(`Retry ${currentAttempt + 1}/${maxRetries} for ${url[urlIndex]} after delay. urlIndex=${urlIndex}`);
               setTimeout(() => {
                 loadTextureWithRetries(url, maxRetries, delay, currentAttempt + 1)
                     .then(resolve)
                     .catch(reject);
               }, delay);
             } else {
-              console.log(`Failed to load ${url} after ${maxRetries} attempts`);
+              console.log(`Failed to load ${url[urlIndex]} after ${maxRetries} attempts`);
               reject(err);
               processQueue();
             }

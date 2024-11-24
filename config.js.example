@@ -111,7 +111,12 @@ export const _configParams = {
                 // This calculates the correct DIRECT URL for the cache
                 // so we can try this first and if it fails, then try the server
                 // this is much faster than trying the server first
-                const url1 = SITREC_CACHE + urlMD5 + ".jpg";
+                // we add "?prefetch=1" to the URL to ensure it's a different cached version
+                // to the one that is returned from cachemaps.php
+                // otherwise Cloudflare and others will think it's not there even after
+                // cachemaps.php has cached it
+                const url1 = SITREC_CACHE + urlMD5 + ".jpg" + "?prefetch=1";
+
 
                 // and this the the request to the server to cache it
                 // if url1 does not exist then try url2
