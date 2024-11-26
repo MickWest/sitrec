@@ -910,7 +910,8 @@ function preventDefaultHandler(e) {
 }
 
 
-
+// If there is an entry "modding" then that is the name of another sitch
+// So we need to load that sitch, and apply the mods
 export function checkForModding(sitchObject) {
     if (sitchObject.modding) {
         const modObject = sitchObject;
@@ -918,20 +919,39 @@ export function checkForModding(sitchObject) {
         sitchObject = SitchMan.findFirstData(s => {return s.data.name === modObject.modding;})
         assert(sitchObject !== undefined, "Modding sitch not found: "+modObject.modding)
 
-        // Do we need to add the defaults?
 
         // merge the two objects into a new one
         sitchObject = {...sitchObject, ...modObject}
 
-
-
-
-            // remove the modding parameter to be tidy. this ensure we don't get here twice
+        // remove the modding parameter to be tidy. this ensure we don't get here twice
         delete sitchObject.modding
 
         par.name = sitchObject.menuName;
 
 
     }
+
+    if (sitchObject.name === "custom") {
+        const customObj = SitchMan.findFirstData(s => {return s.data.name === "custom";})
+        // iterate over all the k/v in the custom object
+        // if they have value.kind === "GUIValue", and merge into the sitchObject
+        for (const [key, value] of Object.entries(customObj)) {
+            if (value.kind === "GUIValue") {
+                // if the key doesn't exist in the sitchObject, then add it
+                // this would be if there's new values in the UI
+                if (sitchObject[key] === undefined) {
+                    sitchObject[key] = {...value};
+                } else {
+                    // it exists, so we take everything except the value
+                    const oldValue = sitchObject[key].value;
+                    // clone the object
+                    sitchObject[key] = {...sitchObject[key], ...value}
+                    // and restore the value
+                    sitchObject[key].value = oldValue;
+                }
+            }
+        }
+    }
+
     return sitchObject;
 }

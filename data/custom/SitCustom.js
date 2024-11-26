@@ -165,7 +165,8 @@ sitch = {
 
     // true airspeed in knots, note this is NOT ground speed
     // so the absolute ground speed will vary with the wind
-    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed"},
+    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed",
+    elastic: true, elasticMin: 5, elasticMax: 1000},
 
     // turnRate should really be derived from the bank angle, but we'll use it for now
     turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.001, desc: "Turn Rate", gui: "physics"},

@@ -783,6 +783,15 @@ class NumberController extends Controller {
         this._elastic = true;
         this._elasticMin = min;
         this._elasticMax = max;
+        this.updateElasticStep();
+        return this;
+    }
+
+    updateElasticStep() {
+        if (this._elastic) {
+            // just set it to 0.2% of the range
+            this._step = (this._max - this._min) / 500;
+        }
         return this;
     }
 
@@ -1027,6 +1036,7 @@ class NumberController extends Controller {
                 // gone off the right, so expand the range to encompass this
                 while (value > this._max && this._max < this._elasticMax) {
                     this._max = Math.min(this._max * 2, this._elasticMax);
+                    this.updateElasticStep()
                 }
 
                 // off the left, compress the max range?
@@ -1037,6 +1047,7 @@ class NumberController extends Controller {
                     // need to reset _maxClick to the new max
                     // so if we drag back to the right, we don't jump
                     this._maxClick = this._max;
+                    this.updateElasticStep();
                  //   value = this._min;
                 }
 
