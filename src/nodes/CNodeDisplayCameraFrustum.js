@@ -81,7 +81,9 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
 
         this.showQuad = v.showQuad ?? false;
 
-        this.guiToggle("showQuad", "Show Frustum Quad")
+        this.showFrustum = v.showFrustum ?? true;
+        this.guiToggle("showFrustum", "Frustum")
+        this.guiToggle("showQuad", "Frustum Ground  Quad")
 
         this.rebuild()
     }
@@ -252,12 +254,14 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
 
         }
 
-        this.FrustumGeometry = new LineSegmentsGeometry();
-        this.FrustumGeometry.setPositions(line_points);
-        this.line = new Line2(this.FrustumGeometry, this.matLine);
-        this.line.computeLineDistances();
-        this.line.scale.setScalar(1);
-        this.group.add(this.line)
+        if (this.showFrustum) {
+            this.FrustumGeometry = new LineSegmentsGeometry();
+            this.FrustumGeometry.setPositions(line_points);
+            this.line = new Line2(this.FrustumGeometry, this.matLine);
+            this.line.computeLineDistances();
+            this.line.scale.setScalar(1);
+            this.group.add(this.line)
+        }
         this.propagateLayerMask();
         this.lastFOV = this.camera.fov;
 

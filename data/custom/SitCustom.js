@@ -168,9 +168,9 @@ sitch = {
     jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed"},
 
     // turnRate should really be derived from the bank angle, but we'll use it for now
-    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.1, desc: "Turn Rate", gui: "physics"},
+    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.001, desc: "Turn Rate", gui: "physics"},
 
-    jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 1, desc: "Jet Heading", gui: "physics"},
+    jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 0.1, desc: "Jet Heading", gui: "physics"},
 
     flightSimCameraPosition: {
         kind: "JetTrack",
@@ -466,7 +466,8 @@ sitch = {
 
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
     altitudeLabel2: {kind: "MeasureAltitude", position: "traverseSmoothedTrack"},
-    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "targetTrackSwitchSmooth", defer: true},
+//    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "targetTrackSwitchSmooth", defer: true},
+    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "traverseSmoothedTrack", defer: true},
 
 
 

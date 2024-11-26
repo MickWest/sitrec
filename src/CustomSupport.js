@@ -337,6 +337,12 @@ export class CCustomManager {
         Promise.all(loadingPromises).then(() => {
 
 
+            // apply the units first, as some controllers are dependent on them
+            // i.e. Target Speed, which use a GUIValue for speed in whatever units
+            // if the set the units later, then it will convert the speed to the new units
+            if (sitchData.modUnits) {
+                Units.modDeserialize(sitchData.modUnits)
+            }
 
             // now we've either got
             console.log("Promised files loaded in Custom Manager deserialize")
@@ -382,10 +388,7 @@ export class CCustomManager {
 
             measurementUIVars.controller._callOnChange(); // PATCH: call the onChange function to update the UI for the visibility of the measurements
 
-            // apply the units, etc
-            if (sitchData.modUnits) {
-                Units.modDeserialize(sitchData.modUnits)
-            }
+
 
             if (sitchData.guiMenus) {
                 Globals.menuBar.modDeserialize(sitchData.guiMenus)

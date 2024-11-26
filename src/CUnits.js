@@ -122,7 +122,12 @@ export class CUnits {
     }
 
     modDeserialize(v) {
-        this.changeUnits(v.units);
+
+        // we need to set the lastUnits to undefined so that the changeUnits method
+        // will not try to convert the GUIValue nodes
+        this.lastUnits = undefined;
+
+        this.changeUnits(v.units, true);
     }
 
 
@@ -162,7 +167,7 @@ export class CUnits {
             this.speed2M = 1 / this.m2Speed;
 
             if (this.lastUnits !== undefined) {
-                // now calculate a scaling factor from the old unitls to the new
+                // now calculate a scaling factor from the old units to the new
                 // for each of the big, small, speed, and vertical speed
                 // this is used to convert old values to new values
                 const scaleFactors = {
