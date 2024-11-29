@@ -133,7 +133,7 @@ if (isset($_GET['get'])) {
     $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
     $useAWS = file_exists($s3_config_path);
 
-    $useAWS = false;
+   // $useAWS = false;
 
     if ($useAWS) {
         require 'vendor/autoload.php';
