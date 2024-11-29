@@ -375,6 +375,7 @@ export var SitGoFast = {
             "Starting Altitude": "LOSTraverseStartingAltitude",
       //      "Constant Vc (closing vel)": "LOSTraverse1",
             "Straight Line": "LOSTraverseStraightLine",
+            "Windblown Object": "LOSTraverseWind",
         })
 
         // NOTE: diplay LOS are wrong if you pick LOSTwoPoint,
