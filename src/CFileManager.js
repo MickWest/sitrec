@@ -59,7 +59,21 @@ export class CFileManager extends CManager {
             let textSitches = [];
             fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
                 console.log("Local files: " + data)
-                this.userSaves = JSON.parse(data) // will give an array of local files
+
+                const files = JSON.parse(data);
+                // "files" will be and array of arrays, each with a name (index 0) and a date (index 1)
+                // we just want the names
+                // but first sort them by date, newest first
+                files.sort((a, b) => {
+                    return new Date(b[1]) - new Date(a[1]);
+                });
+
+
+                this.userSaves = files.map((file) => {
+                    return file[0];
+                })
+
+
                 // add a "-" to the start of the userSaves array, so we can have a blank entry
                 this.userSaves.unshift("-");
 

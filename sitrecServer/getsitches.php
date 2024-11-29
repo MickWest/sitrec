@@ -133,7 +133,7 @@ if (isset($_GET['get'])) {
     $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
     $useAWS = file_exists($s3_config_path);
 
-    //$useAWS = false;
+    $useAWS = false;
 
     if ($useAWS) {
         require 'vendor/autoload.php';
@@ -175,7 +175,10 @@ if (isset($_GET['get'])) {
             $folders = array();
             foreach ($files as $file) {
                 if (is_dir($dir . '/' . $file) && $file != '.' && $file != '..' && $file != '.DS_Store') {
-                    $folders[] = $file;
+                    // get the last modified date of the folder
+                    $lastModified = filemtime($dir . '/' . $file);
+                    $lastDate = date('Y-m-d H:i:s', $lastModified);
+                    $folders[] = [$file, $lastDate];
                 }
             }
             echo json_encode($folders);
@@ -200,14 +203,31 @@ if (isset($_GET['get'])) {
 
 
                 if ($key != "") {
+
+
+
                     // if $key is a folder, then add it to the array
                     // we can tell if it's a folder because it will contain a /
                     if (strpos($key, "/") !== false) {
                         // strip off everything from the first / onwards
                         $key = strtok($key, "/");
+
+
+                        // check if the key is already in the array
+                        $found = false;
+                        foreach ($folders as $folder) {
+                            if ($folder[0] == $key) {
+                                $found = true;
+                                break;
+                            }
+                        }
+
+
                         // if it does not already exist in the array, then add it
-                        if (!in_array($key, $folders)) {
-                            $folders[] = $key;
+                        if (!$found) {
+                            $lastModified = $object['LastModified'];
+                            $lastDate = $lastModified->format('Y-m-d H:i:s');
+                            $folders[] = [$key, $lastDate];
                         }
                     }
                 }
