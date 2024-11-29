@@ -246,6 +246,15 @@ class CNodeSwitch extends CNode {
         }
     }
 
+    // pass through to the selected input
+    // used, for example, when we want to set the position of a wind node
+    // and the wind node is selected from a switch
+    setPosition(pos) {
+        if (Object.keys(this.inputs).length > 0) {
+            this.inputs[this.choice].setPosition(pos);
+        }
+    }
+
     // apply is used for controllers (like CNodeController)
     // we want to have a selection of camera controllers
     // so we need to pass though the apply() call to the selected one
