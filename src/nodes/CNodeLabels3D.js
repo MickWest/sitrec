@@ -22,6 +22,7 @@ export const measurementUIVars = {
 // a global flag to show/hide all measurements
 let measurementUIDdone = false;
 let measureArrowGroupNode = null;
+let measureDistanceGroupNode = null;
 
 // adds a new group for measurements, and a GUI controller to toggle it.
 export function setupMeasurementUI() {
@@ -31,6 +32,10 @@ export function setupMeasurementUI() {
     // We create a group node to hold all the measurement arrows
     measureArrowGroupNode = new CNode3DGroup({id: "MeasurementsGroupNode"});
     measureArrowGroupNode.isMeasurement = true
+
+    measureDistanceGroupNode = new CNode3DGroup({id: "MeasureDistanceGroupNode"});
+  //  measureDistanceGroupNode.isMeasurement = true;
+
 
 
 //    console.warn("%%%%%%% setupMeasurementUI: Globals.showMeasurements = " + Globals.showMeasurements)
@@ -65,7 +70,10 @@ export function removeMeasurementUI() {
 
 export class CNodeLabel3D extends CNode3DGroup {
     constructor(v) {
+        const groupNode = NodeMan.get(v.groupNode ?? "MeasurementsGroupNode");
+        v.container = groupNode.group;
         super(v)
+        this.groupNode = groupNode;
         this.unitType = v.unitType ?? "big";
         this.decimals = v.decimals ?? 2;
         this.size = v.size ?? 12;
@@ -226,8 +234,8 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         }
 
         // add an arrow from A to C and B to D
-        DebugArrowAB(this.id+"start", this.C, this.A, color, true, measureArrowGroupNode.group);
-        DebugArrowAB(this.id+"end", this.D, this.B, color, true, measureArrowGroupNode.group);
+        DebugArrowAB(this.id+"start", this.C, this.A, color, true, this.groupNode.group);
+        DebugArrowAB(this.id+"end", this.D, this.B, color, true, this.groupNode.group);
 
         const length = this.A.distanceTo(this.B);
         let text;

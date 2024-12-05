@@ -357,7 +357,8 @@ sitch = {
             "Starting Altitude": "LOSTraverseStartingAltitude",
             "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
-            "Windblown Object": "LOSTraverseWind",
+            "Windblown Object (on first LOS)": "LOSTraverseWind",
+            "Windblown Target": "LOSTraverseWindTarget",
         },
         default: "Constant Distance",
         exportable: true,
@@ -468,7 +469,7 @@ sitch = {
     altitudeLabel: {kind: "MeasureAltitude", position: "lookCamera"},
     altitudeLabel2: {kind: "MeasureAltitude", position: "traverseSmoothedTrack"},
 //    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "targetTrackSwitchSmooth", defer: true},
-    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "traverseSmoothedTrack", defer: true},
+    distanceLabel: {kind: "MeasureAB", A: "cameraTrackSwitchSmooth", B: "traverseSmoothedTrack", groupNode: "MeasureDistanceGroupNode", defer: true},
 
 
 

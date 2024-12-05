@@ -934,6 +934,17 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             wind: "targetWind"
     });
 
+    if (NodeMan.exists("fixedTargetPosition")) {
+        new CNodeLOSTraverseWind({
+            id: "LOSTraverseWindTarget" + idExtra,
+            LOS: los,
+            startDist: "startDistance",
+            wind: "targetWind",
+            targetStart: "fixedTargetPosition"
+        });
+    }
+
+
 
     // Constant altitude
 //    console.log("+++ LOSTraverseConstantAltitude Node")

@@ -191,6 +191,7 @@ export class CNodeLOSTraverseWind extends CNodeTrack {
     constructor(v) {
         super(v);
         this.requireInputs(["LOS", "startDist", "wind"])
+        this.input("targetStart", true)
         this.array = []
         this.recalculate()
     }
@@ -200,19 +201,25 @@ export class CNodeLOSTraverseWind extends CNodeTrack {
         this.frames = this.in.LOS.frames
         let startDistance = this.in.startDist.v(0)
         var position, startPosition;
-        var oldDistance;
         for (var f = 0; f < this.frames; f++) {
 
             const los = this.in.LOS.v(f)
 
             var result = {}
             if (f === 0) {
-                // First frame, we just take the start Distance
-                position = los.position.clone();
-                let heading = los.heading.clone();
-                heading.multiplyScalar(startDistance)
-                position.add(heading)
+                // First frame, we just take the start Distance or the target start
+                if (this.in.targetStart) {
+                    // LLA defined position, also adjustable with "X" key
+                    position = this.in.targetStart.v0;
+                } else {
+                    // just start at the given start Distance along the first LOS
+                    position = los.position.clone();
+                    let heading = los.heading.clone();
+                    heading.multiplyScalar(startDistance)
+                    position.add(heading)
+                }
                 startPosition = position.clone();
+
             } else {
 
                 // we need to set the wind position
