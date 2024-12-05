@@ -1,5 +1,5 @@
 import {getPixels} from '../get-pixels-mick.js'
-import {Mesh, MeshNormalMaterial, PlaneGeometry, Vector3,} from "three";
+import {Mesh, MeshNormalMaterial, MeshBasicMaterial, PlaneGeometry, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
 import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
@@ -15,7 +15,8 @@ import {pointOnSphereBelow} from "../../SphericalMath";
 
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 
-const tileMaterial = new MeshNormalMaterial({wireframe: true})
+const tileMaterial = new MeshBasicMaterial({wireframe: true, color: "#408020"})
+
 
 class Utils {
 
