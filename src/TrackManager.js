@@ -536,10 +536,29 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             }
 
 
+            // count how many tracks we have now
+            const trackNumber = TrackManager.size();
+            const trackColors = [
+                new Color(1, 0, 0),
+                new Color(0, 1, 0),
+                new Color(0, 0, 1),
+                new Color(1, 1, 0),
+                new Color(1, 0, 1),
+                new Color(0, 1, 1),
+                new Color(0.5, 0, 0),
+                new Color(0, 0.5, 0),
+                new Color(0, 0, 0.5),
+                new Color(0.5, 0.5, 0),
+                new Color(0, 0.5, 0.5),
+                new Color(0.5, 0, 0.5),
+            ];
+
+            const trackColor = trackColors[trackNumber % trackColors.length];
+
             trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
                 id: "TrackDisplayData_" + shortName,
                 track: "TrackData_" + shortName,
-                color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(1, 0, 0)}),
+                color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor)}),
                 width: 0.5,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
@@ -550,7 +569,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
             trackOb.trackDisplayNode = new CNodeDisplayTrack({
                 id: "TrackDisplay_" + shortName,
                 track: "Track_" + shortName,
-                color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(1, 0, 1)}),
+                color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
                 width: 3,
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,

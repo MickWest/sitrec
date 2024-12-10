@@ -58,10 +58,12 @@ export class CNodeTrackGUI extends CNode {
 
 
     addDisplayTrackColor(displayNode, displayDataNode) {
+        const displayColor = displayNode.in.color.v0;
+
         return new CNodeGUIColor({
             id: displayNode.id + "_color",
             desc: "Color",
-            value: displayNode.in.color.v0,
+            value: displayColor,
             gui: this.guiFolder,
             onChange: (v) => {
                 displayNode.inputs.color.value = v;
