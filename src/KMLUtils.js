@@ -91,11 +91,12 @@ export function parseXml(xml, arrayTags)
     return result;
 }
 
-// Given a KML file, extract two array,
-// "when" = timestamps in ms
-// "coord" = LLA coordinates.
+// Given a KML file, extract two array, and an info object
+// when = timestamps in ms
+// coord = LLA coordinates.
+// info = object with name (info.name) and, potentially, other info about the track
 
-export function getKMLTrackWhenCoord(kml, when, coord, info) {
+export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
 
 
 
@@ -163,8 +164,18 @@ export function getKMLTrackWhenCoord(kml, when, coord, info) {
     } else {
         if (kml.kml.Folder.Folder !== undefined) {
             // ADSB Exchange
-            tracks = kml.kml.Folder.Folder.Placemark
-            info.name = kml.kml.Folder.Folder.name["#text"].split(" ")[0];
+
+            let trackFolder = kml.kml.Folder.Folder
+
+            //
+            if (Array.isArray(trackFolder)) {
+                console.log("Multiple Track ADSB-Exchange, using index "+trackIndex)
+                // there are multiple tracks, so we need to select the right one
+                trackFolder = kml.kml.Folder.Folder[trackIndex]
+            }
+            tracks = trackFolder.Placemark;
+
+            info.name = trackFolder.name["#text"].split(" ")[0];
         } else {
             // exported from Google earth, maybe via ADSB Exchange
             tracks = kml.kml.Folder.Placemark.name["#text"];
@@ -509,11 +520,11 @@ message
 // which gives us an array of times and an array of coordinates
 // then we just map that to the MISB format
 // Which means we are only using the time, lat, lon, and alt fields
-export function KMLToMISB(kml) {
+export function KMLToMISB(kml, trackIndex = 0) {
     const _times = []
     const _coord = []
     const info = {}
-    getKMLTrackWhenCoord(kml, _times, _coord, info)
+    getKMLTrackWhenCoord(kml, trackIndex, _times, _coord, info)
 
     const misb = []
     for (let i = 0; i < _times.length; i++) {
