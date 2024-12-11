@@ -3,6 +3,7 @@ import GUI, {Controller} from "./js/lil-gui.esm";
 import {updateSize} from "./JetStuff";
 import {ViewMan} from "./nodes/CNodeView";
 import {Globals} from "./Globals";
+import {Color} from "three";
 import {assert} from "./assert";
 const Stats = require("stats.js");
 
@@ -102,6 +103,35 @@ Controller.prototype.setLabelColor = function(color) {
 
     return this; // Return the controller to allow method chaining
 };
+
+// same but for a GUI object (i.e. a folder)
+GUI.prototype.setLabelColor = function(color, min=0) {
+    // if color is an obkect, then it's a color object
+    // so convert it to a hex string
+    if (typeof color === "object") {
+        color = color.getStyle();
+    }
+
+    // convert back to a color object
+    const colorObj = new Color(color);
+    if (min>0) {
+        // if the largest component is less than min, then scale it up
+        // and scale the other components up by the same amount
+        const max = Math.max(colorObj.r, colorObj.g, colorObj.b);
+        if (max < min) {
+            // handle the case where all components are zero
+            if (max === 0) {
+                // set to min
+                colorObj.set(min, min, min);
+            } else {
+                colorObj.multiplyScalar(min / max);
+            }
+        }
+    }
+    color = colorObj.getStyle();
+    this.domElement.style.color = color;
+    return this; // Return the controller to allow method chaining
+}
 
 // Move a controller to the top of its parent
 Controller.prototype.moveToFirst = function() {

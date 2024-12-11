@@ -184,12 +184,12 @@ class CNode {
         assert(f !== undefined, "Something upstream is not passing in f to node's update function")
     }
 
-    show() {
-        this.visible = true;
+    show(visible = true) {
+        this.visible = visible;
     }
 
     hide() {
-        this.visible = false;
+        this.show(false);
     }
 
     onTerrainLoaded(callback)  {

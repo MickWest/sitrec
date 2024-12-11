@@ -226,6 +226,7 @@ export class CNodeDateTime extends CNode {
     }
     
     changedFrames() {
+        Sit.frames = Math.round(Sit.frames);
         par.frames = Sit.frames;
         NodeMan.updateSitFramesChanged();
         updateGUIFrames();
@@ -237,7 +238,7 @@ export class CNodeDateTime extends CNode {
         // and set the bFrame to the new max
         Sit.bFrame = Sit.frames-1;
 
-        // if aFrame is greater than bFrame, then sit it to zero
+        // if aFrame is greater than bFrame, then set it to zero
         if (Sit.aFrame > Sit.bFrame) Sit.aFrame = 0;
 
     }

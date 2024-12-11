@@ -1,5 +1,5 @@
 //
-import {guiShowHide, Sit} from "../Globals";
+import {guiMenus, guiShowHide, Sit} from "../Globals";
 import {dispose} from "../threeExt";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {LineMaterial} from "three/addons/lines/LineMaterial.js";
@@ -29,6 +29,8 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // newer method - allow input nodes to be declared outside the inputs object
         // and automatically convert constant inputs to CConstantNodes
         this.input("track") // track contains position, and optionally color
+        this.input("dataTrackDisplay", true); // optional data track for reference
+
         this.input("color") // or color can be supplied in a seperate node
         this.optionalInputs(["badColor", "secondColor"]) // to be used if a segment is flagged as "bad"
         this.input("width") // Width currently only working as a constant (v0 is used)
@@ -70,6 +72,46 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 layers: LAYER.MASK_HELPERS,
             })
         }
+
+
+        if (!v.skipGUI) {
+            this.gui = v.gui ?? "contents";
+            this.guiFolder = guiMenus[this.gui].addFolder(this.id).close();
+
+            const minGUIColor = 0.6;
+
+            // set the color of the folder (and its content) to the track color
+            // but we have a minimum value to ensure it's visible
+            this.guiFolder.setLabelColor(this.in.color.v0, minGUIColor);
+
+
+            // toggle for visibility with optional linked data track
+            this.visible = true
+            this.guiFolder.add(this, "visible").listen().onChange(() => {
+                this.show(this.visible);
+                if (this.in.dataTrackDisplay !== undefined) {
+                    this.in.dataTrackDisplay.show(this.visible)
+                }
+            })
+
+            // color picker for the track color, with optional linked data track
+            this.displayColor = this.in.color.v0
+            this.guiFolder.addColor(this, "displayColor").onChange(() => {
+
+                this.guiFolder.setLabelColor(this.in.color.v0,minGUIColor);
+
+                this.in.color.value = this.displayColor
+                this.recalculate()
+                if (this.in.dataTrackDisplay !== undefined) {
+                    this.in.dataTrackDisplay.in.color.value = this.displayColor
+                    this.in.dataTrackDisplay.recalculate()
+                }
+            })
+        }
+
+        // TODO: Add a gui entry for the track color
+        // TODO: link data display track to normal display tracks in terms of visibility and color
+
         
         this.recalculate()
     }

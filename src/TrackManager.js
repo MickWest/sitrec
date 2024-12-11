@@ -542,7 +542,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 new Color(1, 0, 0),
                 new Color(0, 1, 0),
                 new Color(0, 0, 1),
-                new Color(1, 1, 0),
+               // new Color(1, 1, 0), skip yellow as it's the traverse color
                 new Color(1, 0, 1),
                 new Color(0, 1, 1),
                 new Color(0.5, 0, 0),
@@ -563,12 +563,14 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 //  toGround: 1, // spacing for lines to ground
                 ignoreAB: true,
                 layers: LAYER.MASK_HELPERS,
+                skipGUI: true,
 
             })
 
             trackOb.trackDisplayNode = new CNodeDisplayTrack({
                 id: "TrackDisplay_" + shortName,
                 track: "Track_" + shortName,
+                dataTrackDisplay: "TrackDisplayData_" + shortName,
                 color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
                 width: 3,
                 //  toGround: 1, // spacing for lines to ground
@@ -622,12 +624,15 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     //  toGround: 1, // spacing for lines to ground
                     ignoreAB: true,
                     layers: LAYER.MASK_HELPERS,
+                    skipGUI: true,
+
 
                 })
 
                 trackOb.displayCenterNode = new CNodeDisplayTrack({
                     id: "CenterDisplay_" + shortName,
                     track: centerID,
+                    dataTrackDisplay: "CenterDisplayData_" + shortName,
                     color: new CNodeConstant({id: "colorCenter_" + shortName, value: new Color(1, 1, 0)}),
                     width: 3,
                     //  toGround: 1, // spacing for lines to ground
