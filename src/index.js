@@ -290,7 +290,10 @@ async function newSitch(situation, customSetup = false ) {
     cancelAnimationFrame(animate);
     console.log("%%%%% BEFORE the two AWAITS %%%%%%%%")
     await waitForParsingToComplete();
-    await waitForTerrainToLoad();
+
+    if (!process.env.NO_TERRAIN) {
+        await waitForTerrainToLoad();
+    }
     console.log("%%%%% AFTER the two AWAITS %%%%%%%%")
     disposeEverything();
     if (!customSetup) {

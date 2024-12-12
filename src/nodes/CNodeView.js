@@ -10,15 +10,19 @@ import {CManager} from "../CManager";
 import {Globals, guiShowHideViews, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {isConsole} from "../../config";
+import {setupPageStructure} from "../PageStructure";
+
+
 
 
 class CViewManager extends CManager {
     constructor(v) {
         super(v);
         if (!isConsole) { // will not be used in console mode, so just an empty singleton
-
+            setupPageStructure();
             this.topPx = 24;
             this.leftPx = 0;
+            this.container = document.getElementById("Content")
             this.updateSize();
 
 
@@ -38,9 +42,9 @@ class CViewManager extends CManager {
             //
             // document.body.appendChild(this.div);
             // this.container = this.div;
-
             // old (working) way
-            this.container = window;
+            //this.container = window;
+
         }
     }
 
@@ -48,7 +52,9 @@ class CViewManager extends CManager {
 
         if (!isConsole) {
             this.widthPx = window.innerWidth - this.leftPx;
-            this.heightPx = window.innerHeight - this.topPx;
+//            this.heightPx = window.innerHeight - this.topPx; // Old
+            this.heightPx = this.container.offsetHeight - this.topPx; // New
+            console.log("Setting ViewMan size to "+this.widthPx+","+this.heightPx)
         }
     }
 

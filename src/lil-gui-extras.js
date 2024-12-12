@@ -249,6 +249,11 @@ export class CGuiMenuBar {
         const bar = document.createElement("div");
         bar.style.position = "absolute";
         bar.style.top = "0px";
+        if (process.env.BANNER_ACTIVE) {
+            bar.style.top          = process.env.BANNER_HEIGHT + "px";
+            this.menuBar.style.top = process.env.BANNER_HEIGHT + "px";
+        }
+
         bar.style.left = "0px";
         bar.style.height = this.barHeight+"px"; // one pixel more than the menu title divs
         bar.style.width = "100%";
@@ -300,6 +305,10 @@ export class CGuiMenuBar {
 
         // add an info GUI in the top right
         this.infoGUI = new GUI().title("Sitrec").close()
+        // move it down if there is a banner
+        if (process.env.BANNER_ACTIVE) {
+            this.infoGUI.domElement.style.top = process.env.BANNER_HEIGHT + "px";
+        }
 
          Globals.stats = new Stats();
         // Globals.stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom

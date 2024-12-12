@@ -33,6 +33,9 @@ export class CNodeFrameSlider extends CNode {
         sliderContainer.style.position = 'absolute';
         sliderContainer.style.height = '40px';
         sliderContainer.style.bottom = '0px';
+        if (process.env.BANNER_ACTIVE) {
+            sliderContainer.style.bottom = process.env.BANNER_HEIGHT + 'px';
+        }
         sliderContainer.style.width = '100%';
         sliderContainer.style.zIndex = '1001'; // Needed to get mouse events when over other windows
         sliderContainer.style.display = 'flex';
