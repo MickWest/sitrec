@@ -14,6 +14,7 @@ import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 import {convertColorInput} from "../ConvertColorInputs";
 import {par} from "../par";
+import {hexColor} from "../threeUtils";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
@@ -74,35 +75,39 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         }
 
 
+        this.displayColor = this.in.color.v0
+        this.visible = true
+
         if (!v.skipGUI) {
             this.gui = v.gui ?? "contents";
             this.guiFolder = guiMenus[this.gui].addFolder(this.id).close();
 
-            const minGUIColor = 0.6;
+            this.minGUIColor = 0.6;
 
             // set the color of the folder (and its content) to the track color
             // but we have a minimum value to ensure it's visible
-            this.guiFolder.setLabelColor(this.in.color.v0, minGUIColor);
+            this.guiFolder.setLabelColor(this.in.color.v0, this.minGUIColor);
 
 
             // toggle for visibility with optional linked data track
-            this.visible = true
             this.guiFolder.add(this, "visible").listen().onChange(() => {
                 this.show(this.visible);
                 if (this.in.dataTrackDisplay !== undefined) {
+                    this.in.dataTrackDisplay.visible = this.visible
                     this.in.dataTrackDisplay.show(this.visible)
                 }
             })
 
             // color picker for the track color, with optional linked data track
-            this.displayColor = this.in.color.v0
+
             this.guiFolder.addColor(this, "displayColor").onChange(() => {
 
-                this.guiFolder.setLabelColor(this.in.color.v0,minGUIColor);
+                this.guiFolder.setLabelColor(this.in.color.v0,this.minGUIColor);
 
                 this.in.color.value = this.displayColor
                 this.recalculate()
                 if (this.in.dataTrackDisplay !== undefined) {
+                    this.in.dataTrackDisplay.displayColor = this.displayColor
                     this.in.dataTrackDisplay.in.color.value = this.displayColor
                     this.in.dataTrackDisplay.recalculate()
                 }
@@ -127,6 +132,29 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         dispose(this.trackGeometry)
         super.dispose();
     }
+
+    modSerialize() {
+
+        return {
+            ...super.modSerialize(),
+            displayColor: hexColor(this.displayColor),
+            visible: this.visible,
+
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v);
+        this.displayColor = new Color(v.displayColor);
+        this.in.color.value = this.displayColor;
+        if (this.guiFolder !== undefined) {
+            this.guiFolder.setLabelColor(this.in.color.v0, this.minGUIColor);
+        }
+        this.visible = v.visible;
+        this.show(this.visible);
+      //  this.guiFolder.updateDisplay();
+    }
+
 
     recalculate() {
         this.group.remove(this.trackLine)

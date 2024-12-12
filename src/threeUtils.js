@@ -1,5 +1,5 @@
 // Utlity functions to make vectors, 2 or 3 size.
-import {Vector2, Vector3} from "three";
+import {Vector2, Vector3, Color} from "three";
 
 
 export function V2(x = 0, y = 0) {
@@ -202,4 +202,11 @@ export function makeMatrix4PointYAt(_normal) {
     te[10] = _z.z;
     return m;
 
+}
+
+export function hexColor(color) {
+    color = new Color(color); // ensures strings get converted to color objects
+    const hex = "#"+color.getHexString();
+    console.log("hexColor", color, hex);
+    return hex;
 }
