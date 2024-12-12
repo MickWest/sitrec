@@ -5,8 +5,14 @@ const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const InstallPaths = require('./config-install');
-const child_process = require('child_process');
 const copyPatterns = require('./webpackCopyPatterns');
+const Dotenv = require('dotenv-webpack');
+const child_process = require('child_process');
+const dotenv = require('dotenv');
+const result = dotenv.config();
+if (result.error) {
+    throw result.error;
+}
 
 function getFormattedLocalDateTime() {
     const now = new Date();
@@ -17,7 +23,9 @@ function getFormattedLocalDateTime() {
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
     // Get the most recent tag from git
-    const gitTag = child_process.execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
+    // Or use environment variable for version/tag if available
+    const gitTag = process.env.VERSION ||
+        child_process.execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
     return `Sitrec ${gitTag}: ${year}-${month}-${day} ${hours}:${minutes} PT`;
 }
 
@@ -67,6 +75,7 @@ module.exports = {
         },
     },
     plugins: [
+        new Dotenv(),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             title: "Sitrec - Metabunk's Situation Recreation Tool",
