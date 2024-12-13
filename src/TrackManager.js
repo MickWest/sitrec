@@ -93,6 +93,12 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
         assert(0, "Unknown file type: " + fileInfo.filename)
     }
 
+    // if there's no data, then return, which will just skip this track
+    if (!misb || misb.length === 0) {
+        return false;
+    }
+
+
     // first make a data track with id = dataID
     // from the misb array source
     // This will be an array of :
@@ -326,314 +332,253 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
             // just use the default MISB Columns, so no columns are specified
-            makeTrackFromDataFile(trackFileName, trackDataID, trackID, undefined, trackIndex);
+            const success = makeTrackFromDataFile(trackFileName, trackDataID, trackID, undefined, trackIndex);
 
 
-            const trackNode = NodeMan.get(trackID);
-            const trackDataNode = NodeMan.get(trackDataID);
-            // this has the original data in common MISB format, regardless of the data type
-            // actual MISB (and possibly other CSV inputs) might have a center track
-            //
-            const misb = trackDataNode.misb;
+            if (success) {
+                const trackNode = NodeMan.get(trackID);
+                const trackDataNode = NodeMan.get(trackDataID);
+                // this has the original data in common MISB format, regardless of the data type
+                // actual MISB (and possibly other CSV inputs) might have a center track
+                //
+                const misb = trackDataNode.misb;
 
-            // Create the track object
-            const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
-            trackOb.trackID = trackID;
-            trackOb.menuText = shortName;
+                // Create the track object
+                const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
+                trackOb.trackID = trackID;
+                trackOb.menuText = shortName;
 
-            // This track will include FOV and angles
-            // but if there's a center track, we make a separate track for that
-            // in data it looks like
-            // targetTrack: {
-            //     kind: "TrackFromMISB",
-            //         misb: "cameraTrackData",
-            //         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
-            // },
-
-
-            let centerID = null;
-            if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
-                hasCenter = true;
-
-                const centerDataID = "CenterData_" + shortName;
-                centerID = "Center_" + shortName;
-                // const centerTrack = new CNodeTrackFromMISB({
-                //     id: centerTrackID,
-                //     misb: trackDataNode,
-                //     columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"],
-                //     exportable: true,
-                // })
-
-                makeTrackFromDataFile(trackFileName, centerDataID, centerID,
-                    ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
-
-                trackOb.centerDataNode = NodeMan.get(centerDataID);
-                trackOb.centerNode = NodeMan.get(centerID);
+                // This track will include FOV and angles
+                // but if there's a center track, we make a separate track for that
+                // in data it looks like
+                // targetTrack: {
+                //     kind: "TrackFromMISB",
+                //         misb: "cameraTrackData",
+                //         columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]
+                // },
 
 
-            }
+                let centerID = null;
+                if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
+                    hasCenter = true;
 
-            console.log(Sit.dropTargets)
+                    const centerDataID = "CenterData_" + shortName;
+                    centerID = "Center_" + shortName;
+                    // const centerTrack = new CNodeTrackFromMISB({
+                    //     id: centerTrackID,
+                    //     misb: trackDataNode,
+                    //     columns: ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"],
+                    //     exportable: true,
+                    // })
 
-            // how many tracks are there now?
-            const trackNUmber = TrackManager.size();
-            console.log(`Track number: ${trackNUmber}`)
+                    makeTrackFromDataFile(trackFileName, centerDataID, centerID,
+                        ["FrameCenterLatitude", "FrameCenterLongitude", "FrameCenterElevation"]);
 
-
-            if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
-                const dropTargets = Sit.dropTargets["track"]
-                for (let dropTargetSwitch of dropTargets) {
-
-                    // if it ends with a - and a number, then we extract that number, called "selectNumber
-
-                    // we set the selectNumber to the track number by default
-                    // which means that it will always be selected
-                    // unless the dropTarget has a number at the end
-                    // in which case it will be selected only that's the same as the track number
-                    let selectNumber = trackNUmber;
-                    const match = dropTargetSwitch.match(/-(\d+)$/);
-                    if (match !== null) {
-                        selectNumber = Number(match[1]);
-                        // strip off the last part
-                        dropTargetSwitch = dropTargetSwitch.substring(0, dropTargetSwitch.length - match[0].length);
-
-                    }
-
-                    if (NodeMan.exists(dropTargetSwitch)) {
-                        const switchNode = NodeMan.get(dropTargetSwitch);
-
-                        // switchNode.removeOption("KML Track")
-                        // switchNode.addOptionToGUIMenu("KML Track", new CNodeControllerTrackPosition({
-                        //     sourceTrack: trackID,
-                        // }))
+                    trackOb.centerDataNode = NodeMan.get(centerDataID);
+                    trackOb.centerNode = NodeMan.get(centerID);
 
 
-                        if (Sit.dropAsController) {
-                            // backwards compatibility for SitNightSky
-                            // which expects dropped tracks to create a controller
-                            switchNode.addOption(shortName, new CNodeControllerTrackPosition({
-                                id: "TrackController_" + trackID,
-                                sourceTrack: trackID,
-                            }))
-                            // and select it
-                            if (trackNUmber === selectNumber) {
-                                switchNode.selectOption(shortName)
-                            }
-                        } else {
-                            // drag and drop default now just adds the data source track, not a controller
-                            // this is more flexible, as the user can then add a controller if they want
-                            switchNode.removeOption(shortName)
-                            switchNode.addOption(shortName, NodeMan.get(trackID))
-                            // and select it (Quietly, as we don't want to zoom to it yet)
-                            if (trackNUmber === selectNumber) {
-                                switchNode.selectOptionQuietly(shortName)
-                            }
-                            // if there's a center point track, make that as well
-                            if (centerID !== null) {
-                                const menuTextCenter = "Center " + shortName;
-                                switchNode.removeOption(menuTextCenter)
-                                switchNode.addOption(menuTextCenter, NodeMan.get(centerID))
-                                // if it's being added to targetTrackSwitch then select it
-                                if (switchNode.id === "targetTrackSwitch") {
-                                    switchNode.selectOption(menuTextCenter)
-                                }
-                            }
+                }
+
+                console.log(Sit.dropTargets)
+
+                // how many tracks are there now?
+                const trackNUmber = TrackManager.size();
+                console.log(`Track number: ${trackNUmber}`)
+
+
+                if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
+                    const dropTargets = Sit.dropTargets["track"]
+                    for (let dropTargetSwitch of dropTargets) {
+
+                        // if it ends with a - and a number, then we extract that number, called "selectNumber
+
+                        // we set the selectNumber to the track number by default
+                        // which means that it will always be selected
+                        // unless the dropTarget has a number at the end
+                        // in which case it will be selected only that's the same as the track number
+                        let selectNumber = trackNUmber;
+                        const match = dropTargetSwitch.match(/-(\d+)$/);
+                        if (match !== null) {
+                            selectNumber = Number(match[1]);
+                            // strip off the last part
+                            dropTargetSwitch = dropTargetSwitch.substring(0, dropTargetSwitch.length - match[0].length);
 
                         }
 
+                        if (NodeMan.exists(dropTargetSwitch)) {
+                            const switchNode = NodeMan.get(dropTargetSwitch);
 
-                        // add to the "Sync Time to" menu
-                        GlobalDateTimeNode.addSyncToTrack(trackDataID);
-                        // and call it to sync the time
-                        // we don't need to recalculate from this track
-                        // as it's only just been loaded. ????????
-                        // Actually, we do, as the change in time will change the
-                        // position of the per-frame track segment and the display
-                        GlobalDateTimeNode.syncStartTimeTrack();
+                            // switchNode.removeOption("KML Track")
+                            // switchNode.addOptionToGUIMenu("KML Track", new CNodeControllerTrackPosition({
+                            //     sourceTrack: trackID,
+                            // }))
 
+
+                            if (Sit.dropAsController) {
+                                // backwards compatibility for SitNightSky
+                                // which expects dropped tracks to create a controller
+                                switchNode.addOption(shortName, new CNodeControllerTrackPosition({
+                                    id: "TrackController_" + trackID,
+                                    sourceTrack: trackID,
+                                }))
+                                // and select it
+                                if (trackNUmber === selectNumber) {
+                                    switchNode.selectOption(shortName)
+                                }
+                            } else {
+                                // drag and drop default now just adds the data source track, not a controller
+                                // this is more flexible, as the user can then add a controller if they want
+                                switchNode.removeOption(shortName)
+                                switchNode.addOption(shortName, NodeMan.get(trackID))
+                                // and select it (Quietly, as we don't want to zoom to it yet)
+                                if (trackNUmber === selectNumber) {
+                                    switchNode.selectOptionQuietly(shortName)
+                                }
+                                // if there's a center point track, make that as well
+                                if (centerID !== null) {
+                                    const menuTextCenter = "Center " + shortName;
+                                    switchNode.removeOption(menuTextCenter)
+                                    switchNode.addOption(menuTextCenter, NodeMan.get(centerID))
+                                    // if it's being added to targetTrackSwitch then select it
+                                    if (switchNode.id === "targetTrackSwitch") {
+                                        switchNode.selectOption(menuTextCenter)
+                                    }
+                                }
+
+                            }
+
+
+                            // add to the "Sync Time to" menu
+                            GlobalDateTimeNode.addSyncToTrack(trackDataID);
+                            // and call it to sync the time
+                            // we don't need to recalculate from this track
+                            // as it's only just been loaded. ????????
+                            // Actually, we do, as the change in time will change the
+                            // position of the per-frame track segment and the display
+                            GlobalDateTimeNode.syncStartTimeTrack();
+
+                        }
+                    }
+
+                    // If we are adding the track to a drop target
+                    // then also creat a Track Options menu for it, so the user can:
+                    // - change the color
+                    // - change the width
+                    // - toggle the display
+                    // - toggle distance and altitiude labels
+                    // - toggle the display of the target sphere
+                    // - edit the size of the target sphere
+                    // - toggle wireframe or solid
+                    // - change the sphere color
+                    // - toggle sunlight illumination
+                    // - add a model, like a 737, etc. Maybe even a custom local model?
+                    // - add a label
+
+                    // perhaps we need a track manager to keep track of all the tracks
+
+                    // HERE WE ARE!!!!
+                }
+
+                // if the track had FOV data, and there's an fov drop target, then add it
+                //
+                let value = trackNode.v(0);
+                if (typeof value === "string") {
+                    value = Number(value);
+                }
+
+                if (isNumber(value)) {
+                    hasFOV = true;
+                } else if (value.misbRow !== undefined && !isNaN(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
+                    hasFOV = true;
+                } else if (value.vFOV !== undefined) {
+                    hasFOV = true;
+                }
+
+
+                if (hasFOV && Sit.dropTargets !== undefined && Sit.dropTargets["fov"] !== undefined) {
+                    const dropTargets = Sit.dropTargets["fov"]
+                    for (const dropTargetSwitch of dropTargets) {
+                        if (NodeMan.exists(dropTargetSwitch)) {
+                            const switchNode = NodeMan.get(dropTargetSwitch);
+                            switchNode.removeOption(trackID)
+                            switchNode.addOption(trackID, NodeMan.get(trackID))
+                            switchNode.selectOption(trackID)
+                        }
                     }
                 }
 
-                // If we are adding the track to a drop target
-                // then also creat a Track Options menu for it, so the user can:
-                // - change the color
-                // - change the width
-                // - toggle the display
-                // - toggle distance and altitiude labels
-                // - toggle the display of the target sphere
-                // - edit the size of the target sphere
-                // - toggle wireframe or solid
-                // - change the sphere color
-                // - toggle sunlight illumination
-                // - add a model, like a 737, etc. Maybe even a custom local model?
-                // - add a label
+                // same type of thing for heading angles
+                if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.PlatformPitchAngle])) {
+                    hasAngles = true;
+                }
 
-                // perhaps we need a track manager to keep track of all the tracks
+                //
+                if (hasAngles && Sit.dropTargets !== undefined && Sit.dropTargets["angles"] !== undefined) {
+                    let data = {
+                        id: trackID + "_LOS",
+                        smooth: 120, // maybe GUI this?
+                    }
+                    let anglesNode = makeLOSNodeFromTrackAngles(trackID, data);
+                    trackOb.anglesNode = anglesNode;
+                    let anglesID = "Angles_" + shortName;
+                    let anglesController = new CNodeControllerMatrix({
+                        id: anglesID,
+                        source: anglesNode,
+                    })
+                    trackOb.anglesController = anglesController;
 
-                // HERE WE ARE!!!!
-            }
+                    const lookCamera = NodeMan.get("lookCamera");
+                    lookCamera.addControllerNode(anglesController)
 
-            // if the track had FOV data, and there's an fov drop target, then add it
-            //
-            let value = trackNode.v(0);
-            if (typeof value === "string") {
-                value = Number(value);
-            }
-
-            if (isNumber(value)) {
-                hasFOV = true;
-            } else if (value.misbRow !== undefined && !isNaN(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
-                hasFOV = true;
-            } else if (value.vFOV !== undefined) {
-                hasFOV = true;
-            }
-
-
-            if (hasFOV && Sit.dropTargets !== undefined && Sit.dropTargets["fov"] !== undefined) {
-                const dropTargets = Sit.dropTargets["fov"]
-                for (const dropTargetSwitch of dropTargets) {
-                    if (NodeMan.exists(dropTargetSwitch)) {
-                        const switchNode = NodeMan.get(dropTargetSwitch);
-                        switchNode.removeOption(trackID)
-                        switchNode.addOption(trackID, NodeMan.get(trackID))
-                        switchNode.selectOption(trackID)
+                    const dropTargets = Sit.dropTargets["angles"]
+                    for (const dropTargetSwitch of dropTargets) {
+                        if (NodeMan.exists(dropTargetSwitch)) {
+                            const switchNode = NodeMan.get(dropTargetSwitch);
+                            switchNode.removeOption(anglesID)
+                            switchNode.addOption(anglesID, NodeMan.get(anglesID))
+                            switchNode.selectOption(anglesID)
+                        }
                     }
                 }
-            }
-
-            // same type of thing for heading angles
-            if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.PlatformPitchAngle])) {
-                hasAngles = true;
-            }
-
-            //
-            if (hasAngles && Sit.dropTargets !== undefined && Sit.dropTargets["angles"] !== undefined) {
-                let data = {
-                    id: trackID + "_LOS",
-                    smooth: 120, // maybe GUI this?
-                }
-                let anglesNode = makeLOSNodeFromTrackAngles(trackID, data);
-                trackOb.anglesNode = anglesNode;
-                let anglesID = "Angles_" + shortName;
-                let anglesController = new CNodeControllerMatrix({
-                    id: anglesID,
-                    source: anglesNode,
-                })
-                trackOb.anglesController = anglesController;
-
-                const lookCamera = NodeMan.get("lookCamera");
-                lookCamera.addControllerNode(anglesController)
-
-                const dropTargets = Sit.dropTargets["angles"]
-                for (const dropTargetSwitch of dropTargets) {
-                    if (NodeMan.exists(dropTargetSwitch)) {
-                        const switchNode = NodeMan.get(dropTargetSwitch);
-                        switchNode.removeOption(anglesID)
-                        switchNode.addOption(anglesID, NodeMan.get(anglesID))
-                        switchNode.selectOption(anglesID)
-                    }
-                }
-            }
 
 
-            // count how many tracks we have now
-            const trackNumber = TrackManager.size();
-            const trackColors = [
-                new Color(1, 0, 0),
-                new Color(0, 1, 0),
-                new Color(0, 0, 1),
-               // new Color(1, 1, 0), skip yellow as it's the traverse color
-                new Color(1, 0, 1),
-                new Color(0, 1, 1),
-                new Color(0.5, 0, 0),
-                new Color(0, 0.5, 0),
-                new Color(0, 0, 0.5),
-                new Color(0.5, 0.5, 0),
-                new Color(0, 0.5, 0.5),
-                new Color(0.5, 0, 0.5),
-            ];
+                // count how many tracks we have now
+                const trackNumber = TrackManager.size();
+                const trackColors = [
+                    new Color(1, 0, 0),
+                    new Color(0, 1, 0),
+                    new Color(0, 0, 1),
+                    // new Color(1, 1, 0), skip yellow as it's the traverse color
+                    new Color(1, 0, 1),
+                    new Color(0, 1, 1),
+                    new Color(0.5, 0, 0),
+                    new Color(0, 0.5, 0),
+                    new Color(0, 0, 0.5),
+                    new Color(0.5, 0.5, 0),
+                    new Color(0, 0.5, 0.5),
+                    new Color(0.5, 0, 0.5),
+                ];
 
-            const trackColor = trackColors[trackNumber % trackColors.length];
+                const trackColor = trackColors[trackNumber % trackColors.length];
 
-            trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
-                id: "TrackDisplayData_" + shortName,
-                track: "TrackData_" + shortName,
-                color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor)}),
-                width: 0.5,
-                //  toGround: 1, // spacing for lines to ground
-                ignoreAB: true,
-                layers: LAYER.MASK_HELPERS,
-                skipGUI: true,
-
-            })
-
-            trackOb.trackDisplayNode = new CNodeDisplayTrack({
-                id: "TrackDisplay_" + shortName,
-                track: "Track_" + shortName,
-                dataTrackDisplay: "TrackDisplayData_" + shortName,
-                color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
-                width: 3,
-                //  toGround: 1, // spacing for lines to ground
-                ignoreAB: true,
-                layers: LAYER.MASK_HELPERS,
-
-            })
-
-
-            //    trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
-            //        id: trackOb.shortName+"_ob",
-            //        inputs: {
-            //            track: trackOb.trackNode,
-            // //           size: "sizeTargetScaled",
-            //        },
-            //        color: [1, 0, 1],
-            //        layers: sphereMask,
-            //        wireframe: true,
-            //
-            //    })
-
-
-            const sphereId = trackOb.menuText ?? shortName;
-
-            // instead of a sphere, add a 3dObject sphere and follow controllers
-            trackOb.displayTargetSphere = new CNode3DObject({
-                id: sphereId + "_ob",
-                object: "sphere",
-                radius: 10,
-
-            });
-
-            trackOb.displayTargetSphere.addController("TrackPosition", {
-                //   id: trackOb.shortName+"_controller",
-                sourceTrack: trackID,
-            });
-
-            trackOb.displayTargetSphere.addController("ObjectTilt", {
-                track: trackID,
-                tiltType: "banking",
-            })
-
-
-            if (centerID !== null) {
-
-                trackOb.displayCenterDataNode = new CNodeDisplayTrack({
-                    id: "CenterDisplayData_" + shortName,
-                    track: "CenterData_" + shortName,
-                    color: new CNodeConstant({id: "colorCenterData_" + shortName, value: new Color(0, 1, 0)}),
+                trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
+                    id: "TrackDisplayData_" + shortName,
+                    track: "TrackData_" + shortName,
+                    color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor)}),
                     width: 0.5,
                     //  toGround: 1, // spacing for lines to ground
                     ignoreAB: true,
                     layers: LAYER.MASK_HELPERS,
                     skipGUI: true,
 
-
                 })
 
-                trackOb.displayCenterNode = new CNodeDisplayTrack({
-                    id: "CenterDisplay_" + shortName,
-                    track: centerID,
-                    dataTrackDisplay: "CenterDisplayData_" + shortName,
-                    color: new CNodeConstant({id: "colorCenter_" + shortName, value: new Color(1, 1, 0)}),
+                trackOb.trackDisplayNode = new CNodeDisplayTrack({
+                    id: "TrackDisplay_" + shortName,
+                    track: "Track_" + shortName,
+                    dataTrackDisplay: "TrackDisplayData_" + shortName,
+                    color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
                     width: 3,
                     //  toGround: 1, // spacing for lines to ground
                     ignoreAB: true,
@@ -642,141 +587,203 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 })
 
 
-                // trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
-                //     id: "CenterSphere_" + shortName,
-                //     inputs: {
-                //         track: trackOb.centerNode,
-                //         size: "sizeTargetScaled",
-                //     },
-                //     color: [1, 1, 0],
-                //     layers: sphereMask,
-                //     wireframe: true,
+                //    trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({
+                //        id: trackOb.shortName+"_ob",
+                //        inputs: {
+                //            track: trackOb.trackNode,
+                // //           size: "sizeTargetScaled",
+                //        },
+                //        color: [1, 0, 1],
+                //        layers: sphereMask,
+                //        wireframe: true,
                 //
-                // })
+                //    })
 
 
-            }
+                const sphereId = trackOb.menuText ?? shortName;
 
-            if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom) {
-                // maybe adjust the main view camera to look at the center of the track
-                const mainCameraNode = NodeMan.get("mainCamera");
-                const mainCamera = mainCameraNode.camera;
-                const mainView = NodeMan.get("mainView");
-                const bbox = trackBoundingBox(trackOb.trackDataNode);
-                console.log(`Track ${shortName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
-                const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
-                // get point on sphere
-                const ground = pointOnSphereBelow(center);
-                // what's the length of the diagonal of the bounding box?
-                const diagonal = bbox.max.clone().sub(bbox.min).length();
+                // instead of a sphere, add a 3dObject sphere and follow controllers
+                trackOb.displayTargetSphere = new CNode3DObject({
+                    id: sphereId + "_ob",
+                    object: "sphere",
+                    radius: 10,
 
-                const hfov = mainView.getHFOV();
-                // we want the camera height be enough to encompass the diagonal across the hfov
-                const cameraHeight = (diagonal * 1.25) / (2 * Math.tan(hfov / 2));
+                });
 
+                trackOb.displayTargetSphere.addController("TrackPosition", {
+                    //   id: trackOb.shortName+"_controller",
+                    sourceTrack: trackID,
+                });
 
-                // move the camera up by the cameraHeight
-                const up = getLocalUpVector(ground);
-                const cameraTarget = ground.clone().add(up.clone().multiplyScalar(cameraHeight));
-                // and move south by  the cameraHeight
-                const south = getLocalSouthVector(ground);
-                cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
-                mainCamera.position.copy(cameraTarget);
-                mainCamera.lookAt(ground);
-
-                // since we've set the camera default postion for this track, store it
-                // so calling mainCameraNode.resetCamera() will use these new values
-
-                mainCameraNode.snapshotCamera();
+                trackOb.displayTargetSphere.addController("ObjectTilt", {
+                    track: trackID,
+                    tiltType: "banking",
+                })
 
 
-                // // first get LLA versions of the EUS values cameraTarget and ground
-                // const cameraTargetLLA = EUSToLLA(cameraTarget);
-                // const groundLLA = EUSToLLA(ground);
-                // // then store them in the mainCamera node
-                // mainCameraNode.startPosLLA = cameraTargetLLA;
-                // mainCameraNode.lookAtLLA = groundLLA;
+                if (centerID !== null) {
+
+                    trackOb.displayCenterDataNode = new CNodeDisplayTrack({
+                        id: "CenterDisplayData_" + shortName,
+                        track: "CenterData_" + shortName,
+                        color: new CNodeConstant({id: "colorCenterData_" + shortName, value: new Color(0, 1, 0)}),
+                        width: 0.5,
+                        //  toGround: 1, // spacing for lines to ground
+                        ignoreAB: true,
+                        layers: LAYER.MASK_HELPERS,
+                        skipGUI: true,
 
 
-                // If this is not the first track, then find the time of the closest intersection.
+                    })
 
-                const track0 = TrackManager.getByIndex(0);
-                if (track0 !== trackOb) {
-                    let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
-                    console.log("Closest intersection time: ", time);
+                    trackOb.displayCenterNode = new CNodeDisplayTrack({
+                        id: "CenterDisplay_" + shortName,
+                        track: centerID,
+                        dataTrackDisplay: "CenterDisplayData_" + shortName,
+                        color: new CNodeConstant({id: "colorCenter_" + shortName, value: new Color(1, 1, 0)}),
+                        width: 3,
+                        //  toGround: 1, // spacing for lines to ground
+                        ignoreAB: true,
+                        layers: LAYER.MASK_HELPERS,
 
-                    // we want this in the middle, so subtract half the Sit.frames
-
-                    //    time -= Math.floor(Sit.frames*Sit.fps*1000);
-
-                    GlobalDateTimeNode.setStartDateTime(time);
-                    GlobalDateTimeNode.recalculateCascade();
-                    par.renderOne = true;
-
-                    // and make the 2nd track the target track if we have a targetTrackSwitch
-                    if (NodeMan.exists("targetTrackSwitch")) {
-                        const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
-                        targetTrackSwitch.selectOption(trackOb.menuText);
-
-                        // and make the camera track switch use the other track.
-                        const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch");
-                        cameraTrackSwitch.selectOption(track0.menuText);
-
-                        // and set the traverse mode to target object
-                        const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
-                        traverseModeSwitch.selectOption("Target Object");
-
-                        // second track, so we assume we want to focus on this target
-                        // so we are setting the "Camera Heading"  to "To Target" (from "Use Angles")
-                        const headingSwitch = NodeMan.get("CameraLOSController", true);
-                        if (headingSwitch) {
-                            headingSwitch.selectOption("To Target");
-                        }
+                    })
 
 
-                    }
-
-                    // and since we have an intersection, zoomTo it if there's a TerrainModel
-                    if (NodeMan.exists("terrainUI")) {
-                        let terrainUINode = NodeMan.get("terrainUI")
-                        terrainUINode.zoomToTrack(trackOb.trackNode);
-                    }
-
-
-                } else {
-                    // this is the first track loaded.
-                    // so just center on this track
-                    if (NodeMan.exists("terrainUI")) {
-                        let terrainUINode = NodeMan.get("terrainUI")
-                        terrainUINode.zoomToTrack(trackOb.trackNode);
-                    }
-
-
-                    // if it's a simple track with no center track and no angles (i.e. not MISB)
-                    // then switch to "Use Angles" for the camera heading
-                    // which will use the PTZ control as no angles track will be loaded yet
-
-                    if (!hasCenter && !hasAngles) {
-
-                        // first simple track, so just use angles
-                        // which will point the camera in a fixed direction
-                        const headingSwitch = NodeMan.get("CameraLOSController", true);
-                        if (headingSwitch) {
-                            headingSwitch.selectOption("Use Angles");
-                        }
-
-                    }
+                    // trackOb.displayCenterSphere = new CNodeDisplayTargetSphere({
+                    //     id: "CenterSphere_" + shortName,
+                    //     inputs: {
+                    //         track: trackOb.centerNode,
+                    //         size: "sizeTargetScaled",
+                    //     },
+                    //     color: [1, 1, 0],
+                    //     layers: sphereMask,
+                    //     wireframe: true,
+                    //
+                    // })
 
 
                 }
 
+                if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom) {
+                    // maybe adjust the main view camera to look at the center of the track
+                    const mainCameraNode = NodeMan.get("mainCamera");
+                    const mainCamera = mainCameraNode.camera;
+                    const mainView = NodeMan.get("mainView");
+                    const bbox = trackBoundingBox(trackOb.trackDataNode);
+                    console.log(`Track ${shortName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
+                    const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
+                    // get point on sphere
+                    const ground = pointOnSphereBelow(center);
+                    // what's the length of the diagonal of the bounding box?
+                    const diagonal = bbox.max.clone().sub(bbox.min).length();
+
+                    const hfov = mainView.getHFOV();
+                    // we want the camera height be enough to encompass the diagonal across the hfov
+                    const cameraHeight = (diagonal * 1.25) / (2 * Math.tan(hfov / 2));
+
+
+                    // move the camera up by the cameraHeight
+                    const up = getLocalUpVector(ground);
+                    const cameraTarget = ground.clone().add(up.clone().multiplyScalar(cameraHeight));
+                    // and move south by  the cameraHeight
+                    const south = getLocalSouthVector(ground);
+                    cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
+                    mainCamera.position.copy(cameraTarget);
+                    mainCamera.lookAt(ground);
+
+                    // since we've set the camera default postion for this track, store it
+                    // so calling mainCameraNode.resetCamera() will use these new values
+
+                    mainCameraNode.snapshotCamera();
+
+
+                    // // first get LLA versions of the EUS values cameraTarget and ground
+                    // const cameraTargetLLA = EUSToLLA(cameraTarget);
+                    // const groundLLA = EUSToLLA(ground);
+                    // // then store them in the mainCamera node
+                    // mainCameraNode.startPosLLA = cameraTargetLLA;
+                    // mainCameraNode.lookAtLLA = groundLLA;
+
+
+                    // If this is not the first track, then find the time of the closest intersection.
+
+                    const track0 = TrackManager.getByIndex(0);
+                    if (track0 !== trackOb) {
+                        let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
+                        console.log("Closest intersection time: ", time);
+
+                        // we want this in the middle, so subtract half the Sit.frames
+
+                        //    time -= Math.floor(Sit.frames*Sit.fps*1000);
+
+                        GlobalDateTimeNode.setStartDateTime(time);
+                        GlobalDateTimeNode.recalculateCascade();
+                        par.renderOne = true;
+
+                        // and make the 2nd track the target track if we have a targetTrackSwitch
+                        if (NodeMan.exists("targetTrackSwitch")) {
+                            const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
+                            targetTrackSwitch.selectOption(trackOb.menuText);
+
+                            // and make the camera track switch use the other track.
+                            const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch");
+                            cameraTrackSwitch.selectOption(track0.menuText);
+
+                            // and set the traverse mode to target object
+                            const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
+                            traverseModeSwitch.selectOption("Target Object");
+
+                            // second track, so we assume we want to focus on this target
+                            // so we are setting the "Camera Heading"  to "To Target" (from "Use Angles")
+                            const headingSwitch = NodeMan.get("CameraLOSController", true);
+                            if (headingSwitch) {
+                                headingSwitch.selectOption("To Target");
+                            }
+
+
+                        }
+
+                        // and since we have an intersection, zoomTo it if there's a TerrainModel
+                        if (NodeMan.exists("terrainUI")) {
+                            let terrainUINode = NodeMan.get("terrainUI")
+                            terrainUINode.zoomToTrack(trackOb.trackNode);
+                        }
+
+
+                    } else {
+                        // this is the first track loaded.
+                        // so just center on this track
+                        if (NodeMan.exists("terrainUI")) {
+                            let terrainUINode = NodeMan.get("terrainUI")
+                            terrainUINode.zoomToTrack(trackOb.trackNode);
+                        }
+
+
+                        // if it's a simple track with no center track and no angles (i.e. not MISB)
+                        // then switch to "Use Angles" for the camera heading
+                        // which will use the PTZ control as no angles track will be loaded yet
+
+                        if (!hasCenter && !hasAngles) {
+
+                            // first simple track, so just use angles
+                            // which will point the camera in a fixed direction
+                            const headingSwitch = NodeMan.get("CameraLOSController", true);
+                            if (headingSwitch) {
+                                headingSwitch.selectOption("Use Angles");
+                            }
+
+                        }
+
+
+                    }
+
+                }
+
+                trackOb.gui = new CNodeTrackGUI({
+                    id: trackID + "_GUI",
+                    metaTrack: trackOb,
+                })
             }
-
-            trackOb.gui = new CNodeTrackGUI({
-                id: trackID + "_GUI",
-                metaTrack: trackOb,
-            })
-
 
             trackIndex++;
         }
