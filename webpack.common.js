@@ -8,6 +8,10 @@ const InstallPaths = require('./config-install');
 const copyPatterns = require('./webpackCopyPatterns');
 const Dotenv = require('dotenv-webpack');
 const child_process = require('child_process');
+const fs = require('fs');
+const MarkdownIt = require('markdown-it');
+const md = new MarkdownIt();
+
 const dotenv = require('dotenv');
 const result = dotenv.config();
 if (result.error) {
@@ -22,17 +26,12 @@ function getFormattedLocalDateTime() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
-    // Get the most recent tag from git
-    // Or use environment variable for version/tag if available
     const gitTag = process.env.VERSION ||
         child_process.execSync('git describe --tags --abbrev=0', { encoding: 'utf8' }).trim();
     return `Sitrec ${gitTag}: ${year}-${month}-${day} ${hours}:${minutes} PT`;
 }
 
 console.log(getFormattedLocalDateTime());
-
-// example install of several of the above, in the project dir (using terminal in PHPStorm)
-// npm install copy-webpack-plugin --save-dev
 
 module.exports = {
     entry: {
@@ -44,22 +43,6 @@ module.exports = {
     },
     module: {
         rules: [
-            /*
-            { // erm - do I need this? babel is for transpiling down to earlier verisons of js?
-                test: /\.js$/,
-                loader: "babel-loader",
-                exclude: "/node_modules/",
-            },
-            */
-
-            // {
-            //     test: /\.tsx?$/,
-            //   //  include: path.resolve(__dirname, 'src'),
-            //     use: 'ts-loader',
-            //     exclude: /node_modules/,
-            // },
-
-
             {
                 test: /\.css$/,
                 use: [
@@ -71,8 +54,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['.js'],
-        alias: {
-        },
+        alias: {},
     },
     plugins: [
         new Dotenv(),
@@ -84,25 +66,59 @@ module.exports = {
             Buffer: ['buffer', 'Buffer'],
         }),
         new webpack.ProvidePlugin({
-            // Fix for jquery issues with normal import under Webpack. Possibly circular dependencies
             $: "jquery",
             jQuery: "jquery",
         }),
         new CopyPlugin({
-            patterns: copyPatterns
+            patterns: [
+                ...copyPatterns, // Existing patterns
+                {
+                    from: path.resolve(__dirname, 'docs'),
+                    to: path.resolve(InstallPaths.dev_path, 'docs'),
+                    globOptions: {
+                        ignore: ['**/*.md'], // Ignore Markdown files here
+                    },
+                },
+            ],
         }),
+        {
+            // Custom plugin for converting Markdown to HTML
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tapPromise('MarkdownToHtmlPlugin', async () => {
+                    const docsDir = path.resolve(__dirname, 'docs');
+                    const outputDir = path.resolve(InstallPaths.dev_path, 'docs');
+
+                    const convertMarkdownFiles = async (dir) => {
+                        const files = await fs.promises.readdir(dir, { withFileTypes: true });
+
+                        for (const file of files) {
+                            const fullPath = path.join(dir, file.name);
+                            const relativePath = path.relative(docsDir, fullPath);
+                            const outputPath = path.join(outputDir, relativePath.replace(/\.md$/, '.html'));
+
+                            if (file.isDirectory()) {
+                                await fs.promises.mkdir(path.join(outputDir, relativePath), { recursive: true });
+                                await convertMarkdownFiles(fullPath);
+                            } else if (file.name.endsWith('.md')) {
+                                const markdownContent = await fs.promises.readFile(fullPath, 'utf-8');
+                                const htmlContent = md.render(markdownContent);
+                                await fs.promises.writeFile(outputPath, htmlContent, 'utf-8');
+                            }
+                        }
+                    };
+
+                    await convertMarkdownFiles(docsDir);
+                });
+            },
+        },
         new webpack.DefinePlugin({
             'process.env.BUILD_VERSION_STRING': JSON.stringify(getFormattedLocalDateTime()),
-            'CAN_REQUIRE_CONTEXT': JSON.stringify(true)
+            'CAN_REQUIRE_CONTEXT': JSON.stringify(true),
         }),
     ],
     experiments: {
-        topLevelAwait: true
+        topLevelAwait: true,
     },
-
-    // This is to keep class names, which I use for the data driven construction
-    // needs: npm i -D terser-webpack-plugin
-    // see: https://stackoverflow.com/questions/50903065/how-to-disable-webpack-minification-for-classes-names#:~:text=3-,Install,-Terser%20Plugin%20to
     optimization: {
         minimizer: [
             new TerserPlugin({
