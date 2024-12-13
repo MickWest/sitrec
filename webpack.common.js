@@ -87,6 +87,8 @@ module.exports = {
                 compiler.hooks.afterEmit.tapPromise('MarkdownToHtmlPlugin', async () => {
                     const docsDir = path.resolve(__dirname, 'docs');
                     const outputDir = path.resolve(InstallPaths.dev_path, 'docs');
+                    const rootReadme = path.resolve(__dirname, 'README.md');
+                    const outputRootReadme = path.resolve(InstallPaths.dev_path, 'README.html');
 
                     const convertMarkdownFiles = async (dir) => {
                         const files = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -107,7 +109,15 @@ module.exports = {
                         }
                     };
 
+                    // Convert Markdown files in the `docs` directory
                     await convertMarkdownFiles(docsDir);
+
+                    // Convert the root README.md file
+                    if (fs.existsSync(rootReadme)) {
+                        const readmeContent = await fs.promises.readFile(rootReadme, 'utf-8');
+                        const htmlContent = md.render(readmeContent);
+                        await fs.promises.writeFile(outputRootReadme, htmlContent, 'utf-8');
+                    }
                 });
             },
         },
@@ -137,6 +147,6 @@ module.exports = {
     output: {
         filename: '[name].[contenthash].bundle.js',
         path: InstallPaths.dev_path,
-        clean: true, // this deleted the contents of path (InstallPaths.dev_path)
+        clean: true, // this deletes the contents of path (InstallPaths.dev_path)
     },
 };

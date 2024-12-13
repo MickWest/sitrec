@@ -29,7 +29,7 @@ The most common use case is to display three views:
 
 Here's the [famous Aguadilla video](https://www.metabunk.org/sitrec/?sitch=agua)
 
-![screenshot of Sitrec showing the Aguadilla sitch](readmeImages/agua-example.jpg)
+![screenshot of Sitrec showing the Aguadilla sitch](docs/readmeImages/agua-example.jpg)
 
 Sitrec uses or ingests a variety of data sources
 
@@ -81,7 +81,7 @@ Sitrec is built from the "sitrec" project folder. Note this is NOT the same "sit
 
 Clone Sitrec from GitHub, or download a release archive. This will give you the sitrec project folder with these sub-folders:
 - `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
-- `readmeImages` - Documentation images used by this .md file, and maybe others
+- `docs` - other .md format Documentation and images
 - `sitrecServer` - The server-side PHP files, like cachemaps.php
 - `src` - The JavaScript source, with the entry point of index.js
 - `three.js` - The 3D engine, the largest library used
@@ -330,7 +330,7 @@ Note in the above, mainView covers the entire screen (width:1), but it's also ty
 
 Note: This was originally a sitch specified in code, but the same format is used for the dynamically loaded files that are parsed as text. This was in src/sitch/SitWestJet.js (as a code module), but is now in data/sitWestJet.js (as a text file)
 
-![WestJet Screenshot](readmeImages/westjet.jpg)
+![WestJet Screenshot](docs/readmeImages/westjet.jpg)
 
 ```javascript
 export const SitWestJet = {

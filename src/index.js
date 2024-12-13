@@ -456,12 +456,20 @@ async function initializeOnce() {
     addGUIMenu("contents", "Contents")
 
     addGUIMenu("help", "Help");
-    guiMenus.help.addExternalLink("Github Sitrec ReadMe", "https://github.com/MickWest/sitrec?tab=readme-ov-file#readme").perm();
-    guiMenus.help.addExternalLink("User Interface (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/UserInterface.md").perm();
 
-    guiMenus.help.addExternalLink("Custom Sitch Tool (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomSitchTool.md").perm();
-    guiMenus.help.addExternalLink("Custom Models (GitHub)", "https://github.com/MickWest/sitrec/blob/main/docs/CustomModels.md").perm();
 
+    function addHelpLink(name, file) {
+        if (process.env.LOCAL_DOCS ) {
+            guiMenus.help.addExternalLink(name+ " (Local)", "./"+file+".html").perm();
+        } else {
+            guiMenus.help.addExternalLink(name+ " (Github)", "https://github.com/MickWest/sitrec/blob/main/"+file+".md").perm();
+        }
+    }
+
+    addHelpLink("Sitrec ReadMe", "README")
+    addHelpLink("User Interface", "docs/UserInterface")
+    addHelpLink("Custom Sitch Tool", "docs/CustomSitchTool")
+    addHelpLink("Custom Models", "docs/CustomModels")
 
     // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)
