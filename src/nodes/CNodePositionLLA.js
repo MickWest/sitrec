@@ -26,32 +26,52 @@ export class CNodePositionLLA extends CNode {
                    desc: name + " Lat",
                    value: this.LLA[0],
                    start: -90, end: 90, step: 0.01,
+                   stepExplicit: false, // prevent snapping
                    onChange: (v) => {
+                       // Get the text of the input to see if they pasted in Lat, Lon
+                       // like 40.9096508,-74.0734146
+                       // if so, then split it and set the values
+                       const input = this.guiLat.guiEntry.$input.value;
+                       const split = input.split(",");
+                       if (split.length === 2) {
+                           const lat = parseFloat(split[0]);
+                           const lon = parseFloat(split[1]);
+                           if (!isNaN(lat) && !isNaN(lon)) {
+                               this.guiLat.guiEntry.$input.value = lat;
+                               this.LLA[0] = lat;
+                               this.LLA[1] = lon;
+                               this.guiLon.value = lon;
+                               this.recalculateCascade(0)
+                               return;
+                           }
+                       }
                        this.LLA[0] = v;
                        this.recalculateCascade(0)
                    }
                }, v.gui)
 
                this.guiLon = new CNodeGUIValue({
-                    id: name + " Lon",
-                    desc: name + " Lon",
-                    value: this.LLA[1],
-                    start: -180, end: 180, step: 0.01,
-                    onChange: (v) => {
-                        this.LLA[1] = v;
-                        this.recalculateCascade(0)
-                    }
+                   id: name + " Lon",
+                   desc: name + " Lon",
+                   value: this.LLA[1],
+                   start: -180, end: 180, step: 0.01,
+                   stepExplicit: false, // prevent snapping
+                   onChange: (v) => {
+                       this.LLA[1] = v;
+                       this.recalculateCascade(0)
+                   }
                 }, v.gui)
 
                this.guiAlt = new CNodeGUIValue({
-                    id: name + " Alt (ft)",
-                    desc: name + " Alt (ft)",
-                    value: m2f(this.LLA[2]),
-                    start: 0, end: 100000, step: 1,
-                    onChange: (v) => {
-                        this.LLA[2] = f2m(v);
-                        this.recalculateCascade(0)
-                    }
+                   id: name + " Alt (ft)",
+                   desc: name + " Alt (ft)",
+                   value: m2f(this.LLA[2]),
+                   start: 0, end: 100000, step: 1,
+                   stepExplicit: false, // prevent snapping
+                   onChange: (v) => {
+                       this.LLA[2] = f2m(v);
+                       this.recalculateCascade(0)
+                   }
                 }, v.gui)
 
             }

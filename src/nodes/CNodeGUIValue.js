@@ -79,6 +79,13 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         if (v.color !== undefined) {
             this.guiEntry.setLabelColor(v.color)
         }
+
+        // the guiEntry has a _stepExplicit field, which flags
+        // if we snap to the step, or allow any value
+        // this is used (set false) in the CNodePositionLLA to prevent snapping
+        if (v.stepExplicit !== undefined) {
+            this.guiEntry._stepExplicit = v.stepExplicit;
+        }
     }
 
     getValueFrame(frame) {

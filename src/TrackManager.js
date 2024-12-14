@@ -606,7 +606,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 trackOb.displayTargetSphere = new CNode3DObject({
                     id: sphereId + "_ob",
                     object: "sphere",
-                    radius: 10,
+                    radius: 40,
 
                 });
 
