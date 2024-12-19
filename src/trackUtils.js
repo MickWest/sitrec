@@ -69,10 +69,13 @@ export function closestIntersectionTime(track1, track2) {
     const misb2 = NodeMan.get(track2).misb;
     const frames1 = misb1.length;
     const frames2 = misb2.length;
-    const start1 = misb1[0][MISB.UnixTimeStamp];
-    const start2 = misb2[0][MISB.UnixTimeStamp];
-    const end1 = misb1[frames1 - 1][MISB.UnixTimeStamp];
-    const end2 = misb2[frames2 - 1][MISB.UnixTimeStamp];
+
+    // Need to use getTime to get the time in milliseconds
+    // as some of the timestamps are in microseconds
+    const start1 = track1.getTime(0);
+    const start2 = track2.getTime(0);
+    const end1 = track1.getTime(frames1 - 1);
+    const end2 = track2.getTime(frames2 - 1);
 
     // convert all four times to strings
     const start1String = new Date(start1).toISOString();
