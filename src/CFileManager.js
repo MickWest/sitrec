@@ -9,7 +9,7 @@ import {
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
-import {isConsole, SITREC_ROOT, SITREC_SERVER} from "../config";
+import {isConsole, isLocal, SITREC_ROOT, SITREC_SERVER} from "../config";
 import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {Globals, guiMenus, NodeMan, setNewSitchObject, Sit} from "./Globals";
@@ -53,6 +53,13 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "rehostFile").name("Rehost File").perm();
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
             }
+
+
+            if (isLocal) {
+                this.guiFolder.add(NodeMan, "recalculateAllRootFirst").name("debug recalculate all").perm();
+            }
+
+
 
             // get the list of files saved on the server
             // this is basically a list of the folders in the user's directory
