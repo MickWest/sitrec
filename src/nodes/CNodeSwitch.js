@@ -43,6 +43,13 @@ class CNodeSwitch extends CNode {
             // build the list of "key","key" pairs for the gui drop-down menu
             Object.keys(this.inputs).forEach(key => {
                 this.guiOptions[key] = key
+
+                // if any of the inputs are controllers, then this switch is a controller
+                if (this.inputs[key].isController) {
+                    this.isController = true
+                }
+
+
                 //          assert(this.frames === this.choiceList[key].frames,"Frame number mismatch "+
                 //              this.frames + key + this.choiceList[key].frames)
             })
@@ -51,6 +58,23 @@ class CNodeSwitch extends CNode {
                 .onChange((newValue) => {   // using ()=> preserves this
 //                    console.log("Changed to "+newValue)
 //                    console.log("(changing) this.choice = "+this.choice)
+
+                    // if the inputs are controllers
+                    // then we need to recalculate the output nodes
+                    // of the selected controller
+                    // because this switch won't do it
+                    for (const key in this.inputs) {
+                        if (key === this.choice) {
+                            if (this.inputs[key].isController) {
+                                console.warn("CNodeSwitch:onChange: selected input "+key+" is a controller, so recalculating ALL")
+                                //this.inputs[key].recalculateCascade()
+                                NodeMan.recalculateAllRootFirst(false); // patch to recalculate all nodes
+                                break
+                            } else {
+                               // console.log("CNodeSwitch:onChange: selected input "+key+" is not a controller, so not recalculating")
+                            }
+                        }
+                    }
 
                     //this.recalculateCascade()
                     this.recalculateCascade(undefined, false, 0, false)
@@ -177,10 +201,16 @@ class CNodeSwitch extends CNode {
     // if a switch is disabled, then it will disable all its inputs
     // if a switch is enabled, then it will enable only the selected input
     enableController(enable) {
-//        console.log(`CNodeSwitch:enableController(${enable}) called for ${this.id}`)
+        // console.log(`CNodeSwitch:enableController(${enable}) called for ${this.id}`)
         Object.keys(this.inputs).forEach(key => {
             const node = this.inputs[key];
-            node.enableController(enable && key === this.choice)
+            if (key === this.choice) {
+                // console.log(`CNodeSwitch:enableController(${enable}) enabling ${key}`)
+                node.enableController(enable)
+            } else {
+                // console.log(`CNodeSwitch:enableController(${enable}) disabling ${key}`)
+                node.enableController(false)
+            }
         })
     }
 

@@ -132,6 +132,9 @@ sitch = {
                 }},
         },
 
+        // NOTE: Don't use camera shake effect, as there's an issue with the useRecorded that
+        // needs to be resolved first. (Switching from "To Target" to "Use Angles" causes the LOS to be incorrect)
+
         syncPixelZoomWithVideo: true,
     },
 
@@ -157,8 +160,11 @@ sitch = {
     lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind", gui:"physics"},
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // CAMERA TRACKS AND DISPLAY
 
     // this is the fixed camera position that you can move around while holding C, or edit in the camera GUI
+    // this is a track, so it can be used for the camera, or for a target, or for a traverse like any other track
     fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "camera", key:"C"},
 
     // Parameters for the JetTrack node, which is a simple flight simulator creating a jet track, as used in Gimbal, FLIR1, and GoFast
@@ -173,6 +179,7 @@ sitch = {
 
     jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 0.1, desc: "Jet Heading", gui: "physics"},
 
+    // Track of a jet with some simple physics
     flightSimCameraPosition: {
         kind: "JetTrack",
         speed: "jetTAS",
@@ -183,6 +190,8 @@ sitch = {
         useSitFrames: true,
     },
 
+    // Switch between the posible camera tracks
+    // as more tracks are added by the user, this switch will be updated
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
             "fixedCamera": "fixedCameraPosition",
@@ -192,6 +201,8 @@ sitch = {
         gui: "camera",
     },
 
+    // Smoothed version of the camera track
+    // just takes the ouput of the cameraTrackSwitch and smooths it
 
     cameraTrackSwitchSmooth: {
         kind: "SmoothedPositionTrack",
@@ -202,7 +213,7 @@ sitch = {
     },
 
 
-    // display the traverse track (Track)
+    // display the camera track
     cameraDisplayTrack: {
         kind: "DisplayTrack",
         track: "cameraTrackSwitchSmooth",
@@ -210,9 +221,16 @@ sitch = {
         width: 1,
     },
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // TARGET TRACKS AND DISPLAY
+    // Similar to the camera tracks, but for the target
 
+
+    // this is the fixed target position that you can move around while holding X, or edit in the target GUI
     fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "target", key:"X"},
 
+    // Target switch, for switching between different target tracks
+    // initially just the fixed target, but can be updated by the user (adding KML or MISB tracks)
     targetTrackSwitch: {
         kind: "Switch",
         inputs: {
@@ -251,6 +269,8 @@ sitch = {
     },
 
 
+    // A controller for the camera position, TrackPosition just follows the track, updating the position and not
+    // the orientation of the camera
     trackPositionController: {kind: "TrackPosition", sourceTrack: "cameraTrackSwitchSmooth"},
 
     // These are the types of controller for the camera
@@ -263,10 +283,6 @@ sitch = {
         desc: "Camera Position",
         gui:"camera"
     },
-
-
-
-
 
     // we orient the camera to the track by default
     // either the PTZ controller or the trackToTrack controller will override this
@@ -285,7 +301,7 @@ sitch = {
     },
 
 
-    // angels controllers
+    // Switch for angles controllers
     angelsSwitch: {
         kind: "Switch",
         inputs: {
@@ -312,9 +328,9 @@ sitch = {
 
     // Since we are controlling the camera with the LOS controller, we can extract the LOS
     // for other uses, such as a target track generated for LOS traversal
-    recordLos: {kind: "RecordLOS"},
+   // recordLos: {kind: "RecordLOS"},
 
-    JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
+    JetLOSCameraCenter: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: false},
    // JetLOS: {kind: "LOSFromCamera", cameraNode: "lookCamera", useRecorded: true},
 
 
@@ -330,7 +346,7 @@ sitch = {
     },
 
 
-    // // // the actual LOS source can be the camera or the tracking overlay
+    // // // the actual LOS source can be the camera's centerline or the tracking overlay
     // // // (or maybe others later)
     JetLOS: {kind: "Switch", inputs: {
             "Camera Center": "JetLOSCameraCenter",
@@ -408,7 +424,7 @@ sitch = {
 
 
 
-    targetObject: { kind: "3DObject",
+    traverseObject: { kind: "3DObject",
         geometry: "box",
         layers: "TARGETRENDER",
         size: 1,
@@ -424,9 +440,9 @@ sitch = {
         widthSegments:20,
         heightSegments:20,
     },
-    moveTargetAlongPath: {kind: "TrackPosition", object: "targetObject", sourceTrack: "traverseSmoothedTrack"},
+    moveTargetAlongPath: {kind: "TrackPosition", object: "traverseObject", sourceTrack: "traverseSmoothedTrack"},
     orientTarget: {
-        kind: "ObjectTilt", object: "targetObject", track: "traverseSmoothedTrack", tiltType: "frontPointing"
+        kind: "ObjectTilt", object: "traverseObject", track: "traverseSmoothedTrack", tiltType: "frontPointing"
     }, // bank
 
 
@@ -473,14 +489,14 @@ sitch = {
 
 
 
-    shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
-        frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"effects"},
-        decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"effects"},
-        multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"effects"},
-        xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"effects"},
-        yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"effects"},
-        spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"effects"},
-    },
+    // shakeLookCamera: {kind: "CameraShake", object: "lookCamera",
+    //     frequency: {kind: "GUIValue", value: 0.0, start: 0.0, end: 1, step: 0.001, desc: "Shake Freq", gui:"effects"},
+    //     decay: {kind: "GUIValue",     value: 0.708, start: 0.0, end: 1, step: 0.001, desc: "Shake Decay", gui:"effects"},
+    //     multiply: {kind: "GUIValue",  value: 10, start: 1, end: 100, step: 1, desc: "Shake Multiply", gui:"effects"},
+    //     xScale: {kind: "GUIValue",    value: 0.35, start: 0.0, end: 10, step: 0.01, desc: "Shake X Scale", gui:"effects"},
+    //     yScale: {kind: "GUIValue",    value: 0.652, start: 0.0, end: 10, step: 0.01, desc: "Shake Y Scale", gui:"effects"},
+    //     spring: {kind: "GUIValue",    value: 0.719, start: 0.0, end: 1, step: 0.001, desc: "Shake Spring", gui:"effects"},
+    // },
 
 
     targetDistanceGraph: {

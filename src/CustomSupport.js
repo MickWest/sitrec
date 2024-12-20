@@ -415,7 +415,11 @@ export class CCustomManager {
         // special logic for custom model visibility
         // if the custom model is following the same track as this one, then turn it off
 
-        const targetObject = NodeMan.get("targetObject")
+        let targetObject = NodeMan.get("targetObject", false);
+        if (targetObject === undefined) {
+            targetObject = NodeMan.get("traverseObject");
+        }
+
 
 
         // iterate over the NodeMan objects

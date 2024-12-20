@@ -18,8 +18,8 @@ export const SitHayle = {
     terrain: {lat: 50.197944, lon: -5.428180, zoom: 15, nTiles: 8},
 
     mainCamera: {
-        startCameraPosition: [278.4748110392168, 64.40911042728831, -205.77524399028982],
-        startCameraTarget: [374.9433739111792, -41.17793070506451, -1195.4949988311907],
+        startCameraPositionLLA:[50.194880,-5.427217,83.228373],
+        startCameraTargetLLA:[50.203452,-5.431351,30.197730],
     },
 
     lookCamera: {},

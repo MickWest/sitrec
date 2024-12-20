@@ -19,8 +19,8 @@ export const SitN14AQ = {
     skyColor: 'skyblue',
 
     mainCamera: {
-        startCameraPosition: [-45363.5216949528, 55163.527660652966, -178916.8365339594],
-        startCameraTarget: [-45322.06031147982, 54883.94200386166, -177957.61142263407],
+        startCameraPositionLLA:[33.574426,-82.985859,55127.465142],
+        startCameraTargetLLA:[33.566191,-82.985950,54746.628234],
     },
     lookCamera:{ fov: 23},
     cameraTrack: {},
