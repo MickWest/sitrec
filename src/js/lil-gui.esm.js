@@ -779,10 +779,11 @@ class NumberController extends Controller {
     }
 
     // elastic will expand or contract the range if you push against the min or max
-    elastic( min = 100, max = 1000000 ) {
+    elastic( min = 100, max = 1000000, integer = false ) {
         this._elastic = true;
         this._elasticMin = min;
         this._elasticMax = max;
+        this._elasticInteger = integer;
         this.updateElasticStep();
         return this;
     }
@@ -791,6 +792,9 @@ class NumberController extends Controller {
         if (this._elastic) {
             // just set it to 0.2% of the range
             this._step = (this._max - this._min) / 500;
+            if (this._elasticInteger) {
+                this._step = Math.max(1,Math.round(this._step));
+            }
         }
         return this;
     }

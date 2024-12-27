@@ -78,10 +78,13 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         this.cameraNode = cameraNode;
         this.camera = this.cameraNode.camera;
 
+        this.spreadMethods = ["Range", "Altitude"];
+        this.spreadMethod = v.spreadMethod ?? "Range"
+
         this.near = v.near ?? 100;
         this.far = v.far ?? 1000;
 
-        this.colorMethods = ["Random", "User", "Hue From Altitude"];
+        this.colorMethods = ["Random", "User", "Hue From Altitude", "Hue From Distance"];
 
         this.colorMethod = v.colorMethod ?? "Random";
         this.userColor = v.userColor ?? "#FFFFFF";
@@ -141,9 +144,13 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             this.oldNSprites = this.nSprites;
 
 
-        }).elastic(100, 2000);
+        }).elastic(100, 2000, true);
 
-        // add near ad far sliders
+        this.gui.add(this, "spreadMethod", this.spreadMethods).name("Spread Method").onChange(() => {
+            this.updateColors();
+        })
+
+        // add near and far sliders
         this.gui.add(this, "near", 1, 1000, 1).listen().name("Near").onChange(() => {
             if (this.far <= this.near) {
                 this.far = this.near + 10;
@@ -170,6 +177,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         })
 
         this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Altitude Max").onChange(() => {
+            this.rebuildSprites();
             this.updateColors();
         }).elastic(1000, 100000)
 
