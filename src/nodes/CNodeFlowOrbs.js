@@ -6,7 +6,7 @@ import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
 import {DebugArrow, removeDebugArrow} from "../threeExt";
 import * as LAYER from "../LayerMasks";
-import {altitudeAboveSphere} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalDownVector} from "../SphericalMath";
 
 class CFlowOrb {
     constructor(v) {
@@ -106,21 +106,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         this.lastCameraPosition = this.camera.position.clone();
         this.lastFrame = 0;
 
-
-        const lookVector = new Vector3();
-        this.camera.getWorldDirection(lookVector);
-
-
-        // create all the sprites
-        this.orbs = [];
-        for (let i = 0; i < this.nSprites; i++) {
-            this.orbs.push(new CFlowOrb({
-                position: new Vector3(0, 0, 0),
-                startDistance: this.randomDistance(), // initial distance from camera
-            }));
-            this.orbs[i].reset(lookVector, this.camera, true, i);  // initial reset is inside the frustum
-        }
-
+        this.initializeSprites();
 
         this.oldNSprites = this.nSprites;
         this.gui.add(this, "nSprites", 1, 2000, 1).name("Number").onChange(() => {
@@ -150,6 +136,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         }).elastic(100, 2000, true);
 
         this.gui.add(this, "spreadMethod", this.spreadMethods).name("Spread Method").onChange(() => {
+            this.initializeSprites();
             this.updateColors();
         })
 
@@ -190,6 +177,23 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
         this.rebuildSprites();
 
+    }
+
+    initializeSprites() {
+        const lookVector = new Vector3();
+        this.camera.getWorldDirection(lookVector);
+
+
+        // create all the sprites
+
+        this.orbs = [];
+        for (let i = 0; i < this.nSprites; i++) {
+            this.orbs.push(new CFlowOrb({
+                position: new Vector3(0, 0, 0),
+                startDistance: this.randomDistance(), // initial distance from camera
+            }));
+            this.orbs[i].reset(lookVector, this.camera, true, i);  // initial reset is inside the frustum
+        }
     }
 
     rebuildWindArrows() {
@@ -309,13 +313,32 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     }
 
+    getNearFar() {
+        let near = this.near
+        let far = this.far
+        if (this.spreadMethod === "Altitude") {
+            const lookVector = new Vector3();
+            this.camera.getWorldDirection(lookVector);
+            const down = getLocalDownVector(this.camera.position);
+            // get near and far points along the down vector
+            const downNear = down.clone().multiplyScalar(this.near);
+            const downFar = down.clone().multiplyScalar(this.far);
+            // then project them onto the look vector
+            near = Math.abs(downNear.dot(lookVector));
+            far = Math.abs(downFar.dot(lookVector));
+        }
+        return {near, far}
+    }
+
     randomDistance() {
-        return this.near + (this.far-this.near) * Math.random();
+        const {near, far} = this.getNearFar();
+        return near + (far-near) * Math.random();
     }
 
 
     adjustDistance(d) {
-        return this.near + (d - this.oldNear) * (this.far - this.near) / (this.oldFar - this.oldNear);
+        const {near, far} = this.getNearFar();
+        return near + (d - this.oldNear) * (far - near) / (this.oldFar - this.oldNear);
     }
 
     adjustNearFar() {
@@ -355,8 +378,9 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         }
 
 
-        this.oldFar = this.far;
-        this.oldNear = this.near;
+        const {near, far} = this.getNearFar();
+        this.oldFar = far;
+        this.oldNear = near;
     }
 
 
