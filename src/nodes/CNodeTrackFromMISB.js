@@ -41,7 +41,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
     exportGEOJSON() {
         const geo = new CGeoJSON()
 
-        const json = JSON.stringify(geo)
+        const json = JSON.stringify(geo.json)
 
         console.log("CNodeTrackFromMISB:exportGEOJSON(): json = ", json)
 
@@ -72,7 +72,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             }
         })
 
-        const json = stringify(geo, {maxLength: 180, indent: 2})
+        const json = stringify(geo.json, {maxLength: 180, indent: 2})
         console.log("CNodeTrackFromMISB:exportGEOJSON(): json = ", json)
         saveAs(new Blob([json]), name+".json")
     }

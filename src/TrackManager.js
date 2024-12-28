@@ -21,6 +21,7 @@ import {closestIntersectionTime, trackBoundingBox} from "./trackUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
 import {par} from "./par";
 import {CNodeTrackGUI} from "./nodes/CNodeControllerTrackGUI";
+import {CGeoJSON} from "./geoJSONUtils";
 
 
 export const TrackManager = new CManager();
@@ -81,7 +82,11 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
 
     let misb = null;
 
-    if (ext === "kml") {
+    if (ext === "json") {
+        const geo = new CGeoJSON();
+        geo.json = FileManager.get(sourceFile);
+        misb = geo.toMISB(trackIndex)
+    } else if (ext === "kml") {
         // new CNodeKMLDataTrack({
         //     id: dataID,
         //     KMLFile: sourceFile,

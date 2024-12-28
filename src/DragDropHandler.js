@@ -254,7 +254,7 @@ class CDragDropHandler {
 
             fileManagerEntry.isTLE = true;
             NodeMan.get("NightSkyNode").replaceTLE(parsedFile)
-        } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
+        } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv" || fileExt === "json") {
             addTracks([filename], true)
         } else if (fileExt === "sitch.js") {
             // parsedFile is a sitch text def
@@ -281,6 +281,8 @@ class CDragDropHandler {
             }
 
 
+        } else {
+            console.error("Unhandled file type: " + fileExt)
         }
     }
 
