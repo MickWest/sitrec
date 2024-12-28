@@ -260,6 +260,20 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
             }
 
+            if (ext === "json") {
+                const geo = new CGeoJSON();
+                geo.json = FileManager.get(trackFileName);
+                shortName = geo.trackID(trackIndex);
+                found = true; // flag that we found a short name
+
+                // check if there are more tracks (telling us to loop again)
+                const numTracks = geo.countTracks();
+                if (trackIndex < numTracks - 1) {
+                    moreTracks = true;
+                }
+
+            }
+
 
             if (!found) {
                 const match = trackFileName.match(/FlightAware_([A-Z0-9]+)_/);

@@ -55,7 +55,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         const misb = this.in.misb;
         misb.selectSourceColumns(this.columns);
         var points = misb.misb.length
-        const id = this.id + "-GEOJSONtrack"
+        const id = this.id;
         for (let slot = 0; slot < points; slot++) {
             geo.addPoint(id, misb.getLat(slot), misb.getLon(slot), misb.getAlt(slot), misb.getTime(slot))
         }

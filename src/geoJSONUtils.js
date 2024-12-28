@@ -1,5 +1,4 @@
 import {MISB, MISBFields} from "./MISBUtils";
-import {getKMLTrackWhenCoord} from "./KMLUtils";
 
 export class CGeoJSON {
 
@@ -36,15 +35,17 @@ export class CGeoJSON {
             id: trackID + "_" + this.json.totalFeatures,
             geometry: {
                 type: "Point",
-                coordinates: [lon, lat, alt],
+                coordinates: [lat, lon, alt],
             },
             geometry_name: "Location",
-         thresherId: trackID,
-         dtg: new Date(datetime).toISOString(),
-         lat: lat,
-         lon: lon,
-         alt: alt,
-         otherProp: "sitrec"
+            properties: {
+                thresherId: trackID,
+                dtg: new Date(datetime).toISOString(),
+                lat: lat,
+                lon: lon,
+                alt: alt,
+                otherProp: "sitrec"
+            }
         });
         this.json.totalFeatures++;
     }
@@ -54,9 +55,16 @@ export class CGeoJSON {
         // the number of tracks is the number of unique thresherIds
         this.thresherIds = new Set();
         for (let i = 0; i < this.json.totalFeatures; i++) {
-            this.thresherIds.add(this.json.features[i].thresherId);
+            this.thresherIds.add(this.json.features[i].properties.thresherId);
         }
         return this.thresherIds.size;
+    }
+
+    // get the trackID of the indexed track
+    trackID(trackIndex = 0) {
+        const tracks = this.countTracks();
+        console.assert(tracks > trackIndex, "Not enough tracks to get track " + trackIndex + " of " + tracks);
+        return Array.from(this.thresherIds)[trackIndex];
     }
 
 
@@ -74,21 +82,26 @@ export class CGeoJSON {
         const misb = []
         // iterate over the features in the geoJSON
         // if the thresherId matches the trackID, add it to the misb array
+        let trackPointIndex = 0;
         for (let i = 0; i < this.json.totalFeatures; i++) {
-            if (this.json.features[i].thresherId === trackID) {
-                const _coord = this.json.features[i].geometry.coordinates;
-                //const _time = this.json.features[i].dtg;
+            if (this.json.features[i].properties.thresherId === trackID) {
+                // get lat, lon, alt from the properties
+                const lat = this.json.features[i].properties.lat;
+                const lon = this.json.features[i].properties.lon;
+                const alt = this.json.features[i].properties.alt;
+
                 // dtg is a string, convert it to a number
-                const _time = new Date(this.json.features[i].dtg).getTime();
-                misb[i] = new Array(MISBFields);
-                misb[i][MISB.UnixTimeStamp] = _time
-                misb[i][MISB.SensorLatitude] = _coord[1]
-                misb[i][MISB.SensorLongitude] = _coord[0]
-                misb[i][MISB.SensorTrueAltitude] = _coord[2]
+                const _time = new Date(this.json.features[i].properties.dtg).getTime();
+                misb[trackPointIndex] = new Array(MISBFields);
+                misb[trackPointIndex][MISB.UnixTimeStamp] = _time
+                misb[trackPointIndex][MISB.SensorLatitude] = lat
+                misb[trackPointIndex][MISB.SensorLongitude] = lon
+                misb[trackPointIndex][MISB.SensorTrueAltitude] = alt
+                trackPointIndex++;
             }
         }
 
-        // sort the misb array by time stamp (in ms)
+        // sort the loaded misb array by time stamp (in ms)
         misb.sort((a, b) => a[MISB.UnixTimeStamp] - b[MISB.UnixTimeStamp]);
 
         return misb
