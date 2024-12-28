@@ -6,6 +6,7 @@ import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
 import {DebugArrow, removeDebugArrow} from "../threeExt";
 import * as LAYER from "../LayerMasks";
+import {altitudeAboveSphere} from "../SphericalMath";
 
 class CFlowOrb {
     constructor(v) {
@@ -141,6 +142,8 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
             this.rebuildSprites();
 
+            assert(this.nSprites === this.orbs.length, "nSprites and orbs array length mismatch. nSprites=" + this.nSprites + " orbs.length=" + this.orbs.length);
+
             this.oldNSprites = this.nSprites;
 
 
@@ -156,7 +159,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.far = this.near + 10;
             }
             this.adjustNearFar()
-        }).elastic(10, 100000);
+        }).elastic(10, 100000, true);
 
         // same for far
         this.gui.add(this, "far", 100, 10000, 1).listen().name("Far").onChange(() => {
@@ -164,7 +167,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.near = this.far - 10;
             }
             this.adjustNearFar()
-        }).elastic(100, 100000);
+        }).elastic(1000, 100000, true);
 
 
         this.gui.add(this, "colorMethod", this.colorMethods).name("Color Method").onChange(() => {
@@ -176,7 +179,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             this.updateColors();
         })
 
-        this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Altitude Max").onChange(() => {
+        this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Range").onChange(() => {
             this.rebuildSprites();
             this.updateColors();
         }).elastic(1000, 100000)
@@ -219,10 +222,6 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     rebuildSprites()
     {
-
-
-
-
         // recreate the positions array
         this.positions = new Float32Array(this.nSprites * 3);
         // and set the positions
@@ -272,7 +271,10 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     updateColorsAttribute() {
         for (let i = 0; i < this.nSprites; i++) {
-            const color = this.orbs[i].color;
+            const orb = this.orbs[i];
+            assert(orb instanceof CFlowOrb, "Setting color, but Sprite is not a CFlowOrb, i=" + i)
+            assert(orb.color instanceof Color, "Setting color, but Sprite color is not a Color, i=" + i)
+            const color = orb.color;
             this.colors[i * 3] = color.r;
             this.colors[i * 3 + 1] = color.g;
             this.colors[i * 3 + 2] = color.b;
@@ -291,9 +293,13 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             } else if (this.colorMethod === "User") {
                 color = new Color(this.userColor)
             } else if (this.colorMethod === "Hue From Altitude") {
-                const hue = orb.position.y / this.hueAltitudeMax;
+                const hue = altitudeAboveSphere(orb.position) / this.hueAltitudeMax;
                 color = new Color().setHSL(hue, 1, 0.5);
-        }
+            } else if (this.colorMethod === "Hue From Distance") {
+                const distance = orb.position.distanceTo(this.camera.position);
+                const hue = distance / this.hueAltitudeMax;
+                color = new Color().setHSL(hue, 1, 0.5);
+            }
 
 
             orb.color = color;
