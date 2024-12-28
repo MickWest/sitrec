@@ -276,10 +276,13 @@ export function extractRollFromMatrix(m) {
     return angle
 }
 
-export function pointOnSphereBelow(p) {
+
+// Given a point p. return the point on the globe below this, with an optional added altitude
+// (essentially adjusting the MSL altitude of a point)
+export function pointOnSphereBelow(p, altitude=0) {
     const center = V3(0,-wgs84.RADIUS, 0);
     const toP = p.clone().sub(center)
-    return toP.normalize().multiplyScalar(wgs84.RADIUS).add(center);
+    return toP.normalize().multiplyScalar(wgs84.RADIUS+altitude).add(center);
 }
 
 export function altitudeAboveSphere(p) {

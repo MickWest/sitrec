@@ -6,7 +6,7 @@ import {CNodeSpriteGroup} from "./CNodeSpriteGroup";
 import {assert} from "../assert";
 import {DebugArrow, removeDebugArrow} from "../threeExt";
 import * as LAYER from "../LayerMasks";
-import {altitudeAboveSphere, getLocalDownVector} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalDownVector, pointOnSphereBelow} from "../SphericalMath";
 
 class CFlowOrb {
     constructor(v) {
@@ -22,51 +22,6 @@ class CFlowOrb {
 
     }
 
-    reset(lookVector, camera, inside = false, index) {
-
-
-        // given a lookVector and a camera, set the position of the sprite
-        // to be  given distance from the lookVector
-        // and then the corner of the frustum, roated by a random angle (0..2PI)
-        // but OUTSIDE the frustum of the camera
-        const centerPos = camera.position.clone().add(lookVector.clone().multiplyScalar(this.startDistance));
-        const frustumHeight = Math.tan(radians(camera.fov) / 2) * this.startDistance;
-        const frustumWidth = frustumHeight * camera.aspect;
-        const angle = Math.random() * Math.PI * 2;
-
-        var right = new Vector3()
-        var up = new Vector3()
-        var zAxis = new Vector3()
-        camera.matrix.extractBasis(right, up, zAxis)
-
-
-        // get newpos as the offset from the center line
-        // (i.e. not yet a point)
-        const newPos = up.clone().multiplyScalar(frustumHeight).add(right.clone().multiplyScalar(frustumWidth));
-
-        if (inside) {
-            // random position inside and outside the frustum
-            newPos.multiplyScalar(2 * Math.random());
-        } else {
-            // random position outside the frustum (but close)
-            newPos.multiplyScalar(1 + Math.random());
-        }
-
-        // rotate newPos around lookVector by angle
-        newPos.applyAxisAngle(lookVector, angle);
-
-        // and add the center position to get the world point
-        newPos.add(centerPos);
-
-        this.position = newPos;
-        this.lifeTime = 100 + 500 * Math.random();
-
-        // get the distance from the look vector ray
-        const ray = new Ray(camera.position, lookVector);
-        this.awayDistance = Math.sqrt(ray.distanceSqToPoint(this.position));
-
-
-    }
 }
 
 export class CNodeFlowOrbs extends CNodeSpriteGroup {
@@ -120,9 +75,9 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             } else if (this.nSprites > this.oldNSprites) {
                 // add new ones
                 for (let i = this.oldNSprites; i < this.nSprites; i++) {
-                    const newSprite = new CFlowOrb({startDistance: this.randomDistance()});
-                    newSprite.reset(lookVector, this.camera, true, i);
-                    this.orbs.push(newSprite);
+                    const newOrb = new CFlowOrb({startDistance: this.randomDistance()});
+                    this.resetOrb(newOrb, lookVector, this.camera, true, i);
+                    this.orbs.push(newOrb);
                 }
             }
 
@@ -138,10 +93,18 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         this.gui.add(this, "spreadMethod", this.spreadMethods).name("Spread Method").onChange(() => {
             this.initializeSprites();
             this.updateColors();
+            if (this.spreadMethod === "Altitude") {
+                this.farSlider.name("High (m)");
+                this.nearSlider.name("Low (m)");
+                }
+            else {
+                this.farSlider.name("Far (m)");
+                this.nearSlider.name("Near (m)");
+            }
         })
 
         // add near and far sliders
-        this.gui.add(this, "near", 1, 1000, 1).listen().name("Near").onChange(() => {
+        this.nearSlider = this.gui.add(this, "near", 1, 1000, 1).listen().name("Near (m)").onChange(() => {
             if (this.far <= this.near) {
                 this.far = this.near + 10;
             }
@@ -149,7 +112,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         }).elastic(10, 100000, true);
 
         // same for far
-        this.gui.add(this, "far", 100, 10000, 1).listen().name("Far").onChange(() => {
+        this.farSlider = this.gui.add(this, "far", 100, 10000, 1).listen().name("Far (m)").onChange(() => {
             if (this.far <= this.near) {
                 this.near = this.far - 10;
             }
@@ -179,6 +142,67 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     }
 
+
+    resetOrb(orb, lookVector, camera, inside = false, index) {
+
+        // given a lookVector and a camera, set the position of the sprite
+        // to be  given distance from the lookVector
+        // and then the corner of the frustum, roated by a random angle (0..2PI)
+        // but OUTSIDE the frustum of the camera
+        const centerPos = camera.position.clone().add(lookVector.clone().multiplyScalar(orb.startDistance));
+        const frustumHeight = Math.tan(radians(camera.fov) / 2) * orb.startDistance;
+        const frustumWidth = frustumHeight * camera.aspect;
+        const angle = Math.random() * Math.PI * 2;
+
+        var right = new Vector3()
+        var up = new Vector3()
+        var zAxis = new Vector3()
+        camera.matrix.extractBasis(right, up, zAxis)
+
+        // get newpos as the offset from the center line
+        // (i.e. not yet a point)
+        let newPos = up.clone().multiplyScalar(frustumHeight).add(right.clone().multiplyScalar(frustumWidth));
+
+        if (inside) {
+            // random position inside and outside the frustum
+            newPos.multiplyScalar(2 * Math.random());
+        } else {
+            // random position outside the frustum (but close)
+            newPos.multiplyScalar(1 + Math.random());
+        }
+
+        // rotate newPos around lookVector by angle
+        newPos.applyAxisAngle(lookVector, angle);
+
+        // and add the center position to get the world point
+        newPos.add(centerPos);
+
+
+        // TODO - fixe this to only with the altitude spread method
+        // and igure out why the altitiude seems to be wrong
+        // like it's far=30000 and not reacing the ground'
+        // what units???? need to show them???
+
+
+        if (this.spreadMethod === "Altitude") {
+            // if using the altitude spread method, then we need to adjust the altitude
+            // to fix it to the altitide of the center position
+            const centerAltitude = altitudeAboveSphere(centerPos);
+            newPos = pointOnSphereBelow(newPos, centerAltitude);
+        }
+
+        orb.position = newPos;
+        orb.lifeTime = 100 + 500 * Math.random();
+
+        // get the distance from the look vector ray
+        const ray = new Ray(camera.position, lookVector);
+        orb.awayDistance = Math.sqrt(ray.distanceSqToPoint(orb.position));
+
+
+    }
+
+
+
     initializeSprites() {
         const lookVector = new Vector3();
         this.camera.getWorldDirection(lookVector);
@@ -192,7 +216,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 position: new Vector3(0, 0, 0),
                 startDistance: this.randomDistance(), // initial distance from camera
             }));
-            this.orbs[i].reset(lookVector, this.camera, true, i);  // initial reset is inside the frustum
+            this.resetOrb(this.orbs[i], lookVector, this.camera, true, i);  // initial reset is inside the frustum
         }
     }
 
@@ -313,6 +337,9 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     }
 
+    // get the near and far values
+    // if the spread method is altitude, then the near and far are adjusted to
+    // the the distance along the look vector that matches the altitude (from seal level)
     getNearFar() {
         let near = this.near
         let far = this.far
@@ -320,21 +347,32 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             const lookVector = new Vector3();
             this.camera.getWorldDirection(lookVector);
             const down = getLocalDownVector(this.camera.position);
-            // get near and far points along the down vector
-            const downNear = down.clone().multiplyScalar(this.near);
-            const downFar = down.clone().multiplyScalar(this.far);
-            // then project them onto the look vector
-            near = Math.abs(downNear.dot(lookVector));
-            far = Math.abs(downFar.dot(lookVector));
+            const altitude = altitudeAboveSphere(this.camera.position);
+
+            // in the altitude spread method, near and far are ABSOLUTE altitudes
+            // (i.e. meters above the ground)
+            // so to convert hem to distances along the look vector
+            // we need to convert them to distances along the down vector
+            // note that they are flipped, as "near" is a distance from sea level
+
+            const nearDown = altitude - far;
+            const farDown = altitude - near;
+
+
+            const scale = 1 / Math.abs(down.dot(lookVector))
+
+            near = nearDown * scale;
+            far = farDown * scale;
         }
         return {near, far}
     }
 
+    // get a random distance along the look vector
+    // using the scaled near and far values
     randomDistance() {
         const {near, far} = this.getNearFar();
         return near + (far-near) * Math.random();
     }
-
 
     adjustDistance(d) {
         const {near, far} = this.getNearFar();
@@ -453,14 +491,14 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 // if inside is set them the camera has moved a lot
                 // so we immediately reset everything to inside the frustum
                 if (orb.lifeTime < 0 || inside) {
-                    orb.reset(lookVector, this.camera, inside, i);
+                    this.resetOrb(orb, lookVector, this.camera, inside, i);
                     didReset = true;
                 }
             }
 
             // // if it's moving too far away, reset it
             // if (distance > orb.awayDistance + 10 || inside) {
-            //     orb.reset(lookVector, this.camera, inside, i);
+            //     this.resetOrb(orb, lookVector, this.camera, inside, i);
             // }
 
 
