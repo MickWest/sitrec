@@ -6,6 +6,9 @@ import {MISB} from "../MISBUtils";
 import {saveAs} from "../js/FileSaver";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
+import {CGeoJSON} from "../geoJSONUtils";
+import {isLocal} from "../../config";
+import stringify from "json-stringify-pretty-compact";
 
 export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {
@@ -28,8 +31,52 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         this.exportable = exportable;
         if (this.exportable) {
             NodeMan.addExportButton(this, "exportTrackCSV", "CSV ")
+            if (isLocal) {
+                NodeMan.addExportButton(this, "exportGEOJSON", "GEOJSON ")
+                NodeMan.addExportButton(this, "exportALLGEO", "ALLGEO")
+            }
         }
     }
+
+    exportGEOJSON() {
+        const geo = new CGeoJSON()
+
+        const json = JSON.stringify(geo)
+
+        console.log("CNodeTrackFromMISB:exportGEOJSON(): json = ", json)
+
+
+        saveAs(new Blob([json]), "trackFromMISB-"+this.id+".json")
+
+    }
+
+
+    addToGeoJSON(geo) {
+        const misb = this.in.misb;
+        misb.selectSourceColumns(this.columns);
+        var points = misb.misb.length
+        const id = this.id + "-GEOJSONtrack"
+        for (let slot = 0; slot < points; slot++) {
+            geo.addPoint(id, misb.getLat(slot), misb.getLon(slot), misb.getAlt(slot), misb.getTime(slot))
+        }
+    }
+
+    // export ALL the misb derived tracks as GEOJSON
+    exportALLGEO() {
+        const geo = new CGeoJSON();
+        name = "";
+        NodeMan.iterate((key, node) => {
+            if (node instanceof CNodeTrackFromMISB) {
+                name += node.id + "_";
+                node.addToGeoJSON(geo);
+            }
+        })
+
+        const json = stringify(geo, {maxLength: 180, indent: 2})
+        console.log("CNodeTrackFromMISB:exportGEOJSON(): json = ", json)
+        saveAs(new Blob([json]), name+".json")
+    }
+
 
     exportTrackCSV() {
         // let csv = "Frame,Lat,Lon,Alt\n"
