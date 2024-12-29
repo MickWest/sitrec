@@ -32,6 +32,7 @@ export class CNodeViewCanvas extends CNodeView {
                 id: this.id+"_transparency",
                 value: this.transparency, start: 0, end: 1, step: 0.01,
                 desc: "Vid Overlay Trans %",
+                tip: "If non-zero, then the video will overlay the look view, with this transparency (0-1)\nIf there's no video, it will use a black screen as overlay",
                 onChange: (value) => {
                     this.transparency = value;
                     this.canvas.style.opacity = this.transparency;

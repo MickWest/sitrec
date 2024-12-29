@@ -60,6 +60,10 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()
 
+        if (v.tip) {
+            this.guiEntry.tooltip(v.tip);
+        }
+
         this.elastic = v.elastic ?? false;
         if (this.elastic) {
             this.elasticMin = v.elasticMin ?? 10;

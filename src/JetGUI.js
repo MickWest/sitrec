@@ -33,8 +33,11 @@ export function updateGUIFrames() {
     guiRemove(guiFrames, par, 'paused')
 
     guiFrames.add(par, 'time', 0, Sit.frames / Sit.fps, 1 / Sit.fps).onChange(UIChangedTime).listen().name("Time (sec)")
+        .tooltip("Current time from the start of the video in seconds (frame / fps)")
     guiFrames.add(par, 'frame', 0, Sit.frames - 1, 1).onChange(UIChangedFrame).listen().name("Frame in Video")
+        .tooltip("Current frame number in the video")
     guiFrames.add(par, 'paused').listen()
+        .tooltip("Toggle the paused state (also spacebar)")
 
 }
 

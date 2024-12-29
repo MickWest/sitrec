@@ -104,6 +104,27 @@ Controller.prototype.setLabelColor = function(color) {
     return this; // Return the controller to allow method chaining
 };
 
+// adding a tooltip to a controller
+Controller.prototype.tooltip = function(tooltip) {
+    // Find the label element within the controller's DOM
+    const label = this.$name;
+    if (label) {
+        // Add a general class to the controller
+        this.domElement.classList.add('custom-controller-tooltip');
+
+        // Create a unique class name for this controller
+        const uniqueClass = `controller-tooltip-${Math.random().toString(36).substr(2, 9)}`;
+
+        // Add the unique class to the controller's DOM element
+        this.domElement.classList.add(uniqueClass);
+
+        // Add the tooltip to the controller's DOM element
+        this.domElement.title = tooltip;
+    }
+
+    return this; // Return the controller to allow method chaining
+}
+
 // same but for a GUI object (i.e. a folder)
 GUI.prototype.setLabelColor = function(color, min=0) {
     // if color is an obkect, then it's a color object

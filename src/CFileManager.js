@@ -45,13 +45,13 @@ export class CFileManager extends CManager {
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
-                this.guiFolder.add(this, "newSitch").name("New Sitch").perm();
-                this.guiFolder.add(this, "saveSitch").name("Save").perm();
-                this.guiFolder.add(this, "saveSitchAs").name("Save As").perm();
-                this.guiFolder.add(this, "saveWithPermalink").name("Save with Permalink").perm();
-                this.guiFolder.add(this, "importFile").name("Import File").perm();
-                this.guiFolder.add(this, "rehostFile").name("Rehost File").perm();
-                this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm();
+                this.guiFolder.add(this, "newSitch").name("New Sitch").perm().tooltip("Create a new sitch (will reload this page, resetting everything)");
+                this.guiFolder.add(this, "saveSitch").name("Save").perm().tooltip("Save the current sitch to the server");
+                this.guiFolder.add(this, "saveSitchAs").name("Save As").perm().tooltip("Save the current sitch to the server with a new name");
+                this.guiFolder.add(this, "saveWithPermalink").name("Save with Permalink").perm().tooltip("Save the current sitch to the server and get a permalink to share it");
+                this.guiFolder.add(this, "importFile").name("Import File").perm().tooltip("Import a file (or files) from your local system. Same as dragging and dropping a file into the browser window");
+               // this.guiFolder.add(this, "rehostFile").name("Rehost File").perm().tooltip("Rehost a file from your local system. DEPRECATED");
+                this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm().tooltip("Open a folder on your local system and load the sitch file and any assets in it");
             }
 
 
@@ -88,12 +88,14 @@ export class CFileManager extends CManager {
                 this.loadName = this.userSaves[0];
                 this.guiLoad = this.guiFolder.add(this, "loadName", this.userSaves).name("Open").perm().onChange((value) => {
                     this.loadSavedFile(value)
-                }).moveAfter("Save with Permalink");
+                }).moveAfter("Save with Permalink")
+                    .tooltip("Load a saved sitch from your personal folder on the server");
 
                 this.deleteName = this.userSaves[0];
                 this.guiDelete = this.guiFolder.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
                     this.deleteSitch(value)
-                }).moveAfter("Open");
+                }).moveAfter("Open")
+                    .tooltip("Delete a saved sitch from your personal folder on the server");
 
             })
 

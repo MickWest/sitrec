@@ -481,6 +481,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
             guiMenus.view.add(cameraNode.camera, 'fov', 0.35, 80, 0.01).onChange(value => {
                 cameraNode.camera.updateProjectionMatrix()
             }).listen().name("Main FOV")
+                .tooltip("Field of View of the main view's camera (VERTICAL)");
 
             node = cameraNode;
             break;
@@ -673,7 +674,8 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 new CNodeGUIValue({
                     id: "videoZoom",
                     value: 100, start: 5, end: 2000, step: 1,
-                    desc: "Video Zoom %"
+                    desc: "Video Zoom %",
+                    tip: "Zoom in on the center of the video. Will also zoom the 'lookView' camera to match, if linked",
                 }, guiMenus.view)
             }
 

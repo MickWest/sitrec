@@ -359,10 +359,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         this.flareAngle = 5
-        guiTweaks.add(this, 'flareAngle', 0, 20, 0.1).listen().name("SL Flare Angle")
+        guiTweaks.add(this, 'flareAngle', 0, 20, 0.1).listen().name("SL Flare Angle").tooltip("Maximum angle of the reflected view vector for a flare to be visible\ni.e. the range of angles between the vector from the satellite to the sun and the vector from the camera to the satellite reflected off the bottom of the satellite (which is parallel to the ground)")
 
         this.penumbraDepth = 5000
         guiTweaks.add(this, 'penumbraDepth', 0, 100000, 1).listen().name("Earth's Penumbra Depth")
+            .tooltip("Vertical depth in meters over which a satellite fades out as it enters the Earth's shadow")
 
         this.BSC_NumStars = 0;
         this.BSC_MaxMag = -10000;
@@ -472,11 +473,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         guiMenus.view.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
+            .tooltip("Scale factor for the brightness of the stars. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
         guiMenus.view.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
+            .tooltip("Scale factor for the brightness of the satellites. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
         guiMenus.view.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
+            .tooltip("Satellites dimmed to this level or less will not be displayed")
 
         guiMenus.file.add(this,"updateStarlink").name("Update Starlink TLE For Date")
             .onChange(function (x) {this.parent.close()})
+            .tooltip("Get the latest Starlink TLE data for the current date. This will download the data from the internet, so it may take a few seconds.\nWill also enable the Starlink satellites to be displayed in the night sky.")
 
 
 

@@ -40,6 +40,23 @@ export class CNodeEffect extends CNode {
         "Copy": CopyShader,
     }
 
+    effectTips = {
+        "FLIRShader": "Simulates a FLIR camera, with a color palette adjustment",
+        "hBlur": "Horizontal Blur component",
+        "vBlur": "Vertical Blur component",
+        "pixelZoom": "Simulates a pixelated zoom effect when zooming in using View/VideoZoom",
+        "digitalZoom": "Digital Zoom (scaling up sensor pixels)",
+        "Pixelate2x2": "Pixelate 2x2",
+        "PixelateNxN": "Pixelate NxN",
+        "StaticNoise": "Static Noise (like an old TV)",
+        "Invert": "Invert (Negative)",
+        "Compress": "Compress",
+        "Levels": "Levels (TV In/Out Balck, White, Gamma)",
+        "Greyscale": "Greyscale (black and white)",
+        "JPEGArtifacts": "Simulated JPEG Artifacts",
+        "Copy": "Copy",
+    }
+
 
     constructor(v) {
 
@@ -68,7 +85,7 @@ export class CNodeEffect extends CNode {
             } else {
                 this.guiHasDisabled = false;
             }
-        })
+        }).tooltip(this.effectTips[this.effectName]);
 
 
         Globals.defaultGui = null;

@@ -88,7 +88,8 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
             this.oldNSprites = this.nSprites;
 
 
-        }).elastic(100, 2000, true);
+        }).elastic(100, 2000, true)
+            .tooltip("Number of flow orbs to display. More orbs may impact performance.");
 
         this.gui.add(this, "spreadMethod", this.spreadMethods).name("Spread Method").onChange(() => {
             this.initializeSprites();
@@ -102,6 +103,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.nearSlider.name("Near (m)");
             }
         })
+            .tooltip("Method to spread orbs along the camera look vector. \n'Range' spreads orbs evenly along the look vector between near and far distances. \n'Altitude' spreads orbs evenly along the look vector, between the low and high absolute altitudes (MSL)");
 
         // add near and far sliders
         this.nearSlider = this.gui.add(this, "near", 1, 1000, 1).listen().name("Near (m)").onChange(() => {
@@ -123,20 +125,23 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         this.gui.add(this, "colorMethod", this.colorMethods).name("Color Method").onChange(() => {
             this.updateColors();
         })
+            .tooltip("Method to determine the color of the flow orbs. \n'Random' assigns a random color to each orb. \n'User' assigns a user-selected color to all orbs. \n'Hue From Altitude' assigns a color based on the altitude of the orb. \n'Hue From Distance' assigns a color based on the distance of the orb from the camera.");
 
 
         this.gui.addColor(this, "userColor").name("User Color").onChange(() => {
             this.updateColors();
-        })
+        }).tooltip("Select a color for the flow orbs when 'Color Method' is set to 'User'.");
 
         this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Range").onChange(() => {
             this.rebuildSprites();
             this.updateColors();
         }).elastic(1000, 100000)
+            .tooltip("Range over which you get a full spactrum of colors for the 'Hue From Altitude/Range' color method.");
 
 
         this.windWhilePaused = v.windWhilePaused ?? false;
-        this.gui.add(this, "windWhilePaused").name("Wind While Paused");
+        this.gui.add(this, "windWhilePaused").name("Wind While Paused")
+            .tooltip("If checked, wind will still affect the flow orbs even when the simulation is paused. Useful for visualizing wind patterns.");
 
         this.rebuildSprites();
 

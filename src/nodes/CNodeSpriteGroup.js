@@ -139,10 +139,11 @@ constructor(v) {
             this.sizes[i] = this.size;
         }
         this.geometry.attributes.size.needsUpdate = true;
-    }).elastic(10, 1000); // elastic is the range of max values for the slider
+    }).elastic(10, 1000) // elastic is the range of max values for the slider
+        .tooltip("Diameter in meters.");
 
 
-    this.gui.add(this, "mainSizeMultiplier", 1, 100).name("View Size Multiplier");
+    this.gui.add(this, "mainSizeMultiplier", 1, 100).name("View Size Multiplier").tooltip("Adjusts the size of the flow orbs in the main view, but does not change the size in other views.");
 
 }
 

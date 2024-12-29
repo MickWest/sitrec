@@ -54,9 +54,9 @@ sitch = {
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 
-    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 5.0, step: 0.01, desc: "Defocus", gui:"effects"},
+    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 5.0, step: 0.01, desc: "Defocus", gui:"effects", tip: "Blurs the output, pixel range"},
 
-    canvasResolution: {kind: "GUIValue", value: 1600, start: 10, end: 2000, step: 1, desc: "Resolution", gui:"effects"},
+    canvasResolution: {kind: "GUIValue", value: 1600, start: 10, end: 2000, step: 1, desc: "Resolution", gui:"effects", tip: "Horizontal resolution of the output canvas"},
 
     canvasHeight: {kind: "Math", math: "$canvasResolution/1.7927"},
 
@@ -78,7 +78,7 @@ sitch = {
                 }},
             // Noise comes AFTER focus, becuase it's on the sensor
             StaticNoise: {inputs:{
-                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount", gui:"effects"},
+                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount", gui:"effects", tip: "Opacity of the added noise"},
                 }},
             Greyscale:{id:"Custom_GreyScale", enabled: false},
             Invert: {id:"Custom_Invert", enabled: false},
@@ -86,11 +86,11 @@ sitch = {
             Custom_Levels: {
                 kind: "Levels",
                 inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black", gui:"effects"},
-                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White", gui:"effects"},
-                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma", gui:"effects"},
-                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black", gui:"effects"},
-                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White", gui:"effects"},
+                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black", gui:"effects", tip: "Input level below which is black"},
+                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White", gui:"effects", tip: "Input level above which is white"},
+                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma", gui:"effects", tip: "Gamma correction"},
+                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black", gui:"effects", tip: "Minimum output level"},
+                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White", gui:"effects", tip: "Maximum output level"},
 
                 },
                 enabled: true,
@@ -108,7 +108,7 @@ sitch = {
                 filter: "Linear",
                 inputs: {
                     size: 8,
-                    amount: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects"},
+                    amount: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects", tip: "Amount of simulated JPEG compression artifacts"},
                 }
             },
 

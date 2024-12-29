@@ -138,7 +138,9 @@ export class CNodeDateTime extends CNode {
 
 
         this.dateTimeFolder.add(Sit, "startTime").listen()
+            .tooltip("The START time of first frame of the video, in UTC format")
         this.dateTimeFolder.add(Sit, "nowTime").listen()
+            .tooltip("The CURRENT time of the video. This is what the below date and time refer to")
 
       // The UI will update the dateNow member, and then we will update the dateStart member
         const guiYear = this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))
@@ -166,6 +168,7 @@ export class CNodeDateTime extends CNode {
                 par.renderOne = true;
             }
         )
+            .tooltip("The time zone to display the date and time in in the look view (NOT in the Menu)")
 
         this.oldSimSpeed = Sit.simSpeed;
 
@@ -178,10 +181,12 @@ export class CNodeDateTime extends CNode {
                 this.recalculateCascade();
             }
         )
+            .tooltip("The speed of the simulation, 1 is real time, 2 is twice as fast, etc\nThis does not change the video replay speed, just the time calculations for the simulation.")
 
 
-        this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
-        this.dateTimeFolder.add(this, "resetNowTimeToCurrent").name("Sync to Current Time");
+        /// these are duplicate of the "Sync Time to" menu
+        // this.dateTimeFolder.add(this, "resetStartTime").name("Reset Start Time");
+        // this.dateTimeFolder.add(this, "resetNowTimeToCurrent").name("Sync to Current Time");
 
         this.addedSyncToTrack = false;
 
@@ -194,7 +199,8 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(Sit, "frames",1,2000,1).name("Sitch Frames").listen().elastic().onChange((v) => {
             this.changedFrames();
 
-        });
+        })
+            .tooltip("The number of frames in the sitch. If there's a video then this will be the number of frames in the video, but you can change it if you want to add more frames to the sitch, or if you want to use the sitch without a video")
 
         this.guiAFrame = this.dateTimeFolder.add(Sit, "aFrame",1,Sit.frames,1).name("A Frame").listen().onChange((v) => {
 
@@ -202,7 +208,8 @@ export class CNodeDateTime extends CNode {
             updateFrameSlider();
             NodeMan.recalculateAllRootFirst(); // really just need to redraw things..
 
-        });
+        })
+            .tooltip("limited the playback to between A and B, displayed as green and red on the frame slider")
 
         if (Sit.bFrame === undefined) {
             Sit.bFrame = Sit.frames-1
@@ -214,13 +221,14 @@ export class CNodeDateTime extends CNode {
             NodeMan.recalculateAllRootFirst();
 
 
-        });
+        })
+            .tooltip("limited the playback to between A and B, displayed as green and red on the frame slider")
+
 
         this.dateTimeFolder.add(Sit, "fps",1,120,0.01).name("Video FPS").listen().onChange((v) => {
             this.changedFrames()
-        });
-
-
+        })
+            .tooltip("The frames per second of the video. This will change the playback speed of the video (e.g. 30 fps, 25 fps, etc). It will also change the duration of the sitch (in secods) as it changes how long an individual frame is\n This is derived from the video were possible, but you can change it if you want to speed up or slow down the video")
         this.update(0);
 
     }
@@ -290,6 +298,7 @@ export class CNodeDateTime extends CNode {
                     console.log(v)
                     this.syncToTrack(v)
                 }
+                this.populate();
                 par.renderOne = true
 
                 // reset it back to the default
@@ -299,7 +308,8 @@ export class CNodeDateTime extends CNode {
 
 
             }
-        );
+        )
+            .tooltip("Sync the video start time to the original start time, the current time, or the start time of a track track (if loaded)");
     }
 
     addSyncToTrack(timedTrack) {
@@ -347,10 +357,12 @@ export class CNodeDateTime extends CNode {
 
     resetStartTime() {
         this.setStartDateTime( this.originalPopulatedStartTime);
+        this.updateDateTime()
     }
 
     resetNowTimeToCurrent() {
         this.setNowDateTime(new Date());
+        this.updateDateTime()
     }
 
     populate() {

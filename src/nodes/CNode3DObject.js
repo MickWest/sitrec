@@ -499,7 +499,7 @@ export class CNode3DObject extends CNode3DGroup {
             this.modelOrGeometry = "model"
             this.rebuild();
             par.renderOne = true
-        });
+        }).tooltip("Selecte a 3D Model to use for this object");
 
         this.modelMenu.isCommon = true;
 

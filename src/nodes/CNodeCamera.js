@@ -33,7 +33,9 @@ export class CNodeCamera extends CNode3D {
 
         if (this.id === "mainCamera") {
             guiMenus.view.add(this, "snapshotCamera").name("Snapshot Camera")
+                .tooltip("Save the current camera position and heading for use with 'Reset Camera'")
             guiMenus.view.add(this, "resetCamera").name("Reset Camera")
+                .tooltip("Reset the camera to the default, or to .last snapshot position and heading\nAlso Numpad-.")
         }
 
     }

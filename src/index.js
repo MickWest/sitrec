@@ -490,6 +490,7 @@ async function initializeOnce() {
         par.nameSelect = unselectedText ;
 
     })
+        .tooltip("Built-in sitches are predefined situations that often have unique code and assets. Select one to load it.");
 
     // and one for tools
     par.toolSelect = unselectedText;
@@ -521,6 +522,7 @@ async function initializeOnce() {
         window.history.pushState({}, null, url);
         par.toolSelect = unselectedText;
     })
+        .tooltip("Tools are special sitches that are used for custom setups like Starlink or with user tracks, and for testing, debugging, or other special purposes. Select one to load it.");
 
 
 

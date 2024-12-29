@@ -626,7 +626,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         if (effects) {
 
             this.effectsEnabled = true;
-            guiTweaks.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true})
+            guiTweaks.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true}).tooltip("Enable/Disable All Effects")
 
             this.effects = effects;
 
@@ -730,10 +730,12 @@ export class CNodeView3D extends CNodeViewCanvas {
         guiMenus.view.add(this, "focusTrackName", focusTracks).onChange(focusTrackName => {
             //
         }).name("Focus Track").listen()
+            .tooltip("Select a track to make the camera look at it and rotate around it")
         guiMenus.view.add(this, "lockTrackName", focusTracks).onChange(lockTrackName => {
             //
             console.log(this.lockTrackName)
         }).name("Lock Track").listen()
+            .tooltip("Select a track to lock the camera to it, so it moves with the track")
     }
 
     get camera() {

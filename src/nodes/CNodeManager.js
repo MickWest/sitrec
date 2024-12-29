@@ -30,8 +30,19 @@ export class CNodeManager extends CManager{
         if (inputs) {
             const node = this.get(id)
             for (let key in node.inputs) {
-                this.disposeRemove(node.inputs[key].id, inputs)
+                // get the input node
+                const inputNode = node.inputs[key];
+                // if the input node has no other outputs, then we can dispose of it
+                if (inputNode.outputs.length === 1) {
+                    inputNode.outputs = []; // unlink it, safe to do this as it's the only output
+                    this.disposeRemove(node.inputs[key].id, inputs)
+                } else {
+                    // otherwise, just unlink it
+                    assert(0,"Not disposing of input node "+inputNode.id+" as it has other outputs. Probably should not be setting inputs=true here")
+                    //node.removeInput(key);
+                }
             }
+            node.inputs = {};
         }
         super.disposeRemove(id);
     }
