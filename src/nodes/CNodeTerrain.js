@@ -103,6 +103,7 @@ export class CNodeTerrainUI extends CNode {
 
         this.gui = guiMenus.terrain;
         this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).listen().name("Map Type")
+            .tooltip("Map type for terrain textures (seperate from elevation data)")
 
         // WHY local???
         this.setMapType(local.mapType)
@@ -138,6 +139,7 @@ export class CNodeTerrainUI extends CNode {
         local.elevationType = Object.keys(this.elevationSources)[0]
         // add the menu
         this.elevationTypeMenu = this.gui.add(local, "elevationType", this.elevationTypesKV).listen().name("Elevation Type")
+            .tooltip("Elevation data source for terrain height data")
 
         this.elevationTypeMenu.onChange( v => {
 
@@ -186,42 +188,45 @@ export class CNodeTerrainUI extends CNode {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            })
+            }).tooltip("Latitude of the center of the terrain")
+
 
             this.lonController = this.gui.add(this, "lon", -180, 180, .001).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            })
+            }).tooltip("Longitude of the center of the terrain")
 
-            this.zoomController = this.gui.add(this, "zoom", 0, 15, 1).onChange(v => {
+            this.zoomController = this.gui.add(this, "zoom", 2, 15, 1).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            })
+            }).tooltip("Zoom level of the terrain. 2 is the whole world, 15 is few city blocks")
 
             this.nTilesController = this.gui.add(this, "nTiles", 1, 8, 1).onChange(v => {
                 this.flagForRecalculation()
             }).onFinishChange(v => {
                 this.startLoading = true
-            })
+            }).tooltip("Number of tiles in the terrain. More tiles means more detail, but slower loading. (NxN)")
 
 
 
 
             // adds a button to refresh the terrain
-            this.gui.add(this, "doRefresh").name("Refresh");
+            this.gui.add(this, "doRefresh").name("Refresh")
+                .tooltip("Refresh the terrain with the current settings. Use for network glitches that might have caused a failed load")
 
             // a toggle to show or hide the debug elevation grid
 
-            this.gui.add(this, "debugElevationGrid").name("Debug Elevation Grid").onChange(v => {
+            this.gui.add(this, "debugElevationGrid").name("Debug Grids").onChange(v => {
                 this.terrainNode.refreshDebugGrids();
-            });
+            }).tooltip("Show a grid of ground textures (Green) and elevation data (Blue)")
 
 
             this.zoomToTrackSwitchObject = new CNodeSwitch({
                 id: "zoomToTrack", kind: "Switch",
-                inputs: {"-": "null"}, desc: "Zoom to track"
+                inputs: {"-": "null"}, desc: "Zoom to track",
+                tip: "Zoom to the extents of the selected track (for the duration of the Sitch frames)",
             }, this.gui).onChange(track => {
                 this.zoomToTrack(track)
             })
@@ -231,7 +236,8 @@ export class CNodeTerrainUI extends CNode {
             this.flagForRecalculation()
         }).onFinishChange(v => {
             this.startLoading = true
-        }).elastic(10,100);
+        }).elastic(10,100)
+            .tooltip("Scale factor for the elevation data. 1 is normal, 0.5 is half height, 2 is double height")
 
 
     }
@@ -313,6 +319,7 @@ export class CNodeTerrainUI extends CNode {
             this.layer = Object.keys(this.localLayers)[0]
         }
         this.layersMenu = this.gui.add(this, "layer", this.localLayers).listen().name("Layer")
+            .tooltip("Layer for the current map type's terrain textures")
 
         // if the layer has changed, then unload the map and reload it
         // new layer will be handled by the mapDef.layer
@@ -354,7 +361,7 @@ export class CNodeTerrainUI extends CNode {
         this.lat = (minLat + maxLat) / 2;
         this.lon = (minLon + maxLon) / 2;
 
-        const maxZoom = 15
+        const maxZoom = 15;
         const minZoom = 3;
 
         // find the zoom level that fits the track, ignore altitude
