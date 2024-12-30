@@ -862,33 +862,38 @@ export class CNode3DObject extends CNode3DGroup {
             // only recalculate the box if forced
             if (force) {
 
+
                 if (this.modelOrGeometry === "model") {
-                    // detach from the group
-                    this.group.remove(this.model);
+                    // the model might not be loaded yet
+                    // so just skip it if it's not
+                    if (this.model !== undefined) {
+                        // detach from the group
+                        this.group.remove(this.model);
 
-                    // ensure the matrix is up to date
-                    this.model.updateMatrixWorld(true);
+                        // ensure the matrix is up to date
+                        this.model.updateMatrixWorld(true);
 
-                    // store the original matrix
-                    const matrix = this.model.matrix.clone();
-                    // set the matrix to the identity
-                    this.model.matrix.identity();
-                    // update the world matrix
-                    this.model.updateWorldMatrix(true, true);
+                        // store the original matrix
+                        const matrix = this.model.matrix.clone();
+                        // set the matrix to the identity
+                        this.model.matrix.identity();
+                        // update the world matrix
+                        this.model.updateWorldMatrix(true, true);
 
 
-                    this.boundingBox = new Box3();
-                    this.boundingBox.setFromObject(this.model);
+                        this.boundingBox = new Box3();
+                        this.boundingBox.setFromObject(this.model);
 
-                    // restore the original matrix
-                    this.model.matrix.copy(matrix);
-                    this.model.updateWorldMatrix(true, true);
-                    // re-attach to the group
-                    this.group.add(this.model);
+                        // restore the original matrix
+                        this.model.matrix.copy(matrix);
+                        this.model.updateWorldMatrix(true, true);
+                        // re-attach to the group
+                        this.group.add(this.model);
 
-                    if (this.layers) {
-                        this.group.layers.mask = this.layers;
-                        propagateLayerMaskObject(this.group);
+                        if (this.layers) {
+                            this.group.layers.mask = this.layers;
+                            propagateLayerMaskObject(this.group);
+                        }
                     }
 
                 } else {
