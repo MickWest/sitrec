@@ -436,33 +436,33 @@ async function initializeOnce() {
 
     // these area accessed like:
     // guiMenus.main, guiMenus.showhide, guiMenus.tweaks, guiMenus.showhideviews, guiMenus.physics
-    var _gui = addGUIMenu("main", "Sitrec");
-    addGUIMenu("file", "File");
-    addGUIMenu("view", "View");
-    addGUIMenu("time", "Time");
-    addGUIMenu("objects", "Objects");
-    addGUIMenu("terrain", "Terrain");
+    var _gui = addGUIMenu("main", "Sitrec").tooltip("Selecting legacy sitches and tools\nSome legacy sitches have controls here by default");
+    addGUIMenu("file", "File").tooltip("File operations like saving,loading, and exporting");
+    addGUIMenu("view", "View").tooltip("Miscellaneous view controls\nLike all menus, this menu can be dragged of the menu bar to make it a floating menu");
+    addGUIMenu("time", "Time").tooltip("Time and frame controls\nDragging one time slider past the end will affect the above slider\nNote that the time sliders are UTC");
+    addGUIMenu("objects", "Objects").tooltip("3D Objects and their properties\nEach folder is one object. The traverseObject is the object that traverses the lines of sight - i.e. the UAP we are interested in");
+    addGUIMenu("terrain", "Terrain").tooltip("Terrain controls\nThe terrain is the 3D model of the ground. The 'Map' is the 2D image of the ground. The 'Elevation' is the height of the ground above sea level");
     // these four have legacy globals
-    var _guiPhysics = addGUIMenu("physics", "Physics");
+    var _guiPhysics = addGUIMenu("physics", "Physics").tooltip("Physics controls\nThe physics of the situation, like wind speed and the physics of the traverse object");
 
-    addGUIMenu("camera", "Camera");
-    addGUIMenu("target", "Target");
-    addGUIMenu("traverse", "Traverse");
+    addGUIMenu("camera", "Camera").tooltip("Camera controls for the look view camera\nThe look view defaults to the lower right window, and is intended to match the video.");
+    addGUIMenu("target", "Target").tooltip("Target controls\nPosition and properties of the optional target object");
+    addGUIMenu("traverse", "Traverse").tooltip( "Traverse controls\nThe traverse object is the object that traverses the lines of sight - i.e. the UAP we are interested in\nThis menu defined how the traverse object moves and behaves");
 
-    var _guiShowHide = addGUIMenu("showhide", "Show/Hide");
-    var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide");
-    var _guiTweaks = addGUIMenu("effects", "Effects" );
-    addGUIMenu("lighting", "Lighting")
-    addGUIMenu("contents", "Contents")
+    var _guiShowHide = addGUIMenu("showhide", "Show/Hide").tooltip("Showing or hiding views, object and other elements");
+    var _guiShowHideViews = addGUIFolder("showhideviews", "Views", "showhide").tooltip("Show of hide views (windows) like the look view, the video, the main view, and various graphs");
+    var _guiTweaks = addGUIMenu("effects", "Effects" ).tooltip("Special effects like blur, pixelation, and color adjustments that are applied to the final image in the look view");
+    addGUIMenu("lighting", "Lighting").tooltip("The lighting of the scene, like the sun and the ambient light");
+    addGUIMenu("contents", "Contents").tooltip("The contents of the scene, mostly used for tracks");
 
-    addGUIMenu("help", "Help");
+    addGUIMenu("help", "Help").tooltip("Links to the documentation and other help resources");
 
 
     function addHelpLink(name, file) {
         if (process.env.LOCAL_DOCS ) {
-            guiMenus.help.addExternalLink(name+ " (Local)", "./"+file+".html").perm();
+            return guiMenus.help.addExternalLink(name+ " (Local)", "./"+file+".html").perm();
         } else {
-            guiMenus.help.addExternalLink(name+ " (Github)", "https://github.com/MickWest/sitrec/blob/main/"+file+".md").perm();
+            return guiMenus.help.addExternalLink(name+ " (Github)", "https://github.com/MickWest/sitrec/blob/main/"+file+".md").perm();
         }
     }
 
