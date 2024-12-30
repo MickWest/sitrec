@@ -677,6 +677,14 @@ export class CNode3DObject extends CNode3DGroup {
             newType = true;
         }
 
+        // remove the BB measure, in case we don't rebuild them
+        NodeMan.disposeRemove(this.measureX, true);
+        this.measureX  = undefined;
+        NodeMan.disposeRemove(this.measureY, true);
+        this.measureY  = undefined;
+        NodeMan.disposeRemove(this.measureZ, true);
+        this.measureZ  = undefined;
+
 
         const v = this.props;
 
@@ -838,13 +846,6 @@ export class CNode3DObject extends CNode3DGroup {
         this.recalculate()
 
 
-        // remove the BB measure, in case we don't rebuild them
-        NodeMan.disposeRemove(this.measureX, true);
-        this.measureX  = undefined;
-        NodeMan.disposeRemove(this.measureY, true);
-        this.measureY  = undefined;
-        NodeMan.disposeRemove(this.measureZ, true);
-        this.measureZ  = undefined;
 
         this.rebuildBoundingBox();
 
@@ -1083,7 +1084,7 @@ export class CNode3DObject extends CNode3DGroup {
 
     update(f) {
         super.update(f);
-        this.rebuildBoundingBox(false);
+       // this.rebuildBoundingBox(false);
     }
 
 
