@@ -761,7 +761,14 @@ export class CFileManager extends CManager {
                     } else if (dataType === "CUSTOM1") {
                         parsed = parseCustom1CSV(parsed);
                     }
-                    parsed = stripDuplicateTimes(parsed);
+
+                    // if it's a custom file, then strip out any duplicate times
+                    // we are being a bit more robust here, as some legacy files have duplicate times
+                    // For example Aguadilla. That's probably an issue only with "Unknown" files
+                    if (Sit.name === "custom" && dataType !== "Unknown") {
+                        parsed = stripDuplicateTimes(parsed);
+                    }
+
                     break;
                 case "kml":
                 case "ksv":
