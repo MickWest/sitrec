@@ -373,8 +373,8 @@ const materialTypes = {
     basic: {
         m: MeshBasicMaterial,
         params: {
-            color: "white",
-            fog: true,
+            color: ["white", "Base Color"],
+            fog: [true, "Enable Fog"],
         }
     },
 
@@ -382,11 +382,11 @@ const materialTypes = {
     lambert: {
         m: MeshLambertMaterial,
         params: {
-            color: "white",
-            emissive: "black",
-            emissiveIntensity: [1,0,1,0.01],
-            flatShading: false,
-            fog: true,
+            color: ["white", "Base Color"],
+            emissive: ["black", "Emissive color - i.e. the self illuminated color"],
+            emissiveIntensity: [[1,0,1,0.01],"Intensity of self-illuiminated color"],
+            flatShading: [false, "Enable flat shading - i.e. no smooth shading"],
+            fog: [true, "Enable Fog"],
 
         }
     },
@@ -394,59 +394,76 @@ const materialTypes = {
     phong: {
         m: MeshPhongMaterial,
         params: {
-            color: "white",
-            emissive: "black",
-            emissiveIntensity: [1,0,1,0.01],
-            specularColor: "white",
-            shininess: [30,0,100,0.1],
-            flatShading: false,
-            fog: true,
+            color: ["white", "Base Color"],
+            emissive: ["black", "Emissive color - i.e. the self illuminated color"],
+            emissiveIntensity: [[1,0,1,0.01],"Intensity of self-illuminated color"],
+            specularcolor: ["white", "Base Color"],
+            shininess: [[30,0,100,0.1], "Shininess of the specular highlight"],
+            flatShading: [false, "Enable flat shading - i.e. no smooth shading"],
+            fog: [true, "Enable Fog"],
         }
     },
 
     physical: {
         m: MeshPhysicalMaterial,
         params: {
-            color: "white",
-            clearcoat: [1, 0, 1, 0.01],
-            clearcoatRoughness: [0, 0, 1, 0.01],
-            emissive: "black",
-            emissiveIntensity: [1, 0, 1, 0.01],
-            specularColor: "white",
-            specularIntensity: [1,0,1,0.01],
-            sheen: [0, 0, 1, 0.01],
-            sheenRoughness: [0.5, 0, 1, 0.01],
-            sheenColor: "black",
-            flatShading: false,
-            fog: true,
-            reflectivity: [1, 0, 1, 0.01],
-            transmission: [0, 0, 1, 0.01],
-            ior: [1.5, 1, 2.33, 0.01],
-            roughness: [0.5, 0, 1, 0.01],
-            metalness: [0.5, 0, 1, 0.01],
+            color: ["white", "Base Color"],
+            clearcoat: [[1, 0, 1, 0.01], "Clearcoat intensity"],
+            clearcoatRoughness: [[0, 0, 1, 0.01], "Clearcoat roughness"],
+            emissive: ["black", "Emissive color - i.e. the self illuminated color"],
+            emissiveIntensity: [[1, 0, 1, 0.01], "Intensity of self-illuminated color"],
+            specularcolor: ["white", "Specular Color"],
+            specularIntensity: [[1,0,1,0.01], "Intensity of the specular highlight"],
+            sheen: [[0, 0, 1, 0.01], "Sheen intensity"],
+            sheenRoughness: [[0.5, 0, 1, 0.01], "Sheen roughness"],
+            sheenColor: ["black", "Sheen color"],
+            flatShading: [false, "Enable flat shading - i.e. no smooth shading"],
+            fog: [true, "Enable Fog"],
+            reflectivity: [[1, 0, 1, 0.01], "Reflectivity"],
+            transmission: [[0, 0, 1, 0.01], "Transmission"],
+            ior: [[1.5, 1, 2.33, 0.01], "Index of Refraction"],
+            roughness: [[0.5, 0, 1, 0.01], "Roughness"],
+            metalness: [[0.5, 0, 1, 0.01], "Metalness"],
         }
     }
 
 }
 
 const commonMaterialParams = {
-    material: ["basic", "lambert", "phong", "physical"],
+    material: [["basic", "lambert", "phong", "physical"],"Type of Material lighting"],
 }
 
 const commonParams = {
-    geometry: ["sphere", "box", "capsule", "circle", "cone", "cylinder", "dodecahedron", "icosahedron", "octahedron", "ring", "tictac", "tetrahedron", "torus", "torusknot", "superegg"],
-    applyMaterial: false,
-    rotateX: [0, -180, 180, 1],
-    rotateY: [0, -180, 180, 1],
-    rotateZ: [0, -180, 180, 1],
+    geometry: [["sphere", 
+        "box", 
+        "capsule", 
+        "circle", 
+        "cone", 
+        "cylinder", 
+        "dodecahedron", 
+        "icosahedron", 
+        "octahedron", 
+        "ring", 
+        "tictac", 
+        "tetrahedron", 
+        "torus", 
+        "torusknot", 
+        "superegg"], "Type of Generated Geometry"],
+    applyMaterial: [false, "Apply Material to the 3D model, overriding the loaded materials"],
+    rotateX: [[0, -180, 180, 1], "Rotation about the X-axis"],
+    rotateY: [[0, -180, 180, 1], "Rotation about the Y-axis"],
+    rotateZ: [[0, -180, 180, 1], "Rotation about the Z-axis"],
 
-    wireframe: false,
-    edges: false,
-    depthTest: true,
-    opacity: [1,0,1,0.01],
-    transparent: false,
+    wireframe: [false, "Display geometry object as a wireframe"],
+    edges: [false, "Display geometry object as edges"],
+    depthTest: [true, "Enable depth testing"],
+    opacity: [[1,0,1,0.01], "Opacity of the object"],
+    transparent: [false,"Enable transparency"],
    // color: "white",
 }
+
+
+
 
 export class CNode3DObject extends CNode3DGroup {
     constructor(v) {
@@ -490,7 +507,7 @@ export class CNode3DObject extends CNode3DGroup {
         this.modelOrGeometryMenu = this.gui.add(this, "modelOrGeometry", ["geometry", "model"]).listen().name("Model or Geometry").onChange((v) => {
             this.rebuild();
             par.renderOne = true
-        });
+        }).tooltip("Select whether to use a 3D Model or a generated geometry for this object");
 
         this.modelOrGeometryMenu.isCommon = true;
 
@@ -513,7 +530,9 @@ export class CNode3DObject extends CNode3DGroup {
         this.gui.add(this, "displayBoundingBox").name("Display Bounding Box").listen().onChange((v) => {
             this.rebuild();
             par.renderOne = true
-        }).isCommon = true;
+        })
+            .tooltip("Display the bounding box of the object with dimensions")
+            .isCommon = true;
 
         this.rebuild();
 
@@ -578,14 +597,18 @@ export class CNode3DObject extends CNode3DGroup {
     addParams(geometryParams, toHere, gui, isCommon=false) {
         const v = this.props;
         for (const key in geometryParams) {
+            const params = geometryParams[key][0];
+            const tip = geometryParams[key][1];
+            
+            
             if (v[key] === undefined) {
                 // if no value is given, then use the first value in the array
                 // (the default value)
                 // or the value itself if it's not an array
-                if (Array.isArray(geometryParams[key]) && key !== "color") {
-                    v[key] = geometryParams[key][0];
+                if (Array.isArray(params) && key !== "color") {
+                    v[key] = params[0];
                 } else {
-                    v[key] = geometryParams[key];
+                    v[key] = params;
                 }
             }
             toHere[key] = v[key];
@@ -616,40 +639,40 @@ export class CNode3DObject extends CNode3DGroup {
                     .onChange((v) => {
                         this.rebuild();
                         par.renderOne = true
-                    })
+                    }).tooltip(tip);
 
-            } else if (Array.isArray(geometryParams[key])) {
+            } else if (Array.isArray(params)) {
 
                 const elastic = ["radius", "length", "height", "width", "depth", "tube", "innerRadius", "outerRadius", "height", "totalLength", "radiusTop", "radiusBottom",];
                 const isElastic = elastic.includes(key);
 
 
                 // is the firsts value in the array a number?
-                if (typeof geometryParams[key][0] === "number") {
+                if (typeof params[0] === "number") {
                     // and make a gui slider for the parameter
-                    controller = gui.add(toHere, key, geometryParams[key][1], geometryParams[key][2], geometryParams[key][3]).name(key).listen()
+                    controller = gui.add(toHere, key, params[1], params[2], params[3]).name(key).listen()
                         .onChange((v) => {
                             this.rebuild();
                             par.renderOne = true
-                        })
+                        }).tooltip(tip);
                     if (isElastic) {
                         // elastic means the range will expand 2x when you go of the right end
                         // and reset to the minimum when you go off the left end
                         // Upper limit not too important, so we just set it to 1000x the default
-                        controller.elastic(geometryParams[key][2], geometryParams[key][2] * 1000)
+                        controller.elastic(params[2], params[2] * 1000)
                     }
 
                 } else {
                     // assume it's a string, so a drop-down
                     // make a drop-down for the parameter
-                    controller = gui.add(toHere, key, geometryParams[key]).name(key).listen()
+                    controller = gui.add(toHere, key, params).name(key).listen()
                         .onChange((v) => {
                             if (key === "geometry") {
                                 this.modelOrGeometry = "geometry"
                             }
                             this.rebuild();
                             par.renderOne = true
-                        })
+                        }).tooltip(tip);
                 }
 
             } else {
@@ -659,7 +682,7 @@ export class CNode3DObject extends CNode3DGroup {
                     .onChange((v) => {
                         this.rebuild();
                         par.renderOne = true
-                    })
+                    }).tooltip(tip);
             }
 
             controller.isCommon = isCommon;
