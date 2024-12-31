@@ -37,6 +37,7 @@ export class CNodeTrackGUI extends CNode {
 
         }).name(this.metaTrack.menuText + " track in look view")
 
+
     }
 
     dispose() {

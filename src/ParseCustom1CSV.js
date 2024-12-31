@@ -9,7 +9,7 @@ export function parseCustom1CSV(csv) {
     // try {
         const dateCol = findColumn(csv, "TIME", true)
         const latCol = findColumn(csv, "LAT", true)
-        const lonCol = findColumn(csv, "LONG", true)
+        const lonCol = findColumn(csv, ["LON", "LONG"], true)
         const altCol = findColumn(csv, "ALTITUDE", true)
         const aircraftCol = findColumn(csv, "AIRCRAFT", true)
         const callsignCol = findColumn(csv, "CALLSIGN", true)

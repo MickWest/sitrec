@@ -51,29 +51,41 @@ export function convertToRelativeTime(startTime, relativeTimeString) {
     return relativeTime;
 }
 
+// csv is a 2D array
+// text is a string or an array of strings
+// exactMatch is true if the column header must match the text exactly
+// otherwise, the column header must start with the text
+// returns the index of the column that matches the text
 export function findColumn(csv, text, exactMatch = false) {
     // Check if the csv is a non-empty array
     if (!Array.isArray(csv) || csv.length === 0 || !Array.isArray(csv[0])) {
         throw new Error("Invalid input: csv must be a non-empty 2D array.");
     }
 
-    // Iterate through each column of the first row
-    for (let col = 0; col < csv[0].length; col++) {
-        if (exactMatch) {
-            // Check if the column header matches the text exactly
-            if (csv[0][col].trim() === text) {
-                return col; // Return the column index
-            }
-        } else {
-            // Check if the first element of the column starts with the text
-            if (csv[0][col].trimStart().startsWith(text)) {
-                return col; // Return the column index
+    if (!Array.isArray(text)) {
+        text = [text];
+    }
+
+    for (const searchText of text) {
+
+        // Iterate through each column of the first row
+        for (let col = 0; col < csv[0].length; col++) {
+            if (exactMatch) {
+                // Check if the column header matches the text exactly
+                if (csv[0][col].trim() === searchText) {
+                    return col; // Return the column index
+                }
+            } else {
+                // Check if the first element of the column starts with the text
+                if (csv[0][col].trimStart().startsWith(searchText)) {
+                    return col; // Return the column index
+                }
             }
         }
     }
 
     // Throw an error if no column starts with the given text
-    throw new Error("No column found starting with " + text);
+    throw new Error("No column found starting with " + searchText);
 
 }
 

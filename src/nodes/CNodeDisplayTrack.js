@@ -1,5 +1,5 @@
 //
-import {guiMenus, guiShowHide, Sit} from "../Globals";
+import {guiMenus, guiShowHide, NodeMan, Sit} from "../Globals";
 import {dispose} from "../threeExt";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {LineMaterial} from "three/addons/lines/LineMaterial.js";
@@ -7,7 +7,7 @@ import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {wgs84} from "../LLA-ECEF-ENU";
-import {drop} from "../SphericalMath";
+import {drop, getLocalSouthVector, getLocalUpVector} from "../SphericalMath";
 import {AlwaysDepth, Color, LessDepth} from "three";
 import {CNodeDisplayTargetSphere} from "./CNodeDisplayTargetSphere";
 import * as LAYER from "../LayerMasks";
@@ -112,6 +112,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                     this.in.dataTrackDisplay.recalculate()
                 }
             })
+
+            this.guiFolder.add(this, "gotoTrack").name("Go to track");
+
         }
 
         // TODO: Add a gui entry for the track color
@@ -120,6 +123,33 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         
         this.recalculate()
     }
+
+    gotoTrack() {
+
+        console.log("Going to track "+this.id)
+
+        // get current location from the track
+        const trackPoint = this.in.track.v(par.frame).position;
+
+        // get the local up vector at the track point
+        const up = getLocalUpVector(trackPoint);
+        // and south vector
+        const south = getLocalSouthVector(trackPoint);
+        // make a point 20m above, and 200m south
+        const target = trackPoint.clone().add(up.clone().multiplyScalar(20)).add(south.clone().multiplyScalar(200));
+        // get the mainCamera
+        const mainCamera = NodeMan.get("mainCamera").camera;
+        // set the position to the target
+        mainCamera.position.copy(target);
+        // Set up to local up
+        mainCamera.up.copy(up);
+        // and look at the track point
+        mainCamera.lookAt(trackPoint);
+
+
+
+    }
+
 
     update() {
         // recalculate, so we

@@ -946,7 +946,10 @@ export function detectCSVType(csv) {
     }
 
     // CUSTOM1 is a custom track format exported from some database
-    if (csv[0].includes("TIME") && csv[0].includes("LAT") && csv[0].includes("LONG") && csv[0].includes("ALTITUDE")) {
+    if (csv[0].includes("TIME")
+        && csv[0].includes("LAT")
+        && (csv[0].includes("LONG") || csv[0].includes("LON"))
+        && csv[0].includes("ALTITUDE")) {
         return "CUSTOM1";
     }
 
