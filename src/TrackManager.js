@@ -366,6 +366,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 const trackOb = TrackManager.add(trackID, new CMetaTrack(trackFileName, trackDataNode, trackNode));
                 trackOb.trackID = trackID;
                 trackOb.menuText = shortName;
+                trackNode.shortName = shortName;
+                trackDataNode.shortName = shortName;
 
                 // This track will include FOV and angles
                 // but if there's a center track, we make a separate track for that
@@ -378,7 +380,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
                 let centerID = null;
-                if (misb[0][MISB.FrameCenterLatitude] !== undefined) {
+                if (misb[0][MISB.FrameCenterLatitude] !== undefined && misb[0][MISB.FrameCenterLatitude] !== null) {
                     hasCenter = true;
 
                     const centerDataID = "CenterData_" + shortName;

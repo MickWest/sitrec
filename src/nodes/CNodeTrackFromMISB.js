@@ -36,10 +36,41 @@ export class CNodeTrackFromMISB extends CNodeTrack {
                     // limited to local custom use, as it triggers "more than one export button" warning
                     NodeMan.addExportButton(this, "exportGEOJSON", "GEOJSON ")
                     NodeMan.addExportButton(this, "exportALLGEO", "ALLGEO")
+                    NodeMan.addExportButton(this, "exportCustom1", "Custom1 ")
                 }
             }
         }
     }
+
+
+    // export the track as a CSV file (only used for testing Custom1 import functionality
+    exportCustom1() {
+        let csv = "TIME,MGRS,LAT_DMS,LON_DMS,LAT,LONG,LAT_DDM,LON_DDM,ALTITUDE,AIRCRAFT,CALLSIGN,SPEED_KTS\n"
+        const misb = this.in.misb;
+        misb.selectSourceColumns(this.columns);
+        var points = misb.misb.length
+        const id = this.shortName ?? this.id;
+        for (let slot = 0; slot < points; slot++) {
+            const time = misb.getTime(slot);
+            const date = new Date(time)
+            // we want one with the seconds, not the milliseconds
+            const dateStr = date.toISOString().slice(0,19)+"Z";
+            csv += dateStr + ","
+                + "," + "," + ","
+                + misb.getLat(slot) + "," + misb.getLon(slot) + ","
+                + "," + ","
+                + misb.getAlt(slot) + ","
+                + "F-15" + ","+ id + ","
+                + 0 + "\n" // speed is currently ignored
+
+
+        }
+
+        saveAs(new Blob([csv]), "Custom1-"+this.id+".csv")
+
+
+    }
+
 
     exportGEOJSON() {
         const geo = new CGeoJSON()

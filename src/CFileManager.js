@@ -25,6 +25,7 @@ import {writeToClipboard} from "./urlUtils";
 import {CustomManager} from "./CustomSupport";
 import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
+import {parseCustom1CSV} from "./ParseCustom1CSV";
 
 
 // The file manager is a singleton that manages all the files
@@ -756,6 +757,8 @@ export class CFileManager extends CManager {
                         parsed = parseAirdataCSV(parsed);
                     } else if (dataType === "MISB1") {
                         parsed = parseMISB1CSV(parsed);
+                    } else if (dataType === "CUSTOM1") {
+                        parsed = parseCustom1CSV(parsed);
                     }
                     break;
                 case "kml":
@@ -932,6 +935,14 @@ export function detectCSVType(csv) {
     if (csv[0].includes("Sensor Latitude") || csv[0].includes("SensorLatitude")) {
         return "MISB1";
     }
+
+    // CUSTOM1 is a custom track format exported from some database
+    if (csv[0].includes("TIME") && csv[0].includes("LAT") && csv[0].includes("LONG") && csv[0].includes("ALTITUDE")) {
+        return "CUSTOM1";
+    }
+
+
+
 
 
     // only give an error warning for custom, as some sitches have custom code to use

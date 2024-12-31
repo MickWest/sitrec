@@ -49,7 +49,7 @@ export function convertToRelativeTime(startTime, relativeTimeString) {
     return relativeTime;
 }
 
-export function findColumn(csv, text) {
+export function findColumn(csv, text, exactMatch = false) {
     // Check if the csv is a non-empty array
     if (!Array.isArray(csv) || csv.length === 0 || !Array.isArray(csv[0])) {
         throw new Error("Invalid input: csv must be a non-empty 2D array.");
@@ -57,9 +57,16 @@ export function findColumn(csv, text) {
 
     // Iterate through each column of the first row
     for (let col = 0; col < csv[0].length; col++) {
-        // Check if the first element of the column starts with the text
-        if (csv[0][col].trimStart().startsWith(text)) {
-            return col; // Return the column index
+        if (exactMatch) {
+            // Check if the column header matches the text exactly
+            if (csv[0][col].trim() === text) {
+                return col; // Return the column index
+            }
+        } else {
+            // Check if the first element of the column starts with the text
+            if (csv[0][col].trimStart().startsWith(text)) {
+                return col; // Return the column index
+            }
         }
     }
 
@@ -68,6 +75,16 @@ export function findColumn(csv, text) {
 
 }
 
+// either 2024-04-24T16:44:11Z or 2024-04-24T16:44:11.000Z
+// the built in Date parser can handle this
+// returns a date object
+export function parseISODate(dateStr) {
+    const date = new Date(dateStr);
+    return date
+}
+
+// Parse a date string in the format "YYYY-MM-DD HH:MM:SS" as a UTC date
+//
 export function parseUTCDate(dateStr) {
     // Split the date and time parts
     const [datePart, timePart] = dateStr.split(' ');
