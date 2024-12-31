@@ -1,3 +1,5 @@
+import {MISB} from "./MISBUtils";
+
 export function splitOnCommas(str) {
     // Regular expression to match commas that are not inside parentheses
     const regex = /,(?![^\(\)]*\))/g;
@@ -119,4 +121,28 @@ export function addMillisecondsToDate(date, ms) {
 
     // Create a new Date object with the new time
     return new Date(newTime);
+}
+
+export function stripDuplicateTimes(data) {
+    // Create an empty array to store unique timestamps
+    const uniqueData = [];
+
+    // data is an array of arrays, each containing a timestamp at index MISB.UnixTimeStamp
+    // eg. data[0][MISB.UnixTimeStamp] is the timestamp of the first data point
+    // Iterate through each data point
+    let lastTime = -1;
+    for (const point of data) {
+        if (point[MISB.UnixTimeStamp] !== lastTime) {
+            // Add the data point to the uniqueData array
+            uniqueData.push(point);
+
+            // Update the lastTime variable
+            lastTime = point[MISB.UnixTimeStamp]
+        } else {
+            console.log("Duplicate time found: ", point[MISB.UnixTimeStamp]);
+        }
+    }
+
+    // Return the array of unique data points
+    return uniqueData;
 }

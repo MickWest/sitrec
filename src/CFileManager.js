@@ -26,6 +26,7 @@ import {CustomManager} from "./CustomSupport";
 import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
 import {parseCustom1CSV} from "./ParseCustom1CSV";
+import {stripDuplicateTimes} from "./ParseUtils";
 
 
 // The file manager is a singleton that manages all the files
@@ -760,6 +761,7 @@ export class CFileManager extends CManager {
                     } else if (dataType === "CUSTOM1") {
                         parsed = parseCustom1CSV(parsed);
                     }
+                    parsed = stripDuplicateTimes(parsed);
                     break;
                 case "kml":
                 case "ksv":

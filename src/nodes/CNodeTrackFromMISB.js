@@ -237,6 +237,8 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             assert(misb.isValid(slot+1), "slot+1 " + (slot+1) + " is not valid, id=" + this.id)
 
 
+            assert(misb.getTime(slot+1) > misb.getTime(slot), "Time data is not increasing slot =" + slot + " time=" + misb.getTime(slot) + " next time=" + misb.getTime(slot+1));
+
            // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
             const fraction = (msNow - misb.getTime(slot)) / (misb.getTime(slot + 1) - misb.getTime(slot))
             const lat = interpolate(misb.getLat(slot), misb.getLat(slot + 1), fraction);
