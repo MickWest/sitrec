@@ -3,10 +3,12 @@
 import {addTracks} from "./TrackManager";
 import {FileManager, NodeMan, setNewSitchObject, Sit} from "./Globals";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "../config";
-import {getFileExtension, isSubdomain} from "./utils";
+import {cos, getFileExtension, isSubdomain, radians} from "./utils";
 import {par} from "./par";
 import {textSitchToObject} from "./RegisterSitches";
 import {ModelFiles} from "./nodes/CNode3DObject";
+import {LLAToEUS} from "./LLA-ECEF-ENU";
+import {getLocalSouthVector, getLocalUpVector} from "./SphericalMath";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -176,13 +178,106 @@ class CDragDropHandler {
         // Check if the URL is from the same domain we are hosting on
         // later we might support other domains, and load them via proxy
         const urlObject = new URL(url);
-          if (!isSubdomain(urlObject.hostname, SITREC_DOMAIN)
+        if (!isSubdomain(urlObject.hostname, SITREC_DOMAIN)
               && !isSubdomain(urlObject.hostname, SITREC_DEV_DOMAIN)
               && !isSubdomain(urlObject.hostname, "amazonaws.com")
-              )   {
-            console.warn('The provided URL ' + urlObject.hostname +' is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN + "or amazonaws.com");
+              ) {
+            // console.warn('The provided URL ' + urlObject.hostname +' is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN + "or amazonaws.com");
+
+
+            let lat, lon;
+            let alt = 30000;    // default altitude (meters)
+
+            const mainCamera = NodeMan.get("mainCamera").camera;
+
+            // check from Google Maps URLs, and extract the location
+            if (urlObject.hostname === "www.google.com" && urlObject.pathname.startsWith("/maps")) {
+
+                // example URL from Google Maps
+                // https://www.google.com/maps/place/Santa+Monica,+CA/@33.9948301,-118.4615695,67a,35y,116.89h,8.32t/data
+
+                // first get the string after the @ from the string url, and split it by the comma
+                const afterAt = url.split("@")[1].split("/data")[0];
+                const parts = afterAt.split(",");
+                if (parts.length > 1) {
+                    const lat = parseFloat(parts[0]);
+                    const lon = parseFloat(parts[1]);
+
+
+                    // if part[2] ends in "m" or "a" then it's the vertical span of the map
+                    // from that we can work out the altitude
+                    if (parts[2].endsWith("m") || parts[2].endsWith("a")) {
+                        const span = parseFloat(parts[2].slice(0, -1));
+                        // given the camera Vertical FOV, we can work out the altitude
+                        const vFOV = mainCamera.fov * Math.PI / 180;
+                        alt = span / 2 / Math.tan(vFOV / 2);
+                    }
+
+                    console.log("Google Maps URL detected, extracting location: " + lat + ", " + lon, " Altitude: " + alt);
+
+                }
+            }
+
+
+            // ADSBx example URL
+            // https://globe.adsbexchange.com/?replay=2024-12-30-23:54&lat=39.948&lon=-73.938&zoom=11.8
+            if (urlObject.hostname === "globe.adsbexchange.com") {
+                lat = parseFloat(urlObject.searchParams.get("lat"));
+                lon = parseFloat(urlObject.searchParams.get("lon"));
+                let zoom = parseFloat(urlObject.searchParams.get("zoom"));
+
+                // convert zoom to altitude
+                // by first converting it to a tile size in meters
+                let circumference = 40075000*cos(radians(lat));
+                let span = circumference/Math.pow(2,zoom-1)
+                const vFOV = mainCamera.fov * Math.PI / 180;
+                alt = span / 2 / Math.tan(vFOV / 2);
+
+            }
+
+            // FR24 example URL
+            // https://www.flightradar24.com/38.73,-120.56/9
+            if (urlObject.hostname === "www.flightradar24.com") {
+                let latlon = urlObject.pathname.split("/")[1];
+                lat = parseFloat(latlon.split(",")[0]);
+                lon = parseFloat(latlon.split(",")[1]);
+                let zoom = parseFloat(urlObject.pathname.split("/")[2]);
+
+                // convert zoom to altitude
+                // by first converting it to a tile size in meters
+                let circumference = 40075000*cos(radians(lat));
+                let span = circumference/Math.pow(2,zoom-1)
+                const vFOV = mainCamera.fov * Math.PI / 180;
+                alt = span / 2 / Math.tan(vFOV / 2);
+            }
+
+
+
+
+            if (lat !== undefined && lon !== undefined) {
+                const camPos = LLAToEUS(lat, lon, alt);
+
+                const target = LLAToEUS(lat, lon, 0);
+
+                const up = getLocalUpVector(camPos);
+                const south = getLocalSouthVector(camPos);
+                camPos.add(south.clone().multiplyScalar(100)); // move camera 100 meter south, just so we orient norht
+
+                // set the position to the target
+                mainCamera.position.copy(camPos);
+                // Set up to local up
+                mainCamera.up.copy(up);
+                // and look at the track point
+                mainCamera.lookAt(target);
+
+            }
+
             return;
         }
+
+
+
+
         return fetch(url)
             .then(response => {
                 if (!response.ok) {
