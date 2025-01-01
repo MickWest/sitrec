@@ -111,13 +111,18 @@ class CDragDropHandler {
                 this.uploadDroppedFile(file, file.name);
             }
         }
-// If a URL was dragged and dropped
+// If a plain text snippet or URL was dragged and dropped
         else {
             let url = dt.getData('text/plain');
             if (url) {
-                console.log("LOADING DROPPED URL:" + url);
-                this.uploadURL(url);
+                console.log("LOADING DROPPED text:" + url);
+                // check if it's not a valid URL
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    this.uploadText(url);
+                } else {
 
+                    this.uploadURL(url);
+                }
             }
         }
     }
@@ -255,20 +260,8 @@ class CDragDropHandler {
 
 
             if (lat !== undefined && lon !== undefined) {
-                const camPos = LLAToEUS(lat, lon, alt);
+                this.droppedLLA()
 
-                const target = LLAToEUS(lat, lon, 0);
-
-                const up = getLocalUpVector(camPos);
-                const south = getLocalSouthVector(camPos);
-                camPos.add(south.clone().multiplyScalar(100)); // move camera 100 meter south, just so we orient norht
-
-                // set the position to the target
-                mainCamera.position.copy(camPos);
-                // Set up to local up
-                mainCamera.up.copy(up);
-                // and look at the track point
-                mainCamera.lookAt(target);
 
             }
 
@@ -294,6 +287,42 @@ class CDragDropHandler {
             });
     }
 
+    // dragged in a text snippet
+    // check if it's a lat, lon, alt or just a lat, lon
+    // 38.73,-120.56,100000 , or 38.73,-120.56
+    uploadText(text) {
+        // most likely LL or LLA
+        const numbers = text.split(/[\s,]+/).map(parseFloat);
+        if (numbers.length === 2) {
+            // it's a lat, lon
+            this.droppedLLA(numbers[0], numbers[1], 0);
+        } else
+        if (numbers.length === 3) {
+            // it's a lat, lon, alt
+            this.droppedLLA(numbers[0], numbers[1], numbers[2]);
+        } else {
+            console.log("Unhandled text snippet: " + text);
+        }
+    }
+
+
+    droppedLLA(lat, lon, alt) {
+        const mainCamera = NodeMan.get("mainCamera").camera;
+        const camPos = LLAToEUS(lat, lon, alt);
+
+        const target = LLAToEUS(lat, lon, 0);
+
+        const up = getLocalUpVector(camPos);
+        const south = getLocalSouthVector(camPos);
+        camPos.add(south.clone().multiplyScalar(100)); // move camera 100 meter south, just so we orient norht
+
+        // set the position to the target
+        mainCamera.position.copy(camPos);
+        // Set up to local up
+        mainCamera.up.copy(up);
+        // and look at the track point
+        mainCamera.lookAt(target);
+    }
 
     queueResult(filename, result, newStaticURL) {
         this.dropQueue.push({filename: filename, result: result, newStaticURL: newStaticURL});
