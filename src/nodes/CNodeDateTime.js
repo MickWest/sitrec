@@ -142,14 +142,19 @@ export class CNodeDateTime extends CNode {
         this.dateTimeFolder.add(Sit, "nowTime").listen()
             .tooltip("The CURRENT time of the video. This is what the below date and time refer to")
 
+        let fiveYearsFromNow = new Date();
+        fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5);
+
       // The UI will update the dateNow member, and then we will update the dateStart member
-        const guiYear = this.dateTimeFolder.add(this.dateTime, "year", 1947, 2030, 1).listen().onChange(v => this.updateDateTime(v))
+        const guiYear = this.dateTimeFolder.add(this.dateTime, "year", 1947, fiveYearsFromNow.getFullYear(), 1).listen().onChange(v => this.updateDateTime(v))
         const guiMonth = this.dateTimeFolder.add(this.dateTime, "month", 1, 12, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiYear)
-        const guiDay = this.dateTimeFolder.add(this.dateTime, "day", 1, 31, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiMonth)
-        const guiHour =  this.dateTimeFolder.add(this.dateTime, "hour", 0, 23, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiDay)
+        this.guiDay = this.dateTimeFolder.add(this.dateTime, "day", 1, 31, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiMonth)
+        const guiHour =  this.dateTimeFolder.add(this.dateTime, "hour", 0, 23, 1).listen().onChange(v => this.updateDateTime(v)).wrap(this.guiDay)
         const guiMinute = this.dateTimeFolder.add(this.dateTime, "minute", 0, 59, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiHour)
         const guiSecond = this.dateTimeFolder.add(this.dateTime, "second", 0, 59, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiMinute)
         const guiMillisecond = this.dateTimeFolder.add(this.dateTime, "millisecond", 0, 999, 1).listen().onChange(v => this.updateDateTime(v)).wrap(guiSecond)
+
+        this.adjustDaysInMonth();
 
         const options = { timeZoneName: 'short' };
         const timeZone = Sit.timeZone ?? new Date().toLocaleTimeString('en-us', options).split(' ')[2];
@@ -231,6 +236,20 @@ export class CNodeDateTime extends CNode {
             .tooltip("The frames per second of the video. This will change the playback speed of the video (e.g. 30 fps, 25 fps, etc). It will also change the duration of the sitch (in secods) as it changes how long an individual frame is\n This is derived from the video were possible, but you can change it if you want to speed up or slow down the video")
         this.update(0);
 
+    }
+
+    adjustDaysInMonth() {
+        if (this.guiDay === undefined) return;
+        let days = 31;
+        if (this.dateTime.month === 2) {
+            days = 28;
+            if (this.dateTime.year % 4 === 0) {
+                days = 29;
+            }
+        } else if ([4, 6, 9, 11].includes(this.dateTime.month)) {
+            days = 30;
+        }
+        this.guiDay.max(days);
     }
     
     changedFrames() {
@@ -377,6 +396,8 @@ export class CNodeDateTime extends CNode {
         Sit.startTime = this.dateStart.toISOString();
         Sit.nowTime   = this.dateNow.toISOString();
 
+        this.adjustDaysInMonth();
+
     }
 
     populateStartTimeFromUTCString(utcString) {
@@ -399,6 +420,7 @@ export class CNodeDateTime extends CNode {
     // i.e. takes all the UI entires, and sets the now time, which will set the start time
     updateDateTime(v) {
         if (!this.refreshingUI) {
+            this.adjustDaysInMonth();
             this.setNowDateTime(new Date(Date.UTC(
                 this.dateTime.year,
                 this.dateTime.month - 1, // Months are 0-indexed in JavaScript
