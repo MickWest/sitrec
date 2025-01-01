@@ -967,7 +967,7 @@ function selectInitialSitch(force) {
                 if (SitchMan.exists(sortedSitches[key]));
                     toTest += sortedSitches[key] + ",";
             }
-            toTest += "gimbal"  // just so we end up with something more interesting for more of a soak test
+            toTest += localSituation; // end up with the current situation being tested
             testing = true;
 
             console.log(urlParams.get("testAll"));
