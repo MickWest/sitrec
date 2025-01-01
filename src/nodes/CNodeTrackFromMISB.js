@@ -123,6 +123,47 @@ export class CNodeTrackFromMISB extends CNodeTrack {
     }
 
 
+    patchColumn(misb, column, test)
+    {
+        // first find the first valid FOV value (if any)
+        const points = misb.misb.length;
+        let validValue;
+        for (let slot = 0; slot < points; slot++) {
+            const value = misb.misb[slot][column]
+            if (value !== undefined) {
+                const valueNumber = Number(value)
+                // use only valid FOV values
+                if (test(valueNumber)) {
+                    validValue = value
+                    console.log("CNodeTrackFromMISB:recalculate(): FIRST validValue = " + validValue);
+                    break
+                }
+            }
+        }
+
+        // // now go over all the slots, if invalid, the patch with validValue
+        // // if valid, then update validValue
+        for (let slot = 0; slot < points; slot++) {
+            const value = misb.misb[slot][column]
+            if (value !== undefined) {
+                const valueNumber = Number(value)
+                // use only valid FOV values, so if this is valid, we'll use it for subsequent invald rows
+                if (!isNaN(valueNumber) && valueNumber > 0 && valueNumber < 180) {
+                    validValue = value
+                } else {
+                    console.log("Replacing invalid FOV value: " + value + " with validValue = " + validValue)
+                    misb.misb[slot][column] = validValue;
+                }
+            } else {
+                misb.misb[slot][column] = validValue;
+            }
+
+            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb.misb[slot][column] = " + misb.misb[slot][column]);
+        }
+        return (validValue !== undefined)
+    }
+    
+
     // the data track is no more, and now we will make this direcly from the MISB data
     // and add gettor function to the MISB data node in CNodeMISBData.js
     // start with the postin and FOV.
@@ -155,47 +196,11 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
         // patch the fov values in the misb column, overwriting any ilegal or missing values
 
-        // first find the first valid FOV value
-        let validFOV
-        for (let slot=0;slot<points;slot++) {
-            const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
-            if ( misbFOV !== undefined) {
-                const misbFOVNumber = Number(misbFOV)
-                // use only valid FOV values
-                if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
-                    validFOV = misbFOV
-                    console.log("CNodeTrackFromMISB:recalculate(): FIRST validFOV = " + validFOV);
-                    break
-                }
-            }
-        }
-
-        // // now go over all the slots, if invalid, the patch with validFOV
-        // // if valid, then update validFOV
-        for (let slot=0;slot<points;slot++) {
-            const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
-            if ( misbFOV !== undefined) {
-                const misbFOVNumber = Number(misbFOV)
-                // use only valid FOV values, so if this is valid, we'll use it for subsequent invald rows
-                if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
-                    validFOV = misbFOV
-                }
-                else {
-                    console.log("Replacing invalid FOV value: " + misbFOV + " with validFOV = " + validFOV)
-                    misb.misb[slot][MISB.SensorVerticalFieldofView] = validFOV;
-                }
-            }
-            else {
-                misb.misb[slot][MISB.SensorVerticalFieldofView] = validFOV;
-            }
-//            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb[SensorVerticalFieldofView] = " + misb.misb[slot][MISB.SensorVerticalFieldofView] + " validFOV = " + validFOV);
-        }
-
-        // later if validFOV is still undefined, just skip over all the FOV stuff
-
-
-
-
+        let validFOV = this.patchColumn(misb, MISB.SensorVerticalFieldofView,
+            (n) => {return !isNaN(n) && n > 0 && n < 180;}
+        )
+        
+        
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
             // advance the slot if needed
