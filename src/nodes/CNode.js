@@ -553,6 +553,15 @@ class CNode {
         return pos.clone()
     }
 
+    // check to see if p() will return a valid point
+    validPoint(frameFloat) {
+        let pos = this.getValue(frameFloat)
+        if (pos === undefined) return false;
+        if (pos.position !== undefined)
+            pos = pos.position;
+        return pos.clone !== undefined
+    }
+
     // We implement this with an assert to ensure derived classes implement it
     getValueFrame() {
         assert(0,"Should not call getValueFrame base implementation. Node missing getValueFrame implementation?")

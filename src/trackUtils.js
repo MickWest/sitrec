@@ -52,9 +52,11 @@ export function trackBoundingBox(track) {
     let min = p.clone();
     let max = p.clone();
     for (let f = 1; f < frames; f++) {
-        const p = track.p(f);
-        min.min(p);  // using min.min instead of Math.min to avoid creating a new vector
-        max.max(p);
+        if (track.validPoint(f)) {
+            const p = track.p(f);
+            min.min(p);  // using min.min instead of Math.min to avoid creating a new vector
+            max.max(p);
+        }
     }
     return {min:min, max:max};
 }
