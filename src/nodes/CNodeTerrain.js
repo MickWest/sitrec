@@ -507,8 +507,8 @@ export class CNodeTerrain extends CNode {
         // and it uses the WGS84 circumference, radius 6378137, -> 40075016
         // rounded slightly to 40075000
         // this circumference is for the tile APIs, and does NOT change with radius
-        let circumfrence = 40075000*cos(radians(this.lat));
-        this.tileSize = circumfrence/Math.pow(2,this.zoom) // tileSize is the width and height of the tile in meters
+        let circumference = 40075000*cos(radians(this.lat));
+        this.tileSize = circumference/Math.pow(2,this.zoom) // tileSize is the width and height of the tile in meters
 
 
 
