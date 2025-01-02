@@ -65,19 +65,19 @@ export class CNodeWind extends CNode {
         this.guiKnots.updateDisplay()
     }
 
-    // hide and show will be called from a switch node
-    hide() {
-        super.hide()
-        this.guiFrom.hide()
-        this.guiKnots.hide()
-        return this;
+    // // hide and show will be called from a switch node
+    // hide() {
+    //     super.hide()
+    //     this.guiFrom.hide()
+    //     this.guiKnots.hide()
+    //     return this;
+    //
+    // }
 
-    }
-
-    show() {
-        super.show()
-        this.guiFrom.show()
-        this.guiKnots.show()
+    show(visible=true) {
+        super.show(visible)
+        this.guiFrom.show(visible)
+        this.guiKnots.show(visible)
         return this;
     }
 
@@ -104,6 +104,35 @@ export class CNodeWind extends CNode {
         return wind;
     }
 
+
+    update(f) {
+        // if we have a lock, then hide the gui of the wind we lock to
+        if (this.lock !== undefined) {
+            if (NodeMan.exists("lockWind")) {
+                const lock = NodeMan.get("lockWind");
+                const target = NodeMan.get(this.lock);
+
+                if (lock.value) {
+                    this.updateLockedWind()
+                }
+
+                if (lock.value !== target.visible) {
+                    target.recalculate();
+                }
+
+                target.show(!lock.value)
+            }
+        }
+    }
+
+    updateLockedWind() {
+        const target = NodeMan.get(this.lock);
+        target.from = this.from;
+        target.knots = this.knots;
+        target.guiFrom.updateDisplay()
+        target.guiKnots.updateDisplay()
+    }
+
     recalculate() {
         if (this.dontRecurse) return;
         this.dontRecurse = true;
@@ -112,16 +141,7 @@ export class CNodeWind extends CNode {
             if (NodeMan.exists("lockWind")) {
                 const lock = NodeMan.get("lockWind");
                 if (lock.value) {
-                    const target = NodeMan.get(this.lock);
-
-                    // we set the value in the object rather than the UI, as we
-                    // don't want to trigger a recalculation
-                    target.from = this.from;
-                    target.knots = this.knots;
-                    // updateDisplay on the target from and knots will update the UI
-                    target.guiFrom.updateDisplay()
-                    target.guiKnots.updateDisplay()
-
+                    this.updateLockedWind()
                 }
             }
         }

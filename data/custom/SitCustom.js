@@ -157,7 +157,7 @@ sitch = {
     localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
 
     // we can lock them so they are the same, defaults to not locked
-    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Wind", gui:"physics"},
+    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Target Wind to Local", gui:"physics"},
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,6 +266,15 @@ sitch = {
         kind: "fovController",
         object: "lookCamera",
         source: "fovSwitch",
+    },
+
+    windSwitch: {
+        kind: "Switch",
+        inputs: {
+            "Manual": "localWind",
+        },
+        desc: "Local Wind Source",
+        gui: "physics",
     },
 
 
@@ -465,6 +474,7 @@ sitch = {
         "track": ["cameraTrackSwitch-1", "targetTrackSwitch-2", "zoomToTrack"],
 //        "track": ["cameraTrackSwitch", "targetTrackSwitch"],
         "fov": ["fovSwitch"],
+        "wind": ["windSwitch"],
         "angles": ["angelsSwitch"],
     },
 

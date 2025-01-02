@@ -38,7 +38,7 @@ class CDragDropHandler {
         dropZone.style.transition = 'background-color 0.2s, opacity 5s';
         dropZone.style.pointerEvents = 'none';
         dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
-        dropZone.innerHTML = 'DROP FILES HERE';
+        dropZone.innerHTML = 'DROP FILES <br>OR URLS<br>HERE';
 
         if (!Sit.initialDropZoneAnimation) {
             dropZone.style.visibility = 'hidden'; // Initially hidden

@@ -33,7 +33,7 @@ export function parseCustom1CSV(csv) {
             MISBArray[i - 1][MISB.PlatformDesignation] = csv[i][aircraftCol]
 
             // NO FOV
-            MISBArray[i - 1][MISB.SensorVerticalFieldofView] = 0
+            //MISBArray[i - 1][MISB.SensorVerticalFieldofView] = 0
 
         }
 

@@ -510,7 +510,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                 if (isNumber(value)) {
                     hasFOV = true;
-                } else if (value.misbRow !== undefined && !isNaN(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
+                } else if (value.misbRow !== undefined
+                    && value.misbRow[MISB.SensorVerticalFieldofView] !== null
+                    && value.misbRow[MISB.SensorVerticalFieldofView] !== undefined
+                    && !isNaN(Number(value.misbRow[MISB.SensorVerticalFieldofView]))) {
                     hasFOV = true;
                 } else if (value.vFOV !== undefined) {
                     hasFOV = true;
@@ -559,6 +562,32 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                             switchNode.removeOption(anglesID)
                             switchNode.addOption(anglesID, NodeMan.get(anglesID))
                             switchNode.selectOption(anglesID)
+                        }
+                    }
+                }
+
+                let hasWind = false;
+                // and for wind speed and direction
+                if (value.misbRow !== undefined && isNumber(value.misbRow[MISB.WindSpeed])) {
+                    hasWind = true;
+                }
+
+                if (hasWind && Sit.dropTargets !== undefined && Sit.dropTargets["wind"] !== undefined) {
+
+                    // TODO - make a wind data node from this track
+                    // shoudl return heading and speed
+
+                    const dropTargets = Sit.dropTargets["wind"]
+                    for (const dropTargetSwitch of dropTargets) {
+                        if (NodeMan.exists(dropTargetSwitch)) {
+
+                            // THEN ADD IT TO THE DROP TARGET
+
+                            // BUT WHAT ABOUT MANUAL WIND?
+                            // WE"D NEED A WIND NODE THAT RETURNS MANUAL WIND
+                            // So we need to add a manual wind node
+                            // need to handlge local, and target wind, and the locking
+
                         }
                     }
                 }

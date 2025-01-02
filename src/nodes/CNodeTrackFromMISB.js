@@ -123,14 +123,14 @@ export class CNodeTrackFromMISB extends CNodeTrack {
     }
 
 
-    patchColumn(misb, column, test)
+    patchColumn(misb, column, test, defaultValue)
     {
-        // first find the first valid FOV value (if any)
+        // first find the first valid value (if any)
         const points = misb.misb.length;
         let validValue;
         for (let slot = 0; slot < points; slot++) {
             const value = misb.misb[slot][column]
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
                 const valueNumber = Number(value)
                 // use only valid FOV values
                 if (test(valueNumber)) {
@@ -141,11 +141,20 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             }
         }
 
+        if (validValue === undefined) {
+            if (defaultValue !== undefined) {
+                validValue = defaultValue
+            } else {
+                console.log(this.id + " CNodeTrackFromMISB:recalculate(): No valid patch values found, column = " + column);
+                return false
+            }
+        }
+
         // // now go over all the slots, if invalid, the patch with validValue
         // // if valid, then update validValue
         for (let slot = 0; slot < points; slot++) {
             const value = misb.misb[slot][column]
-            if (value !== undefined) {
+            if (value !== undefined && value !== null) {
                 const valueNumber = Number(value)
                 // use only valid FOV values, so if this is valid, we'll use it for subsequent invald rows
                 if (!isNaN(valueNumber) && valueNumber > 0 && valueNumber < 180) {
@@ -199,7 +208,16 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         let validFOV = this.patchColumn(misb, MISB.SensorVerticalFieldofView,
             (n) => {return !isNaN(n) && n > 0 && n < 180;}
         )
-        
+
+        let validWindDirection = this.patchColumn(misb, MISB.WindDirection,
+            (n) => {return !isNaN(n) && n >= 0 && n < 360}
+        )
+
+        let validWindSpeed = this.patchColumn(misb, MISB.WindSpeed,
+            (n) => {return !isNaN(n) && n >= 0 && n < 400} // 400 knots is a bit much, but it's a reasonable limit
+        )
+
+
         
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
@@ -259,20 +277,20 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             // minumum data that is needed
             const product = {position: pos.clone(), lla:[lat,lon,alt]}
 
-            // uniterpolated extra fields
-            const extraFields = [
-                "focal_len",
-                "heading",
-                "pitch",
-                "roll",
-                "gHeading",
-                "gPitch",
-                "gRoll",
-            ]
+            // // uniterpolated extra fields
+            // const extraFields = [
+            //     "focal_len",
+            //     "heading",
+            //     "pitch",
+            //     "roll",
+            //     "gHeading",
+            //     "gPitch",
+            //     "gRoll",
+            // ]
 
             // only copy the vFov if it's actually there
             // need this check for drag-and-drop
-            if (!validFOV) {
+            if (validFOV) {
                 const misbFOV = misb.misb[slot][MISB.SensorVerticalFieldofView]
                 if (misbFOV !== undefined) {
                     const misbFOVNumber = Number(misbFOV)
