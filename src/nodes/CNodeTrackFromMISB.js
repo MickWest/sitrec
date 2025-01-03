@@ -167,7 +167,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
                 misb.misb[slot][column] = validValue;
             }
 
-            console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb.misb[slot][column] = " + misb.misb[slot][column]);
+          //  console.log("CNodeTrackFromMISB:recalculate(): slot = " + slot + " misb.misb[slot][column] = " + misb.misb[slot][column]);
         }
         return (validValue !== undefined)
     }
