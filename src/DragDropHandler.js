@@ -260,16 +260,11 @@ class CDragDropHandler {
 
 
             if (lat !== undefined && lon !== undefined) {
-                this.droppedLLA()
-
-
+                this.droppedLLA(lat, lon, alt)
             }
 
             return;
         }
-
-
-
 
         return fetch(url)
             .then(response => {
