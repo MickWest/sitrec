@@ -154,7 +154,7 @@ sitch = {
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
 
     // local wind is the wind at the camera location
-    localWind:  { kind: "Wind", from: 0, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
+    localWind:  { kind: "Wind", from: 285, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
 
     // we can lock them so they are the same, defaults to not locked
     lockWind: {kind: "GUIFlag", value: false, desc: "Lock Target Wind to Local", gui:"physics"},

@@ -27,7 +27,7 @@ export class CNodeControllerPTZUI extends CNodeController {
             this.setGUI(v,"camera");
             const guiPTZ = this.gui;
 
-            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
+            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor).wrap()
             guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
             if (this.fov !== undefined) {
                 guiPTZ.add(this, "fov", 0.1, 170, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor).elastic(5, 170)

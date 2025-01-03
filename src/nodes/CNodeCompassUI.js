@@ -89,6 +89,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
 
         let length = 35;
 
+        let arrowScale = 0.25;
 
         const targetWind = NodeMan.get("targetWind", false);
         if (targetWind) {
@@ -103,8 +104,8 @@ export class   CNodeCompassUI extends CNodeViewUI {
             const segment = (length ) / 2
             // rLine draws lines rotated about cx,cy
 
-            this.rLine(this.cx-3,this.cy-length,this.cx,this.cy-length*0.5,fromRadians);
-            this.rLine(this.cx+3,this.cy-length,this.cx,this.cy-length*0.5,fromRadians);
+            this.rLine(this.cx-3,this.cy-length,this.cx,this.cy-length*(1-arrowScale),fromRadians);
+            this.rLine(this.cx+3,this.cy-length,this.cx,this.cy-length*(1-arrowScale),fromRadians);
             this.rLine(this.cx+3,this.cy-length,this.cx-3,this.cy-length,fromRadians);
             c.stroke();
 
@@ -123,8 +124,8 @@ export class   CNodeCompassUI extends CNodeViewUI {
             const segment = (length ) / 2
             // rLine draws lines rotated about cx,cy
 
-            this.rLine(this.cx-3,this.cy-length,this.cx,this.cy-length*0.5,fromRadians);
-            this.rLine(this.cx+3,this.cy-length,this.cx,this.cy-length*0.5,fromRadians);
+            this.rLine(this.cx-3,this.cy-length,this.cx,this.cy-length*(1-arrowScale),fromRadians);
+            this.rLine(this.cx+3,this.cy-length,this.cx,this.cy-length*(1-arrowScale),fromRadians);
             this.rLine(this.cx+3,this.cy-length,this.cx-3,this.cy-length,fromRadians);
             c.stroke();
 

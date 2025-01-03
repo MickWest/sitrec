@@ -24,8 +24,8 @@ export class CNodeWind extends CNode {
         // this.input("radius")
 
         if(this.gui) {
-            this.guiFrom = this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade())
-            this.guiKnots = this.gui.add (this, "knots", 0, this.max, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade())
+            this.guiFrom = this.gui.add (this, "from", 0,359,1).name(this.name+" Wind From").onChange(x =>this.recalculateCascade()).wrap()
+            this.guiKnots = this.gui.add (this, "knots", 0, this.max, 1).name(this.name+" Wind Knots").onChange(x => this.recalculateCascade()).wrap()
         }
 
         this.optionalInputs(["originTrack"])
