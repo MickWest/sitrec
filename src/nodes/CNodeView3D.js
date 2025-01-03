@@ -298,6 +298,26 @@ export class CNodeView3D extends CNodeViewCanvas {
         this.preRenderFunction = v.preRenderFunction ?? (() => {});
         this.postRenderFunction = v.postRenderFunction ?? (() => {});
 
+
+        // 4. Set up the event listeners on your renderer
+        this.renderer.domElement.addEventListener('webglcontextlost', event => {
+            event.preventDefault();
+            console.warn('CNodeView3D WebGL context lost');
+        }, false);
+
+        this.renderer.domElement.addEventListener('webglcontextrestored', () => {
+            console.log('CNodeView3D WebGL context restored');
+            // get the terrain UI node and call doRefresh which will re-create the terrain
+            // should be very quick, as all the data is already loaded
+            const terrainNode = NodeMan.get("terrainUI", false);
+            if (terrainNode) {
+                console.log("Calling terrainNode.doRefresh()");
+                terrainNode.doRefresh();
+            }
+
+
+        }, false);
+
     }
 
 
