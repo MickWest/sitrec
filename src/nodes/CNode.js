@@ -63,7 +63,7 @@ class CNode {
             console.log("Node with unique ID: " + this.id + " created, class = " + this.constructor.name);
             assert(0, "anonymous nodes not supported!")
         }
-
+        this.simpleSerials = [];       // a list of serializable properties, default to nothing
         NodeMan.add(this.id, this)
     }
 
@@ -147,7 +147,7 @@ class CNode {
     }
 
     // the default serialize function
-    // this is overridden by derived classes
+    // this is overridden or extended by derived classes
     // to add their own properties
     // the default is just the kind
     // it should be something that, when used in a sitch statement, will recreate the node

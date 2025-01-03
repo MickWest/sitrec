@@ -66,29 +66,10 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
         this.oldNSprites = this.nSprites;
         this.gui.add(this, "nSprites", 1, 2000, 1).name("Number").onChange(() => {
 
-            const lookVector = new Vector3();
-            this.camera.getWorldDirection(lookVector);
-
-            if (this.nSprites < this.oldNSprites) {
-                // remove the last ones
-                this.orbs.splice(this.nSprites);
-            } else if (this.nSprites > this.oldNSprites) {
-                // add new ones
-                for (let i = this.oldNSprites; i < this.nSprites; i++) {
-                    const newOrb = new CFlowOrb({startDistance: this.randomDistance()});
-                    this.resetOrb(newOrb, lookVector, this.camera, true, i);
-                    this.orbs.push(newOrb);
-                }
-            }
-
-            this.rebuildSprites();
-
-            assert(this.nSprites === this.orbs.length, "nSprites and orbs array length mismatch. nSprites=" + this.nSprites + " orbs.length=" + this.orbs.length);
-
-            this.oldNSprites = this.nSprites;
-
+            this.nSpritesChanged();
 
         }).elastic(100, 2000, true)
+            .listen()
             .tooltip("Number of flow orbs to display. More orbs may impact performance.");
 
         this.gui.add(this, "spreadMethod", this.spreadMethods).name("Spread Method").onChange(() => {
@@ -103,6 +84,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.nearSlider.name("Near (m)");
             }
         })
+            .listen()
             .tooltip("Method to spread orbs along the camera look vector. \n'Range' spreads orbs evenly along the look vector between near and far distances. \n'Altitude' spreads orbs evenly along the look vector, between the low and high absolute altitudes (MSL)");
 
         // add near and far sliders
@@ -111,7 +93,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.far = this.near + 10;
             }
             this.adjustNearFar()
-        }).elastic(10, 100000, true);
+        }).elastic(10, 100000, true).listen();
 
         // same for far
         this.farSlider = this.gui.add(this, "far", 100, 10000, 1).listen().name("Far (m)").onChange(() => {
@@ -119,31 +101,76 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
                 this.near = this.far - 10;
             }
             this.adjustNearFar()
-        }).elastic(1000, 100000, true);
+        }).elastic(1000, 100000, true).listen();
 
 
         this.gui.add(this, "colorMethod", this.colorMethods).name("Color Method").onChange(() => {
             this.updateColors();
         })
+            .listen()
             .tooltip("Method to determine the color of the flow orbs. \n'Random' assigns a random color to each orb. \n'User' assigns a user-selected color to all orbs. \n'Hue From Altitude' assigns a color based on the altitude of the orb. \n'Hue From Distance' assigns a color based on the distance of the orb from the camera.");
 
 
         this.gui.addColor(this, "userColor").name("User Color").onChange(() => {
             this.updateColors();
-        }).tooltip("Select a color for the flow orbs when 'Color Method' is set to 'User'.");
+        }).listen().tooltip("Select a color for the flow orbs when 'Color Method' is set to 'User'.");
 
         this.gui.add(this, "hueAltitudeMax", 100, 10000, 1).name("Hue Range").onChange(() => {
             this.rebuildSprites();
             this.updateColors();
         }).elastic(1000, 100000)
+            .listen()
             .tooltip("Range over which you get a full spactrum of colors for the 'Hue From Altitude/Range' color method.");
 
 
         this.windWhilePaused = v.windWhilePaused ?? false;
         this.gui.add(this, "windWhilePaused").name("Wind While Paused")
+            .listen()
             .tooltip("If checked, wind will still affect the flow orbs even when the simulation is paused. Useful for visualizing wind patterns.");
 
         this.rebuildSprites();
+
+        this.simpleSerials = ["nSprites", "spreadMethod", "near", "far", "colorMethod", "userColor", "hueAltitudeMax", "windWhilePaused"];
+
+    }
+
+
+    modSerialize() {
+        return {
+            ...super.modSerialize(),
+
+        }
+    }
+
+    modDeserialize(v) {
+        super.modDeserialize(v);
+        this.visible = v.visible;
+        this.show(v.visible);
+        this.nSpritesChanged();
+        this.rebuildSprites()
+    }
+
+    nSpritesChanged() {
+        const lookVector = new Vector3();
+        this.camera.getWorldDirection(lookVector);
+
+        if (this.nSprites < this.oldNSprites) {
+            // remove the last ones
+            this.orbs.splice(this.nSprites);
+        } else if (this.nSprites > this.oldNSprites) {
+            // add new ones
+            for (let i = this.oldNSprites; i < this.nSprites; i++) {
+                const newOrb = new CFlowOrb({startDistance: this.randomDistance()});
+                this.resetOrb(newOrb, lookVector, this.camera, true, i);
+                this.orbs.push(newOrb);
+            }
+        }
+
+        this.rebuildSprites();
+
+        assert(this.nSprites === this.orbs.length, "nSprites and orbs array length mismatch. nSprites=" + this.nSprites + " orbs.length=" + this.orbs.length);
+
+        this.oldNSprites = this.nSprites;
 
     }
 

@@ -364,6 +364,12 @@ class CDragDropHandler {
         const fileManagerEntry = FileManager.list[filename];
 
         const fileExt = getFileExtension(filename);
+
+        if (filename.split('.').length === 1) {
+            console.warn("Skipping handleParseFile, as no file extension for " + filename+" assuming it's an ID");
+            return;
+        }
+
         // very rough figuring out what to do with it
         // TODO: multiple TLEs, Videos, images.
         if (FileManager.detectTLE(filename)) {
@@ -401,7 +407,7 @@ class CDragDropHandler {
 
 
         } else {
-            console.error("Unhandled file type: " + fileExt)
+            console.warn("Unhandled file type: " + fileExt + " for " + filename);
         }
     }
 

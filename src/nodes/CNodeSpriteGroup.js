@@ -130,7 +130,7 @@ constructor(v) {
     this.visible = v.visible ?? false;
     this.gui.add(this, "visible").name("Visible").onChange(() => {
         this.group.visible = this.visible;
-    });
+    }).listen();
 
     // Size in meters, used a CNodeGUIValue to create a unit-scaled slider
     this.gui.add(this, "size", 0.1, 10).name("Size (m)").onChange(() => {
@@ -145,6 +145,7 @@ constructor(v) {
 
     this.gui.add(this, "mainSizeMultiplier", 1, 100).name("View Size Multiplier").tooltip("Adjusts the size of the flow orbs in the main view, but does not change the size in other views.");
 
+    this.simpleSerials.push("size", "mainSizeMultiplier");
 }
 
 
