@@ -623,26 +623,28 @@ export class CNodeTerrain extends CNode {
 
 
     serialize() {
-        let out = super.serialize();
-        out = {
-            ...out, ...{
-                lat: this.lat,
-                lon: this.lon,
-                zoom: this.zoom,
-                nTiles: this.nTiles,
-            }
-        }
-        // when serializing, we don't want to include optional parameters that were
-        // not there in the original setup data
-        if (this.deferLoad !== undefined) {
-            out.deferLoad = this.deferLoad
-        }
-
-        if (this.in.flattening !== undefined) {
-            out.flattening = this.in.flattening.v0
-        }
-
-        return out;
+        assert(0, "CNodeTerrain: serialize not implemented, see getCustomSitchString() 'modify the terrain model directly' code")
+//         let out = super.serialize();
+//         out = {
+//             ...out, ...{
+//                 lat: this.lat,
+//                 lon: this.lon,
+//                 zoom: this.zoom,
+//                 nTiles: this.nTiles,
+// //                mapType: this.mapType,
+//             }
+//         }
+//         // when serializing, we don't want to include optional parameters that were
+//         // not there in the original setup data
+//         if (this.deferLoad !== undefined) {
+//             out.deferLoad = this.deferLoad
+//         }
+//
+//         if (this.in.flattening !== undefined) {
+//             out.flattening = this.in.flattening.v0
+//         }
+//
+//         return out;
     }
 
     dispose() {
