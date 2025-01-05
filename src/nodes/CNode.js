@@ -63,7 +63,7 @@ class CNode {
             console.log("Node with unique ID: " + this.id + " created, class = " + this.constructor.name);
             assert(0, "anonymous nodes not supported!")
         }
-        this.simpleSerials = [];       // a list of serializable properties, default to nothing
+        this.simpleSerials = ["visible"];       // a list of serializable properties, default to nothing
         NodeMan.add(this.id, this)
     }
 
@@ -116,6 +116,11 @@ class CNode {
 
     modDeserialize(v) {
         this.simpleDeserialize(v, this.simpleSerials)
+        this.visible ??= true; // if not defined, then default to true, as that's the default above, and older saves might not have it
+
+        // we can't call this.show() here, as the GUI might not be set up yet
+        // perhaps we could iterate over all nodes after deserialization to show them?
+        // this.show(this.visible)
     }
 
     addSimpleSerial(serial) {

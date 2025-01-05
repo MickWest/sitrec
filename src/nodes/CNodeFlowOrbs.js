@@ -130,7 +130,7 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
         this.rebuildSprites();
 
-        this.simpleSerials = ["nSprites", "spreadMethod", "near", "far", "colorMethod", "userColor", "hueAltitudeMax", "windWhilePaused"];
+        this.simpleSerials.push("nSprites", "spreadMethod", "near", "far", "colorMethod", "userColor", "hueAltitudeMax", "windWhilePaused");
 
     }
 
@@ -144,8 +144,6 @@ export class CNodeFlowOrbs extends CNodeSpriteGroup {
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.visible = v.visible;
-        this.show(v.visible);
         this.nSpritesChanged();
         this.rebuildSprites()
     }
