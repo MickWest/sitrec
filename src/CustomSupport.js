@@ -437,9 +437,12 @@ export class CCustomManager {
                 // if we've got a target object then disable THAT if it's too close to this object
                 if (ob !== tob) {
                     const targetObjectDist = ob.position.distanceTo(tob.position);
-                    if (targetObjectDist < 10) {
-                        tob.customOldVisible = ob.visible;
-                        tob.visible = false;
+                    if (targetObjectDist < 10 && tob.customOldVisible === undefined) {
+
+                        // removed for now, as it messes with windblown object that come close to the camera
+                        // tob.customOldVisible = ob.visible;
+                        // tob.visible = false;
+                        console.warn("TODO: Disabling target object as it's too close to this object")
                     }
                 }
             }
