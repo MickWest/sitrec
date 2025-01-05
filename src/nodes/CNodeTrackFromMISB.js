@@ -145,7 +145,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             if (defaultValue !== undefined) {
                 validValue = defaultValue
             } else {
-                console.log(this.id + " CNodeTrackFromMISB:recalculate(): No valid patch values found, column = " + column);
+//                console.log(this.id + " CNodeTrackFromMISB:recalculate(): No valid patch values found, column = " + column);
                 return false
             }
         }

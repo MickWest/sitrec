@@ -212,7 +212,7 @@ const gTypes = {
     sphere: {
         g: SphereGeometry,
         params: {
-            radius: [0.5, 0.1, 100, 0.01],
+            radius: [[0.5, 0.1, 100, 0.01], "Radius of the sphere"],
             widthSegments: [10, 4, 40, 1],
             heightSegments: [10, 3, 40, 1],
         }
@@ -597,10 +597,17 @@ export class CNode3DObject extends CNode3DGroup {
     addParams(geometryParams, toHere, gui, isCommon=false) {
         const v = this.props;
         for (const key in geometryParams) {
-            const params = geometryParams[key][0];
-            const tip = geometryParams[key][1];
-            
-            
+            let params = geometryParams[key][0];
+            let tip = geometryParams[key][1];
+
+
+            // if the geometryParams[key] is an array of four numbers, then
+            // set paramps to that array, and set tip to the key
+            if (geometryParams[key].length === 4) {
+                params = geometryParams[key];
+                tip = key;
+            }
+
             if (v[key] === undefined) {
                 // if no value is given, then use the first value in the array
                 // (the default value)
