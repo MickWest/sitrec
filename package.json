@@ -33,7 +33,7 @@
     "seedrandom": "^3.0.5",
     "stats.js": "^0.17.0",
     "stream": "^0.0.3",
-    "three": "^0.171.0",
+    "three": "^0.172.0",
     "three-text2d": "^0.6.0"
   },
   "devDependencies": {
