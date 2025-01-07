@@ -45,8 +45,8 @@ export const SitModelInspector = {
     ambientLight: 0.8,
 
 
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,700]},
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [40.257957,-109.891099,1600]},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [40.254018,-109.880925,1700], gui: "camera", key:"C"},
+    fixedTargetPosition: {kind: "PositionLLA", LLA: [40.257957,-109.891099,1600], gui: "target", key:"X"},
   //  fixedTargetPosition: {kind: "PositionXYZ", XYZ: [0,1600,0]},
     lookCamera:  {fov: 30},
     followTrack: {track:"fixedCameraPosition"},

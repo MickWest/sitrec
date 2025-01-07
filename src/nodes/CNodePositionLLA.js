@@ -1,30 +1,31 @@
 // A node that returns a EUS vector position based on LLA input
 // Can be defined by a lat, lon, and alt
 // or a LLA array of three values
+// Note that the altitude is in meters in the LLA array
+// and in feet in the GUI
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNode} from "./CNode";
 import {V3} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
-import {f2m, m2f} from "../utils";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {ViewMan} from "./CNodeView";
-import {NodeMan} from "../Globals";
 import {adjustHeightAboveGround} from "../threeExt";
+import {assert} from "../assert";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
         super(v);
 
         if (v.LLA !== undefined) {
-            // copy the array in v.LLA to this.LLA
-            this.LLA = v.LLA.slice()
+            // copy the array in v.LLA to this._LLA
+            this._LLA = v.LLA.slice()
             // if there's a gui specified, the add GUI inputs
             if (v.gui) {
                const name = (v.desc ?? "Camera") + (v.key ? " ["+v.key+"]":"");
                this.guiLat = new CNodeGUIValue({
                    id: name + " Lat",
                    desc: name + " Lat",
-                   value: this.LLA[0],
+                   value: this._LLA[0],
                    start: -90, end: 90, step: 0.01,
                    stepExplicit: false, // prevent snapping
                    onChange: (v) => {
@@ -38,14 +39,14 @@ export class CNodePositionLLA extends CNode {
                            const lon = parseFloat(split[1]);
                            if (!isNaN(lat) && !isNaN(lon)) {
                                this.guiLat.guiEntry.$input.value = lat;
-                               this.LLA[0] = lat;
-                               this.LLA[1] = lon;
+                               this._LLA[0] = lat;
+                               this._LLA[1] = lon;
                                this.guiLon.value = lon;
                                this.recalculateCascade(0)
                                return;
                            }
                        }
-                       this.LLA[0] = v;
+                       this._LLA[0] = v;
                        this.recalculateCascade(0)
                    }
                }, v.gui)
@@ -53,11 +54,11 @@ export class CNodePositionLLA extends CNode {
                this.guiLon = new CNodeGUIValue({
                    id: name + " Lon",
                    desc: name + " Lon",
-                   value: this.LLA[1],
+                   value: this._LLA[1],
                    start: -180, end: 180, step: 0.01,
                    stepExplicit: false, // prevent snapping
                    onChange: (v) => {
-                       this.LLA[1] = v;
+                       this._LLA[1] = v;
                        this.recalculateCascade(0)
                    }
                 }, v.gui)
@@ -65,14 +66,15 @@ export class CNodePositionLLA extends CNode {
                this.guiAlt = new CNodeGUIValue({
                    id: name + " Alt (ft)",
                    desc: name + " Alt (ft)",
-                   value: m2f(this.LLA[2]),
+                   value: 0, // don't set the altitude, as we want to set it with units
+                   unitType: "small",
                    start: 0, end: 100000, step: 1,
                    stepExplicit: false, // prevent snapping
                    onChange: (v) => {
-                       this.LLA[2] = f2m(v);
                        this.recalculateCascade(0)
                    }
                 }, v.gui)
+                this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small")
 
             }
 
@@ -100,8 +102,8 @@ export class CNodePositionLLA extends CNode {
                 // we set the values in the UI nodes
                 this.guiLat.value = LLA.x
                 this.guiLon.value = LLA.y
-                this.LLA[0] = LLA.x
-                this.LLA[1] = LLA.y
+                this._LLA[0] = LLA.x
+                this._LLA[1] = LLA.y
 
                 // if the shift key is held, then set the altitude to the ground + 2m
                 if (isKeyHeld('Shift')) {
@@ -111,13 +113,8 @@ export class CNodePositionLLA extends CNode {
                     const groundPointLLA = EUSToLLA(groundPoint);
                     // so the altitude is in the Z component
                     const groundAlt = groundPointLLA.z;
-                    this.guiAlt.value = groundAlt
-                    this.LLA[2] = groundAlt
+                    this.guiAlt.setValueWithUnits(groundAlt, "metric", "small")
                 }
-
-
-
-
                 this.recalculateCascade(0);
                 // we don't change the altitude, as we don't know it from the cursor
             }
@@ -131,8 +128,9 @@ export class CNodePositionLLA extends CNode {
 
     // return vector3 EUS for the specified LLA (animateabel)
     getValueFrame(f) {
-        if (this.LLA !== undefined) {
-            return LLAToEUS(this.LLA[0], this.LLA[1], this.LLA[2])
+        if (this._LLA !== undefined) {
+            assert(this.guiAlt !== undefined, "CNodePositionLLA: no guiAlt defined")
+            return LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(f))
         }
         const lat = this.in.lat.v(f)
         const lon = this.in.lon.v(f)
@@ -152,7 +150,6 @@ export class CNodePositionXYZ extends CNode {
         super(v);
 
         if (v.XYZ !== undefined) {
-            // copy the array in v.LLA to this.LLA
             this.XYZ = v.XYZ.slice()
         } else {
 

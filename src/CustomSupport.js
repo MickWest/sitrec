@@ -442,7 +442,7 @@ export class CCustomManager {
                         // removed for now, as it messes with windblown object that come close to the camera
                         // tob.customOldVisible = ob.visible;
                         // tob.visible = false;
-                        console.warn("TODO: Disabling target object as it's too close to this object")
+//                        console.warn("TODO: Disabling target object as it's too close to this object")
                     }
                 }
             }

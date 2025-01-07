@@ -134,6 +134,27 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
     }
 
+    // given a value, and the units and unitType, set the value in the gui
+    // example: setValueWithUnits(10, "meters", "small")
+    // if the current units are metric, then this will be converted from 10 meters to 32.8084 feet
+    setValueWithUnits(value, fromUnits, unitType) {
+        if (this.unitType === "none") {
+            // valueless, so just set the value
+            this.value = value;
+            this.guiEntry.setValue(this.value);
+            return;
+        }
+
+        assert(Units.factors[fromUnits] !== undefined, "CNodeGUIValue: unknown unit " + fromUnits + "type " + unitType);
+        assert(unitType === this.unitType, "CNodeGUIValue: unitType mismatch " + unitType + " !== " + this.unitType);
+
+        // we need to convert the value to the current units in the requested unitType
+        const scale = Units.getScaleFactors(fromUnits)[unitType];
+        this.value = roundIfClose(value * scale);
+        this.guiEntry.setValue(this.value);
+
+    }
+
     updateDesc() {
         if (this.unitType === "none") {
             return;

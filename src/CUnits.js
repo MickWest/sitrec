@@ -170,12 +170,7 @@ export class CUnits {
                 // now calculate a scaling factor from the old units to the new
                 // for each of the big, small, speed, and vertical speed
                 // this is used to convert old values to new values
-                const scaleFactors = {
-                    big:   this.factors[this.lastUnits].big.toM / this.big2M ,
-                    small: this.factors[this.lastUnits].small.toM / this.small2M,
-                    speed: this.factors[this.lastUnits].speed.toM / this.speed2M,
-                    verticalSpeed: this.factors[this.lastUnits].verticalSpeed.toM / this.vs2mps
-                }
+                const scaleFactors = this.getScaleFactors(this.lastUnits);
                 console.log("CUnits: scaleFactors: ", scaleFactors);
 
                 // we now informany nodes that have a changeUnits method
@@ -203,6 +198,17 @@ export class CUnits {
             this.lastUnits = this.units;
         }
     }
+
+    // given the previous units, get the scale factors to convert to the current units.
+    getScaleFactors(previousUnits) {
+        return {
+            big:   this.factors[previousUnits].big.toM / this.big2M ,
+            small: this.factors[previousUnits].small.toM / this.small2M,
+            speed: this.factors[previousUnits].speed.toM / this.speed2M,
+            verticalSpeed: this.factors[previousUnits].verticalSpeed.toM / this.vs2mps
+        }
+    }
+
 
     // convert meters to the big units
     mToBig(m, decimals = 0) {
