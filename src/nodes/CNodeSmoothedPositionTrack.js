@@ -6,7 +6,7 @@ import {GlobalDateTimeNode, NodeMan} from "../Globals";
 import {f2m, RollingAverage, SlidingAverage} from "../utils";
 import {CatmullRomCurve3} from "three";
 import {V3} from "../threeUtils";
-import {EUSToLLA} from "../LLA-ECEF-ENU";
+import {assert} from "../assert";
 
 export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -84,9 +84,22 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
         if (this.method === "moving" || this.method === "sliding") {
 
-            const x = this.sourceArray.map(pos => pos.position.x)
-            const y = this.sourceArray.map(pos => pos.position.y)
-            const z = this.sourceArray.map(pos => pos.position.z)
+            // const x = this.sourceArray.map(pos => pos.position.x)
+            // const y = this.sourceArray.map(pos => pos.position.y)
+            // const z = this.sourceArray.map(pos => pos.position.z)
+
+            // create x,y,z arrays using getValueFrame, so we can smooth abstract data
+            // (like catmullrom tracks, which don't create the sourceArray)
+
+            const x = []
+            const y = []
+            const z = []
+            for (let i = 0; i < this.sourceArray.length; i++) {
+                const pos = this.in.source.p(i)
+                x.push(pos.x)
+                y.push(pos.y)
+                z.push(pos.z)
+            }
 
             var window = this.in.window.v0
             var iterations = 1
@@ -144,13 +157,36 @@ export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
 
             //   this.dump()
 
+            // now make the array of positions
+            // this avoids recalculating the spline each frame
+            // and allows us to re-smooth a catmull track with existing code
+            this.array = []
+            for (var i = 0; i < this.frames; i++) {
+                var pos = V3()
+                var t = i / this.frames
+                this.spline.getPoint(t, pos)
+                this.array.push({position: pos})
+            }
+
         }
+
+        // // if the source array has misbRows, then we need to copy them to the new array
+        // // so that we can use them in the output
+        // // this will be done in getValueFrame
+        // assert(this.array !== undefined, "CNodeSmoothedPositionTrack: array is undefined, id=" + this.id)
+        // for (let i = 0; i < this.sourceArray.length; i++) {
+        //     if (this.sourceArray[i].misbRow !== undefined) {
+        //         assert(this.array[i] !== undefined, "CNodeSmoothedPositionTrack: array[i] is undefined, i=" + i)
+        //         this.array[i].misbRow = this.sourceArray[i].misbRow
+        //     }
+        // }
 
     }
 
     getValueFrame(frame) {
         let pos;
         if (this.method === "moving" || this.method === "sliding") {
+            assert(this.array[frame] !== undefined, "CNodeSmoothedPositionTrack: array[frame] is undefined, frame=" + frame + " id=" + this.id)
             pos = this.array[frame].position
         } else {
             pos = V3()

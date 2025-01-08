@@ -7,6 +7,9 @@ import {Matrix4} from "three";
 import {radians} from "../utils";
 import {getGlareAngleFromFrame} from "../JetStuff";
 import {getLocalUpVector} from "../SphericalMath";
+import {CNodeSmoothedPositionTrack} from "./CNodeSmoothedPositionTrack";
+import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
+import * as LAYER from "../LayerMasks";
 
 
 export class CNodeControllerObjectTilt extends CNodeController {
@@ -17,7 +20,34 @@ export class CNodeControllerObjectTilt extends CNodeController {
         this.optionalInputs(["wind", "airTrack"])
         this.tiltType = v.tiltType ?? "none"
 
-        // This ia specific to the flying saucer
+        // the input track is likely not smooth enought, so create a smoothed version
+        this.smoothedTrack = new CNodeSmoothedPositionTrack({
+            id: this.id + "Smoothed",
+            source: this.in.track,
+            method: "sliding",
+            window: 200}
+        )
+
+        // with a large smoothing sliding window, the smoothed track will be offset from the original track
+        // when going around a corner.
+        // so we use the original track for the position, and the smoothed track for the heading
+
+
+        // Debug display
+        // new CNodeDisplayTrack({
+        //     id: this.id + "Disp",
+        //     track: this.id + "Smoothed",
+        //     color: "#0030FF",
+        //     width: 1,
+        //     ignoreAB: true,
+        //     layers: LAYER.MASK_HELPERS,
+        //     skipGUI: true,
+        //
+        // })
+
+
+
+        // This is specific to the flying saucer
         if (this.tiltType !== "banking" && !v.noMenu) {
             guiMenus.physics.add(this,"tiltType",{
                 banking:"banking",
@@ -72,10 +102,32 @@ export class CNodeControllerObjectTilt extends CNodeController {
 
                 object.lookAt(next)
 
-                var pos = this.in.track.p(f);
-                var next = this.in.track.p(f + 1)
+                // calculate the heading on the SMOOTHED track
+                var from = this.in.track.p(f)
+                var to = this.in.track.p(f + 1)
+                var fwdAir = to.sub(from);
 
-                switch (this.tiltType.toLowerCase()) {
+                // but we need to use the actual track for the position
+                // i.e. pos and next
+                var pos = this.in.track.p(f); //
+                var next = pos.clone().add(fwdAir)
+
+
+                // var pos = this.smoothedTrack.p(f);
+                // var next = this.smoothedTrack.p(f + 1)
+
+                let tiltType = this.tiltType.toLowerCase()
+
+                // if we don't have an air track, then we can't use the air tilt types
+                // so we just use the non-air versions
+                if (this.in.airTrack === undefined) {
+                    if (tiltType === "frontpointingair")
+                        tiltType = "frontpointing";
+                    if (tiltType === "bottompointingair")
+                        tiltType = "bottompointing";
+                }
+
+                switch (tiltType) {
                     case "banking":
                         // with banking, we calculate the angular velocity
                         // from the track, and then use that to rotate the model
@@ -83,9 +135,9 @@ export class CNodeControllerObjectTilt extends CNodeController {
 
                         const sampleDuration = 1;
                         // first get the angular velocity
-                        const velocityA = trackDirection(this.in.track, f - sampleDuration * Sit.fps / 2)
-                        const velocityB = trackDirection(this.in.track, f + sampleDuration * Sit.fps / 2)
-                        const velocity = trackVelocity(this.in.track, f)
+                        const velocityA = trackDirection(this.smoothedTrack, f - sampleDuration * Sit.fps / 2, 2)
+                        const velocityB = trackDirection(this.smoothedTrack, f + sampleDuration * Sit.fps / 2, 3)
+                        const velocity = trackVelocity(this.smoothedTrack, f)
                         const fwd = velocity.clone().normalize()
                         let angularVelocity = velocityA.angleTo(velocityB) / sampleDuration;  // radians per second
 
@@ -143,7 +195,7 @@ export class CNodeControllerObjectTilt extends CNodeController {
                         object.updateMatrix()
                         object.updateMatrixWorld()
 
-                        var accelerationDir = trackAcceleration(this.in.track, f)
+                        var accelerationDir = trackAcceleration(this.smoothedTrack, f)
 
                         if (this.tiltType === "axialPull")
                             accelerationDir.negate()

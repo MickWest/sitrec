@@ -22,6 +22,7 @@ import {CNode3DObject} from "./nodes/CNode3DObject";
 import {par} from "./par";
 import {CNodeTrackGUI} from "./nodes/CNodeControllerTrackGUI";
 import {CGeoJSON} from "./geoJSONUtils";
+import {CNodeSmoothedPositionTrack} from "./nodes/CNodeSmoothedPositionTrack";
 
 
 export const TrackManager = new CManager();
@@ -120,12 +121,40 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
     })
 
     // then use that to make the per-frame track, which might just be a portion of the original data
-    return new CNodeTrackFromMISB({
-        id: trackID,
+
+    // right now we only smooth the track if it's a custom situation
+    // otherwise we just use the raw interpolated data
+    if (Sit.name !== "custom") {
+        // then use that to make the per-frame track, which might just be a portion of the original data
+        return new CNodeTrackFromMISB({
+            id: trackID,
+            misb: dataID,
+            columns: columns,
+            exportable: true,
+        })
+    }
+
+    // we want to smooth the track
+    // so first create an unsmoothed node (same as above, but with a different id)
+    new CNodeTrackFromMISB({
+        id: trackID+"_unsmoothed",
         misb: dataID,
         columns: columns,
         exportable: true,
     })
+
+
+
+    // then create and return the smoothed track
+    return new CNodeSmoothedPositionTrack(
+        {
+            id: trackID,
+            source: trackID+"_unsmoothed",
+             method: "moving",
+             window: 20,
+        }
+    )
+
 
 }
 
