@@ -3,6 +3,8 @@ import {NodeMan, Sit} from "./Globals";
 import {degrees} from "./utils";
 import {assert} from "./assert";
 import {MISB} from "./MISBUtils";
+import {getLocalUpVector} from "./SphericalMath";
+import {DebugArrowAB} from "./threeExt";
 
 export function trackHeading(source, f) {
     if (f > Sit.frames - 2) f = Sit.frames - 2; // hand out of range
@@ -16,23 +18,34 @@ export function trackHeading(source, f) {
 // f = frame number
 // given that source.p(f) is the position at frame f
 // we calculate the velocity vector at f as the position at f+1 minus the position at f
-export function trackVelocity(source, f) {
+export function trackVelocity(source, f, debugN=0) {
     if (f > Sit.frames - 2) f = Sit.frames - 2; // hand out of range
     if (f < 0) f = 0
+
+    // const A = source.p(f)
+    // const B = source.p(f + 1)
+    // const up = getLocalUpVector(A)
+    // const A1 = A.clone().add(up.clone().multiplyScalar(10))
+    // const B1 = B.clone().add(up.clone().multiplyScalar(10))
+    // DebugArrowAB(source.id+"velocitySampleA"+debugN, A1, A, 0xFF00FF)
+    // DebugArrowAB(source.id+"velocitySampleB"+debugN, B1, B, 0xFFFF00)
+    // DebugArrowAB(source.id+"velocity"+debugN, A1, B1, 0x00FFFF)
+
+
     var fwd = source.p(f + 1).sub(source.p(f))
     return fwd
 }
 
 // per frame direction vector (normalized velocity)
-export function trackDirection(source, f) {
-    return trackVelocity(source, f).normalize();
+export function trackDirection(source, f, debugN=0) {
+    return trackVelocity(source, f, debugN).normalize();
 }
 
 // per frame acceleration
 // essential the first derivative of the position
 export function trackAcceleration(source, f) {
-    const v1 = trackVelocity(source, f)
-    const v2 = trackVelocity(source, f + 1)
+    const v1 = trackVelocity(source, f,     0)
+    const v2 = trackVelocity(source, f + 1, 1)
     var fwd = v2.clone().sub(v1)
     return fwd
 }
