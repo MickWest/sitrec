@@ -342,6 +342,7 @@ export class CNodeTerrainUI extends CNode {
     zoomToTrack(v) {
         if (Globals.dontAutoZoom) return;
         const trackNode = NodeMan.get(v);
+        assert(trackNode.getLLAExtents !== undefined, "Track does not have getLLAExtents")
         const {minLat, maxLat, minLon, maxLon, minAlt, maxAlt} = trackNode.getLLAExtents();
 
         this.zoomToLLABox(minLat, maxLat, minLon, maxLon)

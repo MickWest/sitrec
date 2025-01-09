@@ -72,6 +72,10 @@ export class CGeoJSON {
     // sort the array by time stamp (probabyl not needed, but it's a good idea to be more robust)
     toMISB(trackIndex = 0) {
 
+        // ignore the value in this.json.totalFeatures, as it's not always accurate
+        // generate it from the length of the features array
+        this.json.totalFeatures = this.json.features.length
+
         const tracks = this.countTracks();
         console.assert(tracks > trackIndex, "Not enough tracks to export track " + trackIndex + " of " + tracks);
 

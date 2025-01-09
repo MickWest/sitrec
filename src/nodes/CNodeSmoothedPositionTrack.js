@@ -7,8 +7,9 @@ import {f2m, RollingAverage, SlidingAverage} from "../utils";
 import {CatmullRomCurve3} from "three";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
+import {CNodeTrack} from "./CNodeTrack";
 
-export class CNodeSmoothedPositionTrack extends CNodeEmptyArray {
+export class CNodeSmoothedPositionTrack extends CNodeTrack {
     constructor(v) {
         super(v)
         this.method = v.method || "moving"
