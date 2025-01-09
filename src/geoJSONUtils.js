@@ -1,4 +1,5 @@
 import {MISB, MISBFields} from "./MISBUtils";
+import {assert} from "./assert";
 
 export class CGeoJSON {
 
@@ -52,6 +53,8 @@ export class CGeoJSON {
 
 
     countTracks() {
+        this.json.totalFeatures = this.json.features.length
+        assert(this.json.totalFeatures > 0, "No features in geoJSON");
         // the number of tracks is the number of unique thresherIds
         this.thresherIds = new Set();
         for (let i = 0; i < this.json.totalFeatures; i++) {
@@ -75,6 +78,8 @@ export class CGeoJSON {
         // ignore the value in this.json.totalFeatures, as it's not always accurate
         // generate it from the length of the features array
         this.json.totalFeatures = this.json.features.length
+        assert(this.json.totalFeatures > 0, "No features in geoJSON");
+
 
         const tracks = this.countTracks();
         console.assert(tracks > trackIndex, "Not enough tracks to export track " + trackIndex + " of " + tracks);
