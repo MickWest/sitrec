@@ -297,7 +297,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
                     // use only valid FOV values
                     if (!isNaN(misbFOVNumber) && misbFOVNumber > 0 && misbFOVNumber < 180) {
                         product["vFOV"] = misbFOVNumber;
-                        console.log("CNodeTrackFromMISB:recalculate(): product[\"vFOV\"] = ", product["vFOV"])
+//                        console.log("CNodeTrackFromMISB:recalculate(): product[\"vFOV\"] = ", product["vFOV"])
                     } else {
                         assert(0, "CNodeTrackFromMISB:recalculate(): invalid FOV value: " + misbFOV)
                     }
