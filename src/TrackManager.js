@@ -150,8 +150,9 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
         {
             id: trackID,
             source: trackID+"_unsmoothed",
-             method: "moving",
-             window: 20,
+            method: "moving",
+            window: 20,
+            copyData: true, // we need this to copy over the misbRow data
         }
     )
 
