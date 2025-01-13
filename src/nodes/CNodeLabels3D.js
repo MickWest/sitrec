@@ -182,15 +182,15 @@ export class CNodeLabel3D extends CNode3DGroup {
         // to keep the offset in pixels
         let pos = this.position.clone();
         if (this.offset !== undefined && (this.offset.x !== 0 || this.offset.y !== 0)) {
-            if (view.id = "lookView") infoDiv.innerHTML = `pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            if (view.id === "lookView") infoDiv.innerHTML = `pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.project(camera);
-            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.x += this.offset.x / view.widthPx;
             pos.y += this.offset.y / view.heightPx;
 
-            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.unproject(camera);
-            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
 
         }
         this.sprite.position.copy(pos);
