@@ -4,7 +4,6 @@
 import {Matrix3, Vector3} from "three";
 import {cos, degrees, radians, sin} from "./utils";
 import {Sit} from "./Globals";
-import {drop} from "./SphericalMath"
 import {assert} from "./assert.js";
 import {V3} from "./threeUtils";
 
