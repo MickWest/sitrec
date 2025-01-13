@@ -24,7 +24,6 @@ import {LocalFrame} from "../LocalFrame";
 import {gui, guiTweaks} from "../Globals";
 import {SetupJetGUI} from "../JetGUI";
 import {CNodeFleeter} from "../nodes/CNodeFleeter";
-import {ViewMan} from "../nodes/CNodeView";
 import {CNodeGraphSeries} from "../nodes/CNodeGraphSeries";
 import {CNodeTraverseAngularSpeed} from "../nodes/CNodeTraverseAngularSpeed";
 import {SetupCloudNodes} from "../Clouds";
@@ -38,6 +37,7 @@ import {CNodeDisplayTargetSphere} from "../nodes/CNodeDisplayTargetSphere";
 import {setupOpts} from "../JetChart";
 import {commonJetLabels} from "./CommonSitch";
 import {CNodeTrackAir} from "../nodes/CNodeTrackAir";
+import {ViewMan} from "../CViewManager";
 
 const GimbalDefaults = {
     name:"gimbal",

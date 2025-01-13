@@ -1,7 +1,7 @@
 import {CNodeViewUI} from "./CNodeViewUI";
 import {Vector2} from "three";
-import {mouseToCanvas} from "./CNodeView";
 import {par} from "../par";
+import {mouseToCanvas} from "../ViewUtils";
 
 // A DDI is a screen in a fighter jet, F/A-18 or similar
 // it's square and has five buttons on each edge (10 horizontal, 10 vertical)

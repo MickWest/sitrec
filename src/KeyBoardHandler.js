@@ -80,6 +80,9 @@ export function isKeyCodeHeld(code) {
    return keyCodeHeld[code]
 }
 
+export function wut() {
+    return 1;
+}
 
 // a quickToggle is a more immediate mode UI toggle you can just use
 export var toggles = {}

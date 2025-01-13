@@ -1,8 +1,8 @@
-import {ViewMan} from "./nodes/CNodeView";
 import {par} from "./par";
 import {saveAs} from "./js/FileSaver";
 import {chartDiv, updateChartSize} from "./JetChart";
 import {infoDiv} from "./Globals";
+import {ViewMan} from "./CViewManager";
 
 function DumpVar(view, id) {
     return `${id}:${view[id]}, `

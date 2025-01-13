@@ -5,7 +5,6 @@ import {CNodeViewUI} from "./CNodeViewUI";
 import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {Vector3} from "three";
 import {MV3} from "../threeUtils";
-import {ViewMan} from "./CNodeView";
 import {NodeMan} from "../Globals";
 
 export class   CNodeCompassUI extends CNodeViewUI {

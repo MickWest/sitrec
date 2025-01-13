@@ -14,7 +14,8 @@ import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 import {assert} from "../assert.js";
 import {V2, V3} from "../threeUtils";
-import {ViewMan} from "./CNodeView";
+
+import {ViewMan} from "../CViewManager";
 
 
 export const measurementUIVars = {

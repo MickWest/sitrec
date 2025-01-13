@@ -1,10 +1,11 @@
 import {TransformControls} from "three/addons/controls/TransformControls.js";
 import {BoxGeometry, Line3, Mesh, MeshLambertMaterial, Raycaster, Vector2, Vector3} from "three";
 import {par} from "./par";
-import {mouseInViewOnly, mouseToViewNormalized, ViewMan} from "./nodes/CNodeView";
 import {EUSToLLA, LLAToEUS} from "./LLA-ECEF-ENU";
 import {assert} from "./assert.js";
 import {V3} from "./threeUtils";
+import {ViewMan} from "./CViewManager";
+import {mouseInViewOnly, mouseToViewNormalized} from "./ViewUtils";
 
 // base class for curve editors
 // has a list of positions that are the control points

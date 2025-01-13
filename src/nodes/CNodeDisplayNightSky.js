@@ -35,7 +35,6 @@ import {ECEF2ENU, ECEF2EUS, ECEFToLLAVD_Sphere, EUSToECEF, getLST, raDecToAzElRA
 // https://github.com/gamestdio/three-text2d
 //import { MeshText2D, textAlign } from 'three-text2d'
 import {CNodeViewUI} from "./CNodeViewUI";
-import {ViewMan} from "./CNodeView";
 import * as LAYER from "../LayerMasks";
 import {par} from "../par";
 
@@ -55,6 +54,7 @@ import {
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
 import {SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {DragDropHandler} from "../DragDropHandler";
+import {ViewMan} from "../CViewManager";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');

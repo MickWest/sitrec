@@ -2,10 +2,11 @@
 // Also handled 3D raycasting calculation based on mouse position and view
 //
 
-import {mouseInViewOnly, ViewMan} from "./nodes/CNodeView";
 import {par} from "./par";
 
 import {V2} from "./threeUtils";
+import {ViewMan} from "./CViewManager";
+import {mouseInViewOnly} from "./ViewUtils";
 
 var mouseDragView
 var mouseDown = false

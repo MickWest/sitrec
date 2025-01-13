@@ -14,7 +14,6 @@ import {
     scaleF2M
 } from "../utils";
 import {CNodeCurveEditor} from "../nodes/CNodeCurveEdit";
-import {ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {CNodeJetTrack} from "../nodes/CNodeJetTrack";
 import {CNodeConstant} from "../nodes/CNode";
@@ -52,6 +51,7 @@ import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeInterpolateTwoFrames
 import {closingSpeed} from "../trackUtils";
 import {MV3, V3} from "../threeUtils";
 import {SITREC_ROOT} from "../../config";
+import {ViewMan} from "../CViewManager";
 
 export var SitGoFast = {
     name: "gofast",

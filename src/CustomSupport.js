@@ -2,7 +2,6 @@
 
 import {FileManager, Globals, gui, guiMenus, guiShowHide, infoDiv, NodeMan, Sit, Units} from "./Globals";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
-import {ViewMan} from "./nodes/CNodeView";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
 import {SITREC_ROOT} from "../config";
 import {createCustomModalWithCopy} from "./CFileManager";
@@ -15,6 +14,7 @@ import {getShortURL} from "./urlUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
 import {UpdateHUD} from "./JetStuff";
 import {checkForModding} from "./utils";
+import {ViewMan} from "./CViewManager";
 
 
 export class CCustomManager {

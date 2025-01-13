@@ -1,4 +1,3 @@
-import {mouseInViewOnly} from "./CNodeView";
 import {par} from "../par";
 import {f2m, normalizeLayerType} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
@@ -41,6 +40,8 @@ import {isLocal} from "../../config";
 import {CustomManager} from "../CustomSupport";
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import {SITREC_ROOT} from "../../config.js";
+import {isKeyCodeHeld, wut} from "../KeyBoardHandler";
+import {mouseInViewOnly} from "../ViewUtils";
 
 
 function linearToSrgb(color) {

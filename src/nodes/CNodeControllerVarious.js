@@ -1,7 +1,6 @@
 import {atan, degrees, radians, tan} from "../utils";
 import {ECEFToLLAVD_Sphere, EUSToECEF, LLAToEUS, wgs84} from "../LLA-ECEF-ENU";
 import {isKeyHeld} from "../KeyBoardHandler";
-import {ViewMan} from "./CNodeView";
 import {gui, NodeMan, Sit} from "../Globals";
 import {getLocalEastVector, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {adjustHeightAboveGround, DebugArrow} from "../threeExt";
@@ -10,6 +9,7 @@ import {CNodeController} from "./CNodeController";
 import {MISB} from "../MISBUtils";
 import {Quaternion, Vector2, Vector3} from "three";
 import {assert} from "../assert.js";
+import {ViewMan} from "../CViewManager";
 
 
 // Position the camera on the source track

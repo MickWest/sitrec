@@ -6,9 +6,9 @@ import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStu
 import {calculateGlareStartAngle} from "./JetHorizon";
 import {toggler, togglerNodes} from "./KeyBoardHandler";
 import {FA18, PODBack} from "./nodes/CNodeDisplayATFLIR";
-import {ViewMan} from "./nodes/CNodeView";
 import {f2m} from "./utils";
 import {DebugArrows} from "./threeExt";
+import {ViewMan} from "./CViewManager";
 
 
 function guiRemove(gui, obj, property) {

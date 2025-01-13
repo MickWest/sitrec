@@ -16,8 +16,8 @@ import {getIdealDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon
 import {par} from "./par";
 import {PRJ2XYZ} from "./SphericalMath";
 import {degrees} from "./utils";
-import {ViewMan} from "./nodes/CNodeView";
 import uPlot from "./js/uPlot/uPlot.mick.esm";
+import {ViewMan} from "./CViewManager";
 
 var lastChartData
 

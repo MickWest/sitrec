@@ -4,7 +4,7 @@ import {
     AlwaysDepth
 } from "three";
 import {ExpandKeyframes, f2m, m2f, metersFromMiles, radians, scaleF2M} from "../utils";
-import {VG, ViewMan} from "../nodes/CNodeView";
+import {VG} from "../nodes/CNodeView";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNodeSplineEditor} from "../nodes/CNodeSplineEdit";
 import * as LAYER from "../LayerMasks.js"
@@ -34,6 +34,7 @@ import {CNodeSmoothedPositionTrack} from "../nodes/CNodeSmoothedPositionTrack";
 import {CNodeTrackClosest} from "../nodes/CNodeTrackClosest";
 import {assert} from "../assert.js";
 import {MV3, V3} from "../threeUtils";
+import {ViewMan} from "../CViewManager";
 
 export const SitAguadilla = {
     name: "agua",

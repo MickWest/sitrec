@@ -28,7 +28,6 @@ import {
     SitchMan,
 } from "./Globals";
 import {checkForModding, disableScroll, stripComments} from './utils.js'
-import {ViewMan} from './nodes/CNodeView.js'
 import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
 
@@ -83,6 +82,7 @@ import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
 import {extraCSS} from "./extra.css.js";
 import {TrackManager} from "./TrackManager";
+import {ViewMan} from "./CViewManager";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed

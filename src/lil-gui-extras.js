@@ -1,10 +1,10 @@
 // Helper functions for lil-gui
 import GUI, {Controller} from "./js/lil-gui.esm";
 import {updateSize} from "./JetStuff";
-import {ViewMan} from "./nodes/CNodeView";
 import {Globals} from "./Globals";
 import {Color} from "three";
 import {assert} from "./assert";
+import {ViewMan} from "./CViewManager";
 const Stats = require("stats.js");
 
 // Issue with lil-gui, the OptionController options() method adds a

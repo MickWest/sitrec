@@ -13,7 +13,6 @@ import {par} from "../par";
 import {AzElHelper, SphericalGridHelper} from "../CHelper";
 import {FileManager, Globals, Sit} from "../Globals";
 import {CNodeDisplayCameraFrustumATFLIR} from "./CNodeDisplayCameraFrustum";
-import {ViewMan} from "./CNodeView";
 import {EA2XYZ, PRJ2XYZ} from "../SphericalMath";
 import {dispose, disposeScene, propagateLayerMaskObject} from "../threeExt";
 
@@ -26,6 +25,7 @@ import {GridHelper, Group} from "three";
 import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
+import {ViewMan} from "../CViewManager";
 
 
 export var Pod;

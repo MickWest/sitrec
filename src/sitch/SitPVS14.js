@@ -7,10 +7,10 @@ import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
 
-import {ViewMan} from "../nodes/CNodeView";
 import {CNodeDisplayTrack} from "../nodes/CNodeDisplayTrack";
 import {CNodeConstant} from "../nodes/CNode";
 import * as LAYER from "../LayerMasks";
+import {ViewMan} from "../CViewManager";
 
 export const SitPVS14 = {
     name: "pvs14",

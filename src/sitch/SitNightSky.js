@@ -3,7 +3,6 @@ import {NodeMan, Sit, GlobalDateTimeNode, Globals, FileManager, guiMenus} from "
 import {par} from "../par";
 import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
-import {ViewMan} from "../nodes/CNodeView";
 import {DragDropHandler} from "../DragDropHandler";
 import JSURL from "../js/jsurl"
 import {isLocal, SITREC_SERVER} from "../../config";
@@ -15,6 +14,7 @@ import {MV3} from "../threeUtils";
 import {getPTZController} from "../js/CameraControls";
 
 import {waitForParsingToComplete} from "../CFileManager";
+import {ViewMan} from "../CViewManager";
 
 
 export const SitNightSky = {

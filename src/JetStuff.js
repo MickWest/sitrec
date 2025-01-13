@@ -10,7 +10,7 @@ import * as LAYER from "./LayerMasks";
 import {Line2} from "three/addons/lines/Line2.js";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {showHider, toggles} from "./KeyBoardHandler";
-import {VG, ViewMan} from "./nodes/CNodeView";
+import {VG} from "./nodes/CNodeView";
 import {chartDiv, setupGimbalChart, theChart, UpdateChart, UpdateChartLine, updateChartSize} from "./JetChart";
 import {Ball, CNodeDisplayATFLIR, EOSU, PODBack, PodFrame} from "./nodes/CNodeDisplayATFLIR";
 import {calculateGlareStartAngle, getDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
@@ -65,6 +65,7 @@ import {CNodeInterpolateTwoFramesTrack} from "./nodes/CNodeInterpolateTwoFramesT
 import {CNodeCamera} from "./nodes/CNodeCamera";
 import {trackVelocity} from "./trackUtils";
 import {V3} from "./threeUtils";
+import {ViewMan} from "./CViewManager";
 
 
 var matLineWhite = makeMatLine(0xffffff);

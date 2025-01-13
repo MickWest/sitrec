@@ -3,11 +3,11 @@
 //
 
 import {CNodeViewUI} from "./CNodeViewUI";
-import {mouseToCanvas} from "./CNodeView";
 import {assert} from "../assert";
 import {NodeMan, Sit} from "../Globals";
 import {radians} from "../utils";
 import {extractFOV} from "./CNodeControllerVarious";
+import {mouseToCanvas} from "../ViewUtils";
 
 
 export class CDraggableItem {

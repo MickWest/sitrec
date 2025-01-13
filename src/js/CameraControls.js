@@ -10,7 +10,6 @@ import {
 } from "three";
 import {degrees, radians, vdump} from "../utils";
 import {DebugSphere, intersectMSL, pointAbove} from "../threeExt";
-import {mouseInViewOnly, mouseToView, ViewMan} from "../nodes/CNodeView";
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
@@ -26,6 +25,8 @@ import {intersectSphere2, V3} from "../threeUtils";
 import {onDocumentMouseMove} from "../mouseMoveView";
 import {isKeyHeld} from "../KeyBoardHandler";
 import {isLocal} from "../../config";
+import {ViewMan} from "../CViewManager";
+import {mouseInViewOnly, mouseToView} from "../ViewUtils";
 
 const STATE = {
 	NONE: - 1,

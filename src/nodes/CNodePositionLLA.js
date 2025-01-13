@@ -8,9 +8,9 @@ import {CNode} from "./CNode";
 import {V3} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 import {isKeyHeld} from "../KeyBoardHandler";
-import {ViewMan} from "./CNodeView";
 import {adjustHeightAboveGround} from "../threeExt";
 import {assert} from "../assert";
+import {ViewMan} from "../CViewManager";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {

@@ -1,6 +1,6 @@
-import {mouseToCanvas} from "./nodes/CNodeView";
 import {Vector2} from "three";
 import {clockwiseXY, makeBRight} from "./utils";
+import {mouseToCanvas} from "./ViewUtils";
 
 const DRAG_NONE         = 0   // not doing anything
 const DRAG_INITIAL      = 1   // initial rectangular selection
