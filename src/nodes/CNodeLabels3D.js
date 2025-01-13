@@ -180,23 +180,16 @@ export class CNodeLabel3D extends CNode3DGroup {
         // then modify the sprites position by the offset
         // accounting for the camera's FOV and distance to the sprite, and the viewport size in pixels
         // to keep the offset in pixels
+
         let pos = this.position.clone();
         if (this.offset !== undefined && (this.offset.x !== 0 || this.offset.y !== 0)) {
-            if (view.id === "lookView") infoDiv.innerHTML = `pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.project(camera);
-            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.x += this.offset.x / view.widthPx;
             pos.y += this.offset.y / view.heightPx;
 
-            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
             pos.unproject(camera);
-            if (view.id === "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
-
         }
         this.sprite.position.copy(pos);
-
-
-// OFFSET IN LOOK VIEW SEEMS TO BE ZERO???
 
         const mask = camera.layers.mask;
         const fovScale = 0.0025 * Math.tan((camera.fov / 2) * (Math.PI / 180))

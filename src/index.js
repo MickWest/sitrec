@@ -924,6 +924,8 @@ function renderMain(elapsed) {
 
             view.updateWH()
             if (view.camera) {
+                view.camera.updateMatrix();
+                view.camera.updateMatrixWorld();
                 // Label3DMan.updateScale(view.camera)
                 // some nodes need code running on a per-viewport basis - like textSprites
                 NodeMan.iterate((id, node) => {
