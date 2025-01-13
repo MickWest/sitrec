@@ -4,16 +4,17 @@
 
 import SpriteText from '../js/three-spritetext';
 import * as LAYER from "../LayerMasks";
-import {DebugArrowAB, removeDebugArrow} from "../threeExt";
+import {DebugArrowAB, propagateLayerMaskObject, removeDebugArrow} from "../threeExt";
 import {altitudeAboveSphere, pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
-import {Globals, guiShowHide, NodeMan, Units} from "../Globals";
+import {Globals, guiShowHide, infoDiv, NodeMan, Units} from "../Globals";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {par} from "../par";
 import {LLAToEUS} from "../LLA-ECEF-ENU";
 
 import {assert} from "../assert.js";
 import {V2, V3} from "../threeUtils";
+import {ViewMan} from "./CNodeView";
 
 
 export const measurementUIVars = {
@@ -24,6 +25,11 @@ let measurementUIDdone = false;
 let measureArrowGroupNode = null;
 let measureDistanceGroupNode = null;
 
+let labelsGroupNode = null;
+let labelsControllerMain = null;
+let labelsControllerLook = null;
+
+
 // adds a new group for measurements, and a GUI controller to toggle it.
 export function setupMeasurementUI() {
     if (measurementUIDdone) return;
@@ -32,6 +38,8 @@ export function setupMeasurementUI() {
     // We create a group node to hold all the measurement arrows
     measureArrowGroupNode = new CNode3DGroup({id: "MeasurementsGroupNode"});
     measureArrowGroupNode.isMeasurement = true
+
+    labelsGroupNode = new CNode3DGroup({id: "LabelsGroupNode"});
 
     measureDistanceGroupNode = new CNode3DGroup({id: "MeasureDistanceGroupNode"});
   //  measureDistanceGroupNode.isMeasurement = true;
@@ -57,13 +65,55 @@ export function setupMeasurementUI() {
         par.renderOne = true;
     })
 
+    Globals.showLabelsMain = true;
+    Globals.showLabelsLook = false;
 
+
+
+
+
+    labelsControllerMain = guiShowHide.add(Globals, "showLabelsMain").name("Labels in Main").listen().onChange( (value) => {
+       refreshLabelVisibility();
+    });
+
+    labelsControllerLook = guiShowHide.add(Globals, "showLabelsLook").name("Labels in Look").listen().onChange( (value) => {
+
+        refreshLabelVisibility();
+    })
+
+}
+
+export function refreshLabelsAfterLoading() {
+    measurementUIVars.controller._callOnChange(); // PATCH: call the onChange function to update the UI for the visibility of the measurements
+
+    labelsControllerMain._callOnChange();
+    labelsControllerLook._callOnChange
+
+
+    refreshLabelVisibility();
+}
+
+export function refreshLabelVisibility() {
+    // we just set the layers mask to the appropriate value
+    let mask = 0;
+    if (Globals.showLabelsMain) {
+        mask |= LAYER.MASK_MAIN;
+    }
+    if (Globals.showLabelsLook) {
+        mask |= LAYER.MASK_LOOK;
+    }
+    labelsGroupNode.group.layers.mask = mask;
+    propagateLayerMaskObject(labelsGroupNode.group);
 }
 
 export function removeMeasurementUI() {
     if (measureArrowGroupNode) {
         measureArrowGroupNode.dispose();
         measureArrowGroupNode = null;
+        measureDistanceGroupNode.dispose();
+        measureDistanceGroupNode = null;
+        labelsGroupNode.dispose();
+        labelsGroupNode = null;
         measurementUIDdone = false
     }
 }
@@ -131,21 +181,29 @@ export class CNodeLabel3D extends CNode3DGroup {
         // accounting for the camera's FOV and distance to the sprite, and the viewport size in pixels
         // to keep the offset in pixels
         let pos = this.position.clone();
-        pos.project(camera);
-        pos.x += this.offset.x / view.widthPx;
-        pos.y += this.offset.y / view.heightPx;
-        pos.unproject(camera);
+        if (this.offset !== undefined && (this.offset.x !== 0 || this.offset.y !== 0)) {
+            if (view.id = "lookView") infoDiv.innerHTML = `pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            pos.project(camera);
+            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            pos.x += this.offset.x / view.widthPx;
+            pos.y += this.offset.y / view.heightPx;
+
+            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+            pos.unproject(camera);
+            if (view.id = "lookView") infoDiv.innerHTML += `<br>pos: ${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}`
+
+        }
         this.sprite.position.copy(pos);
 
 
-
+// OFFSET IN LOOK VIEW SEEMS TO BE ZERO???
 
         const mask = camera.layers.mask;
         const fovScale = 0.0025 * Math.tan((camera.fov / 2) * (Math.PI / 180))
          const sprite = this.sprite;
         if (sprite.layers.mask & mask) {
             const distance = camera.position.distanceTo(sprite.position);
-            let scale = distance * fovScale * this.size;
+            let scale = distance * fovScale * this.size * ViewMan.heightPx/view.heightPx;
             sprite.scale.set(scale * sprite.aspect, scale, 1);
         }
 

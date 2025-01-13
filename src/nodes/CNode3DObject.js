@@ -38,8 +38,11 @@ import {disposeObject, disposeScene, propagateLayerMaskObject, setLayerMaskRecur
 import {loadGLTFModel} from "./CNode3DModel";
 import {V3} from "../threeUtils";
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
-import {CNodeMeasureAB} from "./CNodeLabels3D";
+import {CNodeLabel3D, CNodeMeasureAB} from "./CNodeLabels3D";
 import {CManager} from "../CManager";
+import SpriteText from '../js/three-spritetext';
+import {GlobalScene} from "../LocalFrame";
+import {MASK_LOOKRENDER} from "../LayerMasks";
 //
 // class CModelManager extends CManager {
 //     constructor(initialModels) {
@@ -60,6 +63,7 @@ export const ModelFiles = {
     "737 MAX 8 BA":         { file: 'data/models/737 MAX 8 BA.glb',},
     "A340-600":             { file: 'data/models/A340-600.glb',},
     "A-10":                 { file: 'data/models/A-10.glb',},
+    "AC690 Rockwell":       { file: 'data/models/AC690.glb',},
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/f-15.glb',},
     "Lear 75":              { file: 'data/models/Lear-75.glb',},
@@ -536,7 +540,37 @@ export class CNode3DObject extends CNode3DGroup {
 
         this.rebuild();
 
+
+        if (v.label !== undefined) {
+            this.addLabel(v.label)
+        }
     }
+
+
+    // We can use objects as data sources for things like labels
+    // so we need to be able to get the value of the object
+    // Note this just gets the CURRENT position of the object
+    getValueFrame(frameFloat) {
+        return {position: this.group.position.clone()};
+    }
+
+
+    addLabel( label ) {
+
+        this.label = new CNodeLabel3D({
+            id: this.id + "_label",
+            text: label,
+            position: this,
+            layers: (Globals.showLabelsMain ? LAYER.MASK_MAIN : 0) | (Globals.showLabelsLook ? LAYER.MASK_LOOK : 0),
+            offsetY:40, // this is vertical offset in screen pixels.
+            color: "white",
+            size:12,
+            groupNode: "LabelsGroupNode",
+
+        })
+
+    }
+
 
     modSerialize() {
         return {
@@ -1107,6 +1141,9 @@ export class CNode3DObject extends CNode3DGroup {
     }
 
     dispose() {
+        if (this.label) {
+            NodeMan.disposeRemove(this.label, true);
+        }
         this.gui.destroy();
         this.destroyObject();
         super.dispose();
@@ -1119,6 +1156,12 @@ export class CNode3DObject extends CNode3DGroup {
 
     update(f) {
         super.update(f);
+
+        // if (this.spriteText) {
+        //     this.spriteText.position.copy(this._object.position);
+        //     this.spriteText.position.y += 0.1;
+        // }
+
        // this.rebuildBoundingBox(false);
     }
 

@@ -687,6 +687,8 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     id: sphereId + "_ob",
                     object: "sphere",
                     radius: 40,
+                    color: trackColor,
+                    label: shortName,
 
                 });
 

@@ -9,7 +9,7 @@ import {createCustomModalWithCopy} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
 import {GlobalScene} from "./LocalFrame";
-import {measurementUIVars} from "./nodes/CNodeLabels3D";
+import {measurementUIVars, refreshLabelsAfterLoading, refreshLabelVisibility} from "./nodes/CNodeLabels3D";
 import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
@@ -193,7 +193,9 @@ export class CCustomManager {
         ]
 
         const globalsNeeded = [
-            "showMeasurements"
+            "showMeasurements",
+            "showLabelsMain",
+            "showLabelsLook"
         ]
 
         let pars = {}
@@ -387,8 +389,7 @@ export class CCustomManager {
                 }
             }
 
-            measurementUIVars.controller._callOnChange(); // PATCH: call the onChange function to update the UI for the visibility of the measurements
-
+            refreshLabelsAfterLoading();
 
 
             if (sitchData.guiMenus) {
