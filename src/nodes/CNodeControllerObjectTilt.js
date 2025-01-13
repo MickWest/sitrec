@@ -1,15 +1,13 @@
 import {CNodeController} from "./CNodeController";
-import {gui, guiMenus, NodeMan, Sit} from "../Globals";
+import {guiMenus, NodeMan, Sit} from "../Globals";
 import {par} from "../par";
 import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";
 import {V3} from "../threeUtils";
 import {Matrix4} from "three";
 import {radians} from "../utils";
-import {getGlareAngleFromFrame} from "../JetStuff";
 import {getLocalUpVector} from "../SphericalMath";
 import {CNodeSmoothedPositionTrack} from "./CNodeSmoothedPositionTrack";
-import {CNodeDisplayTrack} from "./CNodeDisplayTrack";
-import * as LAYER from "../LayerMasks";
+import {getGlareAngleFromFrame} from "../JetUtils";
 
 
 export class CNodeControllerObjectTilt extends CNodeController {

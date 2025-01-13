@@ -2,13 +2,6 @@
 import {NodeMan, Sit} from "./Globals";
 import {saveAs} from "./js/FileSaver";
 import {
-    Frame2Az,
-    Frame2CueAz,
-    getGlareAngleFromFrame,
-    jetPitchFromFrame,
-    jetRollFromFrame,
-    pitchAndGlobalRollFromFrame,
-    podRollFromFrame,
     UIChangedTime,
     vizRadius
 } from "./JetStuff";
@@ -18,6 +11,14 @@ import {PRJ2XYZ} from "./SphericalMath";
 import {degrees} from "./utils";
 import uPlot from "./js/uPlot/uPlot.mick.esm";
 import {ViewMan} from "./CViewManager";
+import {
+    Frame2Az, Frame2CueAz,
+    getGlareAngleFromFrame,
+    jetPitchFromFrame,
+    jetRollFromFrame,
+    pitchAndGlobalRollFromFrame,
+    podRollFromFrame
+} from "./JetUtils";
 
 var lastChartData
 

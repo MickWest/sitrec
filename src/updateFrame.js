@@ -2,8 +2,8 @@ import {par} from "./par";
 import {Sit} from "./Globals";
 import {isKeyHeld} from "./KeyBoardHandler";
 import {updateFrameSlider} from "./nodes/CNodeFrameSlider";
-import {Frame2Az, Frame2El, UpdatePRFromEA} from "./JetStuff";
-import {mebug} from "./utils";
+import {UpdatePRFromEA} from "./JetStuff";
+import {Frame2Az, Frame2El} from "./JetUtils";
 
 var lastTime = 0;
 

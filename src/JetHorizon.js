@@ -2,19 +2,19 @@
 import {degrees, radians} from "./utils";
 import {EAJP2PR, extractRollFromMatrix, PRJ2XYZ} from "./SphericalMath";
 import {
-    Frame2Az,
-    Frame2El,
-    get_real_horizon_angle_for_frame,
-    getGlareAngleFromFrame,
-    jetPitchFromFrame,
-    jetRollFromFrame,
-    pitchAndGlobalRollFromFrame,
-    podRollFromFrame,
     vizRadius
 } from "./JetStuff";
 import {par} from "./par";
 import {Sit} from "./Globals";
 import {Object3D} from "three";
+import {
+    Frame2Az,
+    Frame2El,
+    get_real_horizon_angle_for_frame,
+    getGlareAngleFromFrame,
+    jetPitchFromFrame,
+    jetRollFromFrame, pitchAndGlobalRollFromFrame, podRollFromFrame
+} from "./JetUtils";
 
 // keeping these as globals speeds up getPodHorizonFromJetAndPod
 // as creating objects is expensive

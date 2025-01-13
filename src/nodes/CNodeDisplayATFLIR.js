@@ -1,10 +1,6 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import {radians} from "../utils";
 import {
-    getGlareAngleFromFrame,
-    jetPitchFromFrame,
-    jetRollFromFrame,
-    pitchAndGlobalRollFromFrame,
     targetSphere,
     vizRadius
 } from "../JetStuff";
@@ -26,6 +22,7 @@ import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 import {ViewMan} from "../CViewManager";
+import {getGlareAngleFromFrame, jetPitchFromFrame, jetRollFromFrame, pitchAndGlobalRollFromFrame} from "../JetUtils";
 
 
 export var Pod;
