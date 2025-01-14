@@ -1,9 +1,6 @@
 ///////////////////////////////////////////////////////////
 import {NodeMan, Sit} from "./Globals";
 import {saveAs} from "./js/FileSaver";
-import {
-    UIChangedTime
-} from "./JetStuff";
 import {getIdealDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
 import {par} from "./par";
 import {PRJ2XYZ} from "./SphericalMath";
@@ -230,7 +227,8 @@ export function setupOpts() {
 
                     if (self.mickDragging == true) {
                         par.time = self.mickMouseLeft1 / self.mickWidth * sc.max;
-                        UIChangedTime()
+                       // UIChangedTime()
+                        console.warn("Cursor move but not updating time as UIChangedTime caused circular dependencies at build time")
                         return [mouseLeft1, mouseTop1]
                     } else
                         return [par.time / sc.max * self.mickWidth, 1]
