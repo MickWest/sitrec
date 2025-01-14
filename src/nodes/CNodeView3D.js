@@ -124,6 +124,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.recalculate(); // to set the effect pass uniforms
 
+        this.initSky();
 
         if (Globals.canVR) {
 
@@ -508,6 +509,45 @@ export class CNodeView3D extends CNodeViewCanvas {
 }
 
 
+initSky() {
+    this.skyBrightnessMaterial = new ShaderMaterial({
+        uniforms: {
+            color: { value: new Color(0,1,0) },
+            opacity: { value: 0.5 },
+        },
+        vertexShader: /* glsl */`
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: /* glsl */`
+            uniform vec3 color;
+            uniform float opacity;
+            varying vec2 vUv;
+            void main() {
+                gl_FragColor = vec4(color, opacity);
+            }
+        `,
+        transparent: true,
+        blending: NormalBlending,
+        depthTest: false,
+        depthWrite: false
+    });
+
+
+    this.fullscreenQuadGeometry = new PlaneGeometry(2, 2);
+
+    this.skyCamera = new Camera();
+
+}
+
+updateSkyUniforms(skyColor, skyOpacity) {
+    this.skyBrightnessMaterial.uniforms.color.value = skyColor;
+    this.skyBrightnessMaterial.uniforms.opacity.value = skyOpacity;
+}
+
 renderSky() {
     // Render the celestial sphere
     if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
@@ -566,41 +606,19 @@ renderSky() {
 
         // Only render the quad if skyOpacity is greater than zero
         if (skyOpacity > 0) {
-            const skyBrightnessMaterial = new ShaderMaterial({
-                uniforms: {
-                    color: { value: skyColor },
-                    opacity: { value: skyOpacity },
-                },
-                vertexShader: /* glsl */`
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = vec4(position, 1.0);
-            }
-        `,
-                fragmentShader: /* glsl */`
-            uniform vec3 color;
-            uniform float opacity;
-            varying vec2 vUv;
-            void main() {
-                gl_FragColor = vec4(color, opacity);
-            }
-        `,
-                transparent: true,
-                blending: NormalBlending,
-                depthTest: false,
-                depthWrite: false
-            });
 
-            const fullscreenQuadGeometry = new PlaneGeometry(2, 2);
-            const fullscreenQuad = new Mesh(fullscreenQuadGeometry, skyBrightnessMaterial);
+            this.updateSkyUniforms(skyColor, skyOpacity);
+
+
+            this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
 
             // Add the fullscreen quad to a scene dedicated to it
-            const fullscreenQuadScene = new Scene();
-            fullscreenQuadScene.add(fullscreenQuad);
+            this.fullscreenQuadScene = new Scene();
+            this.fullscreenQuadScene.add(this.fullscreenQuad);
+
 
             this.renderer.autoClear = false;
-            this.renderer.render(fullscreenQuadScene, new Camera());
+            this.renderer.render(this.fullscreenQuadScene, this.skyCamera);
             //this.renderer.autoClear = true;
             this.renderer.clearDepth();
         }
