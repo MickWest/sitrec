@@ -22,6 +22,8 @@ export function setNullNode(n) {NullNode = n;}
 export var SitchMan;
 export function setSitchMan(n) {SitchMan = n;}
 
+export var CustomManager;
+export function setCustomManager(n) {CustomManager = n;}
 
 
 

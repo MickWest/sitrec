@@ -37,11 +37,11 @@ import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {isLocal} from "../../config";
-import {CustomManager} from "../CustomSupport";
 import { VRButton } from 'three/addons/webxr/VRButton.js';
 import {SITREC_ROOT} from "../../config.js";
 import {isKeyCodeHeld, wut} from "../KeyBoardHandler";
 import {mouseInViewOnly} from "../ViewUtils";
+import {CustomManager} from "../Globals";
 
 
 function linearToSrgb(color) {
@@ -534,6 +534,9 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.camera.layers.mask = this.layers;
             }
 
+           // if (isKeyHeld("y")) console.log("Rendering to renderTargetAntiAliased");
+
+      //     let aWut = isKeyHeld("a");
 
             // Render the scene to the off-screen canvas or render target
             this.renderer.render(GlobalScene, this.camera);

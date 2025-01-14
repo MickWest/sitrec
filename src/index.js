@@ -4,14 +4,14 @@ import "./js/jquery-ui-1.13.2/jquery-ui.css"
 import "./js/jquery-ui-1.13.2/jquery-ui.js?v=1"
 import {
     addGUIFolder,
-    addGUIMenu,
+    addGUIMenu, CustomManager,
     FileManager,
     GlobalDateTimeNode,
     Globals, guiMenus,
     guiTweaks,
     incrementMainLoopCount,
     infoDiv,
-    NodeMan,
+    NodeMan, setCustomManager,
     setFileManager,
     setGlobalDateTimeNode,
     setGlobalURLParams,
@@ -74,7 +74,6 @@ import {disposeGimbalChart} from "./JetChart";
 import {CNodeMath} from "./nodes/CNodeMath";
 import {CNode, CNodeConstant} from "./nodes/CNode";
 import {DragDropHandler} from "./DragDropHandler";
-import {CustomManager} from "./CustomSupport";
 import {CGuiMenuBar} from "./lil-gui-extras";
 import {assert} from "./assert.js";
 import {CNodeFactory} from "./nodes/CNodeFactory";
@@ -82,6 +81,7 @@ import {extraCSS} from "./extra.css.js";
 import {TrackManager} from "./TrackManager";
 import {ViewMan} from "./CViewManager";
 import {glareSprite, targetSphere} from "./JetStuffVars";
+import {CCustomManager} from "./CustomSupport";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -117,6 +117,7 @@ if (!initRendering()) {
     throw new Error("Failed to create a renderer");
 
 }
+
 
 
 let customSitch = null
@@ -315,6 +316,8 @@ async function newSitch(situation, customSetup = false ) {
 }
 
 async function initializeOnce() {
+
+    setCustomManager(new CCustomManager());
 
     Globals.parsing = 0;
 

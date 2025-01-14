@@ -1,6 +1,15 @@
 // Support functions for the custom sitches and mods
 
-import {FileManager, Globals, gui, guiMenus, guiShowHide, infoDiv, NodeMan, Sit, Units} from "./Globals";
+import {
+    FileManager,
+    Globals,
+    guiMenus,
+    infoDiv,
+    NodeMan,
+    setCustomManager,
+    Sit,
+    Units
+} from "./Globals";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
 import {SITREC_ROOT} from "../config";
@@ -565,4 +574,4 @@ function restoreIfDisabled(ob) {
     }
 }
 
-export const CustomManager = new CCustomManager();
+
