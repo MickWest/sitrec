@@ -1,6 +1,6 @@
 // Helper functions for lil-gui
 import GUI, {Controller} from "./js/lil-gui.esm";
-import {updateSize} from "./JetStuff";
+//import {updateSize} from "./JetStuff";
 import {Globals} from "./Globals";
 import {Color} from "three";
 import {assert} from "./assert";
@@ -373,7 +373,7 @@ export class CGuiMenuBar {
 
         ViewMan.topPx = 0;
         ViewMan.updateSize();
-        updateSize();
+      //  updateSize();
     }
 
     toggleVisiblity() {
