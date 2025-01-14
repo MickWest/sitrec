@@ -5,10 +5,10 @@ import {par} from "./par";
 import {curveChanged, UIChangedFrame, UIChangedPR, UIChangedTime} from "./JetStuff";
 import {calculateGlareStartAngle} from "./JetHorizon";
 import {toggler, togglerNodes} from "./KeyBoardHandler";
-import {FA18, PODBack} from "./nodes/CNodeDisplayATFLIR";
 import {f2m} from "./utils";
 import {DebugArrows} from "./threeExt";
 import {ViewMan} from "./CViewManager";
+import {FA18, PODBack} from "./nodes/ATFLIRVars";
 
 
 function guiRemove(gui, obj, property) {

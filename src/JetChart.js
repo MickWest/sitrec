@@ -2,8 +2,7 @@
 import {NodeMan, Sit} from "./Globals";
 import {saveAs} from "./js/FileSaver";
 import {
-    UIChangedTime,
-    vizRadius
+    UIChangedTime
 } from "./JetStuff";
 import {getIdealDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
 import {par} from "./par";
@@ -19,6 +18,7 @@ import {
     pitchAndGlobalRollFromFrame,
     podRollFromFrame
 } from "./JetUtils";
+import {vizRadius} from "./JetStuffVars";
 
 var lastChartData
 

@@ -25,7 +25,7 @@ import {AddSpeedGraph} from "../JetGraphs";
 import {guiTweaks} from "../Globals";
 import {GlobalScene} from "../LocalFrame";
 import {showHider, toggler} from "../KeyBoardHandler";
-import {CreateTraverseNodes, MakeTraverseNodesMenu, SetupTraverseNodes} from "../JetStuff";
+import {CreateTraverseNodes, SetupTraverseNodes} from "../JetStuff";
 import {DebugSphere} from "../threeExt";
 import {CNodeDisplayLOS} from "../nodes/CNodeDisplayLOS";
 import {makeMatLine} from "../MatLines";
@@ -35,6 +35,8 @@ import {CNodeTrackClosest} from "../nodes/CNodeTrackClosest";
 import {assert} from "../assert.js";
 import {MV3, V3} from "../threeUtils";
 import {ViewMan} from "../CViewManager";
+
+import {MakeTraverseNodesMenu} from "../MakeTraverseNodesMenu";
 
 export const SitAguadilla = {
     name: "agua",

@@ -39,11 +39,9 @@ import {SetupMouseHandler} from "./mouseMoveView";
 import {initKeyboard, showHider} from "./KeyBoardHandler";
 import {
     CommonJetStuff,
-    glareSprite,
     initJetStuff,
     initJetStuffOverlays,
     initJetVariables,
-    targetSphere,
     updateSize
 } from "./JetStuff";
 import {
@@ -83,6 +81,7 @@ import {CNodeFactory} from "./nodes/CNodeFactory";
 import {extraCSS} from "./extra.css.js";
 import {TrackManager} from "./TrackManager";
 import {ViewMan} from "./CViewManager";
+import {glareSprite, targetSphere} from "./JetStuffVars";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed

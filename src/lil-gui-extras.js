@@ -355,15 +355,9 @@ export class CGuiMenuBar {
 
         this.infoGUI.show();
         this.bar.style.display = "block";
-
-
-
-
-
-
         this._hidden = false;
 
-        viewMan.topPx = this.barHeight;
+        ViewMan.topPx = this.barHeight;
     }
 
     hide() {

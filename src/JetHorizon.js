@@ -1,9 +1,6 @@
 // Calculating what the horizon should look like in the ATFLIR
 import {degrees, radians} from "./utils";
 import {EAJP2PR, extractRollFromMatrix, PRJ2XYZ} from "./SphericalMath";
-import {
-    vizRadius
-} from "./JetStuff";
 import {par} from "./par";
 import {Sit} from "./Globals";
 import {Object3D} from "three";
@@ -15,6 +12,7 @@ import {
     jetPitchFromFrame,
     jetRollFromFrame, pitchAndGlobalRollFromFrame, podRollFromFrame
 } from "./JetUtils";
+import {vizRadius} from "./JetStuffVars";
 
 // keeping these as globals speeds up getPodHorizonFromJetAndPod
 // as creating objects is expensive

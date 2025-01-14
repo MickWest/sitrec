@@ -137,7 +137,7 @@ module.exports = {
             // `onDetected` is called for each module that is cyclical
             onDetected({ module: webpackModuleRecord, paths, compilation }) {
 
-                if (1) return;
+                 return;
 
                 const ignoreModules = ["mathjs"];
                 // return if any of the ignoreModules is a substring of any of the paths

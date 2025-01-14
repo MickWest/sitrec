@@ -5,7 +5,6 @@ import {VerticalBlurShader} from "three/addons/shaders/VerticalBlurShader.js";
 import {ZoomShader} from "../shaders/ZoomShader";
 import {Pixelate2x2Shader, PixelateNxNShader} from "../shaders/Pixelate2x2Shader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
-import {resolveAnonObjects} from "../SituationSetup";
 import {par} from "../par";
 import {StaticNoiseShader} from "../shaders/StaticNoiseShader";
 import {InvertShader} from "../shaders/InvertShader";

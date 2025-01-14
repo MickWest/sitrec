@@ -12,7 +12,7 @@ import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {showHider} from "./KeyBoardHandler";
 import {VG} from "./nodes/CNodeView";
 import {chartDiv, setupGimbalChart, theChart, UpdateChart, UpdateChartLine, updateChartSize} from "./JetChart";
-import {Ball, CNodeDisplayATFLIR, EOSU, PODBack, PodFrame} from "./nodes/CNodeDisplayATFLIR";
+import {CNodeDisplayATFLIR} from "./nodes/CNodeDisplayATFLIR";
 import {calculateGlareStartAngle, getDeroFromFrame, getPodRollFromGlareAngleFrame} from "./JetHorizon";
 import {GlobalScene, LocalFrame} from "./LocalFrame";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
@@ -28,7 +28,6 @@ import {
     CNodeLOSTraverseWind
 } from "./nodes/CNodeLOSTraverseStraightLine";
 import {CNodeLOSTraverseConstantAltitude} from "./nodes/CNodeLOSTraverseConstantAltitude";
-import {CNodeSwitch} from "./nodes/CNodeSwitch";
 import {makeMatLine, updateMatLineResolution} from "./MatLines";
 import {CNodeViewUI} from "./nodes/CNodeViewUI";
 import {
@@ -67,6 +66,19 @@ import {trackVelocity} from "./trackUtils";
 import {V3} from "./threeUtils";
 import {ViewMan} from "./CViewManager";
 import {Frame2Az, Frame2El, jetPitchFromFrame} from "./JetUtils";
+import {MakeTraverseNodesMenu} from "./MakeTraverseNodesMenu";
+import {Ball, EOSU, PODBack, PodFrame} from "./nodes/ATFLIRVars";
+import {
+    aSphere,
+    ATFLIR,
+    bSphere,
+    glareSphere,
+    glareSprite, setASphere,
+    setATFLIR, setBSphere, setGlareSphere, setGlareSprite,
+    setTargetSphere,
+    targetSphere,
+    vizRadius
+} from "./JetStuffVars";
 
 
 var matLineWhite = makeMatLine(0xffffff);
@@ -80,11 +92,11 @@ var matLineGreenThin = makeMatLine(0x00c000,1.0);
 // these are all in the LocalFrame
 // setup by Gimbal, GoFast, FLIR1 and Aguadilla
 export function initJetVariables() {
-    targetSphere = sphereMark(V3(0,0,0),2,0xffffff, LocalFrame)
+    setTargetSphere(sphereMark(V3(0,0,0),2,0xffffff, LocalFrame))
 
-    aSphere = sphereMark(V3(0,0,0),1.5,0xc08080,LocalFrame)
-    bSphere = sphereMark(V3(0,0,0),1.5,0x80c080,LocalFrame)
-    glareSphere = sphereMark(V3(0,0,0),1.8,0x00ff00,LocalFrame)
+    setASphere(sphereMark(V3(0,0,0),1.5,0xc08080,LocalFrame))
+    setBSphere(sphereMark(V3(0,0,0),1.5,0x80c080,LocalFrame))
+    setGlareSphere (sphereMark(V3(0,0,0),1.8,0x00ff00,LocalFrame))
 
     glareSphere.name = "glareSphere"
 
@@ -92,7 +104,7 @@ export function initJetVariables() {
         const mapt = new TextureLoader().load(SITREC_ROOT+'data/images/GlareSprite.png?v=1');
         const spriteMaterial = new SpriteMaterial({map: mapt, color: 0xffffff, sizeAttenuation: false});
 
-        glareSprite = new Sprite(spriteMaterial);
+        setGlareSprite(new Sprite(spriteMaterial));
         glareSprite.position.set(0, 0, -50)
         glareSprite.scale.setScalar(0.04)
         glareSprite.layers.disable(LAYER.MAIN)
@@ -100,14 +112,6 @@ export function initJetVariables() {
         glareSprite.layers.enable(LAYER.LOOK)
     }
 }
-
-
-export var targetSphere;
-export var glareSphere;
-export var aSphere;
-export var bSphere;
-// just for NAR view and dero view for gimbal
-export var glareSprite
 
 
 var LOS_line;
@@ -206,7 +210,6 @@ export function update_ERROR_circle(scence, circleCenter) {
     showHider(ERROR_circle, 'showErrorCircle', oldErrorCircleVisible, 'o')
 }
 
-export var vizRadius = 100
 var debugText = ""; // stick text in here, and it's show instead of keyboard shortcuts
 export function UpdateHUD(text="") {
     /*
@@ -503,9 +506,6 @@ export function UIChangedFrame() {
     }
     par.paused = true;
 }
-
-export var ATFLIR;
-export function setATFLIR(a) {ATFLIR = a;}
 
 export function curveChanged() {
     UpdateChart()
@@ -850,34 +850,6 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
 
 }
 
-// IMPORTANT node here
-// The LOSTraverseSelect node is the selected LOS traversal method
-// We pass in which ones of the above we want, plue any extra ones
-// (For example in Agua we add the ufoSplineEditor node)
-export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra="", exportable=true) {
-
-
-    let traverseInputs2 = {}
-    for (var inputID in traverseInputs) {
-        traverseInputs2[inputID] = traverseInputs[inputID]+idExtra
-    }
-
-    let nodeMenu = new CNodeSwitch({
-        id: id,
-        inputs: traverseInputs2,
-        desc: "LOS Traverse Method " + idExtra,
-        default: defaultTraverse,
-        exportable: exportable,
-
-    }, guiMenus.traverse)
-
-    // bit of a patch
-    nodeMenu.frames = Sit.frames;
-    nodeMenu.useSitFrames = true;
-    return nodeMenu;
-
-}
-
 
 // pixel dimension of the overall browser window renderble area.
 // same coordinate system as the mouse clicks
@@ -885,7 +857,6 @@ export function MakeTraverseNodesMenu(id, traverseInputs,defaultTraverse,idExtra
 //windowHeight = window.innerHeight;
 
 var lastWindowWidth, lastWindowHeight;
-
 
 // Detects if the page's window has been resized, and resize things as needed.
 export function updateSize(force) {

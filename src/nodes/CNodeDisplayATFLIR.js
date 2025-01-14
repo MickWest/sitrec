@@ -1,9 +1,5 @@
 import {CNode3DGroup} from "./CNode3DGroup";
 import {radians} from "../utils";
-import {
-    targetSphere,
-    vizRadius
-} from "../JetStuff";
 import {showHider} from "../KeyBoardHandler";
 import {par} from "../par";
 import {AzElHelper, SphericalGridHelper} from "../CHelper";
@@ -23,15 +19,21 @@ import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 import {ViewMan} from "../CViewManager";
 import {getGlareAngleFromFrame, jetPitchFromFrame, jetRollFromFrame, pitchAndGlobalRollFromFrame} from "../JetUtils";
+import {
+    Ball,
+    FA18,
+    Pod,
+    PODBack,
+    PodFrame,
+    Pointer,
+    setBall,
+    setEOSU, setFA18,
+    setPod,
+    setPODBack,
+    setPodFrame, setPointer
+} from "./ATFLIRVars";
+import {targetSphere, vizRadius} from "../JetStuffVars";
 
-
-export var Pod;
-export var PODBack;
-export var EOSU;
-export var Ball;
-export var Pointer;
-export var PodFrame;  // group used to store the frame of reference of the pod and the singularity grid
-export var FA18;
 
 var matLineWhite = makeMatLine(0xffffff);
 var matLineCyan = makeMatLine(0x00ffff,1.5);
@@ -46,7 +48,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         super(v);
 
 
-        PodFrame = new Group();
+        setPodFrame(new Group());
         PodFrame.layers.mask = LAYER.MASK_HELPERS
 
         assert(PodFrame != undefined, "Missing PodFrame")
@@ -63,10 +65,10 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         loader.parse(data, "", (gltf) => {
             Globals.parsing --;
             console.log("Loaded and parsed ATFLIR model")
-            Pod = gltf.scene
-            PODBack = Pod.getObjectByName('BODY')
-            EOSU = Pod.getObjectByName('HEAD')
-            Ball = Pod.getObjectByName('BALL')
+            setPod(gltf.scene)
+            setPODBack(Pod.getObjectByName('BODY'))
+            setEOSU(Pod.getObjectByName('HEAD'))
+            setBall(Pod.getObjectByName('BALL'))
 
             PodFrame.add(Pod)
             var podScale = 50;
@@ -74,7 +76,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
             PodFrame.rotateX(radians(jetPitchFromFrame()))
 
-            Pointer = gltf.scene.getObjectByName('Pointer')
+            setPointer(gltf.scene.getObjectByName('Pointer'))
             showHider(Pointer, "Physical Pointer", false)
 
             // make the pod back materials unique, so we can wireframe them later
@@ -95,7 +97,7 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
         loader.parse(dataFA18, "", (gltf2) => {
             Globals.parsing --;
             console.log("Loaded & parsed FA-18F model")
-            FA18 = gltf2.scene; //.getObjectByName('FA-18F')
+            setFA18(gltf2.scene); //.getObjectByName('FA-18F')
             var podScale = 10;
            // FA18.scale.setScalar(podScale);
             FA18.position.z = 0 // 120
@@ -204,13 +206,13 @@ export class CNodeDisplayATFLIR extends CNode3DGroup {
 
         disposeScene(PodFrame);
 
-        Pod = undefined;
-        PODBack = undefined;
-        EOSU = undefined;
-        Ball = undefined;
-        Pointer = undefined;
-        PodFrame = undefined;
-        FA18 = undefined;
+        setPod(undefined);
+        setPODBack(undefined);
+        setEOSU(undefined);
+        setBall(undefined);
+        setPointer(undefined);
+        setPodFrame(undefined);
+        setFA18(undefined);
 
         this.SphericalGrid = undefined;
         this.AzElGrid = undefined;
