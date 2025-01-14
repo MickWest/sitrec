@@ -328,6 +328,9 @@ export class CNodeView3D extends CNodeViewCanvas {
         if (this.visible) {
 
 
+            //AFTER
+
+
             let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
             //if (this.effectsEnabled) {
@@ -361,111 +364,11 @@ export class CNodeView3D extends CNodeViewCanvas {
  */
 
 
+            if (keyHeld["y"]) { return;}
 
+            this.renderSky();
 
-            // Render the celestial sphere
-            if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
-
-                // we need to call this twice (once again in the super's render)
-                // so the camera is correct for the celestial sphere
-                // which is rendered before the main scene
-                // but uses the same camera
-                this.preRenderCameraUpdate()
-
-                // // scale the sprites one for each viewport
-                const nightSkyNode = NodeMan.get("NightSkyNode")
-                nightSkyNode.updateSatelliteScales(this.camera)
-
-
-                this.renderer.setClearColor(this.background);
-                // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
-                //     this.renderer.setClearColor(nightSkyNode.skyColor);
-                // }
-
-                let skyBrightness = 0;
-                let skyColor = this.background;
-                let skyOpacity = 1;
-
-
-     //           why is main view dark when look view camera is in darkness
-     //           is it not useing the main view camera here?
-
-                const sunNode = NodeMan.get("theSun",true);
-                if (sunNode !== undefined) {
-//                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))
-                    this.renderer.setClearColor("black")
-                    skyColor = sunNode.calculateSkyColor(this.camera.position);
-                    skyBrightness = sunNode.calculateSkyBrightness(this.camera.position);
-                    skyOpacity = sunNode.calculateSkyOpacity(this.camera.position);
-                }
-
-
-                // only draw the night sky if it will be visible
-                if (skyOpacity < 1) {
-
-                    this.renderer.clear(true, true, true);
-
-                    var tempPos = this.camera.position.clone();
-                    // this is the celestial sphere, so we want the camera at the origin
-
-                    this.camera.position.set(0, 0, 0)
-                    this.camera.updateMatrix();
-                    this.camera.updateMatrixWorld();
-                    this.renderer.render(GlobalNightSkyScene, this.camera);
-                    this.renderer.clearDepth()
-                    this.camera.position.copy(tempPos)
-                    this.camera.updateMatrix();
-                    this.camera.updateMatrixWorld();
-                }
-
-                // Only render the quad if skyOpacity is greater than zero
-                if (skyOpacity > 0) {
-                    const skyBrightnessMaterial = new ShaderMaterial({
-                        uniforms: {
-                            color: { value: skyColor },
-                            opacity: { value: skyOpacity },
-                        },
-                        vertexShader: /* glsl */`
-            varying vec2 vUv;
-            void main() {
-                vUv = uv;
-                gl_Position = vec4(position, 1.0);
-            }
-        `,
-                        fragmentShader: /* glsl */`
-            uniform vec3 color;
-            uniform float opacity;
-            varying vec2 vUv;
-            void main() {
-                gl_FragColor = vec4(color, opacity);
-            }
-        `,
-                        transparent: true,
-                        blending: NormalBlending,
-                        depthTest: false,
-                        depthWrite: false
-                    });
-
-                    const fullscreenQuadGeometry = new PlaneGeometry(2, 2);
-                    const fullscreenQuad = new Mesh(fullscreenQuadGeometry, skyBrightnessMaterial);
-
-                    // Add the fullscreen quad to a scene dedicated to it
-                    const fullscreenQuadScene = new Scene();
-                    fullscreenQuadScene.add(fullscreenQuad);
-
-                    this.renderer.autoClear = false;
-                    this.renderer.render(fullscreenQuadScene, new Camera());
-                    //this.renderer.autoClear = true;
-                    this.renderer.clearDepth();
-                }
-
-
-
-            } else {
-                // clear the render target (or canvas) with the background color
-                this.renderer.setClearColor(this.background);
-                this.renderer.clear(true, true, true);
-            }
+// BEFORE ............................
 
             // render the day sky
             if (GlobalDaySkyScene !== undefined) {
@@ -511,7 +414,7 @@ export class CNodeView3D extends CNodeViewCanvas {
                 currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
             }
 ////////////////////////////////////////////////////////////////
-
+// BEFORE .............................................................
 
             // if this is an IR viewport, then we need to render the IR ambient light
             // instead of the normal ambient light.
@@ -534,9 +437,6 @@ export class CNodeView3D extends CNodeViewCanvas {
                 this.camera.layers.mask = this.layers;
             }
 
-           // if (isKeyHeld("y")) console.log("Rendering to renderTargetAntiAliased");
-
-      //     let aWut = isKeyHeld("a");
 
             // Render the scene to the off-screen canvas or render target
             this.renderer.render(GlobalScene, this.camera);
@@ -554,6 +454,8 @@ export class CNodeView3D extends CNodeViewCanvas {
             if (this.isIR && this.effectsEnabled) {
                 NodeMan.get("lighting").setIR(false);
             }
+
+// BEFORE ------------------------------------------------------
 
             if (this.effectsEnabled) {
 
@@ -606,6 +508,112 @@ export class CNodeView3D extends CNodeViewCanvas {
 }
 
 
+renderSky() {
+    // Render the celestial sphere
+    if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
+
+        // we need to call this twice (once again in the super's render)
+        // so the camera is correct for the celestial sphere
+        // which is rendered before the main scene
+        // but uses the same camera
+        this.preRenderCameraUpdate()
+
+        // // scale the sprites one for each viewport
+        const nightSkyNode = NodeMan.get("NightSkyNode")
+        nightSkyNode.updateSatelliteScales(this.camera)
+
+
+        this.renderer.setClearColor(this.background);
+        // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
+        //     this.renderer.setClearColor(nightSkyNode.skyColor);
+        // }
+
+        let skyBrightness = 0;
+        let skyColor = this.background;
+        let skyOpacity = 1;
+
+
+        //           why is main view dark when look view camera is in darkness
+        //           is it not useing the main view camera here?
+
+        const sunNode = NodeMan.get("theSun",true);
+        if (sunNode !== undefined) {
+//                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))
+            this.renderer.setClearColor("black")
+            skyColor = sunNode.calculateSkyColor(this.camera.position);
+            skyBrightness = sunNode.calculateSkyBrightness(this.camera.position);
+            skyOpacity = sunNode.calculateSkyOpacity(this.camera.position);
+        }
+
+
+        // only draw the night sky if it will be visible
+        if (skyOpacity < 1) {
+
+            this.renderer.clear(true, true, true);
+
+            var tempPos = this.camera.position.clone();
+            // this is the celestial sphere, so we want the camera at the origin
+
+            this.camera.position.set(0, 0, 0)
+            this.camera.updateMatrix();
+            this.camera.updateMatrixWorld();
+            this.renderer.render(GlobalNightSkyScene, this.camera);
+            this.renderer.clearDepth()
+            this.camera.position.copy(tempPos)
+            this.camera.updateMatrix();
+            this.camera.updateMatrixWorld();
+        }
+
+        // Only render the quad if skyOpacity is greater than zero
+        if (skyOpacity > 0) {
+            const skyBrightnessMaterial = new ShaderMaterial({
+                uniforms: {
+                    color: { value: skyColor },
+                    opacity: { value: skyOpacity },
+                },
+                vertexShader: /* glsl */`
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+        `,
+                fragmentShader: /* glsl */`
+            uniform vec3 color;
+            uniform float opacity;
+            varying vec2 vUv;
+            void main() {
+                gl_FragColor = vec4(color, opacity);
+            }
+        `,
+                transparent: true,
+                blending: NormalBlending,
+                depthTest: false,
+                depthWrite: false
+            });
+
+            const fullscreenQuadGeometry = new PlaneGeometry(2, 2);
+            const fullscreenQuad = new Mesh(fullscreenQuadGeometry, skyBrightnessMaterial);
+
+            // Add the fullscreen quad to a scene dedicated to it
+            const fullscreenQuadScene = new Scene();
+            fullscreenQuadScene.add(fullscreenQuad);
+
+            this.renderer.autoClear = false;
+            this.renderer.render(fullscreenQuadScene, new Camera());
+            //this.renderer.autoClear = true;
+            this.renderer.clearDepth();
+        }
+
+
+
+    } else {
+        // clear the render target (or canvas) with the background color
+        this.renderer.setClearColor(this.background);
+        this.renderer.clear(true, true, true);
+    }
+
+}
 
 
     otherSetup(v)
