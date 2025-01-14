@@ -3,7 +3,7 @@ import { initSitch } from "./sitrec/src/indexCommon.js"
 import {
     get_real_horizon_angle_for_frame,
     Frame2Az, Frame2El, jetPitchFromFrame, jetRollFromFrame
-} from "./sitrec/src/JetStuff.js"
+} from "./sitrec/src/JetUtils.js"
 
 import { NodeMan } from "./sitrec/src/Globals.js"
 
