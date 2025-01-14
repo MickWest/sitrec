@@ -541,9 +541,14 @@ initSky() {
 
     this.skyCamera = new Camera();
 
+    this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
+    this.fullscreenQuadScene = new Scene();
+    this.fullscreenQuadScene.add(this.fullscreenQuad);
+
 }
 
 updateSkyUniforms(skyColor, skyOpacity) {
+    //     console.log("updateSkyUniforms: skyColor = "+skyColor+" skyOpacity = "+skyOpacity)
     this.skyBrightnessMaterial.uniforms.color.value = skyColor;
     this.skyBrightnessMaterial.uniforms.opacity.value = skyOpacity;
 }
@@ -607,14 +612,25 @@ renderSky() {
         // Only render the quad if skyOpacity is greater than zero
         if (skyOpacity > 0) {
 
+            // Add the fullscreen quad to a scene dedicated to it
+            // PROBLEM - WHY DO WE NEED TO KEEP RECREATING THIS?????
+            // if we move the new Mesh to the initSky() function, then it
+            // will render was a plain white polygon. Why?
+            // Not a serious issue, but seems like a bug
+            // or possible some asyc issue with the renerer.clear call
+
+            // // cleanup the old quad and scene
+            if (this.fullscreenQuadScene !== undefined) {
+                // cleanly remove the scene
+                this.fullscreenQuadScene.remove(this.fullscreenQuad);
+
+            }
+            this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
+            this.fullscreenQuadScene.add(this.fullscreenQuad);
+
             this.updateSkyUniforms(skyColor, skyOpacity);
 
 
-            this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
-
-            // Add the fullscreen quad to a scene dedicated to it
-            this.fullscreenQuadScene = new Scene();
-            this.fullscreenQuadScene.add(this.fullscreenQuad);
 
 
             this.renderer.autoClear = false;
