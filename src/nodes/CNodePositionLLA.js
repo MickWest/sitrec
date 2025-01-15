@@ -11,6 +11,7 @@ import {isKeyHeld} from "../KeyBoardHandler";
 import {adjustHeightAboveGround} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
+import {EventManager} from "../CEventManager";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
@@ -48,6 +49,7 @@ export class CNodePositionLLA extends CNode {
                        }
                        this._LLA[0] = v;
                        this.recalculateCascade(0)
+
                    }
                }, v.gui)
 
@@ -116,6 +118,7 @@ export class CNodePositionLLA extends CNode {
                     this.guiAlt.setValueWithUnits(groundAlt, "metric", "small")
                 }
                 this.recalculateCascade(0);
+                EventManager.dispatchEvent("PositionLLA.onChange."+this.id)
                 // we don't change the altitude, as we don't know it from the cursor
             }
 

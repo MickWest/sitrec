@@ -82,6 +82,7 @@ import {TrackManager} from "./TrackManager";
 import {ViewMan} from "./CViewManager";
 import {glareSprite, targetSphere} from "./JetStuffVars";
 import {CCustomManager} from "./CustomSupport";
+import {EventManager} from "./CEventManager";
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -1121,6 +1122,9 @@ function disposeEverything() {
 
     // cancel any pending geolocation requests
     cancelGeoLocationRequest();
+
+    // Remove all event listeners
+    EventManager.removeAll();
 
     // specific to the gimbal chart, but no harm in calling it here in case it gets used in other situations
     disposeGimbalChart();

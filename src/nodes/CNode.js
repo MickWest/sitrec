@@ -55,6 +55,7 @@ class CNode {
         this.visible = true;            // some nodes are display nodes
         this.enabled = true;            // some nodes are switchable, but most ignore this flag
         this.addInputs(v.inputs)
+        this.pruneIfUnused = v.pruneIfUnused ?? false; // if true, then remove this node if it has no outputs
         if (v.id !== undefined) {
             this.id = v.id
         } else {

@@ -179,7 +179,10 @@ export class CNodeManager extends CManager{
         // to avoid the assertion in disposeRemove
         // safe as we are disposing all nodes
         Object.keys(this.list).forEach(key => {
-            this.unlinkDisposeRemove(key);
+            // Some nodes might dispose of other nodes, so we need to check if the node still exists
+            if (this.exists(key)) {
+                this.unlinkDisposeRemove(key);
+            }
         });
 
         // a clean slate so we reset the UniqueNodeNumber
@@ -265,5 +268,20 @@ export class CNodeManager extends CManager{
             }
         }
     }
+
+    pruneUnusedFlagged() {
+        console.log("Pruning unused nodes")
+        // remove all nodes that are not connected to anything
+        for (let key in this.list) {
+            const node = this.list[key].data;
+            // is it not connected to anything?
+            if (node.pruneIfUnused && node.outputs.length === 0 && (node.inputs === undefined || Object.keys(node.inputs).length === 0)) {
+                // remove it
+                console.log("Removing unused prunable node " + key);
+                this.disposeRemove(key)
+            }
+        }
+    }
+
 }
 

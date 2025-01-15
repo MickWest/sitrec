@@ -67,6 +67,11 @@ export class CNodeControllerObjectTilt extends CNodeController {
 
     }
 
+    dispose() {
+        super.dispose()
+        NodeMan.unlinkDisposeRemove(this.smoothedTrack)
+    }
+
     modSerialize() {
         return {
             ...super.modSerialize(),

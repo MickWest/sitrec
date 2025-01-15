@@ -42,6 +42,16 @@ class CMetaTrack {
         // BUT NOT ANYTHING ELSE, AS WE STILL WANT TO CHECK FOR UNANTICIPATED LINKS
         //NodeMan.unlink(this.trackNode, this.trackDataNode); TODO
         //OR  - change disposeRemove so it unlinks first
+
+        // trackNode and centerNode will also have the _unsmoothed versions as input, so need to delete those first
+        // they will be in the "source" input object
+
+        NodeMan.unlinkDisposeRemove(this.trackNode.inputs.source);
+        if (this.centerNode) {
+            NodeMan.unlinkDisposeRemove(this.centerNode.inputs.source);
+        }
+
+
         NodeMan.unlinkDisposeRemove(this.trackDataNode);
         NodeMan.unlinkDisposeRemove(this.trackNode);
         NodeMan.unlinkDisposeRemove(this.centerDataNode);
@@ -57,9 +67,10 @@ class CMetaTrack {
         NodeMan.unlinkDisposeRemove(this.anglesNode);
         NodeMan.unlinkDisposeRemove(this.anglesController);
         removeLOSNodeColumnNodes(this.trackID);
-        NodeMan.pruneUnusedConstants();
-        NodeMan.pruneUnusedControllers();
 
+        NodeMan.pruneUnusedControllers();
+        NodeMan.pruneUnusedFlagged();
+        NodeMan.pruneUnusedConstants();
 
         Globals.sitchEstablished = false;
 
@@ -141,6 +152,7 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
         misb: dataID,
         columns: columns,
         exportable: true,
+        pruneIfUnused: true,
     })
 
 

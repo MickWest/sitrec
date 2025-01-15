@@ -24,6 +24,7 @@ import {CNode3DObject} from "./nodes/CNode3DObject";
 import {UpdateHUD} from "./JetStuff";
 import {checkForModding} from "./utils";
 import {ViewMan} from "./CViewManager";
+import {EventManager} from "./CEventManager";
 
 
 export class CCustomManager {
@@ -59,6 +60,45 @@ export class CCustomManager {
                 infoDiv.style.display = 'none';
             }
         }))
+
+
+        // TODO - Multiple events passed to EventManager.addEventListener
+
+        // Listen for events that mean we've changed the camera track
+        // and hence established a sitch we don't want subsequent tracks to mess up.
+        // changing camera to a fixed camera, which might be something the user does even beforer
+        // they add any tracks
+        EventManager.addEventListener("Switch.onChange.cameraTrackSwitch", (choice) => {
+            console.log("EVENT Camera track switch changed to " + choice)
+            Globals.sitchEstablished = true
+        });
+
+        // Changing the LOS traversal method would indicate a sitch has been established
+        // this might be done after the first track
+        EventManager.addEventListener("Switch.onChange.LOSTraverseSelectTrack", (choice) => {
+            console.log("EVENT Camera track switch changed to " + choice)
+            Globals.sitchEstablished = true
+        });
+
+        // Changing the CameraLOSController method would indicate a sitch has been established
+        // this might be done after the first track
+        EventManager.addEventListener("Switch.onChange.CameraLOSController", (choice) => {
+            Globals.sitchEstablished = true
+        });
+
+        EventManager.addEventListener("GUIValue.onChange.Camera [C] Lat", (value) => {
+            Globals.sitchEstablished = true
+        });
+
+        EventManager.addEventListener("GUIValue.onChange.Camera [C] Lon", (value) => {
+            Globals.sitchEstablished = true
+        });
+
+        EventManager.addEventListener("PositionLLA.onChange.fixedCameraPosition", (value) => {
+            Globals.sitchEstablished = true
+        });
+
+
 
     }
 

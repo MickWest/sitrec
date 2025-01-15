@@ -5,6 +5,7 @@ import {isLocal} from "../../config";
 import {assert} from "../assert.js";
 import {Units} from "../Globals";
 import {roundIfClose} from "../utils";
+import {EventManager} from "../CEventManager";
 
 
 export class CNodeGUIConstant extends CNodeConstant {
@@ -56,6 +57,8 @@ export class CNodeGUIValue extends CNodeGUIConstant {
                 if (this.onChange !== undefined) {
                     this.onChange(value)
                 }
+               // console.log("GUIValue.onChange."+this.id);
+                EventManager.dispatchEvent("GUIValue.onChange."+this.id, value)
                 par.renderOne = true;
             }
         ).name(v.desc ? v.desc : "<no desc>").listen()

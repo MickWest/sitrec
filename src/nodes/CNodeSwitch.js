@@ -3,6 +3,7 @@ import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
 import {isConsole, isLocal} from "../../config";
 import {NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
+import {EventManager} from "../CEventManager";
 
 class CNodeSwitch extends CNode {
     constructor(v, _gui) {
@@ -84,6 +85,7 @@ class CNodeSwitch extends CNode {
                     if (this.onChangeCallback !== undefined) {
                         this.onChangeCallback(this.getObject())
                     }
+                    EventManager.dispatchEvent("Switch.onChange."+this.id, this.choice)
 
                 })
 
