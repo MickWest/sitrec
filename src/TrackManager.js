@@ -494,6 +494,17 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                                 // and select it (Quietly, as we don't want to zoom to it yet)
                                 if (trackNumber === selectNumber && !Globals.sitchEstablished) {
                                     switchNode.selectOptionQuietly(shortName)
+
+                                    // bit of a patch, this will be the second track, and we already set the
+                                    // camera to follow the first track and "Use Angles"
+                                    // but now we've added a target track, so we need to change the camera heading
+                                    // to "To Target" so the first track points at the second track
+                                    if (switchNode.id = "targetTrackSwitch") {
+                                        const headingSwitch = NodeMan.get("CameraLOSController", true);
+                                        if (headingSwitch) {
+                                            headingSwitch.selectOption("To Target");
+                                        }
+                                    }
                                 }
                                 // if there's a center point track, make that as well
                                 if (centerID !== null) {

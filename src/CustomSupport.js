@@ -82,9 +82,11 @@ export class CCustomManager {
 
         // Changing the CameraLOSController method would indicate a sitch has been established
         // this might be done after the first track
-        EventManager.addEventListener("Switch.onChange.CameraLOSController", (choice) => {
-            Globals.sitchEstablished = true
-        });
+        // I'm not doing this, as the LOS controller is changed programatically by loading the first track
+        // coudl possibly patch around it, but I'm not sure if it's needed.
+        // EventManager.addEventListener("Switch.onChange.CameraLOSController", (choice) => {
+        //     Globals.sitchEstablished = true
+        // });
 
         EventManager.addEventListener("GUIValue.onChange.Camera [C] Lat", (value) => {
             Globals.sitchEstablished = true
