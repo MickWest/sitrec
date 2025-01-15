@@ -691,7 +691,7 @@ export class ElevationMap extends TiledMap {
 
 
   clean() {
-    console.log("elevationMap clean()");
+//    console.log("elevationMap clean()");
 
     // abort the pending loading of tiles
     this.controller.abort();

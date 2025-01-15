@@ -44,7 +44,7 @@ export class CNodeHeading extends CNode {
     }
 
     getValueFrame(f) {
-        console.warn("CNodeHeading.getValueFrame is limited in accuracy in larger sitches as it used (0,0,0)")
+//        console.warn("CNodeHeading.getValueFrame is limited in accuracy in larger sitches as it used (0,0,0)")
         let fwd = V3(0, 0, -1);
         fwd.applyAxisAngle(V3(0,1,0), radians(-this.heading))
         return fwd;

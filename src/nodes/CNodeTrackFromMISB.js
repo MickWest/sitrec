@@ -21,7 +21,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
         this.columns = v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]
 
-        console.log("CNodeTrackFromMISB:constructor(): columns[2] = ",this.columns[2])
+//        console.log("CNodeTrackFromMISB:constructor(): columns[2] = ",this.columns[2])
 
         this.input("misb")
 
@@ -135,7 +135,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
                 // use only valid FOV values
                 if (test(valueNumber)) {
                     validValue = value
-                    console.log("CNodeTrackFromMISB:recalculate(): FIRST validValue = " + validValue);
+//                    console.log("CNodeTrackFromMISB:recalculate(): FIRST validValue = " + validValue);
                     break
                 }
             }

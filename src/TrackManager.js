@@ -61,7 +61,7 @@ class CMetaTrack {
         NodeMan.pruneUnusedControllers();
 
 
-
+        Globals.sitchEstablished = false;
 
     }
 
@@ -431,11 +431,11 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                 }
 
-                console.log(Sit.dropTargets)
+//                console.log(Sit.dropTargets)
 
                 // how many tracks are there now?
-                const trackNUmber = TrackManager.size();
-                console.log(`Track number: ${trackNUmber}`)
+                const trackNumber = TrackManager.size();
+                console.log(`Track number: ${trackNumber}`)
 
 
                 if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
@@ -448,7 +448,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         // which means that it will always be selected
                         // unless the dropTarget has a number at the end
                         // in which case it will be selected only that's the same as the track number
-                        let selectNumber = trackNUmber;
+                        let selectNumber = trackNumber;
                         const match = dropTargetSwitch.match(/-(\d+)$/);
                         if (match !== null) {
                             selectNumber = Number(match[1]);
@@ -460,13 +460,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         if (NodeMan.exists(dropTargetSwitch)) {
                             const switchNode = NodeMan.get(dropTargetSwitch);
 
-                            // switchNode.removeOption("KML Track")
-                            // switchNode.addOptionToGUIMenu("KML Track", new CNodeControllerTrackPosition({
-                            //     sourceTrack: trackID,
-                            // }))
-
+                            console.log("Adding track ", trackID, "  to drop target: ", dropTargetSwitch)
 
                             if (Sit.dropAsController) {
+                                // NOT USED IN CUSTOM SITUATION (or anything other than SitNightSky)
                                 // backwards compatibility for SitNightSky
                                 // which expects dropped tracks to create a controller
                                 switchNode.addOption(shortName, new CNodeControllerTrackPosition({
@@ -474,7 +471,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                                     sourceTrack: trackID,
                                 }))
                                 // and select it
-                                if (trackNUmber === selectNumber) {
+                                if (trackNumber === selectNumber) {
                                     switchNode.selectOption(shortName)
                                 }
                             } else {
@@ -483,7 +480,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                                 switchNode.removeOption(shortName)
                                 switchNode.addOption(shortName, NodeMan.get(trackID))
                                 // and select it (Quietly, as we don't want to zoom to it yet)
-                                if (trackNUmber === selectNumber) {
+                                if (trackNumber === selectNumber && !Globals.sitchEstablished) {
                                     switchNode.selectOptionQuietly(shortName)
                                 }
                                 // if there's a center point track, make that as well
@@ -492,12 +489,13 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                                     switchNode.removeOption(menuTextCenter)
                                     switchNode.addOption(menuTextCenter, NodeMan.get(centerID))
                                     // if it's being added to targetTrackSwitch then select it
-                                    if (switchNode.id === "targetTrackSwitch") {
+                                    if (switchNode.id === "targetTrackSwitch" && !Globals.sitchEstablished) {
                                         switchNode.selectOption(menuTextCenter)
                                     }
                                 }
 
                             }
+
 
 
                             // add to the "Sync Time to" menu
@@ -507,7 +505,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                             // as it's only just been loaded. ????????
                             // Actually, we do, as the change in time will change the
                             // position of the per-frame track segment and the display
-                            GlobalDateTimeNode.syncStartTimeTrack();
+                            if (!Globals.sitchEstablished) {
+                                GlobalDateTimeNode.syncStartTimeTrack();
+                            }
 
                         }
                     }
@@ -557,7 +557,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                             const switchNode = NodeMan.get(dropTargetSwitch);
                             switchNode.removeOption(trackID)
                             switchNode.addOption(trackID, NodeMan.get(trackID))
-                            switchNode.selectOption(trackID)
+                            if (!Globals.sitchEstablished) {
+                                switchNode.selectOption(trackID)
+                            }
                         }
                     }
                 }
@@ -591,7 +593,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                             const switchNode = NodeMan.get(dropTargetSwitch);
                             switchNode.removeOption(anglesID)
                             switchNode.addOption(anglesID, NodeMan.get(anglesID))
-                            switchNode.selectOption(anglesID)
+                            if (!Globals.sitchEstablished) {
+                                switchNode.selectOption(anglesID)
+                            }
                         }
                     }
                 }
@@ -624,7 +628,6 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
                 // count how many tracks we have now
-                const trackNumber = TrackManager.size();
                 const trackColors = [
                     new Color(1, 0, 0),
                     new Color(0, 1, 0),
@@ -746,13 +749,22 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                 }
 
-                if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom) {
+
+                console.log("Considering setup options for track: ", shortName, " number ", trackNumber)
+                console.log("Sit.centerOnLoadedTracks: ", Sit.centerOnLoadedTracks, " Globals.dontAutoZoom: ", Globals.dontAutoZoom, " Globals.sitchEstablished: ", Globals.sitchEstablished)
+
+
+                if (Sit.centerOnLoadedTracks && !Globals.dontAutoZoom && !Globals.sitchEstablished) {
+
+
+                    console.log("Centering on loaded track ", shortName)
+
                     // maybe adjust the main view camera to look at the center of the track
                     const mainCameraNode = NodeMan.get("mainCamera");
                     const mainCamera = mainCameraNode.camera;
                     const mainView = NodeMan.get("mainView");
                     const bbox = trackBoundingBox(trackOb.trackDataNode);
-                    console.log(`Track ${shortName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
+//                    console.log(`Track ${shortName} bounding box: ${bbox.min.x}, ${bbox.min.y}, ${bbox.min.z} to ${bbox.max.x}, ${bbox.max.y}, ${bbox.max.z}`)
                     const center = bbox.min.clone().add(bbox.max).multiplyScalar(0.5);
                     // get point on sphere
                     const ground = pointOnSphereBelow(center);
@@ -788,7 +800,6 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
                     // If this is not the first track, then find the time of the closest intersection.
-
                     const track0 = TrackManager.getByIndex(0);
                     if (track0 !== trackOb) {
                         let time = closestIntersectionTime(track0.trackDataNode, trackOb.trackDataNode);
@@ -804,23 +815,24 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                         // and make the 2nd track the target track if we have a targetTrackSwitch
                         if (NodeMan.exists("targetTrackSwitch")) {
-                            const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
-                            targetTrackSwitch.selectOption(trackOb.menuText);
-
-                            // and make the camera track switch use the other track.
-                            const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch");
-                            cameraTrackSwitch.selectOption(track0.menuText);
-
-                            // and set the traverse mode to target object
-                            const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
-                            traverseModeSwitch.selectOption("Target Object");
-
-                            // second track, so we assume we want to focus on this target
-                            // so we are setting the "Camera Heading"  to "To Target" (from "Use Angles")
-                            const headingSwitch = NodeMan.get("CameraLOSController", true);
-                            if (headingSwitch) {
-                                headingSwitch.selectOption("To Target");
-                            }
+                            // console.log("Setting Target Track to ", trackOb.menuText, " and Camera Track to ", track0.menuText)
+                            // const targetTrackSwitch = NodeMan.get("targetTrackSwitch");
+                            // targetTrackSwitch.selectOption(trackOb.menuText);
+                            //
+                            // // and make the camera track switch use the other track.
+                            // const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch");
+                            // cameraTrackSwitch.selectOption(track0.menuText);
+                            //
+                            // // and set the traverse mode to target object
+                            // const traverseModeSwitch = NodeMan.get("LOSTraverseSelectTrack");
+                            // traverseModeSwitch.selectOption("Target Object");
+                            //
+                            // // second track, so we assume we want to focus on this target
+                            // // so we are setting the "Camera Heading"  to "To Target" (from "Use Angles")
+                            // const headingSwitch = NodeMan.get("CameraLOSController", true);
+                            // if (headingSwitch) {
+                            //     headingSwitch.selectOption("To Target");
+                            // }
 
 
                         }
@@ -833,6 +845,10 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
 
                     } else {
+                        console.log("FIRST TRACK LOADED, setting initial terrain")
+                        console.log("ALSO setting camera heading to use angles")
+
+
                         // this is the first track loaded.
                         // so just center on this track
                         if (NodeMan.exists("terrainUI")) {
@@ -860,6 +876,12 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     }
 
                 }
+
+                // if there's more than one track loaded, or there's a center track, then set Globals.sitchEstablished = true;
+                if (trackNumber > 1 || hasCenter) {
+                    Globals.sitchEstablished = true;
+                }
+
 
                 trackOb.gui = new CNodeTrackGUI({
                     id: trackID + "_GUI",

@@ -56,7 +56,7 @@ export function removeOptionFromGUIMenu(controller, optionName) {
         // Update the display
         controller.updateDisplay();
     } else {
-        console.warn("Option "+ optionName +"  does not exist in controller, skipping remove");
+//        console.warn("Option "+ optionName +"  does not exist in controller, skipping remove");
     }
 }
 

@@ -651,7 +651,7 @@ export class CNodeTerrain extends CNode {
     dispose() {
         // first abort any pending request
 
-        console.log("CNodeTerrain: disposing of this.maps")
+//        console.log("CNodeTerrain: disposing of this.maps")
         for (const mapID in this.maps) {
             if (this.maps[mapID].map !== undefined) {
                 this.maps[mapID].map.clean()
@@ -683,7 +683,7 @@ export class CNodeTerrain extends CNode {
         // currently it seems to never load another map if we get errors
         // maybe the global loadingTerrain should be set to false, eventually, if loading fails
 
-        console.log("CNodeTerraina: loadMap, expecting  this.maps")
+//        console.log("CNodeTerraina: loadMap, expecting  this.maps")
 
         assert(Object.keys(this.maps).length > 0, "CNodeTerrain: no maps found")
         assert(this.maps[id] !== undefined, "CNodeTerrain: map type " + id + " not found")
@@ -736,7 +736,7 @@ export class CNodeTerrain extends CNode {
                 zScale: this.elevationScale,
                 radius: this.radius,
                 loadedCallback: ()=> {
-                    console.log("CNodeTerrain: elevation map loaded")
+//                    console.log("CNodeTerrain: elevation map loaded")
                     this.recalculate();
                     this.refreshDebugGrids()
                 },
@@ -761,7 +761,7 @@ export class CNodeTerrain extends CNode {
         // and if so we do nothing (other than the visibility setting)
         if (this.maps[id].map === undefined) {
             Globals.loadingTerrain = true;
-            console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
+//            console.log("CNodeTerrain: loading map "+id+" deferLoad = "+deferLoad)
             this.maps[id].map = new Map33(this.maps[id].group, this, this.position, {
                 nTiles: this.nTiles,
                 zoom: this.zoom,
@@ -784,7 +784,7 @@ export class CNodeTerrain extends CNode {
                     this.outputs.forEach( o => {
                         o.recalculateCascade()
                     })
-                    console.log("CNodeTerrain: id = "+id+" map loaded");
+//                    console.log("CNodeTerrain: id = "+id+" map loaded");
                     propagateLayerMaskObject(this.maps[id].group)
 
                     // call the terrainLoadedCallback on any node that has it
@@ -811,7 +811,7 @@ export class CNodeTerrain extends CNode {
             return;
         }
 
-        console.log("recalculating terrain")
+//        console.log("recalculating terrain")
         //var radius = metersFromMiles(this.in.radiusMiles.v0)
         var radius = this.radius;
         // flattening is 0 to 1, whenre 0=no flattening, 1=flat

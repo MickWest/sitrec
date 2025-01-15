@@ -150,6 +150,8 @@ class CDragDropHandler {
             return;
         }
 
+        console.log("")
+        console.log("##############################################################")
         console.log("### Uploading dropped file: " + file.name)
 
         // otherwise we load and then parse the file with the FileManager

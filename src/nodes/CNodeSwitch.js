@@ -159,13 +159,13 @@ class CNodeSwitch extends CNode {
 
     addOption(option, value) {
         this.addInput(option, value)
-        console.log("+++ ADDING   "+option+" to   "+this.id)
+//        console.log("+++ ADDING   "+option+" to   "+this.id)
         addOptionToGUIMenu(this.controller, option, option)
     }
 
     removeOption(option) {
         if (this.inputs[option] !== undefined) {
-            console.log("--- REMOVING "+option+" from "+this.id)
+//            console.log("--- REMOVING "+option+" from "+this.id)
             this.removeInput(option)
             removeOptionFromGUIMenu(this.controller, option)
         }

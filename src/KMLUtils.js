@@ -207,7 +207,7 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
         for (var i = 0; i < len; i++) {
 
             if (i>0 && whenArray[i]["#text"] === whenArray[i-1]["#text"]) {
-                console.warn("getKMLTrackWhenCoord: Duplicate time "+whenArray[i]["#text"])
+//                console.warn("getKMLTrackWhenCoord: Duplicate time "+whenArray[i]["#text"])
                 continue;
             }
 

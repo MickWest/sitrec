@@ -19,7 +19,7 @@ export class CNodeTrackGUI extends CNode {
         this.trackNode = this.displayNode.in.track;
         this.gui = v.gui ?? "contents";
 
-        console.log("CNodeTrackGUI constructor called for ", this.metaTrack.menuText);
+//        console.log("CNodeTrackGUI constructor called for ", this.metaTrack.menuText);
 
 
         this.showTrackInLook = false;
