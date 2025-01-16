@@ -24,7 +24,7 @@ import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
-import {parseCustom1CSV} from "./ParseCustom1CSV";
+import {isCustom1, parseCustom1CSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
 
 
@@ -944,17 +944,10 @@ export function detectCSVType(csv) {
         return "MISB1";
     }
 
-    // CUSTOM1 is a custom track format exported from some database
-    if (csv[0].includes("TIME")
-        && csv[0].includes("LAT")
-        && (csv[0].includes("LONG") || csv[0].includes("LON"))
-        && csv[0].includes("ALTITUDE")) {
+
+    if (isCustom1(csv)) {
         return "CUSTOM1";
     }
-
-
-
-
 
     // only give an error warning for custom, as some sitches have custom code to use
     // specific columns of CSV files.

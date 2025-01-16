@@ -56,6 +56,7 @@ export function convertToRelativeTime(startTime, relativeTimeString) {
 // exactMatch is true if the column header must match the text exactly
 // otherwise, the column header must start with the text
 // returns the index of the column that matches the text
+// or -1 if not found
 export function findColumn(csv, text, exactMatch = false) {
     // Check if the csv is a non-empty array
     if (!Array.isArray(csv) || csv.length === 0 || !Array.isArray(csv[0])) {
@@ -85,9 +86,13 @@ export function findColumn(csv, text, exactMatch = false) {
     }
 
     // Throw an error if no column starts with the given text
-    throw new Error("No column found starting with " + searchText);
+   //  throw new Error("No column found starting with " + searchText);
+
+    console.warn("No column found " + (exactMatch ? "matching ":"starting with ") + text);
+    return -1;
 
 }
+
 
 // either 2024-04-24T16:44:11Z or 2024-04-24T16:44:11.000Z
 // the built in Date parser can handle this
