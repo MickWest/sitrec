@@ -38,23 +38,31 @@ class CManager {
     disposeRemove(id) {
         if (id===undefined)
             return;
+        let key;
         if (typeof id === "object") {
-            id = id.id;
+            key = id.id;
+        } else {
+            key = id;
         }
-        if (this.exists(id)) {
+        if (this.exists(key)) {
 
             // the node should have no inputs or outputs
             // otherwise, it's not safe to remove it (we'll get a dangling reference)
-            const node = this.list[id].data;
+            const node = this.list[key].data;
+
+
+            //assert (node.id === key, "Trying to disposeRemove a node with a different id, key="+key+", node.id="+node.id);
+
             // node inputs is an object, it should be empty
             assert(node.inputs === undefined || Object.keys(node.inputs).length === 0, "Trying to disposeRemove a node with inputs, id="+id);
             // node outputs is an array, it should be empty
             assert(node.outputs === undefined || node.outputs.length === 0, "Trying to disposeRemove a node with outputs, id="+id);
 
-            if (this.list[id].data.dispose !== undefined) {
-                this.list[id].data.dispose()
+            if (this.list[key].data.dispose !== undefined) {
+                console.log("Disposing " + key);
+                this.list[key].data.dispose()
             }
-            this.remove(id);
+            this.remove(key);
         }
     }
 

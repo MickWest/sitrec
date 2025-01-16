@@ -6,7 +6,7 @@ import {CNodeConstant} from "./nodes/CNode";
 import * as LAYER from "./LayerMasks";
 import {Color} from "three";
 import {getFileExtension, scaleF2M} from "./utils";
-import {FileManager, GlobalDateTimeNode, Globals, gui, guiMenus, NodeMan, Sit} from "./Globals";
+import {FileManager, GlobalDateTimeNode, Globals, guiMenus, NodeMan, Sit} from "./Globals";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {CManager} from "./CManager";
 import {CNodeControllerMatrix, CNodeControllerTrackPosition} from "./nodes/CNodeControllerVarious";
@@ -499,7 +499,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                                     // camera to follow the first track and "Use Angles"
                                     // but now we've added a target track, so we need to change the camera heading
                                     // to "To Target" so the first track points at the second track
-                                    if (switchNode.id = "targetTrackSwitch") {
+                                    if (switchNode.id === "targetTrackSwitch") {
                                         const headingSwitch = NodeMan.get("CameraLOSController", true);
                                         if (headingSwitch) {
                                             headingSwitch.selectOption("To Target");
