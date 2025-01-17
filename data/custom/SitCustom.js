@@ -141,7 +141,7 @@ sitch = {
     dragDropHandler: true,
     useGlobe: true,
     useDayNightGlobe: true,
-
+    globeScale: 1.0,        // it was defaulting to this before, but now it's explicit (in case the default changes)
 
     nightSky: {
         showEquatorialGrid: false,

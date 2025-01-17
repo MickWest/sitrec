@@ -1,4 +1,4 @@
-import {Color, Group, Mesh, MeshPhongMaterial, ShaderMaterial, SphereGeometry, TextureLoader, Vector3} from "three";
+import {Color, Group, Mesh, MeshPhongMaterial, ShaderMaterial, SphereGeometry, TextureLoader, Vector3, FrontSide} from "three";
 import {GlobalScene} from "./LocalFrame";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {radians} from "./utils";
@@ -100,6 +100,17 @@ export function createSphereDayNight(radius, radius1, segments) {
     `
 
     });
+
+    // // make a wireframe material
+    // const wireframeMaterial = new MeshPhongMaterial({
+    //     color: 0xFFFFFF,
+    //     wireframe: true,
+    //     transparent: true,
+    //     opacity: 1.0,
+    //     side: FrontSide,
+    // });
+    //
+    // const sphere = new Mesh(new SphereGeometry(radius, segments, segments), wireframeMaterial);
 
     const sphere = new Mesh(new SphereGeometry(radius, segments, segments), globeMaterial);
     sphere.scale.set(1,radius1/radius,1)
