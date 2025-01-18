@@ -13,7 +13,7 @@ import {
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
 import {SITREC_ROOT} from "../config";
-import {createCustomModalWithCopy} from "./CFileManager";
+import {createCustomModalWithCopy, saveFilePrompted} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
 import {GlobalScene} from "./LocalFrame";
@@ -110,7 +110,7 @@ export class CCustomManager {
 
 
 
-    getCustomSitchString() {
+    getCustomSitchString(local = false) {
         // the output object
         // since we are going to use JSON.stringify, then when it is loaded again we do NOT need
         // the ad-hox parse functions that we used to have
@@ -172,7 +172,13 @@ export class CCustomManager {
             let files = {}
             for (let id in FileManager.list) {
                 const file = FileManager.list[id]
-                files[id] = file.staticURL
+                if (local) {
+                    // if we are saving locally, then we don't need to rehost the files
+                    // so just save the original name
+                    files[id] = file.filename
+                } else {
+                    files[id] = file.staticURL
+                }
             }
             out.loadedFiles = files;
         }
@@ -307,11 +313,39 @@ export class CCustomManager {
         return str;
     }
 
-    serialize(name, version) {
+    serialize(name, version, local = false) {
         console.log("Serializing custom sitch")
 
         assert (Sit.canMod || Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be true to serialize a sitch")
         assert (!Sit.canMod || !Sit.isCustom, "one of Sit.canMod or Sit.isCustom must be false to serialize a sitch")
+
+        if (local) {
+            // if we are saving locally, then we don't need to rehost the files
+            // so just save the stringified sitch
+            // with the loaded files using their original names
+            const str = this.getCustomSitchString(true);
+
+            // savem it with a dialog to select the name
+
+
+            return new Promise((resolve, reject) => {
+                saveFilePrompted(new Blob([str]), name + ".json").then((filename) => {
+                        console.log("Saved as " + filename)
+
+                        // change sit.name to the filename
+                    // with the extension removed (might be more than one dot)
+                    Sit.sitchName = filename.split(".").slice(0, -1).join(".")
+                    console.log("Setting Sit.sitchName to "+Sit.sitchName)
+                        resolve(filename);
+                    })
+            })
+
+
+            //            saveAs(new Blob([str]), name + ".json")
+            // return a promise that resolves to true
+            // just because saveSitchNamed expects a promise
+            // return Promise.resolve(true)
+        }
 
 
         return FileManager.rehostDynamicLinks(true).then(() => {

@@ -50,6 +50,8 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "saveSitch").name("Save").perm().tooltip("Save the current sitch to the server");
                 this.guiFolder.add(this, "saveSitchAs").name("Save As").perm().tooltip("Save the current sitch to the server with a new name");
                 this.guiFolder.add(this, "saveWithPermalink").name("Save with Permalink").perm().tooltip("Save the current sitch to the server and get a permalink to share it");
+                this.guiFolder.add(this, "saveLocal").name("Save Local Sitch File").perm().tooltip("Save a local version of the sitch, so you can use \"Open Local Sitch Folder\" to load it");
+
                 this.guiFolder.add(this, "importFile").name("Import File").perm().tooltip("Import a file (or files) from your local system. Same as dragging and dropping a file into the browser window");
                // this.guiFolder.add(this, "rehostFile").name("Rehost File").perm().tooltip("Rehost a file from your local system. DEPRECATED");
                 this.guiFolder.add(this, "openDirectory").name("Open Local Sitch folder").perm().tooltip("Open a folder on your local system and load the sitch file and any assets in it");
@@ -101,6 +103,12 @@ export class CFileManager extends CManager {
             })
 
         }
+    }
+
+    // a debugging point
+    add(id, data, original) {
+     //   console.log("Adding " + id + " to FileManager")
+        super.add(id, data, original);
     }
 
 
@@ -206,10 +214,10 @@ export class CFileManager extends CManager {
     // if there is a name, then use that.
 
     // Returns a promise that resolves when the sitch is saved
-    saveSitch() {
+    saveSitch(local = false) {
         if (Sit.sitchName === undefined) {
             return this.inputSitchName().then(() => {
-                return this.saveSitchNamed(Sit.sitchName);  // return the Promise here
+                return this.saveSitchNamed(Sit.sitchName, local);  // return the Promise here
             }).then(() => {
                 addOptionToGUIMenu(this.guiLoad, Sit.sitchName);
                 addOptionToGUIMenu(this.guiDelete, Sit.sitchName);
@@ -217,7 +225,7 @@ export class CFileManager extends CManager {
                 console.log("Failed to input sitch name:", error);
             });
         } else {
-            return this.saveSitchNamed(Sit.sitchName);  // return the Promise here
+            return this.saveSitchNamed(Sit.sitchName, local);  // return the Promise here
         }
     }
 
@@ -241,8 +249,9 @@ export class CFileManager extends CManager {
         return this.saveSitch();
     }
 
-    // given a name, save at version to that
-    saveSitchNamed(sitchName) {
+    // given a name, save a version to that folder, unless local,
+    // in which case we make a "downloadable" file
+    saveSitchNamed(sitchName, local = false) {
 
         // and then save the sitch to the server where it will be versioned by data in a folder named for this sitch, for this user
         console.log("Saving sitch as " + sitchName)
@@ -259,7 +268,7 @@ export class CFileManager extends CManager {
         par.paused = true;
         disableAllInput("SAVING");
 
-        return CustomManager.serialize(sitchName, todayDateTimeFilename).then((serialized) => {
+        return CustomManager.serialize(sitchName, todayDateTimeFilename, local).then((serialized) => {
             this.guiFolder.close();
             par.paused = oldPaused
             enableAllInput();
@@ -267,7 +276,14 @@ export class CFileManager extends CManager {
 
     }
 
+    saveLocal() {
 
+        if (Sit.sitchName === undefined) {
+            Sit.sitchName = "Local";
+        }
+
+        this.saveSitch(true);
+    }
 
 
     exportSitch() {
@@ -1074,4 +1090,45 @@ export async function waitForParsingToComplete() {
         checkParsing();
     });
     console.log("Parsing complete!");
+}
+
+
+export async function saveFilePrompted(contents, suggestedName = 'download.txt') {
+    try {
+        // 1. Prompt user with the "save file" dialog
+        const fileHandle = await window.showSaveFilePicker({
+            suggestedName,
+            types: [{
+                description: 'Text File',
+                // accept: {
+                //     'text/plain': ['.txt'],
+                //     'application/json': ['.json'],
+                // }
+            }]
+        });
+
+        // 2. Create a writable stream
+        const writable = await fileHandle.createWritable();
+
+        // 3. Write the contents
+        await writable.write(contents);
+
+        // 4. Close the file and finalize the save
+        await writable.close();
+
+        console.log('File saved successfully!');
+
+        // return a promise that resolved to the the name of the file
+        return new Promise((resolve, reject) => {
+            resolve(fileHandle.name);
+        })
+
+
+        ///return fileHandle.name;
+
+
+    } catch (err) {
+ 2
+        console.error('Save canceled or failed:', err);
+    }
 }
