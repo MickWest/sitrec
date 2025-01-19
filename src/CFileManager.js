@@ -182,9 +182,6 @@ export class CFileManager extends CManager {
 
                 let sitchObject = textSitchToObject(decodedString);
 
-                sitchObject = checkForModding(sitchObject);
-
-
                 setNewSitchObject(sitchObject);
             })
         })
@@ -361,7 +358,12 @@ export class CFileManager extends CManager {
             for await (const entry of this.directoryHandle.values()) {
                 console.log(entry);
                 // if it's a Sit????.js file, then load it like in importFile
-                if (entry.name.startsWith("Sit") && entry.name.endsWith(".js")) {
+//                if (entry.name.startsWith("Sit") && entry.name.endsWith(".js")) {
+
+                // if there's only one, then load it
+                // otherwise show a file picker
+
+                if (entry.name.endsWith(".js")) {
 
                     if (this.localSitchEntry === undefined) {
                         this.guiFolder.add(this, "rehostSitch").name("Rehost Local Sitch").perm();
@@ -392,7 +394,10 @@ export class CFileManager extends CManager {
             DragDropHandler.parseResult(file.name, this.localSitchBuffer);
         }
 
-        setTimeout(() => this.checkForNewLocalSitch(), 500);
+        // This was for when we were continually loading the local sitch
+        // and seeing if it changed, but it's not needed now
+        // as we only load it once
+    //    setTimeout(() => this.checkForNewLocalSitch(), 500);
     }
 
 

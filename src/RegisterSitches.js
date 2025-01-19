@@ -1,6 +1,7 @@
 // Register all the sitches in the sitch directory
 import {SitchMan} from "./Globals";
 import {parseJavascriptObject} from "./Serialize";
+import {checkForModding} from "./utils";
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Note. This failed once due to what seemed to be a circular dependency
@@ -61,11 +62,12 @@ export function registerSitches(textSitches) {
 
     console.log("Starting Text Sitches")
 
-    // add the text sitches
+    // add the text sitches, note we set checkForModding to false
+    // as these are all baked in custom sitches with no need for modding
     for (const key in textSitches) {
         const text = textSitches[key];
 //        console.log("Found Text Sitch: "+key+ " Sitch text = "+text)
-        const obj = textSitchToObject(text);
+        const obj = textSitchToObject(text, false);
         SitchMan.add(key, obj);
     }
 }
@@ -84,7 +86,7 @@ const legacyReplacements = [
 ]
 
 
-export function textSitchToObject(text) {
+export function textSitchToObject(text, canMod = true) {
 // we have a text sitch, which starts with something like:
     // sitch = {
     //     include_pvs14: true,
@@ -105,7 +107,11 @@ export function textSitchToObject(text) {
 
     try {
         const obj = parseJavascriptObject(data)
-        return obj;
+        if (canMod) {
+            return checkForModding(obj);
+        } else {
+            return obj;
+        }
     } catch (e) {
         console.error("Error parsing text sitch: ");
         console.error(e);

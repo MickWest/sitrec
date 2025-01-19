@@ -142,10 +142,20 @@ export class CCustomManager {
         if (Sit.isCustom) {
             // if there's a dropped video url
             if (NodeMan.exists("video")) {
+                console.log("Exporting: Found video node")
                 const videoNode = NodeMan.get("video")
                 if (videoNode.staticURL) {
+                    console.log("Exporting: Found video node with staticURL = ",videoNode.staticURL)
                     out.videoFile = videoNode.staticURL;
+                } else {
+                    console.log("Exporting: Found video node, but no staticURL")
+                    if (local && videoNode.fileName) {
+                        console.log("Exporting: LOCAL Found video node with filename = ",videoNode.fileName)
+                        out.videoFile = videoNode.fileName;
+                    }
                 }
+            } else {
+                console.log("Exporting: No video node found")
             }
 
 
@@ -329,12 +339,12 @@ export class CCustomManager {
 
 
             return new Promise((resolve, reject) => {
-                saveFilePrompted(new Blob([str]), name + ".json").then((filename) => {
+                saveFilePrompted(new Blob([str]), name + "sitch.js").then((filename) => {
                         console.log("Saved as " + filename)
+                    // change sit.name to the filename
+                    // with .sitch.js removed
+                    Sit.sitchName = filename.replace(".sitch.js", "")
 
-                        // change sit.name to the filename
-                    // with the extension removed (might be more than one dot)
-                    Sit.sitchName = filename.split(".").slice(0, -1).join(".")
                     console.log("Setting Sit.sitchName to "+Sit.sitchName)
                         resolve(filename);
                     })
