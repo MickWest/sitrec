@@ -183,9 +183,11 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.value = v.value
-        this.guiEntry.setValue(this.value)
-        this.recalculateCascade()
+        if (this.value !== v.value) {
+            this.value = v.value
+            this.guiEntry.setValue(this.value)
+            this.recalculateCascade()
+        }
     }
 
     show() {
