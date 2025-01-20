@@ -339,11 +339,11 @@ export class CCustomManager {
 
 
             return new Promise((resolve, reject) => {
-                saveFilePrompted(new Blob([str]), name + "sitch.js").then((filename) => {
+                saveFilePrompted(new Blob([str]), name + ".json").then((filename) => {
                         console.log("Saved as " + filename)
                     // change sit.name to the filename
                     // with .sitch.js removed
-                    Sit.sitchName = filename.replace(".sitch.js", "")
+                    Sit.sitchName = filename.replace(".json", "")
 
                     console.log("Setting Sit.sitchName to "+Sit.sitchName)
                         resolve(filename);
