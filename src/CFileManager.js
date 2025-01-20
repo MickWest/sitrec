@@ -363,7 +363,7 @@ export class CFileManager extends CManager {
                 // if there's only one, then load it
                 // otherwise show a file picker
 
-                if (entry.name.endsWith(".js")) {
+                if (entry.name.endsWith(".json") || entry.name.endsWith(".js")) {
 
                     if (this.localSitchEntry === undefined) {
                         this.guiFolder.add(this, "rehostSitch").name("Rehost Local Sitch").perm();
@@ -1105,10 +1105,10 @@ export async function saveFilePrompted(contents, suggestedName = 'download.txt')
             suggestedName,
             types: [{
                 description: 'Text File',
-                // accept: {
-                //     'text/plain': ['.txt'],
-                //     'application/json': ['.json'],
-                // }
+                accept: {
+//                    'text/plain': ['.txt'],
+                    'application/json': ['.json'],
+                }
             }]
         });
 
