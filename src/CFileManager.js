@@ -351,35 +351,59 @@ export class CFileManager extends CManager {
 
     async openDirectory() {
         try {
-            // This will show the directory picker dialog.
+            // 1) Prompt for the directory
             this.directoryHandle = await window.showDirectoryPicker();
 
-            // You can now access the files in the directory.
+            // 2) Collect all .json or .js files
+            const validEntries = [];
             for await (const entry of this.directoryHandle.values()) {
-                console.log(entry);
-                // if it's a Sit????.js file, then load it like in importFile
-//                if (entry.name.startsWith("Sit") && entry.name.endsWith(".js")) {
-
-                // if there's only one, then load it
-                // otherwise show a file picker
-
-                if (entry.name.endsWith(".json") || entry.name.endsWith(".js")) {
-
-                    if (this.localSitchEntry === undefined) {
-                        this.guiFolder.add(this, "rehostSitch").name("Rehost Local Sitch").perm();
-                    }
-
-                    this.localSitchEntry = entry;
-                    this.checkForNewLocalSitch();
-                    break;
+                if (
+                    entry.kind === "file" &&
+                    (entry.name.endsWith(".json") || entry.name.endsWith(".js"))
+                ) {
+                    validEntries.push(entry);
                 }
             }
 
-            // To retain the directory handle for future access, store it in IndexedDB or elsewhere.
+            // 3) If exactly one file was found, use that. Otherwise, prompt for a file.
+            if (validEntries.length === 1) {
+                // We know exactly which file to use:
+                this.localSitchEntry = validEntries[0];
+                console.log("Using sole matching file:", this.localSitchEntry.name);
+            } else {
+                // If there's multiple or none, we ask the user to pick one file.
+                console.log(
+                    `Found ${validEntries.length} matching files. Prompting user to pick one.`
+                );
+
+                // The showOpenFilePicker approach can be configured to “startIn” the directory handle (if supported).
+                const [fileHandle] = await window.showOpenFilePicker({
+                    startIn: this.directoryHandle, // Experimental in some browsers
+                    multiple: false,
+                    types: [
+                        {
+                            description: "JSON or JS files",
+                            accept: {
+                                "application/json": [".json"],
+                                "text/javascript": [".js"]
+                            }
+                        }
+                    ]
+                });
+
+                this.localSitchEntry = fileHandle;
+                console.log("User selected file:", this.localSitchEntry.name);
+            }
+
+            // 4) Use your file handle (e.g., re-host, read content, etc.)
+            // Example: call your existing method to process it
+            this.checkForNewLocalSitch();
+
         } catch (err) {
-            console.error(err.name, err.message);
+            console.error("openDirectory() error:", err.name, err.message);
         }
     }
+
 
     async checkForNewLocalSitch() {
 
@@ -814,6 +838,10 @@ export class CFileManager extends CManager {
                 case "json": //
                     dataType = "json";
                     parsed = JSON.parse(decoder.decode(buffer))
+                    if (parsed.isASitchFile) {
+                        dataType = "sitch";
+                        parsed = buffer;
+                    }
                     break;
 
                 default:
@@ -830,13 +858,13 @@ export class CFileManager extends CManager {
             if (prom !== undefined) {
                 return prom.then(parsed => {
                     return {
-                        filename: filename, parsed: parsed
+                        filename: filename, parsed: parsed, dataType: dataType
                     }
                 })
             }
 
             // otherwise just return the results wrapped in a resolved promise
-            return Promise.resolve({filename: filename, parsed: parsed});
+            return Promise.resolve({filename: filename, parsed: parsed, dataType: dataType});
         }
     }
 

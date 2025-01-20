@@ -381,35 +381,49 @@ class CDragDropHandler {
 
             fileManagerEntry.isTLE = true;
             NodeMan.get("NightSkyNode").replaceTLE(parsedFile)
-        } else if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv" || fileExt === "json") {
-            addTracks([filename], true)
-        } else if (fileExt === "sitch.js") {
-            // parsedFile is a sitch text def
-            // make a copy of the string (as we might be removing all the files)
-            // and set it as the new sitch text
-            let copy = parsedFile.slice();
-            // if it's an arraybuffer, convert it to a sitch object
-            if (copy instanceof ArrayBuffer) {
-                const decoder = new TextDecoder('utf-8');
-                const decodedString = decoder.decode(copy);
-                copy = textSitchToObject(decodedString);
-            }
-            setNewSitchObject(copy)
-        } else if (fileExt === "glb") {
-            // it's a model, so we can replace the model used in targetModel
-            // we have filename, and we can just set
-            ModelFiles[filename] = {file: filename};
-            if (NodeMan.exists("targetObject")) {
-                const target = NodeMan.get("targetObject");
-                target.modelOrGeometry = "model"
-                target.selectModel = filename;
-                target.rebuild();
-                // woudl also need to add it to the gui
-            }
-
-
         } else {
-            console.warn("Unhandled file type: " + fileExt + " for " + filename);
+            let isATrack = false;
+            let isASitch = false;
+            if (fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
+                isATrack = true;
+            }
+
+            if (fileManagerEntry.dataType === "sitch") {
+                isASitch = true;
+            }
+
+
+
+            if (isATrack) {
+                        addTracks([filename], true)
+            } else if (isASitch) {
+                // parsedFile is a sitch text def
+                // make a copy of the string (as we might be removing all the files)
+                // and set it as the new sitch text
+                let copy = parsedFile.slice();
+                // if it's an arraybuffer, convert it to a sitch object
+                if (copy instanceof ArrayBuffer) {
+                    const decoder = new TextDecoder('utf-8');
+                    const decodedString = decoder.decode(copy);
+                    copy = textSitchToObject(decodedString);
+                }
+                setNewSitchObject(copy)
+            } else if (fileExt === "glb") {
+                // it's a model, so we can replace the model used in targetModel
+                // we have filename, and we can just set
+                ModelFiles[filename] = {file: filename};
+                if (NodeMan.exists("targetObject")) {
+                    const target = NodeMan.get("targetObject");
+                    target.modelOrGeometry = "model"
+                    target.selectModel = filename;
+                    target.rebuild();
+                    // woudl also need to add it to the gui
+                }
+
+
+            } else {
+                console.warn("Unhandled file type: " + fileExt + " for " + filename);
+            }
         }
     }
 

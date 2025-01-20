@@ -368,7 +368,8 @@ export function parseJavascriptObject(jsObjectString) {
     // as it's already been done
 
     let requoted;
-    if (jsObjectString.includes('"stringified": "true",')) {
+    // the "true" check is a legacy check, as we used to use "true" instead of true
+    if (jsObjectString.includes('"stringified": true,') || jsObjectString.includes('"stringified": "true",')) {
         requoted = jsObjectString;
     } else {
 

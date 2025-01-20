@@ -117,7 +117,7 @@ export class CCustomManager {
         // and can just use JSON.parse directly on the string
         // any existing one that loads already will continue to work
         // but this allows us to use more complex objects without updating the parser
-        let out = {stringified: "true"}
+        let out = {stringified: true, isASitchFile: true}
 
         // merge in the current Sit object
         // which might have some changes?
