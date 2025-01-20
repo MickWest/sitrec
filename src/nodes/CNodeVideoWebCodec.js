@@ -77,6 +77,11 @@ export class CVideoWebCodecData extends CVideoData {
                 result.parsed.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
                 source.file.appendBuffer(result.parsed)
                 source.file.flush();
+
+                // Remove it from the file manager
+                // as we only need it for the initial load
+                FileManager.disposeRemove("video");
+
                 loadedCallback();
 
             })

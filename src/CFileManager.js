@@ -1133,7 +1133,6 @@ export async function saveFilePrompted(contents, suggestedName = 'download.txt')
 
 
     } catch (err) {
- 2
         console.error('Save canceled or failed:', err);
     }
 }
