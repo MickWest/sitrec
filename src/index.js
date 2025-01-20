@@ -259,6 +259,7 @@ function checkForTest() {
 Globals.newSitchObject = undefined;
 
 function checkFornewSitchObject() {
+
     if (Globals.newSitchObject !== undefined) {
         console.log("New Sitch Text = " + Globals.newSitchObject)
         newSitch(Globals.newSitchObject, true);
@@ -276,13 +277,24 @@ async function newSitch(situation, customSetup = false ) {
 
     // for the built-in sitches, we change the url, but we don't reload the page
     // that way the user can share the url direct to this sitch
+    let url;
     if (!customSetup) {
-        var url = SITREC_ROOT + "?sitch=" + situation
+        url = SITREC_ROOT + "?sitch=" + situation
     } else {
         // set the URL to the default
-        var url = SITREC_ROOT + "?custom=" + FileManager.loadURL;
+        if (FileManager.loadURL !== undefined) {
+            url = SITREC_ROOT + "?custom=" + FileManager.loadURL;
+        } else {
+            // loading local sitch, so set to custom sitch
+            // we don't have a URL, as it does not make sense to share a local sitch via URL
+            url = SITREC_ROOT + "?sitch=custom";
+        }
+
     }
-    window.history.pushState({}, null, url);
+
+    if (url !== undefined) {
+        window.history.pushState({}, null, url);
+    }
 
     // close all the menus, and reattach them to the bar
     // otherwise it gets messy using an old menu config in a new sitch.
