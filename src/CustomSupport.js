@@ -434,6 +434,10 @@ export class CCustomManager {
         // wait for the files to load
         Promise.all(loadingPromises).then(() => {
 
+            // We supress recalculation while we apply the mods
+            // otherwise we get multiple recalculations of the same thing
+            // here we are applying the mods, and then we will recalculate everything
+            Globals.dontRecalculate = true;
 
             // apply the units first, as some controllers are dependent on them
             // i.e. Target Speed, which use a GUIValue for speed in whatever units
@@ -490,6 +494,9 @@ export class CCustomManager {
             if (sitchData.guiMenus) {
                 Globals.menuBar.modDeserialize(sitchData.guiMenus)
             }
+
+
+            Globals.dontRecalculate = false;
 
             // recalculate everything after the mods
             // in case there's some missing dependency

@@ -16,7 +16,7 @@
 // a display node might also be an input, like something you can drag with the mouse
 
 import {par} from "../par";
-import {FileManager, guiMenus, NodeMan, Sit} from "../Globals";
+import {FileManager, Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 
@@ -653,6 +653,7 @@ class CNode {
 // maintain a list of output nodes, with no duplicates
 // then run recalculate on this list, if not empty
 function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = false) {
+    if (Globals.dontRecalculate) return;
     let children = []
     for (let node of list) {
         if (debug)
