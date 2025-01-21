@@ -75,6 +75,7 @@ export class CVideoWebCodecData extends CVideoData {
                 // the file.appendBuffer expects an ArrayBuffer with a fileStart value (a byte offset) and
                 // and byteLength (total byte length)
                 result.parsed.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
+                this.videoDroppedData = result.parsed;
                 source.file.appendBuffer(result.parsed)
                 source.file.flush();
 
