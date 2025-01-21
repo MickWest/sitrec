@@ -43,22 +43,25 @@ export class CFileManager extends CManager {
 
         if (!isConsole) {
             this.guiFolder = guiMenus.file;
+            this.guiFolder.add(this, "newSitch").name("New Sitch").perm().tooltip("Create a new sitch (will reload this page, resetting everything)");
+
+
+            this.guiServer = this.guiFolder.addFolder("Server ("+SITREC_DOMAIN+")").perm().open();
 
             // custom sitches and rehosting only for logged-in users
             if (Globals.userID > 0) {
-                this.guiFolder.add(this, "newSitch").name("New Sitch").perm().tooltip("Create a new sitch (will reload this page, resetting everything)");
 
-                this.guiServer = this.guiFolder.addFolder("Server ("+SITREC_DOMAIN+")").perm().open();
-                this.guiServer.add(this, "saveSitch").name("Save").perm().tooltip("Save the current sitch to the server");
-                this.guiServer.add(this, "saveSitchAs").name("Save As").perm().tooltip("Save the current sitch to the server with a new name");
-                this.guiServer.add(this, "saveWithPermalink").name("Save with Permalink").perm().tooltip("Save the current sitch to the server and get a permalink to share it");
+                this.addServerButtons();
 
                // this.guiFolder.add(this, "rehostFile").name("Rehost File").perm().tooltip("Rehost a file from your local system. DEPRECATED");
+            } else {
+                this.loginButton = this.guiServer.add(this, "loginServer").name("Server Disabled (click to log in)").setLabelColor("#FF8080");
+                this.guiServer.close();
             }
 
 
             this.guiLocal = this.guiFolder.addFolder("Local").perm().open();
-            this.guiLocal.add(this, "saveLocal").name("Save Local Sitch File").perm().tooltip("Save a local version of the sitch, so you can use \"Open Local Sitch Folder\" to load it");
+            this.guiLocal.add(this, "saveLocal").name("Save Local Sitch File").perm().tooltip("Save a local version of the sitch, so you can use \"Open Local Sitch Folder\" to load it\nThis must be in the same folder as the files you use like the tracks and the video");
             this.guiLocal.add(this, "openDirectory").name("Open Local Sitch Folder").perm()
                 .tooltip("Open a folder on your local system and load the sitch .json file and any assets in it. If there is more than on .json file you will be prompted to select one ");
 
@@ -72,45 +75,72 @@ export class CFileManager extends CManager {
 
 
 
-            // get the list of files saved on the server
-            // this is basically a list of the folders in the user's directory
-            let textSitches = [];
-            fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-                console.log("Local files: " + data)
 
-                const files = JSON.parse(data);
-                // "files" will be and array of arrays, each with a name (index 0) and a date (index 1)
-                // we just want the names
-                // but first sort them by date, newest first
-                files.sort((a, b) => {
-                    return new Date(b[1]) - new Date(a[1]);
-                });
-
-
-                this.userSaves = files.map((file) => {
-                    return file[0];
-                })
-
-
-                // add a "-" to the start of the userSaves array, so we can have a blank entry
-                this.userSaves.unshift("-");
-
-                // add a selector for loading a file
-                this.loadName = this.userSaves[0];
-                this.guiLoad = this.guiServer.add(this, "loadName", this.userSaves).name("Open").perm().onChange((value) => {
-                    this.loadSavedFile(value)
-                }).moveAfter("Save with Permalink")
-                    .tooltip("Load a saved sitch from your personal folder on the server");
-
-                this.deleteName = this.userSaves[0];
-                this.guiDelete = this.guiServer.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
-                    this.deleteSitch(value)
-                }).moveAfter("Open")
-                    .tooltip("Delete a saved sitch from your personal folder on the server");
-
-            })
 
         }
+    }
+
+
+    loginServer() {
+        // asyncCheckLogin().then(() => {
+        //     if (Globals.userID > 0) {
+        //         this.guiServer.remove(this.loginButton);
+        //         this.addServerButtons();
+        //     }
+        // })
+
+        this.loginAttempt(() => {
+            this.loginButton.hide();
+            this.addServerButtons()}
+        );
+
+    }
+
+    addServerButtons() {
+        this.guiServer.add(this, "saveSitch").name("Save").perm().tooltip("Save the current sitch to the server");
+        this.guiServer.add(this, "saveSitchAs").name("Save As").perm().tooltip("Save the current sitch to the server with a new name");
+        this.guiServer.add(this, "saveWithPermalink").name("Save with Permalink").perm().tooltip("Save the current sitch to the server and get a permalink to share it");
+
+        this.guiServer.open();
+
+        // get the list of files saved on the server
+        // this is basically a list of the folders in the user's directory
+        let textSitches = [];
+        fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
+            console.log("Local files: " + data)
+
+            const files = JSON.parse(data);
+            // "files" will be and array of arrays, each with a name (index 0) and a date (index 1)
+            // we just want the names
+            // but first sort them by date, newest first
+            files.sort((a, b) => {
+                return new Date(b[1]) - new Date(a[1]);
+            });
+
+
+            this.userSaves = files.map((file) => {
+                return file[0];
+            })
+
+
+            // add a "-" to the start of the userSaves array, so we can have a blank entry
+            this.userSaves.unshift("-");
+
+            // add a selector for loading a file
+            this.loadName = this.userSaves[0];
+            this.guiLoad = this.guiServer.add(this, "loadName", this.userSaves).name("Open").perm().onChange((value) => {
+                this.loadSavedFile(value)
+            }).moveAfter("Save with Permalink")
+                .tooltip("Load a saved sitch from your personal folder on the server");
+
+            this.deleteName = this.userSaves[0];
+            this.guiDelete = this.guiServer.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
+                this.deleteSitch(value)
+            }).moveAfter("Open")
+                .tooltip("Delete a saved sitch from your personal folder on the server");
+
+        })
+
     }
 
     // a debugging point
@@ -302,14 +332,19 @@ export class CFileManager extends CManager {
         return (f.dynamicLink && !f.staticURL);
     }
 
-    loginAttempt(callback, button = this.permaButton, rename = "Permalink", color="#FFFFFF") {
+    loginAttempt(callback, button, rename = "Permalink", color="#FFFFFF") {
         asyncCheckLogin().then(() => {
+
+            // if we are alreayd logged in, then don't need to open the login window
             if (Globals.userID > 0) {
-                button.name(rename).setLabelColor(color)
+                if (button !== undefined) {
+                    button.name(rename).setLabelColor(color)
+                }
                 if (callback !== undefined)
                     callback();
                 return ;
             }
+
 
 // open the login URL in a new window
 // the redirect takes that tab to the main page
@@ -319,10 +354,17 @@ export class CFileManager extends CManager {
 // and if we are, we'll make the permalink
             window.addEventListener('focus', () => {
                 asyncCheckLogin().then(() => {
+                    console.log("After Ridirect, Logged in as " + Globals.userID)
                     if (Globals.userID > 0) {
                         // just change the button text
-                        button.name(rename).setLabelColor(color)
-                        //         return this.makeNightSkyURL();
+                        if (button !== undefined) {
+                            console.log("Changing button name to " + rename)
+                            button.name(rename).setLabelColor(color)
+                        }
+                        if (callback !== undefined) {
+                            console.log("Calling callback after login")
+                            callback();
+                        }
                     }
                 });
             });
