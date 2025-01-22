@@ -97,7 +97,7 @@ export class CFileManager extends CManager {
     }
 
     addServerButtons() {
-        this.guiServer.add(this, "saveSitch").name("Save").perm().tooltip("Save the current sitch to the server");
+        this.guiServer.add(this, "saveSitchFromMenu").name("Save").perm().tooltip("Save the current sitch to the server");
         this.guiServer.add(this, "saveSitchAs").name("Save As").perm().tooltip("Save the current sitch to the server with a new name");
         this.guiServer.add(this, "saveWithPermalink").name("Save with Permalink").perm().tooltip("Save the current sitch to the server and get a permalink to share it");
 
@@ -231,14 +231,14 @@ export class CFileManager extends CManager {
     inputSitchName() {
         return new Promise((resolve, reject) => {
             const sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
-            if (sitchName !== null) {
+            if (sitchName !== null && sitchName !== "") {
                 Sit.sitchName = sitchName;
                 // will need to check if the sitch already exists
                 // server side, and if so, ask if they want to overwrite
                 console.log("Sitch name set to " + Sit.sitchName)
                 resolve();
             } else {
-                reject();
+                reject("Sitch Name Cancelled");
             }
         })
     }
@@ -247,6 +247,16 @@ export class CFileManager extends CManager {
     // The "Save" button on the file menu.
     // if there's no name, then input a name
     // if there is a name, then use that.
+
+    // this wraps the saveSitch function, so we can call it from the GUI
+    // and don't propogate the error
+    saveSitchFromMenu() {
+        return this.saveSitch().then(() => {
+            console.log("Sitch saved as " + Sit.sitchName);
+        }).catch((error) => {
+            console.log("Error in saveSitchFromMenu:", error);
+        })
+    }
 
     // Returns a promise that resolves when the sitch is saved
     saveSitch(local = false) {
@@ -258,9 +268,15 @@ export class CFileManager extends CManager {
                 addOptionToGUIMenu(this.guiDelete, Sit.sitchName);
             }).catch((error) => {
                 console.log("Failed to input sitch name:", error);
+                // propogate the error
+                throw error;
             });
         } else {
-            return this.saveSitchNamed(Sit.sitchName, local);  // return the Promise here
+            return this.saveSitchNamed(Sit.sitchName, local).then(() => {
+                console.log("Sitch saved as " + Sit.sitchName);
+            }).catch((error) => {
+                console.log("Error in saveSitchNamed:", error);
+            })
         }
     }
 
@@ -268,7 +284,8 @@ export class CFileManager extends CManager {
     // saves the sitch, and then gets the permalink
     // and displays it in a modal dialog
     saveWithPermalink() {
-        return this.saveSitch().then(() => {
+        return this.saveSitch()
+            .then(() => {
             // Wait until the custom link is fully set before calling getPermalink
             return CustomManager.getPermalink();
         }).catch((error) => {
@@ -281,7 +298,13 @@ export class CFileManager extends CManager {
     // which will force a new name
     saveSitchAs() {
         Sit.sitchName = undefined;
-        return this.saveSitch();
+        return this.saveSitch()
+            .then(() => {
+                console.log("Sitch saved under a new name.");
+            })
+            .catch((error) => {
+                console.log("Error of Cancel in saveSitchAs:", error);
+            });
     }
 
     // given a name, save a version to that folder, unless local,
