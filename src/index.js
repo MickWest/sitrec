@@ -65,7 +65,7 @@ import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
 import {updateFrame} from "./updateFrame";
-import {checkLogin} from "./login";
+import {checkLogin, configParams} from "./login";
 import {CFileManager, waitForParsingToComplete} from "./CFileManager";
 import {disposeDebugArrows, disposeDebugSpheres, disposeScene, scaleArrows} from "./threeExt";
 import {removeMeasurementUI, setupMeasurementUI} from "./nodes/CNodeLabels3D";
@@ -485,6 +485,13 @@ async function initializeOnce() {
     addHelpLink("User Interface", "docs/UserInterface")
     addHelpLink("Custom Sitch Tool", "docs/CustomSitchTool")
     addHelpLink("Custom Models", "docs/CustomModels")
+
+    if (configParams.extraHelpLinks !== undefined) {
+        for (const [key, value] of Object.entries(configParams.extraHelpLinks)) {
+            guiMenus.help.addExternalLink(key, value).perm();
+        }
+    }
+
 
     // legacy accessor variables. can also use guiMenus.physics, etc
     setupGUIGlobals(_gui,_guiShowHide,_guiTweaks, _guiShowHideViews, _guiPhysics)

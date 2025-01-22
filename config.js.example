@@ -230,7 +230,15 @@ export const _configParams = {
 
         }
 
-    }
+    },
+
+    // useful links to add to the help menu. Add your own here
+    extraHelpLinks: {
+        "ADS-B Helper Chatbot": "https://www.chatbase.co/chatbot-iframe/xPKq8RfpIPtnNw_dptU4p",
+        "ADSBExchange": "https://globe.adsbexchange.com/",
+        "FlightAware": "https://flightaware.com/",
+        "PlaneFinder": "https://planefinder.net/",
+    },
 
 
 
