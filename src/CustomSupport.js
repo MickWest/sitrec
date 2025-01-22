@@ -347,6 +347,9 @@ export class CCustomManager {
 
                     console.log("Setting Sit.sitchName to "+Sit.sitchName)
                         resolve(filename);
+                    }).catch((error) => {
+                        console.log("Error or cancel in saving file local:", error);
+                        reject(error);
                     })
             })
 

@@ -304,6 +304,8 @@ export class CFileManager extends CManager {
             })
             .catch((error) => {
                 console.log("Error of Cancel in saveSitchAs:", error);
+            }).finally(() => {
+                this.guiFolder.close();
             });
     }
 
@@ -326,11 +328,14 @@ export class CFileManager extends CManager {
         par.paused = true;
         disableAllInput("SAVING");
 
-        return CustomManager.serialize(sitchName, todayDateTimeFilename, local).then((serialized) => {
-            this.guiFolder.close();
-            par.paused = oldPaused
-            enableAllInput();
-        })
+        return CustomManager.serialize(sitchName, todayDateTimeFilename, local)
+            .then((serialized) => {})
+            .catch((error) => {})
+            .finally(() => {
+                this.guiFolder.close();
+                par.paused = oldPaused
+                enableAllInput();
+            })
 
     }
 
@@ -473,7 +478,8 @@ export class CFileManager extends CManager {
             this.checkForNewLocalSitch();
 
         } catch (err) {
-            console.error("openDirectory() error:", err.name, err.message);
+            console.warn("openDirectory() error or cancelled", err.name, err.message);
+            this.guiFolder.close();
         }
     }
 
@@ -1236,6 +1242,7 @@ export async function saveFilePrompted(contents, suggestedName = 'download.txt')
 
 
     } catch (err) {
-        console.error('Save canceled or failed:', err);
+        console.warn('Save canceled or failed:', err);
+        throw err;
     }
 }
