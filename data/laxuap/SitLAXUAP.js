@@ -11,7 +11,7 @@ export const SitLAXUAP = {
 
     starScale: 0, // 0.09,
 
-    venusArrow: true,
+    showVenusArrow: true,
 
     files: {
         TargetTrack: "laxuap/82-0193-track-press_alt_uncorrected.kml", // this is the one that goes overhead at 19:08

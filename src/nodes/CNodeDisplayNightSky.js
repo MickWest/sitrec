@@ -83,7 +83,8 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
         this.showStarNames = false;
 
     //    guiShowHide.add(this,"showSatelliteNames" ).onChange(()=>{par.renderOne=true;}).name(this.overlayView.id+" Sat names")
-        guiShowHide.add(this, "showStarNames").onChange(()=>{par.renderOne=true;}).name(this.overlayView.id+" Star names")
+        guiShowHide.add(this, "showStarNames").onChange(()=>{par.renderOne=true;}).name(this.overlayView.id+" Star names").listen();
+        this.addSimpleSerial("showStarNames");
 
 
     }
@@ -391,15 +392,17 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.sunArrowGroup.visible = this.showSunArrows;
         }).name("Sun Angle Arrows")
+        this.addSimpleSerial("showSunArrows")
 
         this.showVenusArrow = Sit.showVenusArrow;
         this.venusArrowGroup = new Group();
-        this.venusArrowGroup.visible = this.venusArrow;
+        this.venusArrowGroup.visible = this.showVenusArrow;
         GlobalScene.add(this.venusArrowGroup)
         guiShowHide.add(this, "showVenusArrow").listen().onChange(()=>{
             par.renderOne=true;
             this.venusArrowGroup.visible = this.showVenusArrow;
         }).name("Venus Arrow")
+        this.addSimpleSerial("showVenusArrow")
 
 
         this.showFlareRegion = Sit.showFlareRegion;
@@ -413,6 +416,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.flareRegionGroup.visible = this.showFlareRegion;
         }).name("Flare Region")
+        this.addSimpleSerial("showFlareRegion")
 
         this.flareBandGroup = new Group();
 
@@ -442,13 +446,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.flareBandGroup.visible = this.showFlareBand;
         }).name("Flare Band")
-
+        this.addSimpleSerial("showFlareBand")
 
         this.showSatellites = true;
         guiShowHide.add(this, "showSatellites").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroup.visible = this.showSatellites;
         }).name("Satellites")
+        this.addSimpleSerial("showSatellites")
 
 
 
@@ -457,12 +462,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.satelliteTrackGroup.visible = this.showSatelliteTracks;
         }).name("Satellite Arrows")
+        this.addSimpleSerial("showSatelliteTracks")
 
         this.showSatelliteGround = Sit.showSatelliteGround ?? false;
         guiShowHide.add(this, "showSatelliteGround").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroundGroup.visible = this.showSatelliteGround;
         }).name("Satellite Ground Arrows")
+        this.addSimpleSerial("showSatelliteGround")
 
         this.showSatelliteNames = false;
 
@@ -470,14 +477,20 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.satelliteTextGroup.visible = this.showSatelliteNames;
         }).name("Satellite Names")
+        this.addSimpleSerial("showSatelliteNames")
 
 
         guiMenus.view.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
             .tooltip("Scale factor for the brightness of the stars. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
+        this.addSimpleSerial("starScale")
+
         guiMenus.view.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
             .tooltip("Scale factor for the brightness of the satellites. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
+        this.addSimpleSerial("satScale");
+
         guiMenus.view.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
             .tooltip("Satellites dimmed to this level or less will not be displayed")
+        this.addSimpleSerial("satCutOff");
 
         guiMenus.file.add(this,"updateStarlink").name("Update Starlink TLE For Date")
             .onChange(function (x) {this.parent.close()})
@@ -596,6 +609,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             }
             propagateLayerMaskObject(this.flareRegionGroup);
         }).name("Flare Region in Look View");
+        this.addSimpleSerial("showFlareRegionLook");
 
 
         this.updateVis()
@@ -639,6 +653,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // equatorial lines might not want to be in the look view
         this.equatorialSphereGroup.layers.mask = this.showEquatorialGridLook ? LAYER.MASK_MAINRENDER : LAYER.MASK_HELPERS;
+
+        this.sunArrowGroup.visible = this.showSunArrows;
+        this.venusArrowGroup.visible = this.showVenusArrow;
+        this.flareRegionGroup.visible = this.showFlareRegion;
+        this.flareBandGroup.visible = this.showFlareBand;
+        this.satelliteGroup.visible = this.showSatellites;
+        this.satelliteTrackGroup.visible = this.showSatelliteTracks;
+        this.satelliteGroundGroup.visible = this.showSatelliteGround;
+        this.satelliteTextGroup.visible = this.showSatelliteNames;
+
 
         propagateLayerMaskObject(this.equatorialSphereGroup)
     }
@@ -1870,7 +1894,7 @@ void main() {
             const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
             const camera = NodeMan.get("lookCamera").camera;
 
-            if (Sit.venusArrow) {
+            if (this.showVenusArrow) {
                 DebugArrow("Venusarrow", eusDir, camera.position, 20000, "#30FF30", true, this.venusArrowGroup)
             }
         }
