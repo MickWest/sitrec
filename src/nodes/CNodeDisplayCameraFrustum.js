@@ -82,8 +82,8 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         this.showQuad = v.showQuad ?? false;
 
         this.showFrustum = v.showFrustum ?? true;
-        this.guiToggle("showFrustum", "Frustum")
-        this.guiToggle("showQuad", "Frustum Ground  Quad")
+        this.showHider("Camera View Frustum");
+        this.guiToggle("showQuad", "Frustum Ground Quad")
 
         this.rebuild()
     }

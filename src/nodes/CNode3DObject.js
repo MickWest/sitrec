@@ -31,7 +31,7 @@ import {
     TorusKnotGeometry, TubeGeometry, Vector2, Vector3,
     WireframeGeometry
 } from "three";
-import {FileManager, Globals, guiMenus, NodeMan} from "../Globals";
+import {FileManager, Globals, guiMenus, guiShowHide, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert";
 import {disposeObject, disposeScene, propagateLayerMaskObject, setLayerMaskRecursive} from "../threeExt";
@@ -39,23 +39,6 @@ import {loadGLTFModel} from "./CNode3DModel";
 import {V3} from "../threeUtils";
 import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 import {CNodeLabel3D, CNodeMeasureAB} from "./CNodeLabels3D";
-import {CManager} from "../CManager";
-import SpriteText from '../js/three-spritetext';
-import {GlobalScene} from "../LocalFrame";
-import {MASK_LOOKRENDER} from "../LayerMasks";
-//
-// class CModelManager extends CManager {
-//     constructor(initialModels) {
-//         super();
-//         for (const key in initialModels) {
-//             this.add(key, initialModels[key]);
-//         }
-//     }
-//
-//
-// }
-
-
 
 // Note these files are CASE SENSIVE. Mac OS is case insensitive, so be careful. (e.g. F-15.glb will not work on my deployed server)
 export const ModelFiles = {

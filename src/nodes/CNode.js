@@ -128,7 +128,12 @@ class CNode {
         if (this.simpleSerials === undefined) {
             this.simpleSerials = [];
         }
-        this.simpleSerials.push(serial);
+        // only add it once
+        if (this.simpleSerials.indexOf(serial) === -1) {
+            this.simpleSerials.push(serial);
+        } else {
+            console.warn("addSimpleSerial: " + serial + " already added to " + this.id)
+        }
     }
 
     simpleSerialize(list) {

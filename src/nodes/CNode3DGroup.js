@@ -5,6 +5,9 @@ import {CNode3D} from "./CNode3D";
 import {normalizeLayerType} from "../utils";
 import {assert} from "../assert.js";
 import {convertColorInput} from "../ConvertColorInputs";
+import {guiShowHide} from "../Globals";
+import {par} from "../par";
+import {toggles} from "../KeyBoardHandler";
 
 // a CNode3DGroup encapsulates a THREE.Group one or more 3D objects
 // is a standard node with inputs, so it will respond to changes in the inputs
@@ -84,6 +87,28 @@ export class CNode3DGroup extends CNode3D {
             this.propagateLayerMask()
         }
     }
+
+
+
+    // Similar to showHider in KeyboardHandler.js
+    // but more specific to modern objects, not using the legacy "par" object
+    showHider(name, key) {
+        // "key" is the keystroke to show/hide the object
+        this.visible = this.group.visible;
+        const hider = guiShowHide.add(this, "visible").name(name).listen().onChange((v) => {
+            this.show(v);
+            par.renderOne = true;
+        })
+
+        if (key) {
+            toggles[key] = hider;
+        }
+
+        // ensure we serialize it
+        this.addSimpleSerial("visible")
+
+    }
+
 }
 
 
