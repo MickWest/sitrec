@@ -10,7 +10,14 @@ import {mouseInViewOnly} from "./ViewUtils";
 
 var mouseDragView
 var mouseDown = false
-var dragMode = 0;
+export const DRAG = {
+    NONE: 0,
+    PAN: 1,
+    ROTATE: 2,
+    ZOOM: 3,
+    MOVEHANDLE: 4,
+}
+var dragMode = DRAG.NONE;
 var mouseLastX = 0;
 var mouseLastY = 0;
 // Current mouse position, REALLY needs encapsulating....
@@ -104,7 +111,7 @@ export function onDocumentMouseMove(event) {
 export function onDocumentMouseUp(event) {
     if (mouseDragView && mouseDragView.onMouseUp != undefined ) {
         mouseDragView.onMouseUp(event, mouseX, mouseY)
-        dragMode = 0;
+        dragMode = DRAG.NONE;
     }
     mouseDragView = null;
     mouseDown = false;

@@ -1,26 +1,27 @@
 import {par} from "../par";
 import {f2m, normalizeLayerType} from "../utils";
 import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
-import {Globals, gui, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
+import {CustomManager, Globals, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
 import {GlobalDaySkyScene, GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
-import {makeMouseRay} from "../mouseMoveView";
+import {DRAG, makeMouseRay} from "../mouseMoveView";
 import {
-    ACESFilmicToneMapping,
     Camera,
-    Color, FloatType,
-    LinearFilter, LinearToneMapping,
+    Color,
+    LinearFilter,
     Mesh,
-    NearestFilter, NormalBlending,
+    NearestFilter,
+    NormalBlending,
     Plane,
     PlaneGeometry,
     Raycaster,
-    RGBAFormat, Scene,
+    RGBAFormat,
+    Scene,
     ShaderMaterial,
     Sphere,
     Sprite,
     SpriteMaterial,
     SRGBColorSpace,
-    TextureLoader, UniformsUtils,
+    TextureLoader,
     UnsignedByteType,
     Vector3,
     WebGLRenderer,
@@ -37,11 +38,9 @@ import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
 import {isLocal} from "../../config";
-import { VRButton } from 'three/addons/webxr/VRButton.js';
+import {VRButton} from 'three/addons/webxr/VRButton.js';
 import {SITREC_ROOT} from "../../config.js";
-import {isKeyCodeHeld, wut} from "../KeyBoardHandler";
 import {mouseInViewOnly} from "../ViewUtils";
-import {CustomManager} from "../Globals";
 
 
 function linearToSrgb(color) {
@@ -670,7 +669,7 @@ renderSky() {
             GlobalScene.add(this.cursorSprite)
 
         this.mouseDown = false;
-        this.dragMode = 0;
+        this.dragMode = DRAG.NONE;
 
         this.showLOSArrow = v.showLOSArrow;
 
@@ -881,7 +880,7 @@ renderSky() {
 
     onMouseUp() {
         if (!this.mouseEnabled) return;
-        this.dragMode = 0;
+        this.dragMode = DRAG.NONE;
         this.mouseDown = false;
 //        console.log("Mouse Down = "+this.mouseDown+ " Drag mode = "+this.dragMode)
     }
@@ -923,20 +922,9 @@ renderSky() {
         this.mouseDown = true;
 //        console.log(this.id+"Mouse Down = "+this.mouseDown+ " Drag mode = "+this.dragMode)
 
-
-        if (this.controls) {
-//            this.controls.enabled = false;
-//            console.log ("Click Disabled "+this.name)
-        }
-
         // TODO, here I've hard-coded a check for mainView
         // but we might want similar controls in other views
         if (this.id === "mainView" && this.camera && mouseInViewOnly(this, mouseX, mouseY)) {
-
-
-
-
-
             this.raycaster.setFromCamera(mouseRay, this.camera);
             var intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
@@ -950,7 +938,7 @@ renderSky() {
             if (targetSphere.position.y !== glareSphere.position.y) {
                 if (intersects.find(hit => hit.object == glareSphere) != undefined) {
                     // CLICKED ON THE green SPHERE
-                    this.dragMode = 1;
+                    this.dragMode = DRAG.MOVEHANDLE;
                     // must pause, as we are controlling the pod now
                     par.paused = true;
                 }
@@ -995,7 +983,7 @@ renderSky() {
         var mouseRay = makeMouseRay(this, mouseX, mouseYUp);
 
         // For testing mouse position, just set dragMode to 1
-        //  this.dragMode = 1;
+        //  this.dragMode = DRAG.MOVEHANDLE;
 
 
 // LOADS OF EXTERNAL STUFF
