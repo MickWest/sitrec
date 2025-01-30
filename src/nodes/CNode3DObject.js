@@ -47,6 +47,7 @@ export const ModelFiles = {
     "A340-600":             { file: 'data/models/A340-600.glb',},
     "A-10":                 { file: 'data/models/A-10.glb',},
     "AC690 Rockwell":       { file: 'data/models/AC690.glb',},
+    "Bell 206 Helicopter":  { file: 'data/models/Bell-206.glb',},
     "F/A-18F" :             { file: 'data/models/FA-18F.glb',},
     "F-15":                 { file: 'data/models/f-15.glb',},
     "Lear 75":              { file: 'data/models/Lear-75.glb',},
