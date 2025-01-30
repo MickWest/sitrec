@@ -9,7 +9,7 @@ import {
 
 } from "three";
 import {degrees, radians, vdump} from "../utils";
-import {DebugSphere, intersectMSL, pointAbove} from "../threeExt";
+import {DebugArrowAB, DebugSphere, intersectMSL, pointAbove} from "../threeExt";
 import {par} from "../par";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, wgs84} from "../LLA-ECEF-ENU";
 import {Sphere} from "three";
@@ -17,8 +17,8 @@ import {
 	altitudeAboveSphere,
 	getAzElFromPositionAndMatrix,
 	getLocalDownVector, getLocalEastVector, getLocalNorthVector,
-	getLocalUpVector,
-	} from "../SphericalMath";
+	getLocalUpVector, pointOnSphereBelow,
+} from "../SphericalMath";
 import {NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
@@ -27,6 +27,9 @@ import {isKeyHeld} from "../KeyBoardHandler";
 import {isLocal} from "../../config";
 import {ViewMan} from "../CViewManager";
 import {mouseInViewOnly, mouseToView} from "../ViewUtils";
+import {CNodeMeasureAB} from "../nodes/CNodeLabels3D";
+import {CNodePositionXYZ} from "../nodes/CNodePositionLLA";
+import {GlobalScene} from "../LocalFrame";
 
 const STATE = {
 	NONE: - 1,
@@ -68,6 +71,21 @@ class CameraMapControls {
 		this.state = STATE.NONE
 		this.enabled = true;
 
+		const id = this.view.id;
+		this.measureStartPoint = V3()
+		this.measureEndPoint = V3()
+		this.measureStart = new CNodePositionXYZ({id: id+"measureA", x:0,y:0,z:0});
+		this.measureEnd = new CNodePositionXYZ({id: id+"measureB", x:0,y:0,z:0});
+		this.measureArrow = new CNodeMeasureAB(
+			{
+				id: id+"measureArrow",
+				A: id+"measureA",
+				B: id+"measureB",
+				color: "#ffFFFF",
+				text: "AB",
+				unitType: "flexible"}
+		);
+
 
 		this.justRotate = false; // set to make all three buttons rotate around the target
 
@@ -92,6 +110,7 @@ class CameraMapControls {
 			this.zoomBy(-zoomSpeed)
 		}
 
+		this.updateMeasureArrow();
 
 	}
 
@@ -246,6 +265,7 @@ class CameraMapControls {
 		}
 
 
+
 	}
 
 
@@ -286,6 +306,10 @@ class CameraMapControls {
 			return;
 		}
 
+
+		this.updateMeasureArrow();
+
+
 		// debug trail of droppings if 'p' key is held
 		if (isKeyHeld('p') && isLocal) {
 			const cursprPos = this.view.cursorSprite.position.clone();
@@ -323,7 +347,7 @@ class CameraMapControls {
 
 		const ptzControls= getPTZController(this.view.cameraNode);
 
-		
+
 		switch (this.state) {
 
 			case STATE.PAN: // Rotate the camera about itself
@@ -332,7 +356,7 @@ class CameraMapControls {
 				const yRotate = 2 * Math.PI * this.mouseDelta.y / this.view.heightPx / 4
 
 //				console.log("PAN: "+xRotate+","+yRotate)
-				
+
 
 				// if we have ptzControls in this view, then update them
 				// not this is notdirectly equzalent to the 	this.camera.rotateY(xRotate), etc
@@ -542,6 +566,58 @@ class CameraMapControls {
 
 		this.mouseStart.copy( this.mouseEnd );
 
+	}
+
+
+	updateMeasureArrow() {
+
+		const mainView = ViewMan.get("mainView");
+		const cursorPos = mainView.cursorSprite.position.clone();
+
+
+		if (isKeyHeld('a')) {
+			this.measureStartPoint.set(cursorPos.x, cursorPos.y, cursorPos.z);
+		}
+
+		if (isKeyHeld('b')) {
+			this.measureEndPoint.set(cursorPos.x, cursorPos.y, cursorPos.z);
+		}
+
+
+		// move the end of the measure arrow
+		if (this.measureStart !== null) {
+			const A = this.measureStartPoint;
+			const B = this.measureEndPoint;
+			const Center = V3(0, -wgs84.RADIUS, 0)
+
+
+			// we need to raise up the line, so that it is above the globe
+
+
+			// for the radisu of the sphere used, use the largest of the two points
+			const A_radius = A.clone().sub(Center).length()
+			const B_radius = B.clone().sub(Center).length()
+			const radius = Math.max(A_radius, B_radius)
+
+
+			// find the center of the arc AB, centered on O
+			const M = A.clone().add(B).multiplyScalar(0.5)
+			// find the point on the sphere below AB
+			const C = pointOnSphereBelow(M, radius - wgs84.RADIUS); // passing in altitude above the wgst84 sphere
+			const C_height = C.clone().sub(Center).length()
+			const M_height = M.clone().sub(Center).length()
+	//		const A_height = A.clone().sub(Center).length()
+	//		const B_height = B.clone().sub(Center).length()
+			const scale = C_height / M_height
+			const A2 = Center.clone().add(A.clone().sub(Center).multiplyScalar(scale))
+			const B2 = Center.clone().add(B.clone().sub(Center).multiplyScalar(scale))
+
+			this.measureStart.setXYZ(A2.x, A2.y, A2.z)
+			this.measureEnd.setXYZ(B2.x, B2.y, B2.z)
+
+			this.measureDownA = DebugArrowAB("MeasureDownA", A2, A, 0x00FF00, true, GlobalScene)
+			this.measureDownB = DebugArrowAB("MeasureDownB", B2, B, 0xFF0000, true, GlobalScene)
+		}
 	}
 
 	fixUp(force = false) {

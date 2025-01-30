@@ -43,6 +43,11 @@ export const SitNightSky = {
 //        starLink: "!"+SITREC_SERVER+"proxy.php?url=https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle",
         starLink: "!"+SITREC_SERVER+"proxy.php?request=CURRENT_STARLINK",
 
+
+       // sun: 'images/nightsky/MickSun.png',
+       // moon: "images/nightsky/MickMoon.png",
+
+
     },
 
     units: "Imperial",

@@ -166,13 +166,17 @@ export class CNodePositionXYZ extends CNode {
     recalculate() {
     }
 
+    setXYZ(x,y,z) {
+        this.XYZ = [x,y,z]
+    }
+
     getValueFrame(f) {
         if (this.XYZ !== undefined) {
             return V3(this.XYZ[0], this.XYZ[1], this.XYZ[2])
         }
-        const x = this.in.lat.x(f)
-        const y = this.in.lon.y(f)
-        const z = this.in.alt.z(f)
+        const x = this.in.x.v(f)
+        const y = this.in.y.v(f)
+        const z = this.in.z.v(f)
         return V3(x, y, z)
     }
 

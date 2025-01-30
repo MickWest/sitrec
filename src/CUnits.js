@@ -228,11 +228,24 @@ export class CUnits {
         return this.mToSmall(m,decimals) + " " + this.smallUnitsAbbrev;
     }
 
+    flexibleWithUnits(m, decimals = 0) {
+        let large = this.mToBig(m, decimals);
+        if (large < 1) {
+            return this.smallWithUnits(m, decimals);
+        } else {
+            return this.bigWithUnits(m, decimals);
+        }
+    }
+
     withUnits(m, decimals=0, unitType="big") {
         if (unitType === "big")
             return this.bigWithUnits(m, decimals);
-        else
+        else if (unitType === "small")
             return this.smallWithUnits(m, decimals);
+        else if (unitType === "flexible")
+            return this.flexibleWithUnits(m, decimals);
+        else
+            assert(0, "CUnits: unknown unitType: " + unitType);
     }
 
 

@@ -18,6 +18,7 @@ import {
     Sprite,
     SpriteMaterial,
     TextureLoader,
+    Texture,
     Vector3
 } from "three";
 import {degrees, radians} from "../utils";
@@ -1318,6 +1319,11 @@ void main() {
         const starMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickStar.png'); // Load a star texture
 
         const sunMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickSun.png'); // Load a star texture
+
+        // alternative way to load a texture, using the file manager, and the "files" list in the Sit
+        //const sunMapImg = FileManager.get("sun");
+        //const sunMap = new Texture(sunMapImg)
+        //sunMap.needsUpdate = true; // Load a star texture
 
         const moonMap = new TextureLoader().load(SITREC_ROOT+'data/images/nightsky/MickMoon.png'); // Load a star texture
 //        const spriteMaterial = new SpriteMaterial({map: spriteMap, color: 0x00ff00});
