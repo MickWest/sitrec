@@ -683,6 +683,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 trackOb.trackDisplayNode = new CNodeDisplayTrack({
                     id: "TrackDisplay_" + shortName,
                     track: "Track_" + shortName,
+                    dataTrack: "TrackData_" + shortName,
                     dataTrackDisplay: "TrackDisplayData_" + shortName,
                     color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
                     width: 3,

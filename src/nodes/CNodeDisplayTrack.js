@@ -15,6 +15,7 @@ import {assert} from "../assert.js";
 import {convertColorInput} from "../ConvertColorInputs";
 import {par} from "../par";
 import {hexColor} from "../threeUtils";
+import {CNodeGUIValue} from "./CNodeGUIValue";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
@@ -31,6 +32,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // and automatically convert constant inputs to CConstantNodes
         this.input("track") // track contains position, and optionally color
         this.input("dataTrackDisplay", true); // optional data track for reference
+        this.optionalInputs(["dataTrack"]) // trackData contains altitudeOffset. It's th
 
         this.input("color") // or color can be supplied in a seperate node
         this.optionalInputs(["badColor", "secondColor"]) // to be used if a segment is flagged as "bad"
@@ -102,7 +104,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
             this.guiFolder.addColor(this, "displayColor").onChange(() => {
 
-                this.guiFolder.setLabelColor(this.in.color.v0,this.minGUIColor);
+                this.guiFolder.setLabelColor(this.in.color.v0, this.minGUIColor);
 
                 this.in.color.value = this.displayColor
                 this.recalculate()
@@ -112,6 +114,47 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                     this.in.dataTrackDisplay.recalculate()
                 }
             })
+
+
+            const track = this.in.dataTrack;
+            if (track !== undefined) {
+                track.altitudeOffset = 0;
+
+                new CNodeGUIValue({
+                    id: this.id + "altitudeOffset",
+                    value: 0,
+                    start: -1000,
+                    end: 1000,
+                    step: 1,
+                    desc: "Alt offset",
+                    unitType: "small",
+                    onChange: (v) => {
+                        track.altitudeOffset = v;
+                        track.recalculateCascade()
+                    },
+                }, this.guiFolder)
+
+                track.altitudeOffset = 0;
+
+                new CNodeGUIValue({
+                    id: this.id + "altitudeLock",
+                    value: 0,
+                    start: -1,
+                    end: 1000,
+                    step: 1,
+                    desc: "Alt Lock (-1 = off)",
+                    unitType: "small",
+                    onChange: (v) => {
+                        track.altitudeLock = v;
+                        track.recalculateCascade()
+                    },
+                    elastic: true,
+                    elasticMin: 1000,
+                    elasticMax: 100000,
+                }, this.guiFolder)
+
+
+            }
 
             this.guiFolder.add(this, "gotoTrack").name("Go to track");
 

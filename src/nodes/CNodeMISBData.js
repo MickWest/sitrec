@@ -117,7 +117,14 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
     }
 
     getAlt(i) {
-        return Number(this.misb[i][this.altCol]);
+        let a = Number(this.misb[i][this.altCol])
+
+        if (this.altitudeLock !== undefined && this.altitudeLock !== -1) {
+            a = this.altitudeLock;
+        } else if (this.altitudeOffset !== undefined) {
+            a += this.altitudeOffset
+        }
+        return a;
     }
 
     getTime(i) {
