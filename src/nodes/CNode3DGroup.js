@@ -109,6 +109,17 @@ export class CNode3DGroup extends CNode3D {
 
     }
 
+    // the "visible" flag is serialized by default, but we need to
+    // set the visibility of the Three.js group when we deserialize it
+    modDeserialize(v) {
+        super.modDeserialize(v);
+        if (v.visible !== undefined) {
+            this.group.visible = this.visible;
+        }
+
+    }
+
+
 }
 
 
