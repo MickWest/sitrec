@@ -7,7 +7,7 @@ import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {wgs84} from "../LLA-ECEF-ENU";
-import {drop, getLocalSouthVector, getLocalUpVector} from "../SphericalMath";
+import {drop, getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {AlwaysDepth, Color, LessDepth} from "three";
 import {CNodeDisplayTargetSphere} from "./CNodeDisplayTargetSphere";
 import * as LAYER from "../LayerMasks";
@@ -16,6 +16,9 @@ import {convertColorInput} from "../ConvertColorInputs";
 import {par} from "../par";
 import {hexColor} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
+
+// just import THREE from three
+import * as THREE from "three";
 
 export class CNodeDisplayTrack extends CNode3DGroup {
     constructor(v) {
@@ -55,6 +58,8 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
 
         this.toGround = v.toGround
+
+        this.showTrackWalls = v.showTrackWalls ?? false;
 
         this.depthFunc = v.depthFunc ?? LessDepth;
 
@@ -100,9 +105,19 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 }
             })
 
+            // // toggle for visibility of the mesh (vertical semi-transparent polygons
+            this.guiFolder.add(this, "showTrackWalls").name("Track Walls").listen().onChange(() => {
+                // just rebuild it, which will remove the mest based on the flag
+                console.log("showTrackWalls changed to "+this.showTrackWalls)
+                if (this.in.dataTrackDisplay !== undefined) {
+                    this.in.dataTrackDisplay.showTrackWalls = this.showTrackWalls
+                    this.in.dataTrackDisplay.recalculate()
+                }
+            })
+
             // color picker for the track color, with optional linked data track
 
-            this.guiFolder.addColor(this, "displayColor").onChange(() => {
+            this.guiColor = this.guiFolder.addColor(this, "displayColor").onChange(() => {
 
                 this.guiFolder.setLabelColor(this.in.color.v0, this.minGUIColor);
 
@@ -160,10 +175,8 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         }
 
-        // TODO: Add a gui entry for the track color
-        // TODO: link data display track to normal display tracks in terms of visibility and color
+        this.simpleSerials.push("showTrackWalls")
 
-        
         this.recalculate()
     }
 
@@ -203,6 +216,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         this.group.remove(this.trackLine)
         this.group.remove(this.toGroundLine)
         dispose(this.trackGeometry)
+        this.removeTrackWall();
         super.dispose();
     }
 
@@ -223,9 +237,14 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         if (this.guiFolder !== undefined) {
             this.guiFolder.setLabelColor(this.in.color.v0, this.minGUIColor);
         }
+
+        if (this.guiColor !== undefined) {
+            // also set the color in the GUI Picker by updateing the display from the value
+            this.guiColor.updateDisplay();
+        }
+
         this.visible = v.visible;
         this.show(this.visible);
-      //  this.guiFolder.updateDisplay();
     }
 
 
@@ -393,6 +412,200 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         }
 */
         this.propagateLayerMask()
+
+        // check if this.in.track is a CNodeMISBDataTrack
+        // if so, then we need to update the track mesh
+         if (this.in.track.constructor.name === "CNodeMISBDataTrack") {
+             this.makeTrackWall(color)
+         }
     }
+
+
+    removeTrackWall() {
+        if (this.trackWall) {
+            this.group.remove(this.trackWall);
+            dispose(this.trackWall.geometry);
+            this.trackWall.geometry = null;
+            this.trackWall = null;
+        }
+
+        // If we also had lines from a prior call, remove/dispose of them
+        if (this.trackLines) {
+            this.group.remove(this.trackLines);
+            dispose(this.trackLines.geometry);
+            this.trackLines.geometry = null;
+            this.trackLines = null;
+        }
+    }
+
+    makeTrackWall(color) {
+        // Remove any previous mesh
+        this.removeTrackWall();
+
+        if (this.showTrackWalls === false) {
+            return;
+        }
+
+        // Gather the track points just as in recalculate(), but also gather their corresponding
+        // bottom points on the sphere. We'll build a mesh that spans each top segment down.
+        const linePoints = [];
+        const groundPoints = [];
+        assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id=" + this.id);
+
+        // get the number of frames
+        const frames = this.in.track.frames;
+
+        for (let f = 0; f < frames; f++) {
+            let trackPoint = this.in.track.v(f);
+            if (trackPoint && trackPoint.x !== undefined) {
+                // If it's a Vector3, wrap it
+                trackPoint = { position: trackPoint };
+            }
+            if (trackPoint?.position !== undefined) {
+                const A = trackPoint.position;
+                assert(!isNaN(A.x) && !isNaN(A.y) && !isNaN(A.z), "CNodeDisplayTrack: trackPoint has NaNs, id=" + this.id + " frame=" + f);
+
+                // The top point
+                linePoints.push(A);
+                // The corresponding bottom point on the sphere (assume this function is given)
+                const bottom = pointOnSphereBelow(A);
+                groundPoints.push(bottom);
+            }
+        }
+
+        assert(linePoints.length > 1, "CNodeDisplayTrack: not enough points for mesh in track " + this.id);
+
+        // Find the midpoint as in recalculate()
+        const mid = { x: 0, y: 0, z: 0 };
+        for (let i = 0; i < linePoints.length; i++) {
+            mid.x += linePoints[i].x;
+            mid.y += linePoints[i].y;
+            mid.z += linePoints[i].z;
+        }
+        mid.x /= linePoints.length;
+        mid.y /= linePoints.length;
+        mid.z /= linePoints.length;
+
+        // Build a single BufferGeometry that forms a strip of quads from top to bottom.
+        // Each consecutive pair of top points (p1, p2) plus bottom points (g1, g2)
+        // forms a pair of triangles.
+        const vertices = [];
+        const normals = [];
+        const uvs = [];
+
+        function addTriangle(p1, p2, p3) {
+            // Vector edges for cross product
+            const v1 = { x: p2.x - p1.x, y: p2.y - p1.y, z: p2.z - p1.z };
+            const v2 = { x: p3.x - p1.x, y: p3.y - p1.y, z: p3.z - p1.z };
+            // Cross
+            const nx = v1.y * v2.z - v1.z * v2.y;
+            const ny = v1.z * v2.x - v1.x * v2.z;
+            const nz = v1.x * v2.y - v1.y * v2.x;
+            // Normalize
+            const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+            const invLen = 1.0 / len;
+            const Nx = nx * invLen;
+            const Ny = ny * invLen;
+            const Nz = nz * invLen;
+
+            // Push positions
+            [p1, p2, p3].forEach((pt) => {
+                const rx = pt.x - mid.x;
+                const ry = pt.y - mid.y;
+                const rz = pt.z - mid.z;
+                vertices.push(rx, ry, rz);
+                normals.push(Nx, Ny, Nz);
+                // Simple placeholder for UV
+                uvs.push(0, 0);
+            });
+        }
+
+        for (let i = 0; i < linePoints.length - 1; i++) {
+            const p1 = linePoints[i];
+            const p2 = linePoints[i + 1];
+            const g1 = groundPoints[i];
+            const g2 = groundPoints[i + 1];
+
+            // Two triangles form one quad
+            addTriangle(p1, p2, g2);
+            addTriangle(p1, g2, g1);
+        }
+
+        // Build the side mesh geometry
+        const geometry = new THREE.BufferGeometry();
+        const vFloat = new Float32Array(vertices);
+        const nFloat = new Float32Array(normals);
+        const uvFloat = new Float32Array(uvs);
+        geometry.setAttribute("position", new THREE.BufferAttribute(vFloat, 3));
+        geometry.setAttribute("normal", new THREE.BufferAttribute(nFloat, 3));
+        geometry.setAttribute("uv", new THREE.BufferAttribute(uvFloat, 2));
+
+        geometry.computeBoundingSphere();
+
+        // Make a material for the semi-transparent fill
+        const mat = new THREE.MeshPhongMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.1,
+            side: THREE.DoubleSide,
+            depthFunc: this.depthFunc,
+            // don't write to depth buffer
+            depthWrite: false,
+        });
+
+        this.trackWall = new THREE.Mesh(geometry, mat);
+        // Shift by midpoint
+        this.trackWall.position.set(mid.x, mid.y, mid.z);
+        this.group.add(this.trackWall);
+
+        //
+        // Now create the vertical edges (the non-opaque vertical lines).
+        // Each quad has "sides" from p1->g1 and p2->g2. We gather all those in one geometry.
+        //
+        const sideLineVertices = [];
+
+        // For each pair (p1,g1), (p2,g2) forming the quad sides
+        // We'll cover i to linePoints.length-1 to draw the full vertical lines at each top-bottom pair.
+        for (let i = 0; i < linePoints.length; i++) {
+            const top = linePoints[i];
+            const bottom = groundPoints[i];
+            // Shift them by the midpoint, just as we do for the mesh
+            const rx1 = top.x - mid.x;
+            const ry1 = top.y - mid.y;
+            const rz1 = top.z - mid.z;
+
+            const rx2 = bottom.x - mid.x;
+            const ry2 = bottom.y - mid.y;
+            const rz2 = bottom.z - mid.z;
+
+            // Push two consecutive points per line segment
+            sideLineVertices.push(rx1, ry1, rz1, rx2, ry2, rz2);
+        }
+
+        const sideLineGeom = new THREE.BufferGeometry();
+        sideLineGeom.setAttribute(
+            "position",
+            new THREE.BufferAttribute(new Float32Array(sideLineVertices), 3)
+        );
+
+        // Use a simple line material, more opaque than the fill
+        const lineMat = new THREE.LineBasicMaterial({
+            color: color,
+            transparent: true,
+            opacity: 0.5,
+            depthFunc: this.depthFunc,
+
+        });
+
+        this.trackLines = new THREE.LineSegments(sideLineGeom, lineMat);
+        // Same shift by midpoint
+        this.trackLines.position.set(mid.x, mid.y, mid.z);
+        this.group.add(this.trackLines);
+
+        this.propagateLayerMask();
+    }
+
+
+
 }
 
