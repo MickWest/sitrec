@@ -74,6 +74,9 @@ export class CNodeSunlight extends CNode {
 
 
     calculateSkyBrightness(position, date) {
+        if (!this.atmosphere) {
+            return 0;
+        }
         const sun = this.calculateSunAt(position, date)
         let sunTotal = sun.sunTotal / Math.PI;
 

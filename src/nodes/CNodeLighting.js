@@ -15,6 +15,7 @@ export class CNodeLighting extends CNode {
         this.sunIntensity = v.sunIntensity ?? 0.7;
         this.sunScattering = v.sunScattering ?? 0.6;
         this.ambientOnly = v.ambientOnly ?? false;
+        this.atmosphere = v.atmosphere ?? true;
 
         this.gui = guiMenus.lighting;
 
@@ -23,6 +24,7 @@ export class CNodeLighting extends CNode {
         this.addGUIValue("sunIntensity", 0, 2, 0.01, "Sun Intensity");
         this.addGUIValue("sunScattering", 0, 2, 0.01, "Sun Scattering");
         this.addGUIBoolean("ambientOnly", "Ambient Only");
+        this.addGUIBoolean("atmosphere", "Atmosphere");
 
 
         Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity * Math.PI);
@@ -91,6 +93,7 @@ export class CNodeLighting extends CNode {
             sunNode.sunIntensity = sunIntensity;
             sunNode.ambientOnly = this.ambientOnly;
             sunNode.sunScattering = this.sunScattering;
+            sunNode.atmosphere = this.atmosphere;
 
         } else {
             // otherwise we manage the lights directly
