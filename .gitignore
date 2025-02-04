@@ -7,3 +7,4 @@ config-install.js
 sitrec-videos
 sitrec-cache
 sitrecServer/vendor
+sitrecServer/config.php
