@@ -327,10 +327,6 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         if (this.visible) {
 
-
-            //AFTER
-
-
             let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
             //if (this.effectsEnabled) {
@@ -366,9 +362,29 @@ export class CNodeView3D extends CNodeViewCanvas {
 
             if (keyHeld["y"]) { return;}
 
+            // update lighting before rendering the sky
+            const lightingNode = NodeMan.get("lighting", true);
+            // if this is an IR viewport, then we need to render the IR ambient light
+            // instead of the normal ambient light.
+
+            if (this.isIR && this.effectsEnabled) {
+                lightingNode.setIR(true);
+            }
+            lightingNode.recalculate((this.id === "mainView"));
+            sharedUniforms.useDayNight.value = !lightingNode.noMainLighting;
+
+
+            // update the sun node, which controls the global scene lighting
+            const sunNode = NodeMan.get("theSun", true);
+            if (sunNode !== undefined) {
+                sunNode.update();
+            }
+
+
+
             this.renderSky();
 
-// BEFORE ............................
+
 
             // render the day sky
             if (GlobalDaySkyScene !== undefined) {
@@ -413,15 +429,8 @@ export class CNodeView3D extends CNodeViewCanvas {
 
                 currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
             }
-////////////////////////////////////////////////////////////////
-// BEFORE .............................................................
 
-            // if this is an IR viewport, then we need to render the IR ambient light
-            // instead of the normal ambient light.
 
-            if (this.isIR && this.effectsEnabled) {
-                NodeMan.get("lighting").setIR(true);
-            }
 
             // viewport setting for fov, layer mask, override camera settings
             // but we want to preserve the camera settings
@@ -454,8 +463,6 @@ export class CNodeView3D extends CNodeViewCanvas {
             if (this.isIR && this.effectsEnabled) {
                 NodeMan.get("lighting").setIR(false);
             }
-
-// BEFORE ------------------------------------------------------
 
             if (this.effectsEnabled) {
 

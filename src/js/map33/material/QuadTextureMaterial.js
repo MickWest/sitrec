@@ -16,6 +16,7 @@ export const sharedUniforms = {
   nearPlane: { value: 0.1 },
   farPlane: { value: 1000 },
   cameraFocalLength: { value: 300 },
+  useDayNight: { value: true },
   // ... other shared uniforms
 };
 

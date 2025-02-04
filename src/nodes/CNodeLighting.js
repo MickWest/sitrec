@@ -16,6 +16,7 @@ export class CNodeLighting extends CNode {
         this.sunScattering = v.sunScattering ?? 0.6;
         this.ambientOnly = v.ambientOnly ?? false;
         this.atmosphere = v.atmosphere ?? true;
+        this.noMainLighting = v.noMainLighting ?? false;
 
         this.gui = guiMenus.lighting;
 
@@ -25,7 +26,7 @@ export class CNodeLighting extends CNode {
         this.addGUIValue("sunScattering", 0, 2, 0.01, "Sun Scattering");
         this.addGUIBoolean("ambientOnly", "Ambient Only");
         this.addGUIBoolean("atmosphere", "Atmosphere");
-
+        this.addGUIBoolean("noMainLighting", "No Lighting in Main View");
 
         Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity * Math.PI);
         Globals.ambientLight.layers.mask = LAYER.MASK_LIGHTING
@@ -79,9 +80,17 @@ export class CNodeLighting extends CNode {
     }
 
 
-    recalculate() {
+    recalculate(isMain = false) {
         let sunIntensity = this.sunIntensity;
         if (this.ambientOnly)   {
+            sunIntensity = 0;
+        }
+
+        let ambientIntensity = this.ambientIntensity;
+
+
+        if (isMain && this.noMainLighting) {
+            ambientIntensity = 1;
             sunIntensity = 0;
         }
 
@@ -89,7 +98,7 @@ export class CNodeLighting extends CNode {
         // so we pass the values to it
         if (NodeMan.exists("theSun")) {
             const sunNode = NodeMan.get("theSun");
-            sunNode.ambientIntensity = this.ambientIntensity;
+            sunNode.ambientIntensity = ambientIntensity;
             sunNode.sunIntensity = sunIntensity;
             sunNode.ambientOnly = this.ambientOnly;
             sunNode.sunScattering = this.sunScattering;
@@ -97,7 +106,7 @@ export class CNodeLighting extends CNode {
 
         } else {
             // otherwise we manage the lights directly
-            Globals.ambientLight.intensity = this.ambientIntensity;
+            Globals.ambientLight.intensity = ambientIntensity;
             Globals.sunLight.intensity = sunIntensity;
         }
 

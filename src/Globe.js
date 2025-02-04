@@ -67,6 +67,7 @@ export function createSphereDayNight(radius, radius1, segments) {
         uniform vec3 sunDirection;
         uniform float nearPlane;
         uniform float farPlane;
+        uniform bool useDayNight;
         varying vec2 vUv;
         
         varying vec3 vNormal;
@@ -82,7 +83,11 @@ export function createSphereDayNight(radius, radius1, segments) {
             vec4 dayColor = texture2D(dayTexture, vUv);
             vec4 nightColor = texture2D(nightTexture, vUv);
             
-            gl_FragColor = mix(nightColor, dayColor, blendFactor);
+            if (useDayNight) {
+                gl_FragColor = mix(nightColor, dayColor, blendFactor);
+            } else {
+                gl_FragColor = dayColor;
+            }
             
             // Logarithmic depth calculation
             float w = vPosition.w;
