@@ -709,6 +709,10 @@ function legacySetup() {
 async function setupFunctions() {
     resetPar();
 
+
+    // just setting visibility of the Save/Load menu items
+    FileManager.sitchChanged();
+
     // not sure this is the best place to do this......
     // but resetPar has just set par.paused to false
     // so no earlier.

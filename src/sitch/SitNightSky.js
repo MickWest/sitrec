@@ -23,6 +23,7 @@ export const SitNightSky = {
     isTextable: false,
     isTool: true,
 
+    canMod: false, // night sky is not modifiable, just Save Permalink
 
     showDateTime: false, // opens the DateTime folder in the UI - not needed any more with new menu system
 
@@ -160,7 +161,7 @@ export const SitNightSky = {
 
 
         if (Globals.userID > 0)
-            this.permaButton = guiMenus.file.add(this, "makeNightSkyURL").name("Night Sky Permalink")
+            this.permaButton = guiMenus.file.add(this, "makeNightSkyURL").name("SAVE Night Sky Permalink")
         else {
             this.permaButton = guiMenus.file.add(this, "loginAttempt").name("Permalink DISABLED (click to log in)")
         }

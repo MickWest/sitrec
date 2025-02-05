@@ -1,0 +1,26 @@
+<?php
+
+// installation specific authentication
+// should return a user id which can be used as a directory name
+// or 0 if the user is not authenticated
+// if no authentication is needed, I return 99999999
+// if you want per-user authentication like this, then you'll need to modify this function
+// or just delete this file, so user.php will return 99999998
+//
+// Note, calling this twice in one session seems to crash Xenforo
+function getUserIDCustom()
+{
+    if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
+        // for local testing
+        $user_id = 99999999;
+    } else {
+        $fileDir = '/srv/www/metabunk.org/public_html/';  # absolute path from this script to the Xenforo root
+        require($fileDir . '/src/XF.php');
+        XF::start($fileDir);
+        $app = XF::setupApp('XF\Pub\App');
+        $app->start();
+        $user = XF::visitor();
+        $user_id = $user->user_id;
+    }
+    return $user_id;
+}

@@ -217,6 +217,13 @@ class CNodeSwitch extends CNode {
     }
 
     recalculate() {
+
+        // if (this.choice === undefined) {
+        //     console.warn("CNodeSwitch: choice is undefined, setting to first available choice");
+        //     this.selectValidChoice();
+        // }
+
+
         // ensure frames are up to date for this switch, setting it to the selected input's frames
         if (!this.useSitFrames) {
             this.frames = this.inputs[this.choice].frames;
@@ -244,6 +251,7 @@ class CNodeSwitch extends CNode {
         // show the selected inputs AFTER all the hiding has been done
 //        console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
         if (Object.keys(this.inputs).length > 0) {
+            assert(this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice+", Switch Node id = "+this.id)
             this.inputs[this.choice].show()
             this.inputs[this.choice].showActiveSources()
         }

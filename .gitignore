@@ -8,3 +8,4 @@ sitrec-videos
 sitrec-cache
 sitrecServer/vendor
 sitrecServer/config.php
+sitrecServer/auth-config.php

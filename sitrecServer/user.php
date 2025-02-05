@@ -7,7 +7,7 @@ require __DIR__ . '/config.php';
 // on metabunk it's used to check if the user is logged into Xenforo
 // and if so, return the user id
 // is this file does not exist, we return 99999998
-$configPath = __DIR__ . '/../../sitrec-config/auth-config.php';
+$configPath = __DIR__ . '/auth-config.php';
 
 function getUserID() {
     global $configPath;
