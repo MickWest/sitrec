@@ -793,7 +793,7 @@ async function setupFunctions() {
 
 // We can get the local lat/lon (i.e. the user's location)
 // get only get the local lat/lon if we don't have URL data and if we are not testing
-    if (!testing && Sit.localLatLon && urlData === undefined) {
+    if (!testing && Sit.localLatLon && urlData === undefined && !isLocal) {
         await requestGeoLocation()
     }
 
