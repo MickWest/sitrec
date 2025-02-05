@@ -1,14 +1,7 @@
 <?php
-require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
 
-if (!isset($cache_base_path)) {
-    $cache_base_path = "../../sitrec-cache/";
-}
+require __DIR__ . '/config.php';
 
-// Lookup table for requests
-$request_url_map = array(
-    "CURRENT_STARLINK" => "https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle"
-);
 
 $request = isset($_GET["request"]) ? $_GET["request"] : null;
 

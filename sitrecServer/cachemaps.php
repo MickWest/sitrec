@@ -7,38 +7,25 @@
 //
 // Actual usage: https://www.metabunk.org/sitrecServer/cachemaps.php?url=https%3A%2F%2Fs3.amazonaws.com%2Felevation-tiles-prod%2Fterrarium%2F9%2F129%2F191.png
 
-// Requires a writable folder sitrec-cache/ on the same level as sitrec/
-// so ../../sitrec-cache will point to it.
+// Requires a writable folder defined in config.php
 
 
-// TODO: Make configgable
-require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
+require __DIR__ . '/config.php';
 
-if(!isset($cache_base_path)) {
-    $cache_base_path = "../../sitrec-cache/";
+if (!isset($acceptable_domains)) {
+    echo "No acceptable domains set in config.php";
+    $acceptable_domains = [
+        // none, as it's all in the config.php
+    ];
 }
 
-$url = $_GET["url"];  // usage e.g.
+$url = $_GET["url"];  // usage examples above
 
 ob_start();			// output buffering, so the echo commands don't get sent (some servers will not send the header() if there's already output
 
 echo "Attempting: ".$url."<br>";
 $url = rawurldecode($url);
 echo "Decoded: ".$url."<br>";
-
-
-//function LoadCached($url) {
-
-// Array of acceptable domains
-$acceptable_domains = [
-    'mickwest.com',  // for testing with the example above
-    'c.tile.openstreetmap.org',
-    'api.mapbox.com',
-    'tiles.maps.eox.at',
-    's3.amazonaws.com',
-    'geoint.nrlssc.org',
-    // Add more domains as needed
-];
 
 // Parse the URL and return its components
 $url_components = parse_url($url);
@@ -63,12 +50,18 @@ foreach ($acceptable_domains as $domain) {
     }
 }
 
+
+
 if (!$domain_allowed) {
-    // Domain is not acceptable, return 403
-    echo "Disallowed domain " . $host ;
-    ob_end_flush();
-    http_response_code(403);
-    return;
+    // if the domain is not allowed, redirect to the URL
+    // this will still allow the browser to fetch the image directly
+    // and not use the server as a proxy
+    // that will worok for anything except the mapbox url that needs an additional token
+    header_remove();
+    header("Location: " . $url);
+    exit();
+
+
 }
 
 // It's an acceptable domain, continue with your logic
@@ -97,10 +90,21 @@ if (strcmp($url_parts['host'],"tiles.maps.eox.at") === 0)
 // check for allowed extensions
 //if ($ext !== "jpg" && $ext !== "jpg" && ext !== "png" && ext !=="tiff" )
 //    if (!($ext === "jpg" || $ext === "jpg" || ext === "png" || ext ==="tiff") )
-if (strcmp($ext,"png") !== 0
-    && strcmp($ext,"jpg") !== 0
-)
-    exit("Illegal File Type ". $ext);
+//if (strcmp($ext,"png") !== 0
+//    && strcmp($ext,"jpg") !== 0
+//)
+//    exit("Illegal File Type ". $ext);
+
+// given an array, $acceptable_extensions, of allowed extensions
+// check to see if the extension is in the array
+// if it's not, then exit
+// if there is no array, or an empty array, then allow all extensions
+if (isset($acceptable_extensions) && count($acceptable_extensions) > 0) {
+    if (!in_array($ext, $acceptable_extensions)) {
+        exit("Illegal File Type " . $ext);
+    }
+}
+
 
 $hash = md5($url) . "." . $ext;
 
@@ -131,11 +135,13 @@ if (file_exists($cachedFile)) {
     //download it
     echo "<br>Fetching from host " . $url_parts['host'];
 
-
-
     $extra = "";
-    if (strcmp($url_parts['host'],"api.mapbox.com") === 0)
-        $extra = $token;
+
+    // optional token for mapbox. See config.php
+    if (isset($token) && isset($token_url)) {
+        if (strcmp($url_parts['host'], $token_url) === 0)
+            $extra = $token;
+    }
 
     $options = array(
         'http'=>array(
@@ -147,14 +153,26 @@ if (file_exists($cachedFile)) {
     );
     $context = stream_context_create($options);
 
-    $dataBlob = file_get_contents($url . $extra, false, $context);
+//    $dataBlob = file_get_contents($url . $extra, false, $context);
+
+    // Use curl instead of file_get_contents
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url . $extra);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10");
+    $dataBlob = curl_exec($ch);
+    curl_close($ch);
+
     if ($dataBlob == false || strlen($dataBlob) === 0) {
         echo "<br>FAILED to fetch " . $url . $extra;
         if ($dataBlob == false) echo "<br>file_get_contents returned false";
         else echo "<br>$dataBlob zero size";
         ob_end_flush();
             exit();
-        }
+    }
+
+
     echo "<br>Fetched";
     echo "<br>result size = ".strlen($dataBlob);
     // Save content into cache
@@ -169,15 +187,8 @@ if (file_exists($cachedFile)) {
     // return dataBlob;
 }
 
-//header("Location: ../f/271341344.jpg");
-
-//  $cachePath = "../f/271341344.jpg";
 
 header_remove(); // Remove all previously set headers
 header("Location: " . $cachePath);
 exit();
-
-//}
-
-// http://mickwest.com/wp-content/uploads/2007/01/552.png
 

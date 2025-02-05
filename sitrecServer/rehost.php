@@ -1,37 +1,20 @@
 <?php
 // need to modify php.ini?
-// /opt/homebrew/etc/php/8.2/php.ini
+// /opt/homebrew/etc/php/8.4/php.ini
 // brew services restart php
+
 require('./user.php');
 
-// S3 -------
-// WHY IS THIS TIMING OUT TOO EARLY ON MAC
-// WHY DOES IT NOT WORK AT ALL ON metabunk.org (Ubuntu)
-// Let's set up debuggin in phpstorm
-
-// set_time_limit(10);
-
 $user_id = getUserID();
-
-// if there's an aws_credentials.json file, then we'll use that to upload to S3
-$s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
-//$useAWS = !$isLocal && file_exists($s3_config_path);
-$useAWS = file_exists($s3_config_path);
-//$useAWS = false;
-if ($useAWS) {
-    require $s3_config_path;
-}
 
 $aws=null;
 
 function startS3() {
     require 'vendor/autoload.php';
     global $aws;
+    global $s3creds;
 
-    // Load the credentials from ../../../sitrec-keys/aws_credentials.json
-    //$aws = json_decode(file_get_contents($awsCredentials), true);
-
-    $aws = getS3Credentials();
+    $aws = $s3creds;
 
     // Get it into the right format
     $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
@@ -67,13 +50,8 @@ if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localh
     $storagePath = "https://localhost/sitrec-upload/";
     $isLocal = true;
 } else {
-    // This code is specific to the metabunk.org implementation.
-    // if you want to use this code on your own site, you'll need to modify it.
-    // or use the local testing code above
-    $storagePath = "https://www.metabunk.org/sitrec-upload/";
+    $storagePath = $uploadURL;  // from config.php
 }
-
-//$logPath = $storageDir . "log.txt";
 
 function writeLog($message) {
 //    global $logPath;

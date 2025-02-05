@@ -9,7 +9,9 @@ export function writeToClipboard(text) {
 }
 
 export async function getShortURL(url) {
+
     if (isLocal) {
+        // comment out the following line to test the shortener locally
         return url;
     }
 

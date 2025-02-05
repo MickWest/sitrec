@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__ . '/config.php';
+
 // we check for an optional file that can be used to customize the user id
 // this would be specific to your installation
 // on metabunk it's used to check if the user is logged into Xenforo
@@ -42,14 +44,13 @@ function getShortDir($user_id)
 //
 function getUserDir($user_id)
 {
+    global $uploadDir;
     if ($user_id == 0) {
         return ""; // return an empty string if the user is not logged in
     }
 
 // Directory to store rehosted files
-    $storageDir = '../../sitrec-upload/';
-
-    $userDir = $storageDir . getShortDir($user_id) . '/';
+    $userDir = $uploadDir . getShortDir($user_id) . '/';
 
     return $userDir;
 }

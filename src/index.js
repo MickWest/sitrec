@@ -108,6 +108,33 @@ let animationFrameId;
 
 checkUserAgent();
 
+// quick test of the server config
+// just call config.php
+
+fetch(SITREC_SERVER+"config.php", {mode: 'cors'}).then(response => response.text()).then(data => {
+    if (data !== "") {
+        console.log("Server Config ERROR: " + data)
+        // now just render a pain text message of data as an error
+        const errorDiv = document.createElement('div');
+        errorDiv.style.position = 'absolute';
+        errorDiv.style.width = 100;
+        errorDiv.style.height = 100;
+        errorDiv.style.color = "white";
+        errorDiv.innerHTML = data;
+        errorDiv.style.top = 40 + 'px';
+        errorDiv.style.left = 20 + 'px';
+        errorDiv.style.fontSize = 20 + 'px';
+        errorDiv.style.display = 'block';
+        errorDiv.style.padding = 5 + 'px';
+        errorDiv.style.background="black";
+        document.body.appendChild(errorDiv);
+        // and that's it
+        throw new Error("config.php error: "+data);
+        debugger;
+
+    }
+})
+
 resetPar();
 await initializeOnce();
 if (!initRendering()) {
@@ -187,6 +214,7 @@ if (customSitch !== null) {
 } else {
     selectInitialSitch();
 }
+
 
 
 

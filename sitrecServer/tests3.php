@@ -5,6 +5,7 @@
 // but the S3 code WAS using 7
 // so we need to make sure the S3 code is using the same version of guzzle as XenForo
 // to do this I force the version of guzzle to be 6.5.5 in the composer.json file
+require __DIR__ . '/config.php';
 require('./user.php');
 $user_id = getUserID();
 
@@ -12,9 +13,8 @@ $user_id = getUserID();
 // just test if we can connect to S3
 require 'vendor/autoload.php';
 
-$s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
-require $s3_config_path;
-$aws = getS3Credentials();
+
+$aws = $s3creds;
 
 $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
 

@@ -1,10 +1,9 @@
 <?php
-require __DIR__ . '/../../sitrec-config/cachemaps-config.php';
-require __DIR__ . '/../../sitrec-config/space-data-config.php';
+// This is specific to the Starlink historical data from Space-Track.org
+require __DIR__ . '/config.php';
 
-// space-data-config.php should look like this:
+// space-data in config.php should look like this:
 //
-// <?php
 // $spaceDataUsername = 'somthing@example.com';
 // $spaceDataPassword = 'somepassword';
 
@@ -15,15 +14,11 @@ require __DIR__ . '/../../sitrec-config/space-data-config.php';
 //    exit("Not logged in");
 //}
 
-if (!isset($cache_base_path)) {
-    $cache_base_path = "../../sitrec-cache";
-}
-
-$cache_base_path = $cache_base_path . "/starlink/";
+$starlink_cache = $cache_base_path . "/starlink/";
 
 // make sure the "starlink" folder exists in the cache directory
-if (!file_exists($cache_base_path)) {
-    mkdir($cache_base_path);
+if (!file_exists($starlink_cache)) {
+    mkdir($starlink_cache);
 }
 
 // called like: localhost/sitrec/sitrecServer/proxyStarlink.php?request=2024-07-18
@@ -52,7 +47,7 @@ $nextDay = date('Y-m-d', strtotime($request . ' +1 day'));
 // https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/2023-12-22--2023-12-23/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~
 $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/" . $request . "--" . $nextDay . "/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~";
 
-$fileLocation = $cache_base_path;
+$fileLocation = $starlink_cache;
 $cachedFile = $fileLocation . $request . ".tle";
 
 // we cache these forever

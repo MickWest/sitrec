@@ -1,0 +1,96 @@
+<?php
+
+/*
+ * This is a simpler configuration file that replaces cachemaps-config.php, other config files, and some in-line settings
+ * TIP: to check for simple syntax errors, load this directly.
+ * https://localhost/sitrec/sitRecServer/config.php
+ */
+
+if (!isset($LOADED_CONFIG)) {
+    $LOADED_CONFIG = true;
+
+    // urlRoot is the base URL for the site, e.g. "https://www.metabunk.org"
+    // by default we have shorting, caching, and uploads as subdirectories of this
+    $urlRoot = $_SERVER['HTTP_HOST'] . "/";
+
+
+    // serverRoot is the base directory for the site
+    // the default configuration is:
+    // $serverRoot /
+    //     $sitrecRoot /   (usually "sitrec/")
+    //         sitrecServer / (where all the PHP files are)
+    //             config.php   (this file)
+    //     sitrec-upload /  (for user uploads, sitches, videos, tracks, etc)
+    //     sitrec-cache / (cache for map tiles)
+    //     u / (shortened URLs)
+
+
+    // serverRoot is the base directory for the site,
+    // It can be an absolute path, like "/var/www/html"
+    // or a relative path from the current directory (i.e. from sitrecServer/config.php)
+    // e.g. "../../" or "../"
+    $serverRoot = "../../";
+
+    // sitrecRoot is the base directory for the sitrec application
+    $sitrecRoot = $serverRoot . "sitrec/";
+
+    // fileRoot is the base directory for sitrec-upload, sitrec-cache, and u
+    // the default installation has these as subdirectories of $serverRoot
+    // but you could change this to be an absolute path
+    // or to use $sitrecRoot as the base
+    $fileRoot = $serverRoot;
+
+    // The following are the DEFAULT values for the various directories
+    // you can change them, so long as you change both the directory and the URL
+    $uploadDir = $serverRoot . "sitrec-upload/";
+    $uploadURL = $urlRoot . "sitrec-upload/";
+
+    $cache_base_path = $serverRoot . "sitrec-cache/";
+    $cache_base_url = $urlRoot . "sitrec-cache/";
+
+    // From shortener.php, for the short URLs
+    $shortenerDir = $serverRoot . 'u/';
+    $shortenerURL = $urlRoot . "u/";
+
+    // Array of acceptable domains for caching (in cachemaps.php)
+    $acceptable_domains = [
+        'mickwest.com',  // for testing with the example above
+        'c.tile.openstreetmap.org',
+        'api.mapbox.com',
+        'tiles.maps.eox.at',
+        //     's3.amazonaws.com', // We use this directly, no cache
+        'geoint.nrlssc.org',
+        // Add more domains as needed
+    ];
+
+    // Array of acceptable image extensions for caching (in cachemaps.php)
+    // remove this if you want to allow all extensions
+    $acceptable_extensions = [ "png", "jpg", "tiff", "jpeg", "gif", "webp", "svg", "bmp", "ico", "tif"];
+
+    // replaces cachemaps-config.php
+    // and is specific to the Mapbox API
+    $token = "?access_token=pk.eyJ1IjoibWlja3dlc3QiLCJhIjoiY2wzeW40enA1MGJsbDNicDA3bW9vdThnMyJ9.Yn3QWDtBHBdCd1aiJtdIQA";
+    $token_url = "api.mapbox.com";
+
+//
+// replaces s3-config.php
+    $s3creds = ["accessKeyId" => "AKIAEXAMPLE3IE6D6",
+        "secretAccessKey" => "GRF8M7/UTV/TrX+Wg7+gEXAMPLE",
+        "region" => "us-west-2",
+        "bucket" => "sitrec",
+        "acl" => "public-read"
+    ];
+    $useAWS = true;
+
+// replaces space-data-config.php
+    $spaceDataUsername = 'com@EXAMPLE.com';
+    $spaceDataPassword = 'EXAMPLE.';
+
+// From proxy.php
+    // Lookup table for requests
+    $request_url_map = array(
+        "CURRENT_STARLINK" => "https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle"
+    );
+
+
+}

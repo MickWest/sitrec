@@ -1,5 +1,8 @@
 <?php
 
+
+require __DIR__ . '/config.php';
+
 //////////////////////////////////////////////////////
 /// TODO: This is duplicated code from rehost.php
 /// should be refactored into a common file
@@ -25,9 +28,11 @@ if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localh
 
 function getSitches()
 {
+    global $sitrecRoot;
 
 // get the list of folders in the data folder
-    $dir = "../data";
+    // note "data" is not configurable, as it's hardcoded by the webpack config
+    $dir = $sitrecRoot . "data";
     $files = scandir($dir);
     $folders = array();
     foreach ($files as $file) {
@@ -129,20 +134,11 @@ if (isset($_GET['get'])) {
         exit();
     }
 
-    // if there's an aws_credentials.json file, then we'll use that to upload to S3
-    $s3_config_path =  __DIR__ . '/../../sitrec-config/s3-config.php';
-    $useAWS = file_exists($s3_config_path);
-
-   // $useAWS = false;
 
     if ($useAWS) {
         require 'vendor/autoload.php';
-        require $s3_config_path;
 
-        // Load the credentials from ../../../sitrec-keys/aws_credentials.json
-        //$aws = json_decode(file_get_contents($awsCredentials), true);
-
-        $aws = getS3Credentials();
+        $aws = $s3creds;
 
         // Get it into the right format
         $credentials = new Aws\Credentials\Credentials($aws['accessKeyId'], $aws['secretAccessKey']);
