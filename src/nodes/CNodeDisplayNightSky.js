@@ -628,6 +628,10 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     updateStarlink() {
         // get the start time
         const startTime = GlobalDateTimeNode.dateNow;
+
+        // go back one day so the TLE's are all before the current time
+        startTime.setDate(startTime.getDate()-1);
+
         // convert to YYYY-MM-DD
         const dateStr = startTime.toISOString().split('T')[0];
         // get the file from the proxyStarlink URL
