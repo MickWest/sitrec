@@ -6,7 +6,8 @@ import {
     Color,
     Group,
     Line,
-    LineBasicMaterial, LineSegments,
+    LineBasicMaterial,
+    LineSegments,
     MathUtils,
     Matrix4,
     Points,
@@ -18,7 +19,6 @@ import {
     Sprite,
     SpriteMaterial,
     TextureLoader,
-    Texture,
     Vector3
 } from "three";
 import {degrees, radians} from "../utils";
@@ -52,10 +52,10 @@ import {
     raDec2Celestial,
     raDecToAltAz
 } from "../CelestialMath";
-import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
 import {SITREC_ROOT, SITREC_SERVER} from "../../config";
 import {DragDropHandler} from "../DragDropHandler";
 import {ViewMan} from "../CViewManager";
+import {bestSat} from "../TLEUtils";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -2065,80 +2065,5 @@ export function addNightSky(def) {
     return nightSky;
 }
 
-// given an array of satrecs, return the one that best matches the date
-// ie the one that is closest to the date, but before it
-// if there are none before it, then return the first one after
-export function bestSat(sats, date) {
-    // Convert the date object to the TLE format
-    //
-
-    const tleDate = (dateToTLE(date));
-    // convert to a number for comparison
-    const dateNum = Number(tleDate);
-
-
-
-
-    // get the last one
-//    var best = sats[sats.length-1];
-
-    var best = sats[0];
-    // if it's the only one, then return it
-    if (sats.length === 1) {
-        return best;
-    }
-
-    var bestDate = 0;
-     for (const sat of sats) {
-         const satDate = sat.epochyr*1000 + sat.epochdays;
-         if (satDate < dateNum) {
-             // we've got a date before the target date
-             // see if it's closer than the current best
-                if (satDate > bestDate) {
-                    best = sat;
-                    bestDate = satDate;
-                }
-         }
-    }
-     // if nothing is found then it's just going to return the first one
-    // which will be the earliest on the list
-    return best;
-
-}
-
-
-/**
- * Converts a Date object to a TLE formatted date string (YYDDD.DDDDDD).
- * @param {Date} date - The date to convert.
- * @returns {string} A string representing the TLE epoch.
- */
-function dateToTLE(date) {
-    // Extract the last two digits of the UTC full year.
-    const year = date.getUTCFullYear() % 100;
-
-    // Calculate the day of the year.
-    // Create a Date object representing the start of the year in UTC.
-    const startOfYear = new Date(Date.UTC(date.getUTCFullYear(), 0, 0));
-    // Compute the difference in milliseconds.
-    const diff = date - startOfYear;
-    const oneDay = 1000 * 60 * 60 * 24;
-    // Floor the result to get an integer day count. (January 1st will yield 1.)
-    const dayOfYear = Math.floor(diff / oneDay);
-
-    // Compute the fractional part of the day.
-    // (The remainder of milliseconds in the current day divided by total ms per day.)
-    const fractionalDay = (diff % oneDay) / oneDay;
-
-    // Format the parts:
-    // Year: ensure two digits.
-    const yearStr = year.toString().padStart(2, '0');
-    // Day of year: ensure three digits.
-    const dayStr = dayOfYear.toString().padStart(3, '0');
-    // Fraction: formatted to six decimal places (includes the leading "0" before the decimal point).
-    // We remove the leading zero to have just the ".DDDDDD" portion.
-    const fractionStr = fractionalDay.toFixed(6).substring(1);
-
-    return `${yearStr}${dayStr}${fractionStr}`;
-}
 
 
