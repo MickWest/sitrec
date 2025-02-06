@@ -665,6 +665,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // go back one day so the TLE's are all before the current time
         // server will add one day to the date to cover things.
+        // Say this is day D, we request D-1
+        // the server will ask for that +2, so we get
+        // D-1 to D+1
+        // but this essentiall gives us D-1 to all of D, which is what we want
+        // this still gives us some times in D that are in the future,
+        // but those are handled by the bestSat function
         startTime.setDate(startTime.getDate()-1);
 
         // convert to YYYY-MM-DD
