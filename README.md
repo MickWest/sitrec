@@ -53,6 +53,48 @@ Some types of situations covered:
 - Viewing the sky (with accurate planets and satellites)
 
 
+## Simple install
+
+Assuming we want to install the build environment in sitrec-test-dev and the local server environment is a folder sittest.
+
+```bash
+git clone https://github.com/MickWest/sitrec sitrec-test-dev
+cd sitrec-test-dev
+cp config.js.example config.js
+cp config-install.js.example config-install.js
+cp .env.example .env
+cp sitrecServer/config.php.example sitrecServer/config.php
+```
+
+Assuming you want to install in a folder called "glass" that's off the root of your local web serve
+
+```bash
+mkdir /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
+cd /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
+mkdir sitrec
+mkdir sitrec-cache
+mkdir sitrec-upload
+mkdir sitrec-videos
+```
+
+Edit config-install.js
+Set dev_path to /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec
+Set prod_path to any folder you can use for staging the deploy build (if needed)
+
+Install all needed node modules
+```bash
+npm install
+```
+
+Build into the local web folder we defined earlier
+```bash
+npm run build
+```
+
+
+
+
+
 ## Code overview
 Sitrec runs mostly client-side using JavaScript and some custom shaders but also has a handful of server-side scripts written in PHP. 
 
@@ -384,21 +426,3 @@ The remaining lines show everything that needs to change
 
 Note the views are not changed from PVS14, as it's a fairly standard landscape mode. 
 
-## Simple install
-
-Assuming we want to install the build environment in sitrec-test-dev and the local server environment is a folder sittest.
-
-git clone https://github.com/MickWest/sitrec sitrec-test-dev
-cd sitrec-test-dev
-cp config.js.example config.js
-cp config-install.js.example config-install.js
-cp .env.example .env
-cp sitrecServer/config.php.example sitrecServer/config.php
-
-Edit config-install.js
-Set dev_path to a folder on your local server
-Ser prod_path to any folder you can use for staging the deploy build (if needed)
-
-npm install
-
-npm run build
