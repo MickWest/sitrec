@@ -86,6 +86,7 @@ export const SITREC_ROOT = (isConsole ? SITREC_CONSOLE_ROOT : (isLocal ? SITREC_
 export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
     (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
 export const SITREC_UPLOAD = SITREC_HOST + "../sitrec-upload/"
+export const SITREC_CACHE = SITREC_HOST + "../sitrec-cache/"
 
 console.log(`SITREC_DOMAIN = ${SITREC_DOMAIN}`)
 console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
