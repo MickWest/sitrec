@@ -112,8 +112,8 @@ copy sitrecServer\config.php.example sitrecServer\config.php
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
 
 ```bash
-mkdir c:\\nginx\\html\\glass\\sitrec
-cd c:\\nginx\\html\\glass\\sitrec
+mkdir c:\\nginx\\html\\glass
+cd c:\\nginx\\html\\glass
 mkdir sitrec
 mkdir sitrec-cache
 mkdir sitrec-upload
