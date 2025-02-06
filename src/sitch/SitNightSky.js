@@ -234,8 +234,12 @@ export const SitNightSky = {
                 Object.keys(FileManager.list).forEach(key => {
                     const f = FileManager.list[key];
                     if (f.dynamicLink) {
+                        console.log("Adding Rehosted dynamic file to url: " + f.staticURL)
                         rehostedFiles.push(f.staticURL)
+                    } else {
+                        console.log("Skipping non-dynamic file: " + f.staticURL)
                     }
+
                 })
 
 

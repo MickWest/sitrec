@@ -40,8 +40,10 @@ if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $request)) {
 }
 
 // given request in the form of YYYY-MM-DD
-// calculate nextDay in the same form
-$nextDay = date('Y-m-d', strtotime($request . ' +1 day'));
+// calculate nextDay in the same form, and use 2 days later
+$nextDay = date('Y-m-d', strtotime($request . ' +2 days'));
+
+
 
 // get the URL in this format
 // https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/2023-12-22--2023-12-23/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~

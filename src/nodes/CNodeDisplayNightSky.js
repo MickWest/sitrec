@@ -154,14 +154,18 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
               }
           }
 
+
+         // draw satellite names
          if (this.showSatelliteNames && this.nightSky.TLEData) {
              const date = this.nightSky.in.startTime.dateNow;
 
              this.ctx.strokeStyle = "#8080FF";
              this.ctx.fillStyle = "#8080FF";
 
-             for (const [index, sat] of Object.entries(this.nightSky.TLEData.satrecs)) {
-                 const positionAndVelocity = satellite.propagate(sat, date);
+             for (const [index, satData] of Object.entries(this.nightSky.TLEData.satData)) {
+                 const best = bestSat(satData, date);
+
+                 const positionAndVelocity = satellite.propagate(best, date);
 
                  if (positionAndVelocity && positionAndVelocity.position) {
                      const positionEci = positionAndVelocity.position;
@@ -184,7 +188,7 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
                          var y = (-pos.y + 1) * this.heightPx / 2
                          x += 5
                          y -= 5
-                         this.ctx.fillText(sat.name, x, y)
+                         this.ctx.fillText(satData.name, x, y)
                      }
                  }
              }
@@ -290,8 +294,9 @@ class CTLEData {
     constructor(fileData) {
         const lines = fileData.split('\n');
 
-        this.satrecs=[]
-
+        this.satData=[]
+        let satrec = null;
+        let satrecName = null;
         // determine if it's a two line element (no names, lines are labeled 1 and 2) or three (line 0 = name)
         if (lines.length < 3 || !lines[1].startsWith("1") || !lines[2].startsWith("2")) {
             for (let i = 0; i < lines.length; i += 2) {
@@ -300,8 +305,25 @@ class CTLEData {
                 if (tleLine1 !== undefined && tleLine2 !== undefined) {
                     const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
                     // no name in a two line element, so create one.
-                    satrec.name = "TLE_"+i
-                    this.satrecs[satrec.name] = satrec;
+                    satrecName = "TLE_"+i
+
+                    // a "satrec" is a satellite record created from a single line of a TLE file
+                    // there might be multiple satrecs with the same name, so we need to store them in an array
+                    // and later pick the best one based on the playback date/time
+                    // each entry in this.satData is an object that has an array of satrecs with the same name
+                    if (this.satData[satrecName] === undefined) {
+                        // it's a new satData entry
+                        // so create a new one with the name and the satrec array, which has one satrec
+                        this.satData[satrecName] = {
+                            name: satrecName,
+                            satrecs: [satrec]
+                        };
+                    }
+                    else {
+                        // entry already exists, so just add the satrec to the array
+                        this.satData[satrecName].satrecs.push(satrec);
+                    }
+
                 }
             }
         }   else {
@@ -314,21 +336,33 @@ class CTLEData {
                     const tleLine2 = fixTLELine(lines[i + 2], tleComboFieldEnds2);
 
                     const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
-                    satrec.name = lines[i]
-                    // for duolicate entires, now it's just overwritin earlier ones
-                    // with the newest one
-                    // which should be what we need
-                    this.satrecs[satrec.name] = satrec;
+                    satrecName = lines[i]
+
+                    if (this.satData[satrecName] === undefined) {
+                        // it's a new satData entry
+                        // so create a new one with the name and the satrec array, which has one satrec
+                        this.satData[satrecName] = {
+                            name: satrecName,
+                            satrecs: [satrec]
+                        };
+                    }
+                    else {
+                        // entry already exists, so just add the satrec to the array
+                        this.satData[satrecName].satrecs.push(satrec);
+                    }
+
+
                 }
             }
         }
 
-        // after remving duplicates, convert to an indexed array
-        const indexedSatrecs = []
-        for (const [index, sat] of Object.entries(this.satrecs)) {
-            indexedSatrecs.push(sat)
+        // after building the arrays of multiple satrecs using the name as the key,
+        // convert to an indexed array
+        const indexedSatData = []
+        for (const [index, satData] of Object.entries(this.satData)) {
+             indexedSatData.push(satData)
         }
-        this.satrecs = indexedSatrecs;
+        this.satData = indexedSatData;
 
     }
 
@@ -630,6 +664,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         const startTime = GlobalDateTimeNode.dateNow;
 
         // go back one day so the TLE's are all before the current time
+        // server will add one day to the date to cover things.
         startTime.setDate(startTime.getDate()-1);
 
         // convert to YYYY-MM-DD
@@ -646,7 +681,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         const id = "starLink_"+dateStr+".tle";
         FileManager.loadAsset(url, id).then( (data)=>{
            // this.replaceTLE(data)
-            DragDropHandler.handleParsedFile(id, FileManager.list[id].data)
+
+            const fileInfo = FileManager.list[id];
+
+            // give it a proper filename so when it's re-loaded
+            // it can be parsed correctly
+            fileInfo.filename = id;
+
+            // kill the static URL to force a rehost with this name
+            fileInfo.staticURL = null;
+
+            fileInfo.dynamicLink = true;
+
+            DragDropHandler.handleParsedFile(id, fileInfo.data)
         });
 
     }
@@ -758,7 +805,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         if ( this.showSatellites && this.TLEData) {
             // Update satellites to correct position for nowDate
-            // for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
+            // for (const [index, sat] of Object.entries(this.TLEData.satData)) {
             //     const success = this.updateSatelliteSprite(sat.spriteText, sat, nowDate)
             // }
 
@@ -839,36 +886,33 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             // get the forward vector (-z) of the camera matrix, for perp distance
             const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
 
-
-            // Update satellites to correct position for nowDate
-//            for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-            for (let i = camera.satStartTime; i < this.TLEData.satrecs.length; i++) {
-                const sat = this.TLEData.satrecs[i];
+            for (let i = camera.satStartTime; i < this.TLEData.satData.length; i++) {
+                const satData = this.TLEData.satData[i];
 
                 // satellites might have invalid positions if we load a TLE that's not close to the time we are calculating for
-                if (sat.invalidPosition) {
+                // this would be updated when updating the satellites position
+                if (satData.invalidPosition) {
+                    i++;
                     continue;
                 }
 
                 // stagger updates unless it has an arrow.
-                if ((i - camera.satStartTime) % camera.satTimeStep !== 0 && !sat.hasArrow)
+                if ((i - camera.satStartTime) % camera.satTimeStep !== 0 && !satData.hasArrow) {
+                    i++;
                     continue;
+                }
 
-                assert(sat.eus !== undefined, `sat.eus is undefined, i= ${i}, this.TLEData.satrecs.length = ${this.TLEData.satrecs.length} `)
+                assert(satData.eus !== undefined, `satData.eus is undefined, i= ${i}, this.TLEData.satData.length = ${this.TLEData.satData.length} `)
 
-                const satPosition = sat.eus;
+                const satPosition = satData.eus;
 
                 const camToSat = satPosition.clone().sub(this.camera.position)
 
                 // get the perpendicular distance to the satellite, and use that to scale the name
                 const distToSat = camToSat.dot(cameraForward);
                 const nameScale  = 0.025 * distToSat * tanHalfFOV;
-                const sprite = sat.spriteText;
+                const sprite = satData.spriteText;
                 sprite.scale.set(nameScale * sprite.aspect, nameScale, 1);
-
-
-
-
 
                 let scale = 0.1;                // base value for scale
                 let darknessMultiplier = 0.3    // if in dark, multiply by this
@@ -889,7 +933,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                     } else {
                         fade = 0;
                         scale *= darknessMultiplier;
-                        this.removeSatArrows(sat);
+                        this.removeSatArrows(satData);
                     }
                 }
 
@@ -930,21 +974,21 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             scale *= glintScale
 
                             // arrows from camera to sat, and from sat to sun
-                            var arrowHelper = DebugArrowAB(sat.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
-                            var arrowHelper2 = DebugArrowAB(sat.name + "sun", satPosition,
+                            var arrowHelper = DebugArrowAB(satData.name, this.camera.position, satPosition, (belowHorizon?"#303030":"#FF0000"), true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
+                            var arrowHelper2 = DebugArrowAB(satData.name + "sun", satPosition,
                                 satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
-                           // var arrowHelper3 = DebugArrowAB(sat.name + "reflected", satPosition,
+                           // var arrowHelper3 = DebugArrowAB(satData.name + "reflected", satPosition,
                            //     satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
-                            sat.hasArrow = true;
+                            satData.hasArrow = true;
                         } else {
-                            this.removeSatArrows(sat);
+                            this.removeSatArrows(satData);
 
                             // do the scale again to incorporate al
-                            // sat.sprite.scale.set(scale, scale, 1);
+                            // satData.sprite.scale.set(scale, scale, 1);
 
                         }
                     } else {
-                        this.removeSatArrows(sat);
+                        this.removeSatArrows(satData);
                     }
                 }
 
@@ -1400,105 +1444,19 @@ void main() {
 
             // we no longer use individual sprites for the satellites
             // but they are still used for text.
-            for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-                // sat.sprite.material.dispose();
+            for (const [index, satData] of Object.entries(this.TLEData.satData)) {
+                // satData.sprite.material.dispose();
                 // this.satelliteGroup.remove(sat.sprite)
                 //sat.sprite = null;
 
-                sat.spriteText.material.dispose();
-                this.satelliteTextGroup.remove(sat.spriteText)
-                sat.spriteText = null;
+                satData.spriteText.material.dispose();
+                this.satelliteTextGroup.remove(satData.spriteText)
+                satData.spriteText = null;
             }
-            this.TLEData = undefined;
+            this.satData = undefined;
         }
     }
 
-
-
-//     addSatellites(scene, textGroup) {
-//
-//         assert(Sit.lat !== undefined, "addSatellites needs Sit.lat")
-//         assert(Sit.lon !== undefined, "addSatellites needs Sit.lon")
-//
-//         // Setup the sprite material
-//         const spriteMap = new TextureLoader().load(SITREC_ROOT+'data/MickStar.png'); // Load a star texture
-//
-//         const spriteMaterial = new SpriteMaterial({
-//             map: spriteMap,
-//             depthTest:true,
-//             color: 0x8080ff});
-//
-//
-//
-//
-// // Create Satellites. At this point duplicate TLE entries will have been removed
-//         // ALTHOUGH - we might want to keep them all, and refine which one is used based on time?
-//         let date = this.in.startTime.dateNow;
-//         this.satelliteSprites = []
-//
-//         for (const [index, sat] of Object.entries(this.TLEData.satrecs)) {
-//             const sprite = new Sprite(spriteMaterial);
-//             sat.sprite = sprite
-//
-//             // Add sprite to scene. Position is set later by updateSatelliteSprite
-//             const scale = 20
-//             sprite.scale.set(scale, scale, 1);
-//
-//             scene.add(sprite);
-//
-//             var name = sat.name.replace("0 STARLINK","SL").replace("STARLINK","SL");
-//
-//             const spriteText = new SpriteText(name,5);
-//             sat.spriteText = spriteText
-//             textGroup.add(spriteText);
-//
-//             this.updateSatelliteSprite(sprite, sat, date)
-//
-//         }
-//
-//     }
-
-
-//     updateSatelliteSprite(sprite, satrec1, date)
-//     {
-//         const positionAndVelocity = satellite.propagate(satrec1, date);
-//
-//         // hardwired to used the lookCamera
-//         // theoretically could do it for both viewports
-//         // but the lookCamera is the one where we will see individual satellites
-//         const camera = this.camera;
-//
-//         if (positionAndVelocity && positionAndVelocity.position) {
-//             const positionEci = positionAndVelocity.position;
-//
-//             var gmst   = satellite.gstime(date);
-//             var ecefK   = satellite.eciToEcf(positionEci, gmst)
-//             const ecef= V3(ecefK.x*1000,ecefK.y*1000,ecefK.z*1000)
-//             const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
-//             const eus = V3(enu.x, enu.z, -enu.y)
-//
-
-//
-//             // Set the position and scale of the sprite
-//             sprite.position.set(eus.x, eus.y, eus.z);
-//
-//             // Calculate distance from camera to sprite
-//             const distance = camera.position.distanceTo(sprite.position);
-//
-//             // Calculate scale to make the sprite appear the same size on screen
-//             let scale =  0.010 * distance * Math.tan((camera.fov / 2) * (Math.PI / 180));
-//
-//             scale *= Sit.starScale ?? 1;
-//
-//             // Set the sprite scale
-// //            sprite.scale.set(scale, scale, 1);
-//             sprite.scale.set(scale * 2 * sprite.aspect, scale * 2, 1);
-//
-//
-//             return true;
-//         }
-//         return false;
-//     }
 
 
     addSatellites(scene, textGroup) {
@@ -1508,10 +1466,13 @@ void main() {
         // Define geometry for satellites
         this.satelliteGeometry = new BufferGeometry();
 
+
+        const len = this.TLEData.satData.length;
+
         // Allocate arrays for positions and colors
-        let positions = new Float32Array(this.TLEData.satrecs.length * 3); // x, y, z for each satellite
-        let colors = new Float32Array(this.TLEData.satrecs.length * 3); // r, g, b for each satellite
-        let magnitudes = new Float32Array(this.TLEData.satrecs.length); // magnitude for each satellite
+        let positions = new Float32Array(len * 3); // x, y, z for each satellite
+        let colors = new Float32Array(len * 3); // r, g, b for each satellite
+        let magnitudes = new Float32Array(len); // magnitude for each satellite
 
         // Custom shaders
         const customVertexShader = `
@@ -1573,8 +1534,8 @@ void main() {
             depthTest: true,
         });
 
-        for (let i = 0; i < this.TLEData.satrecs.length; i++) {
-            const sat = this.TLEData.satrecs[i];
+        for (let i = 0; i < this.TLEData.satData.length; i++) {
+            const sat = this.TLEData.satData[i];
 
             // Calculate satellite position
             const position = V3();
@@ -1744,7 +1705,7 @@ void main() {
         const timeMS = date.getTime();
 
         this.timeStep = 2000
-        const numSats = this.TLEData.satrecs.length;
+        const numSats = this.TLEData.satData.length;
 
         // if there's only a few satellites, use a smaller time step
         if (numSats < 100) {
@@ -1759,77 +1720,78 @@ void main() {
 
         let validCount = 0;
         for (let i = 0; i < numSats; i++) {
-            const sat = this.TLEData.satrecs[i];
+            const satData = this.TLEData.satData[i];
+            const satrec = bestSat(satData.satrecs, date);
 
             // Satellites move in nearly straight lines
             // so interpolate every few seconds
-            if (sat.timeA === undefined || timeMS < sat.timeA || timeMS > sat.timeB) {
+            if (satData.timeA === undefined || timeMS < satData.timeA || timeMS > satData.timeB) {
 
-                sat.timeA = timeMS;
-                if (sat.timeB === undefined) {
+                satData.timeA = timeMS;
+                if (satData.timeB === undefined) {
                     // for the first one we spread it out
                     // so we end up updating about the same number of satellites per frame
-                    sat.timeB = timeMS + Math.floor(1 + this.timeStep * (i/numSats));
+                    satData.timeB = timeMS + Math.floor(1 + this.timeStep * (i/numSats));
                 } else {
-                    sat.timeB = timeMS + this.timeStep;
+                    satData.timeB = timeMS + this.timeStep;
                 }
-                const dateB = new Date(sat.timeB)
-                sat.eusA = this.calcSatUES(sat, date)
-                sat.eusB = this.calcSatUES(sat, dateB)
+                const dateB = new Date(satData.timeB)
+                satData.eusA = this.calcSatUES(satrec, date)
+                satData.eusB = this.calcSatUES(satrec, dateB)
             }
 
 
 
             // if the position can't be calculated then A and/or B will be null
             // so just skip over this
-            if (sat.eusA !== null && sat.eusB !== null) {
+            if (satData.eusA !== null && satData.eusB !== null) {
 
                 // calculate the velocity from A to B in m/s
-                const velocity = sat.eusB.clone().sub(sat.eusA).multiplyScalar(1000 / (sat.timeB - sat.timeA)).length();
+                const velocity = satData.eusB.clone().sub(satData.eusA).multiplyScalar(1000 / (satData.timeB - satData.timeA)).length();
 
                 // Starlink is typically 7.5 km/s, so if it's much higher than that, then it's probably an error
                 // I use 11,000 as an upper limit to include highly elliptical orbits, see:
                 // https://space.stackexchange.com/questions/48830/what-is-the-fastest-satellite-in-earth-orbit
                 if (velocity < 5000 || velocity > 11000) {
                     // if the velocity is too high, then we assume it's an error and skip it
-                    sat.invalidPosition = true;
+                    satData.invalidPosition = true;
                 } else {
 
                     // Otherwise, we have a valid A and B, so do a linear interpolation
-                    //sat.eus = sat.eusA.clone().add(sat.eusB.clone().sub(sat.eusA).multiplyScalar(
-                    //    (timeMS - sat.timeA) / (sat.timeB - sat.timeA)
+                    //satData.eus = satData.eusA.clone().add(satData.eusB.clone().sub(satData.eusA).multiplyScalar(
+                    //    (timeMS - satData.timeA) / (satData.timeB - satData.timeA)
                     //));
 
                     // for optimization do this directly
                     // Calculate the normalized time value
-                    var t = (timeMS - sat.timeA) / (sat.timeB - sat.timeA);
+                    var t = (timeMS - satData.timeA) / (satData.timeB - satData.timeA);
 
                     // Perform the linear interpolation (lerp) directly on x, y, z
-                    sat.eus.x = sat.eusA.x + (sat.eusB.x - sat.eusA.x) * t;
-                    sat.eus.y = sat.eusA.y + (sat.eusB.y - sat.eusA.y) * t;
-                    sat.eus.z = sat.eusA.z + (sat.eusB.z - sat.eusA.z) * t;
+                    satData.eus.x = satData.eusA.x + (satData.eusB.x - satData.eusA.x) * t;
+                    satData.eus.y = satData.eusA.y + (satData.eusB.y - satData.eusA.y) * t;
+                    satData.eus.z = satData.eusA.z + (satData.eusB.z - satData.eusA.z) * t;
 
 
                     // Update the position in the geometry's attribute
-                    positions[i * 3] = sat.eus.x;
-                    positions[i * 3 + 1] = sat.eus.y;
-                    positions[i * 3 + 2] = sat.eus.z;
-                    sat.invalidPosition = false;
+                    positions[i * 3] = satData.eus.x;
+                    positions[i * 3 + 1] = satData.eus.y;
+                    positions[i * 3 + 2] = satData.eus.z;
+                    satData.invalidPosition = false;
 
-                    sat.spriteText.position.set(sat.eus.x, sat.eus.y, sat.eus.z);
+                    satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
 
                     // draw an arrow from the satellite in the direction of its velocity (yellow)
                     if (this.showSatelliteTracks) {
-                        let A = sat.eusA.clone()
-                        let dir = sat.eusB.clone().sub(sat.eusA).normalize()
-                        DebugArrow(sat.name+"_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
+                        let A = satData.eusA.clone()
+                        let dir = satData.eusB.clone().sub(satData.eusA).normalize()
+                        DebugArrow(satData.name+"_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
                     }
 
                     // Arrow from satellite to ground (red)
                     if (this.showSatelliteGround) {
-                        let A = sat.eusA.clone()
+                        let A = satData.eusA.clone()
                         let B = pointOnGround(A)
-                        DebugArrowAB(sat.name+"_g", A, B, "#00FF00", true, this.satelliteGroundGroup, 20, LAYER.MASK_LOOKRENDER)
+                        DebugArrowAB(satData.name+"_g", A, B, "#00FF00", true, this.satelliteGroundGroup, 20, LAYER.MASK_LOOKRENDER)
                     }
 
 
@@ -1837,11 +1799,11 @@ void main() {
             } else {
                 // if the new position is invalid, then we make it invisible
                 // so we will need to flag it as invalid
-                sat.invalidPosition = true;
+                satData.invalidPosition = true;
             }
 
-            if (sat.invalidPosition) {
-                this.removeSatArrows(sat);
+            if (satData.invalidPosition) {
+                this.removeSatArrows(satData);
                 // to make it invisible, we set the magnitude to 0 and position to a million km away
                 magnitudes[i] = 0;
                 positions[i * 3] = 1000000000;
@@ -1857,12 +1819,12 @@ void main() {
         this.satelliteGeometry.attributes.position.needsUpdate = true;
     }
 
-    removeSatArrows(sat)   {
-        if (sat.hasArrow) {
-            removeDebugArrow(sat.name)
-            removeDebugArrow(sat.name + "sun")
-            removeDebugArrow(sat.name + "reflected")
-            sat.hasArrow = false;
+    removeSatArrows(satData)   {
+        if (satData.hasArrow) {
+            removeDebugArrow(satData.name)
+            removeDebugArrow(satData.name + "sun")
+            removeDebugArrow(satData.name + "reflected")
+            satData.hasArrow = false;
         }
     }
 
@@ -2097,6 +2059,80 @@ export function addNightSky(def) {
     return nightSky;
 }
 
-// TODO: check differences between this and the above GST calculator function.
+// given an array of satrecs, return the one that best matches the date
+// ie the one that is closest to the date, but before it
+// if there are none before it, then return the first one after
+export function bestSat(sats, date) {
+    // Convert the date object to the TLE format
+    //
+
+    const tleDate = (dateToTLE(date));
+    // convert to a number for comparison
+    const dateNum = Number(tleDate);
+
+
+
+
+    // get the last one
+//    var best = sats[sats.length-1];
+
+    var best = sats[0];
+    // if it's the only one, then return it
+    if (sats.length === 1) {
+        return best;
+    }
+
+    var bestDate = 0;
+     for (const sat of sats) {
+         const satDate = sat.epochyr*1000 + sat.epochdays;
+         if (satDate < dateNum) {
+             // we've got a date before the target date
+             // see if it's closer than the current best
+                if (satDate > bestDate) {
+                    best = sat;
+                    bestDate = satDate;
+                }
+         }
+    }
+     // if nothing is found then it's just going to return the first one
+    // which will be the earliest on the list
+    return best;
+
+}
+
+
+/**
+ * Converts a Date object to a TLE formatted date string (YYDDD.DDDDDD).
+ * @param {Date} date - The date to convert.
+ * @returns {string} A string representing the TLE epoch.
+ */
+function dateToTLE(date) {
+    // Extract the last two digits of the UTC full year.
+    const year = date.getUTCFullYear() % 100;
+
+    // Calculate the day of the year.
+    // Create a Date object representing the start of the year in UTC.
+    const startOfYear = new Date(Date.UTC(date.getUTCFullYear(), 0, 0));
+    // Compute the difference in milliseconds.
+    const diff = date - startOfYear;
+    const oneDay = 1000 * 60 * 60 * 24;
+    // Floor the result to get an integer day count. (January 1st will yield 1.)
+    const dayOfYear = Math.floor(diff / oneDay);
+
+    // Compute the fractional part of the day.
+    // (The remainder of milliseconds in the current day divided by total ms per day.)
+    const fractionalDay = (diff % oneDay) / oneDay;
+
+    // Format the parts:
+    // Year: ensure two digits.
+    const yearStr = year.toString().padStart(2, '0');
+    // Day of year: ensure three digits.
+    const dayStr = dayOfYear.toString().padStart(3, '0');
+    // Fraction: formatted to six decimal places (includes the leading "0" before the decimal point).
+    // We remove the leading zero to have just the ".DDDDDD" portion.
+    const fractionStr = fractionalDay.toFixed(6).substring(1);
+
+    return `${yearStr}${dayStr}${fractionStr}`;
+}
 
 
