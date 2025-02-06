@@ -69,7 +69,7 @@ if (!isset($LOADED_CONFIG)) {
 
     // replaces cachemaps-config.php
     // and is specific to the Mapbox API
-    $token = "?access_token=pk.eyJ1IjoibWlja3dlc3QiLCJhIjoiY2wzeW40enA1MGJsbDNicDA3bW9vdThnMyJ9.Yn3QWDtBHBdCd1aiJtdIQA";
+    $token = "?access_token=pk.eyJ1IjoibWljaSOME-EXAMPLE-TOKENThnMyJ9.Yn3QWDtd777723aiJtdIQA";
     $token_url = "api.mapbox.com";
 
 //
