@@ -33,8 +33,8 @@ Here's the [famous Aguadilla video](https://www.metabunk.org/sitrec/?sitch=agua)
 
 Sitrec uses or ingests a variety of data sources
 
-- ADS-B files in KML format
-- TLE files (for satellites, mostly Starlink)
+- ADS-B files in KML format from ADSB Exchange, FlightAware, Planefinder, and others
+- TLE files in Two or Three Line Element format (for satellites, mostly Starlink)
 - Star catalogs (BSC, etc.)
 - Video (mp4, limited support)
 - DJI Drone tracks from Airdata as .csv
@@ -52,10 +52,16 @@ Some types of situations covered:
   - From a fixed position
 - Viewing the sky (with accurate planets and satellites)
 
+## Installation Prerequisites
 
-## Simple install
+- web server (e.g. Nginx) with
+  - php
+  - https support (for CORS, can be self-signed for local dev)
+- node.js (for building, with npm)
 
-Assuming we want to install the build environment in sitrec-test-dev and the local server environment is a folder sittest.
+## Simple install Mac/Linux
+
+Assuming we want to install the dibuild environment in sitrec-test-dev and the local server environment is a folder sittest.
 
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
@@ -91,8 +97,62 @@ Build into the local web folder we defined earlier
 npm run build
 ```
 
+## Simple Install Windows
 
 
+```bat
+git clone https://github.com/mickwest/sitrec sitrec-test-dev
+cd sitrec-test-dev
+copy config.js.example config.js
+copy config-install.js.example config-install.js
+copy .env.example .env
+copy sitrecServer\config.php.example sitrecServer\config.php
+```
+
+Assuming you want to install in a folder called "glass" that's off the root of your local web serve
+
+```bash
+mkdir c:\\nginx\\html\\glass\\sitrec
+cd c:\\nginx\\html\\glass\\sitrec
+mkdir sitrec
+mkdir sitrec-cache
+mkdir sitrec-upload
+mkdir sitrec-videos
+```
+
+Edit config-install.js
+Set dev_path to /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec
+Set prod_path to any folder you can use for staging the deploy build (if needed)
+
+Example:
+```javascript
+module.exports = {
+    dev_path: 'c:\\nginx\\html\\glass\\sitrec',
+    prod_path: 'c:\\users\\mick\\sitrec-deploy'
+}
+```
+
+Edit config.js to set the local test path
+```javascript
+const SITREC_LOCAL = "https://"+SITREC_DOMAIN+port+"/glass/sitrec/"
+and 
+const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/glass/sitrec/sitrecServer/"
+```
+
+Edit sitrecServer/config.php, e.g. 
+```php
+    $urlRoot = $_SERVER['HTTP_HOST'] . "/glass";
+```
+
+Install all needed node modules
+```bash
+npm install
+```
+
+Build into the local web folder we defined earlier
+```bash
+npm run build
+```
 
 
 ## Code overview
