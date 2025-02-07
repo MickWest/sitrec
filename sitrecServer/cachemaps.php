@@ -147,7 +147,6 @@ if (file_exists($cachedFile)) {
     if (function_exists('curl_init')) {
         echo "<br>Using curl";
         $ch = curl_init();
-        echo "$ch  ". $ch;
         curl_setopt($ch, CURLOPT_URL, $url . $extra);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
