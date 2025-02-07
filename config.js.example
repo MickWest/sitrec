@@ -1,254 +1,97 @@
-// HOST and LOCAL are the root locations of Sitrec
-// HOST = Remote host, like metabunk.org
-// LOCAL = My dev machine, for development and debugging
-// note my local is in dist, one level deeper than the HOST because I run directly from the dev build
+<?php
 
-import { md5 } from 'js-md5';
+/*
+ * This is a simpler configuration file that replaces cachemaps-config.php, other config files, and some in-line settings
+ * TIP: to check for simple syntax errors, load this directly.
+ * https://localhost/sitrec/sitRecServer/config.php
 
-export const isConsole = (typeof window == 'undefined');
+ */
 
-// While we can automatically detect the host, there are situations when we want/need to run
-// the sitrecServer tools on the remote host, not on the local dev machine
-// so we need to hardwire it below.
-//export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
+if (!isset($LOADED_CONFIG)) {
+    $LOADED_CONFIG = true;
 
-let port = "";
+    // urlRoot is the base URL for the site, e.g. "https://www.metabunk.org"
+    // by default we have shorting, caching, and uploads as subdirectories of this
+    $urlRoot = $_SERVER['HTTP_HOST'] . "/";
 
-if (!isConsole) {
-    port = window.location.port;
-    if (port) {
-        port = ":" + port;
-    }
+
+    // serverRoot is the base directory for the site
+    // the default configuration is:
+    // $serverRoot /
+    //     $sitrecRoot /   (usually "sitrec/")
+    //         sitrecServer / (where all the PHP files are)
+    //             config.php   (this file)
+    //     sitrec-upload /  (for user uploads, sitches, videos, tracks, etc)
+    //     sitrec-cache / (cache for map tiles)
+    //     u / (shortened URLs)
+
+
+    // serverRoot is the base directory for the site,
+    // It can be an absolute path, like "/var/www/html"
+    // or a relative path from the current directory (i.e. from sitrecServer/config.php)
+    // e.g. "../../" or "../"
+    $serverRoot = "../../";
+
+    // sitrecRoot is the base directory for the sitrec application
+    $sitrecRoot = $serverRoot . "sitrec/";
+
+    // fileRoot is the base directory for sitrec-upload, sitrec-cache, and u
+    // the default installation has these as subdirectories of $serverRoot
+    // but you could change this to be an absolute path
+    // or to use $sitrecRoot as the base
+    $fileRoot = $serverRoot;
+
+    // The following are the DEFAULT values for the various directories
+    // you can change them, so long as you change both the directory and the URL
+    $uploadDir = $serverRoot . "sitrec-upload/";
+    $uploadURL = $urlRoot . "sitrec-upload/";
+
+    $cache_base_path = $serverRoot . "sitrec-cache/";
+    $cache_base_url = $urlRoot . "sitrec-cache/";
+
+    // From shortener.php, for the short URLs
+    $shortenerDir = $serverRoot . 'u/';
+    $shortenerURL = $urlRoot . "u/";
+
+    // Array of acceptable domains for caching (in cachemaps.php)
+    $acceptable_domains = [
+        'mickwest.com',  // for testing with the example above
+        'c.tile.openstreetmap.org',
+        'api.mapbox.com',
+        'tiles.maps.eox.at',
+        //     's3.amazonaws.com', // We use this directly, no cache
+        'geoint.nrlssc.org',
+        // Add more domains as needed
+    ];
+
+    // Array of acceptable image extensions for caching (in cachemaps.php)
+    // remove this if you want to allow all extensions
+    $acceptable_extensions = [ "png", "jpg", "tiff", "jpeg", "gif", "webp", "svg", "bmp", "ico", "tif"];
+
+    // replaces cachemaps-config.php
+    // and is specific to the Mapbox API
+    $token = "?access_token=pk.eyJ1IjoibsddsgfdgdfggdfJqb2t3ZmY3MmY4aiJ9.HmBetO0y2IWeyI_p1cO5NA";
+    $token_url = "api.mapbox.com";
+
+//
+// replaces s3-config.php
+    $s3creds = ["accessKeyId" => "AKIdsfgdfgIE6D6",
+        "secretAccessKey" => "GRF8M7/UTV/TrXsdfgdsfgsK3LpsKyX",
+        "region" => "us-west-2",
+        "bucket" => "sitrec",
+        "acl" => "public-read"
+    ];
+    $useAWS = false;
+
+// replaces space-data-config.php
+    $spaceDataUsername = 'com@example.com';
+    $spaceDataPassword = 'sdfgdsfgdf.';
+
+// From proxy.php
+    // Lookup table for requests
+    $request_url_map = array(
+        "CURRENT_STARLINK" => "https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle"
+    );
+
+
 }
-
-export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.hostname)
-//const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
-const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.host + window.location.pathname));
-
-const SITREC_LOCAL = "https://"+SITREC_DOMAIN+port+"/sitrec/"
-
-// console applications are often run from just outside the source tree
-const SITREC_CONSOLE_ROOT = "./sitrec/"
-
-// regular expression that allows us to detect if we are local
-// for http://localhost, or https://localhost
-// or https://192.168.*
-const SITREC_LOCAL_RE = '^https?:\/\/(localhost|192\.168)'
-
-// For the various php based servers in sitrecServer it's different,
-// as it's not included in the dist folder
-// and needs to be deployed separately
-// you can have these wherever you like.
-// (on the same domain, as the proxy allows us to safely bypass same-origin policy
-export const SITREC_DEV_DOMAIN = "www.metabunk.org"
-const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
-const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
-const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/sitrec/sitRecServer/"
-
-// local host might not have a capability to act as a php server,
-// so we can tell Sitrec to use the remote for the proxies
-// by setting SITREC_SERVER_OK_LOCAL to false;
-// This makes development a bit harder, as you have to have development code on production server
-// you can set SITREC_LOCAL_SERVER to a second non-local address for testing
-// and also set SITREC_SERVER_OK_LOCAL to true to force it to use that.
-const SITREC_SERVER_OK_LOCAL = true;
-
-const re_localhost = new RegExp(SITREC_LOCAL_RE);
-
-export var isLocal = false;
-
-var checked = false;
-
-export function checkLocal() {
-    if (!checked) {
-        if(isConsole) {
-            console.log("Running as a console application")
-            isLocal = true;
-        } else {
-            console.log("Running on " + window.location.href)
-            if (re_localhost.test(window.location.href)) {
-                console.log("Running on localhost")
-                isLocal = true;
-            } else {
-                console.log("Not running on localhost");
-            }
-        }
-        checked = true;
-    }
-}
-
-// This is called at the start of index.js
-// but, we want to set the paths here and now, so we
-// force a call before that. Do we still need to call it again?
-checkLocal();
-
-export const SITREC_ROOT = (isConsole ? SITREC_CONSOLE_ROOT : (isLocal ? SITREC_LOCAL : SITREC_HOST))
-export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
-    (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
-export const SITREC_UPLOAD = SITREC_HOST + "../sitrec-upload/"
-export const SITREC_CACHE = SITREC_HOST + "../sitrec-cache/"
-
-console.log(`SITREC_DOMAIN = ${SITREC_DOMAIN}`)
-console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
-console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
-
-// note, don't use this _configParams in the code, use configParams from login.js
-// as it's a global variable that is set up in login.js
-// and that handles the case where _configParams is not defined
-export const _configParams = {
-   rehostRequiresLogin: true,
-
-    customMapSources: {
-
-        mapbox: {
-            name: "MapBox",
-            mapURL: (z, x, y, layer) => {
-                // let's try get the md5 hash of the URL
-
-                const url = `https://api.mapbox.com/v4/mapbox.${layer}/${z}/${x}/${y}@2x.jpg80`;
-               const urlMD5 = md5(url);
-
-
-                // This calculates the correct DIRECT URL for the cache
-                // so we can try this first and if it fails, then try the server
-                // this is much faster than trying the server first
-                // we add "?prefetch=1" to the URL to ensure it's a different cached version
-                // to the one that is returned from cachemaps.php
-                // otherwise Cloudflare and others will think it's not there even after
-                // cachemaps.php has cached it
-                const url1 = SITREC_CACHE + urlMD5 + ".jpg" + "?prefetch=1";
-
-
-                // and this the the request to the server to cache it
-                // if url1 does not exist then try url2
-                const url2 = SITREC_SERVER + "cachemaps.php?url=" +
-                    encodeURIComponent(url)
-
-                return[url1, url2];
-//                return url2;
-            },
-            layers: {
-                "satellite": {
-                    type: "jpg", //not used here yet
-                }
-            },
-            layer: "satellite"
-        },
-        osm: {
-            name: "Open Streetmap",
-            mapURL: (z,x,y) => {
-                return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://c.tile.openstreetmap.org/${z}/${x}/${y}.png`)
-            },
-        },
-        maptiler: {
-            name: "MapTiler",
-
-            // TODO - layers NEED TO include more info, like
-            // MinZoom, MaxZoom, image format (png, jpg, etc)
-            // e.g. here basic-v2 is png, 0-22, etc.
-            // but satellite-v2 is jpg, so we need to have the correct extension in the URL
-
-            layers: {
-                "satellite-v2": {
-                    minZoom: 0,
-                    maxZoom: 22,
-                    type: "jpg",
-                },
-                "satellite-mediumres": {
-                    minZoom: 0,
-                    maxZoom: 22,
-                    type: "jpg",
-                },
-
-
-            },
-
-            mapURL: (z,x,y, layerName, layerType) => {
-                return(`https://api.maptiler.com/tiles/${layerName}/${z}/${x}/${y}.${layerType}?key=cnVJFChj7wZSQz7jBJvR`); // key is metabunk specific - replace with your own
-            },
-        },
-        eox: {
-            name: "EOX",
-            mapURL: (z,x,y) => {
-                return SITREC_SERVER+"cachemaps.php?url=" + encodeURIComponent(`https://tiles.maps.eox.at/wmts?layer=s2cloudless_3857&style=default&tilematrixset=g&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&TileMatrix=${z}&TileCol=${x}&TileRow=${y}`)
-            },
-        },
-
-        // Try make this just use the base url https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery
-        // or perhaps just the capabilities URL?
-
-        NRL_WMS: {
-            name: "Naval Research Laboratory WMS",
-            mapURL: function (z,x,y, layerName, layerType) {
-                return this.mapProjectionTextures.wmsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?",layerName,z,x,y);
-            },
-            capabilities: "https://geoint.nrlssc.org/nrltileserver/wms/category/Imagery?REQUEST=GetCapabilities&SERVICE=WMS",
-            layer: "ImageryMosaic",
-
-        },
-
-        NRL_WMTS: {
-            name: "Naval Research Laboratory WMS Tile",
-
-            mapURL: function (z,x,y,  layerName, layerType) {
-                return this.mapProjectionTextures.wmtsGetMapURLFromTile("https://geoint.nrlssc.org/nrltileserver/wmts",layerName,z,x,y);
-            },
-            capabilities: "https://geoint.nrlssc.org/nrltileserver/wmts?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS",
-            layer: "BlueMarble_AUTO",
-            mapping: 4326,
-
-        },
-
-    },
-
-    customElevationSources: {
-        AWS_Terrarium: {
-            name: "AWS Terrarium",
-
-            mapURL: (z,x,y) => {
-                return `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`
-            },
-
-            maxZoom: 14,
-            minZoom: 0,
-            tileSize: 256,
-            attribution: "AWS Terrarium Elevation Data",
-        },
-
-        NationalMap: {
-            name: "National Map 3DEP GeoTIFF",
-            // here's a working example URL
-            // https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?f=image&format=tiff&bbox=-118.5,33.3,-118.3,33.5&bboxSR=4326&imageSR=4326&size=500,500
-            mapURL: function (z,x,y, layerName, layerType) {
-                return this.mapProjectionElevation.getWMSGeoTIFFURLFromTile("https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage",z,x,y);
-            },
-            maxZoom: 14,
-            minZoom: 0,
-            tileSize: 256,
-            attribution: "National Map 3DEP GeoTIFF",
-            mapping: 4326,
-
-
-        }
-
-    },
-
-    // useful links to add to the help menu. Add your own here
-    extraHelpLinks: {
-        "ADS-B Helper Chatbot": "https://www.chatbase.co/chatbot-iframe/xPKq8RfpIPtnNw_dptU4p",
-        "ADSBExchange": "https://globe.adsbexchange.com/",
-        "FlightAware": "https://flightaware.com/",
-        "PlaneFinder": "https://planefinder.net/",
-    },
-
-
-
-};
-
-////////////////////////////////////////////////
-// / Gimbal, GoFast, flir1, agua, dume, video, hayle, 29palms, SWR, kml, kansas,
-// aa2292, lakemichigan, chilean, porterville, folsomlake, n14aq, swr, swrcss
-// modelinspector, custom
-// This is the sitch that is loaded when running on local
-export const localSituation = "custom";
-//////////////////////////////////////////////
