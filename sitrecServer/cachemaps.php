@@ -156,6 +156,7 @@ if (file_exists($cachedFile)) {
 
     // if we have curl, then use it
     if (function_exists('curl_init')) {
+        echo "<br>Using curl";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url . $extra);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -167,13 +168,14 @@ if (file_exists($cachedFile)) {
     } else {
         // no curl, so use file_get_contents
         // reportedly less reliable
+        echo "<br>Using file_get_contents";
         $dataBlob = file_get_contents($url . $extra, false, $context);
     }
 
 
     if ($dataBlob == false || strlen($dataBlob) === 0) {
         echo "<br>FAILED to fetch " . $url . $extra;
-        if ($dataBlob == false) echo "<br>file_get_contents returned false";
+        if ($dataBlob == false) echo "<br>that returned false";
         else echo "<br>$dataBlob zero size";
         ob_end_flush();
             exit();
