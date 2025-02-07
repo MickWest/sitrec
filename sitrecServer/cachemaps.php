@@ -153,6 +153,15 @@ if (file_exists($cachedFile)) {
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10");
         $dataBlob = curl_exec($ch);
+        if ($dataBlob === false) {
+            echo "<br>FAILED to fetch " . $url . $extra;
+            $info = curl_getinfo($ch);
+            echo '<pre>';
+            print_r($info);
+            echo '</pre>';
+            ob_end_flush();
+            exit();
+        }
         curl_close($ch);
 
     } else {
