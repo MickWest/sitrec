@@ -153,16 +153,23 @@ if (file_exists($cachedFile)) {
     );
     $context = stream_context_create($options);
 
-//    $dataBlob = file_get_contents($url . $extra, false, $context);
 
-    // Use curl instead of file_get_contents
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $url . $extra);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10");
-    $dataBlob = curl_exec($ch);
-    curl_close($ch);
+    // if we have curl, then use it
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url . $extra);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10");
+        $dataBlob = curl_exec($ch);
+        curl_close($ch);
+
+    } else {
+        // no curl, so use file_get_contents
+        // reportedly less reliable
+        $dataBlob = file_get_contents($url . $extra, false, $context);
+    }
+
 
     if ($dataBlob == false || strlen($dataBlob) === 0) {
         echo "<br>FAILED to fetch " . $url . $extra;
@@ -171,6 +178,8 @@ if (file_exists($cachedFile)) {
         ob_end_flush();
             exit();
     }
+
+
 
 
     echo "<br>Fetched";
