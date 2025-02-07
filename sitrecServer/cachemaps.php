@@ -147,6 +147,7 @@ if (file_exists($cachedFile)) {
     if (function_exists('curl_init')) {
         echo "<br>Using curl";
         $ch = curl_init();
+        echo "$ch  ". $ch;
         curl_setopt($ch, CURLOPT_URL, $url . $extra);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
@@ -178,7 +179,7 @@ if (file_exists($cachedFile)) {
         if ($dataBlob == false) echo "<br>that returned false";
         else echo "<br>$dataBlob zero size";
         ob_end_flush();
-            exit();
+        exit();
     }
 
 
