@@ -11,7 +11,7 @@ if (!isset($LOADED_CONFIG)) {
 
     // urlRoot is the base URL for the site, e.g. "https://www.metabunk.org"
     // by default we have shorting, caching, and uploads as subdirectories of this
-    $urlRoot = $_SERVER['HTTP_HOST'] . "/";
+    $urlRoot = "https://" . $_SERVER['HTTP_HOST'] . "/";
 
 
     // serverRoot is the base directory for the site
