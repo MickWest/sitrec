@@ -80,7 +80,7 @@ if (!isset($LOADED_CONFIG)) {
         "bucket" => "sitrec",
         "acl" => "public-read"
     ];
-    $useAWS = true;
+    $useAWS = false;
 
 // replaces space-data-config.php
     $spaceDataUsername = 'com@EXAMPLE.com';
