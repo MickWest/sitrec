@@ -111,17 +111,19 @@ copy sitrecServer\config.php.example sitrecServer\config.php
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
 
-```bash
+```bat
+pushd
 mkdir c:\\nginx\\html\\glass
 cd c:\\nginx\\html\\glass
 mkdir sitrec
 mkdir sitrec-cache
 mkdir sitrec-upload
 mkdir sitrec-videos
+popd
 ```
 
 Edit config-install.js
-Set dev_path to /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec
+Set dev_path to the local deployment folder on the web server
 Set prod_path to any folder you can use for staging the deploy build (if needed)
 
 Example:
@@ -141,7 +143,7 @@ const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/glass/sitrec/sitrecS
 
 Edit sitrecServer/config.php, e.g. 
 ```php
-    $urlRoot = $_SERVER['HTTP_HOST'] . "/glass";
+    $urlRoot = $_SERVER['HTTP_HOST'] . "/glass/";
 ```
 
 Install all needed node modules

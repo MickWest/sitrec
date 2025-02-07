@@ -45,13 +45,13 @@ if ($user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
 
 $isLocal = false;
 
-if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
-    // for local testing
-    $storagePath = "https://localhost/sitrec-upload/";
-    $isLocal = true;
-} else {
+//if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
+//    // for local testing
+//    $storagePath = $urlRoot . "sitrec-upload/";
+//    $isLocal = true;
+//} else {
     $storagePath = $uploadURL;  // from config.php
-}
+//}
 
 function writeLog($message) {
 //    global $logPath;
