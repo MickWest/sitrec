@@ -163,6 +163,7 @@ if (file_exists($cachedFile)) {
             echo '<pre>';
             print_r($info);
             echo '</pre>';
+            curl_close($ch);
             ob_end_flush();
             exit();
         }
