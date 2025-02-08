@@ -61,7 +61,7 @@ Some types of situations covered:
 
 ## Simple install Mac/Linux
 
-Assuming we want to install the dibuild environment in sitrec-test-dev and the local server environment is a folder sittest.
+Assuming we want to install the build environment in sitrec-test-dev and the local server environment is a folder sittest.
 
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
@@ -131,18 +131,6 @@ module.exports = {
     dev_path: 'c:\\nginx\\html\\glass\\sitrec',
     prod_path: 'c:\\users\\mick\\sitrec-deploy'
 }
-```
-
-Edit config.js to set the local test path
-```javascript
-const SITREC_LOCAL = "https://"+SITREC_DOMAIN+port+"/glass/sitrec/"
-and 
-const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/glass/sitrec/sitrecServer/"
-```
-
-Edit sitrecServer/config.php, e.g. 
-```php
-    $urlRoot = $_SERVER['HTTP_HOST'] . "/glass/";
 ```
 
 Install all needed node modules

@@ -4,6 +4,7 @@
  * This is a simpler configuration file that replaces cachemaps-config.php, other config files, and some in-line settings
  * TIP: to check for simple syntax errors, load this directly.
  * https://localhost/sitrec/sitRecServer/config.php
+
  */
 
 if (!isset($LOADED_CONFIG)) {
@@ -69,22 +70,22 @@ if (!isset($LOADED_CONFIG)) {
 
     // replaces cachemaps-config.php
     // and is specific to the Mapbox API
-    $token = "?access_token=pk.eyJ1IjoibWljaSOME-EXAMPLE-TOKENThnMyJ9.Yn3QWDtd777723aiJtdIQA";
+    $token = "?access_token=pk.x.x";
     $token_url = "api.mapbox.com";
 
 //
 // replaces s3-config.php
-    $s3creds = ["accessKeyId" => "AKIAEXAMPLE3IE6D6",
-        "secretAccessKey" => "GRF8M7/UTV/TrX+Wg7+gEXAMPLE",
+    $s3creds = ["accessKeyId" => "x",
+        "secretAccessKey" => "xX",
         "region" => "us-west-2",
         "bucket" => "sitrec",
         "acl" => "public-read"
     ];
-    $useAWS = false;
+    $useAWS = true;
 
 // replaces space-data-config.php
-    $spaceDataUsername = 'com@EXAMPLE.com';
-    $spaceDataPassword = 'EXAMPLE.';
+    $spaceDataUsername = 'com@x.com';
+    $spaceDataPassword = 'x*x*x.';
 
 // From proxy.php
     // Lookup table for requests
@@ -93,4 +94,17 @@ if (!isset($LOADED_CONFIG)) {
     );
 
 
+    $server_config = [
+        "UPLOAD" => $uploadURL,
+        "CACHE" => $cache_base_url,
+        "SHORTENER" => $shortenerURL,
+        "useAWS" => $useAWS,
+    ];
+
+
+    // if there is a FETCH_CONFIG parameter, then we are fetching the config
+    if (isset($_GET["FETCH_CONFIG"])) {
+        echo json_encode($server_config);
+        exit (0);
+    }
 }
