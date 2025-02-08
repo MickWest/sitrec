@@ -237,7 +237,8 @@ export function UpdateHUD(text="") {
     // keyInfo += navigator.platform+"<br>"
 
     if (par.showKeyboardShortcuts) {
-        keyInfo = text + "F - Full Screen<br>" +
+        keyInfo = text +
+            "F - Full Screen<br>" +
             "Num-1 - Z Axis Snap<br>" +
             "Num-7 - Y Axis Snap<br>" +
             "Num-3 - X Axis Snap<br>" +
@@ -251,6 +252,8 @@ export function UpdateHUD(text="") {
             "Up - Faster Backwards<br>" +
             "Down - Faster Forwards<br>" +
             "U - Toggle UI (menus)<br>" +
+            "G - Toggle Globe<br>" +
+            "A/B - Measure distance<br>" +
 
             ""
 
