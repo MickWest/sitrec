@@ -1,9 +1,10 @@
-FROM node:21 as build
+FROM node:21 AS build
 
 WORKDIR /build
 
 COPY data ./data
 COPY src ./src
+COPY docs ./docs
 COPY sitrecServer ./sitrecServer
 COPY package.json .
 COPY package-lock.json .
@@ -11,6 +12,7 @@ COPY webpack.*.js .
 COPY webpackCopyPatterns.js .
 COPY docker/docker-config.js ./config.js
 COPY docker/docker-config-install.js ./config-install.js
+COPY .env .
 
 COPY .git .git
 

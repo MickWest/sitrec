@@ -55,12 +55,13 @@ export async function setupConfigPaths() {
 
     let port = "";
 
-    if (!isConsole) {
-        port = window.location.port;
-        if (port) {
-            port = ":" + port;
-        }
-    }
+    // port is included in window.location.origin so is not needed
+    // if (!isConsole) {
+    //     port = window.location.port;
+    //     if (port) {
+    //         port = ":" + port;
+    //     }
+    // }
 
 
 // SITREC_DOMAIN is the domain of the sever we are uploaded to
