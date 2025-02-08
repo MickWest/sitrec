@@ -8,7 +8,7 @@ import {expandSitData} from "./SituationSetup";
 import stringify from "json-stringify-pretty-compact";
 import {makeTrackFromDataFile} from "./TrackManager";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
-import {isConsole} from "./configUtils";
+import {isConsole, setupConfigPaths} from "./configUtils";
 
 
 // These are some parameters used as defaults for a situation
@@ -142,6 +142,10 @@ export class CSituation {
     }
 
     async loadAssets() {
+
+        setupConfigPaths();
+
+
         console.log("++++++++++++++++++++ Loading assets for ", this.name,  " ++++++++++++++++++++++");
         // There's a per-sitch set of files
         // then other flags can cause files to be added, like the night sky

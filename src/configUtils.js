@@ -45,6 +45,14 @@ export let SITREC_DEV_DOMAIN;
 
 export async function setupConfigPaths() {
 
+    // we're allowing this to be called multiple times
+    // Web app should call it as the first thing in index.js
+    // but it's also called from loadAssets in CSituation.js
+    // to ensure it's called before any assets are loaded by the console application which has a different entry point
+    if (SITREC_APP !== undefined) {
+        return;
+    }
+
     let port = "";
 
     if (!isConsole) {
