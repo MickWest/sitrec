@@ -60,7 +60,7 @@ import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
 import {
-    localSituation,
+    localSituation, setupConfigPaths,
     SITREC_APP,
     SITREC_SERVER
 } from "../config";
@@ -116,8 +116,9 @@ let animationFrameId;
 
 checkUserAgent();
 
+await setupConfigPaths();
 
-await getConfigFromServer();
+//await getConfigFromServer();
 
 // quick test of the server config
 // just call config.php

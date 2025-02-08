@@ -1352,6 +1352,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 // check to see if the "kind" is a node type
                 // if so, then create a node of that type
                 // passing in the data as the constructor
+                console.log("Setting up node of kind: " + key)
                 let valid = NodeFactory.validType(key)
 
                 // in console mode the nodes many not already be registered
