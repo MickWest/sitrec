@@ -1,5 +1,4 @@
-import {SITREC_SERVER} from "../config";
-import {isLocal} from "./configUtils";
+import {isLocal, SITREC_SERVER} from "./configUtils";
 
 export function writeToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {

@@ -2,13 +2,13 @@
 ///  DRAG AND DROP FILES?
 import {addTracks} from "./TrackManager";
 import {FileManager, NodeMan, setNewSitchObject, Sit} from "./Globals";
-import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "../config";
 import {cos, getFileExtension, isSubdomain, radians} from "./utils";
 import {par} from "./par";
 import {textSitchToObject} from "./RegisterSitches";
 import {ModelFiles} from "./nodes/CNode3DObject";
 import {LLAToEUS} from "./LLA-ECEF-ENU";
 import {getLocalSouthVector, getLocalUpVector} from "./SphericalMath";
+import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "./configUtils";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {

@@ -52,10 +52,10 @@ import {
     raDec2Celestial,
     raDecToAltAz
 } from "../CelestialMath";
-import {SITREC_APP, SITREC_SERVER} from "../../config";
 import {DragDropHandler} from "../DragDropHandler";
 import {ViewMan} from "../CViewManager";
 import {bestSat} from "../TLEUtils";
+import {SITREC_APP, SITREC_SERVER} from "../configUtils";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');

@@ -9,7 +9,6 @@ import {
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
-import {SITREC_DOMAIN, SITREC_APP, SITREC_SERVER} from "../config";
 import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {CustomManager, Globals, guiMenus, NodeMan, setNewSitchObject, Sit} from "./Globals";
@@ -26,7 +25,7 @@ import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
 import {isCustom1, parseCustom1CSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
-import {isConsole, isLocal} from "./configUtils";
+import {isConsole, isLocal, SITREC_APP, SITREC_DOMAIN, SITREC_SERVER} from "./configUtils";
 
 
 // The file manager is a singleton that manages all the files

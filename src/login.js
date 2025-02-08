@@ -5,7 +5,8 @@
 // so we don't show the rehost button
 
 import {Globals} from "./Globals";
-import {_configParams, SITREC_SERVER} from "../config";
+import {_configParams} from "../config";
+import {SITREC_SERVER} from "./configUtils";
 
 // we want to import configParams from config.js
 // but it might not exist, so need to check

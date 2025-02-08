@@ -50,8 +50,8 @@ import {commonJetLabels} from "./CommonSitch";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeInterpolateTwoFramesTrack";
 import {closingSpeed} from "../trackUtils";
 import {MV3, V3} from "../threeUtils";
-import {SITREC_APP} from "../../config";
 import {ViewMan} from "../CViewManager";
+import {SITREC_APP} from "../configUtils";
 
 export var SitGoFast = {
     name: "gofast",

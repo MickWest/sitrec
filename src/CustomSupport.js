@@ -12,7 +12,6 @@ import {
 } from "./Globals";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
-import {SITREC_APP} from "../config";
 import {createCustomModalWithCopy, saveFilePrompted} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
@@ -25,6 +24,7 @@ import {UpdateHUD} from "./JetStuff";
 import {checkForModding} from "./utils";
 import {ViewMan} from "./CViewManager";
 import {EventManager} from "./CEventManager";
+import {SITREC_APP} from "./configUtils";
 
 
 export class CCustomManager {

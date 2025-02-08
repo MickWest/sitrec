@@ -1,7 +1,6 @@
 import {getPixels} from '../get-pixels-mick.js'
 import {Mesh, MeshNormalMaterial, MeshBasicMaterial, PlaneGeometry, Vector3,} from "three";
 import QuadTextureMaterial from './material/QuadTextureMaterial'
-import {SITREC_SERVER} from "../../../config";
 import {LLAToEUS, wgs84} from "../../LLA-ECEF-ENU";
 import {assert} from "../../assert.js";
 import {DebugArrowAB, removeDebugArrow} from "../../threeExt";
@@ -10,6 +9,7 @@ import {GlobalScene} from "../../LocalFrame";
 import { fromArrayBuffer } from 'geotiff';
 import {convertTIFFToElevationArray} from "../../TIFFUtils";
 import {pointOnSphereBelow} from "../../SphericalMath";
+import {SITREC_SERVER} from "../../configUtils";
 
 
 

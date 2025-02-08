@@ -5,7 +5,8 @@ import {radians} from "./utils";
 import {Globals, Sit} from "./Globals";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
 import {renderOne} from "./par";
-import {SITREC_APP} from "../config";
+
+import {SITREC_APP} from "./configUtils";
 
 export function createSphere(radius, radius1, segments) {
     const sphere = new Mesh(

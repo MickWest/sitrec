@@ -14,8 +14,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
-import {SITREC_APP, SITREC_SERVER} from "../../config";
-import {isLocal} from "../configUtils";
+import {isLocal, SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {configParams} from "../login";
 import {CTileMappingGoogleCRS84Quad, CTileMappingGoogleMapsCompatible} from "../WMSUtils";
 

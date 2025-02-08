@@ -60,11 +60,9 @@ import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
 import {
-    localSituation, setupConfigPaths,
-    SITREC_APP,
-    SITREC_SERVER
+    localSituation
 } from "../config";
-import {isConsole, isLocal} from "./configUtils.js"
+import {isConsole, isLocal, setupConfigPaths, SITREC_APP, SITREC_SERVER} from "./configUtils.js"
 import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";

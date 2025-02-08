@@ -3,7 +3,8 @@ import {par} from "../par";
 import {FileManager, Sit} from "../Globals";
 import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
-import {SITREC_APP} from "../../config";
+
+import {SITREC_APP} from "../configUtils";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
