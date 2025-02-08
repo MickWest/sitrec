@@ -14,7 +14,7 @@ require __DIR__ . '/config.php';
 //    exit("Not logged in");
 //}
 
-$starlink_cache = $cache_base_path . "/starlink/";
+$starlink_cache = $CACHE_PATH . "/starlink/";
 
 // make sure the "starlink" folder exists in the cache directory
 if (!file_exists($starlink_cache)) {

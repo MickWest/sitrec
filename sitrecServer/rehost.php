@@ -47,10 +47,10 @@ $isLocal = false;
 
 //if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
 //    // for local testing
-//    $storagePath = $urlRoot . "sitrec-upload/";
+//    $storagePath = $ROOT_URL . "sitrec-upload/";
 //    $isLocal = true;
 //} else {
-    $storagePath = $uploadURL;  // from config.php
+    $storagePath = $UPLOAD_URL;  // from config.php
 //}
 
 function writeLog($message) {

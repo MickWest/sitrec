@@ -108,9 +108,9 @@ if (isset($acceptable_extensions) && count($acceptable_extensions) > 0) {
 
 $hash = md5($url) . "." . $ext;
 
-$cachePath = $cache_base_path . $hash;
+$cachePath = $CACHE_PATH . $hash;
 
-$fileLocation = $cache_base_path;
+$fileLocation = $CACHE_PATH;
 $cachedFile = $fileLocation . $hash;
 
 //check if file exists

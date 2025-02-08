@@ -27,16 +27,16 @@ if (isset($params['url'])) {
     }
 
     // Generate a unique code for the URL
-    $code = generateUniqueCode($shortenerDir);
+    $code = generateUniqueCode($SHORTENER_PATH);
 
    // $shortURL = $_SERVER['HTTP_HOST'] . '/u/' . $code . '.html';
 
-    $shortURL = $shortenerURL . $code . '.html';
+    $shortURL = $SHORTENER_URL . $code . '.html';
 
     $html = createRedirectHtml($url);
 
     // Save the URL to the filesystem
-    file_put_contents($shortenerDir . $code . '.html', $html);
+    file_put_contents($SHORTENER_PATH . $code . '.html', $html);
 
     // Return the shortened URL to the client
     echo $shortURL;
@@ -59,9 +59,9 @@ function generateRandomCode($length = 6) {
     return $randomString;
 }
 
-function generateUniqueCode($shortenerDir) {
+function generateUniqueCode($SHORTENER_PATH) {
     do {
         $code = generateRandomCode();
-    } while (file_exists($shortenerDir . $code));
+    } while (file_exists($SHORTENER_PATH . $code));
     return $code;
 }

@@ -44,13 +44,13 @@ function getShortDir($user_id)
 //
 function getUserDir($user_id)
 {
-    global $uploadDir;
+    global $UPLOAD_PATH;
     if ($user_id == 0) {
         return ""; // return an empty string if the user is not logged in
     }
 
 // Directory to store rehosted files
-    $userDir = $uploadDir . getShortDir($user_id) . '/';
+    $userDir = $UPLOAD_PATH . getShortDir($user_id) . '/';
 
     return $userDir;
 }

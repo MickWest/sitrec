@@ -3,7 +3,7 @@
 
 require __DIR__ . '/config.php';
 
-$storagePath = $uploadURL; // from config.php
+$storagePath = $UPLOAD_URL; // from config.php
 
 // find all the sitches in the sitrec/data folder and return them as a json object
 // a sitchs is a folder with a file inside it with the same name with a .sitch.js extension
@@ -11,11 +11,11 @@ $storagePath = $uploadURL; // from config.php
 
 function getSitches()
 {
-    global $sitrecRoot;
+    global $APP_PATH;
 
 // get the list of folders in the data folder
     // note "data" is not configurable, as it's hardcoded by the webpack config
-    $dir = $sitrecRoot . "data";
+    $dir = $APP_PATH . "data";
     $files = scandir($dir);
     $folders = array();
     foreach ($files as $file) {

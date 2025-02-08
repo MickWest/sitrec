@@ -10,24 +10,24 @@
 if (!isset($LOADED_CONFIG)) {
     $LOADED_CONFIG = true;
 
-    // urlRoot is the base URL for the site, e.g. "https://www.metabunk.org"
+    // ROOT_URL is the base URL for the site, e.g. "https://www.metabunk.org"
     // by default we have shorting, caching, and uploads as subdirectories of this
 
-    $appRoot = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $APP_URL = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     // remove everything after the last slash (including the slash), that will give use the URL of the server directory
-    $appRoot = substr($appRoot, 0, strrpos($appRoot, '/'));
+    $APP_URL = substr($APP_URL, 0, strrpos($APP_URL, '/'));
     // remove everything after the last slash (leaving the slash)
-    $appRoot = substr($appRoot, 0, strrpos($appRoot, '/') + 1);
-    // and urlRoot is the base URL for the site
+    $APP_URL = substr($APP_URL, 0, strrpos($APP_URL, '/') + 1);
+    // and ROOT_URL is the base URL for the site
 
-    // start with the appRoot, less the last slash
-    $urlRoot = substr($appRoot, 0, -1);
-    $urlRoot = substr($appRoot, 0, strrpos($urlRoot, '/') + 1);
+    // start with the APP_URL, less the last slash
+    $ROOT_URL = substr($APP_URL, 0, -1);
+    $ROOT_URL = substr($APP_URL, 0, strrpos($ROOT_URL, '/') + 1);
 
-    // serverRoot is the base directory for the site
+    // ROOT_PATH is the base directory for the site
     // the default configuration is:
-    // $serverRoot /
-    //     $sitrecRoot /   (usually "sitrec/")
+    // $ROOT_PATH /
+    //     $ROOT_PATH /   (usually "sitrec/")
     //         sitrecServer / (where all the PHP files are)
     //             config.php   (this file)
     //     sitrec-upload /  (for user uploads, sitches, videos, tracks, etc)
@@ -35,32 +35,32 @@ if (!isset($LOADED_CONFIG)) {
     //     u / (shortened URLs)
 
 
-    // serverRoot is the base directory for the site,
+    // ROOT_PATH is the base directory for the site,
     // It can be an absolute path, like "/var/www/html"
     // or a relative path from the current directory (i.e. from sitrecServer/config.php)
     // e.g. "../../" or "../"
-    $serverRoot = "../../";
+    $ROOT_PATH = "../../";
 
-    // sitrecRoot is the base directory for the sitrec application
-    $sitrecRoot = $serverRoot . "sitrec/";
+    // ROOT_PATH is the base directory for the sitrec application
+    $ROOT_PATH = $ROOT_PATH . "sitrec/";
 
-    // fileRoot is the base directory for sitrec-upload, sitrec-cache, and u
-    // the default installation has these as subdirectories of $serverRoot
+    // FILE_PATH is the base directory for sitrec-upload, sitrec-cache, and u
+    // the default installation has these as subdirectories of $ROOT_PATH
     // but you could change this to be an absolute path
-    // or to use $sitrecRoot as the base
-    $fileRoot = $serverRoot;
+    // or to use $ROOT_PATH as the base
+    $FILE_PATH = $ROOT_PATH;
 
     // The following are the DEFAULT values for the various directories
     // you can change them, so long as you change both the directory and the URL
-    $uploadDir = $serverRoot . "sitrec-upload/";
-    $uploadURL = $urlRoot . "sitrec-upload/";
+    $UPLOAD_PATH = $ROOT_PATH . "sitrec-upload/";
+    $UPLOAD_URL = $ROOT_URL . "sitrec-upload/";
 
-    $cache_base_path = $serverRoot . "sitrec-cache/";
-    $cache_base_url = $urlRoot . "sitrec-cache/";
+    $CACHE_PATH = $ROOT_PATH . "sitrec-cache/";
+    $CACHE_URL = $ROOT_URL . "sitrec-cache/";
 
     // From shortener.php, for the short URLs
-    $shortenerDir = $serverRoot . 'u/';
-    $shortenerURL = $urlRoot . "u/";
+    $SHORTENER_PATH = $ROOT_PATH . 'u/';
+    $SHORTENER_URL = $ROOT_URL . "u/";
 
     // Array of acceptable domains for caching (in cachemaps.php)
     $acceptable_domains = [
@@ -104,10 +104,10 @@ if (!isset($LOADED_CONFIG)) {
 
 
     $server_config = [
-        "UPLOAD" => $uploadURL,
-        "CACHE" => $cache_base_url,
-        "SHORTENER" => $shortenerURL,
-        "useAWS" => $useAWS,
+        "UPLOAD"    => $UPLOAD_URL,
+        "CACHE"     => $CACHE_URL,
+        "SHORTENER" => $SHORTENER_URL,
+        "useAWS"    => $useAWS,
     ];
 
 

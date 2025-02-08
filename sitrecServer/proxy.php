@@ -39,8 +39,8 @@ if ($ext !== "tle") {
 }
 
 $hash = md5($url) . "." . $ext;
-$cachePath = $cache_base_path . $hash;
-$fileLocation = $cache_base_path;
+$cachePath = $CACHE_PATH . $hash;
+$fileLocation = $CACHE_PATH;
 $cachedFile = $fileLocation . $hash;
 
 $lifetime = 60 * 60; // 1 hour
