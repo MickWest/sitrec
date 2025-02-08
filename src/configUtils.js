@@ -81,6 +81,11 @@ export async function setupConfigPaths() {
     SITREC_DEV_DOMAIN = "www.metabunk.org"
 
 
+    if (isConsole) {
+        return;
+    }
+
+
     SITREC_UPLOAD = null;
     SITREC_CACHE = null;
 

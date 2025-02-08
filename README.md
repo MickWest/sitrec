@@ -119,6 +119,7 @@ mkdir sitrec-cache
 mkdir sitrec-upload
 mkdir sitrec-videos
 popd
+notepad config-install.js
 ```
 
 Edit config-install.js
