@@ -68,7 +68,7 @@ export async function setupConfigPaths() {
     SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.origin)
 
 // Config.js is part of the sitrec package, so window.location.pathname will be the path to the sitrec package
-    let SITREC_PATH = window.location.pathname;
+    let SITREC_PATH = isConsole ? "./sitrec/" : window.location.pathname;
 
     let SITREC_APP_PATH = SITREC_PATH;
 // strip off anything after the last slash
