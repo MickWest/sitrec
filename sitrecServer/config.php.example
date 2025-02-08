@@ -13,7 +13,7 @@ if (!isset($LOADED_CONFIG)) {
     // urlRoot is the base URL for the site, e.g. "https://www.metabunk.org"
     // by default we have shorting, caching, and uploads as subdirectories of this
 
-    $appRoot = $_SERVER['REQUEST_URI'];
+    $appRoot = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     // remove everything after the last slash (including the slash), that will give use the URL of the server directory
     $appRoot = substr($appRoot, 0, strrpos($appRoot, '/'));
     // remove everything after the last slash (leaving the slash)
@@ -79,22 +79,22 @@ if (!isset($LOADED_CONFIG)) {
 
     // replaces cachemaps-config.php
     // and is specific to the Mapbox API
-    $token = "?access_token=pk.eyJ1IdeyI_p1cO5NA";
+    $token = "?access_token=pk.eyJ1IjoibWlja3dlvmY4aiJ9.HmBetO0y2IWeyI_p1cO5NA";
     $token_url = "api.mapbox.com";
 
 //
 // replaces s3-config.php
-    $s3creds = ["accessKeyId" => "AKIARd3IE6D6",
-        "secretAccessKey" => "d/d/TrX+duzcNlK3LpsKyX",
+    $s3creds = ["accessKeyId" => "v",
+        "secretAccessKey" => "GRF8vlK3LpsKyX",
         "region" => "us-west-2",
         "bucket" => "sitrec",
         "acl" => "public-read"
     ];
-    $useAWS = true;
+    $useAWS = false;
 
 // replaces space-data-config.php
-    $spaceDataUsername = 'com@d.com';
-    $spaceDataPassword = 'MdiGT.';
+    $spaceDataUsername = 'com@v.com';
+    $spaceDataPassword = 'MGvGT.';
 
 // From proxy.php
     // Lookup table for requests
