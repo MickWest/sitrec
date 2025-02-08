@@ -3,12 +3,12 @@ import {FileManager, infoDiv, Sit, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant} from "./nodes/CNode";
 import {NightSkyFiles} from "./ExtraFiles";
-import {isConsole} from "../config";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {expandSitData} from "./SituationSetup";
 import stringify from "json-stringify-pretty-compact";
 import {makeTrackFromDataFile} from "./TrackManager";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
+import {isConsole} from "./configUtils";
 
 
 // These are some parameters used as defaults for a situation

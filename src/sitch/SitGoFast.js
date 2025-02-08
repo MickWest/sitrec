@@ -50,7 +50,7 @@ import {commonJetLabels} from "./CommonSitch";
 import {CNodeInterpolateTwoFramesTrack} from "../nodes/CNodeInterpolateTwoFramesTrack";
 import {closingSpeed} from "../trackUtils";
 import {MV3, V3} from "../threeUtils";
-import {SITREC_ROOT} from "../../config";
+import {SITREC_APP} from "../../config";
 import {ViewMan} from "../CViewManager";
 
 export var SitGoFast = {
@@ -452,7 +452,7 @@ export var SitGoFast = {
         azEditorNode.editorView.recalculate()
 
         // ocean
-        const waterTexture = new TextureLoader().load(SITREC_ROOT+'data/images/28_sea water texture-seamless-dark.jpg?v=1');
+        const waterTexture = new TextureLoader().load(SITREC_APP+'data/images/28_sea water texture-seamless-dark.jpg?v=1');
         const waterMaterial = new MeshStandardMaterial({
             map: waterTexture,
             transparent: true,

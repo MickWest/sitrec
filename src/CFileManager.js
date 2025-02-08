@@ -9,7 +9,7 @@ import {
 } from "./utils";
 import JSZip from "./js/jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
-import {isConsole, isLocal, SITREC_DOMAIN, SITREC_ROOT, SITREC_SERVER} from "../config";
+import {SITREC_DOMAIN, SITREC_APP, SITREC_SERVER} from "../config";
 import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
 import {CustomManager, Globals, guiMenus, NodeMan, setNewSitchObject, Sit} from "./Globals";
@@ -26,6 +26,7 @@ import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
 import {isCustom1, parseCustom1CSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
+import {isConsole, isLocal} from "./configUtils";
 
 
 // The file manager is a singleton that manages all the files
@@ -175,7 +176,7 @@ export class CFileManager extends CManager {
         // we just jump to the "custom" sitch, which is a blank sitch
         // that the user can modify and save
         // doing it as a URL to ensure a clean slate
-        window.location = SITREC_ROOT + "?sitch=custom";
+        window.location = SITREC_APP + "?sitch=custom";
     }
 
 
@@ -630,7 +631,7 @@ export class CFileManager extends CManager {
 //                 console.log("Sitch rehosted as " + staticURL);
 //
 //                 // and make a URL that points to the new sitch
-//                 let customLink = SITREC_ROOT + "?custom=" + staticURL;
+//                 let customLink = SITREC_APP + "?custom=" + staticURL;
 //
 //                 createCustomModalWithCopy(customLink)();
 //             })
@@ -717,7 +718,7 @@ export class CFileManager extends CManager {
         if (!isUrl) {
             // if it's not a url, then redirect to the data folder
             //filename = "./data/" + filename;
-            filename = SITREC_ROOT + "data/" + filename;
+            filename = SITREC_APP + "data/" + filename;
         }
 
         Globals.parsing++;

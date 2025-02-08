@@ -191,6 +191,7 @@ class CDragDropHandler {
               ) {
             // console.warn('The provided URL ' + urlObject.hostname +' is not from ' + SITREC_DOMAIN + " or " + SITREC_DEV_DOMAIN + "or amazonaws.com");
 
+            // for non-local URLS, we check for info in the URL itself, like a lat, lon, alt location
 
             let lat, lon;
             let alt = 30000;    // default altitude (meters)

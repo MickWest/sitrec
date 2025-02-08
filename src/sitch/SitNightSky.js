@@ -5,8 +5,8 @@ import {CNodeViewUI} from "../nodes/CNodeViewUI";
 import {AddTimeDisplayToUI} from "../UIHelpers";
 import {DragDropHandler} from "../DragDropHandler";
 import JSURL from "../js/jsurl"
-import {isLocal, SITREC_SERVER} from "../../config";
-import {Rehoster} from "../CRehoster";
+import {SITREC_SERVER} from "../../config";
+import {isLocal} from "../configUtils.js";
 import {CNodeSwitch} from "../nodes/CNodeSwitch";
 import {CNodeControllerManualPosition} from "../nodes/CNodeControllerVarious";
 import {assert} from "../assert.js";

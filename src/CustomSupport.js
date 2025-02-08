@@ -12,7 +12,7 @@ import {
 } from "./Globals";
 import {isKeyHeld, toggler} from "./KeyBoardHandler";
 import {ECEFToLLAVD_Sphere, EUSToECEF} from "./LLA-ECEF-ENU";
-import {SITREC_ROOT} from "../config";
+import {SITREC_APP} from "../config";
 import {createCustomModalWithCopy, saveFilePrompted} from "./CFileManager";
 import {DragDropHandler} from "./DragDropHandler";
 import {par} from "./par";
@@ -384,7 +384,7 @@ export class CCustomManager {
                     name = Sit.name + "_mod.js"
                     paramName = "mod"
                 }
-                this.customLink = SITREC_ROOT + "?"+paramName+"=" + staticURL;
+                this.customLink = SITREC_APP + "?"+paramName+"=" + staticURL;
 
                 //
                 window.history.pushState({}, null, this.customLink);

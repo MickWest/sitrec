@@ -37,9 +37,9 @@ import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
 import {ACESFilmicToneMappingShader} from "../shaders/ACESFilmicToneMappingShader";
 import {ShaderPass} from "three/addons/postprocessing/ShaderPass.js";
-import {isLocal} from "../../config";
+import {isLocal} from "../configUtils.js"
 import {VRButton} from 'three/addons/webxr/VRButton.js';
-import {SITREC_ROOT} from "../../config.js";
+import {SITREC_APP} from "../../config.js";
 import {mouseInViewOnly} from "../ViewUtils";
 
 
@@ -662,7 +662,7 @@ renderSky() {
         assert(this.scene, "CNodeView3D needs global GlobalScene")
 
         const spriteCrosshairMaterial = new SpriteMaterial({
-            map: new TextureLoader().load(SITREC_ROOT+'data/images/crosshairs.png'),
+            map: new TextureLoader().load(SITREC_APP+'data/images/crosshairs.png'),
             color: 0xffffff, sizeAttenuation: false,
             depthTest: false, // no depth buffer, so it's always on top
             depthWrite: false,

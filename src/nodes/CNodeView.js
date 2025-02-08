@@ -37,10 +37,7 @@ class CNodeView extends CNode {
         this.input("relativeTo", true);
 
         
-        // if (isLocal) {
-        //     // local debugging, make a (ref) copy of v for later checks
-        //     this.v_for_debug = v;
-        // }
+
 
         // merge defaults with the passed parameters
         // into this. We used to merge in all of v, but that's not a good idea

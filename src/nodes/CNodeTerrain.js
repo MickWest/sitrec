@@ -14,7 +14,8 @@ import {GlobalScene} from "../LocalFrame";
 import {CNodeSwitch} from "./CNodeSwitch";
 import {V3} from "../threeUtils";
 import {assert} from "../assert";
-import {isLocal, SITREC_ROOT, SITREC_SERVER} from "../../config";
+import {SITREC_APP, SITREC_SERVER} from "../../config";
+import {isLocal} from "../configUtils";
 import {configParams} from "../login";
 import {CTileMappingGoogleCRS84Quad, CTileMappingGoogleMapsCompatible} from "../WMSUtils";
 
@@ -72,7 +73,7 @@ export class CNodeTerrainUI extends CNode {
             FlatShading: {
                 name: "Flat Shading",
                 mapURL: (z, x, y) => {
-                    return SITREC_ROOT + "data/images/grey-256x256.png?v=1";
+                    return SITREC_APP + "data/images/grey-256x256.png?v=1";
                 },
             },
         }
@@ -84,7 +85,7 @@ export class CNodeTerrainUI extends CNode {
                 RGBTest: {
                     name: "RGB Test",
                     mapURL: (z, x, y) => {
-                        return SITREC_ROOT + "data/images/colour_bars_srgb-255-128-64.png?v=1";
+                        return SITREC_APP + "data/images/colour_bars_srgb-255-128-64.png?v=1";
                     },
                 },
             }

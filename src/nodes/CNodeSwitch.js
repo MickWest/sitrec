@@ -1,6 +1,6 @@
 import {CNode} from "./CNode";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "../lil-gui-extras";
-import {isConsole, isLocal} from "../../config";
+import {isConsole, isLocal} from "../configUtils.js";
 import {NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {EventManager} from "../CEventManager";

@@ -3,7 +3,8 @@ import {Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {CNodeGraphLine} from "./CNodeGraphLine";
-import {isConsole} from "../../config";
+
+import {isConsole} from "../configUtils";
 
 // The CurveEditorView can have inputs from the curve editor (i.e. the compare nodes)
 // it's a view, so should not be used as in input

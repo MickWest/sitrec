@@ -3,14 +3,10 @@
 // LOCAL = My dev machine, for development and debugging
 // note my local is in dist, one level deeper than the HOST because I run directly from the dev build
 
-import { md5 } from 'js-md5';
+import {md5} from 'js-md5';
+import {isConsole} from "./src/configUtils";
+//import {getConfigFromServer} from "./src/configUtils";
 
-export const isConsole = (typeof window == 'undefined');
-
-// While we can automatically detect the host, there are situations when we want/need to run
-// the sitrecServer tools on the remote host, not on the local dev machine
-// so we need to hardwire it below.
-//export const SITREC_DOMAIN = "https://www.metabunk.org/sitrec/"
 
 let port = "";
 
@@ -21,79 +17,97 @@ if (!isConsole) {
     }
 }
 
-export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.hostname)
-//const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.hostname + window.location.pathname));
-const SITREC_HOST = (isConsole ? "https://localhost/" : (window.location.protocol + "//" + window.location.host + window.location.pathname));
 
-const SITREC_LOCAL = "https://"+SITREC_DOMAIN+port+"/sitrec/"
+// SITREC_DOMAIN is the domain of the sever we are uploaded to
+// e.g. https://www.metabunk.org/ or https://localhost/
+export const SITREC_DOMAIN = (isConsole ? "https://localhost/" : window.location.origin)
 
-// console applications are often run from just outside the source tree
-const SITREC_CONSOLE_ROOT = "./sitrec/"
+// Config.js is part of the sitrec package, so window.location.pathname will be the path to the sitrec package
+let SITREC_PATH          = window.location.pathname;
 
-// regular expression that allows us to detect if we are local
-// for http://localhost, or https://localhost
-// or https://192.168.*
-const SITREC_LOCAL_RE = '^https?:\/\/(localhost|192\.168)'
+let SITREC_APP_PATH      = SITREC_PATH;
+// strip off anything after the last slash
+SITREC_APP_PATH = SITREC_APP_PATH.substring(0, SITREC_APP_PATH.lastIndexOf("/")+1);
 
-// For the various php based servers in sitrecServer it's different,
-// as it's not included in the dist folder
-// and needs to be deployed separately
-// you can have these wherever you like.
-// (on the same domain, as the proxy allows us to safely bypass same-origin policy
+let SITREC_SERVER_PATH   = SITREC_APP_PATH  + "sitrecServer/";
+export const SITREC_SERVER = SITREC_DOMAIN + port + SITREC_SERVER_PATH;
+
+
+
+// SITREC_APP is the path to the sitrec application
+// e.g. /sitrec/ or /sitrec-dev/
+export const SITREC_APP = isConsole
+    ? "./sitrec/" // When running as a console application, use a relative path.
+    : SITREC_DOMAIN + port + SITREC_APP_PATH;
+
+
+
+
+// TEMP
 export const SITREC_DEV_DOMAIN = "www.metabunk.org"
-const SITREC_DEV_SERVER = "https://"+SITREC_DEV_DOMAIN+"/sitrec/sitrecServer/"
-const SITREC_HOST_SERVER = SITREC_HOST+"sitrecServer/"
-const SITREC_LOCAL_SERVER = "https://"+SITREC_DOMAIN+port+"/sitrec/sitRecServer/"
 
-// local host might not have a capability to act as a php server,
-// so we can tell Sitrec to use the remote for the proxies
-// by setting SITREC_SERVER_OK_LOCAL to false;
-// This makes development a bit harder, as you have to have development code on production server
-// you can set SITREC_LOCAL_SERVER to a second non-local address for testing
-// and also set SITREC_SERVER_OK_LOCAL to true to force it to use that.
-const SITREC_SERVER_OK_LOCAL = true;
 
-const re_localhost = new RegExp(SITREC_LOCAL_RE);
+export let SITREC_UPLOAD = null;
+export let SITREC_CACHE = null;
 
-export var isLocal = false;
+// const serverConfig = await getConfigFromServer();
+// if (serverConfig !== null) {
+//     SITREC_SERVER = serverConfig.SERVER;
+//     SITREC_UPLOAD = serverConfig.UPLOAD;
+//     SITREC_CACHE = serverConfig.CACHE;
+// }
 
-var checked = false;
 
-export function checkLocal() {
-    if (!checked) {
-        if(isConsole) {
-            console.log("Running as a console application")
-            isLocal = true;
-        } else {
-            console.log("Running on " + window.location.href)
-            if (re_localhost.test(window.location.href)) {
-                console.log("Running on localhost")
-                isLocal = true;
-            } else {
-                console.log("Not running on localhost");
-            }
-        }
-        checked = true;
-    }
+
+    // log all the exported variables
+console.log("SITREC_DOMAIN: ", SITREC_DOMAIN);
+console.log("SITREC_APP: ", SITREC_APP);
+
+console.log("SITREC_SERVER: ", SITREC_SERVER);
+console.log("SITREC_UPLOAD: ", SITREC_UPLOAD);
+console.log("SITREC_CACHE: ", SITREC_CACHE);
+console.log("SITREC_DEV_DOMAIN: ", SITREC_DEV_DOMAIN);
+
+
+
+
+
+
+
+// strip off everything from the index of the second to last slash, to the end
+// this will leave the path to the directory above the sitrec package
+let SITREC_DATA_PATH = SITREC_PATH; // default to the same directory as the sitrec package
+
+if (SITREC_PATH.lastIndexOf("/") > 0) { // but anything other than the root directory needs to be the parent directory
+    // first remove everything after the LAST slash, including the slash
+    SITREC_DATA_PATH = SITREC_DATA_PATH.substring(0, SITREC_DATA_PATH.lastIndexOf("/"));
+    // the remove everything after the second to last slash, but leave it alone
+    SITREC_DATA_PATH = SITREC_DATA_PATH.substring(0, SITREC_DATA_PATH.lastIndexOf("/")+1);
 }
 
-// This is called at the start of index.js
-// but, we want to set the paths here and now, so we
-// force a call before that. Do we still need to call it again?
-checkLocal();
+// Paths relative to the domain.
+// you can optionally have a different set of paths for local and/or console
 
-export const SITREC_ROOT = (isConsole ? SITREC_CONSOLE_ROOT : (isLocal ? SITREC_LOCAL : SITREC_HOST))
-export const SITREC_SERVER = ((isLocal && SITREC_SERVER_OK_LOCAL) ? SITREC_LOCAL_SERVER :
-    (isLocal ? SITREC_DEV_SERVER : SITREC_HOST_SERVER));
-export const SITREC_UPLOAD = SITREC_HOST + "../sitrec-upload/"
-export const SITREC_CACHE = SITREC_HOST + "../sitrec-cache/"
+let UPLOAD_PATH          = SITREC_DATA_PATH + "sitrec-upload/";
+let CACHE_PATH           = SITREC_DATA_PATH + "sitrec-cache/";
 
-console.log(`SITREC_DOMAIN = ${SITREC_DOMAIN}`)
-console.log(`SITREC_ROOT = ${SITREC_ROOT}`)
-console.log(`SITREC_SERVER = ${SITREC_SERVER}`)
+SITREC_UPLOAD = SITREC_DOMAIN + port + UPLOAD_PATH;
+SITREC_CACHE  = SITREC_DOMAIN + port + CACHE_PATH;
+
+// log all the exported variables
+console.log("SITREC_DOMAIN: ", SITREC_DOMAIN);
+console.log("SITREC_APP: ", SITREC_APP);
+console.log("SITREC_SERVER: ", SITREC_SERVER);
+console.log("SITREC_UPLOAD: ", SITREC_UPLOAD);
+console.log("SITREC_CACHE: ", SITREC_CACHE);
+console.log("SITREC_DEV_DOMAIN: ", SITREC_DEV_DOMAIN);
 
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+console.log("SETTING _configParams");
 // note, don't use this _configParams in the code, use configParams from login.js
 // as it's a global variable that is set up in login.js
 // and that handles the case where _configParams is not defined

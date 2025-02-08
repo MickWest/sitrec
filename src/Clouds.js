@@ -5,7 +5,7 @@ import * as LAYER from "./LayerMasks";
 import {CNodeLOSHorizonTrack} from "./nodes/CNodeLOSHorizonTrack";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 import {MeshStandardMaterial, TextureLoader} from "three";
-import {SITREC_ROOT} from "../config";
+import {SITREC_APP} from "../config";
 
 // Wrapper for the cloud node setup - used by Gimbal
 export function SetupCloudNodes() {
@@ -21,7 +21,7 @@ export function SetupCloudNodes() {
         }
     })
 
-    const cloudTexture = new TextureLoader().load(SITREC_ROOT+'data/images/cloud-sprite-flatter.png?v=2');
+    const cloudTexture = new TextureLoader().load(SITREC_APP+'data/images/cloud-sprite-flatter.png?v=2');
     const cloudMaterial = new MeshStandardMaterial({
         map: cloudTexture,
         transparent: true,

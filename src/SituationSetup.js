@@ -35,9 +35,9 @@ import {makeArrayNodeFromMISBColumn} from "./nodes/CNodeArrayFromMISBColumn";
 import {assert} from "./assert.js";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
 import {MV3} from "./threeUtils";
-import {isConsole} from "../config";
 import {registerNodeConsole} from "./RegisterNodes.js"
 import {Frame2Az} from "./JetUtils";
+import {isConsole} from "./configUtils";
 
 export async function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")
@@ -1366,7 +1366,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                     node = NodeFactory.create(key, data);
                 } else {
                     if (data.kind !== undefined) {
-                        assert(false, "SituationSetup: unknown kind: " + data.kind)
+                        assert(false, "SituationSetup: unknown CNode kind: " + data.kind)
                     }
                 }
             }

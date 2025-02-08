@@ -5,7 +5,7 @@ import {loadImage, versionString} from "../utils";
 import {par} from "../par";
 import {updateGUIFrames} from "../JetGUI";
 import {updateFrameSlider} from "./CNodeFrameSlider";
-import {isLocal} from "../../config";
+import {isLocal} from "../configUtils.js"
 import {assert} from "../assert.js";
 import { CNodeATFLIRUI } from "./CNodeATFLIRUI.js";
 

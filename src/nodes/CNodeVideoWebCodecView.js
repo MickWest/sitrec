@@ -3,7 +3,7 @@ import {par} from "../par";
 import {FileManager, Sit} from "../Globals";
 import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
-import {SITREC_ROOT} from "../../config";
+import {SITREC_APP} from "../../config";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
@@ -120,7 +120,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
             return root + url;
         }
 
-        this.url = getAbsolutePath(this.fileName, SITREC_ROOT);
+        this.url = getAbsolutePath(this.fileName, SITREC_APP);
 
 
         // add a gui link to the file manager gui

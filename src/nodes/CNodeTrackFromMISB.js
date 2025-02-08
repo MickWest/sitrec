@@ -7,7 +7,7 @@ import {saveAs} from "../js/FileSaver";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
 import {CGeoJSON} from "../geoJSONUtils";
-import {isLocal} from "../../config";
+import {isLocal} from "../configUtils.js"
 import stringify from "json-stringify-pretty-compact";
 
 export class CNodeTrackFromMISB extends CNodeTrack {

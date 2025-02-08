@@ -59,8 +59,12 @@ import {CSitchFactory} from "./CSitchFactory";
 import {CNodeDateTime} from "./nodes/CNodeDateTime";
 import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
-import {checkLocal, isConsole, isLocal, localSituation, SITREC_ROOT, SITREC_SERVER} from "../config";
-
+import {
+    localSituation,
+    SITREC_APP,
+    SITREC_SERVER
+} from "../config";
+import {isConsole, isLocal} from "./configUtils.js"
 import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";
 import {updateLockTrack} from "./updateLockTrack";
@@ -83,6 +87,10 @@ import {ViewMan} from "./CViewManager";
 import {glareSprite, targetSphere} from "./JetStuffVars";
 import {CCustomManager} from "./CustomSupport";
 import {EventManager} from "./CEventManager";
+import {checkLocal, getConfigFromServer} from "./configUtils";
+
+console.log ("SITREC START - index.js after imports")
+
 
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
@@ -108,32 +116,35 @@ let animationFrameId;
 
 checkUserAgent();
 
+
+await getConfigFromServer();
+
 // quick test of the server config
 // just call config.php
 
-fetch(SITREC_SERVER+"config.php", {mode: 'cors'}).then(response => response.text()).then(data => {
-    if (data !== "") {
-        console.log("Server Config ERROR: " + data)
-        // now just render a pain text message of data as an error
-        const errorDiv = document.createElement('div');
-        errorDiv.style.position = 'absolute';
-        errorDiv.style.width = 100;
-        errorDiv.style.height = 100;
-        errorDiv.style.color = "white";
-        errorDiv.innerHTML = data;
-        errorDiv.style.top = 40 + 'px';
-        errorDiv.style.left = 20 + 'px';
-        errorDiv.style.fontSize = 20 + 'px';
-        errorDiv.style.display = 'block';
-        errorDiv.style.padding = 5 + 'px';
-        errorDiv.style.background="black";
-        document.body.appendChild(errorDiv);
-        // and that's it
-        throw new Error("config.php error: "+data);
-        debugger;
-
-    }
-})
+// fetch(SITREC_SERVER+"config.php", {mode: 'cors'}).then(response => response.text()).then(data => {
+//     if (data !== "") {
+//         console.log("Server Config ERROR: " + data)
+//         // now just render a pain text message of data as an error
+//         const errorDiv = document.createElement('div');
+//         errorDiv.style.position = 'absolute';
+//         errorDiv.style.width = 100;
+//         errorDiv.style.height = 100;
+//         errorDiv.style.color = "white";
+//         errorDiv.innerHTML = data;
+//         errorDiv.style.top = 40 + 'px';
+//         errorDiv.style.left = 20 + 'px';
+//         errorDiv.style.fontSize = 20 + 'px';
+//         errorDiv.style.display = 'block';
+//         errorDiv.style.padding = 5 + 'px';
+//         errorDiv.style.background="black";
+//         document.body.appendChild(errorDiv);
+//         // and that's it
+//         throw new Error("config.php error: "+data);
+//         debugger;
+//
+//     }
+// })
 
 resetPar();
 await initializeOnce();
@@ -263,7 +274,7 @@ function checkUserAgent() {
 function checkForTest() {
     console.log("Testing = " + testing + " toTest = " + toTest)
     if (toTest != undefined && toTest != "") {
-//        var url = SITREC_ROOT + "?test=" + toTest
+//        var url = SITREC_APP + "?test=" + toTest
 //        window.location.assign(url)
 
         var testArray = toTest.split(',');
@@ -307,15 +318,15 @@ async function newSitch(situation, customSetup = false ) {
     // that way the user can share the url direct to this sitch
     let url;
     if (!customSetup) {
-        url = SITREC_ROOT + "?sitch=" + situation
+        url = SITREC_APP + "?sitch=" + situation
     } else {
         // set the URL to the default
         if (FileManager.loadURL !== undefined) {
-            url = SITREC_ROOT + "?custom=" + FileManager.loadURL;
+            url = SITREC_APP + "?custom=" + FileManager.loadURL;
         } else {
             // loading local sitch, so set to custom sitch
             // we don't have a URL, as it does not make sense to share a local sitch via URL
-            url = SITREC_ROOT + "?sitch=custom";
+            url = SITREC_APP + "?sitch=custom";
         }
 
     }
@@ -534,7 +545,7 @@ async function initializeOnce() {
     _gui.add(par, "nameSelect", selectableSitches).name("Built-in Sitch").perm().onChange(sitch => {
         par.name = par.nameSelect;
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.nameSelect)
-        var url = SITREC_ROOT+"?sitch=" + sitch
+        var url = SITREC_APP+"?sitch=" + sitch
         newSitch(sitch);
         window.history.pushState({}, null, url);
         par.nameSelect = unselectedText ;
@@ -546,7 +557,7 @@ async function initializeOnce() {
     par.toolSelect = unselectedText;
     _gui.add(par, "toolSelect", toolSitches).name("Tools").perm().listen().onChange(sitch => {
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.name)
-        var url = SITREC_ROOT+"?sitch=" + sitch
+        var url = SITREC_APP+"?sitch=" + sitch
 
 // smoke test of everything after the current sitch in alphabetical order
         if (sitch === "testhere") {
@@ -1062,11 +1073,11 @@ function selectInitialSitch(force) {
     var lower = situation.slice().toLowerCase();
 
     if (lower === "testall") {
-        const url = SITREC_ROOT + "?testAll=1"
+        const url = SITREC_APP + "?testAll=1"
         window.location.assign(url)
     }
     if (lower === "testquick") {
-        const url = SITREC_ROOT + "?testAll=2"
+        const url = SITREC_APP + "?testAll=2"
         window.location.assign(url)
     }
 

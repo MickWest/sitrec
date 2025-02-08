@@ -1,6 +1,6 @@
 import {CManager} from "./CManager";
-import {isConsole} from "../config";
 import {setupPageStructure} from "./PageStructure";
+import {isConsole} from "./configUtils";
 
 class CViewManager extends CManager {
     constructor(v) {
