@@ -56,9 +56,11 @@ Some types of situations covered:
 
 To install Sitrec locally without having to configure a local web server
 
+Install Git
+
 Install Docker Desktop from https://www.docker.com/
 
-From a terminal window run the commands to copy over the config files (see below for Mac or Windows)
+From a terminal window run the commands to download and copy over the config files (see below for Mac or Windows)
 
 Run `docker compose -p sitrec up -d --build`
 
