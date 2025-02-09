@@ -52,7 +52,21 @@ Some types of situations covered:
   - From a fixed position
 - Viewing the sky (with accurate planets and satellites)
 
-## Installation Prerequisites
+## Quickest Local Install, Using Docker
+
+To install Sitrec locally without having to configure a local web server
+
+Install Docker Desktop from https://www.docker.com/
+
+From a terminal window run the commands to copy over the config files (see below for Mac or Windows)
+
+Run `docker compose -p sitrec up -d --build`
+
+In a browser, go to http://localhost:6425/
+
+## Local Server Installation Prerequisites
+
+If you want to run directly from a local server, and not use Docker, the you will need:
 
 - web server (e.g. Nginx) with
   - php
@@ -344,7 +358,9 @@ Before testing this, ensure you've got the five folders on the deploy servers, t
 
 ## Docker
 
-`docker compose up -d` will start a container running the sitrec frontend and sitrecServer. By default, this will expose the service on `http://localhost:6425/`, without a basepath. To run on a different port, change the `ports` section of the `docker-compose.yml` file.
+`docker compose -p sitrec up -d` will start a container running the sitrec frontend and sitrecServer. By default, this will expose the service on `http://localhost:6425/`, without a basepath. To run on a different port, change the `ports` section of the `docker-compose.yml` file.
+
+`docker compose -p sitrec up -d --build` will force a rebuild of the image.
 
 A default bind mount is set up for the `sitrec-videos` folder in the root of the project directory, allowing videos to be added. The `sitrec-cache` folder uses a volume by default, but can be changed to a bind mount by uncommenting a line in the `docker-compose.yml` file.
 
