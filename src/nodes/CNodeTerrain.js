@@ -105,8 +105,6 @@ export class CNodeTerrainUI extends CNode {
         this.mapTypeMenu = this.gui.add(local, "mapType", this.mapTypesKV).listen().name("Map Type")
             .tooltip("Map type for terrain textures (seperate from elevation data)")
 
-        // WHY local???
-        this.setMapType(local.mapType)
 //////////////////////////////////////////////////////////////////////////////////////////
         // same for elevation sources
         if (configParams.customElevationSources !== undefined) {
@@ -550,7 +548,7 @@ export class CNodeTerrain extends CNode {
             }
         }
 
-        local.mapType = v.mapType ?? "mapbox"
+        local.mapType = v.mapType ?? configParams.defaultMapType ?? "mapbox";
 
         // always create a terrainUI, just with limited options for the legacy sitches
         // but for now, everything is include (will need to flag "everything" in custom)
@@ -571,7 +569,13 @@ export class CNodeTerrain extends CNode {
         }
 
         this.deferLoad = v.deferLoad;
-        this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad:false)
+
+        // the newly created UI node will not have the mapType set
+        // so we need to set it here. It can be an async process if we need to load capabilities
+        // so we need to wait for it to finish before the map is loaded
+        this.UINode.setMapType(local.mapType).then(() => {
+            this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad : false)
+        })
     }
 
     refreshDebugGrids() {
@@ -594,7 +598,7 @@ export class CNodeTerrain extends CNode {
 
         // if no layers, then don't pass any layers into the mapURL function
         if (sourceDef.layers === undefined) {
-            return sourceDef.mapURL(z, x,y)
+            return sourceDef.mapURL.bind(this)(z, x,y)
         }
 
         const layerName = this.UINode.layer;
