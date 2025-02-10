@@ -17,8 +17,6 @@ function getSitches()
     // note "data" is not configurable, as it's hardcoded by the webpack config
     $dir = $APP_PATH . "data";
 
-    echo("<br> " . $dir . "<br>");
-
     $files = scandir($dir);
     $folders = array();
     foreach ($files as $file) {
