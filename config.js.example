@@ -11,6 +11,9 @@ export const _configParams = {
 
     rehostRequiresLogin: true,
 
+    // This is the default map type if none specificed in the Sit file
+    defaultMapType: "NRL_WMTS", //"NRL_WMTS",
+
     customMapSources: {
 
         mapbox: {
