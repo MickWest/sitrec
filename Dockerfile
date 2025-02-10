@@ -1,4 +1,4 @@
-FROM node:21 AS build
+FROM node:22 AS build
 
 WORKDIR /build
 
@@ -19,12 +19,11 @@ COPY .git .git
 RUN npm ci
 RUN npm run build
 
-FROM php:7.2-apache
+FROM php:8.4-apache
 
 USER www-data
 
 COPY --from=build /build/dist /var/www/html
-COPY docker/cachemaps-config.php ../sitrec-config/cachemaps-config.php
 
 WORKDIR /var/www/html
 
