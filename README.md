@@ -58,20 +58,29 @@ To install Sitrec locally without having to configure a local web server
 
 Install Git
 
-Install Docker Desktop from https://www.docker.com/
+Install Docker Desktop from https://www.docker.com/ and run it. 
 
-From a terminal window run the commands to download and copy over the config files (see below for Mac or Windows), then change to the sitrec folder
-
-```
+Mac/Linux
+```bash
+git clone https://github.com/MickWest/sitrec sitrec-test-dev
+cd sitrec-test-dev
+for f in config/*.example; do cp "$f" "${f%.example}"; done
 cd sitrec
-```
-
-Build the docker image and compose the container
-```
 docker compose -p sitrec up -d --build
+open http://localhost:6425/
 ```
 
-Go to http://localhost:6425/
+Windows
+```bat
+git clone https://github.com/mickwest/sitrec sitrec-test-dev
+cd sitrec-test-dev
+for %f in (config\*.example) do copy /Y "%f" "%~dpnf"
+cd sitrec
+docker compose -p sitrec up -d --build
+start http://localhost:6425/
+```
+
+This will be running on http://localhost:6425/. The "open" or "start" commands above should open a browser window. 
 
 ## Local Server Installation Prerequisites
 
@@ -85,7 +94,7 @@ If you want to install and run directly from a local server, and not use Docker,
 
 ## Simple install Mac/Linux
 
-Assuming we want to install the build environment in sitrec-test-dev and the local server environment is a folder sittest.
+Assuming we want to install the build environment in "sitrec-test-dev" and the local server environment is a folder "glass".
 
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
@@ -188,7 +197,9 @@ Node.js is used both for build tools (i.e. webpack) and for packages used by the
 Sitrec is built from the "sitrec" project folder. Note this is NOT the same "sitrec" server folder you deploy to.  
 
 Clone Sitrec from GitHub, or download a release archive. This will give you the sitrec project folder with these sub-folders:
+- `config` - the configuration files. Initially just .example files
 - `data` - per-sitch data like ADS-B data, csv files, TLEs, models, sprites, and images
+- `docker` - Configuration files for Docker builds
 - `docs` - other .md format Documentation and images
 - `sitrecServer` - The server-side PHP files, like cachemaps.php
 - `src` - The JavaScript source, with the entry point of index.js
@@ -197,10 +208,14 @@ Clone Sitrec from GitHub, or download a release archive. This will give you the 
 - `tests` - Unit tests that can be run by Jest
 
 Then there are the project build files:
+- `docker-compose.yml` - configures the Docker container
+- `Dockerfile` - configures the Docker image (which goes in the container)
 - `package.json` - top-level descriptor, contains npm scripts for build and deploy. It also contains the devDependencies (node modules that are used)
 - `webpack.common.js` - the main configuration file for Webpack. The next two files both include this. 
+- `webpack.copy-files.js` - a seperate Webpack config to just copy the files wihout rebuilding
 - `webpack.dev.js` - used for development
 - `webpack.prod.js` - used for production/deployment
+- `webpackCopyPatterns.js` - defines what files are copied from the dev folder to the build, and how they are transformed and.or renamed (e.g. custom.env)
 - `config/config.js` - Contains install-specific constants for server paths used by the app
 - `config/config-install.js` - development and production file paths, used by the build system
 
@@ -228,7 +243,7 @@ The private video folder contains videos taken by individuals and posted on the 
 The public folder contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
 
 ## Create/Edit the config files in config/
-You will need to edit shared.env, config.js, config-install.js and config.php
+You will need to edit shared.env, config.js, config-install.js and config.php. The defaults will work to an extend (with no credentials for downloading Mapbox or Space-Data, etc), so the _minumum_ you need to edit is config-install.js
 
 ### sitrec/config/shared.env
 
@@ -263,14 +278,14 @@ dev_path: 'c:\\nginx\\html\\s\\sitrec',
 prod_path: 'c:\\Users\\Fred\\sitrec-deploy'
 ```
 
+If you are just building/testing locally, these can be the same path. 
+
 ## sitrec/config/config.php
 
-All the server configuration files have been consolidated into config/config.php. It sets up
-- the directory structure for the cache files
-- Credentials for site like mapbox, amazon S3, space-data, etc are now in shared.env
-- Some flags and other setting
-
+This sets up credentials for site like mapbox, amazon S3, space-data, etc are now in shared.env
 Read the comments in the file. There's a config.php.example file to use as a starting point
+
+File paths are now automatically detected by config_paths.php, which you should not need to edit. If you have a configuration that requires you to edit this file, then please let me know (Open an issue on GitHub or email me, mick@mickwest.com) 
 
 ## Install the node modules
 
