@@ -1,6 +1,6 @@
 <?php
 // Specify the path to your configuration file
-$filename = '../.env.php'; // Change this to your file's name if necessary
+$filename = '../shared.env.php'; // Change this to your file's name if necessary
 
 // Check if the file exists
 if (!file_exists($filename)) {
@@ -24,7 +24,7 @@ foreach ($lines as $line) {
     if (count($parts) != 2) {
         // not a line with a single '=', so skip it
         // this will skip the <?php tag and the php /* .... */ multi-line comment
-        // that is automatically added to the .env file by webpackCopyPatterns.js
+        // that is automatically added to the shared.env file by webpackCopyPatterns.js
 
         // Optionally log or handle malformed lines here
         continue;

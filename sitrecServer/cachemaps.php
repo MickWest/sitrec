@@ -143,7 +143,7 @@ if (file_exists($cachedFile)) {
     }
     $token_url = "api.mapbox.com";
 
-    // optional token for mapbox. Set in .env
+    // optional token for mapbox. Set in shared.env
     if (isset($token) && isset($token_url)) {
         if (strcmp($url_parts['host'], $token_url) === 0)
             $extra = $token;

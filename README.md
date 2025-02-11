@@ -85,7 +85,7 @@ git clone https://github.com/MickWest/sitrec sitrec-test-dev
 cd sitrec-test-dev
 cp config.js.example config.js
 cp config-install.js.example config-install.js
-cp .env.example .env
+cp shared.env.example shared.env
 cp sitrecServer/config.php.example sitrecServer/config.php
 ```
 
@@ -224,11 +224,11 @@ The private video folder contains videos taken by individuals and posted on the 
 The public folder contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
 
 ## Create/Edit the config files
-You will need to edit .env, config.js, config-install.js and sitrecServer/config.php
+You will need to edit shared.env, config.js, config-install.js and sitrecServer/config.php
 
-### sitrec/.env
+### sitrec/shared.env
 
-See .env.example file for usage. 
+See shared.env.example file for usage. 
 
 ### sitrec/config.js
 This has the basic paths for both the local dev environment, and (optionally) the server environment 
@@ -367,7 +367,7 @@ Before testing this, ensure you've got the five folders on the deploy servers, t
 
 A default bind mount is set up for the `sitrec-videos` folder in the root of the project directory, allowing videos to be added. The `sitrec-cache` folder uses a volume by default, but can be changed to a bind mount by uncommenting a line in the `docker-compose.yml` file.
 
-A Mapbox token can be provided by setting the `MAPBOX_TOKEN` environment variable in the `.env` file, see `.env.example`.
+A Mapbox token can be provided by setting the `MAPBOX_TOKEN` environment variable in the `shared.env` file, see `shared.env.example`.
 
 The rehosting & shortening functionality is not available in the docker container, as this depends on the Metabunk server.
 

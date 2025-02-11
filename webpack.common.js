@@ -13,9 +13,8 @@ const MarkdownIt = require('markdown-it');
 const md = new MarkdownIt();
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
-
 const dotenv = require('dotenv');
-const result = dotenv.config();
+const result = dotenv.config({ path: './shared.env' });
 if (result.error) {
     throw result.error;
 }
@@ -60,7 +59,9 @@ module.exports = {
         alias: {},
     },
     plugins: [
-        new Dotenv(),
+        new Dotenv({
+            path: './shared.env',
+        }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             title: "Sitrec - Metabunk's Situation Recreation Tool",

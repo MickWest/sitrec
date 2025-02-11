@@ -6,9 +6,9 @@ module.exports = [
     { from: "data", to: "./data"},
     { from: "sitrecServer", to: "./sitrecServer"},
 
-    // copy the .env file, renaming it to .env.php to prevent direct access
+    // copy the shared.env file, renaming it to shared.env.php to prevent direct access
     // combined with the initial <?php tag, this will prevent the file from being served
-    { from: ".env", to: "./.env.php",
+    { from: "shared.env", to: "./shared.env.php",
         transform: (content, absoluteFrom) => {
             // Convert Buffer to string, prepend '<?php\n', then return as Buffer again
             const updatedContent = `<?php /*;\n${content.toString()}\n*/`;

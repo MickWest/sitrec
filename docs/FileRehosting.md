@@ -55,7 +55,7 @@ The server can be configured to either rehost to the server's filesystem or to a
 
 To upload a file, the user must be authenticated. This is done by a function that returns a user ID. The ID can be a number, or a string. This ID is used as the name of the user's upload folder. Each user can only upload to their own folder, so determination of the ID is entirely server-side. 
 
-A custom authentication method can be implemented by creating a file **sitrec-config/auth-config.php** with a function getUserIDCustom() which returns a user ID, or 0 if not logged in. For example, this is the metabunk authenticator.
+A custom authentication method can be implemented with a function getUserIDCustom() in config.php, which returns a user ID, or 0 if not logged in. For example, this is the metabunk authenticator.
 ```javascript
 function getUserIDCustom()
 {
@@ -76,10 +76,7 @@ function getUserIDCustom()
 ```
 Note I return 99999999 if we are running a on local host, this is just for testing. If deployed then it used the Xenforo forum framework (i.e. the software that runs Metabunk.org) to get the i.d. of the user (assuming they are logged in). It returns 0 if not logged in, and that will disable file rehosting. 
 
-Supplying a **sitrec-config/auth-config.php** file is *optional*. If you don't supply one then the server will default to a user id of 99999998 and allow uploads. 
-
-If you are running on an internal system then you might want to implement an authenticator based on IP addresses. But you don't need to. 
-
+Supplying a getUserIDCustom() is required in config.php, but you can just return any value as the default user id. Return 0 means they are not logged in. 
 
 ### Filesystem Rehosting
 

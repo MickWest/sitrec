@@ -3,21 +3,8 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/config_paths.php';
 
-// we check for an optional file that can be used to customize the user id
-// this would be specific to your installation
-// on metabunk it's used to check if the user is logged into Xenforo
-// and if so, return the user id
-// is this file does not exist, we return 99999998
-$configPath = __DIR__ . '/auth-config.php';
-
 function getUserID() {
-    global $configPath;
-    if (file_exists($configPath)) {
-        require $configPath;
-        return getUserIDCustom();
-    } else {
-        return 99999998;
-    }
+  return getUserIDCustom();
 }
 
 

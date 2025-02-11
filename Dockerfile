@@ -19,7 +19,7 @@ COPY webpack.*.js .
 COPY webpackCopyPatterns.js .
 COPY config.js .
 COPY docker/docker-config-install.js ./config-install.js
-COPY .env .
+COPY shared.env .
 COPY .git .git
 
 # We use npm ci (Clean Install) to install the dependencies

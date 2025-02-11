@@ -26,7 +26,7 @@ require_once __DIR__ . '/injectEnv.php';
     // remove this if you want to allow all extensions
     $acceptable_extensions = [ "png", "jpg", "tiff", "jpeg", "gif", "webp", "svg", "bmp", "ico", "tif"];
 //
-// import S3 credentials from .env
+// import S3 credentials from shared.env
     $s3creds = [
         "accessKeyId"     => getenv("S3_ACCESS_KEY_ID"),
         "secretAccessKey" => getenv("S3_SECRET_ACCESS_KEY"),
