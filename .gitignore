@@ -6,6 +6,7 @@ config-install.js
 .env
 sitrec-videos
 sitrec-cache
+sitrec-upload
 sitrecServer/vendor
 sitrecServer/config.php
 sitrecServer/auth-config.php

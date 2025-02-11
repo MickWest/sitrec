@@ -13,7 +13,6 @@ COPY webpackCopyPatterns.js .
 COPY config.js .
 COPY docker/docker-config-install.js ./config-install.js
 COPY .env .
-
 COPY .git .git
 
 RUN npm ci
@@ -27,7 +26,18 @@ COPY --from=build /build/dist /var/www/html
 
 WORKDIR /var/www/html
 
-VOLUME /var/www/html/sitrec-cache
+# make sitrec-cache and upload dirs and set permissions
+# cache is needed for terrain loading and starlink
+# upload is needed for video and data track uploads
+# but it will NOT be persisted
+# So it's highly recommended you use S3 with docker
+# or mount a volume to /var/www/html/sitrec-upload
+
+RUN mkdir ./sitrec-cache
+RUN chmod 777 ./sitrec-cache
+RUN mkdir ./sitrec-upload
+RUN chmod 777 ./sitrec-upload
+
 VOLUME /var/www/html/sitrec-videos
 
 EXPOSE 80

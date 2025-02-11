@@ -8,4 +8,4 @@ services:
       - MAPBOX_TOKEN=${MAPBOX_TOKEN}
     volumes:
       - ./sitrec-videos:/var/www/html/sitrec-videos
-#      - ./sitrec-cache:/var/www/html/cache
+#      - ./sitrec-cache:/var/www/html/sitrec-cache
