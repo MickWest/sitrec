@@ -60,11 +60,18 @@ Install Git
 
 Install Docker Desktop from https://www.docker.com/
 
-From a terminal window run the commands to download and copy over the config files (see below for Mac or Windows)
+From a terminal window run the commands to download and copy over the config files (see below for Mac or Windows), then change to the sitrec folder
 
-Run `docker compose -p sitrec up -d --build`
+```
+cd sitrec
+```
 
-In a browser, go to http://localhost:6425/
+Build the docker image and compose the container
+```
+docker compose -p sitrec up -d --build
+```
+
+Go to http://localhost:6425/
 
 ## Local Server Installation Prerequisites
 
@@ -83,30 +90,31 @@ Assuming we want to install the build environment in sitrec-test-dev and the loc
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
 cd sitrec-test-dev
-cp config/config.js.example config/config.js
-cp config/config-install.js.example config/config-install.js
-cp config/shared.env.example config/shared.env
-cp config/config.php.example config/config.php
+for f in config/*.example; do cp "$f" "${f%.example}"; done
+npm install
 ```
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
 
 ```bash
 mkdir /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
-cd /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
+pushd /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
 mkdir sitrec
 mkdir sitrec-cache
 mkdir sitrec-upload
 mkdir sitrec-videos
+popd
 ```
 
 Edit config/config-install.js
 Set dev_path to /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec
-Set prod_path to any folder you can use for staging the deploy build (if needed)
+Set prod_path to any folder you can use for staging the deploy build (if needed). Example
 
-Install all needed node modules
-```bash
-npm install
+```javascript
+module.exports = {
+dev_path: '/Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec',
+prod_path: '/Users/mick/sitrec-deploy'
+}
 ```
 
 Build into the local web folder we defined earlier
@@ -116,14 +124,10 @@ npm run build
 
 ## Simple Install Windows
 
-
 ```bat
 git clone https://github.com/mickwest/sitrec sitrec-test-dev
 cd sitrec-test-dev
-copy config\config.js.example config\config.js
-copy config\config-install.js.example config\config-install.js
-copy .env.example .env
-copy config\config.php.example config\config.php
+for %f in (config\*.example) do copy /Y "%f" "%~dpnf"
 ```
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve

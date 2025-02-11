@@ -17,9 +17,8 @@ COPY package.json .
 COPY package-lock.json .
 COPY webpack.*.js .
 COPY webpackCopyPatterns.js .
-COPY config/config.js ./config
+COPY config ./config
 COPY docker/docker-config-install.js ./config/config-install.js
-COPY config/shared.env ./config
 COPY .git .git
 
 # We use npm ci (Clean Install) to install the dependencies
