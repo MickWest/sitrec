@@ -562,10 +562,10 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.satelliteTextGroup.matrixWorldAutoUpdate = false
 
 
-        console.log("Loading stars")
+//        console.log("Loading stars")
         this.addStars(this.celestialSphere)
 
-        console.log("Loading planets")
+//        console.log("Loading planets")
         this.addPlanets(this.celestialSphere)
 
 
@@ -588,7 +588,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             }
         }
 
-        console.log("Adding celestial grid")
+//        console.log("Adding celestial grid")
         this.equatorialSphereGroup = new Group();
         this.celestialSphere.add(this.equatorialSphereGroup);
         this.addCelestialSphereLines(this.equatorialSphereGroup, 10);
@@ -2044,13 +2044,13 @@ void main() {
 
 
 export function addNightSky(def) {
-    console.log("Adding CNodeDisplayNightSky")
+//    console.log("Adding CNodeDisplayNightSky")
     var nightSky = new CNodeDisplayNightSky({id: "NightSkyNode", ...def});
 
     // iterate over any 3D views
     // and add an overlay to each for the star names (and any other night sky UI)
 
-    console.log("Adding night Sky Overlays")
+//    console.log("Adding night Sky Overlays")
     ViewMan.iterate((key, view) => {
         if (view.canDisplayNightSky) {
             new CNodeDisplaySkyOverlay({

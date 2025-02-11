@@ -60,7 +60,7 @@ export function registerSitches(textSitches) {
         registerSitchModule(key, moduleExports)
     });
 
-    console.log("Starting Text Sitches")
+//    console.log("Starting Text Sitches")
 
     // add the text sitches, note we set checkForModding to false
     // as these are all baked in custom sitches with no need for modding

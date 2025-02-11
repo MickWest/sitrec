@@ -136,11 +136,11 @@ export class CUnits {
     // toM conversion factors go to meters and meters per second
 
     changeUnits(_units, updateGUI=true) {
-        console.log("CUnits: changeUnits: " + _units);
+//        console.log("CUnits: changeUnits: " + _units);
         this.units = _units.toLowerCase();
 
         if (this.units !== this.lastUnits ) {
-            console.log("CUnits: changeUnits: to " + this.units + "from lastUnits: " + this.lastUnits);
+//            console.log("CUnits: changeUnits: to " + this.units + "from lastUnits: " + this.lastUnits);
 
             // set current
             this.big = this.factors[this.units].big;

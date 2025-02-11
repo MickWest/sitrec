@@ -645,7 +645,7 @@ class MetaBezierCurveEditor {
             var spacesAvailable = this.g.w / 50;
 
             this.xStep = findStep(rangeX, spacesAvailable);
-            console.log("Auto X step is " + this.xStep)
+//            console.log("Auto X step is " + this.xStep)
         }
 
 

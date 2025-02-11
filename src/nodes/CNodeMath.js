@@ -44,7 +44,7 @@ export class CNodeMath extends CNode {
                 assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
                 let node = NodeMan.get(id);
                 this.addInput(node.id, node.id)
-                console.log("CNodeMath: adding input: " + node.id + " to " + this.id);
+//                console.log("CNodeMath: adding input: " + node.id + " to " + this.id);
             }
         }
     }

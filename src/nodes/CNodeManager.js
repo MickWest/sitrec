@@ -9,7 +9,7 @@ export class CNodeManager extends CManager{
     constructor(props) {
         super (props)
         this.UniqueNodeNumber = 0;
-        console.log("Instantiating CNodeManager")
+//        console.log("Instantiating CNodeManager")
     }
 
 

@@ -111,7 +111,7 @@ export class CSituation {
         props = expandSitData(props);  // Do we really want to do this here? The whole CSituation class is a bit of a mess.
         // as we WERE also doing it in the SituationSetupFromData() function
         Object.assign(this,props);
-        console.log("Setting units to: ",this.units)
+//        console.log("Setting units to: ",this.units)
         Units.changeUnits(this.units);
     }
 
@@ -146,7 +146,7 @@ export class CSituation {
         setupConfigPaths();
 
 
-        console.log("++++++++++++++++++++ Loading assets for ", this.name,  " ++++++++++++++++++++++");
+//        console.log("++++++++++++++++++++ Loading assets for ", this.name,  " ++++++++++++++++++++++");
         // There's a per-sitch set of files
         // then other flags can cause files to be added, like the night sky
         var assets = this.files ?? {};

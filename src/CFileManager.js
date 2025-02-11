@@ -128,7 +128,7 @@ export class CFileManager extends CManager {
         // this is basically a list of the folders in the user's directory
         let textSitches = [];
         fetch((SITREC_SERVER + "getsitches.php?get=myfiles"), {mode: 'cors'}).then(response => response.text()).then(data => {
-            console.log("Local files: " + data)
+//            console.log("Local files: " + data)
 
             const files = JSON.parse(data);
             // "files" will be and array of arrays, each with a name (index 0) and a date (index 1)
@@ -721,7 +721,7 @@ export class CFileManager extends CManager {
         }
 
         Globals.parsing++;
-        console.log(">>> loadAsset() Loading Started: " + filename+ " GlobPars=" + Globals.parsing + " id=" + id);
+//        console.log(">>> loadAsset() Loading Started: " + filename+ " GlobPars=" + Globals.parsing + " id=" + id);
 
 
         var bufferPromise = null;
@@ -745,7 +745,7 @@ export class CFileManager extends CManager {
         return bufferPromise
             .then(arrayBuffer => {
                 // parseAsset always returns a promise
-                console.log("<<< loadAsset() Loading Finished: " + filename + " id=" + id);
+//                console.log("<<< loadAsset() Loading Finished: " + filename + " id=" + id);
 
                 //if (dynamicLink)
                 // always store the original
@@ -784,7 +784,7 @@ export class CFileManager extends CManager {
                 }
 
                 Globals.parsing--;
-                console.log("<<< loadAsset() parsing Finished: " + filename + " GlobPars=" + Globals.parsing + " id=" + id);
+//                console.log("<<< loadAsset() parsing Finished: " + filename + " GlobPars=" + Globals.parsing + " id=" + id);
                 return parsedAsset; // Return the asset for further chaining if necessary
             })
             .catch(error => {
@@ -804,7 +804,7 @@ export class CFileManager extends CManager {
 
     parseAsset(filename, id, buffer) {
 
-        console.log("parseAsset(" + filename + "," + id + ",<buffer>)")
+//        console.log("parseAsset(" + filename + "," + id + ",<buffer>)")
         // if it's a zip file, then we need to extract the file
         // and then parse that.
 
@@ -954,7 +954,7 @@ export class CFileManager extends CManager {
                     return Promise.resolve({filename: filename, parsed: buffer, dataType: dataType});
             }
 
-            console.log("parseAsset: DONE Parse " + filename)
+//            console.log("parseAsset: DONE Parse " + filename)
 
             // if a promise then promise to wrap the result of that in a structure
             if (prom !== undefined) {

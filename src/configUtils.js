@@ -14,7 +14,7 @@ export async function getConfigFromServer() {
         const configURL = window.location.origin + window.location.pathname + "sitrecServer/" + "config_paths.php" + "?FETCH_CONFIG";
         const response = await fetch(configURL);
         const server_config = await response.json();
-        console.log(server_config);
+//        console.log(server_config);
 
         console.log("Loaded configuration from server URL: " + configURL);
 

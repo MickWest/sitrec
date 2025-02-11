@@ -387,35 +387,6 @@ async function initializeOnce() {
 
     registerNodes();
 
-
-
-
-
-
-    // const test1 = new CNodeMath({
-    //     id: "test1",
-    //     inputs: {a: 5, b: 6},
-    //     math: "a+b",
-    // })
-    //
-    // console.log("TESTING CNodeMath")
-    // console.log("TESTING CNodeMath")
-    // console.log(test1.getValueFrame(0))
-
-    new CNodeConstant({id: "nodeA", value: 5})
-    new CNodeConstant({id: "nodeB", value: 17})
-
-    const test2 = new CNodeMath({
-        id:"test2",  // test nodes MUST have an ID
-        math: `X = $nodeA;
-                // comment line
-               Y = X + $nodeB + 100; // something
-               Z = X + Y;
-               Z * 100;
-               `,
-    })
-    console.log(test2.getValueFrame(0))
-
 // Get all the text based sitches from the server
 // these are the sitches defined by <name>.sitch.js files inside the folder of the same name in data
     let textSitches = [];
@@ -423,7 +394,7 @@ async function initializeOnce() {
 //        console.log("TEXT BASED Sitches: " + data)
 //        console.log ("parsed data: ")
         textSitches = JSON.parse(data) // will give an array of text based sitches
-        console.log ("parse done");
+//        console.log ("parse done");
     })
 
     registerSitches(textSitches);
@@ -465,7 +436,7 @@ async function initializeOnce() {
 
 // Get the URL and extract parameters
     const queryString = window.location.search;
-    console.log(">"+queryString);
+//    console.log(">"+queryString);
     urlParams = new URLSearchParams(queryString);
     setGlobalURLParams(urlParams)
 
@@ -475,7 +446,7 @@ async function initializeOnce() {
 // But if it's local, we default to the local situation, defined in config.js
     if (isLocal) {
         situation = localSituation
-        console.log("LOCAL TEST MODE: " + situation + ", isLocal = " + isLocal)
+//        console.log("LOCAL TEST MODE: " + situation + ", isLocal = " + isLocal)
     }
 
     // note in lil-gui.esm.js I changed
@@ -757,11 +728,11 @@ async function setupFunctions() {
 
 // Start loading the assets in Sit.files, and wait for them to load
 
-    console.log("START Load Assets")
+//    console.log("START Load Assets")
     const assetsLoading = Sit.loadAssets();
-    console.log("WAIT Load Assets")
+//    console.log("WAIT Load Assets")
     await assetsLoading;
-    console.log("START load inline assets")
+//    console.log("START load inline assets")
     await startLoadingInlineAssets(Sit)
 
     console.log("FINISHED Load Assets")
@@ -821,7 +792,7 @@ async function setupFunctions() {
 
 
     if (Sit.useGlobe) {
-        console.log("addAlignedGlobe()")
+//        console.log("addAlignedGlobe()")
 
         // if a globe scale is set, then use that
         // otherwise, if terrain is set, then use 0.9999 (to avoid z-fighting)
