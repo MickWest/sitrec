@@ -82,7 +82,9 @@ start http://localhost:6425/
 
 This will be running on http://localhost:6425/. The "open" or "start" commands above should open a browser window. 
 
-## Local Server Installation Prerequisites
+# Local Server Installation
+
+## Prerequisites
 
 If you want to install and run directly from a local server, and not use Docker, the you will need:
 
@@ -92,9 +94,9 @@ If you want to install and run directly from a local server, and not use Docker,
   - https support (for CORS, can be self-signed for local dev)
 - node.js (for building, with npm)
 
-## Simple install Mac/Linux
+## Server Install Mac/Linux
 
-Assuming we want to install the build environment in "sitrec-test-dev" and the local server environment is a folder "glass".
+Assuming we want to install the build environment in "sitrec-test-dev", run:
 
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
@@ -103,7 +105,7 @@ for f in config/*.example; do cp "$f" "${f%.example}"; done
 npm install
 ```
 
-Assuming you want to install in a folder called "glass" that's off the root of your local web serve
+Assuming you want to install in a folder called "glass" that's off the root of your local web server. In this example, the full path to my local web server root is: /Users/mick/Library/CloudStorage/Dropbox/Metabunk/
 
 ```bash
 mkdir /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass
@@ -131,12 +133,13 @@ Build into the local web folder we defined earlier
 npm run build
 ```
 
-## Simple Install Windows
+## Server Install Windows
 
 ```bat
 git clone https://github.com/mickwest/sitrec sitrec-test-dev
 cd sitrec-test-dev
 for %f in (config\*.example) do copy /Y "%f" "%~dpnf"
+npm install
 ```
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
@@ -162,11 +165,6 @@ module.exports = {
     dev_path: 'c:\\nginx\\html\\glass\\sitrec',
     prod_path: 'c:\\users\\mick\\sitrec-deploy'
 }
-```
-
-Install all needed node modules
-```bash
-npm install
 ```
 
 Build into the local web folder we defined earlier
