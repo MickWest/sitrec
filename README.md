@@ -85,7 +85,7 @@ git clone https://github.com/MickWest/sitrec sitrec-test-dev
 cd sitrec-test-dev
 cp config/config.js.example config/config.js
 cp config/config-install.js.example config/config-install.js
-cp shared.env.example shared.env
+cp config/shared.env.example config/shared.env
 cp sitrecServer/config.php.example sitrecServer/config.php
 ```
 
@@ -226,7 +226,7 @@ The public folder contain videos that are government produced, are by me, or are
 ## Create/Edit the config files in config/
 You will need to edit shared.env, config.js, config-install.js and sitrecServer/config.php
 
-### sitrec/shared.env
+### sitrec/config/shared.env
 
 See shared.env.example file for usage. 
 
@@ -367,9 +367,9 @@ Before testing this, ensure you've got the five folders on the deploy servers, t
 
 A default bind mount is set up for the `sitrec-videos` folder in the root of the project directory, allowing videos to be added. The `sitrec-cache` folder uses a volume by default, but can be changed to a bind mount by uncommenting a line in the `docker-compose.yml` file.
 
-A Mapbox token can be provided by setting the `MAPBOX_TOKEN` environment variable in the `shared.env` file, see `shared.env.example`.
+Default sitrec-cache and sitrec-upload folders is created - but these will not persist. 
 
-The rehosting & shortening functionality is not available in the docker container, as this depends on the Metabunk server.
+The shortening functionality is not available in the docker container, as this depends on the Metabunk server.
 
 ## Adding A Sitch
 

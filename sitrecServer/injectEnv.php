@@ -1,8 +1,6 @@
 <?php
-// Specify the path to your configuration file
-$filename = '../shared.env.php'; // Change this to your file's name if necessary
+$filename = '../shared.env.php';
 
-// Check if the file exists
 if (!file_exists($filename)) {
     die("Error: File '$filename' not found.\n");
 }

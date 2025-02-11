@@ -14,7 +14,7 @@ const md = new MarkdownIt();
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 
 const dotenv = require('dotenv');
-const result = dotenv.config({ path: './shared.env' });
+const result = dotenv.config({ path: './config/shared.env' });
 if (result.error) {
     throw result.error;
 }
@@ -60,7 +60,7 @@ module.exports = {
     },
     plugins: [
         new Dotenv({
-            path: './shared.env',
+            path: './config/shared.env',
         }),
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({

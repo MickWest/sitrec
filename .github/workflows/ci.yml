@@ -43,7 +43,7 @@ jobs:
       run: |
         cp config/config.js.example config/config.js
         cp config/config-install.js.example config/config-install.js
-        cp shared.env.example shared.env
+        cp config/shared.env.example config/shared.env
         mkdir ../dev ../prod
         # webpack's schema requires absolute paths for the output paths
         # macOS uses BSD sed instead of GNU sed on linux/windows. this works for both:

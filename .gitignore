@@ -3,7 +3,7 @@ node_modules/
 config/config.js
 config/config-install.js
 .vscode/
-shared.env
+config/shared.env
 sitrec-videos
 sitrec-cache
 sitrec-upload

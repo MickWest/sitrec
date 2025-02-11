@@ -8,7 +8,7 @@ module.exports = [
 
     // copy the shared.env file, renaming it to shared.env.php to prevent direct access
     // combined with the initial <?php tag, this will prevent the file from being served
-    { from: "shared.env", to: "./shared.env.php",
+    { from: "./config/shared.env", to: "./shared.env.php",
         transform: (content, absoluteFrom) => {
             // Convert Buffer to string, prepend '<?php\n', then return as Buffer again
             const updatedContent = `<?php /*;\n${content.toString()}\n*/`;
