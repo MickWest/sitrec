@@ -15,6 +15,10 @@ module.exports = [
             return Buffer.from(updatedContent);
         },},
 
+    // the php configuration file is copied into the server folder
+    // for deployment
+    { from: "./config/config.php", to: "./sitrecServer/config.php",},
+
     // Web worker source code needs to be loaded at run time
     // so we just copy it over
     // This is currently not used

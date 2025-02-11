@@ -86,7 +86,7 @@ cd sitrec-test-dev
 cp config/config.js.example config/config.js
 cp config/config-install.js.example config/config-install.js
 cp config/shared.env.example config/shared.env
-cp sitrecServer/config.php.example sitrecServer/config.php
+cp config/config.php.example config/config.php
 ```
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
@@ -123,7 +123,7 @@ cd sitrec-test-dev
 copy config\config.js.example config\config.js
 copy config\config-install.js.example config\config-install.js
 copy .env.example .env
-copy sitrecServer\config.php.example sitrecServer\config.php
+copy config\config.php.example config\config.php
 ```
 
 Assuming you want to install in a folder called "glass" that's off the root of your local web serve
@@ -224,7 +224,7 @@ The private video folder contains videos taken by individuals and posted on the 
 The public folder contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
 
 ## Create/Edit the config files in config/
-You will need to edit shared.env, config.js, config-install.js and sitrecServer/config.php
+You will need to edit shared.env, config.js, config-install.js and config.php
 
 ### sitrec/config/shared.env
 
@@ -259,11 +259,11 @@ dev_path: 'c:\\nginx\\html\\s\\sitrec',
 prod_path: 'c:\\Users\\Fred\\sitrec-deploy'
 ```
 
-## sitrec/sitrecServer/config.php
+## sitrec/config/config.php
 
-All the server configuration files have been consolidated into sitrecServer/config.php. It sets up
+All the server configuration files have been consolidated into config/config.php. It sets up
 - the directory structure for the cache files
-- Credentials for site like mapbox, amazon S3, space-data, etc
+- Credentials for site like mapbox, amazon S3, space-data, etc are now in shared.env
 - Some flags and other setting
 
 Read the comments in the file. There's a config.php.example file to use as a starting point
@@ -338,7 +338,6 @@ A smoke test that loads ALL the sitches one after another
 Failure could mean
 - PHP-fpm not running
 - php.ini missing extension=openssl
-- s/sitrec-config/cachemaps-config.php is missing or bad
 - s/sitrec-cache is missing or not writeable
 
 
