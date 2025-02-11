@@ -1,5 +1,5 @@
 const path = require('path');
-const InstallPaths = require('./config-install');
+const InstallPaths = require('./config/config-install');
 
 module.exports = [
     // copies the data directory

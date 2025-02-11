@@ -83,8 +83,8 @@ Assuming we want to install the build environment in sitrec-test-dev and the loc
 ```bash
 git clone https://github.com/MickWest/sitrec sitrec-test-dev
 cd sitrec-test-dev
-cp config.js.example config.js
-cp config-install.js.example config-install.js
+cp config/config.js.example config/config.js
+cp config/config-install.js.example config/config-install.js
 cp shared.env.example shared.env
 cp sitrecServer/config.php.example sitrecServer/config.php
 ```
@@ -100,7 +100,7 @@ mkdir sitrec-upload
 mkdir sitrec-videos
 ```
 
-Edit config-install.js
+Edit config/config-install.js
 Set dev_path to /Users/mick/Library/CloudStorage/Dropbox/Metabunk/glass/sitrec
 Set prod_path to any folder you can use for staging the deploy build (if needed)
 
@@ -120,8 +120,8 @@ npm run build
 ```bat
 git clone https://github.com/mickwest/sitrec sitrec-test-dev
 cd sitrec-test-dev
-copy config.js.example config.js
-copy config-install.js.example config-install.js
+copy config\config.js.example config\config.js
+copy config\config-install.js.example config\config-install.js
 copy .env.example .env
 copy sitrecServer\config.php.example sitrecServer\config.php
 ```
@@ -136,10 +136,10 @@ mkdir sitrec-cache
 mkdir sitrec-upload
 mkdir sitrec-videos
 popd
-notepad config-install.js
+notepad config\config-install.js
 ```
 
-Edit config-install.js
+Edit config\config-install.js
 Set dev_path to the local deployment folder on the web server
 Set prod_path to any folder you can use for staging the deploy build (if needed)
 
@@ -197,8 +197,8 @@ Then there are the project build files:
 - `webpack.common.js` - the main configuration file for Webpack. The next two files both include this. 
 - `webpack.dev.js` - used for development
 - `webpack.prod.js` - used for production/deployment
-- `config.js` - Contains install-specific constants for server paths used by the app
-- `config-install.js` - development and production file paths, used by the build system
+- `config/config.js` - Contains install-specific constants for server paths used by the app
+- `config/config-install.js` - development and production file paths, used by the build system
 
 (config.js and config-install.js are initial supplied as config.js.example and config-install.js.example - you will need to rename them).
 
@@ -223,14 +223,14 @@ There's also an optional URL shortener, which is uses a folder called 'u' to sto
 The private video folder contains videos taken by individuals and posted on the internet. I use them in Sitrec under fair-use, non-commercial, educational. But they are not included here. Ask me if you really need one. 
 The public folder contain videos that are government produced, are by me, or are otherwise free of restrictions. They can be found here: https://www.dropbox.com/scl/fo/biko4zk689lgh5m5ojgzw/h?rlkey=stuaqfig0f369jzujgizsicyn&dl=0
 
-## Create/Edit the config files
+## Create/Edit the config files in config/
 You will need to edit shared.env, config.js, config-install.js and sitrecServer/config.php
 
 ### sitrec/shared.env
 
 See shared.env.example file for usage. 
 
-### sitrec/config.js
+### sitrec/config/config.js
 This has the basic paths for both the local dev environment, and (optionally) the server environment 
 For the dev environment, we need edits in two places:
 
@@ -243,7 +243,7 @@ Then the server, the file has code which will attempt to determine SITREC_HOST f
 config.js also has the localSituation variable which determines which sitch you boot up into in a local dev environment.
 
 
-### sitrec/config-install.js
+### sitrec/config/config-install.js
 
 This tells Webpack where to put the built application. My setup is:
 

@@ -1,7 +1,7 @@
 First edit:
-config.js.example
+config/config.js.example
 and
-config-install.js.example
+config/config-install.js.example
 (rename to remove .example, edit paths)
 
 cd sitrec_source

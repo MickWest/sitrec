@@ -1,7 +1,7 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const path = require("path");
-const InstallPaths = require("./config-install");
+const InstallPaths = require("./config/config-install");
 
 module.exports = merge(common, {
     mode: 'production',

@@ -41,15 +41,15 @@ jobs:
         #cache-dependency-path: package-lock.json
     - name: config script setup
       run: |
-        cp config.js.example config.js
-        cp config-install.js.example config-install.js
+        cp config/config.js.example config/config.js
+        cp config/config-install.js.example config/config-install.js
         cp shared.env.example shared.env
         mkdir ../dev ../prod
         # webpack's schema requires absolute paths for the output paths
         # macOS uses BSD sed instead of GNU sed on linux/windows. this works for both:
-        sed -i'.bak' -e "s#dev_path:.*#dev_path: '$(realpath ../dev)',#" config-install.js
-        sed -i'.bak' -e "s#prod_path:.*#prod_path: '$(realpath ../prod)',#" config-install.js
-        cat config-install.js
+        sed -i'.bak' -e "s#dev_path:.*#dev_path: '$(realpath ../dev)',#" config/config-install.js
+        sed -i'.bak' -e "s#prod_path:.*#prod_path: '$(realpath ../prod)',#" config/config-install.js
+        cat config/config-install.js
     - name: install deps
       # could use npm ci instead, but this is more consistent with the build instructions in the README
       run: npm install
@@ -79,7 +79,7 @@ jobs:
       run: bun install --production # a bit faster than npm i/ci, except on windows
     - name: config script setup
       run: |
-        cp config.js.example config.js
+        cp config/config.js.example config/config.js
         # custom console tools will often be run from outside the source tree
         # so by default the config assumes that sitrec's root is "./sitrec/"
         mv ./test/console/*.js ../

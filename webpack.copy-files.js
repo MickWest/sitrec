@@ -1,7 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const copyPatterns = require('./webpackCopyPatterns');
-const InstallPaths = require('./config-install'); // Import paths configuration
+const InstallPaths = require('./config/config-install'); // Import paths configuration
 
 module.exports = {
     mode: 'none', // No optimization needed for copying

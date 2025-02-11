@@ -61,7 +61,7 @@ import {addAlignedGlobe} from "./Globe";
 import JSURL from "./js/jsurl";
 import {
     localSituation
-} from "../config";
+} from "../config/config";
 import {isConsole, isLocal, setupConfigPaths, SITREC_APP, SITREC_SERVER} from "./configUtils.js"
 import {SituationSetup, startLoadingInlineAssets} from "./SituationSetup";
 import {CUnits} from "./CUnits";

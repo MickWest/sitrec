@@ -17,8 +17,8 @@ COPY package.json .
 COPY package-lock.json .
 COPY webpack.*.js .
 COPY webpackCopyPatterns.js .
-COPY config.js .
-COPY docker/docker-config-install.js ./config-install.js
+COPY config/config.js ./config
+COPY docker/docker-config-install.js ./config/config-install.js
 COPY shared.env .
 COPY .git .git
 

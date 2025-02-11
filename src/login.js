@@ -5,21 +5,9 @@
 // so we don't show the rehost button
 
 import {Globals} from "./Globals";
-import {_configParams} from "../config";
+import {_configParams} from "../config/config";
 import {SITREC_SERVER} from "./configUtils";
 
-// we want to import configParams from config.js
-// but it might not exist, so need to check
-// export let configParams;
-//
-// console.log("REQUIRING _configParams in config.js")
-// configParams = require('../config')._configParams;
-// if (configParams === undefined) {
-//     console.log("No _configParams in config.js")
-//     configParams = {}
-// }
-
-// configParams is now required in login.js
 export const configParams = _configParams;
 
 export async function checkLogin()  {
