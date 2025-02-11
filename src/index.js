@@ -27,7 +27,7 @@ import {
     Sit,
     SitchMan,
 } from "./Globals";
-import {checkForModding, disableScroll, stripComments} from './utils.js'
+import {checkForModding, disableScroll, parseBoolean, stripComments} from './utils.js'
 import {CSituation} from "./CSituation";
 import {par, resetPar} from "./par";
 
@@ -512,7 +512,7 @@ async function initializeOnce() {
 
 
     function addHelpLink(name, file) {
-        if (process.env.LOCAL_DOCS ) {
+        if (parseBoolean(process.env.LOCAL_DOCS) ) {
             return guiMenus.help.addExternalLink(name+ " (Local)", "./"+file+".html").perm();
         } else {
             return guiMenus.help.addExternalLink(name+ " (Github)", "https://github.com/MickWest/sitrec/blob/main/"+file+".md").perm();

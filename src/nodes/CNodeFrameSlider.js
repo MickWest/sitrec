@@ -1,6 +1,7 @@
 import { par } from "../par";
 import { NodeMan, Sit } from "../Globals";
 import { CNode } from "./CNode";
+import {parseBoolean} from "../utils";
 
 export class CNodeFrameSlider extends CNode {
     constructor(v) {
@@ -33,7 +34,7 @@ export class CNodeFrameSlider extends CNode {
         sliderContainer.style.position = 'absolute';
         sliderContainer.style.height = '40px';
         sliderContainer.style.bottom = '0px';
-        if (process.env.BANNER_ACTIVE) {
+        if (parseBoolean(process.env.BANNER_ACTIVE)) {
             sliderContainer.style.bottom = process.env.BANNER_HEIGHT + 'px';
         }
         sliderContainer.style.width = '100%';

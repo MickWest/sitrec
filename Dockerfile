@@ -27,7 +27,7 @@ COPY --from=build /build/dist /var/www/html
 
 WORKDIR /var/www/html
 
-VOLUME /var/www/html/cache
+VOLUME /var/www/html/sitrec-cache
 VOLUME /var/www/html/sitrec-videos
 
 EXPOSE 80

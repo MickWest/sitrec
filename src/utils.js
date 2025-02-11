@@ -955,3 +955,22 @@ export function checkForModding(sitchObject) {
 
     return sitchObject;
 }
+
+export function parseBoolean(value) {
+    if (typeof value === 'string') {
+        switch (value.toLowerCase().trim()) {
+            case 'true':
+            case '1':
+            case 'yes':
+                return true;
+            case 'false':
+            case '0':
+            case 'no':
+                return false;
+            default:
+                return Boolean(value);
+        }
+    }
+    return Boolean(value);
+}
+

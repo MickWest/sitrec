@@ -13,13 +13,16 @@
 // BANNER_FONT="Arial"
 
 
+import {parseBoolean} from "./utils";
+
 let setupDone = false;
 
 export function setupPageStructure() {
     if (setupDone) return;
     setupDone = true;
+
     // if banner is not active, then we just have a single div
-    if (!process.env.BANNER_ACTIVE) {
+    if (!parseBoolean(process.env.BANNER_ACTIVE)) {
         // create the container div, with ID of "Content"
         const container = document.createElement('div');
         container.id = "Content";

@@ -5,6 +5,7 @@ import {Globals} from "./Globals";
 import {Color} from "three";
 import {assert} from "./assert";
 import {ViewMan} from "./CViewManager";
+import {parseBoolean} from "./utils";
 const Stats = require("stats.js");
 
 // Issue with lil-gui, the OptionController options() method adds a
@@ -268,7 +269,7 @@ export class CGuiMenuBar {
         const bar = document.createElement("div");
         bar.style.position = "absolute";
         bar.style.top = "0px";
-        if (process.env.BANNER_ACTIVE) {
+        if (parseBoolean(process.env.BANNER_ACTIVE)) {
             bar.style.top          = process.env.BANNER_HEIGHT + "px";
             this.menuBar.style.top = process.env.BANNER_HEIGHT + "px";
         }
@@ -325,7 +326,7 @@ export class CGuiMenuBar {
         // add an info GUI in the top right
         this.infoGUI = new GUI().title("Sitrec").close()
         // move it down if there is a banner
-        if (process.env.BANNER_ACTIVE) {
+        if (parseBoolean(process.env.BANNER_ACTIVE)) {
             this.infoGUI.domElement.style.top = process.env.BANNER_HEIGHT + "px";
         }
 
