@@ -68,8 +68,9 @@ In a browser, go to http://localhost:6425/
 
 ## Local Server Installation Prerequisites
 
-If you want to run directly from a local server, and not use Docker, the you will need:
+If you want to install and run directly from a local server, and not use Docker, the you will need:
 
+- git
 - web server (e.g. Nginx) with
   - php
   - https support (for CORS, can be self-signed for local dev)

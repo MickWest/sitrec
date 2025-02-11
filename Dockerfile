@@ -1,5 +1,12 @@
+# Description: Dockerfile for building Sitrec
+
+# This is a multi-stage build
+# The first stage is to build the app, using Node.js, version 22
 FROM node:22 AS build
 
+# Set the working directory to /build
+# copy the needed files and run npm install
+# in build/dist
 WORKDIR /build
 
 COPY data ./data
@@ -15,9 +22,24 @@ COPY docker/docker-config-install.js ./config-install.js
 COPY .env .
 COPY .git .git
 
+# We use npm ci (Clean Install) to install the dependencies
 RUN npm ci
-RUN npm run build
 
+# We build the app using either:
+# npm run build (for development)
+# or
+# npm run deploy (for production)
+# Both commands are defined in the package.json file
+# and will build the app using Webpack into the dist folder
+# (See docker-config-install.js, which sets those paths)
+
+RUN npm run deploy
+
+
+# The second stage is to build the image
+# We're using the official PHP 8.4 image with Apache
+# This is the image that will be used to run the app
+# We're copying the built app from the first stage to this image
 FROM php:8.4-apache
 
 USER www-data
@@ -37,6 +59,7 @@ RUN mkdir ./sitrec-cache
 RUN chmod 777 ./sitrec-cache
 RUN mkdir ./sitrec-upload
 RUN chmod 777 ./sitrec-upload
+
 
 VOLUME /var/www/html/sitrec-videos
 
