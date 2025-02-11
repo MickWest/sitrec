@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
 
 //    print ("Hello World<br>");
 //  exit(0);

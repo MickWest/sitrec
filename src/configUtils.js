@@ -11,7 +11,7 @@ export async function getConfigFromServer() {
 
 
         // reconstruct the url from parts to strip off any filename or query string
-        const configURL = window.location.origin + window.location.pathname + "sitrecServer/" + "config.php" + "?FETCH_CONFIG";
+        const configURL = window.location.origin + window.location.pathname + "sitrecServer/" + "config_paths.php" + "?FETCH_CONFIG";
         const response = await fetch(configURL);
         const server_config = await response.json();
         console.log(server_config);

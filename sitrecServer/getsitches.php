@@ -1,7 +1,8 @@
 <?php
 
 
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
 
 $storagePath = $UPLOAD_URL; // from config.php
 

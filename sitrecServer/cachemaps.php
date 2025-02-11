@@ -10,7 +10,8 @@
 // Requires a writable folder defined in config.php
 
 
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
 
 if (!isset($acceptable_domains)) {
     echo "No acceptable domains set in config.php";
@@ -137,7 +138,12 @@ if (file_exists($cachedFile)) {
 
     $extra = "";
 
-    // optional token for mapbox. See config.php
+    if($mapbox_token_env_var = getenv('MAPBOX_TOKEN')) {
+        $token = "?access_token=" . $mapbox_token_env_var;
+    }
+    $token_url = "api.mapbox.com";
+
+    // optional token for mapbox. Set in .env
     if (isset($token) && isset($token_url)) {
         if (strcmp($url_parts['host'], $token_url) === 0)
             $extra = $token;

@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
 
 // we check for an optional file that can be used to customize the user id
 // this would be specific to your installation

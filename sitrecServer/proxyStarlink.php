@@ -1,6 +1,8 @@
 <?php
 // This is specific to the Starlink historical data from Space-Track.org
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
+
 
 // space-data in config.php should look like this:
 //
@@ -8,7 +10,7 @@ require __DIR__ . '/config.php';
 // $spaceDataPassword = 'somepassword';
 
 // need to ensure we are logged in first
-//require __DIR__ . '/user.php';
+//require_once __DIR__ . '/user.php';
 //$userID = getUserID();
 //if ($userID == "") {
 //    exit("Not logged in");
@@ -58,12 +60,8 @@ if (file_exists($cachedFile) ) {
     exit();
 } else {
 
-
-
-
-
-    $username = $spaceDataUsername;
-    $password = $spaceDataPassword;
+    $username = getenv('SPACEDATA_USERNAME');
+    $password = getenv('SPACEDATA_PASSWORD');
 
 // Space-Track.org login URL
     $loginUrl = 'https://www.space-track.org/ajaxauth/login';

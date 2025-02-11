@@ -1,6 +1,7 @@
 <?php
 
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
 
 
 $request = isset($_GET["request"]) ? $_GET["request"] : null;

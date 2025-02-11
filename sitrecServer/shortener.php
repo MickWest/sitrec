@@ -2,8 +2,9 @@
 
 // Directory to store shortened URLs
 
-require __DIR__ . '/config.php';
-require('./user.php');
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
+require_once __DIR__ . './user.php';
 $user_id = getUserID();
 
 

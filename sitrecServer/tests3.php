@@ -5,7 +5,8 @@
 // but the S3 code WAS using 7
 // so we need to make sure the S3 code is using the same version of guzzle as XenForo
 // to do this I force the version of guzzle to be 6.5.5 in the composer.json file
-require __DIR__ . '/config.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config_paths.php';
 require('./user.php');
 $user_id = getUserID();
 
