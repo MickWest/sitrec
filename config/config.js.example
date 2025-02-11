@@ -1,7 +1,7 @@
 // server-side specific configuration
 
 import {md5} from 'js-md5';
-import {SITREC_CACHE, SITREC_SERVER} from "./src/configUtils";
+import {SITREC_CACHE, SITREC_SERVER} from "../src/configUtils";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
