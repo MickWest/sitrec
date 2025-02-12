@@ -41,7 +41,7 @@ class CViewManager extends CManager {
             this.widthPx = window.innerWidth - this.leftPx;
 //            this.heightPx = window.innerHeight - this.topPx; // Old
             this.heightPx = this.container.offsetHeight - this.topPx; // New
-            console.log("Setting ViewMan size to " + this.widthPx + "," + this.heightPx)
+//            console.log("Setting ViewMan size to " + this.widthPx + "," + this.heightPx)
         }
     }
 

@@ -237,7 +237,7 @@ class CameraMapControls {
 			return;
 		}
 		if (!mouseInViewOnly(this.view,event.clientX, event.clientY)) return;
-		console.log ("CameraMapControls Mouse DOWN, button = "+event.button)
+//		console.log ("CameraMapControls Mouse DOWN, button = "+event.button)
 		this.button = event.button;
 		this.updateStateFromEvent(event)
 		const [x, y] = mouseToView(this.view, event.clientX, event.clientY)
@@ -252,7 +252,7 @@ class CameraMapControls {
 		// convert to LLA
 		const ecef = EUSToECEF(cursorPos)
 		const LLA = ECEFToLLAVD_Sphere(ecef)
-		console.log("Cursor LLA: "+vdump(LLA));
+//		console.log("Cursor LLA: "+vdump(LLA));
 		if (NodeMan.exists("cursorLLA")) {
 			NodeMan.get("cursorLLA").changeLLA(LLA.x, LLA.y, LLA.z)
 		} else {
