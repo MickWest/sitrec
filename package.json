@@ -24,6 +24,7 @@
     "jquery": "^3.7.1",
     "js-md5": "^0.8.3",
     "json-stringify-pretty-compact": "^4.0.0",
+    "jszip": "^3.10.1",
     "mathjs": "^14.0.0",
     "ndarray": "^1.0.19",
     "ndarray-pack": "^1.2.1",

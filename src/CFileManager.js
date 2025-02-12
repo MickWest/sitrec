@@ -7,7 +7,7 @@ import {
     stringToArrayBuffer,
     versionString
 } from "./utils";
-import JSZip from "./js/jszip";
+import JSZip from "jszip";
 import {parseSRT, parseXml} from "./KMLUtils";
 import {CRehoster} from "./CRehoster";
 import {CManager} from "./CManager";
