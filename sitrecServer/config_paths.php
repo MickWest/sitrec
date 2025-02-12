@@ -3,12 +3,12 @@
 require_once __DIR__ . '/injectEnv.php';
 
 // $APP_URL is the base URL for the site, e.g. "https://www.metabunk.org/sitrec" or "https://www.metabunk.org/somepath/another/sitrec/"
-$APP_URL = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$APP_URL =  $_SERVER['REQUEST_SCHEME'] . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 // remove everything after the last slash (including the slash), that will give use the URL of the server directory
 $APP_URL = substr($APP_URL, 0, strrpos($APP_URL, '/'));
 // remove everything after the last slash (leaving the slash)
 $APP_URL = substr($APP_URL, 0, strrpos($APP_URL, '/') + 1);
-// and ROOT_URL is the base URL for the site
+// and ROOT_URL is the base URL for the site"
 
 // $APP_PATH is the base directory for the sitrec application
 // used by getsitches.php to find the data directory
@@ -16,7 +16,7 @@ $APP_URL = substr($APP_URL, 0, strrpos($APP_URL, '/') + 1);
 $APP_PATH = "../";
 
 
-// $DATA_IN_APP is true if the data directory is inside the app directory
+// $ROOT_IS_APP is true if the data directory is inside the app directory
 // otherwise it's one directory above.
 $ROOT_IS_APP = true;
 

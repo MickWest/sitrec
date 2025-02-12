@@ -34,7 +34,7 @@ require_once __DIR__ . '/injectEnv.php';
         "bucket"          => getenv("S3_BUCKET"),
         "acl"             => getenv("S3_ACL"),
     ];
-    $useAWS = true;
+    $useAWS = getenv("SAVE_TO_S3");
 
 // From proxy.php
     // Lookup table for requests
@@ -42,3 +42,36 @@ require_once __DIR__ . '/injectEnv.php';
         "CURRENT_STARLINK" => "https://celestrak.org/NORAD/elements/supplemental/sup-gp.php?FILE=starlink&FORMAT=tle"
     );
 
+// installation specific authentication
+// should return a user id which can be used as a directory name
+// or 0 if the user is not authenticated
+// if no authentication is needed, I return 99999999
+// if you want per-user authentication like this, then you'll need to modify this function
+// or just delete this file, so user.php will return 99999998
+//
+// Note, calling this twice in one session seems to crash Xenforo
+function getUserIDCustom()
+{
+    // a default user id for testing
+    // and for if there's no xenforo
+    $user_id = 99999999;
+
+    if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
+        // for local testing
+    } else {
+        $fileDir = getenv('XENFORO_PATH');
+        if ($fileDir) {
+            // check if the file exists
+            $xf_file = $fileDir . 'src/XF.php';
+            if (file_exists($xf_file)) {
+                require($xf_file);
+                XF::start($fileDir);
+                $app = XF::setupApp('XF\Pub\App');
+                $app->start();
+                $user = XF::visitor();
+                $user_id = $user->user_id;
+            }
+        }
+    }
+    return $user_id;
+}

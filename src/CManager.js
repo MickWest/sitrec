@@ -59,7 +59,7 @@ class CManager {
             assert(node.outputs === undefined || node.outputs.length === 0, "Trying to disposeRemove a node with outputs, id="+id);
 
             if (this.list[key].data.dispose !== undefined) {
-                console.log("Disposing " + key);
+//                console.log("Disposing " + key);
                 this.list[key].data.dispose()
             }
             this.remove(key);

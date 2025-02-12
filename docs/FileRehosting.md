@@ -55,28 +55,37 @@ The server can be configured to either rehost to the server's filesystem or to a
 
 To upload a file, the user must be authenticated. This is done by a function that returns a user ID. The ID can be a number, or a string. This ID is used as the name of the user's upload folder. Each user can only upload to their own folder, so determination of the ID is entirely server-side. 
 
-A custom authentication method can be implemented with a function getUserIDCustom() in config.php, which returns a user ID, or 0 if not logged in. For example, this is the metabunk authenticator.
+A custom authentication method can be implemented with a function getUserIDCustom() in config.php, which returns a user ID, or 0 if not logged in. For example, this is the Metabunk authenticator. 
 ```javascript
 function getUserIDCustom()
 {
+    // a default user id for testing
+    // and for if there's no xenforo
+    $user_id = 99999999;
+
     if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
         // for local testing
-        $user_id = 99999999;
     } else {
-        $fileDir = '/srv/www/metabunk.org/public_html/';  # absolute path from this script to the Xenforo root
-        require($fileDir . '/src/XF.php');
-        XF::start($fileDir);
-        $app = XF::setupApp('XF\Pub\App');
-        $app->start();
-        $user = XF::visitor();
-        $user_id = $user->user_id;
+        $fileDir = getenv('XENFORO_PATH');
+        if ($fileDir) {
+            // check if the file exists
+            $xf_file = $fileDir . 'src/XF.php';
+            if (file_exists($xf_file)) {
+                require($xf_file);
+                XF::start($fileDir);
+                $app = XF::setupApp('XF\Pub\App');
+                $app->start();
+                $user = XF::visitor();
+                $user_id = $user->user_id;
+            }
+        }
     }
     return $user_id;
 }
 ```
 Note I return 99999999 if we are running a on local host, this is just for testing. If deployed then it used the Xenforo forum framework (i.e. the software that runs Metabunk.org) to get the i.d. of the user (assuming they are logged in). It returns 0 if not logged in, and that will disable file rehosting. 
 
-Supplying a getUserIDCustom() is required in config.php, but you can just return any value as the default user id. Return 0 means they are not logged in. 
+Supplying a getUserIDCustom() is required in config.php, but you can just return any value as the default user id. Return 0 means they are not logged in. If you don't have rehosting of files available, then return 0
 
 ### Filesystem Rehosting
 
@@ -93,32 +102,19 @@ Then in the sitrecServer folder, where you should have a **composer.json** and a
 ```shell
 composer update
 ```
-This will install the sdk in a folder called vendor. 
+This will install the AWS SDK in a folder called vendor. 
 
-Note in composer.json we have
-```json
-{
-    "require": {
-        "aws/aws-sdk-php": "^3.301",
-        "guzzlehttp/guzzle": "^7.8"
-    }
-}
-```
-In previous releases (before 1.5.0a), Guzzle was limited to version 6.5. The reason being that Xenforo (on Metabunk.org) uses 6.5 and somehow that version is called deep within the vendor code. Since Xenforo was updated to 2.3.0, this is no longer the case and we can use the latest version of Guzzle. 
-
-Configuring the AWS S3 connection is done with a set of credentials. The credentials are returned by a custom function in sitrec-config/s3-config.php, for example:
+Configuring the AWS S3 connection is done with a set of credentials. These are set in config/shared.env, for example:
 
 ```php
-function getS3Credentials()
-{
-    $creds = ["accessKeyId" => "AKIAforexample",
-        "secretAccessKey" => "GRF8M7forexample.skdnfisaudbfisaudbffd",
-        "region" => "us-west-2",
-        "bucket" => "sitrec",
-        "acl" => "public-read"
-    ];
-return $creds;
+SAVE_TO_S3=true
+S3_ACCESS_KEY_ID="Aasd...6D6"
+S3_SECRET_ACCESS_KEY="GRF...sKyX"
+S3_REGION="us-west-2"
+S3_BUCKET="sitrec"
+S3_ACL="public-read"
 }
 ```
-if you don't supply a **sitrec-config/s3-config.php** file then the server will just use the filesystem rehosting.
+if you don't supply these credentials file then the server will just attempt to use the filesystem rehosting.
 
+See shared.env for additional configuration.

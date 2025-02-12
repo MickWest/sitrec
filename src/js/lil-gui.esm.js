@@ -451,7 +451,7 @@ class Controller {
             this.listen(false);
             const childIndex = this.parent.children.indexOf(this);
             const controllerIndex = this.parent.controllers.indexOf(this);
-            console.log("destroying controller, childIndex: " + childIndex + " controllerIndex: " + controllerIndex);
+//            console.log("destroying controller, childIndex: " + childIndex + " controllerIndex: " + controllerIndex);
             this.parent.children.splice(childIndex, 1);
             this.parent.controllers.splice(controllerIndex, 1);
             this.parent.$children.removeChild(this.domElement);
