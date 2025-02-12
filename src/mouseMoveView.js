@@ -79,7 +79,7 @@ export function onDocumentMouseMove(event) {
 
     // if we started dragging in a view, then send moves only to that
     if (mouseDragView) {
-         console.log("Mouse Dragging " + mouseDragView.id)
+//         console.log("Mouse Dragging " + mouseDragView.id)
         if (mouseDragView.onMouseDrag) {
             // console.log("Mouse Dragging " + mouseDragView.id)
             mouseDragView.onMouseDrag(event, mouseX, mouseY, mouseX - mouseLastX, mouseY - mouseLastY)
