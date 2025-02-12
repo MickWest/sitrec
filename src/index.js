@@ -342,7 +342,7 @@ async function newSitch(situation, customSetup = false ) {
     console.log("%%%%% BEFORE the two AWAITS %%%%%%%%")
     await waitForParsingToComplete();
 
-    if (!process.env.NO_TERRAIN) {
+    if (!parseBoolean(process.env.NO_TERRAIN)) {
         await waitForTerrainToLoad();
     }
     console.log("%%%%% AFTER the two AWAITS %%%%%%%%")

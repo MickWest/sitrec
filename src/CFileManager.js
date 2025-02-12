@@ -3,7 +3,7 @@ import {
     arrayBufferToString, checkForModding,
     cleanCSVText, disableAllInput, enableAllInput,
     getFileExtension,
-    isHttpOrHttps,
+    isHttpOrHttps, parseBoolean,
     stringToArrayBuffer,
     versionString
 } from "./utils";
@@ -49,10 +49,10 @@ export class CFileManager extends CManager {
             // the Save and Load buttons should only be available for the custom sitch
 
 
-            if (process.env.SAVE_TO_SERVER || process.env.SAVE_TO_S3) {
+            if (parseBoolean(process.env.SAVE_TO_SERVER) || parseBoolean(process.env.SAVE_TO_S3)) {
 
                 let serverName = SITREC_DOMAIN;
-                if (process.env.SAVE_TO_S3) {
+                if (parseBoolean(process.env.SAVE_TO_S3)) {
                     serverName = process.env.S3_BUCKET + ".s3"
                 }
 
@@ -70,7 +70,7 @@ export class CFileManager extends CManager {
                 }
             }
 
-            if (process.env.SAVE_TO_LOCAL) {
+            if (parseBoolean(process.env.SAVE_TO_LOCAL)) {
                 // Local save/load is always available for the custom sitch, regardless of login status
                 this.guiLocal = this.guiFolder.addFolder("Local").perm().open();
                 this.guiLocal.add(this, "saveLocal").name("Save Local Sitch File").perm().tooltip("Save a local version of the sitch, so you can use \"Open Local Sitch Folder\" to load it\nThis must be in the same folder as the files you use like the tracks and the video");
@@ -93,19 +93,19 @@ export class CFileManager extends CManager {
     sitchChanged() {
     // update the UI based on the sitch name
         if (Sit.name === "custom") {
-            if (process.env.SAVE_TO_LOCAL) {
+            if (parseBoolean(process.env.SAVE_TO_LOCAL)) {
                 this.guiLocal.show();
             }
             if (Globals.userID > 0) {
-                if (process.env.SAVE_TO_SERVER || process.env.SAVE_TO_S3) {
+                if (parseBoolean(process.env.SAVE_TO_SERVER) || parseBoolean(process.env.SAVE_TO_S3)) {
                     this.guiServer.show();
                 }
             }
         } else {
-            if (process.env.SAVE_TO_LOCAL) {
+            if (parseBoolean(process.env.SAVE_TO_LOCAL)) {
                 this.guiLocal.hide();
             }
-            if (process.env.SAVE_TO_SERVER || process.env.SAVE_TO_S3) {
+            if (parseBoolean(process.env.SAVE_TO_SERVER) || parseBoolean(process.env.SAVE_TO_S3)) {
                 this.guiServer.hide();
             }
         }
@@ -129,7 +129,7 @@ export class CFileManager extends CManager {
     }
 
     addServerButtons() {
-        if (! process.env.SAVE_TO_SERVER && !process.env.SAVE_TO_S3)
+        if (! parseBoolean(process.env.SAVE_TO_SERVER) && !parseBoolean(process.env.SAVE_TO_S3))
             return;
 
         this.guiServer.add(this, "saveSitchFromMenu").name("Save").perm().tooltip("Save the current sitch to the server");
