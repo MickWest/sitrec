@@ -261,7 +261,13 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     }
 
                     if (indexedTrack.name !== undefined) {
-                        const match = indexedTrack.name['#text'].match(/([A-Z0-9]+) track/);
+                        let match = indexedTrack.name['#text'].match(/([A-Z0-9\-]+) track/);
+
+                        // backwards compatability for the old format which did not allow for - in the flight number
+                        if (!Sit.allowDashInFlightNumber) {
+                            match = indexedTrack.name['#text'].match(/([A-Z0-9]+) track/);
+                        }
+
                         if (match !== null) {
                             shortName = match[1];
                             found = true;

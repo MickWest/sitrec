@@ -19,6 +19,10 @@ sitch = {
 
     centerOnLoadedTracks: true, // likely unique to SitCustom. When true, the camera will center on the loaded track(s) when they are loaded.
 
+    // compatibility flags
+    allowDashInFlightNumber: true, // if true, the flight number can have a dash in it
+
+
 
     initialDropZoneAnimation: true,
 
