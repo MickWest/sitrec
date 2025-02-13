@@ -165,15 +165,17 @@ class CameraMapControls {
 
 		if (ptzControls !== undefined) {
 
-			// the controller will be disabled if not selected
-			if (ptzControls.enabled === false) return;
-
 			const fov = ptzControls.fov;
 
 			ptzControls.fov = this.zoomScale(fov, delta, 1.5, 0.95)
 
 			if (ptzControls.fov < 0.1) ptzControls.fov = 0.1;
 			if (ptzControls.fov > 120) ptzControls.fov = 120;
+
+			// the FOV UI node is also updated, It's a hidden UI element that remains for backwards compatibility.
+			const fovUINode = NodeMan.get("fovUI")
+			fovUINode.setValue(ptzControls.fov);
+
 
 		} else {
 

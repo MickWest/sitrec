@@ -1,7 +1,7 @@
 import {degrees, radians} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
-import {gui, guiMenus, Sit} from "../Globals";
+import {NodeMan, Sit} from "../Globals";
 
 import {CNodeController} from "./CNodeController";
 import {V3} from "../threeUtils";
@@ -61,6 +61,15 @@ export class CNodeControllerPTZUI extends CNodeController {
     }
 
     refresh(v) {
+
+        // the FOV UI node is also updated, It's a hidden UI element that remains for backwards compatibility.
+        // NOTE: this is a hack, and should be removed in the future.
+        // and it's hard-wired for any instance of this class to update the fovUI node.
+        const fovUINode = NodeMan.get("fovUI", true)
+        if (fovUINode) {
+            fovUINode.setValue(v);
+        }
+
         // don't think this is needed
         this.recalculateCascade();
     }
