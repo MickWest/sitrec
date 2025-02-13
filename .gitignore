@@ -9,3 +9,5 @@ sitrec-cache
 sitrec-upload
 sitrecServer/vendor
 config/config.php
+debug/
+__image_snapshots__/
