@@ -57,6 +57,9 @@ export class CRehoster {
             //     console.log('URL copied to clipboard:', resultUrl);
             // })
 
+            // make resultUrl more shareable by escaping any space with %20
+            resultUrl = resultUrl.replace(/ /g, "%20");
+
             return resultUrl
         } catch (error) {
             console.error('Error uploading file:', error);
