@@ -78,13 +78,15 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         // update the desc with the units
         this.updateDesc()
 
-        // set it invisible
-        if (v.hidden) {
-            this.guiEntry.domElement.style.display = "none";
-        }
 
         if (v.color !== undefined) {
             this.guiEntry.setLabelColor(v.color)
+        }
+
+        // set it invisible
+        if (v.hidden) {
+            this.hidden = true;
+            this.hide();
         }
 
         // the guiEntry has a _stepExplicit field, which flags
@@ -137,14 +139,20 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
     }
 
+
+    // set value directly, and update the gui
+    setValue(value) {
+        this.value = value;
+        this.guiEntry.setValue(this.value);
+    }
+
     // given a value, and the units and unitType, set the value in the gui
     // example: setValueWithUnits(10, "meters", "small")
     // if the current units are metric, then this will be converted from 10 meters to 32.8084 feet
     setValueWithUnits(value, fromUnits, unitType) {
         if (this.unitType === "none") {
             // valueless, so just set the value
-            this.value = value;
-            this.guiEntry.setValue(this.value);
+            this.setValue(value);
             return;
         }
 
@@ -193,14 +201,18 @@ export class CNodeGUIValue extends CNodeGUIConstant {
     show() {
         if(!this.gui)
             return this
+        if (this.hidden) {
+            return this;
+        }
         super.show()
         this.guiEntry.show()
         return this
     }
 
     hide() {
-        if(!this.gui)
-            return this
+        if(!this.gui) {
+            return this;
+        }
         super.hide()
         this.guiEntry.hide()
         return this
