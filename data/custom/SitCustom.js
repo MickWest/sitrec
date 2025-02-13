@@ -131,7 +131,7 @@ sitch = {
                         end: 2000,
                         step: 0.01,
                         desc: "Pixel Zoom %",
-                        hidden: true
+                      //  hidden: true
                     },
                 }},
         },
