@@ -173,9 +173,10 @@ class CameraMapControls {
 			if (ptzControls.fov > 120) ptzControls.fov = 120;
 
 			// the FOV UI node is also updated, It's a hidden UI element that remains for backwards compatibility.
-			const fovUINode = NodeMan.get("fovUI")
-			fovUINode.setValue(ptzControls.fov);
-
+			const fovUINode = NodeMan.get("fovUI", false)
+			if (fovUINode) {
+				fovUINode.setValue(ptzControls.fov);
+			}
 
 		} else {
 

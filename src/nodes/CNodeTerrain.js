@@ -246,6 +246,8 @@ export class CNodeTerrainUI extends CNode {
         const mapType = v;
         const mapDef = this.mapSources[mapType];
 
+        assert(mapDef !== undefined, "CNodeTerrainUI: mapDef for " + mapType + " not found in mapSources");
+
         // does it have pre-listed layers in the mapDef?
         if (mapDef.layers !== undefined) {
             // nothing needed here
