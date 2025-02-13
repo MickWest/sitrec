@@ -150,26 +150,38 @@ class CameraMapControls {
 	}
 
 
+	zoomScale(n, delta, speed, fraction) {
+		const scale = Math.pow(fraction, speed * Math.abs(delta));
+		if (delta < 0) {
+			n *= scale;
+		} else if (delta > 0) {
+			n /= scale;
+		}
+		return n;
+	}
+
 	zoomBy(delta) {
 		const ptzControls = getPTZController(this.view.cameraNode);
 
 		if (ptzControls !== undefined) {
-			ptzControls.fov += delta / 10
+
+			// the controller will be disabled if not selected
+			if (ptzControls.enabled === false) return;
+
+			const fov = ptzControls.fov;
+
+			ptzControls.fov = this.zoomScale(fov, delta, 1, 0.95)
+
 			if (ptzControls.fov < 0.1) ptzControls.fov = 0.1;
 			if (ptzControls.fov > 120) ptzControls.fov = 120;
+
 		} else {
 
 			var target2Camera = this.camera.position.clone().sub(this.target)
 			var length = target2Camera.length()
 
-			const zoomScale = Math.pow(0.95, this.zoomSpeed * Math.abs(delta));
-			if (delta < 0) {
-				length *= zoomScale;
+			length = this.zoomScale(length, delta, 0.95)
 
-			} else if (delta > 0) {
-
-				length /= zoomScale
-			}
 			target2Camera.normalize().multiplyScalar(length)
 			this.camera.position.copy(this.target).add(target2Camera)
 
