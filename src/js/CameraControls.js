@@ -170,7 +170,7 @@ class CameraMapControls {
 
 			const fov = ptzControls.fov;
 
-			ptzControls.fov = this.zoomScale(fov, delta, 1, 0.95)
+			ptzControls.fov = this.zoomScale(fov, delta, 1.5, 0.95)
 
 			if (ptzControls.fov < 0.1) ptzControls.fov = 0.1;
 			if (ptzControls.fov > 120) ptzControls.fov = 120;
@@ -180,7 +180,7 @@ class CameraMapControls {
 			var target2Camera = this.camera.position.clone().sub(this.target)
 			var length = target2Camera.length()
 
-			length = this.zoomScale(length, delta, 0.95)
+			length = this.zoomScale(length, delta, this.zoomSpeed, 0.95)
 
 			target2Camera.normalize().multiplyScalar(length)
 			this.camera.position.copy(this.target).add(target2Camera)
