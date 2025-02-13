@@ -429,15 +429,13 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }).name("Sun Angle Arrows")
         this.addSimpleSerial("showSunArrows")
 
-        this.showVenusArrow = Sit.showVenusArrow;
-        this.venusArrowGroup = new Group();
-        this.venusArrowGroup.visible = this.showVenusArrow;
-        GlobalScene.add(this.venusArrowGroup)
-        guiShowHide.add(this, "showVenusArrow").listen().onChange(()=>{
-            par.renderOne=true;
-            this.venusArrowGroup.visible = this.showVenusArrow;
-        }).name("Venus Arrow")
-        this.addSimpleSerial("showVenusArrow")
+
+        this.addCelestialArrow("Venus")
+        this.addCelestialArrow("Mars")
+        this.addCelestialArrow("Jupiter")
+        this.addCelestialArrow("Saturn")
+        this.addCelestialArrow("Sun")
+        this.addCelestialArrow("Moon")
 
 
         this.showFlareRegion = Sit.showFlareRegion;
@@ -537,8 +535,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.toSun = V3(0,0,1)
         this.fromSun = V3(0,0,-1)
 
-        this.planets =      ["Sun", "Moon", "Mercury", "Venus",   "Mars",     "Jupiter", "Saturn", "Uranus",  "Neptune", "Pluto"]
-        this.planetColors = ["#FFFFFF", "#FFFFFF", "#FFFFFF", "#80ff80", "#ff8080", "#FFFF80", "#FF80FF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
+        this.planets =      ["Sun",     "Moon",    "Mercury", "Venus",   "Mars",     "Jupiter", "Saturn", "Uranus",  "Neptune", "Pluto"]
+        this.planetColors = ["#FFFF40", "#FFFFFF", "#FFFFFF", "#80ff80", "#ff8080", "#FFFF80", "#FF80FF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
 
 
         this.celestialSphere = new Group();
@@ -659,6 +657,22 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 //        console.log("Done with CNodeDisplayNightSky constructor")
     }
 
+    addCelestialArrow(name) {
+        const flagName = "show"+name+"Arrow";
+        const groupName = name+"ArrowGroup";
+
+        this[flagName] = Sit[flagName] ?? false;
+        this[groupName] = new Group();
+        this[groupName].visible = this[flagName];
+        GlobalScene.add(this[groupName])
+        guiShowHide.add(this, flagName).listen().onChange(()=>{
+            par.renderOne=true;
+            this[groupName].visible = this[flagName];
+        }).name(name+" Vector");
+        this.addSimpleSerial(flagName)
+    }
+
+
     updateStarlink() {
         // get the start time
         const startTime = GlobalDateTimeNode.dateNow;
@@ -713,7 +727,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.equatorialSphereGroup.layers.mask = this.showEquatorialGridLook ? LAYER.MASK_MAINRENDER : LAYER.MASK_HELPERS;
 
         this.sunArrowGroup.visible = this.showSunArrows;
-        this.venusArrowGroup.visible = this.showVenusArrow;
+        this.VenusArrowGroup.visible = this.showVenusArrow;
+        this.MarsArrowGroup.visible = this.showMarsArrow;
+        this.JupiterArrowGroup.visible = this.showJupiterArrow;
+        this.SunArrowGroup.visible = this.showSunArrow;
+        this.MoonArrowGroup.visible = this.showMoonArrow;
         this.flareRegionGroup.visible = this.showFlareRegion;
         this.flareBandGroup.visible = this.showFlareBand;
         this.satelliteGroup.visible = this.showSatellites;
@@ -1848,6 +1866,11 @@ void main() {
         const equatorial = raDec2Celestial(ra, dec, sphereRadius)
 
 
+        let color = "#FFFFFF";
+        if (this.planetSprites[planet] !== undefined) {
+            color = this.planetSprites[planet].color;
+        }
+
 
         // Set the position and scale of the sprite
         sprite.position.set(equatorial.x, equatorial.y, equatorial.z);
@@ -1857,25 +1880,7 @@ void main() {
         sprite.scale.set(scale, scale, 1);
 
 
-        if (planet === "Venus") {
-
-            // const ecef2 = equatorial.clone()
-            // ecef2.applyMatrix4(this.celestialSphere.matrix)
-
-            const gst = calculateGST(date);
-            const ecef = celestialToECEF(ra, dec, wgs84.RADIUS, gst)
-            // ecef for the sun will give us a vector from the cernter to the earth towards the Sun (which, for our purposes
-            // is considered to be infinitely far away
-            // We can use this to find the region where Starlink flares are expected
-
-            const eus = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
-            const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
-            const camera = NodeMan.get("lookCamera").camera;
-
-            if (this.showVenusArrow) {
-                DebugArrow("Venusarrow", eusDir, camera.position, 20000, "#30FF30", true, this.venusArrowGroup)
-            }
-        }
+        this.updateArrow(planet, ra, dec, date, observer, sphereRadius)
 
 
         if (planet === "Sun") {
@@ -2030,14 +2035,42 @@ void main() {
             mag: mag,
             equatorial: equatorial,
             sprite: sprite,
+            color: color,
         }
 
     }
 
 
+    updateArrow(planet, ra, dec, date, observer, sphereRadius) {
+
+        // problem with initialization order, so we need to check if the planet sprite is defined
+        if (this.planetSprites[planet] === undefined) {
+            return;
+        }
+
+        const name = planet;
+        const flagName = "show" + name + "Arrow";
+        const groupName = name + "ArrowGroup";
+        const arrowName = name + "arrow";
+
+        if (this[flagName] === undefined) {
+            return;
+        }
+
+        if (this[flagName]) {
+            const gst = calculateGST(date);
+            const ecef = celestialToECEF(ra, dec, wgs84.RADIUS, gst)
+            const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
+            const camera = NodeMan.get("lookCamera").camera;
+
+            const planetColor = this.planetSprites[planet].color;
+
+            DebugArrow(arrowName, eusDir, camera.position, 20000, planetColor, true, this[groupName])
+        }
+    }
+
 
 }
-
 
 
 
