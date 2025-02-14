@@ -11,3 +11,4 @@ sitrecServer/vendor
 config/config.php
 debug/
 __image_snapshots__/
+tests/__image_snapshots__/

@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////
 ///  DRAG AND DROP FILES?
 import {addTracks} from "./TrackManager";
-import {FileManager, NodeMan, setNewSitchObject, Sit} from "./Globals";
+import {FileManager, Globals, NodeMan, setNewSitchObject, Sit} from "./Globals";
 import {cos, getFileExtension, isSubdomain, radians} from "./utils";
 import {par} from "./par";
 import {textSitchToObject} from "./RegisterSitches";
@@ -40,7 +40,7 @@ class CDragDropHandler {
         dropZone.style.zIndex = '9999'; // High z-index to overlay other elements
         dropZone.innerHTML = 'DROP FILES <br>OR URLS<br>HERE';
 
-        if (!Sit.initialDropZoneAnimation) {
+        if (!Sit.initialDropZoneAnimation || Globals.fixedFrame !== undefined) {
             dropZone.style.visibility = 'hidden'; // Initially hidden
         }
         // 10px red border

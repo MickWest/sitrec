@@ -146,6 +146,15 @@ await setupConfigPaths();
 // })
 
 resetPar();
+const queryString = window.location.search;
+urlParams = new URLSearchParams(queryString);
+setGlobalURLParams(urlParams)
+
+Globals.fixedFrame = undefined;
+if (urlParams.get("frame") !== null) {
+    Globals.fixedFrame = parseInt(urlParams.get("frame"));
+}
+
 await initializeOnce();
 if (!initRendering()) {
     // we failed to create a renderer, so we can't continue
@@ -435,10 +444,7 @@ async function initializeOnce() {
     console.log("SITREC START - Three.JS Revision = " + REVISION)
 
 // Get the URL and extract parameters
-    const queryString = window.location.search;
-//    console.log(">"+queryString);
-    urlParams = new URLSearchParams(queryString);
-    setGlobalURLParams(urlParams)
+
 
 
 
@@ -884,6 +890,15 @@ function renderMain(elapsed) {
         if (lastFrame !== par.frame)
             par.renderOne = true;
     }
+
+    // frame number forced by URL parameter
+    if (Globals.fixedFrame !== undefined) {
+        par.frame = Globals.fixedFrame;
+        GlobalDateTimeNode.update(Globals.fixedFrame);
+        par.paused = true;
+        par.renderOne = true;
+    }
+
 
     DragDropHandler.checkDropQueue();
 
