@@ -2,7 +2,7 @@
   "name": "sitrec",
   "version": "1.0.0",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "npx jest tests/",
     "build": "npx webpack --config webpack.dev.js",
     "deploy": "npx webpack --config webpack.prod.js",
     "start": "webpack serve --config webpack.dev.js --mode development",
@@ -13,7 +13,7 @@
       "<rootDir>/test/"
     ],
     "roots": [
-      "<rootDir>/tests"
+      "<rootDir>"
     ]
   },
   "dependencies": {
