@@ -150,7 +150,7 @@ constructor(v) {
 }
 
 
-    preViewportUpdate(view) {
+    preRender(view) {
 
         if (view.id === "mainView") {
             // Adjust magnification based on user input

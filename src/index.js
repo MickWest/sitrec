@@ -86,6 +86,7 @@ import {glareSprite, targetSphere} from "./JetStuffVars";
 import {CCustomManager} from "./CustomSupport";
 import {EventManager} from "./CEventManager";
 import {checkLocal, getConfigFromServer} from "./configUtils";
+import {CNodeView3D} from "./nodes/CNodeView3D";
 
 console.log ("SITREC START - index.js after imports")
 
@@ -973,14 +974,16 @@ function renderMain(elapsed) {
             view.setFromDiv(view.div)
 
             view.updateWH()
-            if (view.camera) {
+            // view needs to a 3D view, not just have a camea
+            if (view.camera && ( view instanceof CNodeView3D ) ) {
                 view.camera.updateMatrix();
                 view.camera.updateMatrixWorld();
                 // Label3DMan.updateScale(view.camera)
                 // some nodes need code running on a per-viewport basis - like textSprites
+
                 NodeMan.iterate((id, node) => {
-                    if (node.preViewportUpdate !== undefined) {
-                        node.preViewportUpdate(view)
+                    if (node.preRender !== undefined) {
+                        node.preRender(view)
                     }
                 })
 

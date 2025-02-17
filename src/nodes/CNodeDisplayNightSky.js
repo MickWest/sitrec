@@ -56,6 +56,7 @@ import {DragDropHandler} from "../DragDropHandler";
 import {ViewMan} from "../CViewManager";
 import {bestSat} from "../TLEUtils";
 import {SITREC_APP, SITREC_SERVER} from "../configUtils";
+import {CNodeLabeledArrow} from "./CNodeLabels3D";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -408,6 +409,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         //     this.checkInputs(["cloudData", "material"])
         this.addInput("startTime",GlobalDateTimeNode)
 
+        this.planets =      ["Sun",     "Moon",    "Mercury", "Venus",   "Mars",     "Jupiter", "Saturn", "Uranus",  "Neptune", "Pluto"]
+        this.planetColors = ["#FFFF40", "#FFFFFF", "#FFFFFF", "#80ff80", "#ff8080", "#FFFF80", "#FF80FF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
+
         if (GlobalNightSkyScene === undefined) {
             setupNightSkyScene(new Scene())
         }
@@ -556,8 +560,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.toSun = V3(0,0,1)
         this.fromSun = V3(0,0,-1)
 
-        this.planets =      ["Sun",     "Moon",    "Mercury", "Venus",   "Mars",     "Jupiter", "Saturn", "Uranus",  "Neptune", "Pluto"]
-        this.planetColors = ["#FFFF40", "#FFFFFF", "#FFFFFF", "#80ff80", "#ff8080", "#FFFF80", "#FF80FF", "#FFFFFF", "#FFFFFF", "#FFFFFF"]
 
 
         this.celestialSphere = new Group();
@@ -678,14 +680,27 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 //        console.log("Done with CNodeDisplayNightSky constructor")
     }
 
+    // See updateArrow
     addCelestialArrow(name) {
         const flagName = "show"+name+"Arrow";
         const groupName = name+"ArrowGroup";
+        const obName = name+"ArrowOb";
 
         this[flagName] = Sit[flagName] ?? false;
         this[groupName] = new Group();
         this[groupName].visible = this[flagName];
         GlobalScene.add(this[groupName])
+
+        this[obName] = new CNodeLabeledArrow({
+            id: obName,
+            start: "lookCamera",
+            direction: V3(0,0,1),
+            length: -100,
+            color: this.planetColors[this.planets.indexOf(name)],
+            group: this[groupName],
+        })
+
+
         guiShowHide.add(this, flagName).listen().onChange(()=>{
             par.renderOne=true;
             this[groupName].visible = this[flagName];
@@ -2086,21 +2101,19 @@ void main() {
         const flagName = "show" + name + "Arrow";
         const groupName = name + "ArrowGroup";
         const arrowName = name + "arrow";
+        const obName = name + "ArrowOb";
 
         if (this[flagName] === undefined) {
             return;
         }
 
         if (this[flagName]) {
-            const gst = calculateGST(date);
+             const gst = calculateGST(date);
             const ecef = celestialToECEF(ra, dec, wgs84.RADIUS, gst)
             const eusDir = ECEF2EUS(ecef, radians(Sit.lat), radians(Sit.lon), 0, true);
-            const camera = NodeMan.get("lookCamera").camera;
+            eusDir.normalize();
+            this[obName].updateDirection(eusDir)
 
-            const planetColor = this.planetSprites[planet].color;
-
-//            DebugArrow(arrowName, eusDir, camera.position, 20000, planetColor, true, this[groupName])
-            DebugArrow(arrowName, eusDir, camera.position, -200, planetColor, true, this[groupName])
         }
     }
 

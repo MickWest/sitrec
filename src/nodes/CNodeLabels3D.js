@@ -160,7 +160,7 @@ export class CNodeLabel3D extends CNode3DGroup {
 
     }
 
-    preViewportUpdate(view) {
+    preRender(view) {
         this.updateScale(view);
     }
 
@@ -310,6 +310,70 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         super.dispose();
     }
 }
+
+export class CNodeLabeledArrow extends CNodeLabel3D {
+    constructor(v) {
+        super(v);
+        this.input("start");
+        this.input("direction")
+        this.input("length");
+        this.input("color")
+        this.recalculate(0)
+    }
+
+    recalculate(f) {
+        this.start = this.in.start.p(f);
+        this.length = this.in.length.v(f);
+        this.direction = this.in.direction.p(f);
+
+        // normalize the direction
+        this.direction.normalize();
+
+        this.end = this.start.clone().add(this.direction.clone().multiplyScalar(this.length));
+
+        // if length is negative, then it's a pixel value and we'll scale it later
+
+        const midPoint = this.start.clone().add(this.end).multiplyScalar(0.5);
+        this.position.set(midPoint.x, midPoint.y, midPoint.z);
+
+        const color = this.in.color.v(f)
+        // add an arrow from A to C and B to D
+        DebugArrowAB(this.id+"arrow", this.start, this.end, color, true, this.groupNode.group);
+
+        const length = this.start.distanceTo(this.end);
+        let text = Units.withUnits(length, this.decimals, this.unitType);
+        this.changeText(text);
+
+    }
+
+    updateDirection(dir) {
+        this.direction.copy(dir);
+        this.update(0);
+    }
+
+    // scale things based on the camera's position
+    preRender(view) {
+        super.preRender(view);
+
+        // change the length of the arrows based on the camera's position
+        if (this.length < 0) {
+            const lengthPixels = -this.length;
+            const lengthMeters = view.pixelsToMeters(this.start, lengthPixels);
+            const color = this.in.color.v(0)
+            this.end = this.start.clone().add(this.direction.clone().multiplyScalar(lengthMeters));
+
+            // just calling this again will update the length of the arrow
+            DebugArrowAB(this.id+"arrow", this.start, this.end, color, true, this.groupNode.group);
+        }
+
+    }
+
+    dispose() {
+        removeDebugArrow(this.id+"arrow");
+        super.dispose();
+    }
+}
+
 
 export class CNodeMeasureAltitude extends CNodeMeasureAB {
     constructor(v) {
