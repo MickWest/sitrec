@@ -985,7 +985,7 @@ function renderMain(elapsed) {
                 })
 
                 // patch in arrow head scaling
-                scaleArrows(view.camera);
+                scaleArrows(view);
 
             }
             updateLockTrack(view, par.frame)

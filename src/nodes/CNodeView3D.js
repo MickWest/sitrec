@@ -1138,6 +1138,35 @@ renderSky() {
     }
 
 
+    // given a 3D position in the scene and a length in pixele
+    // we known the verical field of view of the camera
+    // and we know the height of the canvas in pixels
+    // we can calculate the distance from the camera to the object
+    // So convert pixels into meters
+    pixelsToMeters(position, pixels) {
+        // get the vertical field of view in radians
+        const vfov = this.camera.fov * Math.PI / 180;
+        // get the height of the canvas in pixels
+        const heightPx = this.heightPx;
+        // calculate the distance from the camera to the object
+        const meters = pixels * position.distanceTo(this.camera.position) / (heightPx / (2 * Math.tan(vfov / 2)));
+
+        return meters;
+    }
+
+    // this is just the inverse of the above function
+     metersToPixels(position, meters) {
+        // get the vertical field of view in radians
+        const vfov = this.camera.fov * Math.PI / 180;
+        // get the height of the canvas in pixels
+        const heightPx = this.heightPx;
+        // calculate the distance from the camera to the object
+        const pixels = meters * (heightPx / (2 * Math.tan(vfov / 2))) / position.distanceTo(this.camera.position);
+
+        return pixels;
+     }
+
+
 }
 
 

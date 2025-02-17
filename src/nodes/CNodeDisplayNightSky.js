@@ -131,6 +131,27 @@ export class CNodeDisplaySkyOverlay extends CNodeViewUI{
                       this.ctx.fillText(this.nightSky.commonNames[HR], x, y)
                   }
               }
+              
+              // // iterate over ALL the stars, not just the common ones
+              // // and lable them with the index
+              //   for (let n = 0; n < this.nightSky.BSC_NumStars; n++) {
+              //       const ra = this.nightSky.BSC_RA[n]
+              //       const dec = this.nightSky.BSC_DEC[n]
+              //       assert(ra !== 0 || dec !== 0, "ra AND dec is 0 for star "+n + " "+this.nightSky.BSC_NAME[n]+" Mag="+this.nightSky.BSC_MAG[n])
+              //       const pos1 = raDec2Celestial(ra, dec, 100) // get equatorial
+              //       pos1.applyMatrix4(this.nightSky.celestialSphere.matrix) // convert equatorial to EUS
+              //       pos1.project(camera) // project using the EUS camera
+              //
+              //       if (pos1.z > -1 && pos1.z < 1 && pos1.x >= -1 && pos1.x <= 1 && pos1.y >= -1 && pos1.y <= 1) {
+              //           var x = (pos1.x + 1) * this.widthPx / 2
+              //           var y = (-pos1.y + 1) * this.heightPx / 2
+              //           x += 5
+              //           y -= 5
+              //           this.ctx.fillText(n, x, y)
+              //       }
+              //   }
+              
+              
 
               // Note this is overlay code, so we use this.nightSky.
               // CNodeDisplayNightSky would use this.planetSprites
@@ -881,6 +902,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         let attentuation = Math.max(0, 1 - skyBrightness);
         starScale *= attentuation
 
+        assert(starScale < 2, "starScale is too big: "+starScale);
         this.starMaterial.uniforms.starScale.value = starScale;
 
 
@@ -1056,6 +1078,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         offset += 4;
 //    const view = new DataView(buffer.slice(28))
 
+        let nInput = 0;
         while (offset < -starn * nbent - 28) {
             const xno = view.getFloat32(offset, littleEndian);
             offset += 4
@@ -1072,13 +1095,24 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             const xdpm = view.getFloat32(offset, littleEndian);
             offset += 4
 
-            this.BSC_RA[this.BSC_NumStars] = sra0;
-            this.BSC_DEC[this.BSC_NumStars] = sdec0;
-            this.BSC_MAG[this.BSC_NumStars] = mag;
-            this.BSC_NumStars++;
+            // assert mag is within expected range for stars, and not NaN
+            assert(!isNaN(mag) &&  mag >= -2 && mag <= 8, "mag out of range: "+mag +" at nInput = "+nInput)
 
-            if (mag > this.BSC_MaxMag)
-                this.BSC_MaxMag = mag;
+            if (sra0 === 0 && sdec0 === 0) {
+                // ra and dec of zero indicates a placeholder entry, and is skipped
+//                console.log("Skipping star with ra, dec, 0,0, probably a bad entry, nInput = " + nInput)
+            } else {
+
+                this.BSC_RA[this.BSC_NumStars] = sra0;
+                this.BSC_DEC[this.BSC_NumStars] = sdec0;
+                this.BSC_MAG[this.BSC_NumStars] = mag;
+                this.BSC_NumStars++;
+
+                if (mag > this.BSC_MaxMag)
+                    this.BSC_MaxMag = mag;
+            }
+
+            nInput++;
         }
     }
 
@@ -2065,7 +2099,8 @@ void main() {
 
             const planetColor = this.planetSprites[planet].color;
 
-            DebugArrow(arrowName, eusDir, camera.position, 20000, planetColor, true, this[groupName])
+//            DebugArrow(arrowName, eusDir, camera.position, 20000, planetColor, true, this[groupName])
+            DebugArrow(arrowName, eusDir, camera.position, -200, planetColor, true, this[groupName])
         }
     }
 

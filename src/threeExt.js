@@ -267,7 +267,8 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
 
     if (DebugArrows[name] == undefined) {
         color = new Color(color)  // convert from whatever format, like "green" or "#00ff00" to a THREE.Color(r,g,b)
-        DebugArrows[name] = new ArrowHelper(dir, origin, _length, color, _headLength);
+//        DebugArrows[name] = new ArrowHelper(dir, origin, _length, color, _headLength);
+        DebugArrows[name] = new ArrowHelper(dir, origin, _length, color);
         DebugArrows[name].visible = visible
         DebugArrows[name].length = _length;
         DebugArrows[name].headLength = _headLength;
@@ -284,6 +285,7 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
         DebugArrows[name].setLength(_length, _headLength)
         DebugArrows[name].visible = visible
         DebugArrows[name].length = _length;
+        DebugArrows[name].originalLength = _length;
         DebugArrows[name].headLength = _headLength;
         DebugArrows[name].direction = dir;
 
@@ -292,14 +294,21 @@ export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFF
     return DebugArrows[name]
 }
 
-export function scaleArrows(camera) {
-    let campos = camera.position.clone();
-    const fovScale = 0.0025 * Math.tan((camera.fov / 2) * (Math.PI / 180))
+export function scaleArrows(view) {
+
+    // being called with overlay views, which have a camera, but no pixelsToMeters
+    // the arrows are only rendered in 3D views, so we can ignore this
+    if (view.pixelsToMeters === undefined) return;
+
     for (var key in DebugArrows) {
         const arrow = DebugArrows[key]
-        let headPosition = arrow.position.clone().add(arrow.direction.clone().multiplyScalar(arrow.length));
-        let distance = campos.distanceTo(headPosition);
-        arrow.setLength(arrow.length, distance * fovScale * arrow.headLength);
+        let headLength = view.pixelsToMeters(arrow.position, arrow.headLength);
+        if (arrow.originalLength < 0) {
+            let length = view.pixelsToMeters(arrow.position, -arrow.originalLength);
+            arrow.setLength(length, headLength);
+        } else {
+            arrow.setLength(arrow.length, headLength);
+        }
     }
 
 }
