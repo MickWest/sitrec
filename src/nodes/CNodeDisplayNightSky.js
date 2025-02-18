@@ -687,9 +687,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         const obName = name+"ArrowOb";
 
         this[flagName] = Sit[flagName] ?? false;
-        this[groupName] = new Group();
-        this[groupName].visible = this[flagName];
-        GlobalScene.add(this[groupName])
+        this[groupName] = new CNode3DGroup({id: groupName});
+        this[groupName].show(this[flagName]);
 
         this[obName] = new CNodeLabeledArrow({
             id: obName,
@@ -697,13 +696,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             direction: V3(0,0,1),
             length: -100,
             color: this.planetColors[this.planets.indexOf(name)],
-            group: this[groupName],
+            groupNode: groupName,
+            label: name,
+            labelPosition: "1",
         })
 
 
         guiShowHide.add(this, flagName).listen().onChange(()=>{
             par.renderOne=true;
-            this[groupName].visible = this[flagName];
+            this[groupName].show(this[flagName]);
         }).name(name+" Vector");
         this.addSimpleSerial(flagName)
     }
@@ -763,11 +764,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.equatorialSphereGroup.layers.mask = this.showEquatorialGridLook ? LAYER.MASK_MAINRENDER : LAYER.MASK_HELPERS;
 
         this.sunArrowGroup.visible = this.showSunArrows;
-        this.VenusArrowGroup.visible = this.showVenusArrow;
-        this.MarsArrowGroup.visible = this.showMarsArrow;
-        this.JupiterArrowGroup.visible = this.showJupiterArrow;
-        this.SunArrowGroup.visible = this.showSunArrow;
-        this.MoonArrowGroup.visible = this.showMoonArrow;
+        this.VenusArrowGroup.show(this.showVenusArrow);
+        this.MarsArrowGroup.show(this.showMarsArrow);
+        this.JupiterArrowGroup.show(this.showJupiterArrow);
+        this.SunArrowGroup.show(this.showSunArrow);
+        this.MoonArrowGroup.show(this.showMoonArrow);
         this.flareRegionGroup.visible = this.showFlareRegion;
         this.flareBandGroup.visible = this.showFlareBand;
         this.satelliteGroup.visible = this.showSatellites;

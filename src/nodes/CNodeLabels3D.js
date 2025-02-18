@@ -318,7 +318,10 @@ export class CNodeLabeledArrow extends CNodeLabel3D {
         this.input("direction")
         this.input("length");
         this.input("color")
-        this.recalculate(0)
+
+        this.label = v.label ?? "";
+
+        this.recalculate(0);
     }
 
     recalculate(f) {
@@ -330,19 +333,14 @@ export class CNodeLabeledArrow extends CNodeLabel3D {
         this.direction.normalize();
 
         this.end = this.start.clone().add(this.direction.clone().multiplyScalar(this.length));
-
-        // if length is negative, then it's a pixel value and we'll scale it later
-
-        const midPoint = this.start.clone().add(this.end).multiplyScalar(0.5);
-        this.position.set(midPoint.x, midPoint.y, midPoint.z);
+        this.position.copy(this.end);
 
         const color = this.in.color.v(f)
         // add an arrow from A to C and B to D
         DebugArrowAB(this.id+"arrow", this.start, this.end, color, true, this.groupNode.group);
 
-        const length = this.start.distanceTo(this.end);
-        let text = Units.withUnits(length, this.decimals, this.unitType);
-        this.changeText(text);
+
+        this.changeText(this.label);
 
     }
 
@@ -353,7 +351,6 @@ export class CNodeLabeledArrow extends CNodeLabel3D {
 
     // scale things based on the camera's position
     preRender(view) {
-        super.preRender(view);
 
         // change the length of the arrows based on the camera's position
         if (this.length < 0) {
@@ -366,6 +363,9 @@ export class CNodeLabeledArrow extends CNodeLabel3D {
             DebugArrowAB(this.id+"arrow", this.start, this.end, color, true, this.groupNode.group);
         }
 
+        // update the position of the text
+        this.position.copy(this.end);
+        super.preRender(view);
     }
 
     dispose() {
