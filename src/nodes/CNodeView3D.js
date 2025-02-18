@@ -56,7 +56,7 @@ function linearToSrgb(color) {
 export class CNodeView3D extends CNodeViewCanvas {
     constructor(v) {
 
-        assert(v.camera !== undefined, "Missing Camera creating CNodeView 3D, id="+v.id)
+        assert(v.camera !== undefined, "Missing Camera creating CNodeView 3D, id=" + v.id)
 
         // strip out the camera, as we don't want it in the super
         // as there's conflict with the getter
@@ -97,7 +97,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         // need to ensure the near/far clip distances are propogated to custom shaders
 
 //        console.log(" devicePixelRatio = "+window.devicePixelRatio+" canvas.width = "+this.canvas.width+" canvas.height = "+this.canvas.height)
- //       console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
+        //       console.log("Window inner width = "+window.innerWidth+" height = "+window.innerHeight)
 
         // this.renderer = new WebGLRenderer({antialias: true, canvas: this.canvas, logarithmicDepthBuffer: true})
         //
@@ -208,9 +208,9 @@ export class CNodeView3D extends CNodeViewCanvas {
                 logarithmicDepthBuffer: true,
             });
         } catch (e) {
-            console.error("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer: "+e)
+            console.error("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer: " + e)
             // show an alert
-            alert("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer:\n "+e)
+            alert("Incompatible Browser or Graphics Acceleration Disabled\n Error creating WebGLRenderer:\n " + e)
 
 
             return;
@@ -233,7 +233,7 @@ export class CNodeView3D extends CNodeViewCanvas {
             Globals.renderTargetAntiAliased = new WebGLRenderTarget(256, 256, {
                 format: RGBAFormat,
                 type: UnsignedByteType,
-             //   type: FloatType, // Use FloatType for HDR
+                //   type: FloatType, // Use FloatType for HDR
                 colorSpace: SRGBColorSpace,
                 minFilter: NearestFilter,
                 magFilter: NearestFilter,
@@ -267,7 +267,7 @@ export class CNodeView3D extends CNodeViewCanvas {
         // Shader material for copying texture
         this.copyMaterial = new ShaderMaterial({
             uniforms: {
-                'tDiffuse': { value: null }
+                'tDiffuse': {value: null}
             },
             vertexShader: /* glsl */`
             varying vec2 vUv;
@@ -295,8 +295,10 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.effectPasses = {};
 
-        this.preRenderFunction = v.preRenderFunction ?? (() => {});
-        this.postRenderFunction = v.postRenderFunction ?? (() => {});
+        this.preRenderFunction = v.preRenderFunction ?? (() => {
+        });
+        this.postRenderFunction = v.postRenderFunction ?? (() => {
+        });
 
 
         // 4. Set up the event listeners on your renderer
@@ -322,13 +324,13 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
     renderTargetAndEffects() {
-    {
+        {
 
-        if (this.visible) {
+            if (this.visible) {
 
-            let currentRenderTarget = null; // if no effects, we render directly to the canvas
+                let currentRenderTarget = null; // if no effects, we render directly to the canvas
 
-            //if (this.effectsEnabled) {
+                //if (this.effectsEnabled) {
                 if (this.in.canvasWidth !== undefined) {
                     Globals.renderTargetAntiAliased.setSize(this.in.canvasWidth.v0, this.in.canvasHeight.v0);
                     if (this.effectsEnabled) {
@@ -346,188 +348,187 @@ export class CNodeView3D extends CNodeViewCanvas {
                 }
                 currentRenderTarget = Globals.renderTargetAntiAliased;
                 this.renderer.setRenderTarget(currentRenderTarget);
-            //}
+                //}
 
-/*
- maybe:
- - Render day sky to renderTargetA
- - Render night sky to renderTargetA (should have a black background)
- - Combine them both to renderTargetAntiAliased instead of clearing it
- - they will only need combining at dusk/dawn, using total light in the sky
- - then render the scene to renderTargetAntiAliased, and apply effects with A/B as before
+                /*
+                 maybe:
+                 - Render day sky to renderTargetA
+                 - Render night sky to renderTargetA (should have a black background)
+                 - Combine them both to renderTargetAntiAliased instead of clearing it
+                 - they will only need combining at dusk/dawn, using total light in the sky
+                 - then render the scene to renderTargetAntiAliased, and apply effects with A/B as before
 
- */
-
-
-            if (keyHeld["y"]) { return;}
-
-            // update lighting before rendering the sky
-            const lightingNode = NodeMan.get("lighting", true);
-            // if this is an IR viewport, then we need to render the IR ambient light
-            // instead of the normal ambient light.
-
-            if (this.isIR && this.effectsEnabled) {
-                lightingNode.setIR(true);
-            }
-            lightingNode.recalculate((this.id === "mainView"));
-            sharedUniforms.useDayNight.value = !lightingNode.noMainLighting;
+                 */
 
 
-            // update the sun node, which controls the global scene lighting
-            const sunNode = NodeMan.get("theSun", true);
-            if (sunNode !== undefined) {
-                sunNode.update();
-            }
+                if (keyHeld["y"]) {
+                    return;
+                }
+
+                // update lighting before rendering the sky
+                const lightingNode = NodeMan.get("lighting", true);
+                // if this is an IR viewport, then we need to render the IR ambient light
+                // instead of the normal ambient light.
+
+                if (this.isIR && this.effectsEnabled) {
+                    lightingNode.setIR(true);
+                }
+                lightingNode.recalculate((this.id === "mainView"));
+                sharedUniforms.useDayNight.value = !lightingNode.noMainLighting;
 
 
-
-            this.renderSky();
-
-
-
-            // render the day sky
-            if (GlobalDaySkyScene !== undefined) {
-
-                var tempPos = this.camera.position.clone();
-                this.camera.position.set(0, 0, 0)
-                this.camera.updateMatrix();
-                this.camera.updateMatrixWorld();
-                const oldTME = this.renderer.toneMappingExposure;
-                const oldTM = this.renderer.toneMapping;
-
-                // this.renderer.toneMapping = ACESFilmicToneMapping;
-                // this.renderer.toneMappingExposure = NodeMan.get("theSky").effectController.exposure;
-                this.renderer.render(GlobalDaySkyScene, this.camera);
-                // this.renderer.toneMappingExposure = oldTME;
-                // this.renderer.toneMapping = oldTM;
-
-                this.renderer.clearDepth()
-                this.camera.position.copy(tempPos)
-                this.camera.updateMatrix();
-                this.camera.updateMatrixWorld();
+                // update the sun node, which controls the global scene lighting
+                const sunNode = NodeMan.get("theSun", true);
+                if (sunNode !== undefined) {
+                    sunNode.update();
+                }
 
 
-                // if tone mapping the sky, insert the tone mapping shader here
+                this.renderSky();
 
-                // create the pass similar to in CNodeEffect.js
-                // passing in a shader to the ShaderPass
-                const acesFilmicToneMappingPass = new ShaderPass(ACESFilmicToneMappingShader);
+
+                // render the day sky
+                if (GlobalDaySkyScene !== undefined) {
+
+                    var tempPos = this.camera.position.clone();
+                    this.camera.position.set(0, 0, 0)
+                    this.camera.updateMatrix();
+                    this.camera.updateMatrixWorld();
+                    const oldTME = this.renderer.toneMappingExposure;
+                    const oldTM = this.renderer.toneMapping;
+
+                    // this.renderer.toneMapping = ACESFilmicToneMapping;
+                    // this.renderer.toneMappingExposure = NodeMan.get("theSky").effectController.exposure;
+                    this.renderer.render(GlobalDaySkyScene, this.camera);
+                    // this.renderer.toneMappingExposure = oldTME;
+                    // this.renderer.toneMapping = oldTM;
+
+                    this.renderer.clearDepth()
+                    this.camera.position.copy(tempPos)
+                    this.camera.updateMatrix();
+                    this.camera.updateMatrixWorld();
+
+
+                    // if tone mapping the sky, insert the tone mapping shader here
+
+                    // create the pass similar to in CNodeEffect.js
+                    // passing in a shader to the ShaderPass
+                    const acesFilmicToneMappingPass = new ShaderPass(ACESFilmicToneMappingShader);
 
 // Set the exposure value
-                acesFilmicToneMappingPass.uniforms['exposure'].value = NodeMan.get("theSky").effectController.exposure;
+                    acesFilmicToneMappingPass.uniforms['exposure'].value = NodeMan.get("theSky").effectController.exposure;
 
 // test patch in the block of code from the effect loop
-                acesFilmicToneMappingPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-                // flip the render targets
-                const useRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
-
-                this.renderer.setRenderTarget(useRenderTarget);
-                this.fullscreenQuad.material = acesFilmicToneMappingPass.material;  // Set the material to the current effect pass
-                this.renderer.render(this.fullscreenQuad, new Camera());
-                this.renderer.clearDepth()
-
-                currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
-            }
-
-
-
-            // viewport setting for fov, layer mask, override camera settings
-            // but we want to preserve the camera settings
-
-            const oldFOV = this.camera.fov;
-            if (this.fovOverride !== undefined) {
-                this.camera.fov = this.fovOverride;
-                this.camera.updateProjectionMatrix();
-            }
-
-            const oldLayers = this.camera.layers.mask;
-            if (this.layers !== undefined) {
-                this.camera.layers.mask = this.layers;
-            }
-
-
-            // Render the scene to the off-screen canvas or render target
-            this.renderer.render(GlobalScene, this.camera);
-
-            if (this.layers !== undefined) {
-                this.camera.layers.mask = oldLayers;
-            }
-
-
-            if (this.fovOverride !== undefined) {
-                this.camera.fov = oldFOV;
-                this.camera.updateProjectionMatrix();
-            }
-
-            if (this.isIR && this.effectsEnabled) {
-                NodeMan.get("lighting").setIR(false);
-            }
-
-            if (this.effectsEnabled) {
-
-             //   this.renderer.setRenderTarget(null);
-
-                // Apply each effect pass sequentially
-                for (let effectName in this.effectPasses) {
-                    const effectNode = this.effectPasses[effectName];
-                    if (!effectNode.enabled) continue;
-                    let effectPass = effectNode.pass;
-
-                    // the efferctNode has an optional filter type for the source texture
-                    // which will be from the PREVIOUS effect pass's render target
-                    switch (effectNode.filter.toLowerCase()) {
-                        case "linear":
-                            forceFilterChange(currentRenderTarget.texture, LinearFilter, this.renderer);
-                            break;
-                        case "nearest":
-                        default:
-                            forceFilterChange(currentRenderTarget.texture, NearestFilter, this.renderer);
-                            break;
-                    }
-
-                    // Ensure the texture parameters are applied
-                    // currentRenderTarget.texture.needsUpdate = true;
-
-                    effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                    acesFilmicToneMappingPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
                     // flip the render targets
                     const useRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
 
                     this.renderer.setRenderTarget(useRenderTarget);
-                    //this.renderer.clear(true, true, true);
-                    this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
+                    this.fullscreenQuad.material = acesFilmicToneMappingPass.material;  // Set the material to the current effect pass
                     this.renderer.render(this.fullscreenQuad, new Camera());
+                    this.renderer.clearDepth()
+
                     currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
                 }
+
+
+                // viewport setting for fov, layer mask, override camera settings
+                // but we want to preserve the camera settings
+
+                const oldFOV = this.camera.fov;
+                if (this.fovOverride !== undefined) {
+                    this.camera.fov = this.fovOverride;
+                    this.camera.updateProjectionMatrix();
+                }
+
+                const oldLayers = this.camera.layers.mask;
+                if (this.layers !== undefined) {
+                    this.camera.layers.mask = this.layers;
+                }
+
+
+                // Render the scene to the off-screen canvas or render target
+                this.renderer.render(GlobalScene, this.camera);
+
+                if (this.layers !== undefined) {
+                    this.camera.layers.mask = oldLayers;
+                }
+
+
+                if (this.fovOverride !== undefined) {
+                    this.camera.fov = oldFOV;
+                    this.camera.updateProjectionMatrix();
+                }
+
+                if (this.isIR && this.effectsEnabled) {
+                    NodeMan.get("lighting").setIR(false);
+                }
+
+                if (this.effectsEnabled) {
+
+                    //   this.renderer.setRenderTarget(null);
+
+                    // Apply each effect pass sequentially
+                    for (let effectName in this.effectPasses) {
+                        const effectNode = this.effectPasses[effectName];
+                        if (!effectNode.enabled) continue;
+                        let effectPass = effectNode.pass;
+
+                        // the efferctNode has an optional filter type for the source texture
+                        // which will be from the PREVIOUS effect pass's render target
+                        switch (effectNode.filter.toLowerCase()) {
+                            case "linear":
+                                forceFilterChange(currentRenderTarget.texture, LinearFilter, this.renderer);
+                                break;
+                            case "nearest":
+                            default:
+                                forceFilterChange(currentRenderTarget.texture, NearestFilter, this.renderer);
+                                break;
+                        }
+
+                        // Ensure the texture parameters are applied
+                        // currentRenderTarget.texture.needsUpdate = true;
+
+                        effectPass.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                        // flip the render targets
+                        const useRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
+
+                        this.renderer.setRenderTarget(useRenderTarget);
+                        //this.renderer.clear(true, true, true);
+                        this.fullscreenQuad.material = effectPass.material;  // Set the material to the current effect pass
+                        this.renderer.render(this.fullscreenQuad, new Camera());
+                        currentRenderTarget = currentRenderTarget === Globals.renderTargetA ? Globals.renderTargetB : Globals.renderTargetA;
+                    }
+                }
+
+                // Render the final texture to the screen, id we were using a render target.
+                if (currentRenderTarget !== null) {
+                    this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
+                    this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
+                    this.renderer.setRenderTarget(null);
+                    this.renderer.render(this.fullscreenQuad, new Camera());
+                }
+
+
             }
-
-            // Render the final texture to the screen, id we were using a render target.
-            if (currentRenderTarget !== null) {
-                this.copyMaterial.uniforms['tDiffuse'].value = currentRenderTarget.texture;
-                this.fullscreenQuad.material = this.copyMaterial;  // Set the material to the copy material
-                this.renderer.setRenderTarget(null);
-                this.renderer.render(this.fullscreenQuad, new Camera());
-            }
-
-
         }
     }
-}
 
 
-initSky() {
-    this.skyBrightnessMaterial = new ShaderMaterial({
-        uniforms: {
-            color: { value: new Color(0,1,0) },
-            opacity: { value: 0.5 },
-        },
-        vertexShader: /* glsl */`
+    initSky() {
+        this.skyBrightnessMaterial = new ShaderMaterial({
+            uniforms: {
+                color: {value: new Color(0, 1, 0)},
+                opacity: {value: 0.5},
+            },
+            vertexShader: /* glsl */`
             varying vec2 vUv;
             void main() {
                 vUv = uv;
                 gl_Position = vec4(position, 1.0);
             }
         `,
-        fragmentShader: /* glsl */`
+            fragmentShader: /* glsl */`
             uniform vec3 color;
             uniform float opacity;
             varying vec2 vUv;
@@ -535,144 +536,140 @@ initSky() {
                 gl_FragColor = vec4(color, opacity);
             }
         `,
-        transparent: true,
-        blending: NormalBlending,
-        depthTest: false,
-        depthWrite: false
-    });
+            transparent: true,
+            blending: NormalBlending,
+            depthTest: false,
+            depthWrite: false
+        });
 
 
-    this.fullscreenQuadGeometry = new PlaneGeometry(2, 2);
+        this.fullscreenQuadGeometry = new PlaneGeometry(2, 2);
 
-    this.skyCamera = new Camera();
+        this.skyCamera = new Camera();
 
-    this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
-    this.fullscreenQuadScene = new Scene();
-    this.fullscreenQuadScene.add(this.fullscreenQuad);
+        this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
+        this.fullscreenQuadScene = new Scene();
+        this.fullscreenQuadScene.add(this.fullscreenQuad);
 
-}
-
-updateSkyUniforms(skyColor, skyOpacity) {
-    //     console.log("updateSkyUniforms: skyColor = "+skyColor+" skyOpacity = "+skyOpacity)
-    this.skyBrightnessMaterial.uniforms.color.value = skyColor;
-    this.skyBrightnessMaterial.uniforms.opacity.value = skyOpacity;
-}
-
-renderSky() {
-    // Render the celestial sphere
-    if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
-
-        // we need to call this twice (once again in the super's render)
-        // so the camera is correct for the celestial sphere
-        // which is rendered before the main scene
-        // but uses the same camera
-        this.preRenderCameraUpdate()
-
-        // // scale the sprites one for each viewport
-        const nightSkyNode = NodeMan.get("NightSkyNode")
-        nightSkyNode.updateSatelliteScales(this.camera)
-
-
-        this.renderer.setClearColor(this.background);
-        // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
-        //     this.renderer.setClearColor(nightSkyNode.skyColor);
-        // }
-
-        let skyBrightness = 0;
-        let skyColor = this.background;
-        let skyOpacity = 1;
-
-
-        //           why is main view dark when look view camera is in darkness
-        //           is it not useing the main view camera here?
-
-        const sunNode = NodeMan.get("theSun",true);
-        if (sunNode !== undefined) {
-//                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))
-            this.renderer.setClearColor("black")
-            skyColor = sunNode.calculateSkyColor(this.camera.position);
-            skyBrightness = sunNode.calculateSkyBrightness(this.camera.position);
-            skyOpacity = sunNode.calculateSkyOpacity(this.camera.position);
-        }
-
-
-        // only draw the night sky if it will be visible
-        if (skyOpacity < 1) {
-
-            this.renderer.clear(true, true, true);
-
-            var tempPos = this.camera.position.clone();
-            // this is the celestial sphere, so we want the camera at the origin
-
-            this.camera.position.set(0, 0, 0)
-            this.camera.updateMatrix();
-            this.camera.updateMatrixWorld();
-            this.renderer.render(GlobalNightSkyScene, this.camera);
-            this.renderer.clearDepth()
-            this.camera.position.copy(tempPos)
-            this.camera.updateMatrix();
-            this.camera.updateMatrixWorld();
-        }
-
-        // Only render the quad if skyOpacity is greater than zero
-        if (skyOpacity > 0) {
-
-            // Add the fullscreen quad to a scene dedicated to it
-            // PROBLEM - WHY DO WE NEED TO KEEP RECREATING THIS?????
-            // if we move the new Mesh to the initSky() function, then it
-            // will render was a plain white polygon. Why?
-            // Not a serious issue, but seems like a bug
-            // or possible some asyc issue with the renerer.clear call
-
-            // // cleanup the old quad and scene
-            if (this.fullscreenQuadScene !== undefined) {
-                // cleanly remove the scene
-                this.fullscreenQuadScene.remove(this.fullscreenQuad);
-
-            }
-            this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
-            this.fullscreenQuadScene.add(this.fullscreenQuad);
-
-            this.updateSkyUniforms(skyColor, skyOpacity);
-
-
-
-
-            this.renderer.autoClear = false;
-            this.renderer.render(this.fullscreenQuadScene, this.skyCamera);
-            //this.renderer.autoClear = true;
-            this.renderer.clearDepth();
-        }
-
-
-
-    } else {
-        // clear the render target (or canvas) with the background color
-        this.renderer.setClearColor(this.background);
-        this.renderer.clear(true, true, true);
     }
 
-}
+    updateSkyUniforms(skyColor, skyOpacity) {
+        //     console.log("updateSkyUniforms: skyColor = "+skyColor+" skyOpacity = "+skyOpacity)
+        this.skyBrightnessMaterial.uniforms.color.value = skyColor;
+        this.skyBrightnessMaterial.uniforms.opacity.value = skyOpacity;
+    }
+
+    renderSky() {
+        // Render the celestial sphere
+        if (this.canDisplayNightSky && GlobalNightSkyScene !== undefined) {
+
+            // we need to call this twice (once again in the super's render)
+            // so the camera is correct for the celestial sphere
+            // which is rendered before the main scene
+            // but uses the same camera
+            this.preRenderCameraUpdate()
+
+            // // scale the sprites one for each viewport
+            const nightSkyNode = NodeMan.get("NightSkyNode")
+            nightSkyNode.updateSatelliteScales(this.camera)
 
 
-    otherSetup(v)
-    {
+            this.renderer.setClearColor(this.background);
+            // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {
+            //     this.renderer.setClearColor(nightSkyNode.skyColor);
+            // }
+
+            let skyBrightness = 0;
+            let skyColor = this.background;
+            let skyOpacity = 1;
+
+
+            //           why is main view dark when look view camera is in darkness
+            //           is it not useing the main view camera here?
+
+            const sunNode = NodeMan.get("theSun", true);
+            if (sunNode !== undefined) {
+//                    this.renderer.setClearColor(sunNode.calculateSkyColor(this.camera.position))
+                this.renderer.setClearColor("black")
+                skyColor = sunNode.calculateSkyColor(this.camera.position);
+                skyBrightness = sunNode.calculateSkyBrightness(this.camera.position);
+                skyOpacity = sunNode.calculateSkyOpacity(this.camera.position);
+            }
+
+
+            // only draw the night sky if it will be visible
+            if (skyOpacity < 1) {
+
+                this.renderer.clear(true, true, true);
+
+                var tempPos = this.camera.position.clone();
+                // this is the celestial sphere, so we want the camera at the origin
+
+                this.camera.position.set(0, 0, 0)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
+                this.renderer.render(GlobalNightSkyScene, this.camera);
+                this.renderer.clearDepth()
+                this.camera.position.copy(tempPos)
+                this.camera.updateMatrix();
+                this.camera.updateMatrixWorld();
+            }
+
+            // Only render the quad if skyOpacity is greater than zero
+            if (skyOpacity > 0) {
+
+                // Add the fullscreen quad to a scene dedicated to it
+                // PROBLEM - WHY DO WE NEED TO KEEP RECREATING THIS?????
+                // if we move the new Mesh to the initSky() function, then it
+                // will render was a plain white polygon. Why?
+                // Not a serious issue, but seems like a bug
+                // or possible some asyc issue with the renerer.clear call
+
+                // // cleanup the old quad and scene
+                if (this.fullscreenQuadScene !== undefined) {
+                    // cleanly remove the scene
+                    this.fullscreenQuadScene.remove(this.fullscreenQuad);
+
+                }
+                this.fullscreenQuad = new Mesh(this.fullscreenQuadGeometry, this.skyBrightnessMaterial);
+                this.fullscreenQuadScene.add(this.fullscreenQuad);
+
+                this.updateSkyUniforms(skyColor, skyOpacity);
+
+
+                this.renderer.autoClear = false;
+                this.renderer.render(this.fullscreenQuadScene, this.skyCamera);
+                //this.renderer.autoClear = true;
+                this.renderer.clearDepth();
+            }
+
+
+        } else {
+            // clear the render target (or canvas) with the background color
+            this.renderer.setClearColor(this.background);
+            this.renderer.clear(true, true, true);
+        }
+
+    }
+
+
+    otherSetup(v) {
         this.raycaster = new Raycaster();
         assert(this.scene, "CNodeView3D needs global GlobalScene")
 
         const spriteCrosshairMaterial = new SpriteMaterial({
-            map: new TextureLoader().load(SITREC_APP+'data/images/crosshairs.png'),
+            map: new TextureLoader().load(SITREC_APP + 'data/images/crosshairs.png'),
             color: 0xffffff, sizeAttenuation: false,
             depthTest: false, // no depth buffer, so it's always on top
             depthWrite: false,
         });
 
         this.showCursor = v.showCursor;
-            this.cursorSprite = new Sprite(spriteCrosshairMaterial)
-            this.cursorSprite.position.set(0, 25000, -50)
-            this.cursorSprite.scale.setScalar(0.02)
-            this.cursorSprite.visible = false;
-            GlobalScene.add(this.cursorSprite)
+        this.cursorSprite = new Sprite(spriteCrosshairMaterial)
+        this.cursorSprite.position.set(0, 25000, -50)
+        this.cursorSprite.scale.setScalar(0.02)
+        this.cursorSprite.visible = false;
+        GlobalScene.add(this.cursorSprite)
 
         this.mouseDown = false;
         this.dragMode = DRAG.NONE;
@@ -690,14 +687,13 @@ renderSky() {
     }
 
 
-
-
-    addEffects(effects)
-    {
+    addEffects(effects) {
         if (effects) {
 
             this.effectsEnabled = true;
-            guiTweaks.add(this,"effectsEnabled").name("Effects").onChange(()=>{par.renderOne=true}).tooltip("Enable/Disable All Effects")
+            guiTweaks.add(this, "effectsEnabled").name("Effects").onChange(() => {
+                par.renderOne = true
+            }).tooltip("Enable/Disable All Effects")
 
             this.effects = effects;
 
@@ -770,7 +766,7 @@ renderSky() {
     modDeserialize(v) {
         super.modDeserialize(v)
         if (v.focusTrackName !== undefined) this.focusTrackName = v.focusTrackName
-        if (v.lockTrackName  !== undefined) this.lockTrackName  = v.lockTrackName
+        if (v.lockTrackName !== undefined) this.lockTrackName = v.lockTrackName
         if (v.effectsEnabled !== undefined) this.effectsEnabled = v.effectsEnabled
     }
 
@@ -839,7 +835,7 @@ renderSky() {
         // var divW = this.div.clientWidth;
         // var divH = this.div.clientHeight;
 
-        this.camera.aspect = this.canvas.width/this.canvas.height;
+        this.camera.aspect = this.canvas.width / this.canvas.height;
         this.camera.updateProjectionMatrix();
 
         if (this.controls) {
@@ -871,8 +867,8 @@ renderSky() {
 
         // Clear manually, otherwise the second render will clear the background.
         // note: old code used pixelratio to handle retina displays, no longer needed.
-         this.renderer.autoClear = false;
-         //this.renderer.clear();
+        this.renderer.autoClear = false;
+        //this.renderer.clear();
 
 
         this.preRenderFunction();
@@ -895,10 +891,10 @@ renderSky() {
         if (!this.mouseEnabled) return;
 
         // convert to coordinates relative to lower left of view
-        var mouseYUp = this.heightPx - (mouseY-this.topPx)
+        var mouseYUp = this.heightPx - (mouseY - this.topPx)
         var mouseRay = makeMouseRay(this, mouseX, mouseYUp);
 
-       // this.cursorSprite.position
+        // this.cursorSprite.position
 
         if (event.button === 1 && this.camera) {
             console.log("Center Click")
@@ -973,7 +969,7 @@ renderSky() {
 //            console.log ("Click re-Enabled "+this.id)
             // debugger
             // console.log(mouseInViewOnly(this, mouseX, mouseY))
-  //          this.controls.enabled = true;
+            //          this.controls.enabled = true;
         }
     }
 
@@ -982,10 +978,10 @@ renderSky() {
 
 //        console.log(this.id+" Mouse Move = "+this.mouseDown+ " Drag mode = "+this.dragMode)
 
-   //     return;
+        //     return;
 
 
-        var mouseYUp = this.heightPx - (mouseY-this.topPx)
+        var mouseYUp = this.heightPx - (mouseY - this.topPx)
         var mouseRay = makeMouseRay(this, mouseX, mouseYUp);
 
         // For testing mouse position, just set dragMode to 1
@@ -1002,7 +998,7 @@ renderSky() {
                 this.raycaster.setFromCamera(mouseRay, this.camera);
                 var intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
-                    console.log(`Mouse Move Dragging (${mouseX},${mouseY})`)
+                console.log(`Mouse Move Dragging (${mouseX},${mouseY})`)
 
                 //  debugText = ""
                 var closestPoint = V3()
@@ -1073,15 +1069,15 @@ renderSky() {
                 this.raycaster.setFromCamera(mouseRay, this.camera);
 
 
-             //   CONVERTO TO Sit.useGlobe
+                //   CONVERTO TO Sit.useGlobe
 
                 if (1 || this.useGlobe) {
-                    const dragSphere = new Sphere(new Vector3(0,-wgs84.RADIUS,0), wgs84.RADIUS /* + f2m(this.defaultTargetHeight) */ )
+                    const dragSphere = new Sphere(new Vector3(0, -wgs84.RADIUS, 0), wgs84.RADIUS /* + f2m(this.defaultTargetHeight) */)
                     if (this.raycaster.ray.intersectSphere(dragSphere, possibleTarget)) {
-                   //     console.log("dragSphere  HIT: " + possibleTarget.x + "," + possibleTarget.y + "," + possibleTarget.z + "<br>")
+                        //     console.log("dragSphere  HIT: " + possibleTarget.x + "," + possibleTarget.y + "," + possibleTarget.z + "<br>")
                         target = possibleTarget.clone()
                     }
-                }else {
+                } else {
 
                     // Not found a collision with anything in the GlobalScene, so just collide with the 25,000 foot plane
                     const selectPlane = new Plane(new Vector3(0, -1, 0), f2m(this.defaultTargetHeight))
@@ -1120,7 +1116,7 @@ renderSky() {
                 }
 
                 if (this.showLOSArrow) {
-                    DebugArrowAB("LOS from Mouse", this.camera.position, target,0xffff00,true,GlobalScene,0)
+                    DebugArrowAB("LOS from Mouse", this.camera.position, target, 0xffff00, true, GlobalScene, 0)
                 }
                 par.renderOne = true;
             }
@@ -1128,11 +1124,11 @@ renderSky() {
             // here we are just mouseing over the globe viewport
             // but the mouse it up
             // we want to allow rotation so it gets the first click.
-     //           console.log("ENABLED controls "+this.id)
-     //       this.controls.enabled = true;
+            //           console.log("ENABLED controls "+this.id)
+            //       this.controls.enabled = true;
         } else {
-     //              console.log("DISABLED controls not just in "+this.id)
-     //       if (this.controls) this.controls.enabled = false;
+            //              console.log("DISABLED controls not just in "+this.id)
+            //       if (this.controls) this.controls.enabled = false;
         }
 
     }
@@ -1155,7 +1151,7 @@ renderSky() {
     }
 
     // this is just the inverse of the above function
-     metersToPixels(position, meters) {
+    metersToPixels(position, meters) {
         // get the vertical field of view in radians
         const vfov = this.camera.fov * Math.PI / 180;
         // get the height of the canvas in pixels
@@ -1164,7 +1160,19 @@ renderSky() {
         const pixels = meters * (heightPx / (2 * Math.tan(vfov / 2))) / position.distanceTo(this.camera.position);
 
         return pixels;
-     }
+    }
+
+    // given a 3D position in the scene, and an offset in pixels
+    // then return the new 3D position that will result in it being rendered by that offset
+    offsetScreenPixels(position, pixelsX, pixelsY) {
+        const offsetPosition = position.clone();
+        if (pixelsX === 0 && pixelsY === 0) return offsetPosition;
+        offsetPosition.project(this.camera);
+        offsetPosition.x += pixelsX / this.widthPx;
+        offsetPosition.y += pixelsY / this.heightPx;
+        offsetPosition.unproject(this.camera);
+        return offsetPosition;
+    }
 
 
 }

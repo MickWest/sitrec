@@ -183,13 +183,10 @@ export class CNodeLabel3D extends CNode3DGroup {
         // to keep the offset in pixels
 
         let pos = this.position.clone();
-        if (this.offset !== undefined && (this.offset.x !== 0 || this.offset.y !== 0)) {
-            pos.project(camera);
-            pos.x += this.offset.x / view.widthPx;
-            pos.y += this.offset.y / view.heightPx;
-
-            pos.unproject(camera);
+        if (this.offset !== undefined) {
+            pos = view.offsetScreenPixels(pos, this.offset.x, this.offset.y);
         }
+
         this.sprite.position.copy(pos);
 
         const mask = camera.layers.mask;
