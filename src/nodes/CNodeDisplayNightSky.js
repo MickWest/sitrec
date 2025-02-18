@@ -694,11 +694,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             id: obName,
             start: "lookCamera",
             direction: V3(0,0,1),
-            length: -100,
+            length: -200,
             color: this.planetColors[this.planets.indexOf(name)],
             groupNode: groupName,
             label: name,
             labelPosition: "1",
+            offsetY: 20,
         })
 
 
