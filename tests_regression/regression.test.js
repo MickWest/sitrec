@@ -11,6 +11,7 @@ expect.extend({ toMatchImageSnapshot });
 const testData = [
     { name: 'agua', url: 'https://localhost/sitrec/?sitch=agua&frame=10' },
     { name: 'gimbal', url: 'https://localhost/sitrec/?sitch=gimbal&frame=10' },
+    { name: 'starlink', url: 'https://localhost/sitrec/?custom=https://sitrec.s3.us-west-2.amazonaws.com/99999999/Stalink%20Names/20250218_060544.js' },
     { name: "potomac", url: "https://localhost/sitrec/?custom=https://sitrec.s3.us-west-2.amazonaws.com/99999999/Potomac/20250204_203812.js&frame=10" },
     // Add more objects as needed.
 ];
