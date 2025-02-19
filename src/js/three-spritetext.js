@@ -220,6 +220,11 @@ export default class extends three.Sprite {
 
     }
 
+    setTransparency(alpha) {
+        this.material.opacity = alpha;
+        this.material.transparent = true; // alpha < 1;
+    }
+
     clone() {
         return new this.constructor(this.text, this.textHeight, this.color).copy(this);
     }

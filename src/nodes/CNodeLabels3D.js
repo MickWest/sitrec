@@ -4,7 +4,7 @@
 
 import SpriteText from '../js/three-spritetext';
 import * as LAYER from "../LayerMasks";
-import {DebugArrowAB, propagateLayerMaskObject, removeDebugArrow} from "../threeExt";
+import {calculateAltitude, DebugArrowAB, propagateLayerMaskObject, removeDebugArrow} from "../threeExt";
 import {altitudeAboveSphere, pointOnSphereBelow} from "../SphericalMath";
 import {CNodeMunge} from "./CNodeMunge";
 import {Globals, guiShowHide, infoDiv, NodeMan, Units} from "../Globals";
@@ -161,7 +161,32 @@ export class CNodeLabel3D extends CNode3DGroup {
     }
 
     preRender(view) {
+        this.updateVisibility(view);
         this.updateScale(view);
+    }
+
+    updateVisibility(view) {
+        // text is draw with no depth test, so it's always visible
+        // so here we check if it's underground, and hide it if it is
+        const altitude = calculateAltitude(this.position);
+        let transparency = 1;
+        if (altitude > 0) {
+        } else {
+            const fadeDepth = 25000;
+            if (altitude < -fadeDepth) {
+                transparency = 0 ;
+            } else {
+                transparency = (1 + altitude / fadeDepth);
+            }
+
+        }
+
+
+        //console.log("transparency = " + transparency + " altitude = " + altitude)
+        this.sprite.setTransparency(transparency);
+
+
+
     }
 
     // Update the Scale based on the camera's position
