@@ -571,8 +571,12 @@ export class CNodeView3D extends CNodeViewCanvas {
 
             // // scale the sprites one for each viewport
             const nightSkyNode = NodeMan.get("NightSkyNode")
-            nightSkyNode.updateSatelliteScales(this.camera)
+            nightSkyNode.updateSatelliteScales(this)
 
+            if (nightSkyNode.showSatelliteNames) {
+                // updating the satellite text is just applying the offset per viewport
+                nightSkyNode.updateSatelliteText(this)
+            }
 
             this.renderer.setClearColor(this.background);
             // if (nightSkyNode.useDayNight && nightSkyNode.skyColor !== undefined) {

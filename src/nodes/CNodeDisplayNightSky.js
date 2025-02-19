@@ -893,7 +893,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
     }
 
-    updateSatelliteScales(camera) {
+    updateSatelliteScales(view) {
+
+        const camera = view.camera;
 
         // for optimization we are not updating every scale on every frame
         if (camera.satTimeStep === undefined) {
@@ -1061,6 +1063,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 magnitudes[i] = scale
             }
             this.satelliteGeometry.attributes.magnitude.needsUpdate = true;
+        }
+    }
+
+    updateSatelliteText(view) {
+        const numSats = this.TLEData.satData.length;
+        for (let i = 0; i < numSats; i++) {
+            const satData = this.TLEData.satData[i];
+            const sprite = satData.spriteText;
+            if (sprite) {
+                const pos = satData.eus;
+                const offsetPost = view.offsetScreenPixels(pos, 0, 30);
+                satData.spriteText.position.copy(offsetPost);
+            }
         }
     }
 
@@ -1841,11 +1856,8 @@ void main() {
                     // Calculate the normalized time value
                     var t = (timeMS - satData.timeA) / (satData.timeB - satData.timeA);
 
-                    // Perform the linear interpolation (lerp) directly on x, y, z
-                    satData.eus.x = satData.eusA.x + (satData.eusB.x - satData.eusA.x) * t;
-                    satData.eus.y = satData.eusA.y + (satData.eusB.y - satData.eusA.y) * t;
-                    satData.eus.z = satData.eusA.z + (satData.eusB.z - satData.eusA.z) * t;
-
+                    // Perform the linear interpolation (lerp)
+                    satData.eus.lerpVectors(satData.eusA, satData.eusB, t);
 
                     // Update the position in the geometry's attribute
                     positions[i * 3] = satData.eus.x;
@@ -1853,6 +1865,7 @@ void main() {
                     positions[i * 3 + 2] = satData.eus.z;
                     satData.invalidPosition = false;
 
+                    satData.currentPosition = satData.eus.clone();
                     satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
 
                     // draw an arrow from the satellite in the direction of its velocity (yellow)
