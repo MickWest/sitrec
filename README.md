@@ -89,10 +89,9 @@ This will be running on http://localhost:6425/. The "open" or "start" commands a
 
 If you want to install and run directly from a local server, and not use Docker, the you will need:
 
-- git
-- web server (e.g. Nginx) with
-  - php
-  - https support (for CORS, can be self-signed for local dev)
+- A web server (e.g. Nginx) with
+  - PHP (8.3+ recommended)
+  - HTTPS support (for CORS, can be self-signed for local dev)
 - node.js (for building, with npm)
 
 ## Server Install Mac/Linux
