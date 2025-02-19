@@ -561,6 +561,11 @@ export function adjustHeightAboveGround (point, height) {
     return pointAbove(ground, height);
 }
 
+export function calculateAltitude(point) {
+    const center = V3(0,-wgs84.RADIUS,0);
+    return point.clone().sub(center).length() - wgs84.RADIUS;
+}
+
 export function forceFilterChange(texture, filter, renderer) {
     // Check if the filter is already set
     if (texture.minFilter === filter && texture.magFilter === filter) {
