@@ -378,6 +378,11 @@ async function newSitch(situation, customSetup = false ) {
 
 async function initializeOnce() {
 
+    window.addEventListener('beforeunload', function (e) {
+        e.preventDefault();
+        e.returnValue = ''; // Standard for most browsers
+    });
+
     setCustomManager(new CCustomManager());
 
     Globals.parsing = 0;
