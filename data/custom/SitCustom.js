@@ -169,7 +169,7 @@ sitch = {
 
     // this is the fixed camera position that you can move around while holding C, or edit in the camera GUI
     // this is a track, so it can be used for the camera, or for a target, or for a traverse like any other track
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Camera", gui: "camera", key:"C"},
+    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Cam", gui: "camera", key:"C"},
 
     // Parameters for the JetTrack node, which is a simple flight simulator creating a jet track, as used in Gimbal, FLIR1, and GoFast
 

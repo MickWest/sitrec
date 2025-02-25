@@ -22,9 +22,10 @@ export class CNodePositionLLA extends CNode {
             this._LLA = v.LLA.slice()
             // if there's a gui specified, the add GUI inputs
             if (v.gui) {
-               const name = (v.desc ?? "Camera") + (v.key ? " ["+v.key+"]":"");
+                 const id = (v.desc ?? "Camera") + (v.key ? " ["+v.key+"]":"");
+                const name = (v.desc ?? "Cam") + (v.key ? " ["+v.key+"]":"");
                this.guiLat = new CNodeGUIValue({
-                   id: name + " Lat",
+                   id: id + " Lat",
                    desc: name + " Lat",
                    value: this._LLA[0],
                    start: -90, end: 90, step: 0.01,
@@ -34,7 +35,13 @@ export class CNodePositionLLA extends CNode {
                        // like 40.9096508,-74.0734146
                        // if so, then split it and set the values
                        const input = this.guiLat.guiEntry.$input.value;
-                       const split = input.split(",");
+                       // strip off any degrees symbols
+                       const inputNoDeg = input.replace(/°/g, "");
+                       let split = inputNoDeg.split(",");
+                       if (split.length === 1) {
+                           split = inputNoDeg.split(" ");
+                       }
+
                        if (split.length === 2) {
                            const lat = parseFloat(split[0]);
                            const lon = parseFloat(split[1]);
@@ -47,14 +54,14 @@ export class CNodePositionLLA extends CNode {
                                return;
                            }
                        }
-                       this._LLA[0] = v;
+                       this._LLA[0] = parseFloat(v);
                        this.recalculateCascade(0)
 
                    }
                }, v.gui)
 
                this.guiLon = new CNodeGUIValue({
-                   id: name + " Lon",
+                   id: id + " Lon",
                    desc: name + " Lon",
                    value: this._LLA[1],
                    start: -180, end: 180, step: 0.01,
@@ -66,8 +73,8 @@ export class CNodePositionLLA extends CNode {
                 }, v.gui)
 
                this.guiAlt = new CNodeGUIValue({
-                   id: name + " Alt (ft)",
-                   desc: name + " Alt (ft)",
+                   id: id + " Alt (ft)",  // including the (ft) for historical reasons, so we have the same id as older saves
+                   desc: name + " Alt",
                    value: 0, // don't set the altitude, as we want to set it with units
                    unitType: "small",
                    start: 0, end: 100000, step: 1,
