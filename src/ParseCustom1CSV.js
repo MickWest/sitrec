@@ -9,10 +9,10 @@ import {MISB, MISBFields} from "./MISBUtils";
 // we need at least time, lat, lon, and alt
 const CustomCSVFormats = {
     CUSTOM1: {
-        time:     ["TIME", "TIMESTAMP", "DATE"],
-        lat:      ["LAT", "LATITUDE"],
-        lon:      ["LON", "LONG", "LONGITUDE"],
-        alt:      ["ALTITUDE", "ALT", "ALTITUDE (m)*"],
+        time:     ["TIME", "TIMESTAMP", "DATE", "UTC"],
+        lat:      ["LAT", "LATITUDE", "TPLAT"],
+        lon:      ["LON", "LONG", "LONGITUDE", "TPLON"],
+        alt:      ["ALTITUDE", "ALT", "ALTITUDE (m)*", "TPHAE"],
         aircraft: ["AIRCRAFT", "AIRCRAFTSPECIFICTYPE"],
         callsign: ["CALLSIGN", "TAILNUMBER"]
     }
@@ -22,7 +22,9 @@ const CustomCSVFormats = {
 
 
 export function isCustom1(csv) {
-    // CUSTOM1 is a custom track format exported from some database
+    // CUSTOM1 is one of several custom track format exported from some database
+    // at a minimum it has time, lat, lon, alt
+    // optionally it has aircraft and callsign
 
     // csv[0] is the header row
     // given
@@ -33,7 +35,7 @@ export function isCustom1(csv) {
         && findColumn(csv, headerValues.lat, true) !== -1
         && findColumn(csv, headerValues.lon, true) !== -1
         && findColumn(csv, headerValues.alt, true) !== -1
-        && findColumn(csv, headerValues.aircraft, true) !== -1) {
+    ) {
         return true;
     }
 
@@ -62,7 +64,15 @@ export function parseCustom1CSV(csv) {
     for (let i = 1; i < rows; i++) {
         MISBArray[i - 1] = new Array(MISBFields).fill(null);
 
-        MISBArray[i - 1][MISB.UnixTimeStamp] = parseISODate(csv[i][dateCol]).getTime();
+        // date can either be an ISO date string, or
+        let date = parseISODate(csv[i][dateCol]).getTime();
+        if (isNaN(date)) {
+            // try to parse as a number
+            // we don't distinguish the units here, as that's handled by CNodeMISBData::getTime()
+            date = Number(csv[i][dateCol]);
+        }
+
+        MISBArray[i - 1][MISB.UnixTimeStamp] = date;
 
         MISBArray[i - 1][MISB.SensorLatitude] = Number(csv[i][latCol])
         MISBArray[i - 1][MISB.SensorLongitude] = Number(csv[i][lonCol])
