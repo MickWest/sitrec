@@ -1,10 +1,8 @@
 import {
     areArrayBuffersEqual,
-    arrayBufferToString, checkForModding,
     cleanCSVText, disableAllInput, enableAllInput,
     getFileExtension,
-    isHttpOrHttps, parseBoolean,
-    stringToArrayBuffer,
+    isHttpOrHttps, parseBoolean, radians,
     versionString
 } from "./utils";
 import JSZip from "jszip";
@@ -26,6 +24,7 @@ import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
 import {isCustom1, parseCustom1CSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
 import {isConsole, isLocal, SITREC_APP, SITREC_DOMAIN, SITREC_SERVER} from "./configUtils";
+import {resetGlobalOrigin} from "./ResetOrigin";
 
 
 // The file manager is a singleton that manages all the files
@@ -84,10 +83,20 @@ export class CFileManager extends CManager {
 
             if (isLocal) {
                 this.guiFolder.add(NodeMan, "recalculateAllRootFirst").name("debug recalculate all").perm();
+                this.guiFolder.add(this, "resetOrigin").name("debug reset Origin").perm();
+
             }
 
         }
     }
+
+
+    resetOrigin() {
+        resetGlobalOrigin();
+    }
+
+
+
 
 
     sitchChanged() {

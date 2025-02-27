@@ -519,6 +519,20 @@ export class CCustomManager {
     preRenderUpdate(view) {
         if (!Sit.isCustom) return;
 
+        //
+        // infoDiv.innerHTML = "Camera<br>"
+        // const camera = NodeMan.get("lookCamera").camera
+        // infoDiv.innerHTML += "Position: " + camera.position.x.toFixed(2) + ", " + camera.position.y.toFixed(2) + ", " + camera.position.z.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Rotation: " + camera.rotation.x.toFixed(2) + ", " + camera.rotation.y.toFixed(2) + ", " + camera.rotation.z.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "FOV: " + camera.fov.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Aspect: " + camera.aspect.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Near: " + camera.near.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Far: " + camera.far.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Zoom: " + camera.zoom.toFixed(2) + "<br>"
+
+
+
+
         // special logic for custom model visibility
         // if the custom model is following the same track as this one, then turn it off
 

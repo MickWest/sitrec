@@ -40,6 +40,23 @@ export class CNodeCamera extends CNode3D {
 
     }
 
+    adjustOrigin(diff) {
+        // adjust the camera position
+        this.camera.position.add(diff);
+
+        // do we need to adjust the startPos, lookAt, startPosLLA, lookAtLLA?
+        // the seems mostly uses as default value
+
+    //    startpos undefined?????
+
+        this.startPos.add(diff);
+        this.lookAt.add(diff);
+        this.startPosLLA = EUSToLLA(this.startPos);
+        this.lookAtLLA = EUSToLLA(this.lookAt);
+
+    }
+
+
     modSerialize() {
     // calculate the current position and lookAt in LLA format
         // dump a camera location to the console

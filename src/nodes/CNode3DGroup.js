@@ -63,6 +63,10 @@ export class CNode3DGroup extends CNode3D {
         }
     }
 
+    adjustOrigin(diff) {
+        this.group.position.add(diff)
+    }
+
 
     // set the layer bit for this object to the passed value (or 1 if undefined)
     setLayerBit(layer, value=1) {

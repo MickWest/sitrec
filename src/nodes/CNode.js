@@ -650,6 +650,14 @@ class CNode {
         }
     }
 
+
+    adjustOrigin(diff) {
+        // virtual function, derived nodes override to adjust the origin
+        // for example, a CNode3DGroup might adjust the position of the group
+        // based on the origin
+        console.log("adjustOrigin not implemented for " + this.id)
+    }
+
 }
 
 
