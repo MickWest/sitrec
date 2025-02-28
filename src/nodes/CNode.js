@@ -68,6 +68,14 @@ class CNode {
         NodeMan.add(this.id, this)
     }
 
+    log(message) {
+        if (this.debugLog) {
+            // note optional debugStyle that the node can set for itself
+            // otherwise, it's red and bold
+            console.log("%c"+this.id + ": " + message, this.debugStyle ?? "color: red; font-weight: bold;")
+        }
+    }
+
 
     dispose() {
 
