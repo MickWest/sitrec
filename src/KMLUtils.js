@@ -118,6 +118,11 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
         if (kml.kml.Document.Folder !== undefined) {
             var route = kml.kml.Document.Folder[0]
             if (route.name["#text"] === "Route") {
+                if (when === undefined) {
+                    // skip if we don't need the data
+                    // i.e. just checking if it's a valid track
+                    return false;
+                }
                 // FR24 format
                 info.name = kml.kml.Document.name["#text"];
                 const p = route.Placemark
@@ -185,10 +190,16 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
     assert(info.name !== undefined && info.name !== "", "Unable to find name")
 
     if (tracks === undefined) {
+        assert(when === undefined, "No tracks in KML file "+info.name + " when we need them as when array is not undefined")
         console.warn("getKMLTrackWhenCoord: No tracks in KML file "+info.name)
-        return;
+        return false;
     }
 
+    if (when === undefined) {
+        // skip if we don't need the data
+        // i.e. just checking if it's a valid track
+        return true;
+    }
 
     if (!Array.isArray(tracks)) {
         // just one object, so put it in an array, so we can use the same following code
@@ -224,7 +235,20 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
     })
 
 
+    return true;
+
+
 }
+
+// A utility function to check if a KML file contains a track
+// some KML files are just placemarks, 3D building (polygons), etc.
+// this function checks if the KML file contains a track by doing a dummy call to getKMLTrackWhenCoord
+// if it fails, then there is no track
+export function doesKMLContainTrack(kml) {
+    const valid = getKMLTrackWhenCoord(kml, 0);
+    return valid;
+}
+
 
 // DJI SRT format is in six lines:
 // 3
