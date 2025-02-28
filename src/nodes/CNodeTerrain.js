@@ -26,6 +26,8 @@ export class CNodeTerrainUI extends CNode {
     constructor(v) {
         super(v);
 
+       //this.debugLog = true;
+
         this.adjustable = v.adjustable ?? true;
         //
         // this.lat = 40;
@@ -142,7 +144,7 @@ export class CNodeTerrainUI extends CNode {
         this.elevationTypeMenu.onChange( v => {
 
             // elevation map has changed, so kill the old one
-            console.log("Elevation type changed to " + v+ " so unloading the elevation map")
+            log("Elevation type changed to " + v+ " so unloading the elevation map")
             this.terrainNode.elevationMap.clean()
             this.terrainNode.elevationMap = undefined;
 
@@ -392,6 +394,8 @@ export class CNodeTerrainUI extends CNode {
 
 
     doRefresh() {
+        this.log("Refreshing terrain")
+        assert(this.terrainNode.maps[local.mapType].map !== undefined, "Terrain map not defined when trying the set startLoading")
         this.startLoading = true;
         this.flagForRecalculation();
     }
@@ -402,13 +406,20 @@ export class CNodeTerrainUI extends CNode {
 
     update() {
         if (this.recalculateSoon) {
+            console.log("Recalculating terrain as recalculatedSoon is true. startLoading=" + this.startLoading)
             this.recalculate();
             this.recalculateSoon = false;
         }
 
-        if (this.startLoading) {
+        // we need to wait for this.terrainNode.maps[local.mapType].map to be defined
+        // because it's set async in setMapType
+        // setMapType can be waiting for the capabilities to be loaded
+        if (this.startLoading && this.terrainNode.maps[local.mapType].map !== undefined) {
+            console.log("Starting to load terrain as startLoading is true, recalulateSoon=" + this.recalculateSoon)
             this.startLoading = false;
+            assert(this.terrainNode.maps[local.mapType].map !== undefined, "Terrain map not defined")
             this.terrainNode.maps[local.mapType].map.startLoadingTiles();
+            assert(this.terrainNode.elevationMap !== undefined, "Elevation map not defined")
             this.terrainNode.elevationMap.startLoadingTiles();
         }
     }
@@ -478,6 +489,8 @@ export class CNodeTerrain extends CNode {
         }
 
         super(v);
+
+     //   this.debugLog = true;
 
         this.loaded = false;
 
@@ -576,6 +589,7 @@ export class CNodeTerrain extends CNode {
         // so we need to set it here. It can be an async process if we need to load capabilities
         // so we need to wait for it to finish before the map is loaded
         this.UINode.setMapType(local.mapType).then(() => {
+            this.log("Calling loadMap from constructor with local.mapType=" + local.mapType)
             this.loadMap(local.mapType, (this.deferLoad !== undefined) ? this.deferLoad : false)
         })
     }
@@ -657,7 +671,7 @@ export class CNodeTerrain extends CNode {
     dispose() {
         // first abort any pending request
 
-//        console.log("CNodeTerrain: disposing of this.maps")
+        this.log("CNodeTerrain: disposing of this.maps")
         for (const mapID in this.maps) {
             if (this.maps[mapID].map !== undefined) {
                 this.maps[mapID].map.clean()
@@ -667,13 +681,17 @@ export class CNodeTerrain extends CNode {
             this.maps[mapID].group = undefined;
         }
 
-        this.elevationMap.clean()
-        this.elevationMap = undefined;
+        if (this.elevationMap !== undefined) {
+            this.elevationMap.clean()
+            this.log("Setting ElevatioMap to undefined")
+            this.elevationMap = undefined;
+        }
 
         super.dispose();
     }
 
     unloadMap(mapID) {
+        this.log("CNodeTerrain: unloading map "+mapID)
         if (this.maps[mapID].map !== undefined) {
             this.maps[mapID].map.clean()
             this.maps[mapID].map = undefined
@@ -689,7 +707,7 @@ export class CNodeTerrain extends CNode {
         // currently it seems to never load another map if we get errors
         // maybe the global loadingTerrain should be set to false, eventually, if loading fails
 
-//        console.log("CNodeTerraina: loadMap, expecting  this.maps")
+        this.log("CNodeTerrain: loadMap, id = " + id + " deferLoad = " + deferLoad)
 
         assert(Object.keys(this.maps).length > 0, "CNodeTerrain: no maps found")
         assert(this.maps[id] !== undefined, "CNodeTerrain: map type " + id + " not found")
@@ -725,6 +743,7 @@ export class CNodeTerrain extends CNode {
         // this can happen if we change the number of tiles due to the projection
         if (this.elevationMap !== undefined) {
             if (elevationNTiles !== this.elevationMap.nTiles) {
+                log("CNodeTerrain: elevation map nTiles has changed, so unloading the elevation map")
                 this.elevationMap.clean()
                 this.elevationMap = undefined;
             }
@@ -734,20 +753,21 @@ export class CNodeTerrain extends CNode {
         // they will use this to get the elevation for the meshes via lat/lon
         // so the elevation map can use a different coordinate system to the textured geometry map
         if (this.elevationMap === undefined) {
-            this.elevationMap = new ElevationMap( this, this.position, {
+            this.log("CNodeTerrain: creating elevation map")
+            this.elevationMap = new ElevationMap(this, this.position, {
                 nTiles: elevationNTiles,  // +2 to ensure we cover the image map areas when using different projections
                 zoom: this.zoom,
                 tileSize: this.tileSize,
                 tileSegments: this.tileSegments,
                 zScale: this.elevationScale,
                 radius: this.radius,
-                loadedCallback: ()=> {
-//                    console.log("CNodeTerrain: elevation map loaded")
+                loadedCallback: () => {
+                    this.log("CNodeTerrain: elevation map loaded")
                     this.recalculate();
                     this.refreshDebugGrids()
                 },
                 deferLoad: deferLoad,
-              //  mapURL: this.mapURLDirect.bind(this),
+                //  mapURL: this.mapURLDirect.bind(this),
                 elevationULR: this.elevationURLDirect.bind(this),
 
                 // //mapProjection: new CTileMappingGoogleCRS84Quad(),
@@ -761,8 +781,10 @@ export class CNodeTerrain extends CNode {
 
 
         // make the correct group visible
-        for (const mapID in this.maps) this.maps[mapID].group.visible = (mapID === id);
-
+        for (const mapID in this.maps) {
+            assert(this.maps[mapID].group !== undefined, "CNodeTerrain: map group is undefined")
+            this.maps[mapID].group.visible = (mapID === id);
+        }
         // check to see if the map has already been loaded
         // and if so we do nothing (other than the visibility setting)
         if (this.maps[id].map === undefined) {
@@ -778,6 +800,8 @@ export class CNodeTerrain extends CNode {
                 mapProjection: this.mapProjectionTextures,
                 elevationMap: this.elevationMap,
                 loadedCallback:  ()=> {
+                    this.log("CNodeTerrain: id = "+id+" map loaded callback")
+
                     // first check to see if it has been disposed
                     // this happnes and need fixing, but for now just warn and
                     if (this.maps[id].map === undefined) {
@@ -817,8 +841,13 @@ export class CNodeTerrain extends CNode {
             return;
         }
 
-//        console.log("recalculating terrain")
-        //var radius = metersFromMiles(this.in.radiusMiles.v0)
+        if (this.elevationMap === undefined) {
+            console.warn("CNodeTerrain: elevation map is undefined, called recalculate while still loading - ignoring")
+            return;
+        }
+
+        this.log("CNodeTerrain: recalculate")
+
         var radius = this.radius;
         // flattening is 0 to 1, whenre 0=no flattening, 1=flat
         // so scale radius by (1/(1-flattening)

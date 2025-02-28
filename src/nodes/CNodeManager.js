@@ -9,6 +9,7 @@ export class CNodeManager extends CManager{
     constructor(props) {
         super (props)
         this.UniqueNodeNumber = 0;
+        this.suspendRecalculateCount = 0;
 //        console.log("Instantiating CNodeManager")
     }
 
@@ -237,7 +238,23 @@ export class CNodeManager extends CManager{
         return depth;
     }
 
+    suspendRecalculate() {
+        this.suspendRecalculateCount++;
+    }
+
+    unsuspendRecalculate() {
+        this.suspendRecalculateCount--;
+        if (this.suspendRecalculateCount === 0) {
+            this.recalculateAllRootFirst();
+        }
+    }
+
+
     recalculateAllRootFirst(withTerrain = false) {
+        if (this.suspendRecalculateCount > 0) {
+            return;
+        }
+
         // we will creat an array indexed by how deep the node is in the tree
         // a node with no inputs is at depth 0
         // a node with inputs that are all at depth 0 is at depth 1, etc
@@ -260,9 +277,8 @@ export class CNodeManager extends CManager{
                 for (let node of nodes) {
                     // we do not want to recalculate terrain nodes
 
-                    if (withTerrain || node.id !== "TerrainModel") {
+                    if (withTerrain || (node.id !== "TerrainModel" && node.id !== "terrainUI")) {
                         node.recalculate();
-//                    console.log("Recalculated " + node.constructor.name + ":" + node.id + " at depth " + i + ", node.frames = " + node.frames + (node.frameless?" (frameless)":""));
                     }
                 }
             }

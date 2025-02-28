@@ -453,7 +453,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
 
                 // how many tracks are there now?
                 const trackNumber = TrackManager.size();
-                console.log(`Track number: ${trackNumber}`)
+//                console.log(`Track number: ${trackNumber}`)
 
 
                 if (Sit.dropTargets !== undefined && Sit.dropTargets["track"] !== undefined) {
@@ -478,7 +478,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         if (NodeMan.exists(dropTargetSwitch)) {
                             const switchNode = NodeMan.get(dropTargetSwitch);
 
-                            console.log("Adding track ", trackID, "  to drop target: ", dropTargetSwitch)
+//                            console.log("Adding track ", trackID, "  to drop target: ", dropTargetSwitch)
 
                             if (Sit.dropAsController) {
                                 // NOT USED IN CUSTOM SITUATION (or anything other than SitNightSky)

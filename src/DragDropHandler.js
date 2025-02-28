@@ -354,7 +354,9 @@ class CDragDropHandler {
                     const parsedFile = x.parsed;
                     const filename = x.filename;
 
+                    NodeMan.suspendRecalculate()
                     this.handleParsedFile(filename, parsedFile);
+                    NodeMan.unsuspendRecalculate();
 
                 }
                 console.log("parseResult: DONE Parse " + filename)
