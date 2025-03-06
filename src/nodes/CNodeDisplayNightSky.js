@@ -1120,7 +1120,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             offset += 8
             const is = utf8decoder.decode(new Uint8Array([view.getUint8(offset), view.getUint8(offset + 1)]));
             offset += 2
-            const mag = view.getInt16(offset, littleEndian) / 100;
+            let mag = view.getInt16(offset, littleEndian) / 100;
             offset += 2
             const xrpm = view.getFloat32(offset, littleEndian);
             offset += 4
@@ -1133,16 +1133,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             if (sra0 === 0 && sdec0 === 0) {
                 // ra and dec of zero indicates a placeholder entry, and is skipped
 //                console.log("Skipping star with ra, dec, 0,0, probably a bad entry, nInput = " + nInput)
-            } else {
-
-                this.BSC_RA[this.BSC_NumStars] = sra0;
-                this.BSC_DEC[this.BSC_NumStars] = sdec0;
-                this.BSC_MAG[this.BSC_NumStars] = mag;
-                this.BSC_NumStars++;
-
-                if (mag > this.BSC_MaxMag)
-                    this.BSC_MaxMag = mag;
+                // setting to -15 will make it invisible
+                // we are not skipping, as we need the numbers in sync to get the names
+                mag = -15;
             }
+
+            this.BSC_RA[this.BSC_NumStars] = sra0;
+            this.BSC_DEC[this.BSC_NumStars] = sdec0;
+            this.BSC_MAG[this.BSC_NumStars] = mag;
+            this.BSC_NumStars++;
+
+            if (mag > this.BSC_MaxMag)
+                this.BSC_MaxMag = mag;
+
 
             nInput++;
         }
