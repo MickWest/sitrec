@@ -2,6 +2,10 @@
 import {atan, degrees, radians, tan} from "./utils";
 import {MISB, MISBFields} from "./MISBUtils";
 import {assert} from "./assert.js";
+import {CNodeTrackFromLLAArray} from "./nodes/CNodeTrack";
+import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
+import {NodeMan} from "./Globals";
+import * as LAYERS from "./LayerMasks";
 
 export function parseXml(xml, arrayTags)
 {
@@ -99,6 +103,11 @@ export function parseXml(xml, arrayTags)
 export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
 
 
+        // dummy object for info, if it's not supplied
+    // things set in here will just not be returned
+    if (info === undefined) {
+        info = {}
+    }
 
     // first extract the gx:Track into "when" and "coord" array
     // this differs based on file format
@@ -115,7 +124,7 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
 
 
     if (kml.kml.Document !== undefined) {
-        if (kml.kml.Document.Folder !== undefined) {
+        if (kml.kml.Document.Folder !== undefined && Array.isArray(kml.kml.Document.Folder)) {
             var route = kml.kml.Document.Folder[0]
             if (route.name["#text"] === "Route") {
                 if (when === undefined) {
@@ -163,8 +172,10 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
             info.name = kml.kml.Document.name["#text"].split(" ")[2];
         } else {
             // some old format, used by Chilean
-            tracks = [kml.kml.Document.Placemark]
-            info.name = kml.kml.Document.Placemark.name["#text"];
+            if (kml.kml.Document.Placemark !== undefined) {
+                tracks = [kml.kml.Document.Placemark]
+                info.name = kml.kml.Document.Placemark.name["#text"];
+            }
         }
     } else {
         if (kml.kml.Folder.Folder !== undefined) {
@@ -187,13 +198,14 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
         }
     }
 
-    assert(info.name !== undefined && info.name !== "", "Unable to find name")
 
     if (tracks === undefined) {
-        assert(when === undefined, "No tracks in KML file "+info.name + " when we need them as when array is not undefined")
-        console.warn("getKMLTrackWhenCoord: No tracks in KML file "+info.name)
+        assert(when === undefined, "No tracks in KML file when we need them, as when array is not undefined")
+        console.warn("getKMLTrackWhenCoord: No tracks in KML file ")
         return false;
     }
+
+    assert(info.name !== undefined && info.name !== "", "Unable to find name")
 
     if (when === undefined) {
         // skip if we don't need the data
@@ -568,4 +580,197 @@ export function KMLToMISB(kml, trackIndex = 0) {
 
     }
     return misb
+}
+
+const defaultStyle = {
+    LineStyle: {
+        color: {"#text": "ffffffff"},
+    },
+    PolyStyle: {
+        color: {"#text": "ffc0c0c0"},
+    }
+}
+
+export function getStyle(kml, id, type="normal") {
+
+    // if id has a #, remove it
+    if (id.startsWith("#")) {
+        id = id.substring(1);
+    }
+
+    if (kml.kml.Document !== undefined) {
+        if (kml.kml.Document.Style !== undefined) {
+            let styles = kml.kml.Document.Style;
+            if (!Array.isArray(styles)) {
+                styles = [styles];
+            }
+            for (let style of styles) {
+                if (style.id === id) {
+                    const result = {...defaultStyle, ...style};
+                    return result;
+                }
+            }
+        }
+    }
+
+    // if we can't find it in the Style entry, look in the StyleMap entry
+    // and use the "type" to select normal or highlight
+
+    if (kml.kml.Document !== undefined) {
+        if (kml.kml.Document.StyleMap !== undefined) {
+            let styleMaps = kml.kml.Document.StyleMap;
+            if (!Array.isArray(styleMaps)) {
+                styleMaps = [styleMaps];
+            }
+            for (const key in styleMaps) {
+                const styleMap = styleMaps[key];
+                if (styleMap.id === id) {
+                    for (const pairKey in styleMap.Pair) {
+                        const pair = styleMap.Pair[pairKey];
+                        if (pair.key["#text"] === type) {
+                            const styleId = pair.styleUrl["#text"].substring(1); // remove leading #
+                            return getStyle(kml, styleId);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return defaultStyle;
+}
+
+
+export function extractKMLObjects(root, kml=root, depth=0) {
+
+    let style = defaultStyle;
+    let name = "";
+
+    // if there's styleURL, then we need to extract the style
+    if (kml.styleUrl !== undefined) {
+        style = getStyle(root, kml.styleUrl["#text"].substring(1));
+        console.log(style);
+    }
+
+    if (kml.name !== undefined) {
+        name = kml.name["#text"];
+    }
+
+
+// iterate over the k,v pairs in the kml object, this will also iterate over the arrays
+    for (let [key, value] of Object.entries(kml)) {
+      //  console.log("  ".repeat(depth),  key, value);
+        // parse it if it something we know how to parse
+        if (key === "LineString") {
+            console.log("LineString")
+            console.log(style);
+            extractKMLLineString(value, style, name)
+        }
+        else if (key === "Polygon") {
+         //   console.log("polygon")
+            extractKMLPolygon(value, style, name)
+
+        }
+        // if it's an object, then recurse
+        else if (typeof value === 'object') {
+            extractKMLObjects(root,value, depth+1)
+        }
+    }
+}
+
+function getBoolean(obj, key) {
+    if (obj[key] === undefined) {
+        return false;
+    }
+    return obj[key]["#text"] === "1";
+}
+
+function getText(obj, key) {
+    if (obj[key] === undefined) {
+        return "";
+    }
+    return obj[key]["#text"];
+}
+
+// extract the coordinates from a KML object's "coordinates" entry
+function extractCoordinates(obj) {
+    if (obj.coordinates === undefined) {
+        return [];
+    }
+    const coordStr = obj.coordinates["#text"]
+    // strip off any leading or trailing whitespace, including \n and \t
+    const coordStrClean = coordStr.trim()
+    const coords = coordStrClean.split(' ')
+    const coordArray = []
+    for (let i = 0; i < coords.length; i++) {
+        const c = coords[i].split(',')
+        const lon = Number(c[0]) // lon is first in kml format, as it's considered x.
+        const lat = Number(c[1])
+        const alt = Number(c[2])
+        coordArray.push([lat, lon, alt])
+        console.log(i, lat, lon, alt)
+    }
+    return coordArray;
+
+}
+
+
+function extractKMLLineString(obj, style, name) {
+    const extrude = getBoolean(obj, "extrude")
+    const tessellate = getBoolean(obj, "tessellate")
+    const altitudeMode = getText(obj, "altitudeMode")
+    const coordinates  = extractCoordinates(obj)
+
+    makeKMLDisplayTrack(coordinates, style, name, altitudeMode, false);
+
+}
+
+function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap) {
+    if (coordinates.length > 1) {
+        console.log("LineString with " + coordinates.length + " coordinates")
+
+        let id = NodeMan.getUniqueID(name)
+        // a data track object to store the track data
+        const trackOb = new CNodeTrackFromLLAArray({
+            id: id,
+            altitudeMode: altitudeMode,
+        })
+        // not sure why tracks need to derive from empty array, but they do
+        // so we have to set the array after creating the object
+        trackOb.setArray(coordinates);
+
+        const lineColor = "#" + style.LineStyle.color["#text"]
+        const polyColor = "#" + style.PolyStyle.color["#text"]
+
+        // for both line and poly get the opacity from the first byte of the color
+        // as it's a hex string, we need to convert it to a number 0-255 goes to 0-1
+        const lineOpacity = parseInt(lineColor.substring(1, 3), 16) / 255
+        const polyOpacity = parseInt(polyColor.substring(1, 3), 16) / 255
+
+        // a display track object to display the track, using the above data track as input
+        const trackDisplay = new CNodeDisplayTrack({
+            id: id + "-display",
+            track: id,
+            color: lineColor,
+            dropColor: polyColor,
+            lineOpacity: lineOpacity,
+            polyOpacity: polyOpacity,
+            width: 2,
+            toGround: true,
+            showTrackWalls: true,
+            showCap: showCap,
+            depthFunc: "LessDepth",
+            depthWrite: true,
+            layers: LAYERS.MASK_WORLD
+
+        });
+    }
+}
+
+
+function extractKMLPolygon(obj, style, name) {
+    const extrude = getBoolean(obj, "extrude")
+    const tessellate = getBoolean(obj, "tessellate")
+    const altitudeMode = getText(obj, "altitudeMode")
+    const coordinates = extractCoordinates(obj.outerBoundaryIs.LinearRing)
+    makeKMLDisplayTrack(coordinates, style, name, altitudeMode, true);
 }

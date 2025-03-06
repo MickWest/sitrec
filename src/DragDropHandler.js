@@ -9,6 +9,7 @@ import {ModelFiles} from "./nodes/CNode3DObject";
 import {LLAToEUS} from "./LLA-ECEF-ENU";
 import {getLocalSouthVector, getLocalUpVector} from "./SphericalMath";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "./configUtils";
+import {doesKMLContainTrack, extractKMLObjects} from "./KMLUtils";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -391,11 +392,15 @@ class CDragDropHandler {
                 isATrack = true;
             }
 
-            if (fileManagerEntry.dataType === "sitch") {
-                isASitch = true;
+            // kml files might not contain a track
+            if (fileExt === "kml") {
+                isATrack = doesKMLContainTrack(parsedFile)
             }
 
 
+            if (fileManagerEntry.dataType === "sitch") {
+                isASitch = true;
+            }
 
             if (isATrack) {
                         addTracks([filename], true)
@@ -425,8 +430,17 @@ class CDragDropHandler {
 
 
             } else {
-                console.warn("Unhandled file type: " + fileExt + " for " + filename);
+                if (fileExt !== "kml") {
+                    console.warn("Unhandled file type: " + fileExt + " for " + filename);
+                }
             }
+
+            if (fileExt === "kml") {
+                console.log("KML file detected, adding anything else in the file")
+                extractKMLObjects(parsedFile)
+            }
+
+
         }
     }
 

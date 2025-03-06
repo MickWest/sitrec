@@ -1,6 +1,6 @@
 import {CNodeEmptyArray} from "./CNodeArray";
-import {GlobalDateTimeNode} from "../Globals";
-import {EUSToLLA} from "../LLA-ECEF-ENU";
+import {GlobalDateTimeNode, NodeMan} from "../Globals";
+import {EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -71,6 +71,52 @@ export function trackLength(node) {
     }
     return len;
 }
+
+
+export class CNodeTrackFromLLAArray extends CNodeTrack {
+    constructor(v) {
+        super(v);
+        this.altitudeMode = v.altitudeMode ?? "absolute";
+    }
+
+    setArray(array) {
+        this.array = array;
+        this.frames = this.array.length;
+    }
+
+    getValueFrame(frame) {
+        const v = this.array[frame];
+        const lat = v[0]
+        const lon = v[1];
+        const alt = v[2];
+        let eus = LLAToEUS(lat, lon, alt);
+
+        // while this is sub optimal, it shoudl not be done constantly.
+        // it mostly for KML polygons and paths, which have no inputs, so are essentially static
+        if (this.altitudeMode === "relativeToGround") {
+            // need the altitude to be relative to the ground
+            // get the terrain
+            const terrainNode = NodeMan.get("TerrainModel", false);
+            if (terrainNode !== undefined) {
+                eus = terrainNode.getPointBelow(eus, alt)
+            }
+
+
+        }
+
+        return {position: eus}
+    }
+
+    // p(frame) {
+    //     const v = this.array[frame];
+    //     const lat = v[0]
+    //     const lon = v[1];
+    //     const alt = v[2];
+    //     const eus = LLAToEUS(lat, lon, alt);
+    //     return {position: eus}
+    // }
+}
+
 
 
 

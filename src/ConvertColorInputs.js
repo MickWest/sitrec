@@ -23,6 +23,14 @@ export function convertColorInput(v, name, id="unnamedColorInput") {
             var colorObject = ob;
             if (!(colorObject instanceof Color)) {
                 if (typeof colorObject === "string" || typeof colorObject === "number") {
+
+                    // if it's a 9 character hex string (e.g. from a KML) like #FF00C050,
+                    // convert it to a 7 character hex string (#00C050, as three.js doesn't like the alpha channel
+                    // in hex strings
+                    if (typeof colorObject === "string" && colorObject.length === 9) {
+                        colorObject = "#" + colorObject.slice(3)
+                    }
+
                     // hex string or number
                     colorObject = new Color(colorObject)
                 } else if (Array.isArray(colorObject)) {

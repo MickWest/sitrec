@@ -880,8 +880,8 @@ export class CNodeTerrain extends CNode {
         return intersects.length > 0 ? intersects[0] : null
     }
 
-    getPointBelow(A) {
-        // given a point in ENU, return the point on the terrain
+    getPointBelow(A, agl = 0) {
+        // given a point in EUS, return the point on the terrain (or agl meters above it, if not zero)
         // We use the terrain map to get the elevation
         // we use LL (Lat and Lon) to get the data from the terrain maps
         // using LL ensure the results are consistent with the display of the map
@@ -899,7 +899,7 @@ export class CNodeTerrain extends CNode {
         // then the end of this vector (added to the center) is the point on the terrain
         const earthCenterENU = V3(0,-wgs84.RADIUS,0)
         const centerToA = A.clone().sub(earthCenterENU)
-        const scale = (wgs84.RADIUS + elevation) / centerToA.length()
+        const scale = (wgs84.RADIUS + elevation + agl) / centerToA.length()
         return earthCenterENU.add(centerToA.multiplyScalar(scale))
     }
 }

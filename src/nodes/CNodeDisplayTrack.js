@@ -50,21 +50,21 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         this.frames = v.frames ?? this.in.track.frames;
         this.useSitFrames = this.in.track.useSitFrames;
 
+        this.lineOpacity = v.lineOpacity ?? 0.5;
+        this.polyOpacity = v.polyOpacity ?? 0.1;
+
         this.trackGeometry = null
         this.trackLine = null
 
-        this.toGroundGeometry = null
-        this.toGroundLine = null
-
-
-        this.toGround = v.toGround
-
         this.showTrackWalls = v.showTrackWalls ?? false;
+        this.showCap = v.showCap ?? false;
 
         this.depthFunc = v.depthFunc ?? LessDepth;
+        this.depthWrite = v.depthWrite ?? false;
 
         // functions are strings in new sitches
         if (this.depthFunc === "AlwaysDepth") this.depthFunc = AlwaysDepth;
+        if (this.depthFunc === "LessDepth") this.depthFunc = LessDepth;
 
         if (v.autoSphere) {
             new CNodeDisplayTargetSphere({
@@ -112,6 +112,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 if (this.in.dataTrackDisplay !== undefined) {
                     this.in.dataTrackDisplay.showTrackWalls = this.showTrackWalls
                     this.in.dataTrackDisplay.recalculate()
+                } else {
+
+                    // any track can have walls.
+                    this.recalculate()
                 }
             })
 
@@ -214,7 +218,6 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
     dispose() {
         this.group.remove(this.trackLine)
-        this.group.remove(this.toGroundLine)
         dispose(this.trackGeometry)
         this.removeTrackWall();
         super.dispose();
@@ -250,9 +253,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
     recalculate() {
         this.group.remove(this.trackLine)
-        this.group.remove(this.toGroundLine)
         const line_points = [];
-        const toGround_points = [];
         const line_colors = [];
         assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id="+this.id)
         for (var f = 0; f < this.frames; f++) {
@@ -306,32 +307,6 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                     dropColor = {r: color.r * 0.75, g: color.g * 0.75, b: color.b * 0.75}
                 } else {
                     dropColor = this.in.dropColor.v(f)
-                }
-
-                if (this.toGround !== undefined && this.toGround > 0) {
-                    if (f % this.toGround === 0) {
-
-                        var groundY = 0 - drop(A.x, A.z, wgs84.RADIUS)
-
-                        /*
-                        // same point new color
-                        line_points.push(A.x, A.y, A.z);
-                        line_colors.push(dropColor.r, dropColor.g/2, dropColor.b/2)
-
-                        // down and back again in new color
-                        line_points.push(A.x, groundY, A.z);
-                        line_points.push(A.x, A.y, A.z);
-                        line_colors.push(dropColor.r/2, dropColor.g/2, dropColor.b/2)
-                        line_colors.push(dropColor.r/2, dropColor.g/2, dropColor.b/2)
-
-                        // original point in old color
-                        line_points.push(A.x, A.y, A.z);
-                        line_colors.push(color.r, color.g, color.b)
-    */
-                        toGround_points.push(A.x, A.y, A.z)
-                        toGround_points.push(A.x, groundY, A.z)
-
-                    }
                 }
             }
         }
@@ -399,30 +374,22 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         this.group.add(this.trackLine);
 
-        /*
-        if (this.toGround !== undefined) {
-            dispose(this.toGroundGeometry)
-            this.toGroundGeometry = new LineGeometry();
-            this.toGroundGeometry.setPositions(toGround_points);
-          //  const wireframe = new WireframeGeometry2(this.toGroundGeometry)
-          //  this.toGroundLine = new LineSegments(wireframe, matLineTrack);
-            this.toGroundLine = new LineSegments(wireframe, matLineTrack);
-
-            this.group.add(this.toGroundLine);
-        }
-*/
         this.propagateLayerMask()
 
         // check if this.in.track is a CNodeMISBDataTrack
         // if so, then we need to update the track mesh
-         if (this.in.track.constructor.name === "CNodeMISBDataTrack") {
-             this.makeTrackWall(color)
-         }
+
+
+        // OLD CHECK REMOVED, as we now have showTrackWalls as a parameter
+   //     if (this.in.track.constructor.name === "CNodeMISBDataTrack") {
+             this.makeTrackWall(color, dropColor, this.lineOpacity, this.polyOpacity)
+   //     }
     }
 
 
     removeTrackWall() {
         if (this.trackWall) {
+            // note the track wall includes the cap on KML polygons
             this.group.remove(this.trackWall);
             dispose(this.trackWall.geometry);
             this.trackWall.geometry = null;
@@ -438,7 +405,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         }
     }
 
-    makeTrackWall(color) {
+    makeTrackWall(lineColor, polyColor, lineOpacity = 1, polyOpacity = 1) {
         // Remove any previous mesh
         this.removeTrackWall();
 
@@ -531,6 +498,14 @@ export class CNodeDisplayTrack extends CNode3DGroup {
             addTriangle(p1, g2, g1);
         }
 
+        if (this.showCap) {
+            // create a fan for the top using linePoints[0] as the center
+            for (let i = 1; i < linePoints.length - 1; i++) {
+                addTriangle(linePoints[0], linePoints[i], linePoints[i + 1]);
+            }
+        }
+
+
         // Build the side mesh geometry
         const geometry = new THREE.BufferGeometry();
         const vFloat = new Float32Array(vertices);
@@ -544,13 +519,13 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         // Make a material for the semi-transparent fill
         const mat = new THREE.MeshPhongMaterial({
-            color: color,
+            color: polyColor,
             transparent: true,
-            opacity: 0.1,
+            opacity: polyOpacity,  // TODO - make this a parameter
             side: THREE.DoubleSide,
             depthFunc: this.depthFunc,
             // don't write to depth buffer
-            depthWrite: false,
+            depthWrite: this.depthWrite,
         });
 
         this.trackWall = new THREE.Mesh(geometry, mat);
@@ -590,9 +565,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         // Use a simple line material, more opaque than the fill
         const lineMat = new THREE.LineBasicMaterial({
-            color: color,
+            color: lineColor,
             transparent: true,
-            opacity: 0.5,
+            opacity: lineOpacity,
             depthFunc: this.depthFunc,
 
         });
@@ -604,8 +579,5 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         this.propagateLayerMask();
     }
-
-
-
 }
 

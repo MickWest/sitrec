@@ -299,5 +299,19 @@ export class CNodeManager extends CManager{
         }
     }
 
+    // given a name, return a unique name
+    // either the name itself, or the name with a number appended
+    // e.g. if name is "foo", and "foo" already exists, then return "foo1"
+    getUniqueID(name) {
+        if (!this.exists(name)) {
+            return name;
+        }
+        let i = 1;
+        while (this.exists(name + i)) {
+            i++;
+        }
+        return name + i;
+    }
+
 }
 
