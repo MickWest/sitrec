@@ -13,6 +13,7 @@ const testData = [
     { name: 'gimbal', url: 'https://localhost/sitrec/?sitch=gimbal&frame=10' },
     { name: 'starlink', url: 'https://localhost/sitrec/?custom=https://sitrec.s3.us-west-2.amazonaws.com/99999999/Stalink%20Names/20250218_060544.js' },
     { name: "potomac", url: "https://localhost/sitrec/?custom=https://sitrec.s3.us-west-2.amazonaws.com/99999999/Potomac/20250204_203812.js&frame=10" },
+    { name: "orion", url: "https://localhost/sitrec/?custom=https://sitrec.s3.us-west-2.amazonaws.com/99999999/Orion%20in%20Both%20views%20for%20Label%20Check/20250306_175023.js",}
     // Add more objects as needed.
 ];
 
@@ -45,6 +46,8 @@ describe('Visual Regression Testing', () => {
             try {
                 // Set a consistent viewport size.
                 await page.setViewport({ width: 1920, height: 1080 });
+
+                url = url+'&ignoreunload=1';
 
                 // Navigate to the URL with detailed error logging.
                 const response = await page.goto(url, {

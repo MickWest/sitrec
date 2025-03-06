@@ -378,10 +378,17 @@ async function newSitch(situation, customSetup = false ) {
 
 async function initializeOnce() {
 
-    window.addEventListener('beforeunload', function (e) {
-        e.preventDefault();
-        e.returnValue = ''; // Standard for most browsers
-    });
+    // check to see if the url has a ignoreunload parameter
+    // if it does, then we don't ask the user if they want to leave the page
+    // this is useful for testing, as it allows the page to be reloaded without
+    // the user having to confirm
+    if (urlParams.get("ignoreunload") === null) {
+        //
+        window.addEventListener('beforeunload', function (e) {
+            e.preventDefault();
+            e.returnValue = ''; // Standard for most browsers
+        });
+    }
 
     setCustomManager(new CCustomManager());
 
