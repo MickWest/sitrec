@@ -1,11 +1,11 @@
 // loader object for a
 import {CNode} from "./CNode";
 import {Map33, CMapTextureSource, ElevationMap} from '../js/map33/map33.js'
-import {propagateLayerMaskObject} from "../threeExt";
+import {pointAbove, propagateLayerMaskObject} from "../threeExt";
 import {cos, radians} from "../utils";
 import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {EUSToLLA, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
-import {Group} from "three";
+import {Group, Raycaster} from "three";
 
 // note for map33.js to not give errors, had to  add
 // const process = require('process');
@@ -407,7 +407,12 @@ export class CNodeTerrainUI extends CNode {
     update() {
         if (this.recalculateSoon) {
             console.log("Recalculating terrain as recalculatedSoon is true. startLoading=" + this.startLoading)
+
+            // something of a patch with terrain, as it's often treated as a global
+            // by other nodes (like the track node, when using accurate terrain for KML polygons)
+            // so we recalculate it first, and then recalculate all the other nodes
             this.recalculate();
+
             this.recalculateSoon = false;
         }
 
@@ -765,6 +770,14 @@ export class CNodeTerrain extends CNode {
                     this.log("CNodeTerrain: elevation map loaded")
                     this.recalculate();
                     this.refreshDebugGrids()
+
+                    // we can't add outputs to the terrain node
+                    // as it gets destroyed and recreated
+                    // and other nodes access it via the NodeMan, not via inputs/outputs
+                    // so to ensure collisions are recalculated, we need to do it here
+                    // a bit brute force, but it's not that often
+                    NodeMan.recalculateAllRootFirst(false); // false means don't recalculate the terrain again
+
                 },
                 deferLoad: deferLoad,
                 //  mapURL: this.mapURLDirect.bind(this),
@@ -880,13 +893,31 @@ export class CNodeTerrain extends CNode {
         return intersects.length > 0 ? intersects[0] : null
     }
 
-    getPointBelow(A, agl = 0) {
+    getPointBelow(A, agl = 0, accurate = false) {
         // given a point in EUS, return the point on the terrain (or agl meters above it, if not zero)
         // We use the terrain map to get the elevation
         // we use LL (Lat and Lon) to get the data from the terrain maps
         // using LL ensure the results are consistent with the display of the map
         // even if the map is distorted slightly in latitude dud to non-linear scaling
         // it's also WAY faster than using raycasting
+
+        // however, we can use raycasting if we want more accurate results
+        // that match the actual polygons
+        // this is useful for things like building that sit on the terrain
+        if (accurate) {
+            // we are going to use a ray from 100000m above the point to
+            const B = pointAbove(A, 100000)
+            const BtoA = A.clone().sub(B).normalize()
+
+            const rayCaster = new Raycaster(B, BtoA);
+            const ground = this.getClosestIntersect(rayCaster);
+            if (ground !== null) {
+                let groundPoint = ground.point;
+                groundPoint.add(BtoA.multiplyScalar(-agl))
+                return groundPoint;
+            }
+        }
+
 
         const LLA = EUSToLLA(A)
         // elevation is the height above the wgs84 sphere

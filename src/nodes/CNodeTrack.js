@@ -98,7 +98,7 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
             // get the terrain
             const terrainNode = NodeMan.get("TerrainModel", false);
             if (terrainNode !== undefined) {
-                eus = terrainNode.getPointBelow(eus, alt)
+                eus = terrainNode.getPointBelow(eus, alt, true)
             }
 
 
