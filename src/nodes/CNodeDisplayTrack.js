@@ -14,7 +14,7 @@ import * as LAYER from "../LayerMasks";
 import {assert} from "../assert.js";
 import {convertColorInput} from "../ConvertColorInputs";
 import {par} from "../par";
-import {hexColor} from "../threeUtils";
+import {hexColor, V3} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 
 // just import THREE from three
@@ -42,6 +42,17 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         this.input("width") // Width currently only working as a constant (v0 is used)
 
         this.optionalInputs(["dropColor"])
+
+        // minWallStep is the minimum distance between points to draw a wall polygon (and outline)
+        // set to 0 to draw a wall at every point (for KML polygons and lines)
+        // or set custom values as needed
+        // here we set it to 50m as the default for legacy sitches that often have per-frame data
+        // and would have a lot of wall polygons if we drew them all
+        if (v.minWallStep === undefined) {
+            this.minWallStep = 50;
+        } else {
+            this.minWallStep = v.minWallStep;
+        }
 
         this.ignoreAB = v.ignoreAB ?? false;
 
@@ -422,8 +433,19 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // get the number of frames
         const frames = this.in.track.frames;
 
+        // just some point far away to start with
+        // as we are using this to measure distance
+        let lastPoint = V3(0,-10000,0)
+
+
         for (let f = 0; f < frames; f++) {
             let trackPoint = this.in.track.v(f);
+
+            // find distance from last point
+            const dist = trackPoint.position.distanceTo(lastPoint);
+            if (dist < this.minWallStep) continue;
+            lastPoint = trackPoint.position.clone();
+
             if (trackPoint && trackPoint.x !== undefined) {
                 // If it's a Vector3, wrap it
                 trackPoint = { position: trackPoint };

@@ -760,7 +760,8 @@ function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap
             showCap: showCap,
             depthFunc: "LessDepth",
             depthWrite: true,
-            layers: LAYERS.MASK_WORLD
+            layers: LAYERS.MASK_WORLD,
+            minWallStep: 0, // minWallStep is the minimum distance between wall points. Set to 0 to draw all points
 
         });
     }
