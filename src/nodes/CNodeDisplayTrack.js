@@ -123,11 +123,9 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 if (this.in.dataTrackDisplay !== undefined) {
                     this.in.dataTrackDisplay.showTrackWalls = this.showTrackWalls
                     this.in.dataTrackDisplay.recalculate()
-                } else {
-
-                    // any track can have walls.
-                    this.recalculate()
                 }
+                // any track can have walls.
+                this.recalculate()
             })
 
             // color picker for the track color, with optional linked data track
@@ -391,10 +389,11 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // if so, then we need to update the track mesh
 
 
-        // OLD CHECK REMOVED, as we now have showTrackWalls as a parameter
-   //     if (this.in.track.constructor.name === "CNodeMISBDataTrack") {
-             this.makeTrackWall(color, dropColor, this.lineOpacity, this.polyOpacity)
-   //     }
+        // we don't display track walls for track that have a data track,
+        // as the data track will have the walls (spaced per track frame, like a KML track, so wide)
+        if (this.in.dataTrackDisplay === undefined) {
+            this.makeTrackWall(color, dropColor, this.lineOpacity, this.polyOpacity)
+        }
     }
 
 

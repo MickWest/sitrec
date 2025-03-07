@@ -673,11 +673,16 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 ];
 
                 const trackColor = trackColors[trackNumber % trackColors.length];
+                // make dropcolor be the same as the track color bur reduced in brightness to 75%
+                const dropColor = trackColor.clone().multiplyScalar(0.75);
+
 
                 trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
                     id: "TrackDisplayData_" + shortName,
                     track: "TrackData_" + shortName,
                     color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor)}),
+                    dropColor: dropColor,
+
                     width: 0.5,
                     //  toGround: 1, // spacing for lines to ground
                     ignoreAB: true,
