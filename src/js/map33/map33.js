@@ -9,41 +9,13 @@ import {GlobalScene} from "../../LocalFrame";
 import { fromArrayBuffer } from 'geotiff';
 import {convertTIFFToElevationArray} from "../../TIFFUtils";
 import {pointOnSphereBelow} from "../../SphericalMath";
-import {SITREC_SERVER} from "../../configUtils";
+
 
 
 
 // MICK: map33 uses Z up, so coordinates are modified in a couple of places from the original source
 
 const tileMaterial = new MeshBasicMaterial({wireframe: true, color: "#408020"})
-
-
-class Utils {
-
-  // Calculate the world position of a tile.
-  // these are used for positioning the tiles in the scene
-  // each tile is a mesh, and the mesh is positioned in the scene
-  // the actual 3D points will be realtive to this.
-  // Note this is and APPROXIMATE position, and varies with tile size
-  // maybe better to use the LatLon center of the tile, and then calculate the
-  // position of the vertices relative to that.
-  static tile2position(z, x, y, center, tileSize) {
-    const result = {
-      x: (x - center.x) * tileSize,
-      y: (-y + center.y) * tileSize,
-      z: 0
-    }
-    return result
-  }
-
-  static position2tile(z, x, y, center, tileSize) {
-    const centerPosition = Utils.tile2position(z, center.x, center.y, center, tileSize)
-    console.log(centerPosition)
-    const deltaX = Math.round((x - centerPosition.x) / tileSize)
-    const deltaY = Math.round(-(y - centerPosition.y) / tileSize)
-    return {x: deltaX + center.x, y: deltaY + center.y, z}
-  }
-}
 
 class Tile {
   constructor(map, z, x, y, size) {
@@ -435,15 +407,17 @@ class Tile {
 //////////////////////////////////////////////////////////////////////////////////
 
   setPosition(center) {
-    const position = Utils.tile2position(
-        this.z,
-        this.x,
-        this.y,
-      center,
-      this.size
-    )
-    const correctPosition = new Vector3(position.x, position.z,-position.y) // MICK
-    this.mesh.position.set(correctPosition.x, correctPosition.y,correctPosition.z) // MICK
+
+    // We are ignoring the passed "Center", and just calculating a local origin from the midpoint of the Lat, Lon extents
+
+    const lat1 = this.map.options.mapProjection.getNorthLatitude(this.y, this.z);
+    const lon1 = this.map.options.mapProjection.getLeftLongitude(this.x, this.z);
+    const lat2 = this.map.options.mapProjection.getNorthLatitude(this.y + 1, this.z);
+    const lon2 = this.map.options.mapProjection.getLeftLongitude(this.x + 1, this.z);
+    const lat = (lat1 + lat2) / 2;
+    const lon = (lon1 + lon2) / 2;
+
+    const p = LLAToEUS(lat, lon, 0);
 
     // we need to update the matrices, otherwise collision will not work until rendered
     // which can lead to odd asynchronous bugs where the last tiles loaded
@@ -775,32 +749,6 @@ class Map33 extends TiledMap {
     })
   }
 
-
-
-
-  addFromPosition(posX, posY) {
-    const {
-      x,
-      y,
-      z
-    } = Utils.position2tile(this.zoom, posX, posY, this.center, this.tileSize)
-    console.log({x, y, z})
-    const tile = new Tile(this, this.zoom, x, y)
-
-    if (tile.key() in this.tileCache) return
-
-    this.tileCache[tile.key()] = tile
-    tile.fetchElevationTile().then(tile => {
-      tile.setPosition(this.center)
-      this.scene.add(tile.mesh)
-      console.log("Adding "+posX+","+posY)
-    }).then(() => {
-      Object.values(this.tileCache).forEach(tile => {
-        tile.recalculateCurve(this.radius)
-        tile.resolveSeams(this.tileCache)
-      })
-    })
-  }
 
   clean() {
       console.log("map33 clean()");
