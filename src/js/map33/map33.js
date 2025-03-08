@@ -419,6 +419,8 @@ class Tile {
 
     const p = LLAToEUS(lat, lon, 0);
 
+    this.mesh.position.copy(p)
+
     // we need to update the matrices, otherwise collision will not work until rendered
     // which can lead to odd asynchronous bugs where the last tiles loaded
     // don't have matrices set, and so act as holes, but this varies with loading order
