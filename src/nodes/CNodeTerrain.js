@@ -780,6 +780,8 @@ export class CNodeTerrain extends CNode {
                     //NodeMan.recalculateAllRootFirst(false); // false means don't recalculate the terrain again
 
                     EventManager.dispatchEvent("terrainLoaded", this)
+                    EventManager.dispatchEvent("elevationChanged", this)
+
 
                 },
                 deferLoad: deferLoad,

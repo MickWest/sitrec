@@ -88,7 +88,7 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
             // they are just added and never removed
             // but are all cleared when a new sitch is loaded
             // possibly should have object responsible for removing their own listeners
-            EventManager.addEventListener("terrainLoaded", () => this.recalculateCascade());
+            EventManager.addEventListener("elevationChanged", () => this.recalculateCascade());
         }
     }
 
