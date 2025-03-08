@@ -478,7 +478,7 @@ export class CCustomManager {
             // and the globals
             if (sitchData.globals) {
                 for (let key in sitchData.globals) {
-                    console.warn("Applying global "+key+" with value "+sitchData.globals[key])
+//                    console.warn("Applying global "+key+" with value "+sitchData.globals[key])
                     Globals[key] = sitchData.globals[key]
                 }
             }
@@ -520,8 +520,9 @@ export class CCustomManager {
         if (!Sit.isCustom) return;
 
         //
-        // infoDiv.innerHTML = "Camera<br>"
-        // const camera = NodeMan.get("lookCamera").camera
+        // infoDiv.style.display = 'block';
+        // infoDiv.innerHTML = "Look Camera<br>"
+        // let camera = NodeMan.get("lookCamera").camera
         // infoDiv.innerHTML += "Position: " + camera.position.x.toFixed(2) + ", " + camera.position.y.toFixed(2) + ", " + camera.position.z.toFixed(2) + "<br>"
         // infoDiv.innerHTML += "Rotation: " + camera.rotation.x.toFixed(2) + ", " + camera.rotation.y.toFixed(2) + ", " + camera.rotation.z.toFixed(2) + "<br>"
         // infoDiv.innerHTML += "FOV: " + camera.fov.toFixed(2) + "<br>"
@@ -529,8 +530,16 @@ export class CCustomManager {
         // infoDiv.innerHTML += "Near: " + camera.near.toFixed(2) + "<br>"
         // infoDiv.innerHTML += "Far: " + camera.far.toFixed(2) + "<br>"
         // infoDiv.innerHTML += "Zoom: " + camera.zoom.toFixed(2) + "<br>"
-
-
+        //
+        //
+        // infoDiv.innerHTML += "<br><br>Main Camera<br>"
+        // camera = NodeMan.get("mainCamera").camera
+        // infoDiv.innerHTML += "Position: " + camera.position.x.toFixed(2) + ", " + camera.position.y.toFixed(2) + ", " + camera.position.z.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "Rotation: " + camera.rotation.x.toFixed(2) + ", " + camera.rotation.y.toFixed(2) + ", " + camera.rotation.z.toFixed(2) + "<br>"
+        // infoDiv.innerHTML += "FOV: " + camera.fov.toFixed(2) + "<br>"
+        //
+        // infoDiv.innerHTML += "<br>Sit.lat: " + Sit.lat.toFixed(2) + " Sit.lon " + Sit.lon.toFixed(2) + "<br>"
+        //
 
 
         // special logic for custom model visibility
