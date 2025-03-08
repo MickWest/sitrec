@@ -17,6 +17,7 @@ import {assert} from "../assert";
 import {isLocal, SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {configParams} from "../login";
 import {CTileMappingGoogleCRS84Quad, CTileMappingGoogleMapsCompatible} from "../WMSUtils";
+import {EventManager} from "../CEventManager";
 
 const terrainGUIColor = "#c0ffc0";
 
@@ -776,7 +777,9 @@ export class CNodeTerrain extends CNode {
                     // and other nodes access it via the NodeMan, not via inputs/outputs
                     // so to ensure collisions are recalculated, we need to do it here
                     // a bit brute force, but it's not that often
-                    NodeMan.recalculateAllRootFirst(false); // false means don't recalculate the terrain again
+                    //NodeMan.recalculateAllRootFirst(false); // false means don't recalculate the terrain again
+
+                    EventManager.dispatchEvent("terrainLoaded", this)
 
                 },
                 deferLoad: deferLoad,

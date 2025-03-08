@@ -1,6 +1,7 @@
 import {CNodeEmptyArray} from "./CNodeArray";
 import {GlobalDateTimeNode, NodeMan} from "../Globals";
 import {EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
+import {EventManager} from "../CEventManager";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -77,7 +78,20 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
     constructor(v) {
         super(v);
         this.altitudeMode = v.altitudeMode ?? "absolute";
+
+
+        // using events to recalculate the track when the terrain is loaded
+        // which is more lightweight than recalculating all nodes
+        // we just do this for nodes that are relative to the ground .0
+        if (this.altitudeMode === "relativeToGround") {
+            // Currently there's no facility for removing event listeners
+            // they are just added and never removed
+            // but are all cleared when a new sitch is loaded
+            // possibly should have object responsible for removing their own listeners
+            EventManager.addEventListener("terrainLoaded", () => this.recalculateCascade());
+        }
     }
+
 
     setArray(array) {
         this.array = array;
