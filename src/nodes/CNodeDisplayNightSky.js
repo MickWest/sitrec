@@ -1133,9 +1133,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             if (sra0 === 0 && sdec0 === 0) {
                 // ra and dec of zero indicates a placeholder entry, and is skipped
 //                console.log("Skipping star with ra, dec, 0,0, probably a bad entry, nInput = " + nInput)
-                // setting to -15 will make it invisible
+                // setting to 15 will make it invisible
                 // we are not skipping, as we need the numbers in sync to get the names
-                mag = -15;
+                mag = 15;
+            } else {
+                // finding the maximum VALID magnitude
+                // so ignoring that 15
+                if (mag > this.BSC_MaxMag)
+                    this.BSC_MaxMag = mag;
             }
 
             this.BSC_RA[this.BSC_NumStars] = sra0;
@@ -1143,8 +1148,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.BSC_MAG[this.BSC_NumStars] = mag;
             this.BSC_NumStars++;
 
-            if (mag > this.BSC_MaxMag)
-                this.BSC_MaxMag = mag;
+
 
 
             nInput++;
