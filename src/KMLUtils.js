@@ -648,7 +648,7 @@ export function extractKMLObjects(root, kml=root, depth=0) {
     // if there's styleURL, then we need to extract the style
     if (kml.styleUrl !== undefined) {
         style = getStyle(root, kml.styleUrl["#text"].substring(1));
-        console.log(style);
+//        console.log(style);
     }
 
     if (kml.name !== undefined) {
@@ -661,8 +661,8 @@ export function extractKMLObjects(root, kml=root, depth=0) {
       //  console.log("  ".repeat(depth),  key, value);
         // parse it if it something we know how to parse
         if (key === "LineString") {
-            console.log("LineString")
-            console.log(style);
+//            console.log("LineString")
+//            console.log(style);
             extractKMLLineString(value, style, name)
         }
         else if (key === "Polygon") {
@@ -707,7 +707,7 @@ function extractCoordinates(obj) {
         const lat = Number(c[1])
         const alt = Number(c[2])
         coordArray.push([lat, lon, alt])
-        console.log(i, lat, lon, alt)
+//        console.log(i, lat, lon, alt)
     }
     return coordArray;
 
@@ -726,7 +726,7 @@ function extractKMLLineString(obj, style, name) {
 
 function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap) {
     if (coordinates.length > 1) {
-        console.log("LineString with " + coordinates.length + " coordinates")
+//        console.log("LineString with " + coordinates.length + " coordinates")
 
         let id = NodeMan.getUniqueID(name)
         // a data track object to store the track data
