@@ -550,6 +550,20 @@ export function pointOnGroundLL(lat, lon) {
     return pointOnGround(A)
 }
 
+// get the aboe ground altitude a point in ESU
+export function altitudeAt(A) {
+    const B = pointOnGround(A);
+    const altitude = A.clone().sub(B).length();
+    return altitude;
+}
+
+// get the ground altitude (MSL) at a point speciifed by lat/lon
+export function altitudeAtLL(lat, lon) {
+    const A = LLAToEUS(lat, lon, 100000);
+    return altitudeAt(A)
+}
+
+
 export function pointAbove(point, height) {
     const center = V3(0,-wgs84.RADIUS,0);
     const toPoint = point.clone().sub(center).normalize();

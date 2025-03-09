@@ -67,7 +67,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         this.trackGeometry = null
         this.trackLine = null
 
-        this.showTrackWalls = v.showTrackWalls ?? false;
+        this.extendToGround = v.extendToGround ?? false;
         this.showCap = v.showCap ?? false;
 
         this.depthFunc = v.depthFunc ?? LessDepth;
@@ -117,11 +117,11 @@ export class CNodeDisplayTrack extends CNode3DGroup {
             })
 
             // // toggle for visibility of the mesh (vertical semi-transparent polygons
-            this.guiFolder.add(this, "showTrackWalls").name("Track Walls").listen().onChange(() => {
+            this.guiFolder.add(this, "extendToGround").name("Extend To Ground").listen().onChange(() => {
                 // just rebuild it, which will remove the mest based on the flag
-                console.log("showTrackWalls changed to "+this.showTrackWalls)
+                console.log("extendToGround changed to "+this.extendToGround)
                 if (this.in.dataTrackDisplay !== undefined) {
-                    this.in.dataTrackDisplay.showTrackWalls = this.showTrackWalls
+                    this.in.dataTrackDisplay.extendToGround = this.extendToGround
                     this.in.dataTrackDisplay.recalculate()
                 }
                 // any track can have walls.
@@ -188,7 +188,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         }
 
-        this.simpleSerials.push("showTrackWalls")
+        this.simpleSerials.push("extendToGround")
 
         this.recalculate()
     }
@@ -419,7 +419,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // Remove any previous mesh
         this.removeTrackWall();
 
-        if (this.showTrackWalls === false) {
+        if (this.extendToGround === false) {
             return;
         }
 

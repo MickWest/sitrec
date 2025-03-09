@@ -733,6 +733,7 @@ function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap
         const trackOb = new CNodeTrackFromLLAArray({
             id: id,
             altitudeMode: altitudeMode,
+            showCap: showCap,
         })
         // not sure why tracks need to derive from empty array, but they do
         // so we have to set the array after creating the object
@@ -756,7 +757,7 @@ function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap
             polyOpacity: polyOpacity,
             width: 2,
             toGround: true,
-            showTrackWalls: true,
+            extendToGround: true,
             showCap: showCap,
             depthFunc: "LessDepth",
             depthWrite: true,
@@ -764,6 +765,9 @@ function     makeKMLDisplayTrack(coordinates, style, name, altitudeMode, showCap
             minWallStep: 0, // minWallStep is the minimum distance between wall points. Set to 0 to draw all points
 
         });
+
+        trackOb.recalculateCascade()
+
     }
 }
 

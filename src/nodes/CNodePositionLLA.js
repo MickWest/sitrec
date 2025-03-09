@@ -8,7 +8,7 @@ import {CNode} from "./CNode";
 import {V3} from "../threeUtils";
 import {CNodeGUIValue} from "./CNodeGUIValue";
 import {isKeyHeld} from "../KeyBoardHandler";
-import {adjustHeightAboveGround} from "../threeExt";
+import {adjustHeightAboveGround, altitudeAtLL} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
 import {EventManager} from "../CEventManager";
@@ -81,9 +81,36 @@ export class CNodePositionLLA extends CNode {
                    stepExplicit: false, // prevent snapping
                    onChange: (v) => {
                        this.recalculateCascade(0)
+                       this.updateAltituide();
+
                    }
                 }, v.gui)
-                this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small")
+
+                // //makr them both elastic
+                //
+                //
+                //
+                // ////////////////////////////////////////////////////////////////////
+                // // NEW FUN AGL!!!
+                // this.guiAGL = new CNodeGUIValue({
+                //     id: id + " AGL",  // including the (ft) for historical reasons, so we have the same id as older saves
+                //     desc: name + " AGL",
+                //     value: 0, // don't set the altitude, as we want to set it with units
+                //     unitType: "small",
+                //     start: 0, end: 10000, step: 1,
+                //     stepExplicit: false, // prevent snapping
+                //     onChange: (v) => {
+                //         this.recalculateCascade(0)
+                //     }
+                // }, v.gui)
+                //
+                //
+                // this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small")
+                // this.updateAltituide();
+
+
+
+
 
             }
 
@@ -96,6 +123,16 @@ export class CNodePositionLLA extends CNode {
             this.input("alt")
         }
         this.recalculate()
+    }
+
+    updateAltituide() {
+        const altitude = altitudeAtLL(this._LLA[0], this._LLA[1]);
+
+        // so we need to atually calculate the AGL, based on the terrain
+        // also need to adjust it when terrain elevations
+
+//        this.guiAGL.setValueWithUnits(altitude, "metric", "small")
+
     }
 
     update() {

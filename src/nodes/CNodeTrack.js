@@ -2,6 +2,7 @@ import {CNodeEmptyArray} from "./CNodeArray";
 import {GlobalDateTimeNode, NodeMan} from "../Globals";
 import {EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
 import {EventManager} from "../CEventManager";
+import {pointOnSphereBelow} from "../SphericalMath";
 
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
@@ -78,6 +79,7 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
     constructor(v) {
         super(v);
         this.altitudeMode = v.altitudeMode ?? "absolute";
+        this.showCap = v.showCap ?? false;
 
 
         // using events to recalculate the track when the terrain is loaded
@@ -90,12 +92,55 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
             // possibly should have object responsible for removing their own listeners
             EventManager.addEventListener("elevationChanged", () => this.recalculateCascade());
         }
+        this.recalculate();
     }
 
 
     setArray(array) {
         this.array = array;
         this.frames = this.array.length;
+    }
+
+    recalculate() {
+        super.recalculate();
+        // assume the elevation might have changed
+        // so we recalculate the elevation of the center of the track
+        // which we might need for Google Earth-style KML polygons with "Extend sides to Ground"
+
+        this.centerElevation = 0; // default elevation in case we can't find the ground
+
+        if (this.altitudeMode === "relativeToGround" && this.showCap && this.frames > 0) {
+            // need the altitude to be relative to the ground
+            // get the terrain
+            const terrainNode = NodeMan.get("TerrainModel", false);
+            if (terrainNode !== undefined) {
+               // average all the LLA frames to get the center
+                let lat = 0;
+                let lon = 0;
+                let alt = 0;
+                for (let f = 0; f < this.frames; f++) {
+                    const v = this.array[f];
+                    lat += v[0];
+                    lon += v[1];
+                    alt += v[2];
+                }
+                lat /= this.frames;
+                lon /= this.frames;
+                alt /= this.frames;
+
+                // get the center of the track
+                const center = LLAToEUS(lat, lon, alt);
+
+                // get the ground point below the center (best avaialble from the terrain elevation
+                this.centerGroundPoint = terrainNode.getPointBelow(center, 0, true);
+
+                // get MSL point below the center (i.e. point on WGS84 sphere
+                this.centerMSLPoint = pointOnSphereBelow(center);
+                this.centerElevation = this.centerGroundPoint.distanceTo(this.centerMSLPoint);
+
+            }
+        }
+
     }
 
     getValueFrame(frame) {
@@ -105,16 +150,25 @@ export class CNodeTrackFromLLAArray extends CNodeTrack {
         const alt = v[2];
         let eus = LLAToEUS(lat, lon, alt);
 
-        // while this is sub optimal, it shoudl not be done constantly.
+        // while this is sub optimal, it should not be done constantly.
         // it mostly for KML polygons and paths, which have no inputs, so are essentially static
         if (this.altitudeMode === "relativeToGround") {
             // need the altitude to be relative to the ground
             // get the terrain
-            const terrainNode = NodeMan.get("TerrainModel", false);
-            if (terrainNode !== undefined) {
-                eus = terrainNode.getPointBelow(eus, alt, true)
-            }
 
+            if (this.showCap) {
+                // use the center elevation for ground level, plus the point's altitude
+                eus = LLAToEUS(lat, lon, this.centerElevation + alt);
+
+
+            } else {
+
+                const terrainNode = NodeMan.get("TerrainModel", false);
+                if (terrainNode !== undefined) {
+                    eus = terrainNode.getPointBelow(eus, alt, true)
+                }
+
+            }
 
         }
 
