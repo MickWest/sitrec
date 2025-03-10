@@ -140,19 +140,28 @@ export class CNodeGUIValue extends CNodeGUIConstant {
     }
 
 
-    // set value directly, and update the gui
-    setValue(value) {
+    // set GUI controlelr value directly, and update the gui,
+    // optionally ignoring the onChange callback
+    setValue(value, ignoreOnChange=false) {
         this.value = value;
-        this.guiEntry.setValue(this.value);
+
+        if (!ignoreOnChange) {
+            // this will call the onChange callback
+            this.guiEntry.setValue(this.value);
+        } else {
+            // this will not call the onChange callback
+            this.guiEntry.setValueQuietly(this.value);
+        }
     }
+
 
     // given a value, and the units and unitType, set the value in the gui
     // example: setValueWithUnits(10, "meters", "small")
     // if the current units are metric, then this will be converted from 10 meters to 32.8084 feet
-    setValueWithUnits(value, fromUnits, unitType) {
+    setValueWithUnits(value, fromUnits, unitType, ignoreOnChange=false) {
         if (this.unitType === "none") {
             // valueless, so just set the value
-            this.setValue(value);
+            this.setValue(value, ignoreOnChange);
             return;
         }
 
@@ -161,8 +170,8 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         // we need to convert the value to the current units in the requested unitType
         const scale = Units.getScaleFactors(fromUnits)[unitType];
-        this.value = roundIfClose(value * scale);
-        this.guiEntry.setValue(this.value);
+        value = roundIfClose(value * scale);
+        this.setValue(value, ignoreOnChange);
 
     }
 

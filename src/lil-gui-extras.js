@@ -117,6 +117,17 @@ Controller.prototype.tooltip = function(tooltip) {
     return this; // Return the controller to allow method chaining
 }
 
+Controller.prototype.setValueQuietly = function(value) {
+    // Set the value without triggering the onChange event
+    this.object[ this.property ] = value;
+
+    // Update the display
+    this.updateDisplay();
+
+    return this; // Return the controller to allow method chaining
+}
+
+
 // same but for a GUI object (i.e. a folder)
 GUI.prototype.setLabelColor = function(color, min=0) {
     // if color is an obkect, then it's a color object

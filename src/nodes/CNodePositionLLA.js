@@ -159,7 +159,7 @@ export class CNodePositionLLA extends CNode {
                     const groundPointLLA = EUSToLLA(groundPoint);
                     // so the altitude is in the Z component
                     const groundAlt = groundPointLLA.z;
-                    this.guiAlt.setValueWithUnits(groundAlt, "metric", "small")
+                    this.guiAlt.setValueWithUnits(groundAlt, "metric", "small", true)
                 }
                 this.recalculateCascade(0);
                 EventManager.dispatchEvent("PositionLLA.onChange."+this.id)
