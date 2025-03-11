@@ -20,13 +20,20 @@ export class CNodeLighting extends CNode {
 
         this.gui = guiMenus.lighting;
 
-        this.addGUIValue("ambientIntensity", 0, 2, 0.01, "Ambient Intensity");
-        this.addGUIValue("IRAmbientIntensity", 0, 2, 0.01, "IR Ambient Intensity");
-        this.addGUIValue("sunIntensity", 0, 2, 0.01, "Sun Intensity");
-        this.addGUIValue("sunScattering", 0, 2, 0.01, "Sun Scattering");
-        this.addGUIBoolean("ambientOnly", "Ambient Only");
-        this.addGUIBoolean("atmosphere", "Atmosphere");
-        this.addGUIBoolean("noMainLighting", "No Lighting in Main View");
+        this.addGUIValue("ambientIntensity", 0, 2, 0.01, "Ambient Intensity")
+            .tooltip("Ambient light intensity. 0 is no ambient light, 1 is normal ambient light, 2 is double ambient light");
+        this.addGUIValue("IRAmbientIntensity", 0, 2, 0.01, "IR Ambient Intensity")
+            .tooltip("IR Ambient light intensity (used for IR viewports)");
+        this.addGUIValue("sunIntensity", 0, 2, 0.01, "Sun Intensity")
+            .tooltip("Sunlight intensity. 0 is no sunlight, 1 is normal full sunlight, 2 is double sunlight");
+        this.addGUIValue("sunScattering", 0, 2, 0.01, "Sun Scattering")
+            .tooltip;("Sunlight scattering amount");
+        this.addGUIBoolean("ambientOnly", "Ambient Only")
+            .tooltip("If true, then only ambient light is used, no sunlight");
+        this.addGUIBoolean("atmosphere", "Atmosphere")
+            .tooltip("If true, then the atmosphere is rendered.\nSet to false to see the stars in daytime");
+        this.addGUIBoolean("noMainLighting", "No Lighting in Main View")
+            .tooltip("If true, then no lighting is used in the main view.\nThis is useful for debugging, but not recommended for normal use");
 
         Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity * Math.PI);
         Globals.ambientLight.layers.mask = LAYER.MASK_LIGHTING

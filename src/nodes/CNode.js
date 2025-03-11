@@ -105,13 +105,13 @@ class CNode {
     addGUIValue(variable, start, end, step, name) {
         assert(this.gui, "No GUI in addGUIValue for node ${this.id}");
         this.addSimpleSerial(variable)
-        this.gui.add(this, variable, start, end, step).name(name).listen().onChange(()=>this.recalculate());
+        return this.gui.add(this, variable, start, end, step).name(name).listen().onChange(()=>this.recalculate());
     }
 
     addGUIBoolean(variable, name) {
         assert(this.gui, "No GUI in addGUIValue for node ${this.id}");
         this.addSimpleSerial(variable)
-        this.gui.add(this, variable).name(name).listen().onChange(()=>this.recalculate());
+        return this.gui.add(this, variable).name(name).listen().onChange(()=>this.recalculate());
     }
 
 
