@@ -25,6 +25,7 @@ import {checkForModding} from "./utils";
 import {ViewMan} from "./CViewManager";
 import {EventManager} from "./CEventManager";
 import {SITREC_APP} from "./configUtils";
+import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
 
 
 export class CCustomManager {
@@ -60,6 +61,13 @@ export class CCustomManager {
                 infoDiv.style.display = 'none';
             }
         }))
+
+        toggler('e', guiMenus.contents.add( this, "toggleExtendToGround")
+            .name("Toggle ALL [E]xtend To Ground")
+            .moveToFirst()
+            .tooltip("Toggle 'Extend to Ground' for all tracks\nWill set all off if any are on\nWill set all on if none are on")
+
+        )
 
 
         // TODO - Multiple events passed to EventManager.addEventListener
@@ -102,6 +110,23 @@ export class CCustomManager {
 
 
 
+    }
+
+    toggleExtendToGround() {
+        console.log("Toggle Extend to Ground");
+        let anyExtended = false;
+        NodeMan.iterate((id, node) => {
+            if (node instanceof CNodeDisplayTrack) {
+                anyExtended ||= node.extendToGround;
+            }
+        })
+
+        NodeMan.iterate((id, node) => {
+            if (node instanceof CNodeDisplayTrack) {
+                node.extendToGround = !anyExtended;
+                node.recalculate();
+            }
+        })
     }
 
     loginAttempt() {

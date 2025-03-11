@@ -442,7 +442,11 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
             // find distance from last point
             const dist = trackPoint.position.distanceTo(lastPoint);
-            if (dist < this.minWallStep) continue;
+
+            // if the distance is less than the minimum wall step
+            // and this is not the last frame, then skip this point
+            if (dist < this.minWallStep && f < frames-1) continue;
+
             lastPoint = trackPoint.position.clone();
 
             if (trackPoint && trackPoint.x !== undefined) {
