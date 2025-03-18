@@ -333,7 +333,7 @@ class CNodeView extends CNode {
 
         if (div.clientWidth === 0 || div.clientHeight === 0) {
             // div is not visible, so don't do anything
-            console.warn("Div has no size in "+this.id+" possibly hidden or not in DOM")
+//            console.warn("Div has no size in "+this.id+" possibly hidden or not in DOM")
             return;
         }
 

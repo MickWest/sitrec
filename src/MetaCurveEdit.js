@@ -387,7 +387,7 @@ class MetaBezierCurveEditor {
         this.resize = function () {
 
             if (this.c.clientWidth === 0 || this.c.clientHeight === 0) {
-                console.warn("MetaBezierCurveEditor: canvas is zero size");
+//                console.warn("MetaBezierCurveEditor: canvas is zero size");
             }
 
             if (this.fillCanvas) {
@@ -402,7 +402,12 @@ class MetaBezierCurveEditor {
                 // coordinate are relative to the canvas
                 // so g.y,g.y is the top left offset from (0,0) in the canvas (in canvas pixels)
                 // and g.w,g.h is the width and height of the graph in canvas pixels
-                assert(this.c.width > 58 && this.c.height > 54, "Canvas too small for bezier editor");
+
+                if (this.c.width <= 58 || this.c.height <= 54) {
+                    console.warn("MetaBezierCurveEditor: canvas is too small", this.c.width, this.c.height);
+                    return;
+                }
+
                 this.g = {
                     x: 50,
                     y: 5,
