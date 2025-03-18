@@ -153,7 +153,7 @@ export function AddTailAngleGraph(mungeInputs, windowParams={}, editorParams={})
     addGenericJetGraph("tailAngleGraph", "Tail Angle", mungeInputs, windowParams, editorParams, mungeFunction);
 }
 
-export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.60, top = 0, width = -1, height = 0.25, lines=[]) {
+export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.60, top = 0, width = -1, height = 0.25, lines=[], dynamicY = false) {
 
     let maybeGlare = {};
 
@@ -197,6 +197,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
 
             minX: 0, maxX: Sit.frames, minY: minY, maxY: maxY,
             dynamicX: true,
+            dynamicY: dynamicY,
 
             onChange: function () {
 
@@ -362,7 +363,7 @@ export function AddSpeedGraph(source, caption, minY = 0, maxY = 1000, left = 0.6
     return speedGraphNode;
 }
 
-export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  = 0.73, top =0, width = -1, height =.25, yStep=5000, xStep=200) {
+export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  = 0.73, top =0, width = -1, height =.25, yStep=5000, xStep=200, dynamicY = false) {
     var AltitudeGraphNode = new CNodeCurveEditor({
         id: "altitudeGraph",
         left: left, top: top, width: width, height: height,
@@ -381,6 +382,7 @@ export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  =
             xLabel: "Frame", xStep: xStep, yLabel: "Target Altitude", yStep: yStep,
             xLabel2: "Alititude",
             dynamicX: true,
+            dynamicY: dynamicY,
         },
         inputs: {
             compare: new CNodeGraphSeries({

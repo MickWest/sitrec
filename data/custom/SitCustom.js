@@ -529,7 +529,8 @@ sitch = {
         visible: false,
         track: "traverseSmoothedTrack",
         min: 0, max: 60000,
-        left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000
+        left:0.40, top:0, width:.15, height:-1, xStep: 500, yStep:5000,
+        dynamicY: true,
     },
 
     speedGraphForTarget: { kind: "speedGraph",
@@ -537,7 +538,9 @@ sitch = {
         label: "Target Speed",
         track: "traverseSmoothedTrack",
         min:0, max:1000,
-        left: 0.25, top:0, width: .15, height:-1},
+        left: 0.25, top:0, width: .15, height:-1,
+        dynamicY: true,
+    },
 
     include_Compasses: true,
 

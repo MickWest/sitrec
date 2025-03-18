@@ -190,6 +190,13 @@ if (customSitch !== null) {
         // do we need this if it's in CustomSupport's deserialize function?
         sitchObject = checkForModding(sitchObject);
 
+        if (sitchObject.name === "custom") {
+            // Temporary patch for custom sitches new parameters
+            sitchObject.speedGraphForTarget.dynamicY = true;
+            sitchObject.altitudeGraphForTarget.dynamicY = true;
+
+        }
+
 
         setSit(new CSituation(sitchObject))
 

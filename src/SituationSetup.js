@@ -1136,6 +1136,9 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 data.top ?? 0,
                 data.width ?? 0.2,
                 data.height ?? 0.25,
+                undefined,
+                data.dynamicY ?? false,
+
 
             );
             if (data.visible === false) {
@@ -1145,6 +1148,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
 
         case "altitudeGraph":
             SSLog();
+
             // this should be changed to be the same as the speed graph
             const altitudeGraph = AddAltitudeGraph(
                 data.min ?? 0,
@@ -1157,6 +1161,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 data.height ?? 0.25,
                 data.yStep ?? 5000,
                 data.xStep ?? 200,
+                data.dynamicY ?? false,
 
             );
             if (data.visible === false) {
@@ -1181,6 +1186,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 {
                     maxY: data.maxY ?? 90,
                     dynamicX: true,
+                    dynamicY: data.dynamicY ?? false,
                 }
 
             );
@@ -1202,6 +1208,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                 {
                     maxY: data.maxY ?? 30,
                     dynamicX: true,
+                    dynamicY: data.dynamicY ?? false,
                 }
 
             );

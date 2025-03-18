@@ -28,6 +28,27 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
 
     }
 
+    modSerialize() {
+            return super.modSerialize();
+    }
+
+    modDeserialize(v) {
+        console.log("CNodeCurveEditorView.modDeserialize", v)
+        super.modDeserialize(v);
+
+        // legacy views, we have to force it visible
+        this.visible = !v.visible
+        this.show(this.visible)
+
+        // wait a frame and then set it dirty to force a redraw
+        // (patch for legacy editor node which is really a container for the MetaBezierCurveEditor)
+        // just setting it dirty immediately doesn't work, as the update order is incorrect
+
+        requestAnimationFrame( () => {
+            this.editor.dirty = true;}
+        )
+    }
+
     // renderCanvas is called every frame from the viewport rendering loop
     // in index.js
     // the super call will handle the canvas resizing
