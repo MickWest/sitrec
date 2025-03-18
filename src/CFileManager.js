@@ -341,13 +341,15 @@ export class CFileManager extends CManager {
     // just delete the current sitch name, and then call saveSitch,
     // which will force a new name
     saveSitchAs() {
+        const lastSitchName = Sit.sitchName;
         Sit.sitchName = undefined;
         return this.saveSitch()
             .then(() => {
                 console.log("Sitch saved under a new name.");
             })
             .catch((error) => {
-                console.log("Error of Cancel in saveSitchAs:", error);
+                Sit.sitchName = lastSitchName; // Restore the last sitch name if we cancel
+                console.log("Error or Cancel in saveSitchAs:", error);
             }).finally(() => {
                 this.guiFolder.close();
             });
