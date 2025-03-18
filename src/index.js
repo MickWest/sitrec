@@ -191,9 +191,9 @@ if (customSitch !== null) {
         sitchObject = checkForModding(sitchObject);
 
         if (sitchObject.name === "custom") {
-            // Temporary patch for custom sitches new parameters
-            sitchObject.speedGraphForTarget.dynamicY = true;
-            sitchObject.altitudeGraphForTarget.dynamicY = true;
+            // // Temporary patch for custom sitches new parameters
+            // sitchObject.speedGraphForTarget.dynamicY = true;
+            // sitchObject.altitudeGraphForTarget.dynamicY = true;
 
         }
 
