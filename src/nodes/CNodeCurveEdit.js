@@ -38,7 +38,7 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
 
         // legacy views, we have to force it visible
         this.visible = !v.visible
-        this.show(this.visible)
+        this.show(v.visible)
 
         // wait a frame and then set it dirty to force a redraw
         // (patch for legacy editor node which is really a container for the MetaBezierCurveEditor)

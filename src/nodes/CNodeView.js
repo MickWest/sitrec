@@ -557,10 +557,6 @@ class CNodeView extends CNode {
          if (this.visible === visible)
               return;
 
-        // if (this.id === "trackingOverlay" && visible !== this.visible) {
-        //         console.log("Setting "+this.id+" to "+visible + " from "+this.visible)
-        // }
-
         this.visible = visible
 
         // if this is NOT an overlay view, then we can set the div visibility directly
@@ -584,19 +580,13 @@ class CNodeView extends CNode {
         }
     }
 
-    show() {
-        this.setVisible(true)
-        //    this.div.style.display = 'block'
+    show(visible = true) {
+        this.setVisible(visible)
     }
 
     hide() {
-        this.setVisible(false)
-        //   this.div.style.display = 'none'
+        this.show(false)
     }
-
-    //  clone() {
-    //      return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-    //  }
 
 }
 
