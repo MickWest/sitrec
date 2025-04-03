@@ -36,6 +36,9 @@ if (!$request) {
     exit("No request");
 }
 
+$type = isset($_GET["type"]) ? $_GET["type"] : "";
+
+
 // validate the request and make sure it's in the right format
 if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $request)) {
     exit("Invalid request key ".$request);
@@ -47,12 +50,21 @@ $nextDay = date('Y-m-d', strtotime($request . ' +2 days'));
 
 
 
-// get the URL in this format
+// the default
 // https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/2023-12-22--2023-12-23/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~
 $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/" . $request . "--" . $nextDay . "/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~";
 
+
+if ($type == "LEO") {
+    $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/EPOCH/" . $request . "--" . $nextDay . "/MEAN_MOTION/>11.25/ECCENTRICITY/<0.25/OBJECT_TYPE/payload/orderby/NORAD_CAT_ID,EPOCH/format/3le";
+}
+
+
+$url = encodeAngleBrackets($url);
+
+
 $fileLocation = $starlink_cache;
-$cachedFile = $fileLocation . $request . ".tle";
+$cachedFile = $fileLocation . $request .$type . ".tle"; // note added the type
 
 // we cache these forever
 if (file_exists($cachedFile) ) {
@@ -108,11 +120,18 @@ if (file_exists($cachedFile) ) {
     if ($data === false || empty($data)) {
         die('Data query failed or returned no results.');
     }
+// Get HTTP status code
+    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+// Check for HTTP errors
+    if ($http_status !== 200) {
+        echo $data;
+        die('Data query failed with HTTP status code: ' . $http_status. "<br>" . $data);
+    }
 
-    // check that the first line contains "STARLINK"
+    // check that the first line contains "STARLINK" if the default tyoe
     $lines = explode("\n", $data);
-    if (strpos($lines[0], "STARLINK") === false) {
-        die('Data query failed or returned no results.');
+    if ($type == "" && strpos($lines[0], "STARLINK") === false) {
+        die('STARLINK is not in the first line of the data.');
     }
 
 
@@ -126,4 +145,13 @@ if (file_exists($cachedFile) ) {
     header("Location: " . $cachedFile);
     exit();
 }
+
+function encodeAngleBrackets($url) {
+    return str_replace(
+        ['<', '>'],
+        ['%3C', '%3E'],
+        $url
+    );
+}
+
 ?>
