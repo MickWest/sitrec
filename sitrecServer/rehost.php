@@ -7,7 +7,7 @@ require('./user.php');
 
 $user_id = getUserID();
 
-$aws=null;
+$aws = null;
 
 function startS3() {
     require 'vendor/autoload.php';
@@ -37,7 +37,7 @@ if (isset($_GET['getuser'])) {
 
 $userDir = getUserDir($user_id);
 
-// need to be logged in, and a memmber of group 9 (Verified users)
+// need to be logged in, and a member of group 9 (Verified users)
 if ($user_id == 0 /*|| !in_array(9,$user->secondary_group_ids)*/) {
     http_response_code(501);
     exit("Internal Server Error");
@@ -50,7 +50,7 @@ $isLocal = false;
 //    $storagePath = $ROOT_URL . "sitrec-upload/";
 //    $isLocal = true;
 //} else {
-    $storagePath = $UPLOAD_URL;  // from config.php
+$storagePath = $UPLOAD_URL;  // from config.php
 //}
 
 function writeLog($message) {
@@ -68,14 +68,21 @@ function writeLog($message) {
 //    file_put_contents($logPath, $logEntry, FILE_APPEND);
 }
 
+// Secure validation function
+function isSafeName($name) {
+    return preg_match('/^[A-Za-z0-9 _\\-\\.\\(\\)]+$/', $name);
+}
+
 // check to see if we have delete = true
 if (isset($_POST['delete']) && $_POST['delete'] == 'true') {
-    $filename = $_POST['filename'];
+    $filename = $_POST['filename'] ?? '';
     $version = $_POST['version'] ?? null;
 
-    // exit if the filename contains a path
-    if (strpos($filename, '/') !== false) {
-        exit(0);
+    // Strictly validate filename and version
+    if (!isSafeName($filename) || ($version && !isSafeName($version))) {
+        // exit with error code
+        http_response_code(400);
+        exit("Invalid filename or version");
     }
 
     if ($useAWS) {
@@ -89,10 +96,8 @@ if (isset($_POST['delete']) && $_POST['delete'] == 'true') {
         if ($useAWS) {
             $s3Path = $user_id . '/' . $filename . '/';
             $s3->deleteMatchingObjects($aws['bucket'], $s3Path);
-        }
-        else {
-
-            $dir = $userDir . $filename;
+        } else {
+            $dir = $userDir . basename($filename);
             if (file_exists($dir)) {
                 $files = glob($dir . '/*'); // get all file names
                 foreach ($files as $file) { // iterate files
@@ -103,36 +108,36 @@ if (isset($_POST['delete']) && $_POST['delete'] == 'true') {
                 rmdir($dir);
             }
         }
-
     } else {
         if ($useAWS) {
             // delete the specific version from s3
             $s3Path = $user_id . '/' . $filename . '/' . $version;
             $s3->deleteMatchingObjects($aws['bucket'], $s3Path);
         } else {
-
-            // otherwise we delete the specific version
-            $file = $userDir . $filename . '/' . $version;
+            $file = $userDir . basename($filename) . '/' . basename($version);
             if (file_exists($file)) {
                 unlink($file);
             }
         }
     }
-
     exit(0);
 }
-
 
 // Check if file and filename are provided
 if (!isset($_FILES['fileContent']) || !isset($_POST['filename'])) {
     die("File or filename not provided");
 }
 
-// Retrieve the file and filename
-$fileName = $_POST['filename'];
-$fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);//    require 'vendor/autoload.php';
-$version = $_POST['version'] ?? null;
+// Securely retrieve the file and filename
+$fileName = basename($_POST['filename']);
+$fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);
+$version = isset($_POST['version']) ? basename($_POST['version']) : null;
 
+// Validate names
+if (!isSafeName($fileName) || ($version && !isSafeName($version))) {
+    http_response_code(400);
+    exit("Invalid filename or version provided");
+}
 
 writeLog(print_r($_FILES, true));
 writeLog(print_r($_POST, true));
@@ -151,18 +156,14 @@ if ($version) {
     // versioned files sit in a folder based on the file name
     // like /sitrec-upload/99999998/MyFile/versionnumber.jpg
     $userDir = $userDir . $baseName . '/';
-    $newFileName = $version;  // note we are assuming the front end has supplied a unique version number with the correct extension
-    // Create a files specific folder for the user if it doesn't exist
+    $newFileName = $version;  // Assume front-end has supplied a unique version number with correct extension
 }
-
-
 
 if ($useAWS) {
     $s3 = startS3();
 
-    $filePath = $_FILES['fileContent']['tmp_name'];  // Path to the temporary uploaded file
-    $fileStream = fopen($filePath, 'r');  // Open a file stream
-
+    $filePath = $_FILES['fileContent']['tmp_name'];
+    $fileStream = fopen($filePath, 'r');
 
     $s3Path = $user_id . '/' . $newFileName;
     if ($version) {
@@ -173,14 +174,7 @@ if ($useAWS) {
     // Using upload instead of putObject to allow for larger files
     // putObject was giving odd timeout errors.
     try {
-        $result = $s3->upload(
-            $aws['bucket'],
-            $s3Path,
-            $fileStream,
-            $aws['acl']  // Access control list (e.g., 'public-read')
-        );
-
-        // Success, print the URL of the uploaded file
+        $result = $s3->upload($aws['bucket'], $s3Path, $fileStream, $aws['acl']);
         echo $result['ObjectURL'];
     } catch (Aws\Exception\S3Exception $e) {
         // Catch an S3 specific exception.
@@ -191,25 +185,13 @@ if ($useAWS) {
             fclose($fileStream);  // Close the file stream to free up resources
         }
     }
-    exit (0);
+    exit(0);
 }
 
-
-
-// No AWS credentials, so we'll just upload to the local server
-
-// Create the BASE directory for the user if it doesn't exist
-//if (!file_exists($userDir)) {
-//    mkdir($userDir, 0755, true);
-//}
-
-
-
+// Local server storage
 if (!file_exists($userDir)) {
     mkdir($userDir, 0755, true);
 }
-
-
 
 $userFilePath = $userDir . $newFileName;
 
