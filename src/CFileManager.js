@@ -833,8 +833,21 @@ export class CFileManager extends CManager {
         // if it's a zip file, then we need to extract the file
         // and then parse that.
 
-        // Check if the filename ends with .zip
+        let isZip = false;
+        // Check if the filename ends with .zip or .kmz
         if (filename.endsWith('.zip') || filename.endsWith('.kmz')) {
+            isZip = true;
+        }
+
+        // files zipped on the server are not always .zip at this point
+        // so we need to check the first few bytes of the file
+        const byteView = new Uint8Array(buffer);
+        if (byteView[0] === 0x50 && byteView[1] === 0x4B && byteView[2] === 0x03 && byteView[3] === 0x04) {
+            isZip = true;
+        }
+
+        // If it's a zip file, then we need to unzip it
+        if (isZip) {
             // Create a new instance of JSZip
             const zip = new JSZip();
             // Load the zip file
@@ -849,6 +862,8 @@ export class CFileManager extends CManager {
                             return zipEntry.async('arraybuffer')
                                 .then(unzippedBuffer => {
                                     // Recursively call parseAsset for each unzipped file
+                                    // (note, this will currently only work for single zipped files as
+                                    // the id will be the same for all of them)
                                     return this.parseAsset(zipFilename, id, unzippedBuffer);
                                 });
                         }

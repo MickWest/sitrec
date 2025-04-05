@@ -15,9 +15,9 @@ require_once __DIR__ . '/config_paths.php';
 //    exit("Not logged in");
 //}
 
-$zipIt = false;
+$zipIt = true;
 
-$starlink_cache = $CACHE_PATH . "/starlink/";
+$starlink_cache = $CACHE_PATH . "starlink/";
 
 // make sure the "starlink" folder exists in the cache directory
 if (!file_exists($starlink_cache)) {
