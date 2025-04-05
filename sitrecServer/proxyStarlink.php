@@ -87,6 +87,12 @@ if ($zipIt) {
             exit("Failed to create ZIP from existing TLE");
         }
     }
+} else {
+// If the .tle file already exists, return it
+    if (file_exists($cachedTLE)) {
+        header("Location: " . $cachedTLE);
+        exit();
+    }
 }
 
 // retrieve Space-Track login credentials from environment
