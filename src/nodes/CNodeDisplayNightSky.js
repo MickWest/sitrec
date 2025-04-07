@@ -35,7 +35,6 @@ import {ECEF2ENU, ECEF2EUS, ECEFToLLAVD_Sphere, EUSToECEF, getLST, raDecToAzElRA
 // npm install three-text2d --save-dev
 // https://github.com/gamestdio/three-text2d
 //import { MeshText2D, textAlign } from 'three-text2d'
-import {CNodeViewUI} from "./CNodeViewUI";
 import * as LAYER from "../LayerMasks";
 import {par} from "../par";
 
@@ -57,6 +56,7 @@ import {ViewMan} from "../CViewManager";
 import {bestSat} from "../TLEUtils";
 import {SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {CNodeLabeledArrow} from "./CNodeLabels3D";
+import {CNodeDisplaySkyOverlay} from "./CNodeDisplaySkyOverlay";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -69,154 +69,6 @@ var Astronomy = require("astronomy-engine")
 
 // other source of stars, if we need more (for zoomed-in pics)
 // https://www.astronexus.com/hyg
-
-// CNodeDisplaySkyOverlay takes a CNodeCanvas derived node, CNodeDisplayNightSky and a camera
-// and displays star names on an overlay
-export class CNodeDisplaySkyOverlay extends CNodeViewUI{
-
-    constructor(v) {
-        super(v);
-        this.addInput("startTime",GlobalDateTimeNode)
-
-        this.camera = v.camera;
-        this.nightSky = v.nightSky;
-
-        this.showSatelliteNames = false;
-        this.showStarNames = false;
-
-    //    guiShowHide.add(this,"showSatelliteNames" ).onChange(()=>{par.renderOne=true;}).name(this.overlayView.id+" Sat names")
-        guiShowHide.add(this, "showStarNames").onChange(()=>{par.renderOne=true;}).name(this.overlayView.id+" Star names").listen();
-        this.addSimpleSerial("showStarNames");
-
-
-    }
-
-    //
-     renderCanvas(frame) {
-         super.renderCanvas(frame);
-
-         const camera = this.camera.clone();
-         camera.position.set(0,0,0)
-         camera.updateMatrix()
-         camera.updateWorldMatrix()
-         camera.updateProjectionMatrix()
-
-//         var cameraECEF = ESUToECEF()
-//         var cameraLLA = ECEFToLLA()
-
-         var font_h = 9
-
-          this.ctx.font = Math.floor(font_h) + 'px' + " " + 'Arial'
-         this.ctx.fillStyle = "#ffffff";
-          this.ctx.strokeStyle = '#ffffff';
-          this.ctx.textAlign = 'left';
-
-          if (this.showStarNames) {
-              for (var HR in this.nightSky.commonNames) {
-
-                  // HR is the HR number, i.e. the index into the BSC + 1
-                  // So we sub 1 to get the actual index.
-                  const n = HR - 1
-
-                  const ra = this.nightSky.BSC_RA[n]
-                  const dec = this.nightSky.BSC_DEC[n]
-                  const pos = raDec2Celestial(ra, dec, 100) // get equatorial
-                  pos.applyMatrix4(this.nightSky.celestialSphere.matrix) // convert equatorial to EUS
-                  pos.project(camera) // project using the EUS camera
-
-                  if (pos.z > -1 && pos.z < 1 && pos.x >= -1 && pos.x <= 1 && pos.y >= -1 && pos.y <= 1) {
-                      var x = (pos.x + 1) * this.widthPx / 2
-                      var y = (-pos.y + 1) * this.heightPx / 2
-                      x += 5
-                      y -= 5
-                      this.ctx.fillText(this.nightSky.commonNames[HR], x, y)
-                  }
-              }
-              
-              // // iterate over ALL the stars, not just the common ones
-              // // and lable them with the index
-              //   for (let n = 0; n < this.nightSky.BSC_NumStars; n++) {
-              //       const ra = this.nightSky.BSC_RA[n]
-              //       const dec = this.nightSky.BSC_DEC[n]
-              //       assert(ra !== 0 || dec !== 0, "ra AND dec is 0 for star "+n + " "+this.nightSky.BSC_NAME[n]+" Mag="+this.nightSky.BSC_MAG[n])
-              //       const pos1 = raDec2Celestial(ra, dec, 100) // get equatorial
-              //       pos1.applyMatrix4(this.nightSky.celestialSphere.matrix) // convert equatorial to EUS
-              //       pos1.project(camera) // project using the EUS camera
-              //
-              //       if (pos1.z > -1 && pos1.z < 1 && pos1.x >= -1 && pos1.x <= 1 && pos1.y >= -1 && pos1.y <= 1) {
-              //           var x = (pos1.x + 1) * this.widthPx / 2
-              //           var y = (-pos1.y + 1) * this.heightPx / 2
-              //           x += 5
-              //           y -= 5
-              //           this.ctx.fillText(n, x, y)
-              //       }
-              //   }
-              
-              
-
-              // Note this is overlay code, so we use this.nightSky.
-              // CNodeDisplayNightSky would use this.planetSprites
-              for (const [name, planet] of Object.entries(this.nightSky.planetSprites)) {
-                  var pos = planet.equatorial.clone()
-                  pos.applyMatrix4(this.nightSky.celestialSphere.matrix)
-
-                  pos.project(camera)
-
-                  this.ctx.strokeStyle = planet.color;
-                  this.ctx.fillStyle = planet.color;
-
-                  if (pos.z > -1 && pos.z < 1 && pos.x >= -1 && pos.x <= 1 && pos.y >= -1 && pos.y <= 1) {
-                      var x = (pos.x + 1) * this.widthPx / 2
-                      var y = (-pos.y + 1) * this.heightPx / 2
-                      x += 5
-                      y -= 5
-                      this.ctx.fillText(name, x, y)
-                  }
-
-              }
-          }
-
-
-         // draw satellite names
-         if (this.showSatelliteNames && this.nightSky.TLEData) {
-             const date = this.nightSky.in.startTime.dateNow;
-
-             this.ctx.strokeStyle = "#8080FF";
-             this.ctx.fillStyle = "#8080FF";
-
-             for (const [index, satData] of Object.entries(this.nightSky.TLEData.satData)) {
-                 const best = bestSat(satData, date);
-
-                 const positionAndVelocity = satellite.propagate(best, date);
-
-                 if (positionAndVelocity && positionAndVelocity.position) {
-                     const positionEci = positionAndVelocity.position;
-
-                     var gmst = satellite.gstime(date);
-                     var ecefK = satellite.eciToEcf(positionEci, gmst)
-                     const ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000)
-                     const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
-                     const eus = V3(enu.x, enu.z, -enu.y)
-                     //    pos.applyMatrix4(this.nightSky.celestialSphere.matrix)
-
-                     const pos = eus
-
-                     // we use the actual camera for satellites, as they are just in EUS
-                     pos.project(this.camera)
-
-
-                     if (pos.z > -1 && pos.z < 1 && pos.x >= -1 && pos.x <= 1 && pos.y >= -1 && pos.y <= 1) {
-                         var x = (pos.x + 1) * this.widthPx / 2
-                         var y = (-pos.y + 1) * this.heightPx / 2
-                         x += 5
-                         y -= 5
-                         this.ctx.fillText(satData.name, x, y)
-                     }
-                 }
-             }
-         }
-     }
-}
 
 // TLE Data is in fixed positions in a 69 character string, which is how the satellite.js library expects it
 // but sometimes we get it with spaces removed, as it's copied from a web page
@@ -310,6 +162,14 @@ function fixTLELine(line, ends) {
 }
 
 
+// this is the TLE data for the satellites
+// A CTLEData object is created from a TLE file and consists of just
+// a satData array, which is an array of objects
+// each object has a name, a visible flag, and an array of satrecs
+// the satrec is a satellite record created from a single line of a TLE file
+// there can be several satrecs with the same name, so we need to store them in an array
+// and pick the best one based on the playback date/time
+
 class CTLEData {
     // constructor is passed in a string that contains the TLE file as \n seperated lines
     // extracts in into
@@ -338,6 +198,7 @@ class CTLEData {
                         // so create a new one with the name and the satrec array, which has one satrec
                         this.satData[satrecName] = {
                             name: satrecName,
+                            visible: true,
                             satrecs: [satrec]
                         };
                     }
@@ -360,11 +221,17 @@ class CTLEData {
                     const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
                     satrecName = lines[i]
 
+                    // if it starts with "0 ", then strip that off
+                    if (satrecName.startsWith("0 ")) {
+                        satrecName = satrecName.substring(2)
+                    }
+
                     if (this.satData[satrecName] === undefined) {
                         // it's a new satData entry
                         // so create a new one with the name and the satrec array, which has one satrec
                         this.satData[satrecName] = {
                             name: satrecName,
+                            visible: true,
                             satrecs: [satrec]
                         };
                     }
@@ -444,11 +311,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.mainCamera = NodeMan.get("mainCamera").camera;
         assert(this.mainCamera, "CNodeDisplayNightSky needs a main camera")
 
+        const satGUI = guiShowHide.addFolder("Satellites");
+
+
+
         this.showSunArrows = Sit.showSunArrows;
         this.sunArrowGroup = new Group();
         this.sunArrowGroup.visible = this.showSunArrows;
         GlobalScene.add(this.sunArrowGroup)
-        guiShowHide.add(this, "showSunArrows").listen().onChange(()=>{
+        satGUI.add(this, "showSunArrows").listen().onChange(()=>{
             par.renderOne=true;
             this.sunArrowGroup.visible = this.showSunArrows;
         }).name("Sun Angle Arrows")
@@ -470,7 +341,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.flareRegionGroup.debugTimeStamp = timeStamp;
         this.flareRegionGroup.visible = this.showFlareRegion;
         GlobalScene.add(this.flareRegionGroup)
-        guiShowHide.add(this, "showFlareRegion").listen().onChange(()=>{
+        satGUI.add(this, "showFlareRegion").listen().onChange(()=>{
             par.renderOne=true;
             this.flareRegionGroup.visible = this.showFlareRegion;
         }).name("Flare Region")
@@ -500,30 +371,42 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.showFlareBand = Sit.showFlareBand;
         this.flareBandGroup.visible = this.showFlareBand;
-        guiShowHide.add(this, "showFlareBand").listen().onChange(()=>{
+        satGUI.add(this, "showFlareBand").listen().onChange(()=>{
             par.renderOne=true;
             this.flareBandGroup.visible = this.showFlareBand;
         }).name("Flare Band")
         this.addSimpleSerial("showFlareBand")
 
         this.showSatellites = true;
-        guiShowHide.add(this, "showSatellites").listen().onChange(()=>{
+        satGUI.add(this, "showSatellites").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroup.visible = this.showSatellites;
         }).name("Satellites")
         this.addSimpleSerial("showSatellites")
 
+        this.showStarlink = true;
+        satGUI.add(this, "showStarlink").listen().onChange(()=>{
+            par.renderOne=true;
+            this.filterSatellites();
+        }).name("Starlink");
+
+        this.showISS = true;
+        satGUI.add(this, "showISS").listen().onChange(()=>{
+            par.renderOne=true;
+            this.filterSatellites();
+        }).name("ISS");
+
 
 
         this.showSatelliteTracks = Sit.showSatelliteTracks ?? false;
-        guiShowHide.add(this, "showSatelliteTracks").listen().onChange(()=>{
+        satGUI.add(this, "showSatelliteTracks").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteTrackGroup.visible = this.showSatelliteTracks;
         }).name("Satellite Arrows")
         this.addSimpleSerial("showSatelliteTracks")
 
         this.showSatelliteGround = Sit.showSatelliteGround ?? false;
-        guiShowHide.add(this, "showSatelliteGround").listen().onChange(()=>{
+        satGUI.add(this, "showSatelliteGround").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroundGroup.visible = this.showSatelliteGround;
         }).name("Satellite Ground Arrows")
@@ -531,7 +414,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this.showSatelliteNames = false;
 
-        guiShowHide.add(this,"showSatelliteNames" ).listen().onChange(()=>{
+        satGUI.add(this,"showSatelliteNames" ).listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteTextGroup.visible = this.showSatelliteNames;
         }).name("Satellite Names")
@@ -542,15 +425,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             .tooltip("Scale factor for the brightness of the stars. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
         this.addSimpleSerial("starScale")
 
-        guiMenus.view.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
+        satGUI.add(Sit,"satScale",0,6,0.01).name("Sat Brightness").listen()
             .tooltip("Scale factor for the brightness of the satellites. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
         this.addSimpleSerial("satScale");
 
-        guiMenus.view.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
+        satGUI.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
             .tooltip("Satellites dimmed to this level or less will not be displayed")
         this.addSimpleSerial("satCutOff");
 
-        guiMenus.file.add(this,"updateStarlink").name("Update Starlink TLE For Date")
+        guiMenus.file.add(this,"updateStarlink").name("Load Satellite TLE For Date")
             .onChange(function (x) {this.parent.close()})
             .tooltip("Get the latest Starlink TLE data for the current date. This will download the data from the internet, so it may take a few seconds.\nWill also enable the Starlink satellites to be displayed in the night sky.")
 
@@ -711,6 +594,29 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     }
 
 
+    filterSatellites() {
+        if (this.TLEData === undefined) return;
+
+        // iterate over the satellites and flag visiblity
+        // based on the name and the GUI flags
+        for (const satData of this.TLEData.satData) {
+
+             satData.visible = false;
+            if (this.showStarlink && satData.name.startsWith("STARLINK")) {
+                satData.visible = true;
+                continue;
+            }
+
+            if (this.showISS && satData.name.startsWith("ISS (ZARYA)")) {
+                satData.visible = true;
+                continue;
+            }
+
+
+        }
+    }
+
+
     updateStarlink() {
         // get the start time
         const startTime = GlobalDateTimeNode.dateNow;
@@ -731,7 +637,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // note this is NOT a dynamic file
         // it fixed based on the date
         // so we don't need to rehost it
-        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr;
+        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr+"&type=LEO";
 
         // TODO: remove the old starlink from the file manager.
 
@@ -953,6 +859,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
             for (let i = camera.satStartTime; i < this.TLEData.satData.length; i++) {
                 const satData = this.TLEData.satData[i];
+
+                // bit of a hack for visiblity, just set the scale to 0
+                // and skip the update
+                // TODO: the first few
+                if (!satData.visible) {
+                    magnitudes[i] = 0
+                    const spriteText = satData.spriteText;
+                    spriteText.scale.set(0,0,0);
+                    continue;
+                }
 
                 // satellites might have invalid positions if we load a TLE that's not close to the time we are calculating for
                 // this would be updated when updating the satellites position
@@ -1516,6 +1432,7 @@ void main() {
     replaceTLE(tle) {
         this.removeSatellites()
         this.TLEData = new CTLEData(tle)
+        this.filterSatellites()
         this.addSatellites(this.satelliteGroup, this.satelliteTextGroup)
     }
 
@@ -1585,6 +1502,13 @@ void main() {
 
     void main() {
         vColor = color;
+        
+        // if magnitude is 0 then do not draw it
+        if (magnitude == 0.0) {
+            gl_Position = vec4(0,0,0,0);
+            gl_PointSize = 0.0;
+            return;
+        }
 
         float size = mix(minSize, maxSize, magnitude);
         size *= 3.0 * (30.0 / cameraFOV) * satScale;
@@ -1620,7 +1544,7 @@ void main() {
             fragmentShader: customFragmentShader,
             uniforms: {
                 maxMagnitude: { value: this.BSC_MaxMag },
-                minSize: { value: 1.0 },
+                minSize: { value: 0.0 },  // was 1.0, but we want to scale to zero if needed
                 maxSize: { value: 20.0 },
                 starTexture: { value: new TextureLoader().load(SITREC_APP+'data/images/nightsky/MickStar.png') },
                 cameraFOV: { value: 30 },
@@ -1810,6 +1734,8 @@ void main() {
         } else {
             this.timeStep = numSats; // scale it by the number of satellites
         }
+
+        assert (this.satelliteGeometry !== undefined, "updateAllSatellites needs a geometry");
 
         // Get the position attribute from the geometry
         const positions = this.satelliteGeometry.attributes.position.array;
