@@ -757,7 +757,11 @@ export class CFileManager extends CManager {
                 return fs.promises.readFile(filename);
             });
         } else {
-            bufferPromise = fetch(filename + "?v=1" + versionString)
+            // add a version string to the filename, so we can force a reload when a new version is deployed
+            // the filename is the URL to the file, so we can just add a query string
+            // unless it already has one, in which case we add a &v=1
+            const versionExtension = (filename.includes("?") ? "&" : "?") + "v=1" + versionString;
+            bufferPromise = fetch(filename + versionExtension)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -1074,7 +1078,7 @@ export class CFileManager extends CManager {
                     }
                 }
 
-                console.log("Dynamic Rehost: " + rehostFilename)
+                console.log("Dynamic Rehost: " + rehostFilename + " length=" + f.original.byteLength + " staticURL=" + f.staticURL)
                 const rehostPromise = this.rehoster.rehostFile(rehostFilename, f.original).then((staticURL) => {
                     console.log("AS PROMISED: " + staticURL)
                     f.staticURL = staticURL;
