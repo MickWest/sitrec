@@ -200,7 +200,7 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
 
 
     if (tracks === undefined) {
-        assert(when === undefined, "No tracks in KML file when we need them, as when array is not undefined")
+     //   assert(when === undefined, "No tracks in KML file when we need them, as when array is not undefined")
         console.warn("getKMLTrackWhenCoord: No tracks in KML file ")
         return false;
     }
@@ -578,7 +578,13 @@ export function KMLToMISB(kml, trackIndex = 0) {
     const _times = []
     const _coord = []
     const info = {}
-    getKMLTrackWhenCoord(kml, trackIndex, _times, _coord, info)
+    const success = getKMLTrackWhenCoord(kml, trackIndex, _times, _coord, info)
+
+    if (!success) {
+        console.warn("KMLToMISB: No track in KML file for index" + trackIndex)
+        return false;
+    }
+
 
     const misb = []
     for (let i = 0; i < _times.length; i++) {
