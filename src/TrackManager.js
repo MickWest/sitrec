@@ -111,7 +111,14 @@ export function makeTrackFromDataFile(sourceFile, dataID, trackID, columns, trac
     }
 
     // if there's no data, then return, which will just skip this track
-    if (!misb || misb.length === 0) {
+    // als skip track with just on point
+    if (!misb) {
+        console.warn("makeTrackFromDataFile: No data in file: ", sourceFile)
+        return false;
+    }
+
+    if (misb.length <= 1) {
+        console.warn("makeTrackFromDataFile: Insufficent data in file: ", sourceFile, " misb length: ", misb.length)
         return false;
     }
 
