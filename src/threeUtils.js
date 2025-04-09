@@ -207,6 +207,6 @@ export function makeMatrix4PointYAt(_normal) {
 export function hexColor(color) {
     color = new Color(color); // ensures strings get converted to color objects
     const hex = "#"+color.getHexString();
-    console.log("hexColor", color, hex);
+//    console.log("hexColor", color, hex);
     return hex;
 }
