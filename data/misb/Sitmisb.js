@@ -3,6 +3,8 @@ sitch = {
     name: "misb",
     menuName: "MISB",
 
+
+
     // "files" is a list of files to load with a key for each one
     // so we can reference them later
     // e.g. "misb" is used by both the camera track and the target track
@@ -287,5 +289,9 @@ sitch = {
     trackingOverlay: {kind: "TrackingOverlay", overlayView: "video",
         cameraLOSNode: "JetLOS",
         fovNode: "cameraTrack"},
+
+    include_Compasses: true,
+
+
 
 }
