@@ -68,9 +68,12 @@ class CMetaTrack {
         NodeMan.unlinkDisposeRemove(this.anglesController);
         removeLOSNodeColumnNodes(this.trackID);
 
+        // more limited pruning
         NodeMan.pruneUnusedControllers();
         NodeMan.pruneUnusedFlagged();
-        NodeMan.pruneUnusedConstants();
+
+        // DON"T DO THIS
+        //NodeMan.pruneUnusedConstants();
 
         Globals.sitchEstablished = false;
 
@@ -687,7 +690,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 trackOb.trackDisplayDataNode = new CNodeDisplayTrack({
                     id: "TrackDisplayData_" + shortName,
                     track: "TrackData_" + shortName,
-                    color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor)}),
+                    color: new CNodeConstant({id: "colorData_" + shortName, value: new Color(trackColor), pruneIfUnused: true}),
                     dropColor: dropColor,
 
                     width: 0.5,
@@ -703,7 +706,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     track: "Track_" + shortName,
                     dataTrack: "TrackData_" + shortName,
                     dataTrackDisplay: "TrackDisplayData_" + shortName,
-                    color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor)}),
+                    color: new CNodeConstant({id: "colorTrack_" + shortName, value: new Color(trackColor), pruneIfUnused: true}),
                     width: 3,
                     //  toGround: 1, // spacing for lines to ground
                     ignoreAB: true,
@@ -753,7 +756,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     trackOb.displayCenterDataNode = new CNodeDisplayTrack({
                         id: "CenterDisplayData_" + shortName,
                         track: "CenterData_" + shortName,
-                        color: new CNodeConstant({id: "colorCenterData_" + shortName, value: new Color(0, 1, 0)}),
+                        color: new CNodeConstant({id: "colorCenterData_" + shortName, value: new Color(0, 1, 0), pruneIfUnused: true}),
                         width: 0.5,
                         //  toGround: 1, // spacing for lines to ground
                         ignoreAB: true,
@@ -767,7 +770,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                         id: "CenterDisplay_" + shortName,
                         track: centerID,
                         dataTrackDisplay: "CenterDisplayData_" + shortName,
-                        color: new CNodeConstant({id: "colorCenter_" + shortName, value: new Color(1, 1, 0)}),
+                        color: new CNodeConstant({id: "colorCenter_" + shortName, value: new Color(1, 1, 0), pruneIfUnused: true}),
                         width: 3,
                         //  toGround: 1, // spacing for lines to ground
                         ignoreAB: true,

@@ -10,6 +10,7 @@ import {LLAToEUS} from "./LLA-ECEF-ENU";
 import {getLocalSouthVector, getLocalUpVector} from "./SphericalMath";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "./configUtils";
 import {doesKMLContainTrack, extractKMLObjects} from "./KMLUtils";
+import {assert} from "./assert";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {

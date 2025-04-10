@@ -19,7 +19,7 @@ import {
 	getLocalDownVector, getLocalEastVector, getLocalNorthVector,
 	getLocalUpVector, pointOnSphereBelow,
 } from "../SphericalMath";
-import {NodeFactory, NodeMan, Sit} from "../Globals";
+import {Globals, NodeFactory, NodeMan, Sit} from "../Globals";
 import {CNodeControllerPTZUI} from "../nodes/CNodeControllerPTZUI";
 import {intersectSphere2, V3} from "../threeUtils";
 import {onDocumentMouseMove} from "../mouseMoveView";
@@ -388,7 +388,9 @@ class CameraMapControls {
 					if (ptzControls.el <= -89) ptzControls.el = -89
 					if (ptzControls.el >= 89) ptzControls.el = 89
 
+					//Globals.debugRecalculate = true
 					ptzControls.recalculateCascade();
+					Globals.debugRecalculate = false;
 
 				} else {
 

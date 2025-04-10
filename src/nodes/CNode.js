@@ -363,6 +363,11 @@ class CNode {
                 node = new CNodeConstant({
                     id: this.id+"_"+key,  // give it a unique id from node id plus input key
                     value: nodeID})
+
+                // these auto nodes are not managed by their creators
+                // so we need to set the pruneIfUnused flag so we can remove them if their outputs are removed
+                node.pruneIfUnused = true; // so we can remove it if not used
+//                console.log("Adding flagged auto node " + node.id)
             }
         }
 
@@ -635,15 +640,15 @@ class CNode {
     // need to cull child nodes that can be reached by other paths
     // so they don't get prematurely recalculated
     // the "depth" patameter here is just used for indenting.
-    recalculateCascade(f, noControllers = false, depth = 0, debug = false) {
+    recalculateCascade(f, noControllers = false, depth = 0) {
 
         if (f === undefined) f = par.frame;
 
-        if (debug)
-            console.log("|---".repeat(depth) + " Recalculating:  " + this.constructor.name +": " +  this.id + " frame " + f)
+        if (Globals.debugRecalculate)
+            console.log("|---".repeat(depth) + " Root Recalculating:  " + this.constructor.name +": " +  this.id + " frame " + f)
 
         let listOfOne = [this]
-        recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth, debug)
+        recalculateNodesBreadthFirst(listOfOne, f, noControllers, depth)
         // bit of a patch - whenever we do a recalculateCascade we make sure we render one frame
         // so any changes are reflected in the display
         par.renderOne = true;
@@ -673,12 +678,12 @@ class CNode {
 // run recalculate on each one
 // maintain a list of output nodes, with no duplicates
 // then run recalculate on this list, if not empty
-function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = false) {
+function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
     if (Globals.dontRecalculate) return;
     let children = []
     for (let node of list) {
-        if (debug)
-            console.log("|---".repeat(depth) + " Recalulating:  " + node.id)
+        if (Globals.debugRecalculate)
+            console.log("|---".repeat(depth) + " BreadthFirst Recalulating:  " + node.id + " from " + node.debugParent)
         node.recalculate();
 
         // Controllers are a bit of a special case
@@ -689,38 +694,49 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = fal
 
         if (!noControllers) {
             if (node.applyControllers !== undefined) {
-                if (debug && node.id === "lookCamera")
+                if (Globals.debugRecalculate)
                     console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
                 node.applyControllers(f, depth)
             } else {
-                if (debug && node.id === "lookCamera")
-                    console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
+//                if (Globals.debugRecalculate)
+//                    console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
             }
         }
 
+    }
+
+    // we make the list of children AFTER the recalculate
+    // to avoid overwriting output.debugParent
+    for (let node of list) {
         // for each output in node.outputs, if it's not in the outputs list, add it
         node.outputs.forEach(output => {
             if (!children.includes(output)) {
                 children.push(output)
+                if (Globals.debugRecalculate) {
+                    output.debugParent = node.id;
+                }
             }
         })
     }
 
-    // if any node in the children list is also a descendant of another node in the list
-    // the we need to remove it from the list
-    // we do this by making a new list, and only adding nodes that are not 2+ generation descendants of any node
+    //
+
+
+    // We want to skip recalculating children that are descendants of other **children**
     let immediateChildren = []
     for (let child of children) {
         let isDescendant = false;
-        // for (let node of list) {
-        //     const maxDepth = node.maxDepthOf(child)
-        //     // see if it's a descendent for at least second generation
-        //     // and if so we don't want to recalculate it now, as it will get recalculate later by its immediate parent
-        //     if (maxDepth > 1) {
-        //         isDescendant = true;
-        //         break;
-        //     }
-        // }
+
+
+        for (let node of children) {
+            const maxDepth = node.maxDepthOf(child)
+            // see if it's a descendent for at least second generation
+            // and if so we don't want to recalculate it now, as it will get recalculate later by its immediate parent
+            if (maxDepth > 0) {
+                isDescendant = true;
+                break;
+            }
+        }
         if (!isDescendant) {
             immediateChildren.push(child)
         }
@@ -728,7 +744,7 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth, debug = fal
 
     // if anything in the list, then recurse
     if (children.length > 0) {
-        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1, debug)
+        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1, Globals.debugRecalculate )
     }
 }
 

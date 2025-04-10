@@ -291,11 +291,17 @@ export class CNodeManager extends CManager{
         for (let key in this.list) {
             const node = this.list[key].data;
             // is it not connected to anything?
-            if (node.pruneIfUnused && node.outputs.length === 0 && (node.inputs === undefined || Object.keys(node.inputs).length === 0)) {
-                // remove it
-                console.log("Removing unused prunable node " + key);
-                this.disposeRemove(key)
+            if (node.outputs.length === 0 && (node.inputs === undefined || Object.keys(node.inputs).length === 0)) {
+                if (node.pruneIfUnused) {
+                    // remove it
+//                    console.log("Removing unused prunable node " + key);
+                    this.disposeRemove(key)
+                } else {
+//                    console.log("Not removing node " + key + " as it is not prunable")
+                }
             }
+
+
         }
     }
 

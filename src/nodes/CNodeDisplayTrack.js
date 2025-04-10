@@ -160,6 +160,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                         track.altitudeOffset = v;
                         track.recalculateCascade()
                     },
+                    pruneIfUnused: true
                 }, this.guiFolder)
 
                 track.altitudeOffset = 0;
@@ -179,6 +180,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                     elastic: true,
                     elasticMin: 1000,
                     elasticMax: 100000,
+                    pruneIfUnused: true
                 }, this.guiFolder)
 
 

@@ -41,7 +41,7 @@ export function convertColorInput(v, name, id="unnamedColorInput") {
                 }
             }
 
-            v[name] = new CNodeConstant({id: id + "_" + name + "_colorInput", value: colorObject})
+            v[name] = new CNodeConstant({id: id + "_" + name + "_colorInput", value: colorObject, pruneIfUnused: true})
         }
     }
 }
