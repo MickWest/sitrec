@@ -234,7 +234,14 @@ export class CCustomManager {
 
                 // check if empty {} object, don't need to store that
                 if (Object.keys(nodeMod).length > 0) {
-                    mods[node.id] = nodeMod;
+
+                    // if there's just one, and it's "visible: true", then don't store it
+                    // as it's the default
+                    if (Object.keys(nodeMod).length === 1 && nodeMod.visible === true) {
+                        // skip
+                    } else {
+                        mods[node.id] = nodeMod;
+                    }
                 }
             }
         })
