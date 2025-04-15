@@ -21,11 +21,13 @@ import {assert} from "./assert.js";
 import {getShortURL} from "./urlUtils";
 import {CNode3DObject} from "./nodes/CNode3DObject";
 import {UpdateHUD} from "./JetStuff";
-import {checkForModding} from "./utils";
+import {checkForModding, degrees} from "./utils";
 import {ViewMan} from "./CViewManager";
 import {EventManager} from "./CEventManager";
 import {SITREC_APP} from "./configUtils";
 import {CNodeDisplayTrack} from "./nodes/CNodeDisplayTrack";
+import {DebugArrowAB} from "./threeExt";
+import {TrackManager} from "./TrackManager";
 
 
 export class CCustomManager {
@@ -69,6 +71,8 @@ export class CCustomManager {
 
         )
 
+        guiMenus.physics.add( this, "calculateBestPairs").name("Calculate Best Pairs");
+
 
         // TODO - Multiple events passed to EventManager.addEventListener
 
@@ -111,6 +115,145 @@ export class CCustomManager {
 
 
     }
+
+    calculateBestPairs() {
+        // given the camera position for lookCamera at point A and B
+        // calculate the LOS for each object from the camerea, at A and B
+        // then interate over the objects and find the best pairs
+
+        const targetAngle = 0.6;
+
+        const A = Sit.aFrame;
+        const B = Sit.bFrame;
+
+        const lookCamera = NodeMan.get("lookCamera");
+        const lookA = lookCamera.p(A);
+        const lookB = lookCamera.p(B);
+        // TODO - A and B above don't work, we need to use a track like CNodeLOSFromCamera, or simulate the camera (which is what CNodeLOSFromCamera does)
+        // but for fixed camera for now, it's okay.
+
+        const trackList = [];
+
+        // Now iterate over the objects tracks
+        TrackManager.iterate((id, track) => {
+
+            const node = track.trackNode;
+
+            // get the object position at times A and B
+            const posA = node.p(A);
+            const posB = node.p(B);
+
+            // get the two vectors from look A and B to the object
+
+            const losA = posA.clone().sub(lookA).normalize();
+            const losB = posB.clone().sub(lookB).normalize();
+
+            trackList.push({
+                id: id,
+                node: node,
+                posA: posA,
+                posB: posB,
+                losA: losA,
+                losB: losB,
+
+            });
+
+            console.log("Track " + id + " A: " + posA.toArray() + " B: " + posB.toArray() + " LOSA: " + losA.toArray() + " LOSB: " + losB.toArray());
+
+        })
+
+        // Now iterate over the track list and find the best pairs
+        // for now add two absolute deffrences between the target angle
+        // and the angle between the two LOS vectors
+
+
+        let bestPair = [null, null];
+        let bestDiff = 1000000;
+
+        this.bestPairs = []
+
+        // outer loop, iterate over the track list
+        for (let i = 0; i < trackList.length-1; i++) {
+            const obj1 = trackList[i];
+
+            // inner loop, iterate over the object list
+            for (let j = i + 1; j < trackList.length; j++) {
+                const obj2 = trackList[j];
+
+                // get the angle between the two LOS vectors at A and B
+                const angleA = degrees(Math.acos(obj1.losA.dot(obj2.losA)));
+                const angleB = degrees(Math.acos(obj1.losB.dot(obj2.losB)));
+
+                // get the absolute difference from the target angle
+                const diffA = Math.abs(angleA - targetAngle);
+                const diffB = Math.abs(angleB - targetAngle);
+
+                console.log("Pair " + obj1.id + " " + obj2.id + " A: " + angleA.toFixed(2) + " B: " + angleB.toFixed(2) + " Diff A: " + diffA.toFixed(2) + " Diff B: " + diffB.toFixed(2));
+
+                const metric = diffA + diffB;
+
+                // store all paits as object in bestPairs
+                this.bestPairs.push({
+                    obj1: obj1,
+                    obj2: obj2,
+                    angleA: angleA,
+                    angleB: angleB,
+                    diffA: diffA,
+                    diffB: diffB,
+                    metric: metric,
+                });
+
+
+                // if the diff is less than the best diff, then store it
+                if (metric < bestDiff) {
+                    bestDiff = diffA + diffB;
+                    bestPair = [obj1, obj2];
+                }
+
+
+            }
+        }
+
+        // sort the best pairs by metric
+        this.bestPairs.sort((a, b) => {
+            return a.metric - b.metric;
+        });
+
+
+
+
+        console.log("Best pair: " + bestPair[0].id + " " + bestPair[1].id + " Diff: " + bestDiff.toFixed(10));
+        console.log("Best angles: " + bestPair[0].losA.angleTo(bestPair[1].losA).toFixed(10) + " " + bestPair[0].losB.angleTo(bestPair[1].losB).toFixed(10));
+
+        // // for the best pair draw debug arrows from lookA and lookB to the objects
+        //
+        // // red fro the first one
+        // DebugArrowAB("Best 0A", lookA, bestPair[0].posA, "#FF0000", true, GlobalScene)
+        // DebugArrowAB("Best 0B", lookB, bestPair[0].posB, "#FF8080", true, GlobalScene)
+        //
+        // // green for the second one
+        // DebugArrowAB("Best 1A", lookA, bestPair[1].posA, "#00ff00", true, GlobalScene)
+        // DebugArrowAB("Best 1B", lookB, bestPair[1].posB, "#80ff80", true, GlobalScene)
+
+
+        // do debug arrows for the top 10
+        for (let i = 0; i < Math.min(10, this.bestPairs.length); i++) {
+            const obj1 = this.bestPairs[i].obj1;
+            const obj2 = this.bestPairs[i].obj2;
+
+            DebugArrowAB("Best "+i+"A", lookA, obj1.posA, "#FF0000", true, GlobalScene)
+            DebugArrowAB("Best "+i+"B", lookB, obj1.posB, "#FF8080", true, GlobalScene)
+
+            DebugArrowAB("Best "+i+"A", lookA, obj2.posA, "#00ff00", true, GlobalScene)
+            DebugArrowAB("Best "+i+"B", lookB, obj2.posB, "#80ff80", true, GlobalScene)
+
+            // and a white arrow between them
+            DebugArrowAB("Best "+i+"AB", obj1.posA, obj2.posA, "#FFFFFF", true, GlobalScene)
+
+        }
+
+    }
+
 
     toggleExtendToGround() {
         console.log("Toggle Extend to Ground");
