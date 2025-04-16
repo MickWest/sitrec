@@ -273,7 +273,7 @@ export function extractFOV(value) {
         // it's a track with a vFOV member
         return  value.vFOV;
     } else {
-        assert(0, "extractFOV: no vFOV or misbRow member in value, can't find FOV")
+        assert(0, "extractFOV: no vFOV or misbRow member in value, can't find FOV, value = "+value);
     }
 }
 

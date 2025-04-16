@@ -27,15 +27,15 @@ export class CNodeControllerPTZUI extends CNodeController {
             this.setGUI(v,"camera");
             const guiPTZ = this.gui;
 
-            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor).wrap()
-            guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
+            guiPTZ.add(this, "az", -180, 180, 0.1).listen().name("Pan (Az)").onChange(v => this.refresh()).setLabelColor(pszUIColor).wrap()
+            guiPTZ.add(this, "el", -89, 89, 0.1).listen().name("Tilt (El)").onChange(v => this.refresh()).setLabelColor(pszUIColor)
             if (this.fov !== undefined) {
-                guiPTZ.add(this, "fov", 0.1, 170, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh(v)).setLabelColor(pszUIColor).elastic(5, 170)
+                guiPTZ.add(this, "fov", 0.1, 170, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh()).setLabelColor(pszUIColor).elastic(5, 170)
             }
             if (this.roll !== undefined ) {
-                guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh(v)).setLabelColor(pszUIColor)
+                guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh()).setLabelColor(pszUIColor)
             }
-            guiPTZ.add(this, "relative").listen().name("Relative").onChange(v => this.refresh(v))
+            guiPTZ.add(this, "relative").listen().name("Relative").onChange(v => this.refresh())
         }
        // this.refresh()
     }
@@ -61,13 +61,13 @@ export class CNodeControllerPTZUI extends CNodeController {
     }
 
     refresh(v) {
+        // legacy check
+        assert(v === undefined, "CNodeControllerPTZUI: refresh called with v, should be undefined");
 
         // the FOV UI node is also updated, It's a hidden UI element that remains for backwards compatibility.
-        // NOTE: this is a hack, and should be removed in the future.
-        // and it's hard-wired for any instance of this class to update the fovUI node.
         const fovUINode = NodeMan.get("fovUI", false)
         if (fovUINode) {
-            fovUINode.setValue(v);
+            fovUINode.setValue(this.fov);
         }
 
         // don't think this is needed
