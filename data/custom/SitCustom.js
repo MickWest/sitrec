@@ -206,7 +206,7 @@ sitch = {
         inputs: {
             "fixedCamera": "fixedCameraPosition",
             "flightSimCamera": "flightSimCameraPosition",
-            "satelliteTrack": "satelliteTrack",
+      //      "satelliteTrack": "satelliteTrack",
         },
         desc: "Camera Track",
         gui: "camera",

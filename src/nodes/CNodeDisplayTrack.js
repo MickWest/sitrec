@@ -7,7 +7,7 @@ import {LineMaterial} from "three/addons/lines/LineMaterial.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
 import {wgs84} from "../LLA-ECEF-ENU";
-import {drop, getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
+import {altitudeAboveSphere, drop, getLocalSouthVector, getLocalUpVector, pointOnSphereBelow} from "../SphericalMath";
 import {AlwaysDepth, Color, LessDepth} from "three";
 import {CNodeDisplayTargetSphere} from "./CNodeDisplayTargetSphere";
 import * as LAYER from "../LayerMasks";
@@ -202,16 +202,25 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         // get current location from the track
         const trackPoint = this.in.track.v(par.frame).position;
 
+        const altitude = altitudeAboveSphere(trackPoint);
+        console.log("Track altitude = " + altitude)
+
+
         // get the local up vector at the track point
         const up = getLocalUpVector(trackPoint);
         // and south vector
         const south = getLocalSouthVector(trackPoint);
-        // make a point 20m above, and 200m south
-        const target = trackPoint.clone().add(up.clone().multiplyScalar(20)).add(south.clone().multiplyScalar(200));
+        // make a point 200m above, and 20m south
+        const newCameraPos = trackPoint.clone().add(up.clone().multiplyScalar(200)).add(south.clone().multiplyScalar(20));
+
+        const newCameraPosAltitude = altitudeAboveSphere(newCameraPos);
+        console.log("newCameraPos altitude = " + newCameraPosAltitude)
+
+
         // get the mainCamera
         const mainCamera = NodeMan.get("mainCamera").camera;
         // set the position to the target
-        mainCamera.position.copy(target);
+        mainCamera.position.copy(newCameraPos);
         // Set up to local up
         mainCamera.up.copy(up);
         // and look at the track point

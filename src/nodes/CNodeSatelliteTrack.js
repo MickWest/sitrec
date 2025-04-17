@@ -5,6 +5,8 @@ import {GlobalDateTimeNode, Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {EventManager} from "../CEventManager";
 import {bestSat} from "../TLEUtils";
 
+// TODO - consider flagging this as not smoothable for use as a camera track
+// the TLE calculation should give a smooth curve, and the smoothing will shift the position slightly
 
  export class CNodeSatelliteTrack extends CNodeTrack {
     constructor(v) {
@@ -20,26 +22,32 @@ import {bestSat} from "../TLEUtils";
             this.recalculate()
         }
 
+        // adding time object as input for recalculation
         this.addInput("time", "dateTimeStart")
-
 
         this.satelliteText = "ISS (ZARYA)";
 
-        guiMenus.camera.add(this, "satelliteText").name("Satellite").onFinishChange(v => {
+
+        this.guiSatellite = guiMenus.camera.add(this, "satelliteText").name("Satellite").onFinishChange(v => {
             this.satellite = this.satelliteText;
             this.norad = null; // reset the norad number to force recalculation of the satellite data
             this.recalculate();
             this.satelliteText = this.satData.name;
 
-        }).listen();
+        }).listen().hide();
 
         // Use event listeners to update the track when the satellite changes
-        EventManager.addEventListener("tleLoaded", (event, data) => { this.recalculateCascade()})
+        EventManager.addEventListener("tleLoaded", (event, data) => {
+            this.recalculateCascade()
+        })
+
+
+        this.addSimpleSerial("satellite");
 
     }
 
 
-    // given a satellite name or number in s, convert it into a valid NORAD number that
+     // given a satellite name or number in s, convert it into a valid NORAD number that
     // exists in the TLE database
     // return null if it doesn't exist
 
@@ -170,6 +178,16 @@ import {bestSat} from "../TLEUtils";
             this.array[i] = {
                 position: pos,
             };
+        }
+
+
+        // we have a satellite track, so update the gui
+        this.guiSatellite.show();
+
+        // make sure it's in the switch
+        const cameraTrackSwitch = NodeMan.get("cameraTrackSwitch", false);
+        if (cameraTrackSwitch) {
+            cameraTrackSwitch.replaceOption("Satellite", this);
         }
 
 

@@ -173,6 +173,11 @@ class CNodeSwitch extends CNode {
         }
     }
 
+    replaceOption(option, value) {
+        this.removeOption(option)
+        this.addOption(option, value)
+    }
+
     selectOption(option, quiet=false) {
         this.choice = option
         if (!quiet) {
