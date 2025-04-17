@@ -81,10 +81,11 @@ export class CNodePositionLLA extends CNode {
                    stepExplicit: false, // prevent snapping
                    onChange: (v) => {
                        this.recalculateCascade(0)
-                       this.updateAltituide();
+                     //  this.updateAltituide();
 
                    }
                 }, v.gui)
+                this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small")
 
                 // //makr them both elastic
                 //
@@ -125,15 +126,15 @@ export class CNodePositionLLA extends CNode {
         this.recalculate()
     }
 
-    updateAltituide() {
-        const altitude = altitudeAtLL(this._LLA[0], this._LLA[1]);
-
-        // so we need to atually calculate the AGL, based on the terrain
-        // also need to adjust it when terrain elevations
-
-//        this.guiAGL.setValueWithUnits(altitude, "metric", "small")
-
-    }
+//     updateAltituide() {
+//         const altitude = altitudeAtLL(this._LLA[0], this._LLA[1]);
+//
+//         // so we need to atually calculate the AGL, based on the terrain
+//         // also need to adjust it when terrain elevations
+//
+// //        this.guiAGL.setValueWithUnits(altitude, "metric", "small")
+//
+//     }
 
     update() {
         if (this.key) {
