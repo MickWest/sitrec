@@ -407,7 +407,7 @@ sitch = {
             "Windblown Object (on first LOS)": "LOSTraverseWind",
             "Windblown Target": "LOSTraverseWindTarget",
         },
-        default: "Constant Distance",
+        default: "Target Object",
         exportable: true,
         gui:"traverse",
     },
