@@ -399,11 +399,11 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.filterSatellites();
         }).name("ISS");
 
-        this.showAllSatellites = false;
-        satGUI.add(this, "showAllSatellites").listen().onChange(()=>{
+        this.showOtherSatellites = false;
+        satGUI.add(this, "showOtherSatellites").listen().onChange(()=>{
             par.renderOne=true;
             this.filterSatellites();
-        }).name("All Satellites");
+        }).name("Other Satellites");
 
 
 
@@ -610,22 +610,31 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // based on the name and the GUI flags
         for (const satData of this.TLEData.satData) {
 
-             satData.visible = false;
+            satData.visible = false;
+            let filterHit = false;
 
-            if (this.showAllSatellites) {
+
+            if (satData.name.startsWith("STARLINK")) {
+                filterHit = true;
+                if (this.showStarlink) {
+                    satData.visible = true;
+                    continue;
+                }
+            }
+
+            if (satData.name.startsWith("ISS (ZARYA)")) {
+                filterHit = true;
+                if (this.showISS) {
+                    satData.visible = true;
+                    continue;
+                }
+            }
+
+            if (!filterHit && this.showOtherSatellites) {
                 satData.visible = true;
                 continue;
             }
 
-            if (this.showStarlink && satData.name.startsWith("STARLINK")) {
-                satData.visible = true;
-                continue;
-            }
-
-            if (this.showISS && satData.name.startsWith("ISS (ZARYA)")) {
-                satData.visible = true;
-                continue;
-            }
 
 
         }

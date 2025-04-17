@@ -97,8 +97,12 @@ import {bestSat} from "../TLEUtils";
             console.warn("CNodeSatelliteTrack: no satellite found for number" + s)
         }
 
-        // if it's a string, try to find it in the TLE database
+        // if it's a string, try to find it in the TLE database, first try to match the name exactly
         if (typeof s === "string") {
+
+            // upper case it, as all the TLE data is upper case
+            s = s.toUpperCase()
+
             for (let i = 0; i < numSatData; i++) {
                 const satData = satDataArray[i]
                 // check if the name is the same as the string
@@ -107,10 +111,36 @@ import {bestSat} from "../TLEUtils";
                     return satData.number
                 }
             }
+
+            // then try string starting with this, just return the first one, e.g. "ISS" or "HST"
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                // check if the name starts with the string
+                if (satData.name.startsWith(s)) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+                    return satData.number
+                }
+            }
+
+            // then try string containing this, just return the first one, e.g.
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                // check if the name contains the string
+                if (satData.name.includes(s)) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+                    return satData.number
+                }
+            }
+
+
             console.warn("CNodeSatelliteTrack: no satellite found for name" + s)
         }
 
-        console.error("CNodeSatelliteTrack: not number or string " + s)
+
+        if (typeof s !== "number" && typeof s !== "string") {
+            console.error("CNodeSatelliteTrack: not number or string " + s)
+        }
+
         return null
 
     }
