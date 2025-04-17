@@ -92,14 +92,15 @@ export function SetupJetGUI() {
     }).name('Scale Jet Pitch with Roll')
 
     guiTweaks.add(par, 'speed', 1, 10, 0.1).listen().name("Video Speed")
-    toggler('b', guiTweaks.add(par, 'podWireframe').listen().name("[B]ack Pod Wireframe").onChange(value => {
+    guiTweaks.add(par, 'podWireframe').listen().name("[B]ack Pod Wireframe").onChange(value => {
         PODBack.traverse(child => {
             if (child.isMesh) {
                 child.material.wireframe = value;
             }
 
         })
-    }))
+    })
+
     // guiTweaks.add(par, 'lockCameraToJet').listen().name("Lock Camera to Jet");
     //
 
