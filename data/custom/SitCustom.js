@@ -352,6 +352,7 @@ sitch = {
             "To Target": "trackToTrackController",
             "Use Angles": "angelsSwitch",
         },
+        default: "Use Angles",
         desc: "Camera Heading",
         gui: "camera"
     },
