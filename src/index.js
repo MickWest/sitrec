@@ -1006,8 +1006,8 @@ function renderMain(elapsed) {
                     }
                 })
 
-                // patch in arrow head scaling
-                scaleArrows(view);
+                // // patch in arrow head scaling
+                // scaleArrows(view);
 
             }
             updateLockTrack(view, par.frame)

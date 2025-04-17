@@ -302,9 +302,18 @@ export function scaleArrows(view) {
 
     for (var key in DebugArrows) {
         const arrow = DebugArrows[key]
-        let headLength = view.pixelsToMeters(arrow.position, arrow.headLength);
+        // arrow.position is the start of the arrow, we need to scale the arrow head
+        // based on the end of the arrow
+        const arrowEnd = arrow.position.clone().add(arrow.direction.clone().multiplyScalar(arrow.length));
+
+        let headLength = view.pixelsToMeters(arrowEnd, arrow.headLength);
+
+        // don't let it get bigger than half the arrow length
+        headLength = Math.min(arrow.length/2, headLength);
+
         if (arrow.originalLength < 0) {
-            let length = view.pixelsToMeters(arrow.position, -arrow.originalLength);
+            assert(0,"DEPRECATED: originalLength < 0")
+            let length = view.pixelsToMeters(arrowEnd, -arrow.originalLength);
             arrow.setLength(length, headLength);
         } else {
             arrow.setLength(arrow.length, headLength);

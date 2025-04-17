@@ -27,7 +27,7 @@ import {
     WebGLRenderer,
     WebGLRenderTarget
 } from "three";
-import {DebugArrowAB, forceFilterChange} from "../threeExt";
+import {DebugArrowAB, forceFilterChange, scaleArrows} from "../threeExt";
 import {CNodeViewCanvas} from "./CNodeViewCanvas";
 import {sharedUniforms} from "../js/map33/material/QuadTextureMaterial";
 import {wgs84} from "../LLA-ECEF-ENU";
@@ -877,6 +877,13 @@ export class CNodeView3D extends CNodeViewCanvas {
 
         this.preRenderFunction();
         CustomManager.preRenderUpdate(this)
+
+        // patch in arrow head scaling, probably a better place for this
+        // but we want to down AFTER the camera is updated
+        // mainly though it's because the camera control call updateMeasureArrow(), which was before
+        scaleArrows(this);
+
+
         this.renderTargetAndEffects()
         CustomManager.postRenderUpdate(this)
         this.postRenderFunction();
