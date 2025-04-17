@@ -1,7 +1,7 @@
 // A track node that can be used to track a satellite
 
 import {CNodeTrack} from "./CNodeTrack";
-import {GlobalDateTimeNode, NodeMan, Sit} from "../Globals";
+import {GlobalDateTimeNode, Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {EventManager} from "../CEventManager";
 import {bestSat} from "../TLEUtils";
 
@@ -21,6 +21,17 @@ import {bestSat} from "../TLEUtils";
         }
 
         this.addInput("time", "dateTimeStart")
+
+
+        this.satelliteText = "ISS (ZARYA)";
+
+        guiMenus.camera.add(this, "satelliteText").name("Satellite").onFinishChange(v => {
+            this.satellite = this.satelliteText;
+            this.norad = null; // reset the norad number to force recalculation of the satellite data
+            this.recalculate();
+            this.satelliteText = this.satData.name;
+
+        }).listen();
 
         // Use event listeners to update the track when the satellite changes
         EventManager.addEventListener("tleLoaded", (event, data) => { this.recalculateCascade()})

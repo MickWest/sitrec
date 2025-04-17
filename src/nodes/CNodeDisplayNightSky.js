@@ -384,7 +384,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         satGUI.add(this, "showSatellites").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroup.visible = this.showSatellites;
-        }).name("Satellites")
+        }).name("Overall Satellites Flag")
         this.addSimpleSerial("showSatellites")
 
         this.showStarlink = true;
@@ -398,6 +398,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.filterSatellites();
         }).name("ISS");
+
+        this.showAllSatellites = false;
+        satGUI.add(this, "showAllSatellites").listen().onChange(()=>{
+            par.renderOne=true;
+            this.filterSatellites();
+        }).name("All Satellites");
 
 
 
@@ -605,6 +611,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         for (const satData of this.TLEData.satData) {
 
              satData.visible = false;
+
+            if (this.showAllSatellites) {
+                satData.visible = true;
+                continue;
+            }
+
             if (this.showStarlink && satData.name.startsWith("STARLINK")) {
                 satData.visible = true;
                 continue;
