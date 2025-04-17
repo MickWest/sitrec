@@ -169,7 +169,9 @@ class CameraMapControls {
 
 			ptzControls.fov = this.zoomScale(fov, delta, 1.5, 0.95)
 
-			if (ptzControls.fov < 0.1) ptzControls.fov = 0.1;
+			const minZoom = 0.01;
+
+			if (ptzControls.fov < minZoom) ptzControls.fov = minZoom;
 			if (ptzControls.fov > 120) ptzControls.fov = 120;
 
 			// the FOV UI node is also updated, It's a hidden UI element that remains for backwards compatibility.

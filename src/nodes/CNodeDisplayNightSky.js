@@ -57,6 +57,7 @@ import {bestSat} from "../TLEUtils";
 import {SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {CNodeLabeledArrow} from "./CNodeLabels3D";
 import {CNodeDisplaySkyOverlay} from "./CNodeDisplaySkyOverlay";
+import {EventManager} from "../CEventManager";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -198,6 +199,7 @@ class CTLEData {
                         // so create a new one with the name and the satrec array, which has one satrec
                         this.satData[satrecName] = {
                             name: satrecName,
+                            number: parseInt(satrec.satnum),
                             visible: true,
                             satrecs: [satrec]
                         };
@@ -231,6 +233,7 @@ class CTLEData {
                         // so create a new one with the name and the satrec array, which has one satrec
                         this.satData[satrecName] = {
                             name: satrecName,
+                            number: parseInt(satrec.satnum),
                             visible: true,
                             satrecs: [satrec]
                         };
@@ -658,6 +661,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             fileInfo.dynamicLink = true;
 
             DragDropHandler.handleParsedFile(id, fileInfo.data)
+            EventManager.dispatchEvent("tleLoaded", {})
         });
 
     }
@@ -1614,7 +1618,7 @@ void main() {
     }
 
 
-    calcSatUES(sat, date) {
+    calcSatEUS(sat, date) {
         const positionAndVelocity = satellite.propagate(sat, date);
         if (positionAndVelocity && positionAndVelocity.position) {
             const positionEci = positionAndVelocity.position;
@@ -1759,8 +1763,8 @@ void main() {
                     satData.timeB = timeMS + this.timeStep;
                 }
                 const dateB = new Date(satData.timeB)
-                satData.eusA = this.calcSatUES(satrec, date)
-                satData.eusB = this.calcSatUES(satrec, dateB)
+                satData.eusA = this.calcSatEUS(satrec, date)
+                satData.eusB = this.calcSatEUS(satrec, dateB)
             }
 
 

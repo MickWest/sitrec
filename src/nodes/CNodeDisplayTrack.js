@@ -269,6 +269,12 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id="+this.id)
         for (var f = 0; f < this.frames; f++) {
             let trackPoint = this.in.track.v(f)
+
+            if (trackPoint === undefined && f === 0) {
+                console.warn("CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f+" SKIPPING")
+                return;
+            }
+
             assert(trackPoint !== undefined, "CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f)
 
             // if it's a vector3 (e.g. from a fixed position), then fake the trackPoint structure

@@ -462,6 +462,12 @@ export class CNodeDateTime extends CNode {
         return MS;
     }
 
+// as above, but return a date object
+    frameToDate(frame) {
+        const MS = this.frameToMS(frame);
+        return new Date(MS);
+    }
+
     update(frame) {
         this.frame = frame
         this.dateNow = startToNowDateTime(this.dateStart);

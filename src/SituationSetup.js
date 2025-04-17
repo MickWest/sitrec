@@ -1373,7 +1373,7 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
                     node = NodeFactory.create(key, data);
                 } else {
                     if (data.kind !== undefined) {
-                        assert(false, "SituationSetup: unknown CNode kind: " + data.kind)
+                        assert(false, "SituationSetup: unknown CNode kind: " + data.kind + " for key: " + key+ " - If new class, check it's in the src/nodes folder, extends CNode and is exported");
                     }
                 }
             }

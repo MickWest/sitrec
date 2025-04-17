@@ -194,12 +194,19 @@ sitch = {
         useSitFrames: true,
     },
 
+    // Track for satellites
+    satelliteTrack: {
+        kind: "SatelliteTrack",
+        satellite: 25544, // NORAD 25544, ISS (International Space Station) default
+    },
+
     // Switch between the posible camera tracks
     // as more tracks are added by the user, this switch will be updated
     cameraTrackSwitch: {kind: "Switch",
         inputs: {
             "fixedCamera": "fixedCameraPosition",
             "flightSimCamera": "flightSimCameraPosition",
+            "satelliteTrack": "satelliteTrack",
         },
         desc: "Camera Track",
         gui: "camera",
@@ -222,6 +229,13 @@ sitch = {
         kind: "DisplayTrack",
         track: "cameraTrackSwitchSmooth",
         color: "#00FFFF",
+        width: 1,
+    },
+
+    satelliteDisplayTrack: {
+        kind: "DisplayTrack",
+        track: "satelliteTrack",
+        color: "#FFFFFF",
         width: 1,
     },
 
