@@ -3,6 +3,10 @@ class CEventManager {
         this.events = {};
     }
 
+    // Currently there's no facility for removing event listeners
+    // they are just added and never removed
+    // but are all cleared when a new sitch is loaded
+    // possibly should have object responsible for removing their own listeners
     addEventListener(event, callback) {
         if (!this.events[event]) {
             this.events[event] = [];
