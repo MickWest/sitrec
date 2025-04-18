@@ -166,7 +166,7 @@ import {bestSat} from "../TLEUtils";
         super.modDeserialize(v);
         // we just force the satellite to be recalculated after all loading is done
         // with the call to NodeMan.recalculateAllRootFirst() that's done after loading
-        this.norad = 0;
+        this.norad = null;
     }
 
 
@@ -176,13 +176,12 @@ import {bestSat} from "../TLEUtils";
         // once we have a norad number, we won't need to do this again
         // as norad numbers should not change
         if (!this.norad) {
-            this.norad = this.getSatelliteNumber(this.satellite)
-            if (this.norad === null) {
-                console.warn("CNodeSatelliteTrack:recalculate no norad number found for " + this.satellite)
-                return
+            this.norad = this.getSatelliteNumber(this.satellite);
+            if (!this.norad) {
+                console.warn(`CNodeSatelliteTrack:recalculate no NORAD number found for ${this.satellite}`);
+                return;
             }
         }
-
         // now we have a norad number, so we can get the satellite data
 
         // in case the the TLE data has changed, we need to recalculate the satellite data object

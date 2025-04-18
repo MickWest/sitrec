@@ -674,77 +674,91 @@ class CNode {
 }
 
 
-// given a list of nodes
-// run recalculate on each one
-// maintain a list of output nodes, with no duplicates
-// then run recalculate on this list, if not empty
-function recalculateNodesBreadthFirst(list, f, noControllers, depth) {
+// clear the depth of this node and all its children
+function clearDepth(node) {
+    node.depth = -1;
+    node.outputs.forEach(child => {
+        clearDepth(child)
+    })
+}
+
+// mark the depth of this node and all its children
+// a child can exist in multiple generations
+// and we only want to recalculate it at the deepest level
+function markDepth(node, depth) {
+    node.depth = Math.max(depth, node.depth);
+    node.outputs.forEach(child => {
+        markDepth(child, depth + 1)
+    })
+}
+
+// for backwards compatibility for now this is called with a list of one node
+function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
+
+    assert(list.length === 1, "recalculateNodesBreadthFirst called with more than one node")
+
+    const root = list[0];
+    // first we traverse the tree and mark the depth of each node
+    // children are marked with a depth of 1
+    clearDepth(root)
+    markDepth(root, 0)
+    recalculateNodesBreadthFirstRecurse(list, f, noControllers, 0, debugRecalculate)
+}
+
+// this is the recursive function that does the actual recalculation
+// it takes a list of nodes and recalculates them in breadth first order
+// it also takes a depth parameter to control the depth of the recursion
+// it also takes a debugRecalculate parameter to control the debug output
+// it also takes a noControllers parameter to control whether to apply controllers or not
+function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debugRecalculate) {
     let children = []
     for (let node of list) {
-        if (Globals.debugRecalculate)
-            console.log("|---".repeat(depth) + " BreadthFirst Recalulating:  " + node.id + " from " + node.debugParent)
-        node.recalculate();
+        if (node.depth === depth) {
+            if (debugRecalculate)
+                console.log("|---".repeat(depth) + " BreadthFirst Recalulating:  " + node.id + " from " + node.debugParent)
+            node.recalculate();
 
-        // Controllers are a bit of a special case
-        // they adjust a CNode3D's object, and that might depend on the value of that object
-        // for example, lookAt depends on the position of the object to calculate the heading
-        // so we need to reapply the controller after the object has been recalculated
-        // but before the children are recalculated (as they might depend on the effect of the controller on this node)
+            // Controllers are a bit of a special case
+            // they adjust a CNode3D's object, and that might depend on the value of that object
+            // for example, lookAt depends on the position of the object to calculate the heading
+            // so we need to reapply the controller after the object has been recalculated
+            // but before the children are recalculated (as they might depend on the effect of the controller on this node)
 
-        if (!noControllers) {
-            if (node.applyControllers !== undefined) {
-                if (Globals.debugRecalculate)
-                    console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
-                node.applyControllers(f, depth)
-            } else {
-//                if (Globals.debugRecalculate)
-//                    console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
+            if (!noControllers) {
+                if (node.applyControllers !== undefined) {
+                    if (debugRecalculate)
+                        console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
+                    node.applyControllers(f, depth)
+                } else {
+                    if (debugRecalculate)
+                        console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
+                }
             }
-        }
 
+
+        }
     }
 
     // we make the list of children AFTER the recalculate
     // to avoid overwriting output.debugParent
     for (let node of list) {
-        // for each output in node.outputs, if it's not in the outputs list, add it
-        node.outputs.forEach(output => {
-            if (!children.includes(output)) {
-                children.push(output)
-                if (Globals.debugRecalculate) {
-                    output.debugParent = node.id;
+        if (node.depth === depth) {
+            // for each output in node.outputs, if it's not in the outputs list, add it
+            node.outputs.forEach(output => {
+                if (!children.includes(output)) {
+                    children.push(output)
+                    if (Globals.debugRecalculate) {
+                        output.debugParent = node.id;
+                    }
                 }
-            }
-        })
-    }
-
-    //
-
-
-    // We want to skip recalculating children that are descendants of other **children**
-    let immediateChildren = []
-    for (let child of children) {
-        let isDescendant = false;
-
-
-        for (let node of children) {
-            const maxDepth = node.maxDepthOf(child)
-            // see if it's a descendent for at least second generation
-            // and if so we don't want to recalculate it now, as it will get recalculate later by its immediate parent
-            if (maxDepth > 0) {
-                isDescendant = true;
-                break;
-            }
-        }
-        if (!isDescendant) {
-            immediateChildren.push(child)
+            })
         }
     }
 
     // if anything in the list, then recurse
     if (children.length > 0) {
-        recalculateNodesBreadthFirst(immediateChildren, f, noControllers, depth+1, Globals.debugRecalculate )
+        recalculateNodesBreadthFirstRecurse(children, f, noControllers, depth+1, Globals.debugRecalculate )
     }
 }
 

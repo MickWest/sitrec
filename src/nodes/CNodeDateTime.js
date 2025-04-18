@@ -1,4 +1,4 @@
-import {guiMenus, NodeMan, Sit} from "../Globals";
+import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {CNode} from "./CNode";
 import {par} from "../par";
 import {isKeyCodeHeld, isKeyHeld} from "../KeyBoardHandler";
@@ -430,7 +430,11 @@ export class CNodeDateTime extends CNode {
                 this.dateTime.second,
                 this.dateTime.millisecond,
             )))
+            Globals.debugCascade = true;
+            Globals.debugCounter = 0;
             this.recalculateCascade()
+            console.log("Did a time change recalc debugCounter = "+Globals.debugCounter)
+            Globals.debugCascade = false;
             par.renderOne = true;
         }
     }
