@@ -162,8 +162,15 @@ import {bestSat} from "../TLEUtils";
     }
 
 
+    modDeserialize(v) {
+        super.modDeserialize(v);
+        // we just force the satellite to be recalculated after all loading is done
+        // with the call to NodeMan.recalculateAllRootFirst() that's done after loading
+        this.norad = 0;
+    }
 
-    recalculate() {
+
+     recalculate() {
 
         // if we don't have a norad number, then try to get one from the TLE database
         // once we have a norad number, we won't need to do this again
@@ -182,6 +189,9 @@ import {bestSat} from "../TLEUtils";
         // using the current norad number
         // norad numbers should not change over a session (probably never)
         this.satData = this.getSatelliteData(this.norad);
+
+        // update GUI text
+        this.satelliteText = this.satData.name;
 
         // it might now be null, like if we change the TLE that we are using
         if (this.satData === null) {
