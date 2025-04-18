@@ -219,24 +219,26 @@ class CNode {
         // virtual function that only applies to CNodeSwitch and CNodeController
     }
 
-    countVisibleOutputs(depth = 0) {
-        // recursively count the number of visible outputs
-        // a switch node counds as visible if it has this as an input
-        let count = 0;
 
-        for (let output of this.outputs) {
+
+    countVisibleOutputs() {
+        // Iteratively count the number of visible outputs
+        let count = 0;
+        let stack = [...this.outputs];
+
+        while (stack.length > 0) {
+            const output = stack.pop();
+
             if (output.visible) {
-                // if it's a switch node, then it's visible if it has this as an input
                 if (output.constructor.name === "CNodeSwitch") {
-                    // check if the current choice of the Switch is this node
-                    // and that counts as visible
+                    // Check if the current choice of the Switch is this node
                     if (output.inputs[output.choice] === this) {
                         count++;
-                        count += output.countVisibleOutputs(depth+1);
+                        stack.push(...output.outputs);
                     }
                 } else {
                     count++;
-                    count += output.countVisibleOutputs(depth+1);
+                    stack.push(...output.outputs);
                 }
             }
         }
