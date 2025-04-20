@@ -314,8 +314,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.mainCamera = NodeMan.get("mainCamera").camera;
         assert(this.mainCamera, "CNodeDisplayNightSky needs a main camera")
 
-        const satGUI = guiShowHide.addFolder("Satellites");
+//        const satGUI = guiShowHide.addFolder("Satellites");
 
+        const satGUI = guiMenus.satellites
+        satGUI.add(this,"updateStarlink").name("Load Satellite TLE For Date")
+            .onChange(function (x) {this.parent.close()})
+            .tooltip("Get the latest Starlink TLE data for the current date. This will download the data from the internet, so it may take a few seconds.\nWill also enable the Starlink satellites to be displayed in the night sky.")
 
 
         this.showSunArrows = Sit.showSunArrows;
@@ -417,6 +421,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         satGUI.add(this, "showSatelliteTracks").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteTrackGroup.visible = this.showSatelliteTracks;
+            this.filterSatellites();
         }).name("Satellite Arrows")
         this.addSimpleSerial("showSatelliteTracks")
 
@@ -424,6 +429,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         satGUI.add(this, "showSatelliteGround").listen().onChange(()=>{
             par.renderOne=true;
             this.satelliteGroundGroup.visible = this.showSatelliteGround;
+            this.filterSatellites();
         }).name("Satellite Ground Arrows")
         this.addSimpleSerial("showSatelliteGround")
 
@@ -454,11 +460,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         satGUI.add(Sit,"satCutOff",0,0.5,0.001).name("Sat Cut-Off").listen()
             .tooltip("Satellites dimmed to this level or less will not be displayed")
         this.addSimpleSerial("satCutOff");
-
-        guiMenus.file.add(this,"updateStarlink").name("Load Satellite TLE For Date")
-            .onChange(function (x) {this.parent.close()})
-            .tooltip("Get the latest Starlink TLE data for the current date. This will download the data from the internet, so it may take a few seconds.\nWill also enable the Starlink satellites to be displayed in the night sky.")
-
 
 
         // Sun Direction will get recalculated based on data
@@ -1246,9 +1247,15 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     filterSatellites() {
         if (this.TLEData === undefined) return;
 
+
         // iterate over the satellites and flag visiblity
         // based on the name and the GUI flags
         for (const satData of this.TLEData.satData) {
+
+            // this is just a clean time to remove the debug arrows
+            // they will get recreated of all visible satellites
+            removeDebugArrow(satData.name + "_t");
+            removeDebugArrow(satData.name + "_g");
 
             satData.visible = false;
             let filterHit = false;
@@ -1286,7 +1293,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 satData.visible = true;
                 continue;
             }
-
 
 
         }
@@ -1576,7 +1582,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 }
 
                 // stagger updates unless it has an arrow.
-                if ((i - camera.satStartTime) % camera.satTimeStep !== 0 && !satData.hasArrow) {
+                if ((i - camera.satStartTime) % camera.satTimeStep !== 0 && !satData.hasSunArrow) {
                     i++;
                     continue;
                 }
@@ -1608,7 +1614,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                     } else {
                         fade = 0;
                         scale *= darknessMultiplier;
-                        this.removeSatArrows(satData);
+                        this.removeSatSunArrows(satData);
                     }
                 }
 
@@ -1654,16 +1660,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                                 satPosition.clone().add(toSun.clone().multiplyScalar(10000000)), "#c08000", true, this.sunArrowGroup, 10, LAYER.MASK_HELPERS)
                            // var arrowHelper3 = DebugArrowAB(satData.name + "reflected", satPosition,
                            //     satPosition.clone().add(reflected.clone().multiplyScalar(10000000)), "#00ff00", true, this.sunArrowGroup, 0.025, LAYER.MASK_HELPERS)
-                            satData.hasArrow = true;
+                            satData.hasSunArrow = true;
                         } else {
-                            this.removeSatArrows(satData);
+                            this.removeSatSunArrows(satData);
 
                             // do the scale again to incorporate al
                             // satData.sprite.scale.set(scale, scale, 1);
 
                         }
                     } else {
-                        this.removeSatArrows(satData);
+                        this.removeSatSunArrows(satData);
                     }
                 }
 
@@ -2514,18 +2520,20 @@ void main() {
                     satData.currentPosition = satData.eus.clone();
                     satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
 
-                    // draw an arrow from the satellite in the direction of its velocity (yellow)
-                    if (this.showSatelliteTracks) {
-                        let A = satData.eusA.clone()
-                        let dir = satData.eusB.clone().sub(satData.eusA).normalize()
-                        DebugArrow(satData.name+"_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
-                    }
+                    if (satData.visible) {
+                        // draw an arrow from the satellite in the direction of its velocity (yellow)
+                        if (this.showSatelliteTracks) {
+                            let A = satData.eusA.clone()
+                            let dir = satData.eusB.clone().sub(satData.eusA).normalize()
+                            DebugArrow(satData.name + "_t", dir, A, 500000, "#FFFF00", true, this.satelliteTrackGroup, 20, LAYER.MASK_LOOKRENDER)
+                        }
 
-                    // Arrow from satellite to ground (red)
-                    if (this.showSatelliteGround) {
-                        let A = satData.eusA.clone()
-                        let B = pointOnGround(A)
-                        DebugArrowAB(satData.name+"_g", A, B, "#00FF00", true, this.satelliteGroundGroup, 20, LAYER.MASK_LOOKRENDER)
+                        // Arrow from satellite to ground (red)
+                        if (this.showSatelliteGround) {
+                            let A = satData.eusA.clone()
+                            let B = pointOnGround(A)
+                            DebugArrowAB(satData.name + "_g", A, B, "#00FF00", true, this.satelliteGroundGroup, 20, LAYER.MASK_LOOKRENDER)
+                        }
                     }
 
 
@@ -2536,8 +2544,8 @@ void main() {
                 satData.invalidPosition = true;
             }
 
-            if (satData.invalidPosition) {
-                this.removeSatArrows(satData);
+            if (satData.invalidPosition || !satData.visible) {
+                this.removeSatSunArrows(satData);
                 // to make it invisible, we set the magnitude to 0 and position to a million km away
                 magnitudes[i] = 0;
                 positions[i * 3] = 1000000000;
@@ -2553,12 +2561,12 @@ void main() {
         this.satelliteGeometry.attributes.position.needsUpdate = true;
     }
 
-    removeSatArrows(satData)   {
-        if (satData.hasArrow) {
+    removeSatSunArrows(satData)   {
+        if (satData.hasSunArrow) {
             removeDebugArrow(satData.name)
             removeDebugArrow(satData.name + "sun")
             removeDebugArrow(satData.name + "reflected")
-            satData.hasArrow = false;
+            satData.hasSunArrow = false;
         }
     }
 

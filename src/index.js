@@ -491,6 +491,7 @@ async function initializeOnce() {
     addGUIMenu("view", "View").tooltip("Miscellaneous view controls\nLike all menus, this menu can be dragged off the menu bar to make it a floating menu");
     addGUIMenu("time", "Time").tooltip("Time and frame controls\nDragging one time slider past the end will affect the above slider\nNote that the time sliders are UTC");
     addGUIMenu("objects", "Objects").tooltip("3D Objects and their properties\nEach folder is one object. The traverseObject is the object that traverses the lines of sight - i.e. the UAP we are interested in");
+    addGUIMenu("satellites", "Satellites").tooltip("Loading and controlling satellites\nThe satellites.\nStarlink, ISS, etc. Controlls for Horizon flares and other satellite effects");
     addGUIMenu("terrain", "Terrain").tooltip("Terrain controls\nThe terrain is the 3D model of the ground. The 'Map' is the 2D image of the ground. The 'Elevation' is the height of the ground above sea level");
     // these four have legacy globals
     var _guiPhysics = addGUIMenu("physics", "Physics").tooltip("Physics controls\nThe physics of the situation, like wind speed and the physics of the traverse object");
