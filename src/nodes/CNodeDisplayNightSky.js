@@ -399,6 +399,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             this.filterSatellites();
         }).name("ISS");
 
+        this.showBrightest = true;
+        satGUI.add(this, "showBrightest").listen().onChange(()=>{
+            par.renderOne=true;
+            this.filterSatellites();
+        }).name("Celestrack's Brightest");
+
         this.showOtherSatellites = false;
         satGUI.add(this, "showOtherSatellites").listen().onChange(()=>{
             par.renderOne=true;
@@ -422,12 +428,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.addSimpleSerial("showSatelliteGround")
 
         this.showSatelliteNames = false;
-
         satGUI.add(this,"showSatelliteNames" ).listen().onChange(()=>{
             par.renderOne=true;
-            this.satelliteTextGroup.visible = this.showSatelliteNames;
-        }).name("Satellite Names")
+            this.updateSatelliteNamesVisibility();
+        }).name("Satellite Names (Look View)")
         this.addSimpleSerial("showSatelliteNames")
+
+        this.showSatelliteNamesMain = false;
+        satGUI.add(this,"showSatelliteNamesMain" ).listen().onChange(()=>{
+            par.renderOne=true;
+            this.updateSatelliteNamesVisibility();
+        }).name("Satellite Names (Main View)")
+        this.addSimpleSerial("showSatelliteNamesMain")
+
 
 
         guiMenus.view.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
@@ -468,7 +481,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         this.satelliteTextGroup = new Group();
-        this.satelliteTextGroup.visible = false;
+        this.updateSatelliteNamesVisibility();
 
         GlobalScene.add(this.satelliteTextGroup)
 
@@ -572,6 +585,14 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 //        console.log("Done with CNodeDisplayNightSky constructor")
     }
 
+    updateSatelliteNamesVisibility() {
+        this.satelliteTextGroup.visible = this.showSatelliteName || this.showSatelliteNameMain;
+        this.satelliteTextGroup.layers.mask =
+            (this.showSatelliteNames ? LAYER.MASK_LOOK : 0)
+            | (this.showSatelliteNamesMain ? LAYER.MASK_MAIN : 0)
+        propagateLayerMaskObject(this.satelliteTextGroup);
+    }
+
     // See updateArrow
     addCelestialArrow(name) {
         const flagName = "show"+name+"Arrow";
@@ -603,6 +624,625 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
     }
 
 
+    brightest = [
+        [
+            "00694",
+            "ATLAS CENTAUR 2"
+        ],
+        [
+            "00733",
+            "THOR AGENA D R/B"
+        ],
+        [
+            "00877",
+            "SL-3 R/B"
+        ],
+        [
+            "02802",
+            "SL-8 R/B"
+        ],
+        [
+            "03230",
+            "SL-8 R/B"
+        ],
+        [
+            "03597",
+            "OAO 2"
+        ],
+        [
+            "03669",
+            "ISIS 1"
+        ],
+        [
+            "04327",
+            "SERT 2"
+        ],
+        [
+            "05118",
+            "SL-3 R/B"
+        ],
+        [
+            "05560",
+            "ASTEX 1"
+        ],
+        [
+            "05730",
+            "SL-8 R/B"
+        ],
+        [
+            "06073",
+            "COSMOS 482 DESCENT CRAFT"
+        ],
+        [
+            "06153",
+            "OAO 3 (COPERNICUS)"
+        ],
+        [
+            "06155",
+            "ATLAS CENTAUR R/B"
+        ],
+        [
+            "08459",
+            "SL-8 R/B"
+        ],
+        [
+            "10114",
+            "SL-3 R/B"
+        ],
+        [
+            "10967",
+            "SEASAT 1"
+        ],
+        [
+            "11267",
+            "SL-14 R/B"
+        ],
+        [
+            "11574",
+            "SL-8 R/B"
+        ],
+        [
+            "11672",
+            "SL-14 R/B"
+        ],
+        [
+            "12139",
+            "SL-8 R/B"
+        ],
+        [
+            "12465",
+            "SL-3 R/B"
+        ],
+        [
+            "12585",
+            "METEOR PRIRODA"
+        ],
+        [
+            "12904",
+            "SL-3 R/B"
+        ],
+        [
+            "13068",
+            "SL-3 R/B"
+        ],
+        [
+            "13154",
+            "SL-3 R/B"
+        ],
+        [
+            "13403",
+            "SL-3 R/B"
+        ],
+        [
+            "13553",
+            "SL-14 R/B"
+        ],
+        [
+            "13819",
+            "SL-3 R/B"
+        ],
+        [
+            "14032",
+            "COSMOS 1455"
+        ],
+        [
+            "14208",
+            "SL-3 R/B"
+        ],
+        [
+            "14372",
+            "COSMOS 1500"
+        ],
+        [
+            "14699",
+            "COSMOS 1536"
+        ],
+        [
+            "14820",
+            "SL-14 R/B"
+        ],
+        [
+            "15483",
+            "SL-8 R/B"
+        ],
+        [
+            "15772",
+            "SL-12 R/B(2)"
+        ],
+        [
+            "15945",
+            "SL-14 R/B"
+        ],
+        [
+            "16182",
+            "SL-16 R/B"
+        ],
+        [
+            "16496",
+            "SL-14 R/B"
+        ],
+        [
+            "16719",
+            "COSMOS 1743"
+        ],
+        [
+            "16792",
+            "SL-14 R/B"
+        ],
+        [
+            "16882",
+            "SL-14 R/B"
+        ],
+        [
+            "16908",
+            "AJISAI (EGS)"
+        ],
+        [
+            "17295",
+            "COSMOS 1812"
+        ],
+        [
+            "17567",
+            "SL-14 R/B"
+        ],
+        [
+            "17589",
+            "COSMOS 1833"
+        ],
+        [
+            "17590",
+            "SL-16 R/B"
+        ],
+        [
+            "17912",
+            "SL-14 R/B"
+        ],
+        [
+            "17973",
+            "COSMOS 1844"
+        ],
+        [
+            "18153",
+            "SL-14 R/B"
+        ],
+        [
+            "18187",
+            "COSMOS 1867"
+        ],
+        [
+            "18421",
+            "COSMOS 1892"
+        ],
+        [
+            "18749",
+            "SL-14 R/B"
+        ],
+        [
+            "18958",
+            "COSMOS 1933"
+        ],
+        [
+            "19046",
+            "SL-3 R/B"
+        ],
+        [
+            "19120",
+            "SL-16 R/B"
+        ],
+        [
+            "19210",
+            "COSMOS 1953"
+        ],
+        [
+            "19257",
+            "SL-8 R/B"
+        ],
+        [
+            "19573",
+            "COSMOS 1975"
+        ],
+        [
+            "19574",
+            "SL-14 R/B"
+        ],
+        [
+            "19650",
+            "SL-16 R/B"
+        ],
+        [
+            "20261",
+            "INTERCOSMOS 24"
+        ],
+        [
+            "20262",
+            "SL-14 R/B"
+        ],
+        [
+            "20323",
+            "DELTA 1 R/B"
+        ],
+        [
+            "20443",
+            "ARIANE 40 R/B"
+        ],
+        [
+            "20453",
+            "DELTA 2 R/B(1)"
+        ],
+        [
+            "20465",
+            "COSMOS 2058"
+        ],
+        [
+            "20466",
+            "SL-14 R/B"
+        ],
+        [
+            "20511",
+            "SL-14 R/B"
+        ],
+        [
+            "20580",
+            "HST"
+        ],
+        [
+            "20625",
+            "SL-16 R/B"
+        ],
+        [
+            "20663",
+            "COSMOS 2084"
+        ],
+        [
+            "20666",
+            "SL-6 R/B(2)"
+        ],
+        [
+            "20775",
+            "SL-8 R/B"
+        ],
+        [
+            "21088",
+            "SL-8 R/B"
+        ],
+        [
+            "21397",
+            "OKEAN-3"
+        ],
+        [
+            "21422",
+            "COSMOS 2151"
+        ],
+        [
+            "21423",
+            "SL-14 R/B"
+        ],
+        [
+            "21574",
+            "ERS-1"
+        ],
+        [
+            "21610",
+            "ARIANE 40 R/B"
+        ],
+        [
+            "21819",
+            "INTERCOSMOS 25"
+        ],
+        [
+            "21876",
+            "SL-8 R/B"
+        ],
+        [
+            "21938",
+            "SL-8 R/B"
+        ],
+        [
+            "21949",
+            "USA 81"
+        ],
+        [
+            "22219",
+            "COSMOS 2219"
+        ],
+        [
+            "22220",
+            "SL-16 R/B"
+        ],
+        [
+            "22236",
+            "COSMOS 2221"
+        ],
+        [
+            "22285",
+            "SL-16 R/B"
+        ],
+        [
+            "22286",
+            "COSMOS 2228"
+        ],
+        [
+            "22566",
+            "SL-16 R/B"
+        ],
+        [
+            "22626",
+            "COSMOS 2242"
+        ],
+        [
+            "22803",
+            "SL-16 R/B"
+        ],
+        [
+            "22830",
+            "ARIANE 40 R/B"
+        ],
+        [
+            "23087",
+            "COSMOS 2278"
+        ],
+        [
+            "23088",
+            "SL-16 R/B"
+        ],
+        [
+            "23343",
+            "SL-16 R/B"
+        ],
+        [
+            "23405",
+            "SL-16 R/B"
+        ],
+        [
+            "23561",
+            "ARIANE 40+ R/B"
+        ],
+        [
+            "23705",
+            "SL-16 R/B"
+        ],
+        [
+            "24298",
+            "SL-16 R/B"
+        ],
+        [
+            "24883",
+            "ORBVIEW 2 (SEASTAR)"
+        ],
+        [
+            "25400",
+            "SL-16 R/B"
+        ],
+        [
+            "25407",
+            "SL-16 R/B"
+        ],
+        [
+            "25544",
+            "ISS (ZARYA)"
+        ],
+        [
+            "25732",
+            "CZ-4B R/B"
+        ],
+        [
+            "25860",
+            "OKEAN-O"
+        ],
+        [
+            "25861",
+            "SL-16 R/B"
+        ],
+        [
+            "25876",
+            "DELTA 2 R/B"
+        ],
+        [
+            "25977",
+            "HELIOS 1B"
+        ],
+        [
+            "25994",
+            "TERRA"
+        ],
+        [
+            "26070",
+            "SL-16 R/B"
+        ],
+        [
+            "26474",
+            "TITAN 4B R/B"
+        ],
+        [
+            "27386",
+            "ENVISAT"
+        ],
+        [
+            "27422",
+            "IDEFIX & ARIANE 42P R/B"
+        ],
+        [
+            "27424",
+            "AQUA"
+        ],
+        [
+            "27432",
+            "CZ-4B R/B"
+        ],
+        [
+            "27597",
+            "MIDORI II (ADEOS-II)"
+        ],
+        [
+            "27601",
+            "H-2A R/B"
+        ],
+        [
+            "28059",
+            "CZ-4B R/B"
+        ],
+        [
+            "28222",
+            "CZ-2C R/B"
+        ],
+        [
+            "28353",
+            "SL-16 R/B"
+        ],
+        [
+            "28415",
+            "CZ-4B R/B"
+        ],
+        [
+            "28480",
+            "CZ-2C R/B"
+        ],
+        [
+            "28499",
+            "ARIANE 5 R/B"
+        ],
+        [
+            "28738",
+            "CZ-2D R/B"
+        ],
+        [
+            "28931",
+            "ALOS (DAICHI)"
+        ],
+        [
+            "28932",
+            "H-2A R/B"
+        ],
+        [
+            "29228",
+            "RESURS-DK 1"
+        ],
+        [
+            "29252",
+            "GENESIS 1"
+        ],
+        [
+            "29507",
+            "CZ-4B R/B"
+        ],
+        [
+            "31114",
+            "CZ-2C R/B"
+        ],
+        [
+            "31598",
+            "COSMO-SKYMED 1"
+        ],
+        [
+            "31789",
+            "GENESIS 2"
+        ],
+        [
+            "31792",
+            "COSMOS 2428"
+        ],
+        [
+            "31793",
+            "SL-16 R/B"
+        ],
+        [
+            "33504",
+            "KORONAS-FOTON"
+        ],
+        [
+            "37731",
+            "CZ-2C R/B"
+        ],
+        [
+            "38341",
+            "H-2A R/B"
+        ],
+        [
+            "39358",
+            "SHIJIAN-16 (SJ-16)"
+        ],
+        [
+            "39679",
+            "SL-4 R/B"
+        ],
+        [
+            "39766",
+            "ALOS-2"
+        ],
+        [
+            "41038",
+            "YAOGAN-29"
+        ],
+        [
+            "41337",
+            "ASTRO-H (HITOMI)"
+        ],
+        [
+            "42758",
+            "HXMT (HUIYAN)"
+        ],
+        [
+            "43521",
+            "CZ-2C R/B"
+        ],
+        [
+            "43641",
+            "SAOCOM 1A"
+        ],
+        [
+            "43682",
+            "H-2A R/B"
+        ],
+        [
+            "46265",
+            "SAOCOM 1B"
+        ],
+        [
+            "48274",
+            "CSS (TIANHE)"
+        ],
+        [
+            "48865",
+            "COSMOS 2550"
+        ],
+        [
+            "52794",
+            "CZ-2C R/B"
+        ],
+        [
+            "54149",
+            "GSLV R/B"
+        ],
+        [
+            "57800",
+            "XRISM"
+        ],
+        [
+            "59588",
+            "ACS3"
+        ]
+    ];
+
     filterSatellites() {
         if (this.TLEData === undefined) return;
 
@@ -629,6 +1269,18 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                     continue;
                 }
             }
+
+            // check the number against the brightest list
+            if (this.showBrightest) {
+                for (const [num, name] of this.brightest) {
+                    if (satData.number === parseInt(num)) {
+                        filterHit = true;
+                            satData.visible = true;
+                            continue;
+                        }
+                }
+            }
+
 
             if (!filterHit && this.showOtherSatellites) {
                 satData.visible = true;
@@ -717,6 +1369,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // a guid value's .listen() only updates the gui, so we need to do it manually
         // perhaps better to flag the gui system to update it?
         this.updateVis();
+        this.updateSatelliteNamesVisibility();
+
     }
 
     update(frame) {
