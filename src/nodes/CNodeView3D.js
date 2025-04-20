@@ -573,7 +573,8 @@ export class CNodeView3D extends CNodeViewCanvas {
             const nightSkyNode = NodeMan.get("NightSkyNode")
             nightSkyNode.updateSatelliteScales(this)
 
-            if (nightSkyNode.showSatelliteNames) {
+            if (this.id === "lookView" && nightSkyNode.showSatelliteNames
+            || this.id === "mainView" && nightSkyNode.showSatelliteNamesMain) {
                 // updating the satellite text is just applying the offset per viewport
                 nightSkyNode.updateSatelliteText(this)
             }

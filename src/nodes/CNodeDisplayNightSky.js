@@ -1484,7 +1484,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         // for optimization we are not updating every scale on every frame
         if (camera.satTimeStep === undefined) {
-            camera.satTimeStep = 5
+            camera.satTimeStep = 5; // was 5
             camera.satStartTime = 0;
         } else {
             camera.satStartTime++
@@ -1510,8 +1510,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.starMaterial.uniforms.starScale.value = starScale;
 
 
-        var cameraPos = camera.position;
-        var tanHalfFOV = Math.tan(radians(camera.fov/2))
+
 
         const toSun = this.toSun;
         const fromSun = this.fromSun
@@ -1524,17 +1523,37 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         const raycaster = new Raycaster();
         var hitPoint = new Vector3();
         var hitPoint2 = new Vector3();
-
+        // get the forward vector (-z) of the camera matrix, for perp distance
+        const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
 
         if ( this.showSatellites && this.TLEData) {
+
+
+            // // we scale ALL the text sprites, as it's per camera
+            // for (let i = 0; i < this.TLEData.satData.length; i++) {
+            //     const satData = this.TLEData.satData[i];
+            //     if (satData.visible) {
+            //         const satPosition = satData.eus;
+            //         // scaling based on the view camera
+            //         // whereas later scaling is done with the look Camera?????
+            //         const camToSat = satPosition.clone().sub(camera.position)
+            //         // get the perpendicular distance to the satellite, and use that to scale the name
+            //         const distToSat = camToSat.dot(cameraForward);
+            //         const nameScale = 0.025 * distToSat * tanHalfFOV;
+            //         satData.spriteText.scale.set(nameScale * satData.spriteText.aspect, nameScale, 1);
+            //     } else {
+            //         satData.spriteText.scale.set(0,0,0);
+            //     }
+            // }
+
+
             this.satelliteMaterial.uniforms.cameraFOV.value = camera.fov;
             this.satelliteMaterial.uniforms.satScale.value = Sit.satScale/window.devicePixelRatio;
 
             const positions = this.satelliteGeometry.attributes.position.array;
             const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
 
-            // get the forward vector (-z) of the camera matrix, for perp distance
-            const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+
 
             for (let i = camera.satStartTime; i < this.TLEData.satData.length; i++) {
                 const satData = this.TLEData.satData[i];
@@ -1545,7 +1564,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 if (!satData.visible) {
                     magnitudes[i] = 0
                     const spriteText = satData.spriteText;
-                    spriteText.scale.set(0,0,0);
+
                     continue;
                 }
 
@@ -1568,11 +1587,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
                 const camToSat = satPosition.clone().sub(this.camera.position)
 
-                // get the perpendicular distance to the satellite, and use that to scale the name
-                const distToSat = camToSat.dot(cameraForward);
-                const nameScale  = 0.025 * distToSat * tanHalfFOV;
-                const sprite = satData.spriteText;
-                sprite.scale.set(nameScale * sprite.aspect, nameScale, 1);
+
 
                 let scale = 0.1;                // base value for scale
                 let darknessMultiplier = 0.3    // if in dark, multiply by this
@@ -1661,15 +1676,34 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         }
     }
 
+    // per-viewport satellite sprite text update for scale and screen offset
     updateSatelliteText(view) {
+        const camera = view.camera;
+        const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+        const cameraPos = camera.position;
+        const tanHalfFOV = Math.tan(radians(camera.fov/2))
+
+        const viewScale = 0.025 * view.divParent.clientHeight / view.heightPx;
+
         const numSats = this.TLEData.satData.length;
         for (let i = 0; i < numSats; i++) {
             const satData = this.TLEData.satData[i];
             const sprite = satData.spriteText;
-            if (sprite) {
+            if (satData.visible) {
+                const satPosition = satData.eus;
+                // scaling based on the view camera
+                // whereas satellite dot scaling is done with the look Camera?????
+                const camToSat = satPosition.clone().sub(cameraPos)
+                // get the perpendicular distance to the satellite, and use that to scale the name
+                const distToSat = camToSat.dot(cameraForward);
+                const nameScale = viewScale * distToSat * tanHalfFOV;
+                sprite.scale.set(nameScale * sprite.aspect, nameScale, 1);
+
                 const pos = satData.eus;
                 const offsetPost = view.offsetScreenPixels(pos, 0, 30);
-                satData.spriteText.position.copy(offsetPost);
+                sprite.position.copy(offsetPost);
+            } else {
+               satData.spriteText.scale.set(0,0,0);
             }
         }
     }
