@@ -341,18 +341,12 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.addCelestialArrow("Moon")
 
 
-        this.showFlareRegion = Sit.showFlareRegion;
         this.flareRegionGroup = new Group();
         // get a string of the current time in MS
         const timeStamp = new Date().getTime().toString();
         this.flareRegionGroup.debugTimeStamp = timeStamp;
         this.flareRegionGroup.visible = this.showFlareRegion;
         GlobalScene.add(this.flareRegionGroup)
-        satGUI.add(this, "showFlareRegion").listen().onChange(()=>{
-            par.renderOne=true;
-            this.flareRegionGroup.visible = this.showFlareRegion;
-        }).name("Flare Region")
-        this.addSimpleSerial("showFlareRegion")
 
         this.flareBandGroup = new Group();
 
@@ -376,83 +370,45 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         GlobalScene.add(this.flareBandGroup)
 
-        this.showFlareBand = Sit.showFlareBand;
-        this.flareBandGroup.visible = this.showFlareBand;
-        satGUI.add(this, "showFlareBand").listen().onChange(()=>{
-            par.renderOne=true;
-            this.flareBandGroup.visible = this.showFlareBand;
-        }).name("Flare Band")
-        this.addSimpleSerial("showFlareBand")
+
 
         this.showSatellites = true;
-        satGUI.add(this, "showSatellites").listen().onChange(()=>{
-            par.renderOne=true;
-            this.satelliteGroup.visible = this.showSatellites;
-        }).name("Overall Satellites Flag")
-        this.addSimpleSerial("showSatellites")
-
         this.showStarlink = true;
-        satGUI.add(this, "showStarlink").listen().onChange(()=>{
-            par.renderOne=true;
-            this.filterSatellites();
-        }).name("Starlink");
-        this.addSimpleSerial("showStarlink")
-
         this.showISS = true;
-        satGUI.add(this, "showISS").listen().onChange(()=>{
-            par.renderOne=true;
-            this.filterSatellites();
-        }).name("ISS");
-        this.addSimpleSerial("showISS")
-
         this.showBrightest = true;
-        satGUI.add(this, "showBrightest").listen().onChange(()=>{
-            par.renderOne=true;
-            this.filterSatellites();
-        }).name("Celestrack's Brightest");
-        this.addSimpleSerial("showBrightest")
-
         this.showOtherSatellites = false;
-        satGUI.add(this, "showOtherSatellites").listen().onChange(()=>{
-            par.renderOne=true;
-            this.filterSatellites();
-        }).name("Other Satellites");
-        this.addSimpleSerial("showOtherSatellites")
-
-
-
-
         this.showSatelliteTracks = Sit.showSatelliteTracks ?? false;
-        satGUI.add(this, "showSatelliteTracks").listen().onChange(()=>{
-            par.renderOne=true;
-            this.satelliteTrackGroup.visible = this.showSatelliteTracks;
-            this.filterSatellites();
-        }).name("Satellite Arrows")
-        this.addSimpleSerial("showSatelliteTracks")
-
         this.showSatelliteGround = Sit.showSatelliteGround ?? false;
-        satGUI.add(this, "showSatelliteGround").listen().onChange(()=>{
-            par.renderOne=true;
-            this.satelliteGroundGroup.visible = this.showSatelliteGround;
-            this.filterSatellites();
-        }).name("Satellite Ground Arrows")
-        this.addSimpleSerial("showSatelliteGround")
-
         this.showSatelliteNames = false;
-        satGUI.add(this,"showSatelliteNames" ).listen().onChange(()=>{
-            par.renderOne=true;
-            this.updateSatelliteNamesVisibility();
-        }).name("Satellite Names (Look View)")
-        this.addSimpleSerial("showSatelliteNames")
-
         this.showSatelliteNamesMain = false;
-        satGUI.add(this,"showSatelliteNamesMain" ).listen().onChange(()=>{
-            par.renderOne=true;
-            this.updateSatelliteNamesVisibility();
-        }).name("Satellite Names (Main View)")
-        this.addSimpleSerial("showSatelliteNamesMain")
+        this.showFlareRegion = Sit.showFlareRegion;
+        this.showFlareBand = Sit.showFlareBand;
 
 
+        const satelliteOptions = [
+            { key: "showSatellites", name: "Overall Satellites Flag",           action: () => this.satelliteGroup.visible = this.showSatellites },
+            { key: "showStarlink", name: "Starlink",                            action: () => this.filterSatellites() },
+            { key: "showISS", name: "ISS",                                      action: () => this.filterSatellites() },
+            { key: "showBrightest", name: "Celestrack's Brightest",             action: () => this.filterSatellites() },
+            { key: "showOtherSatellites", name: "Other Satellites",             action: () => this.filterSatellites() },
+            { key: "showSatelliteTracks", name: "Satellite Arrows",             action: () => this.satelliteTrackGroup.visible = this.showSatelliteTracks },
+            { key: "showSatelliteGround", name: "Satellite Ground Arrows",      action: () => this.satelliteGroundGroup.visible = this.showSatelliteGround },
+            { key: "showSatelliteNames", name: "Satellite Names (Look View)",   action: () => this.updateSatelliteNamesVisibility() },
+            { key: "showSatelliteNamesMain", name: "Satellite Names (Main View)", action: () => this.updateSatelliteNamesVisibility() },
+            { key: "showFlareRegion", name: "Flare Region",                     action: () => this.flareRegionGroup.visible = this.showFlareRegion},
+            { key: "showFlareBand", name: "Flare Band",                         action: () => this.flareBandGroup.visible = this.showFlareBand},
+
+        ];
+
+        satelliteOptions.forEach(option => {
+            satGUI.add(this, option.key).listen().onChange(() => {
+                par.renderOne = true;
+                option.action();
+            }).name(option.name);
+            this.addSimpleSerial(option.key);
+        });
+
+        this.flareBandGroup.visible = this.showFlareBand;
 
         guiMenus.view.add(Sit,"starScale",0,3,0.01).name("Star Brightness").listen()
             .tooltip("Scale factor for the brightness of the stars. 1 is normal, 0 is invisible, 2 is twice as bright, etc.")
