@@ -396,24 +396,29 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.filterSatellites();
         }).name("Starlink");
+        this.addSimpleSerial("showStarlink")
 
         this.showISS = true;
         satGUI.add(this, "showISS").listen().onChange(()=>{
             par.renderOne=true;
             this.filterSatellites();
         }).name("ISS");
+        this.addSimpleSerial("showISS")
 
         this.showBrightest = true;
         satGUI.add(this, "showBrightest").listen().onChange(()=>{
             par.renderOne=true;
             this.filterSatellites();
         }).name("Celestrack's Brightest");
+        this.addSimpleSerial("showBrightest")
 
         this.showOtherSatellites = false;
         satGUI.add(this, "showOtherSatellites").listen().onChange(()=>{
             par.renderOne=true;
             this.filterSatellites();
         }).name("Other Satellites");
+        this.addSimpleSerial("showOtherSatellites")
+
 
 
 
@@ -1374,8 +1379,10 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         super.modDeserialize(v);
         // a guid value's .listen() only updates the gui, so we need to do it manually
         // perhaps better to flag the gui system to update it?
+        this.filterSatellites();
         this.updateVis();
         this.updateSatelliteNamesVisibility();
+
 
     }
 
