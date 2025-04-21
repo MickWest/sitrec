@@ -77,7 +77,7 @@ jobs:
     - name: install bun
       uses: oven-sh/setup-bun@v1
     - name: install deps
-      run: bun install --production # a bit faster than npm i/ci, except on windows
+      run: bun install --production  --no-frozen-lockfile # a bit faster than npm i/ci, except on windows
     - name: config script setup
       run: |
         cp config/config.js.example config/config.js
