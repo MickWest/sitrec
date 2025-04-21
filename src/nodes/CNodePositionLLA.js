@@ -79,6 +79,11 @@ export class CNodePositionLLA extends CNode {
                    unitType: "small",
                    start: 0, end: 100000, step: 1,
                    stepExplicit: false, // prevent snapping
+
+                   elastic: true,
+                   elasticMin: 1,
+                   elasticMax: 100000000,
+
                    onChange: (v) => {
                        this.recalculateCascade(0)
                      //  this.updateAltituide();
