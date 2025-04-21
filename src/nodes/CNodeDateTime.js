@@ -436,6 +436,7 @@ export class CNodeDateTime extends CNode {
             console.log("Did a time change recalc debugCounter = "+Globals.debugCounter)
             Globals.debugCascade = false;
             par.renderOne = true;
+            Globals.sitchEstablished = true;
         }
     }
 

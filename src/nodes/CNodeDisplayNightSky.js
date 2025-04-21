@@ -555,15 +555,22 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.rot = 0
 
 
-        // const labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
+        const labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
         // labelMainViewPVS.addText("videoLabelp1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")
         // labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
         // labelMainViewPVS.addText("videoLabelp3", "Drag and drop .txt or .tle files", 12, 6, 1.5, "#f0f00080")
         // labelMainViewPVS.setVisible(true)
 
-        par.validPct = 100;
+        //
+        // labelMainViewPVS.addText("videoLabelp1", "",    10, 2, 1.5, "#f0f00080").update(function() {
+        //     this.text = "sitchEstablished = "+Globals.sitchEstablished;
+        // })
+
+
+        par.validPct = 0;
         labelMainViewPVS.addText("videoLabelInRange", "xx",    92, 2, 1.5, "#f0f00080").update(function() {
-            this.text = "In Range:" + par.validPct.toFixed(1) + "%"
+            this.text = par.validPct ? "In Range:" + par.validPct.toFixed(1) + "%"  : "";
+
         });
 
 //        console.log("Done with CNodeDisplayNightSky constructor")

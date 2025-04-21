@@ -641,6 +641,9 @@ export class CCustomManager {
                         node.modDeserialize(Sit.mods[id])
                     }
                 }
+
+                Globals.sitchEstablished = true; // flag that we've done some editing, so any future drag-and-drop will not mess with the sitch
+
             }
 
             // apply the pars
