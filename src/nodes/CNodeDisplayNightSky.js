@@ -58,6 +58,7 @@ import {SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {CNodeLabeledArrow} from "./CNodeLabels3D";
 import {CNodeDisplaySkyOverlay} from "./CNodeDisplaySkyOverlay";
 import {EventManager} from "../CEventManager";
+import {CNodeViewUI} from "./CNodeViewUI";
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -423,6 +424,17 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.addSimpleSerial("satCutOff");
 
 
+        this.arrowRange = 2000
+        satGUI.add(this,"arrowRange",10,10000,1).name("Arrow Range (km)").listen()
+            .tooltip("arrows beyond this distance will not be displayed")
+            .onChange(() => {
+                this.filterSatellites();
+                par.renderOne = true;
+            })
+        this.addSimpleSerial("arrowRange");
+
+
+
         // Sun Direction will get recalculated based on data
         this.toSun = V3(0,0,1)
         this.fromSun = V3(0,0,-1)
@@ -543,6 +555,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.rot = 0
 
 
+        // const labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
+        // labelMainViewPVS.addText("videoLabelp1", "L = Lat/Lon from cursor",    10, 2, 1.5, "#f0f00080")
+        // labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
+        // labelMainViewPVS.addText("videoLabelp3", "Drag and drop .txt or .tle files", 12, 6, 1.5, "#f0f00080")
+        // labelMainViewPVS.setVisible(true)
+
+        par.validPct = 100;
+        labelMainViewPVS.addText("videoLabelInRange", "xx",    92, 2, 1.5, "#f0f00080").update(function() {
+            this.text = "In Range:" + par.validPct.toFixed(1) + "%"
+        });
 
 //        console.log("Done with CNodeDisplayNightSky constructor")
     }
@@ -2114,8 +2136,8 @@ void main() {
     replaceTLE(tle) {
         this.removeSatellites()
         this.TLEData = new CTLEData(tle)
-        this.filterSatellites()
         this.addSatellites(this.satelliteGroup, this.satelliteTextGroup)
+        this.filterSatellites()
     }
 
     removeSatellites() {
@@ -2423,7 +2445,10 @@ void main() {
         const positions = this.satelliteGeometry.attributes.position.array;
         const magnitudes = this.satelliteGeometry.attributes.magnitude.array;
 
+        const lookPos = NodeMan.get("lookCamera").camera.position;
+
         let validCount = 0;
+        let visibleCount = 0;
         for (let i = 0; i < numSats; i++) {
             const satData = this.TLEData.satData[i];
             const satrec = bestSat(satData.satrecs, date);
@@ -2483,7 +2508,7 @@ void main() {
                     satData.currentPosition = satData.eus.clone();
                     satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
 
-                    if (satData.visible) {
+                    if (satData.visible && satData.eusA.distanceTo(lookPos) < this.arrowRange*1000) {
                         // draw an arrow from the satellite in the direction of its velocity (yellow)
                         if (this.showSatelliteTracks) {
                             let A = satData.eusA.clone()
@@ -2516,9 +2541,14 @@ void main() {
                 validCount++
             }
 
+
+            if (satData.visible) {
+                visibleCount++;
+            }
+
         }
 
-        par.validPct = validCount / numSats * 100;
+        par.validPct = validCount / visibleCount * 100;
 
         // Notify THREE.js that the positions have changed
         this.satelliteGeometry.attributes.position.needsUpdate = true;
