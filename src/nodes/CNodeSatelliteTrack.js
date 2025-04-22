@@ -4,6 +4,7 @@ import {CNodeTrack} from "./CNodeTrack";
 import {GlobalDateTimeNode, Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {EventManager} from "../CEventManager";
 import {bestSat} from "../TLEUtils";
+import {assert} from "../assert";
 
 // TODO - consider flagging this as not smoothable for use as a camera track
 // the TLE calculation should give a smooth curve, and the smoothing will shift the position slightly
@@ -34,7 +35,7 @@ import {bestSat} from "../TLEUtils";
             this.recalculate();
             this.satelliteText = this.satData.name;
 
-        }).listen().hide();
+        }).listen().hide().tooltip("Name or NORAD number of satellite to track. \nStart of name is ok (i.e. ISS)");
 
         // Use event listeners to update the track when the satellite changes
         EventManager.addEventListener("tleLoaded", (event, data) => {
@@ -52,10 +53,8 @@ import {bestSat} from "../TLEUtils";
     // return null if it doesn't exist
 
     getSatelliteNumber (s) {
-        if (s === undefined) {
-            return null
-        }
 
+        // TODO - should this be an input node?
         // see if we have a night sky with any TLE data
         const nightSky = NodeMan.get("NightSkyNode", false)
         if (!nightSky) {
@@ -68,97 +67,31 @@ import {bestSat} from "../TLEUtils";
             console.warn("CNodeSatelliteTrack: no TLE data found")
             return null
         }
-        const satDataArray = tleData.satData;
-        if (satDataArray === undefined) {
-            console.warn("CNodeSatelliteTrack: no satData Array found")
-            return null
-        }
-
-        const numSatData = satDataArray.length;
-        if (numSatData === 0) {
-            console.warn("CNodeSatelliteTrack: satData Array is empty")
-            return null
-        }
-
-        // The satDatArray is an array of objects
-        // which have a name (string) and a number (integer number)
-
-        // if it's a number or a string that resolves into a number, the use that number
-        if (typeof s === "number" || typeof s === "string" && !isNaN(s)) {
-            const satNum = parseInt(s)
-            // now see if it exists in the TLE database
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                if (satData.number === satNum) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satNum)
-                    return satNum
-                }
-            }
-            console.warn("CNodeSatelliteTrack: no satellite found for number" + s)
-        }
-
-        // if it's a string, try to find it in the TLE database, first try to match the name exactly
-        if (typeof s === "string") {
-
-            // upper case it, as all the TLE data is upper case
-            s = s.toUpperCase()
-
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name is the same as the string
-                if (satData.name === s) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-            // then try string starting with this, just return the first one, e.g. "ISS" or "HST"
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name starts with the string
-                if (satData.name.startsWith(s)) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-            // then try string containing this, just return the first one, e.g.
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name contains the string
-                if (satData.name.includes(s)) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-
-            console.warn("CNodeSatelliteTrack: no satellite found for name" + s)
-        }
-
-
-        if (typeof s !== "number" && typeof s !== "string") {
-            console.error("CNodeSatelliteTrack: not number or string " + s)
-        }
-
-        return null
+        return tleData.getNORAD(s);
 
     }
 
     // given a valid norad number, find the index of the satellite in the TLE database
     getSatelliteData(norad) {
-        this.nightSky = NodeMan.get("NightSkyNode", false)
-        const tleData = this.nightSky.TLEData;
-        const satDataArray = tleData.satData;
-        const numSatData = satDataArray.length;
-        for (let i = 0; i < numSatData; i++) {
-            const satData = satDataArray[i]
-            if (satData.number === norad) {
-                return satData
-            }
-        }
-        return null;
-        //return tleData.getRecordFromNORAD(norad);
+         this.nightSky = NodeMan.get("NightSkyNode", false)
+         const tleData = this.nightSky.TLEData;
+
+         // const satDataArray = tleData.satData;
+        // const numSatData = satDataArray.length;
+        // let result = null;
+        // for (let i = 0; i < numSatData; i++) {
+        //     const satData = satDataArray[i]
+        //     if (satData.number === norad) {
+        //         result = satData;
+        //         break;
+        //     }
+        // }
+        //
+        // assert (tleData.getRecordFromNORAD(norad) === result, "CNodeSatelliteTrack: getSatelliteData: TLEData.getRecordFromNORAD does not match the result");
+        //
+        // return result;
+
+        return tleData.getRecordFromNORAD(norad);
 
 
     }

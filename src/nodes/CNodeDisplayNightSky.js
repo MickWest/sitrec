@@ -291,6 +291,91 @@ class CTLEData {
 
     }
 
+    // given a satellite name or number in s, convert it into a valid NORAD number that
+    // exists in the TLE database
+    // return null if it doesn't exist
+    getNORAD(s) {
+        if (s === undefined) {
+            return null
+        }
+
+        const satDataArray = this.satData;
+        if (satDataArray === undefined) {
+            console.warn("CNodeSatelliteTrack: no satData Array found")
+            return null
+        }
+
+        const numSatData = satDataArray.length;
+        if (numSatData === 0) {
+            console.warn("CNodeSatelliteTrack: satData Array is empty")
+            return null
+        }
+
+        // The satDatArray is an array of objects
+        // which have a name (string) and a number (integer number)
+
+        // if it's a number or a string that resolves into a number, the use that number
+        if (typeof s === "number" || typeof s === "string" && !isNaN(s)) {
+            const satNum = parseInt(s)
+            // now see if it exists in the TLE database
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                if (satData.number === satNum) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satNum)
+                    return satNum
+                }
+            }
+            console.warn("CNodeSatelliteTrack: no satellite found for number" + s)
+        }
+
+        // if it's a string, try to find it in the TLE database, first try to match the name exactly
+        if (typeof s === "string") {
+
+            // upper case it, as all the TLE data is upper case
+            s = s.toUpperCase()
+
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                // check if the name is the same as the string
+                if (satData.name === s) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+                    return satData.number
+                }
+            }
+
+            // then try string starting with this, just return the first one, e.g. "ISS" or "HST"
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                // check if the name starts with the string
+                if (satData.name.startsWith(s)) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+                    return satData.number
+                }
+            }
+
+            // then try string containing this, just return the first one, e.g.
+            for (let i = 0; i < numSatData; i++) {
+                const satData = satDataArray[i]
+                // check if the name contains the string
+                if (satData.name.includes(s)) {
+                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+                    return satData.number
+                }
+            }
+
+
+            console.warn("CNodeSatelliteTrack: no satellite found for name" + s)
+        }
+
+
+        if (typeof s !== "number" && typeof s !== "string") {
+            console.error("CNodeSatelliteTrack: not number or string " + s)
+        }
+
+        return null
+
+
+    }
 
     getRecordFromNORAD(norad) {
         if (this.noradIndex[norad] === undefined) {
