@@ -112,9 +112,9 @@ export const SitPVS14 = {
         AddTimeDisplayToUI(labelVideo, 50,96, 3.5, "#f0f000")
 
 
-        var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
-        labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
-        labelMainViewPVS.setVisible(true)
+        // var labelMainViewPVS = new CNodeViewUI({id: "labelMainViewPVS", overlayView: ViewMan.list.mainView.data});
+        // labelMainViewPVS.addText("videoLabelp2", ";&' or [&] ' advance start time", 12, 4, 1.5, "#f0f00080")
+        // labelMainViewPVS.setVisible(true)
 
     },
 
