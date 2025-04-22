@@ -107,16 +107,38 @@ const tleComboFieldEnds2=[1, 7, 16, 25, 33, 42, 51, 69]
 
 function fixTLELine(line, ends) {
 
-    const expectedFields = ends.length;
-
     assert(line !== undefined, "TLE line is undefined");
 
-    // chop any trailing whitespace from the line
+    // chop any trailing whitespace from the line, tle files typically just have a \t
     line = line.trimEnd()
+
+    // if it's exactly 69 characters, we don't need to do anything
+    if (line.length === 69) {
+        return line
+    }
+
+
+    const expectedFields = ends.length;
 
     // split the line into the 9 fields
     // separating by whitespace
-    const fields = line.split(/\s+/)
+    let fields = line.split(/\s+/)
+
+
+//     if (fields.length < expectedFields) {
+// // possibly missing the second field,
+// //         0 TBA - TO BE ASSIGNED
+// //         1 81078U          24333.88851049 +.00000363 +00000+0 +12052-1 0  9994
+// //         2 81078  65.1110 138.6809 0185351  89.7284  63.0761 11.22232541452104
+//         // so just patch it in
+//
+//         const line2 = line.slice(0,9) + '24001A'.padEnd(8) + line.slice(17);
+//         fields = line2.split(/\s+/)
+//
+//
+//     }
+
+
     // if we have expectedFields, we are good
     if (expectedFields === 9) {
         // line 1
@@ -253,12 +275,29 @@ class CTLEData {
         // convert to an indexed array
         const indexedSatData = []
         for (const [index, satData] of Object.entries(this.satData)) {
-             indexedSatData.push(satData)
+            indexedSatData.push(satData)
         }
+
         this.satData = indexedSatData;
+
+        // now create an array of the satData indexed by the NORAD number
+        this.noradIndex = []
+        for (let i = 0; i < this.satData.length; i++) {
+            const satrec = this.satData[i];
+            // add the satrec to the noradIndex array
+            // indexed by the NORAD number
+            this.noradIndex[satrec.number] = this.satData[i];
+        }
 
     }
 
+
+    getRecordFromNORAD(norad) {
+        if (this.noradIndex[norad] === undefined) {
+            return null;
+        }
+        return this.noradIndex[norad];
+    }
 
 
 
@@ -385,6 +424,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.showFlareRegion = Sit.showFlareRegion;
         this.showFlareBand = Sit.showFlareBand;
 
+        this.showSatelliteList = "";
+
 
         const satelliteOptions = [
             { key: "showSatellites", name: "Overall Satellites Flag",           action: () => this.satelliteGroup.visible = this.showSatellites },
@@ -392,6 +433,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             { key: "showISS", name: "ISS",                                      action: () => this.filterSatellites() },
             { key: "showBrightest", name: "Celestrack's Brightest",             action: () => this.filterSatellites() },
             { key: "showOtherSatellites", name: "Other Satellites",             action: () => this.filterSatellites() },
+            { key: "showSatelliteList", name: "List",                           action: () => this.filterSatellites() },
             { key: "showSatelliteTracks", name: "Satellite Arrows",             action: () => this.satelliteTrackGroup.visible = this.showSatelliteTracks },
             { key: "showSatelliteGround", name: "Satellite Ground Arrows",      action: () => this.satelliteGroundGroup.visible = this.showSatelliteGround },
             { key: "showSatelliteNames", name: "Satellite Names (Look View)",   action: () => this.updateSatelliteNamesVisibility() },
@@ -1236,6 +1278,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
     filterSatellites() {
         if (this.TLEData === undefined) return;
+
+
+        // first get the satellte list into an array of NORAD numbers
 
 
         // iterate over the satellites and flag visiblity
