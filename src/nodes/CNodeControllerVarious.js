@@ -25,6 +25,7 @@ export class CNodeControllerTrackToTrack extends CNodeController {
         const camera = objectNode.camera
         var camPos = this.in.sourceTrack.p(f)
         var targetPos = this.in.targetTrack.p(f)
+        camera.up = objectNode.getUpVector(camera.position)
         camera.position.copy(camPos);
         camera.lookAt(targetPos)
         objectNode.syncUIPosition(); //
@@ -41,6 +42,7 @@ export class CNodeControllerLookAtTrack extends CNodeController {
     apply(f, objectNode) {
         const camera = objectNode.camera
         var targetPos = this.in.targetTrack.p(f)
+        camera.up = objectNode.getUpVector(camera.position)
         camera.lookAt(targetPos)
         objectNode.syncUIPosition(); //
     }

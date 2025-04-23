@@ -748,6 +748,7 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                 trackOb.displayTargetSphere.addController("ObjectTilt", {
                     track: trackID,
                     tiltType: "banking",
+                    wind: "targetWind"
                 })
 
 

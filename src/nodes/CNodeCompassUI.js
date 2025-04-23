@@ -182,6 +182,17 @@ export class   CNodeCompassUI extends CNodeViewUI {
             heading = -heading;
         }
 
+        // when we lxock the up vetor the camera can be upside down
+        // so check the dot product with the local up vector and the camera's up vector
+        // from the matrix
+//        const forward = MV3(camera.matrixWorld.elements.slice(8,11));
+        const cameraUp = MV3(this.in.camera.camera.matrixWorld.elements.slice(4,7));
+
+        if (up.dot(cameraUp) < 0) {
+            heading = Math.PI - heading;
+        }
+
+
         return heading;
 
     }

@@ -103,7 +103,8 @@ export class CNodeControllerPTZUI extends CNodeController {
         // we need to get the LOCAL up
 
         const camera = objectNode.camera
-        
+
+    //  since the user controls roll here, we don't want to use north for up
         var up = getLocalUpVector(camera.position, wgs84.RADIUS)
 
 

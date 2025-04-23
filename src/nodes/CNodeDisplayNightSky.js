@@ -193,7 +193,6 @@ function fixTLELine(line, ends) {
 // the satrec is a satellite record created from a single line of a TLE file
 // there can be several satrecs with the same name, so we need to store them in an array
 // and pick the best one based on the playback date/time
-
 class CTLEData {
     // constructor is passed in a string that contains the TLE file as \n seperated lines
     // extracts in into
@@ -513,7 +512,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         const satelliteOptions = [
-            { key: "showSatellites", name: "Overall Satellites Flag",           action: () => this.satelliteGroup.visible = this.showSatellites },
+            { key: "showSatellites", name: "Overall Satellites Flag",           action: () => {this.satelliteGroup.visible = this.showSatellites; this.filterSatellites() }},
             { key: "showStarlink", name: "Starlink",                            action: () => this.filterSatellites() },
             { key: "showISS", name: "ISS",                                      action: () => this.filterSatellites() },
             { key: "showBrightest", name: "Celestrack's Brightest",             action: () => this.filterSatellites() },
@@ -1379,6 +1378,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
             satData.visible = false;
             let filterHit = false;
+
+            if (!this.showSatellites)
+                continue;
 
 
             if (satData.name.startsWith("STARLINK")) {

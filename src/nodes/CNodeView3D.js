@@ -1,6 +1,6 @@
 import {par} from "../par";
 import {f2m, normalizeLayerType} from "../utils";
-import {XYZ2EA, XYZJ2PR} from "../SphericalMath";
+import {getLocalNorthVector, XYZ2EA, XYZJ2PR} from "../SphericalMath";
 import {CustomManager, Globals, guiMenus, guiTweaks, keyHeld, NodeMan} from "../Globals";
 import {GlobalDaySkyScene, GlobalNightSkyScene, GlobalScene} from "../LocalFrame";
 import {DRAG, makeMouseRay} from "../mouseMoveView";
@@ -64,6 +64,16 @@ export class CNodeView3D extends CNodeViewCanvas {
         delete v.camera;
 
         super(v);
+
+
+        this.northUp = v.northUp ?? false;
+        if (this.id === "lookView") {
+            guiMenus.view.add(this, "northUp").name("Look View North Up").onChange(value => {
+                this.recalculate();
+            })
+                .tooltip("Set the look view to be north up, instead of world up.\nfor Satellite views and similar, looking straight down.\nDoes not apply in PTZ mode")
+        }
+        this.addSimpleSerial("northUp");
 
 
         this.isIR = v.isIR ?? false;
@@ -327,6 +337,11 @@ export class CNodeView3D extends CNodeViewCanvas {
         {
 
             if (this.visible) {
+
+                // popogate the view-specific camera setting to the current camera
+                // (currently this does not change, but it might in the future)
+                this.cameraNode.northUp = this.northUp;
+
 
                 let currentRenderTarget = null; // if no effects, we render directly to the canvas
 

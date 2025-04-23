@@ -124,6 +124,15 @@ import {assert} from "../assert";
         // norad numbers should not change over a session (probably never)
         this.satData = this.getSatelliteData(this.norad);
 
+        // However, it's possible the user has REMOVED the satallite by loading
+        // a new TLE file, so we need to check if we have a valid satellite data object
+        if (!this.satData) {
+            console.warn(`CNodeSatelliteTrack:recalculate no satellite data found for ${this.norad}`);
+            this.satelliteText = "Satellite not found";
+            return;
+        }
+
+
         // update GUI text
         this.satelliteText = this.satData.name;
 

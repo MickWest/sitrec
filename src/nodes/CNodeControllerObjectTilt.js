@@ -5,7 +5,7 @@ import {trackAcceleration, trackDirection, trackVelocity} from "../trackUtils";
 import {V3} from "../threeUtils";
 import {Matrix4} from "three";
 import {radians} from "../utils";
-import {getLocalUpVector} from "../SphericalMath";
+import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {CNodeSmoothedPositionTrack} from "./CNodeSmoothedPositionTrack";
 import {getGlareAngleFromFrame} from "../JetUtils";
 
@@ -98,11 +98,7 @@ export class CNodeControllerObjectTilt extends CNodeController {
                     next.sub(this.in.wind.v(f))
                 }
 
-                // for "lookAt" to work, we need to set the up vector
-                // to account for the curvature of the Earth
-                // it defaults to 0,1,0, which is only correct at the origin
-                object.up = getLocalUpVector(object.position)
-
+                object.up = objectNode.getUpVector(object.position)
                 object.lookAt(next)
 
                 // calculate the heading on the SMOOTHED track

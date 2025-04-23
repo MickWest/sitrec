@@ -3,6 +3,7 @@ import {guiShowHide, mainLoopCount, NodeFactory, NodeMan} from "../Globals";
 import {par} from "../par";
 import {assert} from "../assert.js";
 import {normalizeLayerType} from "../utils";
+import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 
 // wrapper class for THREE.JS objects, like cameras, groups, 3D models, etc.
 // Mostly to allow hooking up of controllers, which previous were camera-only
@@ -109,6 +110,23 @@ export class CNode3D extends CNode {
         node.isController = true;
         this.addInput(node.id, node)
         return this;
+    }
+
+
+    getUpVector(position) {
+
+        if (position == undefined) {
+            position = this._object.position
+        }
+
+        // for "lookAt" to work, we need to set the up vector
+        // to account for the curvature of the Earth
+        // it defaults to 0,1,0, which is only correct at the origin
+        if (this.northUp) {
+            return getLocalNorthVector(position)
+        } else {
+            return getLocalUpVector(position)
+        }
     }
 
 }
