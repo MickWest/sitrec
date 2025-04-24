@@ -454,6 +454,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             par.renderOne=true;
             this.sunArrowGroup.visible = this.showSunArrows;
         }).name("Sun Angle Arrows")
+            .tooltip("When glare is detected, show arrows from camera to satellite, and then satellite to sun")
         this.addSimpleSerial("showSunArrows")
 
 
