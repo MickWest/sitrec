@@ -5,8 +5,8 @@ import {assert} from "../assert";
 class CNodeWatch extends CNode {
     constructor(v) {
         super(v);
-        if (typeof v.watchID !== 'string') {
-            this.watchObject = NodeMan.get(v.ob);
+        if (typeof v.ob !== 'string') {
+            this.watchObject = v.ob;
         } else {
             switch (v.ob) {
                 case "Globals":

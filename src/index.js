@@ -729,12 +729,10 @@ async function setupFunctions() {
     Globals.showMeasurements = true;
 
 
-    if (!isConsole) {
-        // Setup the watch nodes that allow access via Math expressions
-        // to code values like the number of frame, fps, etc
-        NodeFactory.create("Watch", {id: "frames", ob: "Sit", watchID: "frames"})
-        NodeFactory.create("Watch", {id: "fps", ob: "Sit", watchID: "fps"})
-    }
+    // Setup the watch nodes that allow access via Math expressions
+    // to code values like the number of frame, fps, etc
+    NodeFactory.create("Watch", {id: "frames", ob: "Sit", watchID: "frames"})
+    NodeFactory.create("Watch", {id: "fps", ob: "Sit", watchID: "fps"})
 
 // Parse the URL parameters, if any
 // setting up stuff like the local coordinate system
