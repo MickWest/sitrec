@@ -2,7 +2,7 @@
 
 import {CManager} from "../CManager";
 import {CNode} from "./CNode";
-import {FileManager, NodeMan, Sit} from "../Globals";
+import {FileManager, Globals, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 
 export class CNodeManager extends CManager{
@@ -222,7 +222,17 @@ export class CNodeManager extends CManager{
         // })
 
         // ensure we recalculate all nodes in the correct order
+        // we don't do the linked GUIValues as that creates out-of-order issues
+        // which is a bit of a patch
+        // currently Turn Rate and TotalTurn are linked
+        // but they get updated becase the watch on CNodeWatch for Sit.frames
+        // will trigger a recalculate on the node
+        // however other node might not work
+        // another patch might be to add a recalculateAllLinked function
+        // but then we only want the silent links?
+        Globals.suppressLinkedRecalculate = true;
         this.recalculateAllRootFirst()
+        Globals.suppressLinkedRecalculate = false;
 
     }
 

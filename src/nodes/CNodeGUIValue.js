@@ -3,10 +3,10 @@ import {CNodeConstant} from "./CNode";
 import {par} from "../par";
 import {isLocal} from "../configUtils.js"
 import {assert} from "../assert.js";
-import {NodeMan, Units} from "../Globals";
-import {roundIfClose} from "../utils";
+import {Globals, NodeMan, Units} from "../Globals";
+import {roundIfClose, stripComments} from "../utils";
 import {EventManager} from "../CEventManager";
-import {evaluateExpression} from "./CNodeMath";
+import {addMathInputs, evaluateExpression} from "./CNodeMath";
 
 
 export class CNodeGUIConstant extends CNodeConstant {
@@ -50,8 +50,17 @@ export class CNodeGUIValue extends CNodeGUIConstant {
             this.link = v.link;
         }
 
+
         if (v.linkMath !== undefined) {
-            this.linkMath = v.linkMath;
+            this.linkMath = stripComments(v.linkMath);
+
+            // only add inputs for the silent links
+            // we only need to propagate changes in one direction
+            // so if Sit.frames changes, we will update the primary value (turnRate)
+            // but not the silent linked value (totalTurn)
+            if (v.link === undefined) {
+                addMathInputs(this, this.linkMath)
+            }
         }
 
         this.onChange = v.onChange;
@@ -65,26 +74,6 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         this.guiEntry = this.gui.add(this, "value", this.start, this.end, this.step).onChange(
             value => {
-                // check for links to other gui values
-                if (this.linkMath !== undefined) {
-                    console.log("GUIValue: Evaluating linkMath: " + this.linkMath);
-
-                    const linkedValue = evaluateExpression(this.linkMath)
-
-
-
-                    if (this.link !== undefined) {
-                        const link = NodeMan.get(this.link);
-                        // the default will be to set the value with recalculation
-                        link.setValue(linkedValue);
-                    }
-
-                    if (this.quietLink !== undefined) {
-                        const link = NodeMan.get(this.quietLink);
-                        // quietLink is a link that does not trigger recalculation
-                        link.setValue(linkedValue, true);
-                    }
-                }
 
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {
@@ -127,6 +116,35 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         // this is used (set false) in the CNodePositionLLA to prevent snapping
         if (v.stepExplicit !== undefined) {
             this.guiEntry._stepExplicit = v.stepExplicit;
+        }
+    }
+
+    // recalculate will be called when the value changes from the UI
+    // or when the inputs to linkedMath change
+    recalculate(f) {
+        super.recalculate(f);
+        // check for links to other gui values
+        if (this.linkMath !== undefined && !Globals.suppressLinkedRecalculate) {
+            console.log("GUIValue: Evaluating linkMath: " + this.linkMath);
+
+            const linkedValue = evaluateExpression(this.linkMath)
+
+            // NOTE: with a link/quietLink pair, the setting of the value
+            // for the link will trigger a recalculation of the quietLink
+            // but not vice-verse
+            // TODO: Consider if we should ignore the node that triggered the recalculation
+
+            if (this.link !== undefined) {
+                const link = NodeMan.get(this.link);
+                // the default will be to set the value with recalculation
+                link.setValue(linkedValue);
+            }
+
+            if (this.quietLink !== undefined) {
+                const link = NodeMan.get(this.quietLink);
+                // quietLink is a link that does not trigger recalculation
+                link.setValue(linkedValue, true);
+            }
         }
     }
 
