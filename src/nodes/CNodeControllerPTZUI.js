@@ -33,7 +33,7 @@ export class CNodeControllerPTZUI extends CNodeController {
                 guiPTZ.add(this, "fov", 0.01, 170, 0.1).listen().name("Zoom (fov)").onChange(v => this.refresh()).setLabelColor(pszUIColor).elastic(1, 170)
             }
             if (this.roll !== undefined ) {
-                guiPTZ.add(this, "roll", -90, 90, 0.1).listen().name("Roll").onChange(v => this.refresh()).setLabelColor(pszUIColor)
+                guiPTZ.add(this, "roll", -180, 180, 0.1).listen().name("Roll").onChange(v => this.refresh()).setLabelColor(pszUIColor)
             }
             guiPTZ.add(this, "relative").listen().name("Relative").onChange(v => this.refresh())
         }
