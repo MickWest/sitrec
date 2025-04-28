@@ -64,7 +64,7 @@ import {assert} from "../assert";
 
         const tleData = nightSky.TLEData;
         if (tleData === undefined) {
-            console.warn("CNodeSatelliteTrack: no TLE data found")
+//            console.warn("CNodeSatelliteTrack: no TLE data found")
             return null
         }
         return tleData.getNORAD(s);
@@ -113,7 +113,7 @@ import {assert} from "../assert";
         if (!this.norad) {
             this.norad = this.getSatelliteNumber(this.satellite);
             if (!this.norad) {
-                console.warn(`CNodeSatelliteTrack:recalculate no NORAD number found for ${this.satellite}`);
+//                console.warn(`CNodeSatelliteTrack:recalculate no NORAD number found for ${this.satellite}`);
                 return;
             }
         }

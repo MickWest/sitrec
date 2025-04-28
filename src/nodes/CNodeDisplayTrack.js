@@ -280,7 +280,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
             let trackPoint = this.in.track.v(f)
 
             if (trackPoint === undefined && f === 0) {
-                console.warn("CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f+" SKIPPING")
+//                console.warn("CNodeDisplayTrack: trackPoint is undefined, id="+this.id+" frame="+f+" SKIPPING")
                 return;
             }
 
