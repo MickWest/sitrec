@@ -23,6 +23,7 @@ class CNodeWatch extends CNode {
             }
         }
         this.watchID = v.watchID;
+        this.value = this.watchObject[this.watchID];
     }
 
     getValueFrame(frame) {
