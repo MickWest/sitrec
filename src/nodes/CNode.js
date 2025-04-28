@@ -65,6 +65,10 @@ class CNode {
             assert(0, "anonymous nodes not supported!")
         }
         this.simpleSerials = ["visible"];       // a list of serializable properties, default to nothing
+        if (v.inheritVisibility) {
+            this.inheritVisibility = v.inheritVisibility;
+        }
+
         NodeMan.add(this.id, this)
     }
 
@@ -201,6 +205,13 @@ class CNode {
         // here we just check f is defined to ensure derived update(f) functions
         // are passing it down
         assert(f !== undefined, "Something upstream is not passing in f to node's update function")
+
+        // and let one node inherit the visibility of another
+        if (this.inheritVisibility) {
+            const node = NodeMan.get (this.inheritVisibility);
+            if (this.visible !== node.visible)
+            this.show(node.visible);
+        }
     }
 
     show(visible = true) {

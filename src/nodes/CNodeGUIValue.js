@@ -125,7 +125,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         super.recalculate(f);
         // check for links to other gui values
         if (this.linkMath !== undefined && !Globals.suppressLinkedRecalculate) {
-            console.log("GUIValue: Evaluating linkMath: " + this.linkMath);
+//            console.log("GUIValue: Evaluating linkMath: " + this.linkMath);
 
             const linkedValue = evaluateExpression(this.linkMath)
 
@@ -258,24 +258,33 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         }
     }
 
-    show() {
-        if(!this.gui)
-            return this
-        if (this.hidden) {
+    show(visible=true) {
+        if (this.visible === visible) {
+            // note the gui has a _hidden flag, not a visible flag, so inverted logic
+            if (this.gui && this.guiEntry._hidden !== visible)
             return this;
         }
-        super.show()
-        this.guiEntry.show()
+        super.show(visible)
+        if(!this.gui)
+            return this
+
+
+        if (visible)
+            this.guiEntry.show()
+        else
+            this.guiEntry.hide()
+
         return this
     }
 
-    hide() {
-        if(!this.gui) {
-            return this;
+    update(frame) {
+        super.update(frame)
+        // ensure the gui visibility matches the node visibility
+        if (this.guiEntry) {
+            if (this.guiEntry._hidden === this.visible) {
+                this.guiEntry.show(this.visible)
+            }
         }
-        super.hide()
-        this.guiEntry.hide()
-        return this
     }
 
 

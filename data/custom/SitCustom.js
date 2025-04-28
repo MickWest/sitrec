@@ -293,7 +293,8 @@ sitch = {
     totalTurn: {
         kind: "GUIValue", value: 0, start: -360, end: 360, step: 0.1,
         desc: "Total Turn", gui: "physics", tooltip: "amount of turn over the entire sitch",
-        link: "turnRate", linkMath: "$totalTurn / ($frames / $fps)"
+        link: "turnRate", linkMath: "$totalTurn / ($frames / $fps)",
+        inheritVisibility: "turnRate"
     },
 
     // we want a clean way of linking two GUI values A and B
