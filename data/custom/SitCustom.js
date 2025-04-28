@@ -23,7 +23,6 @@ sitch = {
     allowDashInFlightNumber: true, // if true, the flight number can have a dash in it
 
 
-
     initialDropZoneAnimation: true,
 
     startDistance: 1,
@@ -33,7 +32,7 @@ sitch = {
     startTime: "2022-09-19T20:50:26.970Z",
     // default terrain covers some of the local area
     TerrainModel: {kind: "Terrain", lat: 34, lon: -118.3, zoom: 7, nTiles: 3, fullUI: true},
-   // terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
+    // terrainUI: {kind: "TerrainUI", terrain: "TerrainModel"},
 
     // default to 30 seconds. Loading a video will change this (also can set in the Time menu)
     frames: 900,
@@ -50,21 +49,41 @@ sitch = {
     targetSize: 100,
 
     lookCamera: {fov: 5, near: 1, far: 8000000},
-    mainCamera: {fov: 30, near: 1, far: 60000000,
-        startCameraPositionLLA:[28.732768,-117.711797,242274.849513],
-        startCameraTargetLLA:[28.740680,-117.712652,241879.049676],
+    mainCamera: {
+        fov: 30, near: 1, far: 60000000,
+        startCameraPositionLLA: [28.732768, -117.711797, 242274.849513],
+        startCameraTargetLLA: [28.740680, -117.712652, 241879.049676],
     },
 
-    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear:false},
+    videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear: false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 
-    focus: {kind: "GUIValue", value: 0.00, start: 0.0, end: 5.0, step: 0.01, desc: "Defocus", gui:"effects", tip: "Blurs the output, pixel range"},
+    focus: {
+        kind: "GUIValue",
+        value: 0.00,
+        start: 0.0,
+        end: 5.0,
+        step: 0.01,
+        desc: "Defocus",
+        gui: "effects",
+        tip: "Blurs the output, pixel range"
+    },
 
-    canvasResolution: {kind: "GUIValue", value: 1600, start: 10, end: 2000, step: 1, desc: "Resolution", gui:"effects", tip: "Horizontal resolution of the output canvas"},
+    canvasResolution: {
+        kind: "GUIValue",
+        value: 1600,
+        start: 10,
+        end: 2000,
+        step: 1,
+        desc: "Resolution",
+        gui: "effects",
+        tip: "Horizontal resolution of the output canvas"
+    },
 
     canvasHeight: {kind: "Math", math: "$canvasResolution/1.7927"},
 
-    lookView: {left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
+    lookView: {
+        left: 0.5, top: 0.5, width: -1.7927, height: 0.5,
 
         canvasWidth: "canvasResolution", canvasHeight: "canvasHeight",
 
@@ -72,33 +91,92 @@ sitch = {
             //Copy:{},
 
 
-
             // initial blurs are for focus
-            hBlur: { inputs: {
+            hBlur: {
+                inputs: {
                     h: "focus",
-                }},
-            vBlur: {inputs:{
+                }
+            },
+            vBlur: {
+                inputs: {
                     v: "focus",
-                }},
+                }
+            },
             // Noise comes AFTER focus, becuase it's on the sensor
-            StaticNoise: {inputs:{
-                    amount: {kind: "GUIValue", value: 0.01, start: 0.0, end: 1.0, step: 0.01, desc: "Noise Amount", gui:"effects", tip: "Opacity of the added noise"},
-                }},
-            Greyscale:{id:"Custom_GreyScale", enabled: false},
-            Invert: {id:"Custom_Invert", enabled: false},
+            StaticNoise: {
+                inputs: {
+                    amount: {
+                        kind: "GUIValue",
+                        value: 0.01,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "Noise Amount",
+                        gui: "effects",
+                        tip: "Opacity of the added noise"
+                    },
+                }
+            },
+            Greyscale: {id: "Custom_GreyScale", enabled: false},
+            Invert: {id: "Custom_Invert", enabled: false},
 
             Custom_Levels: {
                 kind: "Levels",
                 inputs: {
-                    inputBlack:  {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In Black", gui:"effects", tip: "Input level below which is black"},
-                    inputWhite:  {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "TV In White", gui:"effects", tip: "Input level above which is white"},
-                    gamma:       {kind: "GUIValue", value: 1.00, start: 0.0, end: 4.0, step: 0.01, desc: "TV Gamma", gui:"effects", tip: "Gamma correction"},
-                    outputBlack: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out Black", gui:"effects", tip: "Minimum output level"},
-                    outputWhite: {kind: "GUIValue", value: 1.00, start: 0.0, end: 1.0, step: 0.01, desc: "Tv Out White", gui:"effects", tip: "Maximum output level"},
+                    inputBlack: {
+                        kind: "GUIValue",
+                        value: 0.00,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "TV In Black",
+                        gui: "effects",
+                        tip: "Input level below which is black"
+                    },
+                    inputWhite: {
+                        kind: "GUIValue",
+                        value: 1.00,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "TV In White",
+                        gui: "effects",
+                        tip: "Input level above which is white"
+                    },
+                    gamma: {
+                        kind: "GUIValue",
+                        value: 1.00,
+                        start: 0.0,
+                        end: 4.0,
+                        step: 0.01,
+                        desc: "TV Gamma",
+                        gui: "effects",
+                        tip: "Gamma correction"
+                    },
+                    outputBlack: {
+                        kind: "GUIValue",
+                        value: 0.00,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "Tv Out Black",
+                        gui: "effects",
+                        tip: "Minimum output level"
+                    },
+                    outputWhite: {
+                        kind: "GUIValue",
+                        value: 1.00,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "Tv Out White",
+                        gui: "effects",
+                        tip: "Maximum output level"
+                    },
 
                 },
                 enabled: true,
-                },
+            },
 
 
             // digitalZoom: {inputs:{
@@ -112,7 +190,16 @@ sitch = {
                 filter: "Linear",
                 inputs: {
                     size: 8,
-                    amount: {kind: "GUIValue", value: 0.00, start: 0.0, end: 1.0, step: 0.01, desc: "JPEG Artifacts", gui: "effects", tip: "Amount of simulated JPEG compression artifacts"},
+                    amount: {
+                        kind: "GUIValue",
+                        value: 0.00,
+                        start: 0.0,
+                        end: 1.0,
+                        step: 0.01,
+                        desc: "JPEG Artifacts",
+                        gui: "effects",
+                        tip: "Amount of simulated JPEG compression artifacts"
+                    },
                 }
             },
 
@@ -131,9 +218,10 @@ sitch = {
                         end: 2000,
                         step: 0.01,
                         desc: "Pixel Zoom %",
-                      //  hidden: true
+                        //  hidden: true
                     },
-                }},
+                }
+            },
         },
 
         // NOTE: Don't use camera shake effect, as there's an issue with the useRecorded that
@@ -158,10 +246,18 @@ sitch = {
     targetWind: {from: 270, knots: 0, name: "Target", arrowColor: "cyan"},
 
     // local wind is the wind at the camera location
-    localWind:  { kind: "Wind", from: 285, knots: 70,  name: "Local",  arrowColor: "cyan", lock: "targetWind", gui:"physics"},
+    localWind: {
+        kind: "Wind",
+        from: 285,
+        knots: 70,
+        name: "Local",
+        arrowColor: "cyan",
+        lock: "targetWind",
+        gui: "physics"
+    },
 
     // we can lock them so they are the same, defaults to not locked
-    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Target Wind to Local", gui:"physics"},
+    lockWind: {kind: "GUIFlag", value: false, desc: "Lock Target Wind to Local", gui: "physics"},
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,17 +265,43 @@ sitch = {
 
     // this is the fixed camera position that you can move around while holding C, or edit in the camera GUI
     // this is a track, so it can be used for the camera, or for a target, or for a traverse like any other track
-    fixedCameraPosition: {kind: "PositionLLA", LLA: [31.980814,-118.428486,10000], desc: "Cam", gui: "camera", key:"C"},
+    fixedCameraPosition: {
+        kind: "PositionLLA",
+        LLA: [31.980814, -118.428486, 10000],
+        desc: "Cam",
+        gui: "camera",
+        key: "C"
+    },
 
     // Parameters for the JetTrack node, which is a simple flight simulator creating a jet track, as used in Gimbal, FLIR1, and GoFast
 
     // true airspeed in knots, note this is NOT ground speed
     // so the absolute ground speed will vary with the wind
-    jetTAS: {kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed",
-    elastic: true, elasticMin: 5, elasticMax: 1000},
+    jetTAS: {
+        kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed",
+        elastic: true, elasticMin: 5, elasticMax: 1000
+    },
 
     // turnRate should really be derived from the bank angle, but we'll use it for now
-    turnRate: {kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.001, desc: "Turn Rate", gui: "physics"},
+    turnRate: {
+        kind: "GUIValue", value: 0, start: -10, end: 10, step: 0.001,
+        desc: "Turn Rate", gui: "physics",
+        quietLink: "totalTurn", linkMath: "$turnRate * $frames / $fps"
+    },
+
+
+    totalTurn: {
+        kind: "GUIValue", value: 0, start: -360, end: 360, step: 0.1,
+        desc: "Total Turn", gui: "physics", tooltip: "amount of turn over the entire sitch",
+        link: "turnRate", linkMath: "$totalTurn / ($frames / $fps)"
+    },
+
+    // we want a clean way of linking two GUI values A and B
+    // A is the primary value, which affects other nodes
+    // B is the secondary value, which is a function of A
+    // When A changes, B is updated, but there's no propagation
+    // When B changes, A is updated, and the propagation (from A)
+
 
     jetHeading: {kind: "GUIValue", value: 0, start: 0, end: 360, step: 0.1, desc: "Jet Heading", gui: "physics"},
 
@@ -228,15 +350,15 @@ sitch = {
     cameraDisplayTrack: {
         kind: "DisplayTrack",
         track: "cameraTrackSwitchSmooth",
-        color: "#00FFFF",
-        width: 1,
+        color: "#FFFFFF",
+        width: 2,
     },
 
     satelliteDisplayTrack: {
         kind: "DisplayTrack",
         track: "satelliteTrack",
         color: "#FFFFFF",
-        width: 1,
+        width: 2,
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

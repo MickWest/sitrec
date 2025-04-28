@@ -3,9 +3,10 @@ import {CNodeConstant} from "./CNode";
 import {par} from "../par";
 import {isLocal} from "../configUtils.js"
 import {assert} from "../assert.js";
-import {Units} from "../Globals";
+import {NodeMan, Units} from "../Globals";
 import {roundIfClose} from "../utils";
 import {EventManager} from "../CEventManager";
+import {evaluateExpression} from "./CNodeMath";
 
 
 export class CNodeGUIConstant extends CNodeConstant {
@@ -41,6 +42,17 @@ export class CNodeGUIValue extends CNodeGUIConstant {
         this.end = v.end ?? v.value * 2
         this.step = v.step ?? Math.abs((this.end-this.start)/100);
 
+        if (v.quietLink !== undefined) {
+            this.quietLink = v.quietLink;
+        }
+
+        if (v.link !== undefined) {
+            this.link = v.link;
+        }
+
+        if (v.linkMath !== undefined) {
+            this.linkMath = v.linkMath;
+        }
 
         this.onChange = v.onChange;
 
@@ -53,6 +65,27 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
         this.guiEntry = this.gui.add(this, "value", this.start, this.end, this.step).onChange(
             value => {
+                // check for links to other gui values
+                if (this.linkMath !== undefined) {
+                    console.log("GUIValue: Evaluating linkMath: " + this.linkMath);
+
+                    const linkedValue = evaluateExpression(this.linkMath)
+
+
+
+                    if (this.link !== undefined) {
+                        const link = NodeMan.get(this.link);
+                        // the default will be to set the value with recalculation
+                        link.setValue(linkedValue);
+                    }
+
+                    if (this.quietLink !== undefined) {
+                        const link = NodeMan.get(this.quietLink);
+                        // quietLink is a link that does not trigger recalculation
+                        link.setValue(linkedValue, true);
+                    }
+                }
+
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {
                     this.onChange(value)

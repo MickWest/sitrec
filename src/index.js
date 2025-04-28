@@ -10,7 +10,7 @@ import {
     Globals, guiMenus,
     guiTweaks,
     incrementMainLoopCount,
-    infoDiv,
+    infoDiv, NodeFactory,
     NodeMan, setCustomManager,
     setFileManager,
     setGlobalDateTimeNode,
@@ -727,6 +727,12 @@ async function setupFunctions() {
     par.paused = Sit.paused;
 
     Globals.showMeasurements = true;
+
+
+    // Setup the watch nodes that allow access via Math expressions
+    // to code values like the number of frame, fps, etc
+    NodeFactory.create("Watch", {id: "frames", ob: "Sit", watchID: "frames"})
+    NodeFactory.create("Watch", {id: "fps", ob: "Sit", watchID: "fps"})
 
 
 // Parse the URL parameters, if any
