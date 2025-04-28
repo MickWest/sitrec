@@ -70,6 +70,8 @@ function writeLog($message) {
 
 // Secure validation function
 function isSafeName($name) {
+    // Check if the name contains only allowed characters
+    // which are A-Z, a-z, 0-9, space, _, -, ., (, )
     return preg_match('/^[A-Za-z0-9 _\\-\\.\\(\\)]+$/', $name);
 }
 

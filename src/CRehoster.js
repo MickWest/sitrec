@@ -63,6 +63,9 @@ export class CRehoster {
             return resultUrl
         } catch (error) {
             console.error('Error uploading file:', error);
+            // display an error message to the as a single button popup
+            alert("Error uploading file: " + error.message);
+
             throw new Error("Upload problem, maybe not logged in?");
         }
     }

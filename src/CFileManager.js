@@ -274,8 +274,19 @@ export class CFileManager extends CManager {
     // input by the user
     inputSitchName() {
         return new Promise((resolve, reject) => {
-            const sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
+            let sitchName = prompt("Enter a name for the sitch", Sit.sitchName);
             if (sitchName !== null && sitchName !== "") {
+                // the server validates the name with:
+                //     return preg_match('/^[A-Za-z0-9 _\\-\\.\\(\\)]+$/', $name);
+                // so we need to remove any invalid characters, replace them with underscore
+                const validSitchName = sitchName.replace(/[^A-Za-z0-9 _\\-\\.\\(\\)]+/g, "_");
+                // if the name is empty, then  error
+                if (validSitchName === "") {
+                    alert("Invalid sitch name, please try again");
+                    reject("Sitch Name Cancelled");
+                }
+                sitchName = validSitchName;
+
                 Sit.sitchName = sitchName;
                 // will need to check if the sitch already exists
                 // server side, and if so, ask if they want to overwrite
