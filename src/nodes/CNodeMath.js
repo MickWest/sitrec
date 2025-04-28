@@ -33,25 +33,8 @@ export class CNodeMath extends CNode {
         this.frameless = true; // set to indicate that this node does not need a frame number, but will pass the frame number to inputs
         this.mathOriginal = v.math
         this.math = stripComments(this.mathOriginal)
-
-        // find any node variable and add them to the inputs
-        // this ensures that the node is recalculated when the input nodes change
-        // and hence other nodes that depend on this node will also be recalculated
-        let matches = getNodeVariables(this.math)
-        if (matches) {
-            for (let match of matches) {
-                let id = match.slice(1); // remove the leading $
-                assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
-                let node = NodeMan.get(id);
-                this.addInput(node.id, node.id)
-//                console.log("CNodeMath: adding input: " + node.id + " to " + this.id);
-            }
-        }
+        addMathInputs(this, this.math)
     }
-
-
-
-
 
     getValueFrame(f) {
         if (!this.math) {
@@ -77,6 +60,7 @@ export function evaluateExpression(expression, f=0) {
             let node = NodeMan.get(id);
             // and replace it in the string with the value of the node at frame f
             let value = node.getValueFrame(f)
+            assert(value !== undefined, "CNodeMath: node value is undefined, id: " + id);
             // if it's not a number, need more parsing
             if (typeof value !== "number") {
                 if (value.position !== undefined) {
@@ -105,4 +89,22 @@ export function evaluateExpression(expression, f=0) {
 
 }
 
+export function addMathInputs(node, math) {
+    // find any node variable and add them to the inputs
+    // this ensures that the node is recalculated when the input nodes change
+    // and hence other nodes that depend on this node will also be recalculated
+    let matches = getNodeVariables(math)
+    if (matches) {
+        for (let match of matches) {
+            let id = match.slice(1); // remove the leading $
+            assert(NodeMan.exists(id), "CNodeMath: node variable does not exist, id: " + id)
+            let inputNode = NodeMan.get(id);
 
+            // a node might reference itself in the math expression
+            // which would not count at an input
+            if (inputNode !== node) {
+                node.addInput(inputNode.id, inputNode.id)
+            }
+        }
+    }
+}
