@@ -668,6 +668,11 @@ export class CVideoWebCodecData extends CVideoData {
         super.dispose()
     }
 
+    stopStreaming() {
+        this.killWorkers()
+        super.stopStreaming()
+    }
+
 }
 
 

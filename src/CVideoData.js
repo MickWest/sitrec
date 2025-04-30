@@ -49,4 +49,8 @@ export class CVideoData {
 
     }
 
+    stopStreaming() {
+        this.flushEntireCache()
+    }
+
 }

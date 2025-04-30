@@ -86,9 +86,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         par.frame = 0
         par.paused = false;
         if (this.videoData) {
-            this.videoData.killWorkers()
-            this.videoData.flushEntireCache()
-            this.videoData = undefined;
+            this.videoData.stopStreaming()
         }
         this.positioned = false; 
     }
