@@ -1046,9 +1046,9 @@ export class CFileManager extends CManager {
             // is there a video? if so we add it directly, so, like terrain, it starts loading normally
             if (NodeMan.exists("video")) {
                 const videoNode = NodeMan.get("video")
-                if (videoNode.Video !== undefined) {
+                if (videoNode.videoData !== undefined) {
                     const rehostFilename = videoNode.fileName;
-                    const videoDroppedData = videoNode.Video.videoDroppedData;
+                    const videoDroppedData = videoNode.videoData.videoDroppedData;
 
                     if (videoDroppedData !== undefined) {
                         // do we also needs something similar for URLs?

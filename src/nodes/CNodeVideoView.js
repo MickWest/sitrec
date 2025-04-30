@@ -102,9 +102,9 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         if (!this.visible) return;
 
         // if no video file, this is just a drop target for now
-        if (!this.Video) return;
-        this.Video.update()
-        const image = this.Video.getImage(frame);
+        if (!this.videoData) return;
+        this.videoData.update()
+        const image = this.videoData.getImage(frame);
         if (image) {
 
             const ctx = this.canvas.getContext("2d");

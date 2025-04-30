@@ -27,7 +27,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         } else {
             this.fileName = v.file;
             this.addLoadingMessage();
-            this.Video = new CVideoWebCodecData(v,
+            this.videoData = new CVideoWebCodecData(v,
                 this.loadedCallback.bind(this), this.errorCallback.bind(this))
             this.addDownloadButton();
         }
@@ -85,10 +85,10 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.removeText()
         par.frame = 0
         par.paused = false;
-        if (this.Video) {
-            this.Video.killWorkers()
-            this.Video.flushEntireCache()
-            this.Video = undefined;
+        if (this.videoData) {
+            this.videoData.killWorkers()
+            this.videoData.flushEntireCache()
+            this.videoData = undefined;
         }
         this.positioned = false; 
     }
@@ -169,7 +169,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     newVideo(file) {
         Sit.frames = undefined; // need to recalculate this
         this.fileName = file;
-        this.Video = new CVideoWebCodecData({id: this.id + "_data", file: file},
+        this.videoData = new CVideoWebCodecData({id: this.id + "_data", file: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         this.positioned = false;
         par.frame = 0;
@@ -187,7 +187,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
         this.stopStreaming()
         this.addLoadingMessage()
-        this.Video = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
+        this.videoData = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         par.frame = 0;
         par.paused = false; // unpause, otherwise we see nothing.
@@ -206,7 +206,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
     }
 
     errorCallback() {
-        this.Video.error = false;
+        this.videoData.error = false;
         if (this.overlay) {
             this.overlay.removeText("videoLoading")
             this.overlay.addText("videoError", "Error Loading", 50, 45, 5, "#f0f000", "center")
