@@ -24,7 +24,6 @@ import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
 import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
-import {CNodeMirrorVideoView} from "./nodes/CNodeVideoView";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
@@ -38,6 +37,7 @@ import {MV3} from "./threeUtils";
 import {registerNodeConsole} from "./RegisterNodes.js"
 import {Frame2Az} from "./JetUtils";
 import {isConsole} from "./configUtils";
+import {CNodeMirrorVideoView} from "./nodes/CNodeMirrorVideoView";
 
 export async function SituationSetup(runDeferred = false) {
     console.log("++++++ SituationSetup")

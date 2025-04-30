@@ -1,10 +1,10 @@
 import {FileManager, GlobalDateTimeNode, infoDiv, Sit} from "./Globals";
 import {assert} from "./assert";
-import {CVideoData} from "./nodes/CNodeVideoView";
 import {loadImage, versionString} from "./utils";
 import {MP4Demuxer, MP4Source} from "./js/mp4-decode/mp4_demuxer";
 import {par} from "./par";
 import {isLocal} from "./configUtils";
+import {CVideoData} from "./CVideoData";
 
 export class CVideoWebCodecData extends CVideoData {
 
