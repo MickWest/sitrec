@@ -6,6 +6,7 @@ import {CNodeGUIValue} from "./CNodeGUIValue";
 import {guiTweaks} from "../Globals";
 import {versionString} from "../utils";
 import {CMouseHandler} from "../CMouseHandler";
+import {assert} from "../assert";
 
 // TODO: make a better base class for video data, probably can remove the tiny stuff?
 //     we want to have a CVideoImageData class that loads images and pretends to be a video
@@ -31,12 +32,18 @@ export class CVideoData {
         this.width = 100
         this.height = 100
 
+        this.flushEntireCache();
 
-        this.tinyName = v.tinyName;
-        this.fullName = v.fullName;
+    }
 
-        this.flushEntireCache()
+    // virtual functions
+    getImage(frame) {
+        assert(0, "CVideoData: getImage: not implemented")
+        return null;
+    }
 
+    update() {
+        // nothing to do here
     }
 
     flushEntireCache() {
@@ -56,6 +63,17 @@ export class CVideoData {
 
     }
 
+}
+
+
+export class CFramesVideoData extends CVideoData {
+    constructor(v) {
+        super(v)
+
+        this.tinyName = v.tinyName;
+        this.fullName = v.fullName;
+    }
+
     update() {
         // calculate the loaded percentage
         let count = 0;
@@ -69,30 +87,6 @@ export class CVideoData {
         }
         this.videoPercentLoaded = Math.floor(100*count/this.frames);
 
-    }
-
-
-    getImage(frame) {
-        let image = this.imageCache[frame];
-
-        if ((image == undefined || image.width == 0) && this.tinyName !== undefined )
-            image = this.imageCacheTiny[frame];
-        if (image === undefined || image.width === 0)
-            image = null;
-        return image;
-    }
-
-
-}
-
-
-export class CFramesVideoData extends CVideoData {
-    constructor(v) {
-        super(v)
-    }
-
-    update() {
-        super.update()
 
         if (!this.startedLoadingTiny && this.tinyName !== undefined) {
             this.startedLoadingTiny = true
@@ -125,6 +119,16 @@ export class CFramesVideoData extends CVideoData {
                 }
             }
         }
+    }
+
+    getImage(frame) {
+        let image = this.imageCache[frame];
+
+        if ((image == undefined || image.width == 0) && this.tinyName !== undefined )
+            image = this.imageCacheTiny[frame];
+        if (image === undefined || image.width === 0)
+            image = null;
+        return image;
     }
 
 }
@@ -364,17 +368,6 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         par.renderOne = true;
     }
 
-
-
-}
-
-// a view on the above data
-export class CNodeFramesVideoView extends CNodeVideoView {
-    constructor(v) {
-        super(v);
-        this.checkInputs(["zoom"])
-        this.Video = new CFramesVideoData(v)
-    }
 }
 
 export class CNodeMirrorVideoView extends CNodeVideoView {
@@ -395,9 +388,7 @@ export class CNodeMirrorVideoView extends CNodeVideoView {
             this.Video = this.in.mirror.Video;
         }
     }
-
 }
-
 
 
 export function addFiltersToVideoNode(videoNode) {

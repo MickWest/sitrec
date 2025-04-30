@@ -1,42 +1,10 @@
-import {CVideoData} from "./CNodeVideoView";
-import {MP4Demuxer, MP4Source} from "../js/mp4-decode/mp4_demuxer";
-import {FileManager, GlobalDateTimeNode, infoDiv, NodeMan, Sit} from "../Globals";
-import {loadImage, versionString} from "../utils";
-import {par} from "../par";
-import {updateGUIFrames} from "../JetGUI";
-import {updateFrameSlider} from "./CNodeFrameSlider";
-import {isLocal} from "../configUtils.js"
-import {assert} from "../assert.js";
-import { CNodeATFLIRUI } from "./CNodeATFLIRUI.js";
-
-// Working, including with drag-and-drop, but there are some videos where
-// the MOOV chunk seems not to load, or something, and so
-// the getAvccBox function fails.
-// mind you it's an odd function:
-//getAvccBox() {
-//    // TODO: make sure this is coming from the right track.
-//    return this.file.moov.traks[0].mdia.minf.stbl.stsd.entries[0].avcC
-//}
-
-
-//HEY, maybe better to use: https://github.com/w3c/webcodecs/blob/main/samples/video-decode-display/demuxer_mp4.js
-//yeah, looks like I was useing an old demo
-
-
-function updateSitFrames() {
-    if (Sit.framesFromVideo) {
-        console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
-        assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
-        Sit.frames = Sit.videoFrames;
-        Sit.aFrame = 0;
-        Sit.bFrame = Sit.frames - 1;
-    }
-    // NodeMan.updateSitFramesChanged();
-    // updateGUIFrames();
-    // updateFrameSlider();
-    GlobalDateTimeNode.changedFrames();
-}
-
+import {FileManager, GlobalDateTimeNode, infoDiv, Sit} from "./Globals";
+import {assert} from "./assert";
+import {CVideoData} from "./nodes/CNodeVideoView";
+import {loadImage, versionString} from "./utils";
+import {MP4Demuxer, MP4Source} from "./js/mp4-decode/mp4_demuxer";
+import {par} from "./par";
+import {isLocal} from "./configUtils";
 
 export class CVideoWebCodecData extends CVideoData {
 
@@ -45,7 +13,7 @@ export class CVideoWebCodecData extends CVideoData {
         super(v);
 
 
-        this.format=""
+        this.format = ""
         this.error = false;
         this.loaded = false;
 
@@ -71,7 +39,7 @@ export class CVideoWebCodecData extends CVideoData {
         // check for local file
         // if it's got no forward slashes, then it's a local file
         if (v.file !== undefined && v.file.indexOf("/") === -1) {
-            FileManager.loadAsset(v.file,"video").then(result => {
+            FileManager.loadAsset(v.file, "video").then(result => {
                 // the file.appendBuffer expects an ArrayBuffer with a fileStart value (a byte offset) and
                 // and byteLength (total byte length)
                 result.parsed.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
@@ -138,7 +106,7 @@ export class CVideoWebCodecData extends CVideoData {
     }
 
     killWorkers() {
-        for (let i = 0; i<this.numWorkers;i++) {
+        for (let i = 0; i < this.numWorkers; i++) {
             if (this.filterWorkers[i] !== undefined) {
                 this.filterWorkers[i].terminate()
                 this.filterWorkers[i] = undefined;
@@ -160,8 +128,8 @@ export class CVideoWebCodecData extends CVideoData {
 
         this.killWorkers()
 
-        for (let i = 0; i<this.numWorkers;i++) {
-            this.filterWorkers[i] = new Worker('./src/workers/PixelFilterWorker.js?='+versionString);
+        for (let i = 0; i < this.numWorkers; i++) {
+            this.filterWorkers[i] = new Worker('./src/workers/PixelFilterWorker.js?=' + versionString);
             this.filterWorkers[i].onmessage = (e) => {
                 this.handleWorker(e)
             }
@@ -170,8 +138,7 @@ export class CVideoWebCodecData extends CVideoData {
 
     }
 
-    startWithDemuxer(demuxer)
-    {
+    startWithDemuxer(demuxer) {
 
         //        let demuxer = new MP4Demuxer(v.file);
         this.frames = 0;
@@ -201,7 +168,7 @@ export class CVideoWebCodecData extends CVideoData {
                 this.format = videoFrame.format;
 
 
-                this.lastDecodeInfo = "last frame.timestamp = "+videoFrame.timestamp+"<br>";
+                this.lastDecodeInfo = "last frame.timestamp = " + videoFrame.timestamp + "<br>";
                 // first chunk does not always have a 0 timestamp
                 //               const frameNumber1 = (frame.timestamp - this.chunks[0].timestamp) / this.chunks[0].duration   // TODO: This ASSUMES that the first chunk duration is the same for all except the last frame
                 //var frameNumber = this.incomingFrame++; //NO - as won't work when seeking
@@ -210,12 +177,12 @@ export class CVideoWebCodecData extends CVideoData {
                 // find the group this frame is in
                 // will be the group before the first group that starts after this frame
                 // OR the last group (no next group to check)
-                while (groupNumber+1 < this.groups.length && videoFrame.timestamp >= this.groups[groupNumber+1].timestamp)
+                while (groupNumber + 1 < this.groups.length && videoFrame.timestamp >= this.groups[groupNumber + 1].timestamp)
                     groupNumber++;
                 var group = this.groups[groupNumber]
 
                 // calculate the frame number we are decoding from how many are left
-                const frameNumber = group.frame+group.length-group.pending;
+                const frameNumber = group.frame + group.length - group.pending;
 //                console.log(frameNumber+ " Timestamp: "+frame.timestamp)
                 createImageBitmap(videoFrame).then(image => {
                     this.imageCache[frameNumber] = image
@@ -262,7 +229,7 @@ export class CVideoWebCodecData extends CVideoData {
                         for (let i in group.decodeOrder) {
                             framesDecoded += group.decodeOrder[i] + ", "
                         }
- //                       console.log(framesDecoded)
+                        //                       console.log(framesDecoded)
                     }
 
                     group.pending--;
@@ -336,7 +303,7 @@ export class CVideoWebCodecData extends CVideoData {
                     )
                 } else {
                     const lastGroup = this.groups[this.groups.length - 1]
-                    assert (chunk.timestamp >= lastGroup.timestamp, "out of group chunk timestamp")
+                    assert(chunk.timestamp >= lastGroup.timestamp, "out of group chunk timestamp")
                     lastGroup.length++;
                 }
 
@@ -345,8 +312,8 @@ export class CVideoWebCodecData extends CVideoData {
 
                 this.frames++;
                 Sit.videoFrames = this.frames * this.videoSpeed;
-               // Sit.aFrame = 0;
-               // Sit.bFrame = Sit.videoFrames-1;
+                // Sit.aFrame = 0;
+                // Sit.bFrame = Sit.videoFrames-1;
 
                 // decoding is now deferred
                 //            decoder.decode(chunk);
@@ -355,7 +322,7 @@ export class CVideoWebCodecData extends CVideoData {
             // note, that's only true if we are not loading the video async
             // (i.e. the entire video is loaded before we start decoding)
             console.log("Demuxing done (assuming not async loading), frames = " + this.frames + ", Sit.videoFrames = " + Sit.videoFrames)
-            console.log("Demuxer calculated frames as "+demuxer.source.totalFrames)
+            console.log("Demuxer calculated frames as " + demuxer.source.totalFrames)
             //assert(this.frames === demuxer.source.totalFrames, "Frames mismatch between demuxer and decoder"+this.frames+"!="+demuxer.source.totalFrames)
 
             // use the demuxer frame count, as it's more accurate
@@ -370,18 +337,17 @@ export class CVideoWebCodecData extends CVideoData {
     }
 
 
-
     // find the group object for a given frame
     getGroup(frame) {
-        for (let g=0; g<this.groups.length; g++) {
+        for (let g = 0; g < this.groups.length; g++) {
             const group = this.groups[g]
             if (frame >= group.frame && frame < (group.frame + group.length)) {
                 return group;
             }
         }
         const last = this.groups[this.groups.length - 1];
-        assert(last != undefined, "last groups is undefined, I've loaded "+this.groups.length)
-        console.warn("Last frame = "+last.frame+", length = "+last.length+", i.e. up to "+(last.frame+last.length-1))
+        assert(last != undefined, "last groups is undefined, I've loaded " + this.groups.length)
+        console.warn("Last frame = " + last.frame + ", length = " + last.length + ", i.e. up to " + (last.frame + last.length - 1))
         //assert(0,"group not found for frame "+frame)
         return null;
     }
@@ -390,12 +356,12 @@ export class CVideoWebCodecData extends CVideoData {
     // which currently means finding what group the frame is in, and then loading that
     requestFrame(frame) {
 
-        if (frame > Sit.videoFrames-1 ) frame = Sit.videoFrames-1;
-        if (frame < 0 ) frame = 0
+        if (frame > Sit.videoFrames - 1) frame = Sit.videoFrames - 1;
+        if (frame < 0) frame = 0
 
         // if it's already loading, then we are good, don't need to do anything with this request
         const group = this.getGroup(frame);
-        assert(group !== null, "group not found for frame "+frame)
+        assert(group !== null, "group not found for frame " + frame)
         if (group.loaded || group.pending > 0)
             return;
 
@@ -414,8 +380,8 @@ export class CVideoWebCodecData extends CVideoData {
         group.decodeOrder = []
         this.groupsPending++;
         const decodeQueueSizeBefore = this.decoder.decodeQueueSize;
-        for (let i = group.frame; i < group.frame+group.length; i++) {
-          //  console.log ("i = " +i+" decodeQueuesize = "+this.decoder.decodeQueueSize)
+        for (let i = group.frame; i < group.frame + group.length; i++) {
+            //  console.log ("i = " +i+" decodeQueuesize = "+this.decoder.decodeQueueSize)
             this.decoder.decode(this.chunks[i])
         }
         const addedToDecodeQueue = this.decoder.decodeQueueSize - decodeQueueSizeBefore
@@ -423,15 +389,15 @@ export class CVideoWebCodecData extends CVideoData {
 //        console.log ("decodeQueuesize = "+this.decoder.decodeQueueSize+" added "+addedToDecodeQueue)
     }
 
-    purgeGroupsExcept(keep){
+    purgeGroupsExcept(keep) {
         let numPending = 0;
         for (let g in this.groups) {
             const group = this.groups[g]
-            if (group.pending > 0 )
+            if (group.pending > 0)
                 numPending++;
             if (keep.find(keeper => keeper === group) === undefined && group.loaded) {
 //                console.log("Purging group at frame "+group.frame+" group pending = "+group.pending)
-                for (let i = group.frame+1; i < group.frame+group.length; i++) {
+                for (let i = group.frame + 1; i < group.frame + group.length; i++) {
                     // release all the frames in this group
                     this.imageCache[i] = new Image()    // TODO, maybe better as null, but other code expect an empty Image when not loaded
                     this.imageDataCache[i] = undefined;      // the imageData versions used for filtering
@@ -451,9 +417,9 @@ export class CVideoWebCodecData extends CVideoData {
         if (this.config !== undefined) {
 
 
-            d += "Config: Codec: " + this.config.codec + "  format:" + this.format +" " + this.config.codedWidth + "x" + this.config.codedHeight + "<br>"
-            d += "CVideoView: " + this.width +"x"+this.height+"<br>"
-            d += "par.frame = " + par.frame + ", Sit.frames = "+Sit.frames+", chunks = "+this.chunks.length+"<br>"
+            d += "Config: Codec: " + this.config.codec + "  format:" + this.format + " " + this.config.codedWidth + "x" + this.config.codedHeight + "<br>"
+            d += "CVideoView: " + this.width + "x" + this.height + "<br>"
+            d += "par.frame = " + par.frame + ", Sit.frames = " + Sit.frames + ", chunks = " + this.chunks.length + "<br>"
             d += this.lastDecodeInfo;
             d += "Decode Queue Size = " + this.decoder.decodeQueueSize + "<br>";
 
@@ -466,7 +432,7 @@ export class CVideoWebCodecData extends CVideoData {
                 var images = 0;
                 var imageDatas = 0
                 var framesCaches = 0
-                for (var i=g.frame; i<g.frame+g.length;i++) {
+                for (var i = g.frame; i < g.frame + g.length; i++) {
                     if (this.imageCache[i] != undefined && this.imageCache[i].width != 0)
                         images++
                     if (this.imageDataCache[i] != undefined && this.imageDataCache[i].width != 0)
@@ -476,9 +442,8 @@ export class CVideoWebCodecData extends CVideoData {
                 }
 
 
-                d += "Group " + _g + " f = " + g.frame + " l = " + g.length + " ts = "+g.timestamp
-                     + " i = "+images+" id = "+imageDatas+" fc = "+framesCaches+ (g.loaded ? " Loaded " : "")+ (g.pending ? " pending = " + g.pending : "")+"<br>"
-
+                d += "Group " + _g + " f = " + g.frame + " l = " + g.length + " ts = " + g.timestamp
+                    + " i = " + images + " id = " + imageDatas + " fc = " + framesCaches + (g.loaded ? " Loaded " : "") + (g.pending ? " pending = " + g.pending : "") + "<br>"
 
 
             }
@@ -542,7 +507,7 @@ export class CVideoWebCodecData extends CVideoData {
             let B = frame;
             let bestFrame = frame;
             while (A >= 0 && B < this.chunks.length) {
-                if (A>=0) {
+                if (A >= 0) {
                     if (this.imageCache[A] !== undefined && this.imageCache[A].width !== 0) {
                         bestFrame = A;
                         break;
@@ -550,7 +515,7 @@ export class CVideoWebCodecData extends CVideoData {
                     }
                     A--
                 }
-                if (B<this.chunks.length) {
+                if (B < this.chunks.length) {
                     if (this.imageCache[B] !== undefined && this.imageCache[B].width !== 0) {
                         bestFrame = B;
                         break;
@@ -564,7 +529,6 @@ export class CVideoWebCodecData extends CVideoData {
             return image;
 
 
-
             // return super.getImage(frame)
         }
 
@@ -574,47 +538,46 @@ export class CVideoWebCodecData extends CVideoData {
     updateYUVFilter(frameNumber) {
         const image = this.imageCache[frameNumber]
         const YUV = this.frameCache[frameNumber]
-        const len = this.width*this.height
+        const len = this.width * this.height
         if (image && YUV) {
-            var newData = new Uint8ClampedArray(len*4)
-            for (let i = 0; i<len;i++) {
+            var newData = new Uint8ClampedArray(len * 4)
+            for (let i = 0; i < len; i++) {
 
 
                 // calculate offset of the CbCr byte pair (one per 2x2 pixels)
                 // TODO: the row stride might differ for odd dimension videos
-                var row = Math.floor(i/this.width)
-                var col = (i%this.width)&0xfffffffe
-                let uvOffset = len + this.width*(row>>1)+col
+                var row = Math.floor(i / this.width)
+                var col = (i % this.width) & 0xfffffffe
+                let uvOffset = len + this.width * (row >> 1) + col
 
                 // this is the YCbCr to RGB conversion matrix.
                 // for BT.709 HDTV
                 // TODO - extract the matrix from the video  -at least ot assert it's the same
                 var y = YUV[i] - 16
-                var u = YUV[uvOffset+0]-128
-                var v = YUV[uvOffset+1]-128
-                const r = 1.164 * y             + 1.596 * v;
+                var u = YUV[uvOffset + 0] - 128
+                var v = YUV[uvOffset + 1] - 128
+                const r = 1.164 * y + 1.596 * v;
                 const g = 1.164 * y - 0.392 * u - 0.813 * v;
                 const b = 1.164 * y + 2.017 * u + 100;
-
 
 
                 // var r = y + 1.402 * v;
                 // var g = y - 0.34414 * u - 0.71414 * v;
                 // var b = y + 1.772 * u;
-/*
-                // Clamp to 0..1
-                if (r < 0) r = 0;
-                if (g < 0) g = 0;
-                if (b < 0) b = 0;
-                if (r > 255) r = 255;
-                if (g > 255) g = 255;
-                if (b > 255) b = 255;
-*/
+                /*
+                                // Clamp to 0..1
+                                if (r < 0) r = 0;
+                                if (g < 0) g = 0;
+                                if (b < 0) b = 0;
+                                if (r > 255) r = 255;
+                                if (g > 255) g = 255;
+                                if (b > 255) b = 255;
+                */
 
-                newData[i*4 + 0] = r
-                newData[i*4 + 1] = g // YUV[len+(i>>2)+0]
-                newData[i*4 + 2] = b // YUV[i]
-                newData[i*4 + 3] = 255
+                newData[i * 4 + 0] = r
+                newData[i * 4 + 1] = g // YUV[len+(i>>2)+0]
+                newData[i * 4 + 2] = b // YUV[i]
+                newData[i * 4 + 3] = 255
             }
 
             // creating an ImageData isn't that slow
@@ -641,8 +604,8 @@ export class CVideoWebCodecData extends CVideoData {
                 // store them in a matching array
                 // i.e. we have the usable images in this.imageCache
                 // and the ImageData version in this.imageDataCache
-                this.ctx_tmp.drawImage(image,0,0)
-                const imageData = this.ctx_tmp.getImageData(0,0,this.width, this.height)
+                this.ctx_tmp.drawImage(image, 0, 0)
+                const imageData = this.ctx_tmp.getImageData(0, 0, this.width, this.height)
                 this.imageDataCache[frameNumber] = imageData
             }
 
@@ -656,17 +619,14 @@ export class CVideoWebCodecData extends CVideoData {
             )
 
 
-            for (let i = 0; i<clonedImageData.data.length/4;i++) {
-    //            clonedImageData.data[i*4 + 0] += Math.random()*255
+            for (let i = 0; i < clonedImageData.data.length / 4; i++) {
+                //            clonedImageData.data[i*4 + 0] += Math.random()*255
             }
 
             this.filterWorkers[this.nextWorker].postMessage([frameNumber, clonedImageData]);
             this.nextWorker++
             if (this.nextWorker >= this.numWorkers)
                 this.nextWorker = 0;
-
-
-
 
 
             // TODO - empty data from cache
@@ -695,7 +655,7 @@ export class CVideoWebCodecData extends CVideoData {
             this.decoder.flush()
 
         if (isLocal) {
-           // this.debugVideo()
+            // this.debugVideo()
         }
     }
 
@@ -711,3 +671,16 @@ export class CVideoWebCodecData extends CVideoData {
 }
 
 
+function updateSitFrames() {
+    if (Sit.framesFromVideo) {
+        console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
+        assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
+        Sit.frames = Sit.videoFrames;
+        Sit.aFrame = 0;
+        Sit.bFrame = Sit.frames - 1;
+    }
+    // NodeMan.updateSitFramesChanged();
+    // updateGUIFrames();
+    // updateFrameSlider();
+    GlobalDateTimeNode.changedFrames();
+}

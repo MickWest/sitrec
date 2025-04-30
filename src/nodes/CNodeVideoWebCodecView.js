@@ -1,10 +1,10 @@
 import {CNodeVideoView} from "./CNodeVideoView";
 import {par} from "../par";
 import {FileManager, Sit} from "../Globals";
-import {CVideoWebCodecData} from "./CNodeVideoWebCodec";
 import {CNodeViewUI} from "./CNodeViewUI";
 
 import {SITREC_APP} from "../configUtils";
+import {CVideoWebCodecData} from "../CVideoWebCodecData";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
