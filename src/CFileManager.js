@@ -561,8 +561,9 @@ export class CFileManager extends CManager {
     }
 
 
-
-    loadLocalFile(parse = false) {
+    // load a file from the local system by first putting up a file selector dialog
+    // then running the processFile on the resultant file object
+    loadLocalFile(processFile) {
         // Create an input element
         const inputElement = document.createElement('input');
 
@@ -571,31 +572,11 @@ export class CFileManager extends CManager {
 
         // Listen for changes on the input element
         inputElement.addEventListener('change', (event) => {
-            // Get the selected file
-            const file = event.target.files[0];
+            processFile(event.target.files[0]);
 
-            // Create a FileReader to read the file
-            const reader = new FileReader();
+            // Remove the input element after use
+            inputElement.remove();
 
-            // Listen for the 'load' event on the FileReader
-            reader.addEventListener('load', () => {
-                // When the file has been read, parse it as an asset or rehost it
-                if (parse) {
-                      DragDropHandler.parseResult(file.name, reader.result);
-                } else {
-                    this.rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
-                        console.log("Imported File Rehosted as " + rehostResult);
-                        // display an alert with the new URL so the user can copy it
-                        //alert(rehostResult);
-                        createCustomModalWithCopy(rehostResult)();
-
-                    });
-                }
-
-            });
-
-            // Read the file as an array buffer (binary data)
-            reader.readAsArrayBuffer(file);
         });
 
         // Trigger a click event on the input element
@@ -604,11 +585,31 @@ export class CFileManager extends CManager {
     }
 
     rehostFile() {
-        this.loadLocalFile(false)
+        this.loadLocalFile( (file) => {
+            const reader = new FileReader();
+
+            // Listen for the 'load' event on the FileReader
+            reader.addEventListener('load', () => {
+
+                this.rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
+                    console.log("Imported File Rehosted as " + rehostResult);
+                    // display an alert with the new URL so the user can copy it
+                    //alert(rehostResult);
+                    createCustomModalWithCopy(rehostResult)();
+
+                });
+
+            });
+
+            // Read the file as an array buffer (binary data)
+            reader.readAsArrayBuffer(file);
+        })
     }
 
     importFile() {
-        this.loadLocalFile(true)
+        this.loadLocalFile( (file) => {
+            DragDropHandler.uploadDroppedFile(file)
+        })
     }
 
 

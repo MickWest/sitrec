@@ -139,7 +139,6 @@ class CDragDropHandler {
     }
 
     uploadDroppedFile(file) {
-
         // if it's a video file, that's handled differently
         // as we might (in the future) want to stream it
         if (file.type.startsWith("video")) {
@@ -163,17 +162,6 @@ class CDragDropHandler {
             let reader = new FileReader();
             reader.readAsArrayBuffer(file);
             reader.onloadend = () => {
-               // // console.log("Started rehost of dropped file"+file.name)
-               //  FileManager.rehoster.rehostFile(file.name, reader.result).then(rehostResult => {
-               //      console.log("Rehosted as " + rehostResult);
-               //      resolve(rehostResult); // Resolve the promise
-               //  }).catch(error => {
-               //      console.warn("Unable to rehost file, error = " + error);
-               //      reject(error); // Reject the promise
-               //  });
-               //  //console.log("Started PARSE of dropped file"+file.name)
-
-                // parsing the result will happen BEFORE the rehost
                 this.queueResult(file.name, reader.result, null);
             };
         });

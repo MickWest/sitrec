@@ -26,7 +26,7 @@ export class CVideoWebCodecData extends CVideoData {
         }
 
         if (this.incompatible) {
-            console.log("Requires up-to-date WebCodec Browser (Chrome/Edge/Safari")
+            console.log("Video Playback Requires up-to-date WebCodec Browser (Chrome/Edge/Safari")
             this.errorImage = null;
             loadImage('./data/images/errorImage.png').then(result => {
                 this.errorImage = result;
@@ -36,7 +36,7 @@ export class CVideoWebCodecData extends CVideoData {
 
         let source = new MP4Source()
 
-        // check for local file
+        // check for local file (i.e. file on the user's computer loaded with a file picker)
         // if it's got no forward slashes, then it's a local file
         if (v.file !== undefined && v.file.indexOf("/") === -1) {
             FileManager.loadAsset(v.file, "video").then(result => {
@@ -64,6 +64,27 @@ export class CVideoWebCodecData extends CVideoData {
                     () => {
                         errorCallback();
                     })
+
+
+                // fetch(v.file).then(response => {
+                //     const reader = response.body.getReader();
+                //     // if (response.status === 200) {
+                //     //     source.loadFromReader(reader, callback)
+                //     // } else {
+                //     //     if (error !== undefined) {
+                //     //         errorCallback()
+                //     //     }
+                //     // }
+                //
+                //     this.videoDroppedData = reader.result;
+                //     this.videoDroppedURL = null;
+                //     reader.result.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
+                //     source.file.appendBuffer(reader.result)
+                //     source.file.flush();
+                //     loadedCallback();
+                //
+                //
+                // })
             }
             if (v.dropFile !== undefined) {
                 let reader = new FileReader()
