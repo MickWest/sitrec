@@ -33,8 +33,6 @@ export class CVideoData {
     }
 
     flushEntireCache() {
-        this.startedLoadingTiny = false;
-        this.startedLoadingFull = false;
 
         this.imageCacheTiny = [] // optional small versions
         this.imageCache = [] // full sized images
@@ -51,6 +49,13 @@ export class CVideoData {
 
     stopStreaming() {
         this.flushEntireCache()
+    }
+
+    dispose() {
+        this.stopStreaming()
+        this.imageCache = null
+        this.imageDataCache = null
+        this.frameCache = null
     }
 
 }

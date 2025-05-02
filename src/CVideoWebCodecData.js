@@ -661,12 +661,20 @@ export class CVideoWebCodecData extends CVideoData {
     }
 
     dispose() {
-
-        if (this.decoder !== undefined) {
-            this.decoder.close()
+        if (this.decoder) {
+            // flush is asynchronous, so we need to wait for it to finish
+            // before we close the decoder
+            // we create a local variable to avoid the "this" context changing
+            const decoder = this.decoder;
+            decoder.flush()
+                .catch(() => {})   // swallow any flush errors we don't care about
+                .finally(() => decoder.close());
         }
-        this.killWorkers()
-        super.dispose()
+        this.killWorkers();
+        super.dispose();
+
+        delete Sit.videoFile;
+        delete Sit.videoFrames;
     }
 
     stopStreaming() {

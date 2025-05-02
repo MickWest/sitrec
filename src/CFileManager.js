@@ -679,6 +679,8 @@ export class CFileManager extends CManager {
     // returns a promise, which you can then await or .then
     loadAsset(filename, id) {
 
+        assert(filename, "Filename is undefined or null");
+
         // if it starts with data/ then strip that off
         if (filename.startsWith("data/")) {
             filename = filename.substring(5);

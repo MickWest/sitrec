@@ -111,6 +111,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
 
         this.stopStreaming()
         this.addLoadingMessage()
+        this.disposeVideoData()
         this.videoData = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         par.frame = 0;

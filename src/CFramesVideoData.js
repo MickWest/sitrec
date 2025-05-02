@@ -66,4 +66,15 @@ export class CFramesVideoData extends CVideoData {
         return image;
     }
 
+
+    dispose() {
+        super.dispose();
+        this.imageCache = null;
+        this.imageCacheTiny = null;
+        this.tinyName = null;
+        this.fullName = null;
+        this.startedLoadingTiny = false;
+        this.startedLoadingFull = false;
+    }
+
 }

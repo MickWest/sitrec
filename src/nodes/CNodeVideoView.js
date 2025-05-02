@@ -58,6 +58,7 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
             Sit.frames = undefined; // need to recalculate this
         }
         this.fileName = fileName;
+        this.disposeVideoData()
         this.videoData = new CVideoWebCodecData({id: this.id + "_data", file: fileName},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         this.positioned = false;
@@ -187,13 +188,24 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         this.positioned = true;
     }
 
-    makeImageVideo(img) {
+    disposeVideoData() {
         if (this.videoData) {
             this.videoData.stopStreaming()
             this.videoData.dispose();
             this.videoData = null;
         }
-        this.videoData = new CVideoImageData({id: this.id + "_data", img: img},
+    }
+
+
+    makeImageVideo(filename, img, deleteAfterUsing = false) {
+
+        this.disposeVideoData()
+        this.videoData = new CVideoImageData({
+                id: this.id + "_data",
+                filename:filename,
+                img: img,
+                deleteAfterUsing: deleteAfterUsing
+            },
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         this.positioned = false;
         par.frame = 0;
