@@ -15,7 +15,7 @@ export class CNodeMirrorVideoView extends CNodeVideoView {
     // use the new video if it has
     update() {
         if (this.in.mirror.videoData !== this.videoData) {
-            this.Video = this.in.mirror.videoData;
+            this.videoData = this.in.mirror.videoData;
         }
     }
 }
