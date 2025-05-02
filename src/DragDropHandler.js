@@ -411,7 +411,12 @@ class CDragDropHandler {
             }
 
             if (isATrack) {
-                        addTracks([filename], true)
+                addTracks([filename], true)
+                if (fileExt === "kml") {
+                    console.log("KML file detected, adding anything else in the file")
+                    extractKMLObjects(parsedFile)
+                }
+                return
             } else if (isASitch) {
                 // parsedFile is a sitch text def
                 // make a copy of the string (as we might be removing all the files)
@@ -424,6 +429,7 @@ class CDragDropHandler {
                     copy = textSitchToObject(decodedString);
                 }
                 setNewSitchObject(copy)
+                return;
             } else if (fileExt === "glb") {
                 // it's a model, so we can replace the model used in targetModel
                 // we have filename, and we can just set
@@ -435,17 +441,15 @@ class CDragDropHandler {
                     target.rebuild();
                     // woudl also need to add it to the gui
                 }
+                return;
 
 
-            } else {
-                if (fileExt !== "kml") {
-                    console.warn("Unhandled file type: " + fileExt + " for " + filename);
-                }
             }
 
             if (fileExt === "kml") {
                 console.log("KML file detected, adding anything else in the file")
                 extractKMLObjects(parsedFile)
+                return;
             }
 
             // is it an image?
@@ -455,8 +459,11 @@ class CDragDropHandler {
                     console.warn("No video node found to load video file");
                     return;
                 }
-                NodeMan.get("video").makeImageVideo(parsedFile);
+                NodeMan.get("video").makeImageVideo(filename, parsedFile, true);
+                return;
             }
+
+            console.warn("Unhandled file type: " + fileExt + " for " + filename);
 
 
         }
