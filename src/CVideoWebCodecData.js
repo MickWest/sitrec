@@ -36,6 +36,8 @@ export class CVideoWebCodecData extends CVideoData {
 
         let source = new MP4Source()
 
+        // here v.file, if defined is a file name
+        // either a URL or a local file
         // check for local file (i.e. file on the user's computer loaded with a file picker)
         // if it's got no forward slashes, then it's a local file
         if (v.file !== undefined && v.file.indexOf("/") === -1) {
@@ -56,7 +58,11 @@ export class CVideoWebCodecData extends CVideoData {
             })
         } else {
 
+            // it's a URL (URI) which is either a local file
+            // or a remote file on a sever with appropriate CORS, like AWS
             if (v.file !== undefined) {
+
+
                 source.loadURI(v.file,
                     () => {
                         loadedCallback();
@@ -65,6 +71,7 @@ export class CVideoWebCodecData extends CVideoData {
                         errorCallback();
                     })
 
+                // load the entire file and process it like the above
 
                 // fetch(v.file).then(response => {
                 //     const reader = response.body.getReader();
@@ -86,6 +93,9 @@ export class CVideoWebCodecData extends CVideoData {
                 //
                 // })
             }
+
+            // Handle drag and drop files
+            // v.dropFile is a File object, which comes from DragDropHandler
             if (v.dropFile !== undefined) {
                 let reader = new FileReader()
                 reader.readAsArrayBuffer(v.dropFile)

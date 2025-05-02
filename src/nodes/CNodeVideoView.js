@@ -3,8 +3,10 @@ import {CNodeViewCanvas2D} from "./CNodeViewCanvas";
 import {par} from "../par";
 import {quickToggle} from "../KeyBoardHandler";
 import {CNodeGUIValue} from "./CNodeGUIValue";
-import {guiTweaks} from "../Globals";
+import {guiTweaks, Sit} from "../Globals";
 import {CMouseHandler} from "../CMouseHandler";
+import {CNodeViewUI} from "./CNodeViewUI";
+import {CVideoWebCodecData} from "../CVideoWebCodecData";
 
 
 export class CNodeVideoView extends CNodeViewCanvas2D {
@@ -29,6 +31,94 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
 
         this.autoClear = (v.autoClear !== undefined)? v.autoClear : false;
 
+        this.input("zoom", true); // zoom input is optional
+
+
+        this.setupMouseHandler();
+
+        // if it's an overlay view then we don't need to add the overlay UI view
+        if (!v.overlayView) {
+            // Add an overlay view to show status (mostly errors)
+            this.overlay = new CNodeViewUI({id: this.id+"_videoOverlay", overlayView: this})
+            this.overlay.ignoreMouseEvents();
+        }
+
+        v.id = v.id + "_data"
+
+        if (v.file !== undefined) {
+            this.newVideo(v.file, false); // don't clear Sit.frames as legacy code sets it when passing in a video filename this way
+        }
+
+
+    }
+
+    newVideo(fileName, clearFrames = true) {
+        if (clearFrames) {
+            Sit.frames = undefined; // need to recalculate this
+        }
+        this.fileName = fileName;
+        this.videoData = new CVideoWebCodecData({id: this.id + "_data", file: fileName},
+            this.loadedCallback.bind(this), this.errorCallback.bind(this))
+        this.positioned = false;
+        par.frame = 0;
+        par.paused = false; // unpause, otherwise we see nothing.
+        this.addLoadingMessage()
+        this.addDownloadButton()
+
+
+    }
+
+    addLoadingMessage() {
+        if (this.overlay)
+            this.overlay.addText("videoLoading", "LOADING", 50, 50, 5, "#f0f000")
+    }
+
+
+    removeText() {
+        if (this.overlay) {
+            this.overlay.removeText("videoLoading")
+            this.overlay.removeText("videoError")
+            this.overlay.removeText("videoErrorName")
+            this.overlay.removeText("videoNo")
+        }
+    }
+
+
+    stopStreaming() {
+        this.removeText()
+        par.frame = 0
+        par.paused = false;
+        if (this.videoData) {
+            this.videoData.stopStreaming()
+        }
+        this.positioned = false;
+    }
+
+
+
+    loadedCallback() {
+        this.removeText();
+        // if we loaded from a mod or custom
+        // then we might want to set the frame nubmer
+
+        if (Sit.pars !== undefined && Sit.pars.frame !== undefined) {
+            par.frame = Sit.pars.frame;
+        }
+
+
+    }
+
+    errorCallback() {
+        this.videoData.error = false;
+        if (this.overlay) {
+            this.overlay.removeText("videoLoading")
+            this.overlay.addText("videoError", "Error Loading", 50, 45, 5, "#f0f000", "center")
+            this.overlay.addText("videoErrorName", this.fileName, 50, 55, 1.5, "#f0f000", "center")
+        }
+    }
+
+
+    setupMouseHandler() {
         this.mouse = new CMouseHandler(this, {
 
             wheel: (e) => {
