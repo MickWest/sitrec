@@ -752,9 +752,15 @@ export class CFileManager extends CManager {
 
         var isUrl = isHttpOrHttps(filename);
         if (!isUrl) {
-            // if it's not a url, then redirect to the data folder
-            //filename = "./data/" + filename;
-            filename = SITREC_APP + "data/" + filename;
+            // legacy sitches have videos specified as: "../sitrec-videos/public/2 - Gimbal-WMV2PRORES-CROP-428x428.mp4"
+            // and in that case it's relative to SITREC_APP wihtout the data folder
+            if (filename.startsWith("../sitrec-videos/")) {
+                filename = SITREC_APP + filename;
+            } else {
+                // if it's not a url, then redirect to the data folder
+                //filename = "./data/" + filename;
+                filename = SITREC_APP + "data/" + filename;
+            }
         }
 
         Globals.parsing++;
