@@ -448,6 +448,16 @@ class CDragDropHandler {
                 extractKMLObjects(parsedFile)
             }
 
+            // is it an image?
+            if (fileExt === "jpg" || fileExt === "jpeg" || fileExt === "png" || fileExt === "gif") {
+                // it's an image, so we want to make a video that's a single frame
+                if (!NodeMan.exists("video")) {
+                    console.warn("No video node found to load video file");
+                    return;
+                }
+                NodeMan.get("video").makeImageVideo(parsedFile);
+            }
+
 
         }
     }

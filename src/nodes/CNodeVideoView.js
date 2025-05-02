@@ -7,6 +7,7 @@ import {guiTweaks, Sit} from "../Globals";
 import {CMouseHandler} from "../CMouseHandler";
 import {CNodeViewUI} from "./CNodeViewUI";
 import {CVideoWebCodecData} from "../CVideoWebCodecData";
+import {CVideoImageData} from "../CVideoImageData";
 
 
 export class CNodeVideoView extends CNodeViewCanvas2D {
@@ -184,6 +185,21 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         super.modDeserialize(v)
         this.simpleDeserialize(v, this.toSerializeCNodeVideoView)
         this.positioned = true;
+    }
+
+    makeImageVideo(img) {
+        if (this.videoData) {
+            this.videoData.stopStreaming()
+            this.videoData.dispose();
+            this.videoData = null;
+        }
+        this.videoData = new CVideoImageData({id: this.id + "_data", img: img},
+            this.loadedCallback.bind(this), this.errorCallback.bind(this))
+        this.positioned = false;
+        par.frame = 0;
+        par.paused = false; // unpause, otherwise we see nothing.
+        // this.addLoadingMessage()
+        // this.addDownloadButton()
     }
 
     renderCanvas(frame = 0) {
