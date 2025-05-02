@@ -130,14 +130,6 @@ class CDragDropHandler {
     }
 
 
-    // If there are loaded files in the queue, then parse them
-    checkDropQueue() {
-        while (this.dropQueue.length > 0) {
-            const drop = this.dropQueue.shift();
-            this.parseResult(drop.filename, drop.result, drop.newStaticURL);
-        }
-    }
-
     uploadDroppedFile(file) {
         // if it's a video file, that's handled differently
         // as we might (in the future) want to stream it
@@ -312,12 +304,34 @@ class CDragDropHandler {
         mainCamera.lookAt(target);
     }
 
+    // Add a loaded file to the drop queue for later parsing
+    // we do this from within the dragDropHandler event handler,
+    // so we can control when the parsing happens in the event loop
+    // and make it easier to debug (PHPStorm tends to break on debugging async event calls)
+    // @param {string} filename - The name of the file
+    // @param {ArrayBuffer} result - The raw file data
+    // @param {string|null} newStaticURL - The static URL for the file, if applicable
     queueResult(filename, result, newStaticURL) {
         this.dropQueue.push({filename: filename, result: result, newStaticURL: newStaticURL});
     }
 
+    // If there are loaded files in the queue, then parse them
+    // this is called from the main loop
+    // to allow for debugging
+    checkDropQueue() {
+        while (this.dropQueue.length > 0) {
+            const drop = this.dropQueue.shift();
+            this.parseResult(drop.filename, drop.result, drop.newStaticURL);
+        }
+    }
+
+
     // a raw arraybuffer (result) has been loaded
     // parse the asset
+    // and then handle the parsed file
+    // @param {string} filename - The name of the file
+    // @param {ArrayBuffer} result - The raw file data
+    // @param {string|null} newStaticURL - The static URL for the file, if applicable
     parseResult(filename, result, newStaticURL) {
         FileManager.parseAsset(filename, filename, result)
             .then(parsedResult => {
@@ -354,6 +368,11 @@ class CDragDropHandler {
             })
     }
 
+    // handle the parsed file
+    // this is where we decide what to do with the file
+    // based on the file extension and the data type
+    // @param {string} filename - The name of the file
+    // @param {ArrayBuffer} parsedFile - The parsed file data (from parseResult)
     handleParsedFile(filename, parsedFile) {
 
         const fileManagerEntry = FileManager.list[filename];
