@@ -40,7 +40,13 @@ export class CVideoWebCodecData extends CVideoData {
         // either a URL or a local file
         // check for local file (i.e. file on the user's computer loaded with a file picker)
         // if it's got no forward slashes, then it's a local file
-        if (v.file !== undefined && v.file.indexOf("/") === -1) {
+
+
+        // QUESTION: why do we need to use the file manager here?
+        // why not load the file directly?
+        // ANSWER The file manager does some parsing of the path???
+
+        if (v.file !== undefined ) {
             FileManager.loadAsset(v.file, "video").then(result => {
                 // the file.appendBuffer expects an ArrayBuffer with a fileStart value (a byte offset) and
                 // and byteLength (total byte length)
@@ -57,42 +63,6 @@ export class CVideoWebCodecData extends CVideoData {
 
             })
         } else {
-
-            // it's a URL (URI) which is either a local file
-            // or a remote file on a sever with appropriate CORS, like AWS
-            if (v.file !== undefined) {
-
-
-                source.loadURI(v.file,
-                    () => {
-                        loadedCallback();
-                    },
-                    () => {
-                        errorCallback();
-                    })
-
-                // load the entire file and process it like the above
-
-                // fetch(v.file).then(response => {
-                //     const reader = response.body.getReader();
-                //     // if (response.status === 200) {
-                //     //     source.loadFromReader(reader, callback)
-                //     // } else {
-                //     //     if (error !== undefined) {
-                //     //         errorCallback()
-                //     //     }
-                //     // }
-                //
-                //     this.videoDroppedData = reader.result;
-                //     this.videoDroppedURL = null;
-                //     reader.result.fileStart = 0;        // patch in the fileStart of 0, as this is the whole thing
-                //     source.file.appendBuffer(reader.result)
-                //     source.file.flush();
-                //     loadedCallback();
-                //
-                //
-                // })
-            }
 
             // Handle drag and drop files
             // v.dropFile is a File object, which comes from DragDropHandler
