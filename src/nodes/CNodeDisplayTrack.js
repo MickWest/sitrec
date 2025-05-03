@@ -276,6 +276,17 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const line_points = [];
         const line_colors = [];
         assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id="+this.id)
+
+
+        // Line2 has performace issues with large numbers of points that are coincident
+        // Because normalize(0,0) produces NaNs/inf. Those NaNs propagate into
+        // gl_Position, so each degenerate quad is treated by the GPU as a
+        // full‑screen triangle with undefined coordinates
+        // So we need to skip over points that are too close to the previous point
+        // we use EPS to define the minimum distance between points
+        const EPS = 1e-4;           // epsilon for comparing floats
+        let  lastPos;               // track the previous accepted point
+
         for (var f = 0; f < this.frames; f++) {
             let trackPoint = this.in.track.v(f)
 
@@ -302,7 +313,18 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                 var A = trackPoint.position
                 assert(!isNaN(A.x) && !isNaN(A.y) && !isNaN(A.z), "CNodeDisplayTrack: trackPoint has NaNs in position, id=" + this.id + " frame=" + f);
 
-                line_points.push(A.x, A.y, A.z);
+                //line_points.push(A.x, A.y, A.z);
+                // Skip if coincident (or almost) with previous point
+                 if (!lastPos ||
+                     lastPos.distanceToSquared(A) > EPS*EPS) {
+                     line_points.push(A.x, A.y, A.z);
+                     lastPos = A;        // remember
+                 } else {
+                     continue;           // drop zero‑length segment
+                 }
+
+
+
                 var color = trackPoint.color // the track itself can override the color defaults
                 if (color === undefined) {
           //         if (f <= par.frame || this.in.secondColor === undefined)
