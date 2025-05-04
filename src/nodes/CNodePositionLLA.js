@@ -177,13 +177,16 @@ export class CNodePositionLLA extends CNode {
     }
 
     recalculate() {
+        this.EUS = LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(0))
+
     }
 
     // return vector3 EUS for the specified LLA (animateabel)
     getValueFrame(f) {
         if (this._LLA !== undefined) {
             assert(this.guiAlt !== undefined, "CNodePositionLLA: no guiAlt defined")
-            return LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(f))
+       //     return LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(f))
+            return this.EUS
         }
         const lat = this.in.lat.v(f)
         const lon = this.in.lon.v(f)
