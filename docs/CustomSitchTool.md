@@ -130,6 +130,8 @@ Here I bring in the Tv Out Black and White to simulate the haze. I also defocus 
 
 Note in situation like this, the target is often darker than anticipated. That's due to the (current) lack of High Dynamic Range rending in Sitrec. 
 
+You can also drag in an image (JPG or PNG) and it will act like a video. The current number of frames will not be changed. 
+
 ## Complex Tracks and Video
 
 Some platforms, like DJI or other drones, or commercial and military cameras, encode additional data besides the camera position. Typically, this will include the direction the camera is pointing, possible a track of the ground positions below the center cross-hairs, the field of view, and other things. 
