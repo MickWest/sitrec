@@ -3,6 +3,8 @@
 // or a LLA array of three values
 // Note that the altitude is in meters in the LLA array
 // and in feet in the GUI
+//
+// Now with optional wind to adjust the position over time
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAToEUS} from "../LLA-ECEF-ENU";
 import {CNode} from "./CNode";
 import {V3} from "../threeUtils";
@@ -12,10 +14,15 @@ import {adjustHeightAboveGround, altitudeAtLL} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
 import {EventManager} from "../CEventManager";
+import {Sit} from "../Globals";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
         super(v);
+
+        this.input("wind", true)
+        this.frames = Sit.frames;
+        this.useSitFrames = true; // use sit frames for the LLA
 
         if (v.LLA !== undefined) {
             // copy the array in v.LLA to this._LLA
@@ -177,8 +184,9 @@ export class CNodePositionLLA extends CNode {
     }
 
     recalculate() {
-        this.EUS = LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(0))
-
+        if (this._LLA !== undefined) {
+            this.EUS = LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(0))
+        }
     }
 
     // return vector3 EUS for the specified LLA (animateabel)
@@ -186,7 +194,14 @@ export class CNodePositionLLA extends CNode {
         if (this._LLA !== undefined) {
             assert(this.guiAlt !== undefined, "CNodePositionLLA: no guiAlt defined")
        //     return LLAToEUS(this._LLA[0], this._LLA[1], this.guiAlt.getValueFrame(f))
-            return this.EUS
+            let pos = this.EUS.clone();
+            if (this.in.wind) {
+                const wind = this.in.wind.v0.multiplyScalar(f);
+                // add the wind to the position
+                pos.add(wind);
+            }
+
+            return pos
         }
         const lat = this.in.lat.v(f)
         const lon = this.in.lon.v(f)

@@ -803,6 +803,20 @@ export class CNodeOrigin extends CNode {
 
 }
 
+// CNodeSpecificFrame is a node that returns a specific frame from another node
+// in particular to get frame 0 from a wind modified track in order to ignore wind
+export class CNodeSpecificFrame extends CNode {
+    constructor(v) {
+        super(v);
+        this.specificFrame = v.frame;
+        this.input("node")
+    }
+
+    getValueFrame(frame) {
+        return this.in.node.getValueFrame(frame)
+    }
+}
+
 export {CNode}
 
 

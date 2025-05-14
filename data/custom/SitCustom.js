@@ -369,7 +369,10 @@ sitch = {
 
 
     // this is the fixed target position that you can move around while holding X, or edit in the target GUI
-    fixedTargetPosition: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000], desc: "Target", gui: "target", key:"X"},
+    fixedTargetPositionWind: {kind: "PositionLLA", LLA: [32.5,-118.428486,5000],
+        desc: "Target", gui: "target", key:"X", wind: "targetWind"},
+
+    fixedTargetPosition: {kind: "SpecificFrame", frame: 0, node: "fixedTargetPositionWind"},
 
     // Target switch, for switching between different target tracks
     // initially just the fixed target, but can be updated by the user (adding KML or MISB tracks)
@@ -377,6 +380,7 @@ sitch = {
         kind: "Switch",
         inputs: {
             "fixedTarget": "fixedTargetPosition",
+            "fixedTarget + Wind": "fixedTargetPositionWind",
         },
         desc: "Target Track",
         gui: "target",
@@ -529,7 +533,10 @@ sitch = {
             "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
             "Windblown Object (on first LOS)": "LOSTraverseWind",
-            "Windblown Target": "LOSTraverseWindTarget",
+
+            // the "Windblown Target" traverse has been replaced by the fixedTargetPositionWind track
+            // with traverse set to "Target Object"
+            //"Windblown Target": "LOSTraverseWindTarget",
         },
         default: "Target Object",
         exportable: true,
