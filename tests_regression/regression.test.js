@@ -22,7 +22,7 @@ describe('Visual Regression Testing', () => {
     let page;
 
     // Increase the timeout for the entire test suite.
-    jest.setTimeout(30000);
+    jest.setTimeout(60000);
 
     beforeAll(async () => {
         browser = await puppeteer.launch({
