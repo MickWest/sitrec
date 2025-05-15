@@ -6,7 +6,7 @@ import {CNodeGUIValue} from "./CNodeGUIValue";
 import {guiTweaks, Sit} from "../Globals";
 import {CMouseHandler} from "../CMouseHandler";
 import {CNodeViewUI} from "./CNodeViewUI";
-import {CVideoWebCodecData} from "../CVideoWebCodecData";
+import {CVideoWebCodecDataRaw} from "../CVideoWebCodecDataRaw";
 import {CVideoImageData} from "../CVideoImageData";
 
 
@@ -59,7 +59,7 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         }
         this.fileName = fileName;
         this.disposeVideoData()
-        this.videoData = new CVideoWebCodecData({id: this.id + "_data", file: fileName},
+        this.videoData = new CVideoWebCodecDataRaw({id: this.id + "_data", file: fileName},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         this.positioned = false;
         par.frame = 0;

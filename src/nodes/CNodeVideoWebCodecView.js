@@ -5,6 +5,7 @@ import {CNodeViewUI} from "./CNodeViewUI";
 
 import {SITREC_APP} from "../configUtils";
 import {CVideoWebCodecData} from "../CVideoWebCodecData";
+import {CVideoWebCodecDataRaw} from "../CVideoWebCodecDataRaw";
 
 export class CNodeVideoWebCodecView extends CNodeVideoView {
     constructor(v) {
@@ -112,7 +113,7 @@ export class CNodeVideoWebCodecView extends CNodeVideoView {
         this.stopStreaming()
         this.addLoadingMessage()
         this.disposeVideoData()
-        this.videoData = new CVideoWebCodecData({id: this.id + "_data", dropFile: file},
+        this.videoData = new CVideoWebCodecDataRaw({id: this.id + "_data", dropFile: file},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
         par.frame = 0;
         par.paused = false; // unpause, otherwise we see nothing.

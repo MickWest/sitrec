@@ -6,7 +6,9 @@ import {par} from "./par";
 import {isLocal} from "./configUtils";
 import {CVideoData} from "./CVideoData";
 
-export class CVideoWebCodecData extends CVideoData {
+// New raw version with filtering removed
+// and threaded for performance
+export class CVideoWebCodecDataRaw extends CVideoData {
 
 
     constructor(v, loadedCallback, errorCallback) {
@@ -86,60 +88,10 @@ export class CVideoWebCodecData extends CVideoData {
             }
         }
 
-        // RGB filters need to make an ImageData copy to get the RGBA values
-        // rather expensive.
-        // this was used as a testbed for workers, see PixelFilterWorker.js
-        this.RGBFilters = false;
-
-
-        // YUVFilters, if we want to manipulate or inspect the raw per-frame YUV values
-        // like for motion tracking in near real-time
-        // or ad-hoc filters (that hopefully we'd be able to do in WebGL shaders, as YUV extraction and recoding is slow)
-        this.YUVFilters = false;
-
-        if (this.RGBFilters) {
-            this.numWorkers = 16;           // 16, really dude?
-            this.filterWorkers = []
-        }
         let demuxer = new MP4Demuxer(source);
         this.startWithDemuxer(demuxer)
 
     }
-
-    killWorkers() {
-        for (let i = 0; i < this.numWorkers; i++) {
-            if (this.filterWorkers[i] !== undefined) {
-                this.filterWorkers[i].terminate()
-                this.filterWorkers[i] = undefined;
-            }
-        }
-    }
-
-    // this handles messages from the worker threads.
-    handleWorker(e) {
-        // create new cached frame from the cached data
-        const frameNumber = e.data[0]
-        createImageBitmap(e.data[1]).then(recreatedImage => {
-            this.imageCache[frameNumber] = recreatedImage
-        })
-    }
-
-    restartWorker() {
-
-
-        this.killWorkers()
-
-        for (let i = 0; i < this.numWorkers; i++) {
-            this.filterWorkers[i] = new Worker('./src/workers/PixelFilterWorker.js?=' + versionString);
-            this.filterWorkers[i].onmessage = (e) => {
-                this.handleWorker(e)
-            }
-        }
-        this.nextWorker = 0;
-
-    }
-
-
 
     startWithDemuxer(demuxer) {
 
@@ -161,8 +113,6 @@ export class CVideoWebCodecData extends CVideoData {
 
         this.incomingFrame = 0;
         this.lastTimeStamp = -1;
-
-        this.restartWorker()
 
 
         this.decoder = new VideoDecoder({
@@ -198,15 +148,6 @@ export class CVideoWebCodecData extends CVideoData {
                         this.ctx_tmp = this.c_tmp.getContext("2d")
                     }
 
-
-                    // a new raw frame has been decoded into an ImageBitmap
-                    // so we want to update the ImageData and fltered versions
-                    if (this.RGBFilters) {
-                        this.updateFilter(frameNumber)
-                    }
-                    if (this.YUVFilters) {
-                        this.updateYUVFilter(frameNumber)
-                    }
 
                     // if it's the last one we wanted, then tell the system to render a frame
                     // so we update the video display
@@ -265,16 +206,6 @@ export class CVideoWebCodecData extends CVideoData {
 
                 })
 
-                if (this.YUVFilters) {
-                    // also make a raw copy of the YUV videoframe.
-                    // note the actual format might vary with different implementation of WebCOded
-                    // so check for NV
-                    let buffer = new Uint8Array(videoFrame.allocationSize());
-
-                    videoFrame.copyTo(buffer).then(
-                        this.frameCache[frameNumber] = buffer
-                    );
-                }
             },
             error: e => console.error(e),
         });
@@ -550,105 +481,6 @@ export class CVideoWebCodecData extends CVideoData {
     }
 
 
-    updateYUVFilter(frameNumber) {
-        const image = this.imageCache[frameNumber]
-        const YUV = this.frameCache[frameNumber]
-        const len = this.width * this.height
-        if (image && YUV) {
-            var newData = new Uint8ClampedArray(len * 4)
-            for (let i = 0; i < len; i++) {
-
-
-                // calculate offset of the CbCr byte pair (one per 2x2 pixels)
-                // TODO: the row stride might differ for odd dimension videos
-                var row = Math.floor(i / this.width)
-                var col = (i % this.width) & 0xfffffffe
-                let uvOffset = len + this.width * (row >> 1) + col
-
-                // this is the YCbCr to RGB conversion matrix.
-                // for BT.709 HDTV
-                // TODO - extract the matrix from the video  -at least ot assert it's the same
-                var y = YUV[i] - 16
-                var u = YUV[uvOffset + 0] - 128
-                var v = YUV[uvOffset + 1] - 128
-                const r = 1.164 * y + 1.596 * v;
-                const g = 1.164 * y - 0.392 * u - 0.813 * v;
-                const b = 1.164 * y + 2.017 * u + 100;
-
-
-                // var r = y + 1.402 * v;
-                // var g = y - 0.34414 * u - 0.71414 * v;
-                // var b = y + 1.772 * u;
-                /*
-                                // Clamp to 0..1
-                                if (r < 0) r = 0;
-                                if (g < 0) g = 0;
-                                if (b < 0) b = 0;
-                                if (r > 255) r = 255;
-                                if (g > 255) g = 255;
-                                if (b > 255) b = 255;
-                */
-
-                newData[i * 4 + 0] = r
-                newData[i * 4 + 1] = g // YUV[len+(i>>2)+0]
-                newData[i * 4 + 2] = b // YUV[i]
-                newData[i * 4 + 3] = 255
-            }
-
-            // creating an ImageData isn't that slow
-            var newImageData = new ImageData(newData, this.width, this.height)
-
-            const localFrameNumber = frameNumber;
-            createImageBitmap(newImageData).then(
-                imageBitmap => this.imageCache[localFrameNumber] = imageBitmap
-            )
-
-        }
-    }
-
-    updateFilter(frameNumber) {
-        const image = this.imageCache[frameNumber]
-        if (image) {
-            // handle creating filtered images
-            // if there's no imageData, then make it from this image
-            // this gets us the raw bytes from which we can either recreate the image
-            // or create a filtered version
-            if (!this.imageDataCache[frameNumber]) {
-                // extract the pixel data in RGBA by rendering on a canvas
-                // and then getting the ImageData from that
-                // store them in a matching array
-                // i.e. we have the usable images in this.imageCache
-                // and the ImageData version in this.imageDataCache
-                this.ctx_tmp.drawImage(image, 0, 0)
-                const imageData = this.ctx_tmp.getImageData(0, 0, this.width, this.height)
-                this.imageDataCache[frameNumber] = imageData
-            }
-
-            // a test filter
-
-            // make a copy of the imagedata, so we can modify the array
-            var clonedImageData = new ImageData(
-                new Uint8ClampedArray(this.imageDataCache[frameNumber].data),
-                this.imageDataCache[frameNumber].width,
-                this.imageDataCache[frameNumber].height
-            )
-
-
-            for (let i = 0; i < clonedImageData.data.length / 4; i++) {
-                //            clonedImageData.data[i*4 + 0] += Math.random()*255
-            }
-
-            this.filterWorkers[this.nextWorker].postMessage([frameNumber, clonedImageData]);
-            this.nextWorker++
-            if (this.nextWorker >= this.numWorkers)
-                this.nextWorker = 0;
-
-
-            // TODO - empty data from cache
-        }
-
-    }
-
 
     update() {
         super.update()
@@ -683,7 +515,6 @@ export class CVideoWebCodecData extends CVideoData {
                 .catch(() => {})   // swallow any flush errors we don't care about
                 .finally(() => decoder.close());
         }
-        this.killWorkers();
         super.dispose();
 
         delete Sit.videoFile;
@@ -691,23 +522,7 @@ export class CVideoWebCodecData extends CVideoData {
     }
 
     stopStreaming() {
-        this.killWorkers()
         super.stopStreaming()
     }
 
-}
-
-
-function updateSitFrames() {
-    if (Sit.framesFromVideo) {
-        console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
-        assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
-        Sit.frames = Sit.videoFrames;
-        Sit.aFrame = 0;
-        Sit.bFrame = Sit.frames - 1;
-    }
-    // NodeMan.updateSitFramesChanged();
-    // updateGUIFrames();
-    // updateFrameSlider();
-    GlobalDateTimeNode.changedFrames();
 }
