@@ -277,8 +277,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const line_colors = [];
         assert(this.inputs.track !== undefined, "CNodeDisplayTrack: track input is undefined, id="+this.id)
 
+        // should have the same number of frames as the data track we are displaying
+        this.frames = this.in.track.frames;
 
-        // Line2 has performace issues with large numbers of points that are coincident
+        // Line2 has performance issues with large numbers of points that are coincident
         // Because normalize(0,0) produces NaNs/inf. Those NaNs propagate into
         // gl_Position, so each degenerate quad is treated by the GPU as a
         // full‑screen triangle with undefined coordinates
