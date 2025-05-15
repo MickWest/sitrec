@@ -139,6 +139,21 @@ export class CVideoWebCodecData extends CVideoData {
 
     }
 
+    restartDecodeWorkers() {
+        this.numDecodeWorkers = 4;           // 4 is plenty; they run in parallel
+        this.decodeWorkers = [];
+        for (let i = 0; i < this.numDecodeWorkers; i++) {
+            const w = new Worker('./src/workers/DecodeWorker.js?=' + versionString);
+            w.onmessage = ({ data }) => {
+                const { frameNumber, bitmap } = data;
+                this.imageCache[frameNumber] = bitmap;
+                if (frameNumber === this.lastGetImageFrame) par.renderOne = true;
+            };
+            this.decodeWorkers.push(w);
+        }
+        this.nextDecodeWorker = 0;
+    }
+
     startWithDemuxer(demuxer) {
 
         //        let demuxer = new MP4Demuxer(v.file);
@@ -241,7 +256,7 @@ export class CVideoWebCodecData extends CVideoData {
                         this.groupsPending--; // count one less group pending
                         if (this.groupsPending === 0 && this.nextRequest >= 0) {
                             console.log("FULFILLING deferred request as no groups pending , frame = " + this.nextRequest)
-                            this.requestFrame(this.nextRequest)
+                            this.requestGroup(this.nextRequest)
                             this.nextRequest = -1
                         }
 
@@ -363,26 +378,31 @@ export class CVideoWebCodecData extends CVideoData {
         // if it's already loading, then we are good, don't need to do anything with this request
         const group = this.getGroup(frame);
         assert(group !== null, "group not found for frame " + frame)
+        this.requestGroup(group);
+    }
+
+    requestGroup(group) {
         if (group.loaded || group.pending > 0)
             return;
+
+//        console.log("requestFrame " + frame +" group.loaded = " + group.loaded + " group.pending = " + group.pending)
+
 
         // if some OTHER group is currently pending, then we just store the request for when it has finished
         // note this does not queue the requests, so only the most recent one will be honored
 //        if (this.groupsPending > 0) {
         if (this.decoder.decodeQueueSize > 0) {
-//            console.log("Deferring request for frame "+frame+" as decodeQueueuSize == " + this.decoder.decodeQueueSize)
-            this.nextRequest = frame;
+            //assert(this.nextRequest === -1 || this.nextRequest === group, "nextRequest should be -1 or same as group , but is " + this.nextRequest)
+            this.nextRequest = group;
             return;
         }
 
-//        console.log("Loading Group at frame "+group.frame+" for frame request "+frame+" par.frame = "+par.frame)
         group.pending = group.length;
         group.loaded = false;
         group.decodeOrder = []
         this.groupsPending++;
         const decodeQueueSizeBefore = this.decoder.decodeQueueSize;
         for (let i = group.frame; i < group.frame + group.length; i++) {
-            //  console.log ("i = " +i+" decodeQueuesize = "+this.decoder.decodeQueueSize)
             this.decoder.decode(this.chunks[i])
         }
         const addedToDecodeQueue = this.decoder.decodeQueueSize - decodeQueueSizeBefore
@@ -422,7 +442,7 @@ export class CVideoWebCodecData extends CVideoData {
             d += "CVideoView: " + this.width + "x" + this.height + "<br>"
             d += "par.frame = " + par.frame + ", Sit.frames = " + Sit.frames + ", chunks = " + this.chunks.length + "<br>"
             d += this.lastDecodeInfo;
-            d += "Decode Queue Size = " + this.decoder.decodeQueueSize + "<br>";
+            d += "Decode Queue Size = " + this.decoder.decodeQueueSize + " State = " + this.decoder.state + "<br>";
 
 
             for (let _g in this.groups) {
@@ -442,9 +462,16 @@ export class CVideoWebCodecData extends CVideoData {
                         framesCaches++
                 }
 
+                const currentGroup = this.getGroup(par.frame)
+
 
                 d += "Group " + _g + " f = " + g.frame + " l = " + g.length + " ts = " + g.timestamp
-                    + " i = " + images + " id = " + imageDatas + " fc = " + framesCaches + (g.loaded ? " Loaded " : "") + (g.pending ? " pending = " + g.pending : "") + "<br>"
+                    + " i = " + images + " id = " + imageDatas + " fc = "
+                    + framesCaches
+                    + (g.loaded ? " Loaded " : "")
+                    + (currentGroup === g ? "*" : " ")
+                    + (g.pending ? "pending = " + g.pending : "")
+                    + "<br>"
 
 
             }
@@ -640,9 +667,8 @@ export class CVideoWebCodecData extends CVideoData {
         super.update()
         if (this.incompatible) return;
 
-        // if anything pending, then do rendering, so it gets loaded
         // TODO - seems like this should be simpler
-        // note this just ensure ONE MORE frame will be loaded
+        // note this just ensure ONE MORE group will be loaded
         // as update is not called when not rendering
         // but it seems to work
         for (let g in this.groups) {
@@ -656,7 +682,7 @@ export class CVideoWebCodecData extends CVideoData {
             this.decoder.flush()
 
         if (isLocal) {
-            // this.debugVideo()
+             this.debugVideo()
         }
     }
 
