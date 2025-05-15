@@ -555,7 +555,7 @@ export class CVideoWebCodecDataRaw extends CVideoData {
         //     this.decoder.flush()
 
         if (isLocal) {
-             this.debugVideo()
+            // this.debugVideo()
         }
     }
 
