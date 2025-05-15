@@ -1,10 +1,11 @@
-import {FileManager, GlobalDateTimeNode, infoDiv, Sit} from "./Globals";
+import {FileManager, infoDiv, Sit} from "./Globals";
 import {assert} from "./assert";
 import {loadImage, versionString} from "./utils";
 import {MP4Demuxer, MP4Source} from "./js/mp4-decode/mp4_demuxer";
 import {par} from "./par";
 import {isLocal} from "./configUtils";
 import {CVideoData} from "./CVideoData";
+import {updateSitFrames} from "./UpdateSitFrames";
 
 export class CVideoWebCodecData extends CVideoData {
 
@@ -394,6 +395,9 @@ export class CVideoWebCodecData extends CVideoData {
         }
         const addedToDecodeQueue = this.decoder.decodeQueueSize - decodeQueueSizeBefore
 
+        // Kick the reorder buffer so the tail frames are delivered.
+        this.decoder.flush().catch(()=>{ /* ignore mid-seek aborts */ });
+
 //        console.log ("decodeQueuesize = "+this.decoder.decodeQueueSize+" added "+addedToDecodeQueue)
     }
 
@@ -664,9 +668,9 @@ export class CVideoWebCodecData extends CVideoData {
                 par.renderOne = true;
         }
 
-        // if we've decoded all the frames, then make sure they get to where they are going
-        if (this.decoder.decodeQueueSize === 0 && this.decoder.state !== "unconfigured")
-            this.decoder.flush()
+        // // if we've decoded all the frames, then make sure they get to where they are going
+        // if (this.decoder.decodeQueueSize === 0 && this.decoder.state !== "unconfigured")
+        //     this.decoder.flush()
 
         if (isLocal) {
              this.debugVideo()
@@ -698,16 +702,3 @@ export class CVideoWebCodecData extends CVideoData {
 }
 
 
-function updateSitFrames() {
-    if (Sit.framesFromVideo) {
-        console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
-        assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
-        Sit.frames = Sit.videoFrames;
-        Sit.aFrame = 0;
-        Sit.bFrame = Sit.frames - 1;
-    }
-    // NodeMan.updateSitFramesChanged();
-    // updateGUIFrames();
-    // updateFrameSlider();
-    GlobalDateTimeNode.changedFrames();
-}
