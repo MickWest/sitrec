@@ -459,11 +459,17 @@ sitch = {
     },
 
 
+    // az and el optionally from a file
+    // fallback to the ptz angles controller if we don't have those files
+    // (fallback is on a per-element basis, so you can have az from a file, and el from the ptz angles)
+    customAzElController: {kind: "CustomAzEl", fallback: "ptzAngles"},
+
     // Switch for angles controllers
     angelsSwitch: {
         kind: "Switch",
         inputs: {
             "Manual PTZ": "ptzAngles",
+            "Custom Az/El" : "customAzElController",
             // when we add tracks, if they have angles, then we'll add a losTrackMISB node and
             // then a matrixController
         },

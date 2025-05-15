@@ -1,4 +1,4 @@
-import {degrees, radians} from "../utils";
+import {degrees, ExpandKeyframes, radians, RollingAverage} from "../utils";
 import {getLocalUpVector} from "../SphericalMath";
 import {ECEF2EUS, wgs84} from "../LLA-ECEF-ENU";
 import {NodeMan, Sit} from "../Globals";
@@ -11,7 +11,88 @@ import {DebugArrow} from "../threeExt";
 
 const pszUIColor = "#C0C0FF";
 
-export class CNodeControllerPTZUI extends CNodeController {
+// Generic controller that has azimuth, elevation, and zoom
+export class CNodeControllerAzElZoom extends CNodeController {
+    constructor(v) {
+        super(v);
+    }
+
+
+    apply(f, objectNode ) {
+
+        // Since we are in EUS, and the origin is at some arbritary point
+        // we need to get the LOCAL up
+
+        const camera = objectNode.camera
+
+        //  since the user controls roll here, we don't want to use north for up
+        var up = getLocalUpVector(camera.position, wgs84.RADIUS)
+
+
+        // to get a northish direction we get the vector from here to the north pole.
+        // to get the north pole in EUS, we take the north pole's position in ECEF
+        var northPoleECEF = V3(0,0,wgs84.RADIUS)
+        var northPoleEUS = ECEF2EUS(northPoleECEF,radians(Sit.lat),radians(Sit.lon),wgs84.RADIUS)
+        var toNorth = northPoleEUS.clone().sub(camera.position).normalize()
+        // take only the component perpendicular
+        let dot = toNorth.dot(up)
+        let north = toNorth.clone().sub(up.clone().multiplyScalar(dot)).normalize()
+        let south = north.clone().negate()
+        let east = V3().crossVectors(up, south)
+
+        length = 100000;
+        // DebugArrow("local East",east,camera.position,length,"#FF8080")
+        // DebugArrow("local Up",up,camera.position,length,"#80FF90")
+        // DebugArrow("local South",south,camera.position,length,"#8080FF")
+
+        var right = east;
+        var fwd = north;
+
+        let el = this.el
+        let az = this.az
+        if (this.relative) {
+            // if we are in relative mode, then we just rotate the camera's fwd vector
+
+            const xAxis = new Vector3()
+            const yAxis = new Vector3()
+            const zAxis = new Vector3()
+            camera.updateMatrix();
+            camera.updateMatrixWorld()
+            camera.matrix.extractBasis(xAxis,yAxis,zAxis)
+            fwd = zAxis.clone().negate()
+
+            // project fwd onto the horizontal plane define by up
+            // it's only relative to the heading, not the tilt
+            let dot = fwd.dot(up)
+            fwd = fwd.sub(up.clone().multiplyScalar(dot)).normalize()
+
+            right = fwd.clone().cross(up)
+
+
+
+        }
+
+
+        fwd.applyAxisAngle(right,radians(el))
+        fwd.applyAxisAngle(up,-radians(az))
+        camera.fov = this.fov;
+        assert(!Number.isNaN(camera.fov), "CNodeControllerPTZUI: camera.fov is NaN");
+        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )
+        fwd.add(camera.position);
+        camera.up = up;
+        camera.lookAt(fwd)
+        if (this.roll !== undefined ) {
+            camera.rotateZ(radians(this.roll))
+        }
+
+    }
+
+
+}
+
+
+// UI based version of this, PTZ = Az, El, Zoom, and have constants defined by the gui
+export class CNodeControllerPTZUI extends CNodeControllerAzElZoom {
     constructor(v) {
         super(v);
         this.az = v.az;
@@ -74,97 +155,53 @@ export class CNodeControllerPTZUI extends CNodeController {
         this.recalculateCascade();
     }
 
+}
+
+export class CNodeControllerCustomAzEl extends CNodeControllerAzElZoom {
+    constructor(v) {
+        super(v);
+        this.fallback = NodeMan.get(v.fallback);
+        this.frames = Sit.frames;
+        this.useSitFrames = true;
+    }
+
+    setAzFile(azFile, azCol) {
+        this.azFile = azFile;
+        this.azCol = azCol;
+        this.recalculate();
+    }
+
+    setElFile(elFile) {
+        this.elFile = elFile;
+    }
+
+    recalculate() {
+
+        if (this.azFile !== undefined) {
+            assert(this.frames = Sit.frames, "CNodeControllerCustomAzEl: frames not set right");
+            this.azArrayRaw = ExpandKeyframes(this.azFile, this.frames, 0, this.azCol);
+            this.azArray = RollingAverage(this.azArrayRaw, 200);
+        }
+    }
+
     apply(f, objectNode ) {
-
-        // would be good, but arrow keys are already used for frame advance, etc. 4565421
-        // let rotationKeySpeed = 1;
-        // if (isKeyHeld('Shift')) {
-        //     rotationKeySpeed = 10;
-        // }
-        //
-        // // rotate the camera with left and right arrow keys
-        // if (isKeyHeld('ArrowLeft')) {
-        //     this.az -= rotationKeySpeed;
-        // }
-        // if (isKeyHeld('ArrowRight')) {
-        //     this.az += rotationKeySpeed;
-        // }
-        //
-        // // rotate the camera with up and down arrow keys
-        // // note we are using inverted Y, as it's like WASD game controllers
-        // if (isKeyHeld('ArrowUp')) {
-        //     this.el -= rotationKeySpeed;
-        // }
-        // if (isKeyHeld('ArrowDown')) {
-        //     this.el += rotationKeySpeed;
-        // }
-
-        // Since we are in EUS, and the origin is at some arbritary point
-        // we need to get the LOCAL up
-
-        const camera = objectNode.camera
-
-    //  since the user controls roll here, we don't want to use north for up
-        var up = getLocalUpVector(camera.position, wgs84.RADIUS)
-
-
-        // to get a northish direction we get the vector from here to the north pole.
-        // to get the north pole in EUS, we take the north pole's position in ECEF
-        var northPoleECEF = V3(0,0,wgs84.RADIUS)
-        var northPoleEUS = ECEF2EUS(northPoleECEF,radians(Sit.lat),radians(Sit.lon),wgs84.RADIUS)
-        var toNorth = northPoleEUS.clone().sub(camera.position).normalize()
-        // take only the component perpendicular
-        let dot = toNorth.dot(up)
-        let north = toNorth.clone().sub(up.clone().multiplyScalar(dot)).normalize()
-        let south = north.clone().negate()
-        let east = V3().crossVectors(up, south)
-
-        length = 100000;
-        // DebugArrow("local East",east,camera.position,length,"#FF8080")
-        // DebugArrow("local Up",up,camera.position,length,"#80FF90")
-        // DebugArrow("local South",south,camera.position,length,"#8080FF")
-
-        var right = east;
-        var fwd = north;
-
-        let el = this.el
-        let az = this.az
-        if (this.relative) {
-            // if we are in relative mode, then we just rotate the camera's fwd vector
-
-            const xAxis = new Vector3()
-            const yAxis = new Vector3()
-            const zAxis = new Vector3()
-            camera.updateMatrix();
-            camera.updateMatrixWorld()
-            camera.matrix.extractBasis(xAxis,yAxis,zAxis)
-            fwd = zAxis.clone().negate()
-
-            // project fwd onto the horizontal plane define by up
-            // it's only relative to the heading, not the tilt
-            let dot = fwd.dot(up)
-            fwd = fwd.sub(up.clone().multiplyScalar(dot)).normalize()
-
-            right = fwd.clone().cross(up)
-
-
-
+        // default to the fallback at first, in case we don't have a file for az/el/zoom
+        if (this.fallback) {
+            this.az = this.fallback.az;
+            this.el = this.fallback.el;
+            this.fov = this.fallback.fov;
         }
 
-
-        fwd.applyAxisAngle(right,radians(el))
-        fwd.applyAxisAngle(up,-radians(az))
-        camera.fov = this.fov;
-        assert(!Number.isNaN(camera.fov), "CNodeControllerPTZUI: camera.fov is NaN");
-        assert(camera.fov !== undefined && camera.fov>0 && camera.fov <= 180, `bad fov ${camera.fov}` )
-        fwd.add(camera.position);
-        camera.up = up;
-        camera.lookAt(fwd)
-        if (this.roll !== undefined ) {
-            camera.rotateZ(radians(this.roll))
+        if (this.azArray) {
+            this.az = this.azArray[f];
         }
+
+        super.apply(f, objectNode);
 
     }
+
+
+
 
 }
 

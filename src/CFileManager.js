@@ -972,11 +972,16 @@ export class CFileManager extends CManager {
                         parsed = parseCustom1CSV(parsed);
                     }
 
-                    // if it's a custom file, then strip out any duplicate times
-                    // we are being a bit more robust here, as some legacy files have duplicate times
-                    // For example Aguadilla. That's probably an issue only with "Unknown" files
-                    if (Sit.name === "custom" && dataType !== "Unknown") {
-                        parsed = stripDuplicateTimes(parsed);
+                    // most of them will resolve to a MISB type array
+                    // so strip duplicate times from those
+                    // skipping the ones that are not time based
+                    if (dataType !== "AZIMUTH" && dataType !== "ELEVATION") {
+                        // if it's a custom file, then strip out any duplicate times
+                        // we are being a bit more robust here, as some legacy files have duplicate times
+                        // For example Aguadilla. That's probably an issue only with "Unknown" files
+                        if (Sit.name === "custom" && dataType !== "Unknown") {
+                            parsed = stripDuplicateTimes(parsed);
+                        }
                     }
 
                     break;
@@ -1162,6 +1167,10 @@ export function detectCSVType(csv) {
 
     if (isCustom1(csv)) {
         return "CUSTOM1";
+    }
+
+    if (csv[0][0].toLowerCase() === "frame" && csv[0][1].toLowerCase() === "az") {
+        return "AZIMUTH"
     }
 
     // only give an error warning for custom, as some sitches have custom code to use

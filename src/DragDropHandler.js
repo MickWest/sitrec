@@ -11,6 +11,8 @@ import {getLocalSouthVector, getLocalUpVector} from "./SphericalMath";
 import {SITREC_DEV_DOMAIN, SITREC_DOMAIN} from "./configUtils";
 import {doesKMLContainTrack, extractKMLObjects} from "./KMLUtils";
 import {assert} from "./assert";
+import {MISB} from "./MISBUtils";
+import {findColumn} from "./ParseUtils";
 
 // The DragDropHandler is more like the local client file handler, with rehosting, and parsing
 class CDragDropHandler {
@@ -383,6 +385,32 @@ class CDragDropHandler {
             console.warn("Skipping handleParseFile, as no file extension for " + filename+" assuming it's an ID");
             return;
         }
+
+        // if it's a CSV, the first check if it contails AZ and EL
+        // if it does, then we want to send it to the customAzElController node
+        if (fileExt === "csv") {
+            const azCol = findColumn(parsedFile, "Az", true);
+            const elCol = findColumn(parsedFile, "El", true);
+            const zoomCol = findColumn(parsedFile, "Zoom", true);
+
+            // strip the first row
+            // as it's the header
+            // and we don't want to send it to the customAzElController
+            parsedFile = parsedFile.slice(1);
+
+            if (azCol !== -1 || elCol !== -1 || zoomCol !== -1) {
+                // it's a CSV with az and el
+                // so we want to send it to the customAzElController node
+
+                const azElController = NodeMan.get("customAzElController", false)
+                if (azElController) {
+                    azElController.setAzFile(parsedFile, azCol );
+                    azElController.recalculate();
+                }
+            }
+            return;
+        }
+
 
         // very rough figuring out what to do with it
         // TODO: multiple TLEs, Videos, images.
