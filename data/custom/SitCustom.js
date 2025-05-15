@@ -525,6 +525,12 @@ sitch = {
     // camera changes after this point will not be recorded for LOS generation
 
 
+    LOSTraverseCloseToTarget: {
+        kind: "LOSTraverseCloseToTarget",
+        LOS: "JetLOSCameraCenter",
+        target: "targetTrackSwitchSmooth",
+    },
+
 
     // The "Track" traverse node uses the ground track
     LOSTraverseSelectTrack: {
@@ -533,6 +539,7 @@ sitch = {
         los: "JetLOS",
         menu: {
             "Target Object": "targetTrackSwitchSmooth",
+            "Close to Target": "LOSTraverseCloseToTarget",
             "Constant Speed": "LOSTraverseConstantSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Starting Altitude": "LOSTraverseStartingAltitude",
