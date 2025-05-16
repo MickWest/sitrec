@@ -1,5 +1,5 @@
 import {Color} from "three";
-import {FileManager, infoDiv, Sit, Units} from "./Globals";
+import {FileManager, Globals, infoDiv, Sit, SitchMan, Units} from "./Globals";
 import * as LAYER from "./LayerMasks";
 import {CNodeConstant} from "./nodes/CNode";
 import {NightSkyFiles} from "./ExtraFiles";
@@ -8,7 +8,7 @@ import {expandSitData} from "./SituationSetup";
 import stringify from "json-stringify-pretty-compact";
 import {makeTrackFromDataFile} from "./TrackManager";
 import {makePositionLLA} from "./nodes/CNodePositionLLA";
-import {isConsole, setupConfigPaths} from "./configUtils";
+import {isConsole, isLocal, setupConfigPaths} from "./configUtils";
 
 
 // These are some parameters used as defaults for a situation
@@ -97,7 +97,18 @@ const situationDefaults = {
 
 export class CSituation {
     constructor(props) {
-        Object.assign(this,situationDefaults);
+        Object.assign(this, situationDefaults);
+
+        // if custom, then we need to set up the custom situation as the default
+        // in case there are new things that were missing in the old one (like a new menu item)
+        // NOTE, possible risk of missing menu items as it's a shallow copy
+        // MAYBE: try to do a deep copy of immutable parts of the custom sitch
+        if (props.name === "custom" && isLocal && !Globals.regression) {
+            const defaultCustom = SitchMan.get("custom");
+            props = {...defaultCustom, ...props};
+        }
+
+
 //        console.log("Setting units to: ",this.units)
         this.change(props)
     }

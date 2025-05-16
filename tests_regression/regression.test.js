@@ -47,7 +47,7 @@ describe('Visual Regression Testing', () => {
                 // Set a consistent viewport size.
                 await page.setViewport({ width: 1920, height: 1080 });
 
-                url = url+'&ignoreunload=1';
+                url = url+'&ignoreunload=1&regression=1';
 
                 // Navigate to the URL with detailed error logging.
                 const response = await page.goto(url, {

@@ -397,6 +397,8 @@ async function initializeOnce() {
         });
     }
 
+    Globals.regression = urlParams.get("regression");
+
     setCustomManager(new CCustomManager());
 
     Globals.parsing = 0;
