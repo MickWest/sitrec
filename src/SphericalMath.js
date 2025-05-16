@@ -291,15 +291,9 @@ export function altitudeAboveSphere(p) {
 }
 
 // given a psotion and an orientatioin maxtrix, return the Azimuth and Elevation (heading and pitch)
-// of the camera or object
-export function getAzElFromPositionAndMatrix(position, matrix) {
+export function getAzElFromPositionAndForward(position, forward) {
     const up = getLocalUpVector(position);
     const north = getLocalNorthVector(position);
-    // calculat the heading as the andle between the forward vector and the north vector
-    // in the horizontal plane
-    // account for the sign of the angle
-    const forward = new Vector3();
-    matrix.extractBasis(new Vector3(), new Vector3(), forward);
     const forwardH = forward.clone().sub(up.clone().multiplyScalar(forward.dot(up)));
     const northH = north.clone().sub(up.clone().multiplyScalar(north.dot(up)));
     let heading = Math.PI - forwardH.angleTo(northH);
@@ -314,4 +308,15 @@ export function getAzElFromPositionAndMatrix(position, matrix) {
     const elevation = forward.angleTo(up);
     const elevationDeg = elevation * 180 / Math.PI - 90;
     return [headingPos, elevationDeg];
+}
+
+// of the camera or object
+export function getAzElFromPositionAndMatrix(position, matrix) {
+
+    // calculat the heading as the andle between the forward vector and the north vector
+    // in the horizontal plane
+    // account for the sign of the angle
+    const forward = new Vector3();
+    matrix.extractBasis(new Vector3(), new Vector3(), forward);
+    return getAzElFromPositionAndForward(position, forward);
 }

@@ -6,6 +6,7 @@ import {PerspectiveCamera, Vector3} from "three";
 import {Sit} from "../Globals";
 import {CNodeEmptyArray} from "./CNodeArray";
 import {assert} from "../assert.js";
+import {getAzElFromPositionAndForward} from "../SphericalMath";
 
 export class CNodeLOSFromCamera extends CNodeEmptyArray {
     constructor(v) {
@@ -61,4 +62,29 @@ export class CNodeLOSFromCamera extends CNodeEmptyArray {
         right.setFromMatrixColumn(camera.matrixWorld, 0);
         return {position: position, heading: fwd, up: up, right: right};
     }
+}
+
+
+export class CNodeAzFromLOS extends CNodeEmptyArray {
+    constructor(v) {
+        super(v);
+        this.input("LOS");
+        this.recalculate()
+    }
+
+    recalculate() {
+        this.array = [];
+        this.frames = this.in.LOS.frames
+
+        for (let f = 0; f < this.frames; f++) {
+            const los = this.in.LOS.v(f)
+            const start = los.position.clone();
+            const heading = los.heading.clone();
+
+            const [az, el] = getAzElFromPositionAndForward(start, heading)
+
+            this.array.push(az)
+        }
+    }
+
 }

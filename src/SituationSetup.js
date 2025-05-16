@@ -23,7 +23,7 @@ import {addTracks, makeTrackFromDataFile, TrackManager} from "./TrackManager";
 import {CNodeWind} from "./nodes/CNodeWind";
 import {curveChanged, initJetVariables, initViews, SetupTraverseNodes, UIChangedAz} from "./JetStuff";
 import {addNightSky} from "./nodes/CNodeDisplayNightSky";
-import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph} from "./JetGraphs";
+import {AddAltitudeGraph, AddSpeedGraph, AddTailAngleGraph, AddTargetDistanceGraph, AddValueGraph} from "./JetGraphs";
 import {CNodeWatch} from "./nodes/CNodeWatch";
 import {CNodeCurveEditor} from "./nodes/CNodeCurveEdit";
 import {CNodeGraphSeries} from "./nodes/CNodeGraphSeries";
@@ -1167,6 +1167,12 @@ export async function SetupFromKeyAndData(key, _data, depth=0) {
             if (data.visible === false) {
                 altitudeGraph.editorView.hide();
             }
+            break;
+
+        case "valueGraph":
+            SSLog();
+
+            const valueGraph = AddValueGraph(data)
             break;
 
         case "tailAngleGraph":

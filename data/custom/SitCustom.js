@@ -701,6 +701,19 @@ sitch = {
         dynamicY: true,
     },
 
+    azFromLOS: {kind: "AzFromLOS", LOS: "JetLOSCameraCenter", useRecorded: false},
+
+    // TODO - hook valueGraph to AddValueGraph via Setup
+    azValueGraph: { kind: "valueGraph",
+        visible: false,
+        label: "Camera Az",
+        source: "azFromLOS",
+        title: "Camera Azimuth",
+        min:0, max:360,
+        yStep: 10,
+        left: 0.25, top:0, width: .15, height:-1,
+    },
+
     include_Compasses: true,
 
     // labelView defaults to adding an overlay to lookView, and adds the time and date

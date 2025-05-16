@@ -138,6 +138,13 @@ export class CNodeCurveEditor extends CNode {
         }
     }
 
+    show(visible) {
+        super.show(visible);
+        if (this.editorView) {
+            this.editorView.show(visible);
+        }
+    }
+
     recalculate() {
         super.recalculate();
         // no real recalculation is needed here

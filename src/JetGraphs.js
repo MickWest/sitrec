@@ -410,6 +410,75 @@ export function AddAltitudeGraph(min, max, source = "LOSTraverseSelect", left  =
 }
 
 
+// add a generic graph for a node that returns a value (like Az, El, etc)
+export function AddValueGraph(v) {
+// defaults were: min, max, source = "LOSTraverseSelect", left  = 0.73, top =0, width = -1, height =.25, yStep=5000, xStep=200, dynamicY = false
+
+    const id = v.id ?? "valueGraph";
+    const min = v.min ?? 0;
+    const max = v.max ?? 1000;
+    const source = v.source ?? "LOSTraverseSelect";
+    const left = v.left ?? 0.73;
+    const top = v.top ?? 0;
+    const width = v.width ?? -1;
+    const height = v.height ?? 0.25;
+    const yStep = v.yStep ?? 5000;
+    const xStep = v.xStep ?? 200;
+    const dynamicY = v.dynamicY ?? false;
+    const yLabel = v.yLabel ?? "Value";
+    const xLabel = v.xLabel ?? "Frame";
+    const xLabel2 = v.title ?? "Value";
+    const yLabel2 = v.yLabel2 ?? "Value";
+
+    const visible = v.visible ?? true;
+
+
+    var GraphNode = new CNodeCurveEditor({
+        id: id,
+        left: left, top: top, width: width, height: height,
+
+        visible: visible,
+        draggable: true,
+        resizable: true,
+        shiftDrag: false,
+        freeAspect: true,
+        editorConfig: {
+            //     dynamicY: true,
+            //     dynamicRange: 1000,
+            xLabelDelta: false,
+            minX: 0, maxX: Sit.frames - 1, minY: min, maxY: max,
+            xLabel: xLabel, xStep: xStep, yLabel: yLabel, yStep: yStep,
+            xLabel2: xLabel2,
+            dynamicX: true,
+            dynamicY: dynamicY,
+        },
+        inputs: {
+            compare: new CNodeGraphSeries({
+                // Munge node to convert a traverse track to altitude
+                source: source,
+                name: "yLabel",
+                //     min: 20000, max: 26000,
+                color: "#008000",
+            })
+        },
+
+        frames: Sit.frames,
+
+    })
+    GraphNode.editor.disable = true;
+    GraphNode.editorView.show(visible);
+    return GraphNode;
+}
+
+
+
+
+
+
+
+
+
+
 // given a node and a munge function, plat a graph
 // node must return a number
 // for an x component use a munge node, like
