@@ -709,47 +709,84 @@ function markDepth(node, depth) {
 function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
 
-    assert(list.length === 1, "recalculateNodesBreadthFirst called with more than one node")
+    // Globals.timeRecalculate = true;
+    // Globals.debugRecalculate = true;
+    // debugRecalculate = true;
+
+    assert(list.length === 1, "recalculateNodesBreadthFirst called with more than one node");
 
     const root = list[0];
+
+    // Array for per‑node timings when requested
+    const timings = Globals.timeRecalculate ? [] : null;
+
     // first we traverse the tree and mark the depth of each node
-    // children are marked with a depth of 1
-    clearDepth(root)
-    markDepth(root, 0)
-    recalculateNodesBreadthFirstRecurse(list, f, noControllers, 0, debugRecalculate)
+    clearDepth(root);
+    markDepth(root, 0);
+
+    recalculateNodesBreadthFirstRecurse(list, f, noControllers, 0, debugRecalculate, timings);
+
+    // --- output timings (longest first) ----------------------------------
+    if (Globals.timeRecalculate && timings && timings.length) {
+        console.log("\nNode recalculate timings (ms):");
+        timings.sort((a, b) => b.time - a.time);
+        console.log("Node recalculate timings (ms):");
+        timings.forEach(({ id, time }) => {
+            console.log(`${id}: ${time.toFixed(2)}`);
+        });
+    }
 }
 
+// -------------------------------------------------------------------------
 // this is the recursive function that does the actual recalculation
 // it takes a list of nodes and recalculates them in breadth first order
 // it also takes a depth parameter to control the depth of the recursion
 // it also takes a debugRecalculate parameter to control the debug output
 // it also takes a noControllers parameter to control whether to apply controllers or not
-function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debugRecalculate) {
-    let children = []
+// timings (array) is optional and captures per‑node execution time when provided
+function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debugRecalculate, timings = null) {
+    let children = [];
     for (let node of list) {
-        if (node.depth === depth) {
-            if (debugRecalculate)
-                console.log("|---".repeat(depth) + " BreadthFirst Recalulating:  " + node.id + " from " + node.debugParent)
+        // NEW 5/16/2025 - check if the node is visible, and if not, skip it
+        // greatly imporves performance of the recalculate with lots of large traverse nodes
+        if (node.depth === depth && node.visible) {
+            if (debugRecalculate) {
+                console.log("|---".repeat(depth) + " BreadthFirst Recalculating:  "
+                    + node.id + " from " + node.debugParent
+                + (node.visible ? " (visible)" : " (hidden)"));
+            }
+
+            // ---- timing start ------------------------------------------
+            let t0;
+            if (timings) {
+                t0 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+            }
+
             node.recalculate();
+
+            // ---- timing end --------------------------------------------
+            if (timings) {
+                const t1 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+                timings.push({ id: node.id, time: t1 - t0 });
+            }
 
             // Controllers are a bit of a special case
             // they adjust a CNode3D's object, and that might depend on the value of that object
             // for example, lookAt depends on the position of the object to calculate the heading
             // so we need to reapply the controller after the object has been recalculated
             // but before the children are recalculated (as they might depend on the effect of the controller on this node)
-
             if (!noControllers) {
                 if (node.applyControllers !== undefined) {
-                    if (debugRecalculate)
-                        console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f)
-                    node.applyControllers(f, depth)
+                    if (debugRecalculate) {
+                        console.log("|---".repeat(depth) + " applyControllers to  " + node.id + " frame " + f);
+                    }
+                    node.applyControllers(f, depth);
                 } else {
-                    if (debugRecalculate)
-                        console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined")
+                    if (debugRecalculate) {
+//                        console.log("|---".repeat(depth) + " no controllers for  " + node.id + " frame " + f + ", node.applyControllers is undefined");
+                    }
                 }
             }
-
-
         }
     }
 
@@ -760,18 +797,18 @@ function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debu
             // for each output in node.outputs, if it's not in the outputs list, add it
             node.outputs.forEach(output => {
                 if (!children.includes(output)) {
-                    children.push(output)
+                    children.push(output);
                     if (Globals.debugRecalculate) {
                         output.debugParent = node.id;
                     }
                 }
-            })
+            });
         }
     }
 
     // if anything in the list, then recurse
     if (children.length > 0) {
-        recalculateNodesBreadthFirstRecurse(children, f, noControllers, depth+1, Globals.debugRecalculate )
+        recalculateNodesBreadthFirstRecurse(children, f, noControllers, depth + 1, debugRecalculate, timings);
     }
 }
 

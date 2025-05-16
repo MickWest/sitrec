@@ -392,7 +392,7 @@ class CameraMapControls {
 
 					//Globals.debugRecalculate = true
 					ptzControls.recalculateCascade();
-					Globals.debugRecalculate = false;
+					//Globals.debugRecalculate = false;
 
 				} else {
 
