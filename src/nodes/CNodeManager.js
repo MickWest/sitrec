@@ -158,13 +158,17 @@ export class CNodeManager extends CManager{
         return result;
     }
 
-    dumpNodes() {
+    dumpNodes(rootsOnly=false) {
         // for each node that has no inputs, call dumpNodeRecursive to print it and all it's outputs
         let result="";
         for (const key in this.list) {
             const node = this.list[key].data
             if (node.inputs === undefined || Object.keys(node.inputs).length === 0) {
-                result += this.dumpNodeRecursive(node, 0)
+                if (rootsOnly) {
+                    result += (node.visible?"🟢":"🔴")   + node.constructor.name+": "+ node.id + "\n"
+                } else {
+                    result += this.dumpNodeRecursive(node, 0)
+                }
             }
         }
         return result;

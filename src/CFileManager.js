@@ -86,6 +86,8 @@ export class CFileManager extends CManager {
                 this.guiFolder.add(this, "resetOrigin").name("debug reset Origin").perm();
                 this.guiFolder.add(this, "dumpNodes").name("debug dump nodes").perm();
                 this.guiFolder.add(this, "dumpNodesBackwards").name("debug dump nodes backwards").perm();
+                this.guiFolder.add(this, "dumpRoots").name("debug dump Root notes").perm();
+
 
 
             }
@@ -93,12 +95,18 @@ export class CFileManager extends CManager {
         }
     }
 
+    dumpRoots() {
+        console.log("");
+        console.log(NodeMan.dumpNodes(true));
+    }
 
     dumpNodes() {
+        console.log("");
         console.log(NodeMan.dumpNodes());
     }
 
     dumpNodesBackwards() {
+        console.log("");
         console.log(NodeMan.dumpNodesBackwards());
     }
 
