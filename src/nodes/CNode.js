@@ -232,24 +232,25 @@ class CNode {
 
 
 
-    countVisibleOutputs() {
-        // Iteratively count the number of visible outputs
+    countVisibleOutputs(depth = 0) {
+        // recursively count the number of visible outputs
+        // a switch node counds as visible if it has this as an input
         let count = 0;
-        let stack = [...this.outputs];
 
-        while (stack.length > 0) {
-            const output = stack.pop();
-
+        for (let output of this.outputs) {
             if (output.visible) {
+                // if it's a switch node, then it's visible if it has this as an input
                 if (output.constructor.name === "CNodeSwitch") {
-                    // Check if the current choice of the Switch is this node
+                    // check if the current choice of the Switch is this node
+                    // and that counts as visible, and we continue with the switch
                     if (output.inputs[output.choice] === this) {
                         count++;
-                        stack.push(...output.outputs);
+                        count += output.countVisibleOutputs(depth+1);
                     }
+                    // otherwise the switch is ignored, and output will end here
                 } else {
                     count++;
-                    stack.push(...output.outputs);
+                    count += output.countVisibleOutputs(depth+1);
                 }
             }
         }
@@ -263,11 +264,17 @@ class CNode {
         // if more than one output, then check if ANY are visible
         // if not, then hide them
 
+        // // get number of inputs (an KV object)
+        // const numInputs = Object.keys(this.inputs).length;
+        // console.log("hideInactiveSources: " + this.id + " has " + numInputs + " inputs and " + this.outputs.length + " outputs")
+
         // breadth first search
         // so we first set all the inputs to hidden if they have no visible outputs downtree
         for (let key in this.inputs) {
             let input = this.inputs[key];
-            // console.log("(Hide)" + input.id +" has "+input.countVisibleOutputs() + " visible outputs")
+
+
+            // console.log("hideInactiveSources: " + input.id +" has "+input.countVisibleOutputs() + " visible outputs")
             if (input.countVisibleOutputs() === 0) {
                 if (this.visible) console.log("hideInactiveSources: Hiding "+input.id)
                 input.hide();
@@ -698,10 +705,11 @@ function clearDepth(node) {
 // mark the depth of this node and all its children
 // a child can exist in multiple generations
 // and we only want to recalculate it at the deepest level
-function markDepth(node, depth) {
+function markMaximumVisibleDepth(node, depth) {
+    if ( !node.visible ) return; // skip hidden nodes
     node.depth = Math.max(depth, node.depth);
     node.outputs.forEach(child => {
-        markDepth(child, depth + 1)
+        markMaximumVisibleDepth(child, depth + 1)
     })
 }
 
@@ -709,9 +717,9 @@ function markDepth(node, depth) {
 function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
 
-    // Globals.timeRecalculate = true;
-    // Globals.debugRecalculate = true;
-    // debugRecalculate = true;
+     // Globals.timeRecalculate = true;
+     // Globals.debugRecalculate = true;
+     // debugRecalculate = true;
 
     assert(list.length === 1, "recalculateNodesBreadthFirst called with more than one node");
 
@@ -720,9 +728,10 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRe
     // Array for per‑node timings when requested
     const timings = Globals.timeRecalculate ? [] : null;
 
-    // first we traverse the tree and mark the depth of each node
+    // first we traverse the tree and mark the maximum depth of each node
+    // skipping hidden nodes and thier children
     clearDepth(root);
-    markDepth(root, 0);
+    markMaximumVisibleDepth(root, 0);
 
     recalculateNodesBreadthFirstRecurse(list, f, noControllers, 0, debugRecalculate, timings);
 
@@ -732,7 +741,8 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRe
         timings.sort((a, b) => b.time - a.time);
         console.log("Node recalculate timings (ms):");
         timings.forEach(({ id, time }) => {
-            console.log(`${id}: ${time.toFixed(2)}`);
+            let vis = NodeMan.get(id).visible ? " (vis)" : " (hidden)";
+            console.log(`${id}: ${time.toFixed(2)} ${vis}`);
         });
     }
 }
@@ -793,16 +803,28 @@ function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debu
     // we make the list of children AFTER the recalculate
     // to avoid overwriting output.debugParent
     for (let node of list) {
+        // NEW: 5/16/2025 - check if the node is visible, and if not, skip it
         if (node.depth === depth) {
-            // for each output in node.outputs, if it's not in the outputs list, add it
-            node.outputs.forEach(output => {
-                if (!children.includes(output)) {
-                    children.push(output);
-                    if (Globals.debugRecalculate) {
-                        output.debugParent = node.id;
-                    }
+            if (node.visible) {
+                if (debugRecalculate) {
+                    console.log("|---".repeat(depth) + " ADDING outputs of  node: " + node.id);
                 }
-            });
+
+                // for each output in node.outputs, if it's not in the outputs list, add it
+                node.outputs.forEach(output => {
+                    if (!children.includes(output)) {
+                        if (debugRecalculate) console.log("|---".repeat(depth) + " --- CHILD node = " + output.id);
+                        children.push(output);
+                        if (Globals.debugRecalculate) {
+                            output.debugParent = node.id;
+                        }
+                    }
+                });
+            } else {
+                if (debugRecalculate) {
+                    console.log("|---".repeat(depth) + " SKIPPING children of hidden node: " + node.id);
+                }
+            }
         }
     }
 

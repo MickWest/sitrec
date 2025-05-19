@@ -538,13 +538,22 @@ sitch = {
         // idExtra: "Track",
         los: "JetLOS",
         menu: {
+            // NOTE removing one of these will currentl make it always be calculated,
+            // as the Switch node can't set it invisible
+            // TODO: maybe start it out invisible
+            // ALSO, neither way will turn off traverse nodes that feed ohter traverse nodes
+            // we have
+            // LOSTraverseStraightConstantAir needed for gimbal
             "Target Object": "targetTrackSwitchSmooth",
             "Close to Target": "LOSTraverseCloseToTarget",
-            "Constant Speed": "LOSTraverseConstantSpeed",
+            "Constant Ground Speed - ": "LOSTraverseConstantSpeed",
+            "Constant Air Speed": "LOSTraverseConstantAirSpeed",
             "Constant Altitude": "LOSTraverseConstantAltitude",
             "Starting Altitude": "LOSTraverseStartingAltitude",
             "Constant Distance": "LOSTraverseConstantDistance",
             "Straight Line": "LOSTraverseStraightLine",
+            "Const Air AB": "LOSTraverseStraightConstantAir",
+            "Straight Line Fixed -": "LOSTraverseStraightLineFixed",
             "Windblown Object (on first LOS)": "LOSTraverseWind",
 
             // the "Windblown Target" traverse has been replaced by the fixedTargetPositionWind track

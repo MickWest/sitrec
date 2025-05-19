@@ -228,6 +228,8 @@ class CNodeSwitch extends CNode {
         //     this.selectValidChoice();
         // }
 
+        // console.log("");
+        // console.log("======================== CNodeSwitch:recalculate "+this.id+" choice = "+this.choice)
 
         // ensure frames are up to date for this switch, setting it to the selected input's frames
         if (!this.useSitFrames) {
@@ -244,17 +246,18 @@ class CNodeSwitch extends CNode {
         // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {
             if (key !== this.choice) {
-//                console.log("CNode:recalculate HIDE "+this.inputs[key].id)
+               //  console.log("CNodeSwitch:input " + key+ "has "+this.inputs[key].outputs.length +" outputs")
                 if (this.inputs[key].outputs.length === 1) {
                 // if the input is only connected to this switch, then hide it
-                     this.inputs[key].hide()
+                //     console.log("CNodeSwitch:recalculate HIDE "+this.inputs[key].id+ "as only connected to this switch")
+                    this.inputs[key].hide()
                  }
                 this.inputs[key].hideInactiveSources()
             } else {
             }
         })
         // show the selected inputs AFTER all the hiding has been done
-//        console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
+        // console.log("CNode:recalculate SHOW choice "+this.inputs[this.choice].id)
         if (Object.keys(this.inputs).length > 0) {
             assert(this.inputs[this.choice] !== undefined, "CNodeSwitch: choice not found in inputs, choice="+this.choice+", Switch Node id = "+this.id)
             this.inputs[this.choice].show()
