@@ -430,11 +430,14 @@ export function AddValueGraph(v) {
     const xLabel2 = v.title ?? "Value";
     const yLabel2 = v.yLabel2 ?? "Value";
 
+    const name = v.name ?? xLabel2;
+
     const visible = v.visible ?? true;
 
 
     var GraphNode = new CNodeCurveEditor({
         id: id,
+        name: name,
         left: left, top: top, width: width, height: height,
 
         visible: visible,

@@ -53,6 +53,12 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
         return this.wpx * (((x-50)  / 100) * this.zoom + 0.5);
     }
 
+    // use hpy for square scaling
+    // should use the
+    px_square(x) {
+        return this.wpx/2 + this.hpx * (((x-50)  / 100) * this.zoom);
+    }
+
     py(y) {
 //        return this.hpx * y / 100 - 50) * this.zoom + 50;
         return this.hpx *(((y-50)  / 100) * this.zoom + 0.5);
@@ -63,6 +69,12 @@ export class CNodeViewUI extends CNodeViewCanvas2D {
     rx(x, y, a) {
         return this.px(this.cx + (x - this.cx) * cos(a) + (y - this.cy) * sin(a))
     }
+
+    // use the y scaling, so it's square
+    rx_square(x, y, a) {
+        return this.px_square(this.cx + (x - this.cx) * cos(a) + (y - this.cy) * sin(a))
+    }
+
 
     ry(x, y, a) {
         return this.py(this.cy - (x - this.cx) * sin(a) + (y - this.cy) * cos(a))

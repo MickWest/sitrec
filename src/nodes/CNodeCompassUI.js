@@ -2,7 +2,7 @@
 // base on an input camera node
 
 import {CNodeViewUI} from "./CNodeViewUI";
-import {getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
+import {getCompassHeading, getLocalNorthVector, getLocalUpVector} from "../SphericalMath";
 import {Vector3} from "three";
 import {MV3} from "../threeUtils";
 import {NodeMan} from "../Globals";
@@ -54,7 +54,7 @@ export class   CNodeCompassUI extends CNodeViewUI {
 
 
         // get the heading of the camera, in radians
-        const heading = this.getCompassHeading(camera.position, forward);
+        const heading = getCompassHeading(camera.position, forward, camera);
 
         // convert to 0..360 degrees for display
         const headingDeg = heading * 180 / Math.PI;
@@ -148,52 +148,6 @@ export class   CNodeCompassUI extends CNodeViewUI {
         this.rLine(this.cx,this.cy-length,this.cx-3,this.cy-length*0.5,heading);
         this.rLine(this.cx,this.cy-length,this.cx+3,this.cy-length*0.5,heading);
         c.stroke();
-
-
-
-    }
-
-
-    // given position and a vector, return the heading in degrees relative to the north vector at that position
-    getCompassHeading(position, forward) {
-
-        // get local up vector, the headings are the angle about this axis.
-        const up = getLocalUpVector(position);
-
-        // get the north vector
-        const north = getLocalNorthVector(position);
-
-        // project the forward vector onto the horizontal plane defined by up
-        const forwardH = forward.clone().sub(up.clone().multiplyScalar(forward.dot(up)));
-
-        // same with the north vector
-        const northH = north.clone().sub(up.clone().multiplyScalar(north.dot(up)));
-
-        // get the angle between the forward vector and the north vector
-        // using the three.js angleTo function
-        let heading = Math.PI - forwardH.angleTo(northH);
-
-
-        // get the east vector
-        const east = north.clone().cross(up);
-
-        // is it east (positive) or west (negative)
-        if (forwardH.dot(east) > 0) {
-            heading = -heading;
-        }
-
-        // when we lxock the up vetor the camera can be upside down
-        // so check the dot product with the local up vector and the camera's up vector
-        // from the matrix
-//        const forward = MV3(camera.matrixWorld.elements.slice(8,11));
-        const cameraUp = MV3(this.in.camera.camera.matrixWorld.elements.slice(4,7));
-
-        if (up.dot(cameraUp) < 0) {
-            heading = Math.PI - heading;
-        }
-
-
-        return heading;
 
     }
 

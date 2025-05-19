@@ -712,7 +712,6 @@ sitch = {
 
     azFromLOS: {kind: "AzFromLOS", LOS: "JetLOSCameraCenter", useRecorded: false},
 
-    // TODO - hook valueGraph to AddValueGraph via Setup
     azValueGraph: { kind: "valueGraph",
         visible: false,
         label: "Camera Az",
@@ -724,6 +723,8 @@ sitch = {
     },
 
     include_Compasses: true,
+
+    MQ9UI: {kind: "MQ9UI", camera: "lookCamera", relativeTo: "lookView", visible: false, left: 0.0, top: 0.0, width: 1, height: 1},
 
     // labelView defaults to adding an overlay to lookView, and adds the time and date
     labelView: {dateTimeY:93},
