@@ -149,7 +149,8 @@ export class CNodeManager extends CManager{
 
 
     dumpNodeRecursive(node, depth=0) {
-        var result = "|---".repeat(depth) + node.constructor.name+": "+ node.id + "\n"
+        var result = (node.visible?"🟢":"🔴")
+        +"|---".repeat(depth) + node.constructor.name+": "+ node.id + "\n"
         for (const key in node.outputs) {
             const output = node.outputs[key]
             result += this.dumpNodeRecursive(output, depth+1)
@@ -168,6 +169,31 @@ export class CNodeManager extends CManager{
         }
         return result;
 
+    }
+
+    // same the above two, but this time start with nodes that have no outputs
+    // and work backwards via the inputs
+
+    dumpNodeRecursiveBackwards(node, depth=0) {
+        var result = (node.visible?"🟢":"🔴")
+        +"|---".repeat(depth) + node.constructor.name+": "+ node.id + "\n"
+        for (const key in node.inputs) {
+            const input = node.inputs[key]
+            result += this.dumpNodeRecursiveBackwards(input, depth+1)
+        }
+        return result;
+    }
+
+    dumpNodesBackwards() {
+        // for each node that has no inputs, call dumpNodeRecursive to print it and all it's outputs
+        let result="";
+        for (const key in this.list) {
+            const node = this.list[key].data
+            if (node.outputs === undefined || Object.keys(node.outputs).length === 0) {
+                result += this.dumpNodeRecursiveBackwards(node, 0)
+            }
+        }
+        return result;
     }
 
 

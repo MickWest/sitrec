@@ -84,12 +84,23 @@ export class CFileManager extends CManager {
             if (isLocal) {
                 this.guiFolder.add(NodeMan, "recalculateAllRootFirst").name("debug recalculate all").perm();
                 this.guiFolder.add(this, "resetOrigin").name("debug reset Origin").perm();
+                this.guiFolder.add(this, "dumpNodes").name("debug dump nodes").perm();
+                this.guiFolder.add(this, "dumpNodesBackwards").name("debug dump nodes backwards").perm();
+
 
             }
 
         }
     }
 
+
+    dumpNodes() {
+        console.log(NodeMan.dumpNodes());
+    }
+
+    dumpNodesBackwards() {
+        console.log(NodeMan.dumpNodesBackwards());
+    }
 
     resetOrigin() {
         resetGlobalOrigin();
