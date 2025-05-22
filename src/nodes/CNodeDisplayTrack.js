@@ -43,6 +43,11 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         this.optionalInputs(["dropColor"])
 
+
+        // we don't need to draw the track every frame, so we can set up a step
+        // to draw every N frames, or (for extend to ground) every N meters
+        this.trackDisplayStep = v.trackDisplayStep ?? 10; // step for displaying the track, default is 10 (every 10 frames)
+
         // minWallStep is the minimum distance between points to draw a wall polygon (and outline)
         // set to 0 to draw a wall at every point (for KML polygons and lines)
         // or set custom values as needed
@@ -289,7 +294,7 @@ export class CNodeDisplayTrack extends CNode3DGroup {
         const EPS = 1e-4;           // epsilon for comparing floats
         let  lastPos;               // track the previous accepted point
 
-        for (var f = 0; f < this.frames; f++) {
+        for (var f = 0; f < this.frames; f+= this.trackDisplayStep) {
             let trackPoint = this.in.track.v(f)
 
             if (trackPoint === undefined && f === 0) {

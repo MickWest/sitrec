@@ -361,6 +361,8 @@ sitch = {
         track: "satelliteTrack",
         color: "#FFFFFF",
         width: 2,
+        minWallStep: 20000,          // min distance in meters between wall segments
+        trackDisplayStep: 300,      // number of frames between track points
     },
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
