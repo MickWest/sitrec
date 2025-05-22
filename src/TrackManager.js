@@ -79,7 +79,27 @@ class CMetaTrack {
 
     }
 
+
+    show(visible) {
+
+        if (this.displayCenterDataNode) {
+            this.displayCenterDataNode.show(visible);
+        }
+        if (this.displayCenterNode) {
+            this.displayCenterNode.show(visible);
+        }
+        if (this.displayTargetSphere) {
+            this.displayTargetSphere.show(visible);
+        }
+        if (this.displayCenterSphere) {
+            this.displayCenterSphere.show(visible);
+        }
+
+    }
+
 }
+
+
 
 // given a source file id:
 // first create a CNodeTimedData from whatever type of data it is (KML, SRT, etc)
@@ -713,6 +733,9 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     layers: LAYER.MASK_HELPERS,
 
                 })
+
+                // link back to here as the visiblity menue is hooked up to TrackDisplay_<shortName>
+                trackOb.trackDisplayNode.metaTrack = trackOb;
 
 
                 //    trackOb.displayTargetSphere = new CNodeDisplayTargetSphere({

@@ -740,6 +740,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         this[obName] = new CNodeLabeledArrow({
             id: obName,
+            visible: this[flagName],
             start: "lookCamera",
             direction: V3(0,0,1),
             length: -200,
@@ -748,7 +749,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             label: name,
             labelPosition: "1",
             offsetY: 20,
-            checkDisplayOutputs: true,
+            // checkDisplayOutputs: true,
         })
 
 

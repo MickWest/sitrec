@@ -52,7 +52,12 @@ class CNode {
         }
         this.inputs = {}                // inputs are named
         this.outputs = []               // outputs are just an array of nodes
+
         this.visible = true;            // some nodes are display nodes
+        if (v.visible !== undefined) {
+            this.visible = v.visible;
+        }
+
         this.enabled = true;            // some nodes are switchable, but most ignore this flag
         this.addInputs(v.inputs)
         this.pruneIfUnused = v.pruneIfUnused ?? false; // if true, then remove this node if it has no outputs
@@ -267,6 +272,7 @@ class CNode {
                 } else {
                     if (!justDisplayNodes || output.isDisplayNode) {
                         count++;
+//                        if (justDisplayNodes) console.log( " + DISPLAY NODE -> " + output.id)
                     }
 
 
@@ -739,7 +745,7 @@ function markMaximumVisibleDepth(node, depth) {
 function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
 
-     Globals.timeRecalculate = true;
+     //Globals.timeRecalculate = true;
      // Globals.debugRecalculate = true;
      // debugRecalculate = true;
 

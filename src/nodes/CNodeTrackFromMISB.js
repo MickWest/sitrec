@@ -218,6 +218,14 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         )
 
 
+        // TODO: this could be a lot faster
+        // there's a lot of data in the MISB that we recalculate on a MISB frame basis
+        // (i.e. a line of the misb file, not a frame step in the sim)
+        // so that all could be cached, for:
+        // isValid, getLat, getLon, getAlt, getTime
+        // and what we really need is a "getPos" function that returns the position
+        // Note though, we still need the LLA, but only for exporting
+        // so maybe we could recalcualte that only in the export function..
         
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)

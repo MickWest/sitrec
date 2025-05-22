@@ -119,6 +119,10 @@ export class CNodeDisplayTrack extends CNode3DGroup {
                     this.in.dataTrackDisplay.visible = this.visible
                     this.in.dataTrackDisplay.show(this.visible)
                 }
+
+                if (this.metaTrack !== undefined) {
+                    this.metaTrack.show(this.visible)
+                }
             })
 
             // // toggle for visibility of the mesh (vertical semi-transparent polygons
