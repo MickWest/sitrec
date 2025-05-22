@@ -60,6 +60,8 @@ class CNodeSwitch extends CNode {
 //                    console.log("Changed to "+newValue)
 //                    console.log("(changing) this.choice = "+this.choice)
 
+                    this.choiceChanged();
+
                     // if the inputs are controllers
                     // then we need to recalculate the output nodes
                     // of the selected controller
@@ -96,6 +98,7 @@ class CNodeSwitch extends CNode {
         } else if(!isConsole) {
             console.warn("No gui for CNodeSwitch - this is probably not what you want")
         }
+        this.choiceChanged()
         this.recalculate()
     }
 
@@ -182,6 +185,7 @@ class CNodeSwitch extends CNode {
         this.choice = option
         if (!quiet) {
             this.controller.setValue(option)
+            this.choiceChanged();
             this.recalculateCascade()
         } else {
             this.choice = option
@@ -242,16 +246,20 @@ class CNodeSwitch extends CNode {
 
         this.enableController(true);
 
+
+    }
+
+    choiceChanged() {
         // turn on or off gui for all gui sources
         // only turn them off if they are not connected to anything else
         Object.keys(this.inputs).forEach(key => {
             if (key !== this.choice) {
-               //  console.log("CNodeSwitch:input " + key+ "has "+this.inputs[key].outputs.length +" outputs")
+                //  console.log("CNodeSwitch:input " + key+ "has "+this.inputs[key].outputs.length +" outputs")
                 if (this.inputs[key].outputs.length === 1) {
-                // if the input is only connected to this switch, then hide it
-                //     console.log("CNodeSwitch:recalculate HIDE "+this.inputs[key].id+ "as only connected to this switch")
+                    // if the input is only connected to this switch, then hide it
+                    //     console.log("CNodeSwitch:recalculate HIDE "+this.inputs[key].id+ "as only connected to this switch")
                     this.inputs[key].hide()
-                 }
+                }
                 this.inputs[key].hideInactiveSources()
             } else {
             }

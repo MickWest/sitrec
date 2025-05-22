@@ -248,6 +248,33 @@ class CNode {
     }
 
 
+    // lightweight check to see if this node has any visible display outputs
+    // will early exit if it finds one
+    anyVisibleDisplayOutputs() {
+        for (let output of this.outputs) {
+            if (!output.visible) continue;
+
+            if (output.isDisplayNode) {
+                return true;
+            }
+
+            // For CNodeSwitch, check if this node is the current choice
+            if (output.constructor.name === "CNodeSwitch") {
+                if (output.inputs[output.choice] === this) {
+                    if (output.anyVisibleDisplayOutputs()) {
+                        return true;
+                    }
+                }
+            } else {
+                if (output.anyVisibleDisplayOutputs()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     countVisibleOutputs(depth = 0, justDisplayNodes = false) {
         // recursively count the number of visible outputs
@@ -745,7 +772,7 @@ function markMaximumVisibleDepth(node, depth) {
 function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
 
-     //Globals.timeRecalculate = true;
+     // Globals.timeRecalculate = true;
      // Globals.debugRecalculate = true;
      // debugRecalculate = true;
 
@@ -772,9 +799,9 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRe
             if (time >0.001) {
                 const node = NodeMan.get(id);
 
-                const outs = node.countVisibleOutputs(0, true);
+                const outs = node.anyVisibleDisplayOutputs();
                 let vis = node.visible ? " (vis)" : " (hidden)";
-                console.log(`${id}: ${time.toFixed(3)} ${vis}, checkDisplayOutputs=${node.checkDisplayOutputs}, displayOutputs=${outs} ${outs == 0? "🥶":""}`);
+                console.log(`${id}: ${time.toFixed(3)} ${vis}, checkDisplayOutputs=${node.checkDisplayOutputs}, displayOutputs=${outs} ${outs? "🥶":""}`);
             }
         });
     }
