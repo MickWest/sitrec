@@ -7,6 +7,13 @@ import {pointOnSphereBelow} from "../SphericalMath";
 export class CNodeTrack extends CNodeEmptyArray {
     constructor(v) {
         super(v);
+
+        // our mjor overhead is recalculating tracks
+        // so we don't want to do it if not needed, so there's a check in the recalculateCascade logic
+        // that will check the number of display outputs there are in the outputs and descendents of
+        // a node with checkDisplayOutputs set to true
+        // and skip the recalculation if there are no display outputs
+        this.checkDisplayOutputs = true;
     }
 
     exportTrackCSV() {

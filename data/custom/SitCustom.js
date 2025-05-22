@@ -710,7 +710,7 @@ sitch = {
         dynamicY: true,
     },
 
-    azFromLOS: {kind: "AzFromLOS", LOS: "JetLOSCameraCenter", useRecorded: false},
+    azFromLOS: {kind: "AzFromLOS", LOS: "JetLOSCameraCenter", useRecorded: false, checkDisplayOutputs: true},
 
     azValueGraph: { kind: "valueGraph",
         visible: false,
@@ -724,7 +724,10 @@ sitch = {
 
     include_Compasses: true,
 
-    MQ9UI: {kind: "MQ9UI", camera: "lookCamera", relativeTo: "lookView", visible: false, left: 0.0, top: 0.0, width: 1, height: 1},
+    // note differnt way of doing an overlay, for more flexibility
+    MQ9UI: {kind: "MQ9UI", camera: "lookCamera", relativeTo: "lookView",
+      //  left: 0.0, top: 0.0, width: 1, height: 1,
+        visible: false, passThrough: true},
 
     // labelView defaults to adding an overlay to lookView, and adds the time and date
     labelView: {dateTimeY:93},

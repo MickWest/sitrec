@@ -1816,6 +1816,13 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         const viewScale = 0.025 * view.divParent.clientHeight / view.heightPx;
 
+        if (this.TLEData === undefined) {
+            console.warn("TLEData is undefined in updateSatelliteText (Not loaded yet?)")
+            return;
+        }
+
+        assert(this.TLEData !== undefined, "TLEData is undefined in updateSatelliteText")
+
         const numSats = this.TLEData.satData.length;
         for (let i = 0; i < numSats; i++) {
             const satData = this.TLEData.satData[i];

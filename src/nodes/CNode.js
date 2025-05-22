@@ -65,9 +65,21 @@ class CNode {
             assert(0, "anonymous nodes not supported!")
         }
         this.simpleSerials = ["visible"];       // a list of serializable properties, default to nothing
+
+        // we ony add these rare flags if they are true, leaving them undefined
+        // which is truthy as false
         if (v.inheritVisibility) {
             this.inheritVisibility = v.inheritVisibility;
         }
+
+        if (v.checkDisplayOutputs) {
+            this.checkDisplayOutputs = v.checkDisplayOutputs;
+        }
+
+        // PATCH
+        // if (this.id === "azFromLOS") {
+        //     this.checkDisplayOutputs = true;
+        // }
 
         NodeMan.add(this.id, this)
     }
@@ -232,10 +244,14 @@ class CNode {
 
 
 
-    countVisibleOutputs(depth = 0) {
+    countVisibleOutputs(depth = 0, justDisplayNodes = false) {
         // recursively count the number of visible outputs
         // a switch node counds as visible if it has this as an input
         let count = 0;
+
+        // if (this.id === "Track_F-HUVE_unsmoothed") {
+        //     console.log("HUVE");
+        // }
 
         for (let output of this.outputs) {
             if (output.visible) {
@@ -244,13 +260,19 @@ class CNode {
                     // check if the current choice of the Switch is this node
                     // and that counts as visible, and we continue with the switch
                     if (output.inputs[output.choice] === this) {
-                        count++;
-                        count += output.countVisibleOutputs(depth+1);
+                        if (!justDisplayNodes) count++;
+                        count += output.countVisibleOutputs(depth+1, justDisplayNodes);
                     }
                     // otherwise the switch is ignored, and output will end here
                 } else {
-                    count++;
-                    count += output.countVisibleOutputs(depth+1);
+                    if (!justDisplayNodes || output.isDisplayNode) {
+                        count++;
+                    }
+
+
+
+
+                    count += output.countVisibleOutputs(depth+1, justDisplayNodes);
                 }
             }
         }
@@ -717,7 +739,7 @@ function markMaximumVisibleDepth(node, depth) {
 function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRecalculate = false) {
     if (Globals.dontRecalculate) return;
 
-     // Globals.timeRecalculate = true;
+     Globals.timeRecalculate = true;
      // Globals.debugRecalculate = true;
      // debugRecalculate = true;
 
@@ -741,8 +763,10 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRe
         timings.sort((a, b) => b.time - a.time);
         console.log("Node recalculate timings (ms):");
         timings.forEach(({ id, time }) => {
-            let vis = NodeMan.get(id).visible ? " (vis)" : " (hidden)";
-            console.log(`${id}: ${time.toFixed(2)} ${vis}`);
+            const node = NodeMan.get(id);
+
+            let vis = node.visible ? " (vis)" : " (hidden)";
+            console.log(`${id}: ${time.toFixed(2)} ${vis}, checkDisplayOutputs=${node.checkDisplayOutputs}, displayOutputs=${node.countVisibleOutputs(0, true)}`);
         });
     }
 }
@@ -772,7 +796,13 @@ function recalculateNodesBreadthFirstRecurse(list, f, noControllers, depth, debu
                 t0 = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
             }
 
-            node.recalculate();
+
+            // if the checkDisplayOutputs flag is set then we check if the node has any visible DISPLAY outputs
+            // and skip the recalculation if it doesn't
+            // for example, there might be a switch node that cuts this off
+            if (!node.checkDisplayOutputs || node.countVisibleOutputs(0, true) > 0) {
+                node.recalculate();
+            }
 
             // ---- timing end --------------------------------------------
             if (timings) {

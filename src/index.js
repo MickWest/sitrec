@@ -993,7 +993,13 @@ function renderMain(elapsed) {
             view.setVisible(view.overlayView.visible);
         }
 
-        if (view.visible) {
+        let visible = view.visible;
+        if (view.overlayView)
+            visible = view.overlayView.visible;
+        if (view.relativeTo)
+            visible = view.relativeTo.visible;
+
+        if (visible) {
 
             // we set from div, as that's the jQueryUI moving arond
             // which we really should get rid of, and just do it directly with mouse events

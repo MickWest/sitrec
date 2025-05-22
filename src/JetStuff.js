@@ -776,7 +776,9 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             wind: "targetWind"
     });
 
-    if (NodeMan.exists("fixedTargetPosition")) {
+    // PATCH: don't create in Custom mode
+    // as it's not needed, and creating it with no switch causes problems
+    if (NodeMan.exists("fixedTargetPosition") && Sit.name !== "custom") {
         new CNodeLOSTraverseWind({
             id: "LOSTraverseWindTarget" + idExtra,
             LOS: los,

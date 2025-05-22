@@ -13,10 +13,6 @@ import {ViewMan} from "../CViewManager";
 
 const defaultCViewParams = {
     visible: true,
-    left: 0,
-    top: 0,
-    width: 1,
-    height: 1,
     background:null,
     up: [0,1,0],
     fov: 45,
@@ -36,9 +32,6 @@ class CNodeView extends CNode {
         // optionally make the view relative to anohther view
         this.input("relativeTo", true);
 
-        
-
-
         // merge defaults with the passed parameters
         // into this. We used to merge in all of v, but that's not a good idea
         // as it leads to unexpected behaviour.
@@ -46,10 +39,10 @@ class CNodeView extends CNode {
         Object.assign(this,defaultCViewParams)
 
         // // Instead of merging, we just copy the parameters we want
-        this.top = v.top;
-        this.left = v.left;
-        this.width = v.width;
-        this.height = v.height;
+        this.top = v.top ?? 0;
+        this.left = v.left ?? 0;
+        this.width = v.width ?? 1;
+        this.height = v.height ?? 1;
 
         // in initial setup, move windows to not go outside screen
         // only on MetaQuest?
@@ -72,6 +65,11 @@ class CNodeView extends CNode {
   //      if (v.visible !== undefined)
         this.visible = v.visible ?? true;
 
+        // all views are display nodes, meaning they are counted to determine
+        // if we need to recalculate any of their inputs that have
+        this.isDisplayNode = true; // all view nodes are display nodes checkDisplayOutputs set to true
+
+
         this.background = v.background;
         this.up = v.up;
         this.fov = v.fov;
@@ -84,6 +82,7 @@ class CNodeView extends CNode {
         //
         //
 
+        this.passThrough = v.passThrough ?? false;
 
         // container defaults to the window, but could be something else
         // (not yet tested with anything else)
@@ -112,6 +111,9 @@ class CNodeView extends CNode {
             this.div.style.zIndex = 1;
 
             this.div.style.pointerEvents = 'auto';
+            if (this.passThrough) {
+                this.div.style.pointerEvents = 'none';
+            }
 
 //            console.log("For node "+this.id+" INITIAL setting widthPx,heightPx and div.style to "+this.widthPx+","+this.heightPx)
 

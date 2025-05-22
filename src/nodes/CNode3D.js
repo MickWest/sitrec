@@ -12,6 +12,9 @@ export class CNode3D extends CNode {
         super(v);
         v.layers = normalizeLayerType(v.layers)
         this._object = null;    // a 3D object
+
+        // all 3D objects are display nodes
+        this.isDisplayNode = true;
     }
 
     update(f) {
