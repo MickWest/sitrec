@@ -108,32 +108,48 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         return this.getTime(0)
     }
 
+    cacheValues() {
+        this.latArray = [];
+        this.lonArray = [];
+        this.rawAltArray = [];
+        this.timeArray = [];
+        this.validArray = [];
+
+        const len = this.misb.length;
+        for (let i = 0; i < len; i++) {
+            this.latArray.push(Number(this.misb[i][this.latCol]));
+            this.lonArray.push(Number(this.misb[i][this.lonCol]));
+            this.rawAltArray.push(Number(this.misb[i][this.altCol]));
+
+            let time = Number(this.misb[i][MISB.UnixTimeStamp]);
+            if (time > 31568461000000) {
+                time = time / 1000;
+            }
+            this.timeArray.push(time);
+            this.validArray.push(this.calcValid(i));
+        }
+    }
+
     getLat(i) {
-        return Number(this.misb[i][this.latCol]);
+        return this.latArray[i];
     }
 
     getLon(i) {
-        return Number(this.misb[i][this.lonCol]);
+        return this.lonArray[i];
     }
 
     getAlt(i) {
-        let a = Number(this.misb[i][this.altCol])
-
+        let a = this.rawAltArray[i];
         if (this.altitudeLock !== undefined && this.altitudeLock !== -1) {
             a = this.altitudeLock;
         } else if (this.altitudeOffset !== undefined) {
-            a += this.altitudeOffset
+            a += this.altitudeOffset;
         }
         return a;
     }
 
     getTime(i) {
-        let time = Number(this.misb[i][MISB.UnixTimeStamp])
-        // check to see if it's in milliseconds or microseconds
-        if (time > 31568461000000) {   // 31568461000000 is 1971 using microseconds, but 2970 using milliseconds
-            time = time / 1000
-        }
-        return time
+        return this.timeArray[i];
     }
 
     // given a time, find the first frame that is at or after that time
@@ -157,10 +173,14 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         return this.getPosition(this.getIndexAtTime(time));
     }
 
+    isValid(i) {
+        return this.validArray[i];
+    }
+
 
     // a slot is valid if it has a valid timestamp
     // and the lat/lon/alt are not NaN
-    isValid(slotNumber) {
+    calcValid(slotNumber) {
         let lat = this.getLat(slotNumber)
         let lon = this.getLon(slotNumber)
         let alt = this.getAlt(slotNumber)
@@ -220,6 +240,7 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
 
     recalculate() {
+        this.cacheValues();
         this.makeArrayForTrackDisplay()
     }
 }
