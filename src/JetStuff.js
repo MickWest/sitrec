@@ -776,15 +776,17 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
             wind: "targetWind"
     });
 
-    // PATCH: don't create in Custom mode
-    // as it's not needed, and creating it with no switch causes problems
-    if (NodeMan.exists("fixedTargetPosition") && Sit.name !== "custom") {
+
+    // this isn't used in custom, but it's still in some old saves
+    // leaving it here is fine as, like all tracks now, it will
+    // get recalculate-culled if there's no display outputs.
+    if (NodeMan.exists("fixedTargetPosition")) {
         new CNodeLOSTraverseWind({
             id: "LOSTraverseWindTarget" + idExtra,
             LOS: los,
             startDist: "startDistance",
             wind: "targetWind",
-            targetStart: "fixedTargetPosition"
+            targetStart: "fixedTargetPosition",
         });
     }
 
