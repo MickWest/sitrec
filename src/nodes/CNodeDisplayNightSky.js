@@ -748,6 +748,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             label: name,
             labelPosition: "1",
             offsetY: 20,
+            checkDisplayOutputs: true,
         })
 
 

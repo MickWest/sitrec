@@ -763,10 +763,13 @@ function recalculateNodesBreadthFirst(list, f, noControllers, depth = 0, debugRe
         timings.sort((a, b) => b.time - a.time);
         console.log("Node recalculate timings (ms):");
         timings.forEach(({ id, time }) => {
-            const node = NodeMan.get(id);
+            if (time >0.001) {
+                const node = NodeMan.get(id);
 
-            let vis = node.visible ? " (vis)" : " (hidden)";
-            console.log(`${id}: ${time.toFixed(2)} ${vis}, checkDisplayOutputs=${node.checkDisplayOutputs}, displayOutputs=${node.countVisibleOutputs(0, true)}`);
+                const outs = node.countVisibleOutputs(0, true);
+                let vis = node.visible ? " (vis)" : " (hidden)";
+                console.log(`${id}: ${time.toFixed(3)} ${vis}, checkDisplayOutputs=${node.checkDisplayOutputs}, displayOutputs=${outs} ${outs == 0? "🥶":""}`);
+            }
         });
     }
 }

@@ -83,6 +83,8 @@ function addGenericJetGraph(id, yLabel, mungeInputs, windowParams, editorParams,
 
         ...windowDefaults,
 
+        checkDisplayOutputs: true,
+
         editorConfig: {
             ...editorConfigDefaults,
             maxX: frames,
