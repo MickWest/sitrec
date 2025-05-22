@@ -420,6 +420,10 @@ export class CNodeDateTime extends CNode {
     // i.e. takes all the UI entires, and sets the now time, which will set the start time
     updateDateTime(v) {
         if (!this.refreshingUI) {
+
+            // if they set the time, don't auto set it later
+            Globals.sitchEstablished = true;
+
             this.adjustDaysInMonth();
             this.setNowDateTime(new Date(Date.UTC(
                 this.dateTime.year,

@@ -828,6 +828,11 @@ export class CCustomManager {
         if (NodeMan.exists("terrainUI")) {
             const terrainUI = NodeMan.get("terrainUI")
             if (isKeyHeld('t')) {
+
+                // we assume if they set some terrain then they don't want the automatic
+                // moving of the terrain and time done
+                Globals.sitchEstablished = true;
+
                 const mainView = ViewMan.get("mainView")
                 const cursorPos = mainView.cursorSprite.position.clone();
                 // convert to LLA

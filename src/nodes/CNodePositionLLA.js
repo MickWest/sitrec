@@ -14,7 +14,7 @@ import {adjustHeightAboveGround, altitudeAtLL} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
 import {EventManager} from "../CEventManager";
-import {Sit} from "../Globals";
+import {Globals, Sit} from "../Globals";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
@@ -152,6 +152,11 @@ export class CNodePositionLLA extends CNode {
         if (this.key) {
 
             if (isKeyHeld(this.key.toLowerCase())) {
+
+                // don't do any more drag-and-drop triggering of positions
+                // after we move the target or the camera
+                Globals.sitchEstablished = true;
+
                 const mainView = ViewMan.get("mainView")
                 const cursorPos = mainView.cursorSprite.position.clone();
                 // convert to LLA
