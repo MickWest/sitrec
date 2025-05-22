@@ -31,7 +31,16 @@ import {
     propagateLayerMaskObject,
     removeDebugArrow
 } from "../threeExt";
-import {ECEF2ENU, ECEF2EUS, ECEFToLLAVD_Sphere, EUSToECEF, getLST, raDecToAzElRADIANS, wgs84} from "../LLA-ECEF-ENU";
+import {
+    ECEF2ENU,
+    ECEF2EUS,
+    ECEFToLLAVD_Sphere,
+    EUSToECEF,
+    getLST,
+    LLAToEUS, LLAToEUSRadians,
+    raDecToAzElRADIANS,
+    wgs84
+} from "../LLA-ECEF-ENU";
 // npm install three-text2d --save-dev
 // https://github.com/gamestdio/three-text2d
 //import { MeshText2D, textAlign } from 'three-text2d'
@@ -320,7 +329,7 @@ class CTLEData {
             for (let i = 0; i < numSatData; i++) {
                 const satData = satDataArray[i]
                 if (satData.number === satNum) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satNum)
+  //                  console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satNum)
                     return satNum
                 }
             }
@@ -337,7 +346,7 @@ class CTLEData {
                 const satData = satDataArray[i]
                 // check if the name is the same as the string
                 if (satData.name === s) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
                     return satData.number
                 }
             }
@@ -347,7 +356,7 @@ class CTLEData {
                 const satData = satDataArray[i]
                 // check if the name starts with the string
                 if (satData.name.startsWith(s)) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
                     return satData.number
                 }
             }
@@ -357,7 +366,7 @@ class CTLEData {
                 const satData = satDataArray[i]
                 // check if the name contains the string
                 if (satData.name.includes(s)) {
-                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
+//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
                     return satData.number
                 }
             }
@@ -381,6 +390,14 @@ class CTLEData {
             return null;
         }
         return this.noradIndex[norad];
+    }
+
+    getRecordFromName(name) {
+        const NORAD = this.getNORAD(name);
+        if (NORAD === null) {
+            return null;
+        }
+        return this.getRecordFromNORAD(NORAD);
     }
 
 
@@ -1366,6 +1383,25 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         // first get the satellte list into an array of NORAD numbers
+        const list = this.showSatelliteList.split(",").map(x => x.trim());
+        // this can be names or numbers, convert to numbers
+        for (let i = 0; i < list.length; i++) {
+            const num = parseInt(list[i]);
+            if (isNaN(num)) {
+                // look up the name
+                const satData = this.TLEData.getRecordFromName(list[i]);
+                if (satData !== null) {
+                    list[i] = satData.number;
+                } else {
+                    // not a number or a name
+                    console.warn("CNodeDisplayNightSky: unknown satellite name " + list[i])
+                    list[i] = -1;
+                }
+            } else {
+                list[i] = num;
+            }
+        }
+
 
 
         // iterate over the satellites and flag visiblity
@@ -1408,6 +1444,18 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                             satData.visible = true;
                             continue;
                         }
+                }
+            }
+
+            // check the number against the user supplied list
+            // comma separated list of names or NORAD numbers
+            if (this.showSatelliteList) {
+                for (const number of list) {
+                    if (satData.number === parseInt(number)) {
+                        filterHit = true;
+                        satData.visible = true;
+                        continue;
+                    }
                 }
             }
 
@@ -2465,92 +2513,18 @@ void main() {
     }
 
 
+    // To get the EUS we need to get the LLA position
+    // as the satellite.js library assumes an elliptical Earth
+    // see discussion: https://www.metabunk.org/threads/the-secret-of-skinwalker-ranch-s03e09-uap-disappearing-into-thin-air-satellite-going-behind-cloud-entering-earths-shadow.13469/post-316283
     calcSatEUS(sat, date) {
         const positionAndVelocity = satellite.propagate(sat, date);
         if (positionAndVelocity && positionAndVelocity.position) {
-            const positionEci = positionAndVelocity.position;
+            const gmst = satellite.gstime(date);
+            // get geodetic (LLA) coordinates directly from satellite.js
+            const GD = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
 
-            var gmst = satellite.gstime(date);
-            var ecefK = satellite.eciToEcf(positionEci, gmst);
-            let ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000);
+            const altitude = GD.height*1000; // convert from km to meters
 
-            // adjust ecef to account for wgs84 ellipsoid
-            // rendering uses a sphere, so we need to adjust the position to account for the ellipsoid
-            // so the viewpoint is correct
-
-            // simple approximation
-            //    ecef.z = ecef.z / (1-wgs84.FLATTENING)
-
-            // const a = 6378137.0; // semi-major axis (equatorial radius)
-            // const b = 6356752.314245; // semi-minor axis (polar radius)
-            //
-            // const scale_factor = b / a;
-            // ecef.z = ecef.z / scale_factor;
-
-            // // more complex
-            // // convert ellipsoidal to spherical ECEF
-            // see discussion: https://www.metabunk.org/threads/the-secret-of-skinwalker-ranch-s03e09-uap-disappearing-into-thin-air-satellite-going-behind-cloud-entering-earths-shadow.13469/post-316283
-
-            // function ecefToLLA(x, y, z) {
-            //     const a = 6378137.0; // semi-major axis
-            //     const e = 0.081819190842622; // first eccentricity
-            //
-            //     const b = Math.sqrt(a * a * (1 - e * e));
-            //     const ep = Math.sqrt((a * a - b * b) / (b * b));
-            //     const p = Math.sqrt(x * x + y * y);
-            //     const th = Math.atan2(a * z, b * p);
-            //     const lon = Math.atan2(y, x);
-            //     const lat = Math.atan2((z + ep * ep * b * Math.sin(th) * Math.sin(th) * Math.sin(th)), (p - e * e * a * Math.cos(th) * Math.cos(th) * Math.cos(th)));
-            //     const N = a / Math.sqrt(1 - e * e * Math.sin(lat) * Math.sin(lat));
-            //     const alt = p / Math.cos(lat) - N;
-            //
-            //     return { lat: lat, lon: lon, alt: alt };
-            // }
-
-
-            // optimized version with precalculated values
-            const a = 6378137.0; // semi-major axis (equatorial radius)
-            const e = 0.081819190842622; // first eccentricity
-            const e2 = 0.00669437999014; // e squared
-            const b = 6356752.314245; // semi-minor axis
-            const ep2 = 0.00673949674227; // ep squared
-
-            function ecefToLLA(x, y, z) {
-                const p = Math.sqrt(x * x + y * y);
-                const th = Math.atan2(a * z, b * p);
-                const lon = Math.atan2(y, x);
-                const sinTh = Math.sin(th);
-                const cosTh = Math.cos(th);
-                const lat = Math.atan2(z + ep2 * b * sinTh * sinTh * sinTh, p - e2 * a * cosTh * cosTh * cosTh);
-                const sinLat = Math.sin(lat);
-                const N = a / Math.sqrt(1 - e2 * sinLat * sinLat);
-                const alt = p / Math.cos(lat) - N;
-
-                return { lat: lat, lon: lon, alt: alt };
-            }
-
-
-            function llaToSphericalECEF(lat, lon, alt) {
-                const R = 6378137.0; // Mean radius of the Earth (WGS84 Sphere)
-
-                const X = (R + alt) * Math.cos(lat) * Math.cos(lon);
-                const Y = (R + alt) * Math.cos(lat) * Math.sin(lon);
-                const Z = (R + alt) * Math.sin(lat);
-
-                return { x: X, y: Y, z: Z };
-            }
-
-            const llaPos = ecefToLLA(ecef.x, ecef.y, ecef.z);
-            const sphericalECEF = llaToSphericalECEF(llaPos.lat, llaPos.lon, llaPos.alt);
-
-
-            ecef = V3(sphericalECEF.x, sphericalECEF.y, sphericalECEF.z);
-
-
-
-
-            // get the altitude
-            const altitude = ecef.length() - wgs84.RADIUS;
             // if the altitude is less than 100km, then it's in the atmosphere so we don't show it
             if (altitude < 100000) {
                 return null;
@@ -2558,19 +2532,156 @@ void main() {
 
             // if it's significantly (10%) greater than geostationary orbit (35,786 km), then it's probably an error
             // so we don't show it
-            // (This should probably be much lower for Starlink, but we'll leave it for now)
             if (altitude > 40000000) {
                 return null;
             }
 
-            const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS);
-            const eus = V3(enu.x, enu.z, -enu.y);
-            return eus;
-        }
-        else
-            return null;
+            const EUS = LLAToEUSRadians(GD.latitude, GD.longitude, altitude);
+            return EUS;
 
+
+        } else {
+            return null;
+        }
     }
+
+    // calcSatEUSOLD(sat, date) {
+    //     const positionAndVelocity = satellite.propagate(sat, date);
+    //     if (positionAndVelocity && positionAndVelocity.position) {
+    //         const positionEci = positionAndVelocity.position;
+    //
+    //         var gmst = satellite.gstime(date);
+    //         var ecefK = satellite.eciToEcf(positionEci, gmst);
+    //         let ecef = V3(ecefK.x * 1000, ecefK.y * 1000, ecefK.z * 1000);
+    //
+    //         // adjust ecef to account for wgs84 ellipsoid
+    //         // rendering uses a sphere, so we need to adjust the position to account for the ellipsoid
+    //         // so the viewpoint is correct
+    //
+    //         // simple approximation
+    //         //    ecef.z = ecef.z / (1-wgs84.FLATTENING)
+    //
+    //         // const a = 6378137.0; // semi-major axis (equatorial radius)
+    //         // const b = 6356752.314245; // semi-minor axis (polar radius)
+    //         //
+    //         // const scale_factor = b / a;
+    //         // ecef.z = ecef.z / scale_factor;
+    //
+    //         // // more complex
+    //         // // convert ellipsoidal to spherical ECEF
+    //         // see discussion: https://www.metabunk.org/threads/the-secret-of-skinwalker-ranch-s03e09-uap-disappearing-into-thin-air-satellite-going-behind-cloud-entering-earths-shadow.13469/post-316283
+    //
+    //         // function ecefToLLA(x, y, z) {
+    //         //     const a = 6378137.0; // semi-major axis
+    //         //     const e = 0.081819190842622; // first eccentricity
+    //         //
+    //         //     const b = Math.sqrt(a * a * (1 - e * e));
+    //         //     const ep = Math.sqrt((a * a - b * b) / (b * b));
+    //         //     const p = Math.sqrt(x * x + y * y);
+    //         //     const th = Math.atan2(a * z, b * p);
+    //         //     const lon = Math.atan2(y, x);
+    //         //     const lat = Math.atan2((z + ep * ep * b * Math.sin(th) * Math.sin(th) * Math.sin(th)), (p - e * e * a * Math.cos(th) * Math.cos(th) * Math.cos(th)));
+    //         //     const N = a / Math.sqrt(1 - e * e * Math.sin(lat) * Math.sin(lat));
+    //         //     const alt = p / Math.cos(lat) - N;
+    //         //
+    //         //     return { lat: lat, lon: lon, alt: alt };
+    //         // }
+    //
+    //
+    //         // optimized version with precalculated values
+    //         const a = 6378137.0; // semi-major axis (equatorial radius)
+    //         const e = 0.081819190842622; // first eccentricity
+    //         const e2 = 0.00669437999014; // e squared
+    //         const b = 6356752.314245; // semi-minor axis
+    //         const ep2 = 0.00673949674227; // ep squared
+    //
+    //         function ecefToLLA(x, y, z) {
+    //             const p = Math.sqrt(x * x + y * y);
+    //             const th = Math.atan2(a * z, b * p);
+    //             const lon = Math.atan2(y, x);
+    //             const sinTh = Math.sin(th);
+    //             const cosTh = Math.cos(th);
+    //             const lat = Math.atan2(z + ep2 * b * sinTh * sinTh * sinTh, p - e2 * a * cosTh * cosTh * cosTh);
+    //             const sinLat = Math.sin(lat);
+    //             const N = a / Math.sqrt(1 - e2 * sinLat * sinLat);
+    //             const alt = p / Math.cos(lat) - N;
+    //
+    //             return { lat: lat, lon: lon, alt: alt };
+    //         }
+    //
+    //
+    //         function llaToSphericalECEF(lat, lon, alt) {
+    //             const R = 6378137.0; // Mean radius of the Earth (WGS84 Sphere)
+    //
+    //             const X = (R + alt) * Math.cos(lat) * Math.cos(lon);
+    //             const Y = (R + alt) * Math.cos(lat) * Math.sin(lon);
+    //             const Z = (R + alt) * Math.sin(lat);
+    //
+    //             return { x: X, y: Y, z: Z };
+    //         }
+    //
+    //         // a slightly differnt approach
+    //         // calculates the altitude from the ECEF coordinates
+    //         // then normalizes the ECEF coordinates to a sphere of radius R
+    //         // and then scales it by the altitude
+    //         function ellipticalToSphericalECEF(ecef) {
+    //             const R = wgs84.RADIUS; // Spherical Earth radius used for rendering (e.g., 6371008.8)
+    //
+    //             // Step 1: Get geodetic latitude, longitude, and altitude (on ellipsoid)
+    //             const lla = ecefToLLA(ecef.x, ecef.y, ecef.z);
+    //             const alt = lla.alt; // in meters
+    //
+    //             // Step 2: Get geocentric unit direction vector (from center to satellite)
+    //             const r = Math.hypot(ecef.x, ecef.y, ecef.z);
+    //             const ux = ecef.x / r;
+    //             const uy = ecef.y / r;
+    //             const uz = ecef.z / r;
+    //
+    //             // Step 3: Compute spherical position at correct altitude
+    //             const scaledR = R + alt;
+    //
+    //             return {
+    //                 x: ux * scaledR,
+    //                 y: uy * scaledR,
+    //                 z: uz * scaledR
+    //             };
+    //         }
+    //
+    //
+    //
+    //         const llaPos = ecefToLLA(ecef.x, ecef.y, ecef.z);
+    //         const sphericalECEF = llaToSphericalECEF(llaPos.lat, llaPos.lon, llaPos.alt);
+    //
+    //         // New
+    //         //const sphericalECEF = ellipticalToSphericalECEF(ecef);
+    //
+    //         ecef = V3(sphericalECEF.x, sphericalECEF.y, sphericalECEF.z);
+    //
+    //
+    //
+    //
+    //         // get the altitude
+    //         const altitude = ecef.length() - wgs84.RADIUS;
+    //         // if the altitude is less than 100km, then it's in the atmosphere so we don't show it
+    //         if (altitude < 100000) {
+    //             return null;
+    //         }
+    //
+    //         // if it's significantly (10%) greater than geostationary orbit (35,786 km), then it's probably an error
+    //         // so we don't show it
+    //         // (This should probably be much lower for Starlink, but we'll leave it for now)
+    //         if (altitude > 40000000) {
+    //             return null;
+    //         }
+    //
+    //         const enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS);
+    //         const eus = V3(enu.x, enu.z, -enu.y);
+    //         return eus;
+    //     }
+    //     else
+    //         return null;
+    //
+    // }
 
     updateAllSatellites(date) {
 

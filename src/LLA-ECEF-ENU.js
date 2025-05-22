@@ -328,16 +328,21 @@ export function EUSToECEF(posEUS, radius) {
 }
 
 // Convert LLA to Spherical EUS. Optional earth's radius parameter is deprecated, and should not be used.
-export function LLAToEUS(lat, lon, alt=0, radius) {
+export function LLAToEUSRadians(lat, lon, alt=0, radius) {
     assert(radius === undefined, "undexpected radius in LLAToEUS")
     assert(Sit.lat != undefined, "Sit.lat undefined in LLAToEUS")
-    const ecef = RLLAToECEFV_Sphere(radians(lat),radians(lon),alt,wgs84.RADIUS)
+    const ecef = RLLAToECEFV_Sphere(lat,lon,alt,wgs84.RADIUS)
     // Sit.lat/lon is the EUS origin, which can be defined per Sit
     // it's mostly legacy, but the math will be more accurate if the origin is near the action
     // when there's a terrain, Sit.lat/lon is set to center of the map in CNodeTerrain
     var enu = ECEF2ENU(ecef, radians(Sit.lat), radians(Sit.lon), wgs84.RADIUS)
     var eus = V3(enu.x,enu.z,-enu.y)
     return eus
+}
+
+// Convert LLA to Spherical EUS. Optional earth's radius parameter is deprecated, and should not be used.
+export function LLAToEUS(lat, lon, alt=0, radius) {
+    return LLAToEUSRadians(radians(lat), radians(lon), alt, radius)
 }
 
 // vector input version
