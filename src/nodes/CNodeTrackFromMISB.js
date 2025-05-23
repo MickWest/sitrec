@@ -63,7 +63,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         for (let i = 0; i < len; i++) {
             this.latArray.push(misb.getLat(i));
             this.lonArray.push(misb.getLon(i));
-            this.rawAltArray.push(misb.getAlt(i)); // TODO: needs alt adjustments. add a getAlt function to this
+            this.rawAltArray.push(misb.getRawAlt(i)); // TODO: needs alt adjustments. add a getAlt function to this
 
             this.timeArray.push(misb.getTime(i));
             this.validArray.push(misb.isValid(i));
@@ -349,7 +349,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             const fraction = (msNow - this.timeArray[slot]) / (this.timeArray[slot + 1] - this.timeArray[slot])
             const lat = interpolate(this.latArray[slot], this.latArray[slot +1], fraction);
             const lon = interpolate(this.lonArray[slot], this.lonArray[slot +1], fraction);
-            const alt = interpolate(this.rawAltArray[slot], this.rawAltArray[slot +1], fraction);
+            const alt = misb.adjustAlt(interpolate(this.rawAltArray[slot], this.rawAltArray[slot +1], fraction));
 
 
             //const pos = LLAToEUS(lat, lon, alt)
