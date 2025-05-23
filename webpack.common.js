@@ -166,6 +166,9 @@ module.exports = {
                 exclude: /Sit.*\.js$/,
                 terserOptions: {
                     keep_classnames: true,
+                    compress: {
+                        pure_funcs: ['assert']
+                    }
                 },
             }),
         ],
