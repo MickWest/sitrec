@@ -1,6 +1,6 @@
-import {f2m, interpolate} from "../utils";
+import {cos, f2m, interpolate, sin} from "../utils";
 import {GlobalDateTimeNode, NodeMan, Sit} from "../Globals";
-import {LLAToEUS} from "../LLA-ECEF-ENU";
+import {LLAToEUS, RLLAToECEFV_Sphere, wgs84} from "../LLA-ECEF-ENU";
 
 import {MISB} from "../MISBUtils";
 import {saveAs} from "../js/FileSaver";
@@ -9,6 +9,8 @@ import {assert} from "../assert.js";
 import {CGeoJSON} from "../geoJSONUtils";
 import {isLocal} from "../configUtils.js"
 import stringify from "json-stringify-pretty-compact";
+import {Vector3} from "three/src/math/Vector3";
+import {Matrix3} from "three/src/math/Matrix3";
 
 export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {
@@ -218,6 +220,26 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         )
 
 
+        const rSitLat = Sit.lat * Math.PI / 180
+        const rSitLon = Sit.lon * Math.PI / 180
+
+        // convert ECEF (ecefX, ecefY, ecefZ) to ENU (east, north, up)
+        const cosSitLat = Math.cos(rSitLat)
+        const sinSitLat = Math.sin(rSitLat)
+        const cosSitLon = Math.cos(rSitLon)
+        const sinSitLon = Math.sin(rSitLon)
+
+        const lon1 = rSitLon
+        const lat1 = rSitLat
+        const mECEF2ENU = new Matrix3().set(
+            -sin(lon1), cos(lon1), 0,
+            -sin(lat1) * cos(lon1), -sin(lat1) * sin(lon1), cos(lat1),
+            cos(lat1) * cos(lon1), cos(lat1) * sin(lon1), sin(lat1)
+        );
+        const radius = wgs84.RADIUS;
+        var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, radius)
+
+
         // TODO: this could be a lot faster
         // there's a lot of data in the MISB that we recalculate on a MISB frame basis
         // (i.e. a line of the misb file, not a frame step in the sim)
@@ -276,7 +298,33 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
             const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
 
-            const pos = LLAToEUS(lat, lon, alt)
+
+            //const pos = LLAToEUS(lat, lon, alt)
+
+            // expanded LLAToEUS out for speed
+            const rLat = lat * Math.PI / 180
+            const rLon = lon * Math.PI / 180
+            const cosLat = Math.cos(rLat)
+            const sinLat = Math.sin(rLat)
+            const cosLon = Math.cos(rLon)
+            const sinLon = Math.sin(rLon)
+            const radiusAlt = radius + alt;
+
+            // convert LLA to ECEF, including altitude
+            const ecefX = radiusAlt * cosLat * cosLon;
+            const ecefY = radiusAlt * cosLat * sinLon;
+            const ecefZ = radiusAlt * sinLat;
+
+            // convert ECEF to ENU
+            const ecef = new Vector3(ecefX, ecefY, ecefZ);
+            const enu = ecef.clone().sub((originECEF)).applyMatrix3(mECEF2ENU)
+            // and store as EUS
+            const pos = new Vector3(enu.x, enu.z, -enu.y)
+            // end expanded LLAToEUS
+            ///////////////////////////////////////////////////////////////////////
+
+
+
             // end product, a per-frame array of positions
             // that is a track.
 
