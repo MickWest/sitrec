@@ -22,11 +22,15 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         super(v);
     //    this.kml = FileManager.get(v.cameraFile)
 
-        this.columns = v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]
+        this._columns = v.columns || ["SensorLatitude", "SensorLongitude", "SensorTrueAltitude"]
 
-//        console.log("CNodeTrackFromMISB:constructor(): columns[2] = ",this.columns[2])
+//        console.log("CNodeTrackFromMISB:constructor(): columns[2] = ",this._columns[2])
 
         this.input("misb")
+
+
+        this.cacheValues();
+
 
         this.addInput("startTime",GlobalDateTimeNode)
         this.recalculate()
@@ -46,11 +50,32 @@ export class CNodeTrackFromMISB extends CNodeTrack {
     }
 
 
+    cacheValues() {
+        const misb = this.in.misb;
+        misb.selectSourceColumns(this._columns);
+        this.latArray = [];
+        this.lonArray = [];
+        this.rawAltArray = [];
+        this.timeArray = [];
+        this.validArray = [];
+
+        const len = this.inputs.misb.misb.length;
+        for (let i = 0; i < len; i++) {
+            this.latArray.push(misb.getLat(i));
+            this.lonArray.push(misb.getLon(i));
+            this.rawAltArray.push(misb.getAlt(i)); // TODO: needs alt adjustments. add a getAlt function to this
+
+            this.timeArray.push(misb.getTime(i));
+            this.validArray.push(misb.isValid(i));
+        }
+    }
+
+
     // export the track as a CSV file (only used for testing Custom1 import functionality
     exportCustom1() {
         let csv = "TIME,MGRS,LAT_DMS,LON_DMS,LAT,LONG,LAT_DDM,LON_DDM,ALTITUDE,AIRCRAFT,CALLSIGN,SPEED_KTS\n"
         const misb = this.in.misb;
-        misb.selectSourceColumns(this.columns);
+        misb.selectSourceColumns(this._columns);
         var points = misb.misb.length
         const id = this.shortName ?? this.id;
         for (let slot = 0; slot < points; slot++) {
@@ -90,7 +115,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
     addToGeoJSON(geo) {
         const misb = this.in.misb;
-        misb.selectSourceColumns(this.columns);
+        misb.selectSourceColumns(this._columns);
         var points = misb.misb.length
         const id = this.id;
         for (let slot = 0; slot < points; slot++) {
@@ -185,7 +210,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         var msStart = this.in.startTime.getStartTimeValue()
 
         const misb = this.in.misb;
-        misb.selectSourceColumns(this.columns);
+        misb.selectSourceColumns(this._columns);
 
         this.array = [];
         this.frames = Sit.frames;
@@ -208,6 +233,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
         // patch the fov values in the misb column, overwriting any ilegal or missing values
 
+        // EXTRACT as not changing
         let validFOV = this.patchColumn(misb, MISB.SensorVerticalFieldofView,
             (n) => {return !isNaN(n) && n > 0 && n < 180;}
         )
@@ -281,8 +307,8 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             // advance the slot if needed
             while (slot < points-1) {
                 // we need at least two good consecutive slots
-                if (misb.isValid(slot) && misb.isValid(slot+1)) {
-                    const nextDataTime = misb.getTime(slot + 1);
+                if (this.validArray[slot] && this.validArray[slot+1]) {
+                    const nextDataTime = this.timeArray[slot + 1];
                     if (nextDataTime > msNow) {
                         break
                     }
@@ -295,7 +321,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
               if (slot < points-1) {
                   // for the in-range slots, check the time is increasing
                   // which means the data is good and we can interpolate
-                  assert(misb.getTime(slot + 1) > misb.getTime(slot), "Time data is not increasing slot =" + slot + " time=" + misb.getTime(slot) + " next time=" + misb.getTime(slot + 1));
+                  assert(this.timeArray[slot + 1] > this.timeArray[slot], "Time data is not increasing slot =" + slot + " time=" + this.timeArray[slot] + " next time=" + misb.getTime(slot + 1));
               } else {
                   // use the last two slots and interpolate (extrapolate) the position
                   slot = points - 2
@@ -305,7 +331,7 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
             // is either is invalid, then go back until we find a valid pair
             // this should only kick in at the end of the track
-            while ((!misb.isValid(slot) || !misb.isValid(slot+1)) && slot > 0) {
+            while ((!this.validArray[slot] || !this.validArray[slot+1]) && slot > 0) {
                 slot--
             }
 
@@ -313,17 +339,17 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             // however we might want to do something different for out or range
             // as the first and last pairs of data points might not be good
 
-            assert(misb.isValid(slot), "slot " + slot + " is not valid, id=" + this.id)
-            assert(misb.isValid(slot+1), "slot+1 " + (slot+1) + " is not valid, id=" + this.id)
+            assert(this.validArray[slot], "slot " + slot + " is not valid, id=" + this.id)
+            assert(this.validArray[slot+1], "slot+1 " + (slot+1) + " is not valid, id=" + this.id)
 
 
-            assert(misb.getTime(slot+1) > misb.getTime(slot), "Time data is not increasing slot =" + slot + " time=" + misb.getTime(slot) + " next time=" + misb.getTime(slot+1));
+            assert(this.timeArray[slot+1] > this.timeArray[slot], "Time data is not increasing slot =" + slot + " time=" + this.timeArray[slot] + " next time=" + this.timeArray[slot+1]);
 
            // assert(slot < points, "not enough data, or a bug in your code - Time wrong? id=" + this.id)
-            const fraction = (msNow - misb.getTime(slot)) / (misb.getTime(slot + 1) - misb.getTime(slot))
-            const lat = interpolate(misb.getLat(slot), misb.getLat(slot + 1), fraction);
-            const lon = interpolate(misb.getLon(slot), misb.getLon(slot + 1), fraction);
-            const alt = interpolate(misb.getAlt(slot), misb.getAlt(slot + 1), fraction);
+            const fraction = (msNow - this.timeArray[slot]) / (this.timeArray[slot + 1] - this.timeArray[slot])
+            const lat = interpolate(this.latArray[slot], this.latArray[slot +1], fraction);
+            const lon = interpolate(this.lonArray[slot], this.lonArray[slot +1], fraction);
+            const alt = interpolate(this.rawAltArray[slot], this.rawAltArray[slot +1], fraction);
 
 
             //const pos = LLAToEUS(lat, lon, alt)
