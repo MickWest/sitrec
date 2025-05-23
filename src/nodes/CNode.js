@@ -19,6 +19,7 @@ import {par} from "../par";
 import {FileManager, Globals, guiMenus, NodeMan, Sit} from "../Globals";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
+import {isConsole} from "../configUtils";
 
 
 var debugNodeNumber = 0;
@@ -315,6 +316,7 @@ class CNode {
     // hide this if it has only one output
     // then also hide (recursively) the source of this node, if they have only one output (i.e. this)
     hideInactiveSources() {
+        if (isConsole) return;
         // check all the inputs, if they have only one output, then hide them
         // if more than one output, then check if ANY are visible
         // if not, then hide them
@@ -351,6 +353,7 @@ class CNode {
 
     // recursively show all the sources of this node
     showActiveSources() {
+        if (isConsole) return;
         // breadth first search
         for (let key in this.inputs) {
             let input = this.inputs[key];
