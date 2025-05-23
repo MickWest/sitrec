@@ -235,38 +235,47 @@ export class CNodeTrackFromMISB extends CNodeTrack {
         const radius = wgs84.RADIUS;
 
 
-        // const mECEF2ENU = new Matrix3().set(
-        //     -sin(lon1), cos(lon1), 0,
-        //     -sin(lat1) * cos(lon1), -sin(lat1) * sin(lon1), cos(lat1),
-        //     cos(lat1) * cos(lon1), cos(lat1) * sin(lon1), sin(lat1)
-        // );
-        // var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, radius)
 
-
-        // Construct the 4x4 matrix that combines translation and rotation
-        const mECEF2EUS = new Matrix4().set(
-            -sin(lon1),                          cos(lon1),                         0,                         0,
-            -sin(lat1) * cos(lon1),            -sin(lat1) * sin(lon1),            cos(lat1),                0,
-            cos(lat1) * cos(lon1),             cos(lat1) * sin(lon1),            sin(lat1),                0,
-            0,                                  0,                                 0,                        1
+// I'm now precalculating a lot for speed. Could do more.
+// Build ECEF to ENU rotation
+        const mECEF2ENU = new Matrix3().set(
+            -Math.sin(lon1),                    Math.cos(lon1),                      0,
+            -Math.sin(lat1)*Math.cos(lon1), -Math.sin(lat1)*Math.sin(lon1), Math.cos(lat1),
+            Math.cos(lat1)*Math.cos(lon1),  Math.cos(lat1)*Math.sin(lon1), Math.sin(lat1)
         );
 
-// Translation to subtract the origin
+// Compose ENU → EUS swap
+        const mENUtoEUS = new Matrix3().set(
+            1, 0,  0,
+            0, 0,  1,
+            0, -1, 0
+        );
+
+// Final rotation
+        const mECEF2EUS_3x3 = new Matrix3().multiplyMatrices(mENUtoEUS, mECEF2ENU);
+
+// Promote to Matrix4
+        const mECEF2EUS = new Matrix4();
+
+// Assign that combined 3x3 rotation into top-left of 4x4
+        const e = mECEF2EUS.elements;
+        const r = mECEF2EUS_3x3.elements;
+
+        e[0] = r[0]; e[4] = r[3]; e[8]  = r[6]; e[12] = 0;
+        e[1] = r[1]; e[5] = r[4]; e[9]  = r[7]; e[13] = 0;
+        e[2] = r[2]; e[6] = r[5]; e[10] = r[8]; e[14] = 0;
+        e[3] = 0;    e[7] = 0;    e[11] = 0;    e[15] = 1;
+
+
+// Translation
         const originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, wgs84.RADIUS);
         const translation = new Matrix4().makeTranslation(-originECEF.x, -originECEF.y, -originECEF.z);
 
-// Combine translation and rotation, then convert to EUS frame
+// Final matrix: rotate * translate
+
+        // TODO!!! this should be global, and used in many other places for ECEF->EUS
         mECEF2EUS.multiply(translation);
 
-        // TODO: this could be a lot faster
-        // there's a lot of data in the MISB that we recalculate on a MISB frame basis
-        // (i.e. a line of the misb file, not a frame step in the sim)
-        // so that all could be cached, for:
-        // isValid, getLat, getLon, getAlt, getTime
-        // and what we really need is a "getPos" function that returns the position
-        // Note though, we still need the LLA, but only for exporting
-        // so maybe we could recalcualte that only in the export function..
-        
         for (var f=0;f<Sit.frames;f++) {
             var msNow = msStart + Math.floor(frameTime*1000)
             // advance the slot if needed
@@ -343,9 +352,9 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
             const pos = new Vector3(ecefX, ecefY, ecefZ );
             pos.applyMatrix4(mECEF2EUS);
-            const posY = pos.y;
-            pos.y = pos.z;
-            pos.z = -posY;
+            // const posY = pos.y;
+            // pos.y = pos.z;
+            // pos.z = -posY;
             //const pos = new Vector3(ecef_enu.x, ecef_enu.z, -ecef_enu.y)
 
 
