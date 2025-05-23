@@ -108,79 +108,44 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
         return this.getTime(0)
     }
 
-    cacheValues() {
-        this.latArray = [];
-        this.lonArray = [];
-        this.rawAltArray = [];
-        this.timeArray = [];
-        this.validArray = [];
-
-        const len = this.misb.length;
-        for (let i = 0; i < len; i++) {
-            this.latArray.push(Number(this.misb[i][this.latCol]));
-            this.lonArray.push(Number(this.misb[i][this.lonCol]));
-            this.rawAltArray.push(Number(this.misb[i][this.altCol]));
-
-            let time = Number(this.misb[i][MISB.UnixTimeStamp]);
-            if (time > 31568461000000) {
-                time = time / 1000;
-            }
-            this.timeArray.push(time);
-            this.validArray.push(this.calcValid(i));
-        }
-    }
-
     getLat(i) {
-        return this.latArray[i];
+        return Number(this.misb[i][this.latCol]);
     }
 
     getLon(i) {
-        return this.lonArray[i];
+        return Number(this.misb[i][this.lonCol]);
     }
 
     getAlt(i) {
-        let a = this.rawAltArray[i];
+        let a = Number(this.misb[i][this.altCol])
+
         if (this.altitudeLock !== undefined && this.altitudeLock !== -1) {
             a = this.altitudeLock;
         } else if (this.altitudeOffset !== undefined) {
-            a += this.altitudeOffset;
+            a += this.altitudeOffset
         }
         return a;
     }
 
     getTime(i) {
-        return this.timeArray[i];
+        let time = Number(this.misb[i][MISB.UnixTimeStamp])
+        // check to see if it's in milliseconds or microseconds
+        if (time > 31568461000000) {   // 31568461000000 is 1971 using microseconds, but 2970 using milliseconds
+            time = time / 1000
+        }
+        return time
     }
 
     // given a time, find the first frame that is at or after that time
-    // uses a binary search, as we know the time is sorted
     getIndexAtTime(time) {
-        let low = 0, high = this.timeArray.length - 1;
-        let closestIndex = 0;
-        let minDiff = Infinity;
-
-        while (low <= high) {
-            let mid = Math.floor((low + high) / 2);
-            let t = this.timeArray[mid];
-            let diff = Math.abs(t - time);
-
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestIndex = mid;
-            }
-
-            if (t < time) {
-                low = mid + 1;
-            } else if (t > time) {
-                high = mid - 1;
-            } else {
-                return mid; // exact match
+        let points = this.misb.length
+        for (let f = 0; f < points; f++) {
+            if (this.getTime(f) >= time) {
+                return f;
             }
         }
-
-        return closestIndex;
+        return 0
     }
-
 
     // get EUS position at frame i
     getPosition(i) {
@@ -188,20 +153,14 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
     }
 
     // given a time in ms (UNIX time), return the position at that time
-    // this is used for track-track tests, like closest points
-    // we first find the MISB frame number, then get the position from that frame
     getPositionAtTime(time) {
         return this.getPosition(this.getIndexAtTime(time));
-    }
-
-    isValid(i) {
-        return this.validArray[i];
     }
 
 
     // a slot is valid if it has a valid timestamp
     // and the lat/lon/alt are not NaN
-    calcValid(slotNumber) {
+    isValid(slotNumber) {
         let lat = this.getLat(slotNumber)
         let lon = this.getLon(slotNumber)
         let alt = this.getAlt(slotNumber)
@@ -261,7 +220,6 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
 
 
     recalculate() {
-        this.cacheValues();
         this.makeArrayForTrackDisplay()
     }
 }
