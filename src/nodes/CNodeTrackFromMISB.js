@@ -9,9 +9,9 @@ import {assert} from "../assert.js";
 import {CGeoJSON} from "../geoJSONUtils";
 import {isLocal} from "../configUtils.js"
 import stringify from "json-stringify-pretty-compact";
-import {Vector3} from "three/src/math/Vector3";
-import {Matrix3} from "three/src/math/Matrix3";
-import {Matrix4} from "three/src/math/Matrix4";
+import {Vector3} from "three";
+import {Matrix3} from "three";
+import {Matrix4} from "three";
 
 export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {

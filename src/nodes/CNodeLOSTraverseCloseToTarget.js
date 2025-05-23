@@ -3,7 +3,7 @@
 // or "startDist" to start at a particular distance along the first line
 import {Ray} from "three";
 import {CNodeTrack} from "./CNodeTrack";
-import {Vector3} from "three/src/math/Vector3";
+import {Vector3} from "three";
 import {DebugArrowAB} from "../threeExt";
 
 export class CNodeLOSTraverseCloseToTarget extends CNodeTrack {
