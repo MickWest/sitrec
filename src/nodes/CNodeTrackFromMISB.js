@@ -11,6 +11,7 @@ import {isLocal} from "../configUtils.js"
 import stringify from "json-stringify-pretty-compact";
 import {Vector3} from "three/src/math/Vector3";
 import {Matrix3} from "three/src/math/Matrix3";
+import {Matrix4} from "three/src/math/Matrix4";
 
 export class CNodeTrackFromMISB extends CNodeTrack {
     constructor(v) {
@@ -231,14 +232,31 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
         const lon1 = rSitLon
         const lat1 = rSitLat
-        const mECEF2ENU = new Matrix3().set(
-            -sin(lon1), cos(lon1), 0,
-            -sin(lat1) * cos(lon1), -sin(lat1) * sin(lon1), cos(lat1),
-            cos(lat1) * cos(lon1), cos(lat1) * sin(lon1), sin(lat1)
-        );
         const radius = wgs84.RADIUS;
-        var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, radius)
 
+
+        // const mECEF2ENU = new Matrix3().set(
+        //     -sin(lon1), cos(lon1), 0,
+        //     -sin(lat1) * cos(lon1), -sin(lat1) * sin(lon1), cos(lat1),
+        //     cos(lat1) * cos(lon1), cos(lat1) * sin(lon1), sin(lat1)
+        // );
+        // var originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, radius)
+
+
+        // Construct the 4x4 matrix that combines translation and rotation
+        const mECEF2EUS = new Matrix4().set(
+            -sin(lon1),                          cos(lon1),                         0,                         0,
+            -sin(lat1) * cos(lon1),            -sin(lat1) * sin(lon1),            cos(lat1),                0,
+            cos(lat1) * cos(lon1),             cos(lat1) * sin(lon1),            sin(lat1),                0,
+            0,                                  0,                                 0,                        1
+        );
+
+// Translation to subtract the origin
+        const originECEF = RLLAToECEFV_Sphere(lat1, lon1, 0, wgs84.RADIUS);
+        const translation = new Matrix4().makeTranslation(-originECEF.x, -originECEF.y, -originECEF.z);
+
+// Combine translation and rotation, then convert to EUS frame
+        mECEF2EUS.multiply(translation);
 
         // TODO: this could be a lot faster
         // there's a lot of data in the MISB that we recalculate on a MISB frame basis
@@ -316,10 +334,21 @@ export class CNodeTrackFromMISB extends CNodeTrack {
             const ecefZ = radiusAlt * sinLat;
 
             // convert ECEF to ENU
-            const ecef = new Vector3(ecefX, ecefY, ecefZ);
-            const enu = ecef.clone().sub((originECEF)).applyMatrix3(mECEF2ENU)
-            // and store as EUS
-            const pos = new Vector3(enu.x, enu.z, -enu.y)
+            // const ecef = new Vector3(ecefX, ecefY, ecefZ);
+            // const enu = ecef.clone().sub((originECEF)).applyMatrix3(mECEF2ENU)
+            // // and store as EUS
+            // const pos = new Vector3(enu.x, enu.z, -enu.y)
+
+            // Final transformation in one step
+
+            const pos = new Vector3(ecefX, ecefY, ecefZ );
+            pos.applyMatrix4(mECEF2EUS);
+            const posY = pos.y;
+            pos.y = pos.z;
+            pos.z = -posY;
+            //const pos = new Vector3(ecef_enu.x, ecef_enu.z, -ecef_enu.y)
+
+
             // end expanded LLAToEUS
             ///////////////////////////////////////////////////////////////////////
 
@@ -330,8 +359,8 @@ export class CNodeTrackFromMISB extends CNodeTrack {
 
             assert(!Number.isNaN(pos.x),"CNodeTrackFromMISB:recalculate(): pos.x NaN " + "lat = " + lat + " lon = " + lon + " alt = " + alt)
 
-            // minumum data that is needed
-            const product = {position: pos.clone(), lla:[lat,lon,alt]}
+            // minumum data that is needed (no clone need as it's done in the expanded LLAToEUS)
+            const product = {position: pos, lla:[lat,lon,alt]}
 
             // // uniterpolated extra fields
             // const extraFields = [
