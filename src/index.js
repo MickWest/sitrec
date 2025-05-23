@@ -541,7 +541,7 @@ async function initializeOnce() {
 
     par.nameSelect = unselectedText;
     // Add the menu to select a situation
-    _gui.add(par, "nameSelect", selectableSitches).name("Built-in Sitch").perm().onChange(sitch => {
+    _gui.add(par, "nameSelect", selectableSitches).name("Legacy Sitches").perm().onChange(sitch => {
         par.name = par.nameSelect;
         console.log("SITCH par.name CHANGE TO: "+sitch+" ->"+par.nameSelect)
         var url = SITREC_APP+"?sitch=" + sitch
@@ -550,7 +550,7 @@ async function initializeOnce() {
         par.nameSelect = unselectedText ;
 
     })
-        .tooltip("Built-in sitches are predefined situations that often have unique code and assets. Select one to load it.");
+        .tooltip("The Legacy Sitches are older built-in (hard-coded) sitches are predefined situations that often have unique code and assets. Select one to load it.");
 
     // and one for tools
     par.toolSelect = unselectedText;
