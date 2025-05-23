@@ -153,15 +153,34 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
     }
 
     // given a time, find the first frame that is at or after that time
+    // uses a binary search, as we know the time is sorted
     getIndexAtTime(time) {
-        let points = this.misb.length
-        for (let f = 0; f < points; f++) {
-            if (this.getTime(f) >= time) {
-                return f;
+        let low = 0, high = this.timeArray.length - 1;
+        let closestIndex = 0;
+        let minDiff = Infinity;
+
+        while (low <= high) {
+            let mid = Math.floor((low + high) / 2);
+            let t = this.timeArray[mid];
+            let diff = Math.abs(t - time);
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = mid;
+            }
+
+            if (t < time) {
+                low = mid + 1;
+            } else if (t > time) {
+                high = mid - 1;
+            } else {
+                return mid; // exact match
             }
         }
-        return 0
+
+        return closestIndex;
     }
+
 
     // get EUS position at frame i
     getPosition(i) {
@@ -169,6 +188,8 @@ export class CNodeMISBDataTrack extends CNodeEmptyArray {
     }
 
     // given a time in ms (UNIX time), return the position at that time
+    // this is used for track-track tests, like closest points
+    // we first find the MISB frame number, then get the position from that frame
     getPositionAtTime(time) {
         return this.getPosition(this.getIndexAtTime(time));
     }
