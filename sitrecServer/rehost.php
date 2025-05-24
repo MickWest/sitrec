@@ -135,9 +135,15 @@ $fileName = basename($_POST['filename']);
 $fileContent = file_get_contents($_FILES['fileContent']['tmp_name']);
 $version = isset($_POST['version']) ? basename($_POST['version']) : null;
 
+// sanitize the filename by removing any path components
+// or any characters that are not alphanumeric, space, _, -, ., (, )
+$fileName = preg_replace('/[^\w\s\.\-\(\)]/', '_', $fileName);
+
+
 // Validate names
 if (!isSafeName($fileName) || ($version && !isSafeName($version))) {
     http_response_code(400);
+    echo("Invalid filename or version provided " . $fileName);
     exit("Invalid filename or version provided");
 }
 
