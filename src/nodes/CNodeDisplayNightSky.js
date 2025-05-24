@@ -68,6 +68,7 @@ import {CNodeLabeledArrow} from "./CNodeLabels3D";
 import {CNodeDisplaySkyOverlay} from "./CNodeDisplaySkyOverlay";
 import {EventManager} from "../CEventManager";
 import {CNodeViewUI} from "./CNodeViewUI";
+//import { eci_to_geodetic } from '../../pkg/eci_convert.js';
 
 // npm install satellite.js --save-dev
 var satellite = require('satellite.js');
@@ -2524,8 +2525,11 @@ void main() {
             const gmst = satellite.gstime(date);
             // get geodetic (LLA) coordinates directly from satellite.js
             const GD = satellite.eciToGeodetic(positionAndVelocity.position, gmst);
-
             const altitude = GD.height*1000; // convert from km to meters
+
+//            const pv = positionAndVelocity.position;
+//            const GD = eci_to_geodetic(pv.x, pv.y, pv.z, gmst);
+//            const altitude = GD[2]*1000; // convert from km to meters
 
             // if the altitude is less than 100km, then it's in the atmosphere so we don't show it
             if (altitude < 100000) {
@@ -2539,6 +2543,7 @@ void main() {
             }
 
             const EUS = LLAToEUSRadians(GD.latitude, GD.longitude, altitude);
+//            const EUS = LLAToEUSRadians(GD[1], GD[0], altitude);
             return EUS;
 
 

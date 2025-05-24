@@ -45,6 +45,23 @@ http {
     client_max_body_size 100M;
 }
 
+Wasm (e.g. for Rust) mime type support
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    types {
+        application/wasm wasm;
+    }
+
+# and add wasm  in any static location, like
+location ~* \.(js|css|wasm|png|jpg|jpeg|gif|ico|woff|woff2|ttf|svg|eot|otf|map)$ {
+
+
+}
+
+
 restart:
 sudo nginx -s reload
 

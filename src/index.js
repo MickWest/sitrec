@@ -91,6 +91,38 @@ import {CNodeView3D} from "./nodes/CNodeView3D";
 console.log ("SITREC START - index.js after imports")
 
 
+import { eci_to_geodetic } from '../pkg/eci_convert.js';
+
+function test() {
+
+    const x = 6524.834;
+    const y = 6862.875;
+    const z = 6448.296;
+    const gmst = 1.75;
+
+    const result = eci_to_geodetic(x, y, z, gmst);
+
+    const [lon, lat, alt] = result;
+
+    console.log("lon:", lon);
+    console.log("lat:", lat);
+    console.log("alt:", alt);
+
+    // Simple test conditions
+    if (result.length !== 3) throw new Error("Result should have 3 elements.");
+    if (typeof lon !== 'number') throw new Error("Longitude must be a number.");
+    if (typeof lat !== 'number') throw new Error("Latitude must be a number.");
+    if (typeof alt !== 'number') throw new Error("Altitude must be a number.");
+    if (lon < -Math.PI || lon > Math.PI) throw new Error("Longitude out of range.");
+    if (lat < -Math.PI/2 || lat > Math.PI/2) throw new Error("Latitude out of range.");
+    if (alt <= 0) throw new Error("Altitude should be positive.");
+
+    console.log("✅ JS → Rust → JS roundtrip test passed.");
+}
+
+test();
+
+
 // This is the main entry point for the sitrec web application
 // However note that the imports above might have code that is executed
 // before this code is executed.

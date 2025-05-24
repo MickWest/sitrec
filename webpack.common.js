@@ -12,6 +12,7 @@ const fs = require('fs');
 const MarkdownIt = require('markdown-it');
 const md = new MarkdownIt();
 const CircularDependencyPlugin = require('circular-dependency-plugin')
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 const dotenv = require('dotenv');
 const result = dotenv.config({ path: './config/shared.env' });
@@ -154,10 +155,19 @@ module.exports = {
             },
         }),
 
-
+        // new WasmPackPlugin({
+        //     crateDirectory: path.resolve(__dirname, 'rust'), // your Rust crate directory
+        //     outDir: path.resolve(__dirname, 'pkg'),
+        //     outName: 'eci_convert',
+        //     forceMode: 'production', // or 'development'
+        //     watchDirectories: [
+        //         path.resolve(__dirname, 'rust/src'),
+        //     ],
+        // }),
     ],
     experiments: {
         topLevelAwait: true,
+        asyncWebAssembly: true,
     },
     optimization: {
         minimizer: [
