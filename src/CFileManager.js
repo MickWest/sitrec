@@ -1188,7 +1188,8 @@ export function detectCSVType(csv) {
         return "CUSTOM1";
     }
 
-    if (csv[0][0].toLowerCase() === "frame" && csv[0][1].toLowerCase() === "az") {
+    if ((csv[0][0].toLowerCase() === "frame" || csv[0][0].toLowerCase() === "time")
+        && csv[0][1].toLowerCase() === "az") {
         return "AZIMUTH"
     }
 

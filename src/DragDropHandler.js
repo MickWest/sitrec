@@ -393,10 +393,28 @@ class CDragDropHandler {
             const elCol = findColumn(parsedFile, "El", true);
             const zoomCol = findColumn(parsedFile, "Zoom", true);
 
+            const firstColumnHeader = parsedFile[0][0].toLowerCase();
+
+
+
             // strip the first row
             // as it's the header
             // and we don't want to send it to the customAzElController
             parsedFile = parsedFile.slice(1);
+
+            // we expect frame numbers in the first column
+            // if the head is "time" then we expect time in seconds
+            // so convert it to frame numbers
+            if (firstColumnHeader === "time") {
+                // convert the time to frame numbers
+                const fps = Sit.fps;
+                parsedFile.forEach(row => {
+                    if (row[0] !== undefined) {
+                        row[0] = Math.round(row[0] * fps);
+                    }
+                });
+            }
+
 
             if (azCol !== -1 || elCol !== -1 || zoomCol !== -1) {
                 // it's a CSV with az and el
