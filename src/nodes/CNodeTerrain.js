@@ -930,6 +930,13 @@ export class CNodeTerrain extends CNode {
         if (this.maps[local.mapType].map !== undefined)
             elevation = this.maps[local.mapType].map.getElevationInterpolated(LLA.x, LLA.y)
 
+        if (elevation < 0 ) {
+            // if the elevation is negative, then we assume it's below sea level
+            // so we set it to zero
+            elevation = 0;
+        }
+
+
         // then we scale a vector from the center of the earth to the point
         // so that its length is the radius of the earth plus the elevation
         // then the end of this vector (added to the center) is the point on the terrain

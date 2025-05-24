@@ -308,16 +308,33 @@ export class CNodeMeasureAB extends CNodeLabel3D {
         }
 
         // add an arrow from A to C and B to D
-        DebugArrowAB(this.id+"start", this.C, this.A, color, true, this.groupNode.group);
-        DebugArrowAB(this.id+"end", this.D, this.B, color, true, this.groupNode.group);
+        DebugArrowAB(this.id + "start", this.C, this.A, color, true, this.groupNode.group);
+        DebugArrowAB(this.id + "end", this.D, this.B, color, true, this.groupNode.group);
 
-        const length = this.A.distanceTo(this.B);
+        let length
+
+        if (this.altitude) {
+            // if we are measuring altitude, then we need to use the altitude of A and B
+            // to calculate the length
+            length = altitudeAboveSphere(this.A) - altitudeAboveSphere(this.B);
+        } else {
+            length = this.A.distanceTo(this.B);
+        }
+
+
+
         let text;
         if (this.altitude) {
             // TODO: verify this is correct, use the fixed camera and target
-            text = Units.withUnits(length, this.decimals, this.unitType) + " agl";
             var alt = altitudeAboveSphere(this.A)
-            text += "\n "+Units.withUnits(alt, this.decimals, this.unitType)+ " msl";
+            if (Math.abs(alt-length) < 1) {
+                // if the altitude is within 1 meter of the length, then just show the length
+                // as that means we are over the ocean (zero altitude msl))
+                text = Units.withUnits(length, this.decimals, this.unitType) + " msl\n ";
+            } else {
+                text = Units.withUnits(length, this.decimals, this.unitType) + " agl";
+                text += "\n " + Units.withUnits(alt, this.decimals, this.unitType) + " msl";
+            }
             //text += "\n "+Units.withUnits(alt, this.decimals, this.unitType)+ " msl";
         } else {
             text = Units.withUnits(length, this.decimals, this.unitType);
