@@ -328,6 +328,7 @@ function checkFornewSitchObject() {
 
 async function newSitch(situation, customSetup = false ) {
 
+    Globals.sitchEstablished = false;
 
     // for the built-in sitches, we change the url, but we don't reload the page
     // that way the user can share the url direct to this sitch

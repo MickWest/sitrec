@@ -75,8 +75,6 @@ class CMetaTrack {
         // DON"T DO THIS
         //NodeMan.pruneUnusedConstants();
 
-        Globals.sitchEstablished = false;
-
     }
 
 
