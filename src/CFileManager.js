@@ -196,6 +196,11 @@ export class CFileManager extends CManager {
             }).moveAfter("Save with Permalink")
                 .tooltip("Load a saved sitch from your personal folder on the server");
 
+            // this.userVersions = "-";
+            // this.guiVersions = this.guiServer.add(this, "userVersions", this.userVersions).name("Versions").perm().onChange((value) => {
+            //
+            // })
+
             this.deleteName = this.userSaves[0];
             this.guiDelete = this.guiServer.add(this, "deleteName", this.userSaves).name("Delete").perm().onChange((value) => {
                 this.deleteSitch(value)
@@ -228,6 +233,25 @@ export class CFileManager extends CManager {
             console.log("versions: " + data)
             this.versions = JSON.parse(data) // will give an array of local files
             console.log("Parsed Versions url \n" + this.versions[0].url)
+
+
+            // this.userVersions = this.versions.map((version) => {
+            //     return version.version;
+            // });
+            //
+            // // add a "-" to the start of the userVersions array, so we can have a blank entry
+            // this.userVersions.unshift("-");
+            //
+            // // update this.guiVersions
+            //
+            // // I think this is not having an effect as we reload the page with the new URL
+            // // so we need to build this later, when the page has reloaded
+            //
+            // this.guiVersions.options = this.userVersions;
+            // this.guiVersions.setValue(this.userVersions[0]); // set the first value as the default
+            // this.guiVersions.updateDisplay(); // update the display to show the new options
+            //
+
             return this.versions;
         })
     }
