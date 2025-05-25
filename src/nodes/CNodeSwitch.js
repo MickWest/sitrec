@@ -189,6 +189,7 @@ class CNodeSwitch extends CNode {
             this.recalculateCascade()
         } else {
             this.choice = option
+            this.choiceChanged();
             this.controller.updateDisplay();
         }
     }
