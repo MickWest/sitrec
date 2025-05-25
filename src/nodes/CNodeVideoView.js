@@ -34,6 +34,7 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
 
         this.input("zoom", true); // zoom input is optional
 
+        this.videoSpeed = v.videoSpeed ?? 1; // default to 1x speed
 
         this.setupMouseHandler();
 
@@ -59,8 +60,9 @@ export class CNodeVideoView extends CNodeViewCanvas2D {
         }
         this.fileName = fileName;
         this.disposeVideoData()
-        this.videoData = new CVideoWebCodecDataRaw({id: this.id + "_data", file: fileName},
+        this.videoData = new CVideoWebCodecDataRaw({id: this.id + "_data", file: fileName, videoSpeed: this.videoSpeed},
             this.loadedCallback.bind(this), this.errorCallback.bind(this))
+
         this.positioned = false;
         par.frame = 0;
         par.paused = false; // unpause, otherwise we see nothing.
