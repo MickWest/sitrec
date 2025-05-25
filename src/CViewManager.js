@@ -53,6 +53,24 @@ class CViewManager extends CManager {
         })
     }
 
+    updateViewFromPreset(viewName, preset) {
+        const view = this.get(viewName, false);
+        if (view) {
+            if (preset.visible !== undefined) {
+                view.setVisible(preset.visible);
+            }
+            if (preset.left !== undefined) {
+                view.left = preset.left;
+                view.top = preset.top;
+                view.width = preset.width;
+                view.height = preset.height;
+                view.updateWH();
+            }
+        } else {
+            console.warn(`ViewManager: No view found with name ${viewName}`);
+        }
+    }
+
 }
 
 export var ViewMan = new CViewManager()

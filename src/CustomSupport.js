@@ -30,12 +30,17 @@ import {DebugArrowAB} from "./threeExt";
 import {TrackManager} from "./TrackManager";
 
 
+
+
+
+
 export class CCustomManager {
     constructor() {
     }
 
 
     setup() {
+
 
         if (Sit.canMod) {
             // we have "SAVE MOD", but "SAVE CUSTOM" is no more, replaced by standard "Save", "Save As", etc.
@@ -64,14 +69,13 @@ export class CCustomManager {
             }
         }))
 
-        toggler('e', guiMenus.contents.add( this, "toggleExtendToGround")
+        toggler('e', guiMenus.contents.add(this, "toggleExtendToGround")
             .name("Toggle ALL [E]xtend To Ground")
             .moveToFirst()
             .tooltip("Toggle 'Extend to Ground' for all tracks\nWill set all off if any are on\nWill set all on if none are on")
-
         )
 
-        guiMenus.physics.add( this, "calculateBestPairs").name("Calculate Best Pairs");
+        guiMenus.physics.add(this, "calculateBestPairs").name("Calculate Best Pairs");
 
 
         // TODO - Multiple events passed to EventManager.addEventListener
@@ -113,8 +117,91 @@ export class CCustomManager {
         });
 
 
+        this.viewPresets = {
+            Default: {
+                keypress: "1",
+                // video: {visible: true, left: 0.5, top: 0, width: -1.7927, height: 0.5},
+                // mainView: {visible: true, left: 0.0, top: 0, width: 0.5, height: 1},
+                // lookView: {visible: true, left: 0.5, top: 0.5, width: -1.7927, height: 0.5},
+                mainView: {visible: true, left: 0.0, top: 0, width: 0.5, height: 1},
+                video: {visible: true, left: 0.5, top: 0, width: 0.5, height: 0.5},
+                lookView: {visible: true, left: 0.5, top: 0.5, width: 0.5, height: 0.5},
+            },
 
+            SideBySide: {
+                keypress: "2",
+                mainView: {visible: true, left: 0.0, top: 0, width: 0.5, height: 1},
+                video: {visible: false},
+                lookView: {visible: true, left: 0.5, top: 0, width: 0.5, height: 1},
+            },
+
+            TopandBottom: {
+                keypress: "3",
+                mainView: {visible: true, left: 0.0, top: 0, width: 1, height: 0.5},
+                video: {visible: false},
+                lookView: {visible: true, left: 0.0, top: 0.5, width: 1, height: 0.5},
+            },
+
+            ThreeWide: {
+                keypress: "4",
+                mainView: {visible: true, left: 0.0, top: 0, width: 0.333, height: 1},
+                video:    {visible: true, left: 0.333, top: 0, width: 0.333, height: 1},
+                lookView: {visible: true, left: 0.666, top: 0.5, width: 0.333, height: 1},
+            },
+
+            TallVideo: {
+                keypress: "5",
+                mainView: {visible: true, left: 0.0,  top: 0,   width: 0.50, height: 1},
+                video:    {visible: true, left: 0.5,  top: 0,   width: 0.25, height: 1},
+                lookView: {visible: true, left: 0.75, top: 0.5, width: 0.25, height: 1},
+
+            },
+        }
+
+        this.currentViewPreset = "Default";
+        // add a key handler to switch between the view presets
+
+        this.presetGUI = guiMenus.view.add(this, "currentViewPreset", Object.keys(this.viewPresets))
+            .name("View Preset")
+            .listen()
+            .tooltip("Switch between different view presets\nSide-by-side, Top and Bottom, etc.")
+            .onChange((value) => {
+                this.updateViewFromPreset();
+            })
+
+        EventManager.addEventListener("keydown", (data) => {
+            const keypress = data.key.toLowerCase();
+            // if it's a number key, then switch to the corresponding view preset
+            // in this.viewPreset
+            if (keypress >= '0' && keypress <= '9') {
+
+                // find the preset with the key: in the object
+                const presetKey = Object.keys(this.viewPresets).find(
+                    key => this.viewPresets[key].keypress === keypress
+                );
+                if (presetKey) {
+                    this.currentViewPreset = presetKey;
+                    console.log("Switching to view preset " + keypress);
+                    this.updateViewFromPreset();
+                }
+            }
+        })
     }
+
+    updateViewFromPreset() {
+        // update the views from the current view preset
+        const preset = this.viewPresets[this.currentViewPreset];
+        if (preset) {
+            // set the views
+            ViewMan.updateViewFromPreset("video", preset.video);
+            ViewMan.updateViewFromPreset("mainView", preset.mainView);
+            ViewMan.updateViewFromPreset("lookView", preset.lookView);
+        } else {
+            console.warn("No view preset found for " + this.currentViewPreset);
+        }
+    }
+
+
 
     calculateBestPairs() {
         // given the camera position for lookCamera at point A and B
@@ -192,7 +279,7 @@ export class CCustomManager {
 
                 const metric = diffA + diffB;
 
-                // store all paits as object in bestPairs
+                // store all pairs as object in bestPairs
                 this.bestPairs.push({
                     obj1: obj1,
                     obj2: obj2,

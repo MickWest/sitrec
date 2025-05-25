@@ -56,6 +56,7 @@ sitch = {
         startCameraTargetLLA: [28.740680, -117.712652, 241879.049676],
     },
 
+    // Note "videoView" creates anode called "video" for legacy purposes
     videoView: {left: 0.5, top: 0, width: -1.7927, height: 0.5, autoClear: false},
     mainView: {left: 0.0, top: 0, width: 0.5, height: 1, background: '#408080'},
 

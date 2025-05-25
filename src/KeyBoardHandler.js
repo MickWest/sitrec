@@ -2,6 +2,7 @@ import {Globals, gui, guiShowHide, keyCodeHeld, keyHeld, NodeMan, Sit} from "./G
 import {par} from "./par";
 import {closeFullscreen, openFullscreen} from "./utils";
 import {Vector3} from "three";
+import {EventManager} from "./CEventManager";
 
 
 class CKeyInfo {
@@ -193,6 +194,8 @@ export function initKeyboard() {
         keyHeld[key] = true
         keyCodeHeld[keyCode] = true
         console.log("Key: " + key + " keyCode: " + keyCode)
+
+        EventManager.dispatchEvent("keydown", {key: key, keyCode: keyCode, event: e});
 
 
         if (NodeMan.exists("mainCamera")) {
