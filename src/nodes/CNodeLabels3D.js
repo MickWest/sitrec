@@ -43,7 +43,7 @@ export function setupMeasurementUI() {
     labelsGroupNode = new CNode3DGroup({id: "LabelsGroupNode"});
 
     measureDistanceGroupNode = new CNode3DGroup({id: "MeasureDistanceGroupNode"});
-  //  measureDistanceGroupNode.isMeasurement = true;
+    measureDistanceGroupNode.isMeasurement = true;
 
 
 
