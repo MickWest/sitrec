@@ -174,6 +174,11 @@ class CNodeView extends CNode {
             guiShowHideViews.add(this, 'visible').listen().name(name).onChange(value => {
                 this.visible = undefined; // force update
                 this.setVisible(value);
+                if (value) {
+                    // if we are showing the view, then recaulcualte
+                    // for things like graphs
+                    this.recalculate();
+                }
             })
         }
 
