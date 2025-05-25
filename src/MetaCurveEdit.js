@@ -623,8 +623,11 @@ class MetaBezierCurveEditor {
         if (!this.dirty) {
             return;
         }
-        this.dirty = false;
-
+        if (typeof this.dirty === "number") {
+            this.dirty--;
+        } else {
+            this.dirty = 0;
+        }
 
         if (this.dynamicX) {
             // update to match the current frame count
@@ -893,16 +896,17 @@ class MetaBezierCurveEditor {
             this.drawLines(this.lines)
         }
 
-        ctx.font = "20px Arial";
 
         ctx.textAlign = "center";
-        if (this.p.xLabelDelta) {
+        if (this.p.xLabelDelta && first !== undefined && last !== undefined) {
             let delta = last - first
-            let deltaInfo = `${delta>0?'+':''}${delta.toFixed(0)}`
+            let deltaInfo = `[${first.toFixed(1)} -> ${last.toFixed(1)}] ${delta>0?'+':''}${delta.toFixed(1)}`
 
+            ctx.font = "14px Arial";
             ctx.fillText(deltaInfo, this.g.x + this.g.w / 2, this.c.height - 15);
 
         } else {
+            ctx.font = "20px Arial";
             ctx.fillText(this.xLabel, this.g.x + this.g.w / 2, this.c.height - 15);
         }
 

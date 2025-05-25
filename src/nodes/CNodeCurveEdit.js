@@ -93,19 +93,13 @@ export class CNodeCurveEditorView extends CNodeViewCanvas2D {
             }
         }
 
-        // flag a single frame redraw
-//        this.editor.dirty = true;
-//        console.log("+++ Set Editor DIRTY in CNodeCurveEditorView.recalculate")
-
+        // recalculate the compare nodes
+        for (let i = 0; i < this.editor.compareNode.length; i++) {
+            this.editor.compareNode[i].recalculate();
+        }
 
         if (this.visible) {
-            // again a bit messed up with the drawing order
-            // so weve got this nasty hack to force a redraw
-            // on the next frame
-            requestAnimationFrame(() => {
-                    this.editor.dirty = true;
-                }
-            )
+            this.editor.dirty = 2; // force a redraw on the next N frames
         }
 
     }
