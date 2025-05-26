@@ -138,8 +138,28 @@ export class CNodePositionLLA extends CNode {
                                     this._LLA[0] = this.guiLat.value;
                                     this._LLA[1] = this.guiLon.value;
                                     // set the altitude to 0
-                                    this.guiAlt.setValueWithUnits(0, "metric", "small", true)
+                                    this._LLA[2] = 0;
+                                    this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small", true)
                                     this.recalculateCascade(0);
+
+                                    // try to get the altitude from Open-Metro
+                                    const altUrl = `https://api.open-meteo.com/v1/elevation?latitude=${this.guiLat.value}&longitude=${this.guiLon.value}`;
+                                    fetch(altUrl)
+                                        .then(response => response.json())
+                                        .then(altData => {
+                                            if (altData.elevation !== undefined) {
+                                                // add 2m to the elevation, as we want to be above ground
+                                                this._LLA[2] = altData.elevation[0] + 2; // add 2m to the elevation
+                                                this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small", true);
+                                                this.recalculateCascade(0);
+
+                                            } else {
+                                                console.warn("No elevation data found for " + this.lookupString);
+                                            }
+                                        })
+                                        .catch(error => console.error("Error fetching elevation: ", error));
+
+
                                 } else {
                                     alert("No results found for " + this.lookupString);
                                 }
