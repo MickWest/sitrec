@@ -1514,7 +1514,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             fileInfo.dynamicLink = true;
 
             DragDropHandler.handleParsedFile(id, fileInfo.data)
-            EventManager.dispatchEvent("tleLoaded", {})
         });
 
     }
@@ -2336,6 +2335,7 @@ void main() {
         this.TLEData = new CTLEData(tle)
         this.addSatellites(this.satelliteGroup, this.satelliteTextGroup)
         this.filterSatellites()
+        EventManager.dispatchEvent("tleLoaded", {})
     }
 
     removeSatellites() {

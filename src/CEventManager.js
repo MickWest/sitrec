@@ -12,6 +12,8 @@ class CEventManager {
             this.events[event] = [];
         }
 
+//        console.log("⚽️ EventManager adding event listener for", event, "callback", callback);
+
         this.events[event].push(callback);
     }
 
@@ -29,6 +31,8 @@ class CEventManager {
         }
 
         //this.events[event].forEach((cb) => cb(data));
+
+//        console.log("🎃 EventManager dispatching event", event, "with data", data);
 
         // call the callbacks, if any return true, then delete that one
         this.events[event] = this.events[event].filter((cb) => !cb(data));

@@ -130,7 +130,38 @@ class CNodeSwitch extends CNode {
     // so we just need to set the choice (the selected option)
     modDeserialize(v) {
         super.modDeserialize(v);
-        this.selectOptionQuietly(v.choice);
+
+        if (v.choice === "Satellite") {
+            // check to see if the TLE data is loaded
+            // if it is not loaded, then we need to wait for it to be loaded
+            // and then set the choice to the first available choice
+
+            const TlEData = NodeMan.get("NightSkyNode", false)?.TLEData;
+
+            if (TlEData === undefined) {
+                // TLE data is not loaded, so we need to wait for it to be loaded
+                // and then set the choice to the first available choice
+                console.warn("CNodeSwitch:modDeserialize: TLE data not loaded, waiting for it to be loaded")
+                this.choice = null; // set to null so that we can select the first available choice later
+                // as the Satellite choice is not valid until the TLE data is loaded
+                this.selectValidChoice();
+
+                // add an event listener to wait for the TLE data to be loaded
+                // and then set the choice to Satellite
+                EventManager.addEventListener("tleLoaded", () => {
+                    console.log("CNodeSwitch:modDeserialize: TLE data loaded, setting choice 'Satellite''")
+
+                    this.choice = "Satellite";
+                    this.selectOption(this.choice);
+                })
+
+            } else {
+                this.selectOptionQuietly(v.choice);
+            }
+
+        } else {
+            this.selectOptionQuietly(v.choice);
+        }
     }
 
     dispose() {
