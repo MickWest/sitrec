@@ -2,7 +2,7 @@ import {Camera, PerspectiveCamera, Vector3} from "three";
 import {f2m, m2f, vdump} from "../utils";
 import {guiMenus, NodeMan} from "../Globals";
 import {ECEFToLLAVD_Sphere, EUSToECEF, EUSToLLA, LLAVToEUS} from "../LLA-ECEF-ENU";
-import {getLocalUpVector, raisePoint} from "../SphericalMath";
+import {altitudeAboveSphere, getLocalSouthVector, getLocalUpVector, raisePoint} from "../SphericalMath";
 import {CNode3D} from "./CNode3D";
 import {MV3} from "../threeUtils";
 
@@ -174,6 +174,32 @@ export class CNodeCamera extends CNode3D {
             //    NodeMan.get("cameraLat").recalculateCascade() // manual update
         }
     }
+
+
+    goToPoint(point, above = 200, back = 20) {
+        const altitude = altitudeAboveSphere(point);
+        console.log("Track altitude = " + altitude)
+
+
+        // get the local up vector at the track point
+        const up = getLocalUpVector(point);
+        // and south vector
+        const south = getLocalSouthVector(point);
+        // make a point 200m above, and 20m south
+        const newCameraPos = point.clone().add(up.clone().multiplyScalar(above)).add(south.clone().multiplyScalar(back));
+
+        const newCameraPosAltitude = altitudeAboveSphere(newCameraPos);
+        console.log("newCameraPos altitude = " + newCameraPosAltitude)
+
+        // set the position to the target
+        this.camera.position.copy(newCameraPos);
+        // Set up to local up
+        this.camera.up.copy(up);
+        // and look at the target point
+        this.camera.lookAt(point);
+    }
+
+
 }
 
 // given a camera object that's either:

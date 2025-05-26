@@ -14,7 +14,7 @@ import {adjustHeightAboveGround, altitudeAtLL} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
 import {EventManager} from "../CEventManager";
-import {Globals, guiMenus, Sit} from "../Globals";
+import {Globals, guiMenus, NodeMan, Sit} from "../Globals";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
@@ -148,6 +148,9 @@ export class CNodePositionLLA extends CNode {
                     }
                 });
 
+               // Add a "Go To" button to the GUI
+                gui.add(this, "goTo").name("Go To the above position")
+
             }
 
             this.key = v.key;
@@ -170,6 +173,10 @@ export class CNodePositionLLA extends CNode {
 // //        this.guiAGL.setValueWithUnits(altitude, "metric", "small")
 //
 //     }
+
+    goTo() {
+        NodeMan.get("mainCamera").goToPoint(this.EUS,100000,100);
+    }
 
     update() {
         if (this.key) {

@@ -210,34 +210,12 @@ export class CNodeDisplayTrack extends CNode3DGroup {
 
         // get current location from the track
         const trackPoint = this.in.track.v(par.frame).position;
-
-        const altitude = altitudeAboveSphere(trackPoint);
-        console.log("Track altitude = " + altitude)
-
-
-        // get the local up vector at the track point
-        const up = getLocalUpVector(trackPoint);
-        // and south vector
-        const south = getLocalSouthVector(trackPoint);
-        // make a point 200m above, and 20m south
-        const newCameraPos = trackPoint.clone().add(up.clone().multiplyScalar(200)).add(south.clone().multiplyScalar(20));
-
-        const newCameraPosAltitude = altitudeAboveSphere(newCameraPos);
-        console.log("newCameraPos altitude = " + newCameraPosAltitude)
-
-
-        // get the mainCamera
-        const mainCamera = NodeMan.get("mainCamera").camera;
-        // set the position to the target
-        mainCamera.position.copy(newCameraPos);
-        // Set up to local up
-        mainCamera.up.copy(up);
-        // and look at the track point
-        mainCamera.lookAt(trackPoint);
-
+        NodeMan.get("mainCamera").goToPoint(trackPoint);
 
 
     }
+
+
 
 
     update() {
