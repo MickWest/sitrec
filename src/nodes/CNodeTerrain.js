@@ -187,6 +187,7 @@ export class CNodeTerrainUI extends CNode {
 
             this.latController = this.gui.add(this, "lat", -85, 85, .001).onChange(v => {
                 this.flagForRecalculation()
+                this.startLoading = false;
             }).onFinishChange(v => {
                 this.startLoading = true
             }).tooltip("Latitude of the center of the terrain")
@@ -194,18 +195,21 @@ export class CNodeTerrainUI extends CNode {
 
             this.lonController = this.gui.add(this, "lon", -180, 180, .001).onChange(v => {
                 this.flagForRecalculation()
+                this.startLoading = false;
             }).onFinishChange(v => {
                 this.startLoading = true
             }).tooltip("Longitude of the center of the terrain")
 
             this.zoomController = this.gui.add(this, "zoom", 2, 15, 1).onChange(v => {
                 this.flagForRecalculation()
+                this.startLoading = false;
             }).onFinishChange(v => {
                 this.startLoading = true
             }).tooltip("Zoom level of the terrain. 2 is the whole world, 15 is few city blocks")
 
             this.nTilesController = this.gui.add(this, "nTiles", 1, 8, 1).onChange(v => {
                 this.flagForRecalculation()
+                this.startLoading = false;
             }).onFinishChange(v => {
                 this.startLoading = true
             }).tooltip("Number of tiles in the terrain. More tiles means more detail, but slower loading. (NxN)")

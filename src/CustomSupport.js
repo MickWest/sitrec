@@ -933,6 +933,7 @@ export class CCustomManager {
                     terrainUI.lon = LLA.y
                     terrainUI.flagForRecalculation();
                     terrainUI.tHeld = true;
+                    terrainUI.startLoading = false;
                 }
             } else {
                 if (terrainUI.tHeld) {
