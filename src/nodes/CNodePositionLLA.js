@@ -14,7 +14,7 @@ import {adjustHeightAboveGround, altitudeAtLL} from "../threeExt";
 import {assert} from "../assert";
 import {ViewMan} from "../CViewManager";
 import {EventManager} from "../CEventManager";
-import {Globals, Sit} from "../Globals";
+import {Globals, guiMenus, Sit} from "../Globals";
 
 export class CNodePositionLLA extends CNode {
     constructor(v) {
@@ -121,9 +121,32 @@ export class CNodePositionLLA extends CNode {
                 // this.guiAlt.setValueWithUnits(this._LLA[2], "metric", "small")
                 // this.updateAltituide();
 
-
-
-
+                this.lookupString = "";
+               const gui = guiMenus[v.gui];
+               gui.add(this, "lookupString").name("Lookup").onFinishChange(() => {
+                    // given a string like "Sacramento, CA"
+                    // fetch the lat, lon, alt from Nominatim
+                    if (this.lookupString.length > 0) {
+                        const url = "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" + encodeURIComponent(this.lookupString);
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.length > 0) {
+                                    const item = data[0];
+                                    this.guiLat.value = parseFloat(item.lat);
+                                    this.guiLon.value = parseFloat(item.lon);
+                                    this._LLA[0] = this.guiLat.value;
+                                    this._LLA[1] = this.guiLon.value;
+                                    // set the altitude to 0
+                                    this.guiAlt.setValueWithUnits(0, "metric", "small", true)
+                                    this.recalculateCascade(0);
+                                } else {
+                                    alert("No results found for " + this.lookupString);
+                                }
+                            })
+                            .catch(error => console.error("Error fetching location: ", error));
+                    }
+                });
 
             }
 
