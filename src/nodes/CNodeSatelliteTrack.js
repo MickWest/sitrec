@@ -29,7 +29,7 @@ import {assert} from "../assert";
         this.satelliteText = "ISS (ZARYA)";
 
 
-        this.guiSatellite = guiMenus.camera.add(this, "satelliteText").name("Satellite").onFinishChange(v => {
+        this.guiSatellite = guiMenus.satellites.add(this, "satelliteText").name("Satellite to Track").onFinishChange(v => {
             this.satellite = this.satelliteText;
             this.norad = null; // reset the norad number to force recalculation of the satellite data
             this.recalculate();
@@ -172,6 +172,11 @@ import {assert} from "../assert";
         if (cameraTrackSwitch) {
             cameraTrackSwitch.replaceOption("Satellite", this);
         }
+
+         const targetTrackSwitch = NodeMan.get("targetTrackSwitch", false);
+         if (targetTrackSwitch) {
+             targetTrackSwitch.replaceOption("Satellite", this);
+         }
 
 
     }
