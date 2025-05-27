@@ -632,6 +632,28 @@ sitch = {
         kind: "ObjectTilt", object: "traverseObject", track: "traverseSmoothedTrack", tiltType: "frontPointing"
     }, // bank
 
+    cameraObject: {kind: "3DObject",
+        geometry: "sphere",
+        layers: "LOOKRENDER",
+        size: 1,
+        radius: 10,
+
+        width: 10,
+        height: 10,
+        depth: 10,
+
+        material: "lambert",
+        color: "#FFFF00",
+        emissive: '#404040',
+        widthSegments:20,
+        heightSegments:20,
+    },
+
+     moveCameraObjectAlongPath: {kind: "TrackPosition", object: "cameraObject", sourceTrack: "cameraTrackSwitchSmooth"},
+     orientCameraObjectTarget: {
+         kind: "ObjectTilt", object: "cameraObject", track: "cameraTrackSwitchSmooth", tiltType: "frontPointing"
+     },
+
 
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5, spacing : 30, maxLines: 500},
 

@@ -64,6 +64,7 @@ export const ModelFiles = {
 
     "X-37":                 { file: 'data/models/X-37.glb',},
     "Saucer":               { file: 'data/models/saucer01a.glb',},
+    "LCS":                 { file: 'data/models/LCS.glb',},
 
 }
 
