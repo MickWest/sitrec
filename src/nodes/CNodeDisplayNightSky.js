@@ -32,12 +32,11 @@ import {
     removeDebugArrow
 } from "../threeExt";
 import {
-    ECEF2ENU,
     ECEF2EUS,
     ECEFToLLAVD_Sphere,
     EUSToECEF,
     getLST,
-    LLAToEUS, LLAToEUSRadians,
+    LLAToEUSRadians,
     raDecToAzElRADIANS,
     wgs84
 } from "../LLA-ECEF-ENU";
@@ -62,16 +61,15 @@ import {
 } from "../CelestialMath";
 import {DragDropHandler} from "../DragDropHandler";
 import {ViewMan} from "../CViewManager";
-import {bestSat} from "../TLEUtils";
+import {bestSat, CTLEData} from "../TLEUtils";
 import {SITREC_APP, SITREC_SERVER} from "../configUtils";
 import {CNodeLabeledArrow} from "./CNodeLabels3D";
 import {CNodeDisplaySkyOverlay} from "./CNodeDisplaySkyOverlay";
 import {EventManager} from "../CEventManager";
 import {CNodeViewUI} from "./CNodeViewUI";
 //import { eci_to_geodetic } from '../../pkg/eci_convert.js';
-
 // npm install satellite.js --save-dev
-var satellite = require('satellite.js');
+import * as satellite from 'satellite.js';
 
 // installed with
 // npm install astronomy-engine --save-dev
@@ -105,306 +103,6 @@ var Astronomy = require("astronomy-engine")
 // 1 44713U 19074A   23216.03168702  .00031895  00000-0  21481-2 0  9995
 // 2 44713  53.0546 125.3135 0001151  98.9698 261.1421 15.06441263205939
 
-// from the TLE spec, line 1 has 9 combined fields seprated by a single space
-// but some might have leading spaces and some might have trailing spaces
-// here's the END index of each combo field:
-// note these are 1-indexed, so we need to subtract 1 to get the actual index
-// we use 1-indexed because that's how the TLE spec is written
-// see: https://en.wikipedia.org/wiki/Two-line_element_set
-// we actually use this as the length of the string ending with this field
-const tleComboFieldEnds1=[1, 8, 17, 32, 43, 52, 61, 63, 69]
-const tleComboFieldEnds2=[1, 7, 16, 25, 33, 42, 51, 69]
-
-function fixTLELine(line, ends) {
-
-    assert(line !== undefined, "TLE line is undefined");
-
-    // chop any trailing whitespace from the line, tle files typically just have a \t
-    line = line.trimEnd()
-
-    // if it's exactly 69 characters, we don't need to do anything
-    if (line.length === 69) {
-        return line
-    }
-
-
-    const expectedFields = ends.length;
-
-    // split the line into the 9 fields
-    // separating by whitespace
-    let fields = line.split(/\s+/)
-
-
-//     if (fields.length < expectedFields) {
-// // possibly missing the second field,
-// //         0 TBA - TO BE ASSIGNED
-// //         1 81078U          24333.88851049 +.00000363 +00000+0 +12052-1 0  9994
-// //         2 81078  65.1110 138.6809 0185351  89.7284  63.0761 11.22232541452104
-//         // so just patch it in
-//
-//         const line2 = line.slice(0,9) + '24001A'.padEnd(8) + line.slice(17);
-//         fields = line2.split(/\s+/)
-//
-//
-//     }
-
-
-    // if we have expectedFields, we are good
-    if (expectedFields === 9) {
-        // line 1
-        // pad field 2 (the third) with spaces to 8 characters
-        fields[2] = fields[2].padEnd(8, " ")
-    } else {
-        // line 2 should have 8 fields
-        // however there might be a space in the last one which would make it 9
-        // if so, we need to combine the last two fields
-        // including enough spaces to make it the last field 6 charters
-        if (fields.length > 8) {
-            // only one extra allowed, so assert before we pop it
-            assert(fields.length === 9, "TLE line 2 has too many fields: "+line+" "+fields.length+" "+expectedFields);
-            fields[7] = fields[7]+fields[8].padStart(6, " ");
-            fields.pop() // remove the last field
-        }
-    }
-
-    assert(fields.length === expectedFields, "TLE line does not have the right number of fields: "+line+" "+fields.length+" "+expectedFields)
-
-
-    // make a new line so the ENDS of the fields are on the 1-indexed boundaries we want
-    let newLine = ""
-    for (let i = 0; i < expectedFields; i++) {
-        // this is how long we want it to be
-        let expectedLength = ends[i]
-        let field = fields[i]
-        // this is how long it would be if we just added this string
-        let actualLength = newLine.length+field.length
-        // if it's too short, pad the start of it with spaces
-        if (actualLength < expectedLength) {
-            // add expectedLength-actualLength spaces to the start of the field
-            field = " ".repeat(expectedLength-actualLength)+field
-        }
-        // if it's too long, that's an error
-        if (actualLength > expectedLength) {
-            console.error("TLE field "+i+" is too long: "+field)
-        }
-        newLine += field
-        assert(newLine.length === expectedLength, "TLE field "+i+" is not the right length: "+newLine)
-    }
-//   console.log(line);
-//   console.log(newLine);
-    return newLine
-}
-
-
-// this is the TLE data for the satellites
-// A CTLEData object is created from a TLE file and consists of just
-// a satData array, which is an array of objects
-// each object has a name, a visible flag, and an array of satrecs
-// the satrec is a satellite record created from a single line of a TLE file
-// there can be several satrecs with the same name, so we need to store them in an array
-// and pick the best one based on the playback date/time
-class CTLEData {
-    // constructor is passed in a string that contains the TLE file as \n seperated lines
-    // extracts in into
-    constructor(fileData) {
-        const lines = fileData.split('\n');
-
-        this.satData=[]
-        let satrec = null;
-        let satrecName = null;
-        // determine if it's a two line element (no names, lines are labeled 1 and 2) or three (line 0 = name)
-        if (lines.length < 3 || !lines[1].startsWith("1") || !lines[2].startsWith("2")) {
-            for (let i = 0; i < lines.length; i += 2) {
-                const tleLine1 = lines[i + 0];
-                const tleLine2 = lines[i + 1];
-                if (tleLine1 !== undefined && tleLine2 !== undefined) {
-                    const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
-                    // no name in a two line element, so create one.
-                    satrecName = "TLE_"+i
-
-                    // a "satrec" is a satellite record created from a single line of a TLE file
-                    // there might be multiple satrecs with the same name, so we need to store them in an array
-                    // and later pick the best one based on the playback date/time
-                    // each entry in this.satData is an object that has an array of satrecs with the same name
-                    if (this.satData[satrecName] === undefined) {
-                        // it's a new satData entry
-                        // so create a new one with the name and the satrec array, which has one satrec
-                        this.satData[satrecName] = {
-                            name: satrecName,
-                            number: parseInt(satrec.satnum),
-                            visible: true,
-                            satrecs: [satrec]
-                        };
-                    }
-                    else {
-                        // entry already exists, so just add the satrec to the array
-                        this.satData[satrecName].satrecs.push(satrec);
-                    }
-
-                }
-            }
-        }   else {
-            for (let i = 0; i < lines.length; i += 3) {
-                // const tleLine1 = lines[i + 1];
-                // const tleLine2 = lines[i + 2];
-
-                if (lines[i + 1] !== undefined && lines[i + 2] !== undefined) {
-                    const tleLine1 = fixTLELine(lines[i + 1], tleComboFieldEnds1);
-                    const tleLine2 = fixTLELine(lines[i + 2], tleComboFieldEnds2);
-
-                    const satrec = satellite.twoline2satrec(tleLine1, tleLine2);
-                    satrecName = lines[i]
-
-                    // if it starts with "0 ", then strip that off
-                    if (satrecName.startsWith("0 ")) {
-                        satrecName = satrecName.substring(2)
-                    }
-
-                    if (this.satData[satrecName] === undefined) {
-                        // it's a new satData entry
-                        // so create a new one with the name and the satrec array, which has one satrec
-                        this.satData[satrecName] = {
-                            name: satrecName,
-                            number: parseInt(satrec.satnum),
-                            visible: true,
-                            satrecs: [satrec]
-                        };
-                    }
-                    else {
-                        // entry already exists, so just add the satrec to the array
-                        this.satData[satrecName].satrecs.push(satrec);
-                    }
-
-
-                }
-            }
-        }
-
-        // after building the arrays of multiple satrecs using the name as the key,
-        // convert to an indexed array
-        const indexedSatData = []
-        for (const [index, satData] of Object.entries(this.satData)) {
-            indexedSatData.push(satData)
-        }
-
-        this.satData = indexedSatData;
-
-        // now create an array of the satData indexed by the NORAD number
-        this.noradIndex = []
-        for (let i = 0; i < this.satData.length; i++) {
-            const satrec = this.satData[i];
-            // add the satrec to the noradIndex array
-            // indexed by the NORAD number
-            this.noradIndex[satrec.number] = this.satData[i];
-        }
-
-    }
-
-    // given a satellite name or number in s, convert it into a valid NORAD number that
-    // exists in the TLE database
-    // return null if it doesn't exist
-    getNORAD(s) {
-        if (s === undefined) {
-            return null
-        }
-
-        const satDataArray = this.satData;
-        if (satDataArray === undefined) {
-            console.warn("CNodeSatelliteTrack: no satData Array found")
-            return null
-        }
-
-        const numSatData = satDataArray.length;
-        if (numSatData === 0) {
-            console.warn("CNodeSatelliteTrack: satData Array is empty")
-            return null
-        }
-
-        // The satDatArray is an array of objects
-        // which have a name (string) and a number (integer number)
-
-        // if it's a number or a string that resolves into a number, the use that number
-        if (typeof s === "number" || typeof s === "string" && !isNaN(s)) {
-            const satNum = parseInt(s)
-            // now see if it exists in the TLE database
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                if (satData.number === satNum) {
-  //                  console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satNum)
-                    return satNum
-                }
-            }
-            console.warn("CNodeSatelliteTrack: no satellite found for number" + s)
-        }
-
-        // if it's a string, try to find it in the TLE database, first try to match the name exactly
-        if (typeof s === "string") {
-
-            // upper case it, as all the TLE data is upper case
-            s = s.toUpperCase()
-
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name is the same as the string
-                if (satData.name === s) {
-//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-            // then try string starting with this, just return the first one, e.g. "ISS" or "HST"
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name starts with the string
-                if (satData.name.startsWith(s)) {
-//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-            // then try string containing this, just return the first one, e.g.
-            for (let i = 0; i < numSatData; i++) {
-                const satData = satDataArray[i]
-                // check if the name contains the string
-                if (satData.name.includes(s)) {
-//                    console.log("CNodeSatelliteTrack: found satellite " + satData.name + " with number " + satData.number)
-                    return satData.number
-                }
-            }
-
-
-            console.warn("CNodeSatelliteTrack: no satellite found for name" + s)
-        }
-
-
-        if (typeof s !== "number" && typeof s !== "string") {
-            console.error("CNodeSatelliteTrack: not number or string " + s)
-        }
-
-        return null
-
-
-    }
-
-    getRecordFromNORAD(norad) {
-        if (this.noradIndex[norad] === undefined) {
-            return null;
-        }
-        return this.noradIndex[norad];
-    }
-
-    getRecordFromName(name) {
-        const NORAD = this.getNORAD(name);
-        if (NORAD === null) {
-            return null;
-        }
-        return this.getRecordFromNORAD(NORAD);
-    }
-
-
-
-
-}
 
 // NightSkyFiles - loaded when Sit.nightSky is true, defined in ExtraFiles.js
 // export const NightSkyFiles = {
@@ -713,8 +411,19 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
 
         par.validPct = 0;
-        labelMainViewPVS.addText("videoLabelInRange", "xx",    92, 2, 1.5, "#f0f00080").update(function() {
-            this.text = par.validPct ? "In Range:" + par.validPct.toFixed(1) + "%"  : "";
+        const nightSky = this;
+        labelMainViewPVS.addText("videoLabelInRange", "xx",    100, 2, 1.5, "#f0f00080", "right").update(function() {
+
+            this.text = "";
+
+            const TLEData = nightSky.TLEData;
+            if (TLEData !== undefined && TLEData.satData !== undefined && TLEData.satData.length > 0) {
+                // format dates as YYYY-MM-DD HH:MM
+                this.text = "TLEs: "+TLEData.startDate.toISOString().slice(0, 19).replace("T", " ") + " - " +
+                    TLEData.endDate.toISOString().slice(0, 19).replace("T", " ") + "   ";
+            }
+
+            this.text += par.validPct ? "In Range:" + par.validPct.toFixed(1) + "%"  : "";
 
         });
 
