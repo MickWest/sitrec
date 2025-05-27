@@ -153,6 +153,7 @@ class CNodeSwitch extends CNode {
 
                     this.choice = "Satellite";
                     this.selectOption(this.choice);
+                    return true; // stop listening to this event
                 })
 
             } else {
