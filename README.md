@@ -388,3 +388,5 @@ Default sitrec-cache and sitrec-upload folders is created - but these will not p
 The shortening functionality is not available in the docker container, as this depends on the Metabunk server.
 
 
+City Location and population data from: https://simplemaps.com/data/us-cities
+
