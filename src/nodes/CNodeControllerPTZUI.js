@@ -163,6 +163,18 @@ export class CNodeControllerCustomAzEl extends CNodeControllerAzElZoom {
         this.fallback = NodeMan.get(v.fallback);
         this.frames = Sit.frames;
         this.useSitFrames = true;
+
+        this.relative = this.fallback.relative
+
+    }
+
+    // patch that if the relative mode is different from the fallback, we need to recalculate
+    update(f) {
+        if (this.reltive !== this.fallback.relative) {
+            this.relative = this.fallback.relative;
+            this.recalculateCascade();
+        }
+        super.update(f);
     }
 
     setAzFile(azFile, azCol) {
