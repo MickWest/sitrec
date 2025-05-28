@@ -222,6 +222,7 @@ class CNodeView extends CNode {
         super.modDeserialize(v);
         this.simpleDeserialize(v,this.toSerialCNodeView)
         this.updateWH();
+        this.visible = !v.visible; // ensure we toggle the visibility
         this.setVisible(v.visible)
     }
 
