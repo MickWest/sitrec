@@ -37,7 +37,7 @@ export class CNodeJetTrack extends CNodeTrack {
         // get the initial heading angle
         // if the heading is a CNodeHeading, then use the getHeading function (legacy)
         // of we can just supply a number or GUIValue
-        var jetHeading
+        let jetHeading
         if (this.in.heading.getHeading !== undefined) {
             jetHeading = this.in.heading.getHeading(0)
         } else {
@@ -45,19 +45,19 @@ export class CNodeJetTrack extends CNodeTrack {
         }
 
 
-        var radius = wgs84.RADIUS
+        const radius = wgs84.RADIUS
 
-        var jetPos = this.in.origin.p(0)
+        const jetPos = this.in.origin.p(0)
 
         //  new code, jet is at jetOrigin, an arbitrary point in EUS
-        var jetFwd = getLocalNorthVector(jetPos)
-        var jetUp = getLocalUpVector(jetPos)
+        const jetFwd = getLocalNorthVector(jetPos)
+        const jetUp = getLocalUpVector(jetPos)
 
         jetFwd.applyAxisAngle(jetUp, radians(-jetHeading))
 
-        for (var f = 0; f < this.frames; f++) {
+        for (let f = 0; f < this.frames; f++) {
             // first store the current position
-            var trackPoint = {
+            const trackPoint = {
                 position: jetPos.clone(),
                 heading: jetHeading,
                 fwd: jetFwd.clone(),
@@ -65,7 +65,8 @@ export class CNodeJetTrack extends CNodeTrack {
             this.array.push(trackPoint)
 
             // move the jet along the fwd vector
-            var jetSpeed = metersPerSecondFromKnots(this.in.speed.getValueFrame(f))  // 351 from CAS of 241 (239-242)
+            const jetSpeedKnots = this.in.speed.getValueFrame(f)  // 239-242 knots
+            const jetSpeed = metersPerSecondFromKnots(jetSpeedKnots)  // 351 from CAS of 241 (239-242)
             jetPos.add(jetFwd.clone().multiplyScalar(jetSpeed / Sit.fps)) // one frame
 
             // add in the wind vector, uses the local North and Up vectors for reference
@@ -73,10 +74,10 @@ export class CNodeJetTrack extends CNodeTrack {
             jetPos.add(this.in.wind.v(f))
 
             // get the angle we rotate around the up axis this frame
-            var turnRate = this.in.turnRate.getValueFrame(f)
+            const turnRate = this.in.turnRate.getValueFrame(f)
 
             // rotate around local up (opposite of gravity)
-            var upAxis = getLocalUpVector(jetPos, radius)
+            const upAxis = getLocalUpVector(jetPos, radius)
             jetFwd.applyAxisAngle(upAxis, -radians(turnRate / Sit.fps))
 
             // x = cross(y,z)
@@ -85,7 +86,7 @@ export class CNodeJetTrack extends CNodeTrack {
 
             // normalize fwd is at right angles to up
             // meaning it will be parallel to the surface of the earth
-            var rightAxis = V3()
+            const rightAxis = V3()
             rightAxis.crossVectors(upAxis, jetFwd)  // right is calculated as being at right angles to up and fwd
             jetFwd.crossVectors(rightAxis, upAxis) // then fwd is a right angles to right and up
 

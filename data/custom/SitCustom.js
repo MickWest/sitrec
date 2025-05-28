@@ -280,7 +280,8 @@ sitch = {
     // true airspeed in knots, note this is NOT ground speed
     // so the absolute ground speed will vary with the wind
     jetTAS: {
-        kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", unitType: "speed",
+        // note, no units. This is a legacy value that is in knots
+        kind: "GUIValue", value: 500, start: 0, end: 1000, step: 1, desc: "TAS", gui: "physics", // unitType: "speed",
         elastic: true, elasticMin: 5, elasticMax: 1000
     },
 
