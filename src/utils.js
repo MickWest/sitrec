@@ -347,10 +347,36 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
     var aValue
     if (string)
         aValue = input[0][dataCol]
-    else
+    else {
         aValue = parseFloat(input[0][dataCol])
+        // if the frist frame number is not 0, then we need to fill in the gap
+        if (aFrame > 0) {
+            // interpolate a new frame 0
+            // from the next two frames
+            // assume it's not a string
+            var bFrame = parseInt(input[1][indexCol]) + frameOffset;
+            var bValue = parseFloat(input[1][dataCol])
+            // find the value at frame 0
+            // assume linear interpolation
+            const zeroValue = aValue + (0 - aFrame) * (bValue - aValue) / (bFrame - aFrame)
+            // at this single row at the start of the output array
+            const newRow = [];
+            newRow[indexCol] = 0;
+            newRow[dataCol] = zeroValue;
+            // and push it to the output array ins the first position, not push
+            input.unshift(newRow);
+            // and set aFrame to 0
+            aFrame = 0;
+            aValue = zeroValue;
+
+        }
+
+
+    }
     var f = 0;
-    input.forEach(function (frame, index) {
+    //input.forEach(function (frame, index) {
+    for (var index = 1; index < input.length; index++) {
+        var frame = input[index]
         var bFrame = parseInt(frame[indexCol]) + frameOffset
         if (string)
             bValue = frame[dataCol]
@@ -373,7 +399,7 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
         }
 
         out.push(aValue)
-//        console.log(f+": "+out[f]);
+        console.log(f+": "+out[f]);
         f++;
         for (var i = aFrame + 1; i < bFrame; i++) {
             if (stepped)
@@ -385,13 +411,28 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
 
         aFrame = bFrame
         aValue = bValue
-    })
+    }
     // fill up any remaining with the last frame
     // will be at least one, as the last fencepost possible is outLen-1
     // and the above always stops short of the last fencepost
-    for (var i = aFrame; i < outLen-1; i++) {
-        out.push(aValue)
+    // for (var i = aFrame; i < outLen-1; i++) {
+    //     out.push(aValue)
+    // }
+
+    // extraploate the last two values to the end
+    if (out.length < outLen) {
+        const lastValue = out[out.length - 1]
+        const secondLastValue = out[out.length - 2]
+        const lastFrame = aFrame
+        for (var i = lastFrame; i < outLen; i++) {
+            if (stepped)
+                out.push(lastValue);
+            else
+                out.push(lastValue + (i - lastFrame) * (lastValue - secondLastValue) / (lastFrame - (lastFrame - 1)))
+        }
     }
+
+
     return out;
 }
 
