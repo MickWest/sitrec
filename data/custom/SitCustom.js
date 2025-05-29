@@ -120,6 +120,7 @@ sitch = {
                 }
             },
             Greyscale: {id: "Custom_GreyScale", enabled: false},
+            FLIRShader: { id: "Custom_FLIRShader", enabled: false},
             Invert: {id: "Custom_Invert", enabled: false},
 
             Custom_Levels: {
@@ -209,6 +210,7 @@ sitch = {
 
 
             // final zoom to match the video zoom (scaling up pixels)
+            // this has no "gui" as it is controlled by the Video Zoom node
             pixelZoom: {
                 id: "pixelZoomNode",
                 inputs: {
