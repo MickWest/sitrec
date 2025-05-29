@@ -93,6 +93,10 @@ export class CNodeControllerObjectTilt extends CNodeController {
 
                 var next = this.in.track.p(f + 1)
 
+                // if (this.id === "orientCameraObjectTarget") {
+                //     debugger;
+                // }
+
                 // if we have a wind vector then subtract that to get the nose heading
                 if (this.in.wind !== undefined) {
                     next.sub(this.in.wind.v(f))
@@ -226,6 +230,15 @@ export class CNodeControllerObjectTilt extends CNodeController {
                         object.updateMatrixWorld()
                         break;
 
+                    case "frontpointingwind":
+                        if (this.in.wind !== undefined) {
+                            next.sub(this.in.wind.v(f))
+                        }
+                        object.lookAt(next)
+                        object.updateMatrix()
+                        object.updateMatrixWorld()
+                        break;
+
                     case "frontpointingair":
 
                         var from = this.in.airTrack.p(f)
@@ -260,6 +273,13 @@ export class CNodeControllerObjectTilt extends CNodeController {
                         } else {
                             console.warn("jetTrack not found for glare angle in CNodeDisplayTargetModel.js")
                         }
+                        break;
+
+                    case "none":
+                        break;
+
+                    default:
+                        asert(0, "Unknown tilt type: " + this.tiltType + " in CNodeControllerObjectTilt.js, node id: " + this.id)
                         break;
 
                 }

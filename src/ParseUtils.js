@@ -71,6 +71,10 @@ export function findColumn(csv, text, exactMatch = false) {
 
         // Iterate through each column of the first row
         for (let col = 0; col < csv[0].length; col++) {
+            if (typeof csv[0][col] !== 'string') {
+                // If the column header is not a string, skip it
+                continue;
+            }
             if (exactMatch) {
                 // Check if the column header matches the text exactly
                 if (csv[0][col].trim() === searchText) {

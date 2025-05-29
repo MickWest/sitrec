@@ -21,7 +21,7 @@ import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
-import {isCustom1, parseCustom1CSV} from "./ParseCustom1CSV";
+import {isCustom1, parseCustom1CSV, parseCustomFLLCSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
 import {isConsole, isLocal, SITREC_APP, SITREC_DOMAIN, SITREC_SERVER} from "./configUtils";
 import {resetGlobalOrigin} from "./ResetOrigin";
@@ -806,6 +806,15 @@ export class CFileManager extends CManager {
                 //filename = "./data/" + filename;
                 filename = SITREC_APP + "data/" + filename;
             }
+        } else {
+            // if it's a URL, we need to check if it's got a "localhost" in it
+            // and if we are NOT running on localhost, then we need to
+            // add the SITREC_APP to the start of the URL
+            // this is a patch to keep local files compatible with the deployed
+            if (!isLocal && filename.startsWith("https://localhost/")) {
+                filename = SITREC_DOMAIN + '/' + filename.slice(18);
+                console.log("Redirecting debug local URL to " + filename);
+            }
         }
 
         Globals.parsing++;
@@ -1013,6 +1022,8 @@ export class CFileManager extends CManager {
                         parsed = parseMISB1CSV(parsed);
                     } else if (dataType === "CUSTOM1") {
                         parsed = parseCustom1CSV(parsed);
+                    } else if (dataType === "CUSTOM_FLL") {
+                        parsed = parseCustomFLLCSV(parsed);
                     }
 
                     // most of them will resolve to a MISB type array
@@ -1207,6 +1218,10 @@ export function detectCSVType(csv) {
         return "MISB1";
     }
 
+
+    if (csv[0][0].toLowerCase() === "frame" && csv[0][1].toLowerCase() === "latitude" && csv[0][2].toLowerCase() === "longitude") {
+        return "CUSTOM_FLL"
+    }
 
     if (isCustom1(csv)) {
         return "CUSTOM1";

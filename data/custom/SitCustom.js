@@ -652,7 +652,8 @@ sitch = {
 
      moveCameraObjectAlongPath: {kind: "TrackPosition", object: "cameraObject", sourceTrack: "cameraTrackSwitchSmooth"},
      orientCameraObjectTarget: {
-         kind: "ObjectTilt", object: "cameraObject", track: "cameraTrackSwitchSmooth", tiltType: "frontPointing"
+         kind: "ObjectTilt", object: "cameraObject", track: "cameraTrackSwitchSmooth",
+         tiltType: "none", wind: "localWind"
      },
 
 

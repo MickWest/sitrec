@@ -389,44 +389,57 @@ class CDragDropHandler {
         // if it's a CSV, the first check if it contails AZ and EL
         // if it does, then we want to send it to the customAzElController node
         if (fileExt === "csv") {
-            const azCol = findColumn(parsedFile, "Az", true);
-            const elCol = findColumn(parsedFile, "El", true);
-            const zoomCol = findColumn(parsedFile, "Zoom", true);
 
-            const firstColumnHeader = parsedFile[0][0].toLowerCase();
+            // bit of patch, if the type has not been set
+            // check if it contains az, el, zoom columns
+            if ( fileManagerEntry.dataType === "AZIMUTH" || fileManagerEntry.dataType === "Unknown" || fileManagerEntry.dataType === undefined) {
+                const azCol = findColumn(parsedFile, "Az", true);
+                const elCol = findColumn(parsedFile, "El", true);
+                const zoomCol = findColumn(parsedFile, "Zoom", true);
 
 
+                if (azCol !== -1 || elCol !== -1 || zoomCol !== -1) {
 
-            // strip the first row
-            // as it's the header
-            // and we don't want to send it to the customAzElController
-            parsedFile = parsedFile.slice(1);
+                    // get the firs col header before we slice them off
+                    const firstColumnHeader = parsedFile[0][0].toLowerCase();
+                    // remove the first row (headers)
+                    parsedFile = parsedFile.slice(1);
 
-            // we expect frame numbers in the first column
-            // if the head is "time" then we expect time in seconds
-            // so convert it to frame numbers
-            if (firstColumnHeader === "time") {
-                // convert the time to frame numbers
-                const fps = Sit.fps;
-                parsedFile.forEach(row => {
-                    if (row[0] !== undefined) {
-                        row[0] = Math.round(row[0] * fps);
+                    // we expect frame numbers in the first column
+                    // if the head is "time" then we expect time in seconds
+                    // so convert it to frame numbers
+                    if (firstColumnHeader === "time") {
+                        // convert the time to frame numbers
+                        const fps = Sit.fps;
+                        parsedFile.forEach(row => {
+                            if (row[0] !== undefined) {
+                                row[0] = Math.round(row[0] * fps);
+                            }
+                        });
                     }
-                });
-            }
 
 
-            if (azCol !== -1 || elCol !== -1 || zoomCol !== -1) {
-                // it's a CSV with az and el
-                // so we want to send it to the customAzElController node
+                    // it's a CSV with az and el
+                    // so we want to send it to the customAzElController node
 
-                const azElController = NodeMan.get("customAzElController", false)
-                if (azElController) {
-                    azElController.setAzFile(parsedFile, azCol );
-                    azElController.recalculate();
+                    const azElController = NodeMan.get("customAzElController", false)
+                    if (azElController) {
+                        azElController.setAzFile(parsedFile, azCol);
+                        azElController.recalculate();
+                    }
+                    // handled the AZ and EL CSV file, so
+                    return;
                 }
+                // if we get here, then we don't have az and el columns
+
+            } else {
+                // for known CSV files, we assume they are in the right format
+                // strip the first row
+                // as it's the header
+                // and we don't want to send it to the customAzElController
+                parsedFile = parsedFile.slice(1);
+
             }
-            return;
         }
 
 

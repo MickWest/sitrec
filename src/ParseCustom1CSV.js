@@ -2,6 +2,7 @@
 // the header row indicated wih
 import {findColumn, parseISODate} from "./ParseUtils";
 import {MISB, MISBFields} from "./MISBUtils";
+import {GlobalDateTimeNode, Sit} from "./Globals";
 
 
 // For a custom format we have a list of acceptable column headers
@@ -99,4 +100,29 @@ export function parseCustom1CSV(csv) {
 
     return MISBArray;
 
+}
+
+export function parseCustomFLLCSV(csv) {
+
+
+    // get the global start time in MS
+    const startTime = GlobalDateTimeNode.dateStart.valueOf()
+
+    const rows = csv.length;
+    let MISBArray = new Array(rows - 1);
+    for (let i = 1; i < rows; i++) {
+        MISBArray[i - 1] = new Array(MISBFields).fill(null);
+
+        const frame = Number(csv[i][0]);
+        // givena  frame number, we can derive the time from the DateTime object's start time
+        const date = startTime + (frame / Sit.fps * 1000);
+
+
+        MISBArray[i - 1][MISB.UnixTimeStamp] = date;
+
+        MISBArray[i - 1][MISB.SensorLatitude] = Number(csv[i][1])
+        MISBArray[i - 1][MISB.SensorLongitude] = Number(csv[i][2])
+    }
+
+    return MISBArray;
 }
