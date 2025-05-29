@@ -170,7 +170,7 @@ export class CNodeControllerCustomAzEl extends CNodeControllerAzElZoom {
 
     // patch that if the relative mode is different from the fallback, we need to recalculate
     update(f) {
-        if (this.reltive !== this.fallback.relative) {
+        if (this.relative !== this.fallback.relative) {
             this.relative = this.fallback.relative;
             this.recalculateCascade();
         }
