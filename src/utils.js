@@ -399,7 +399,7 @@ export function ExpandKeyframes(input, outLen, indexCol = 0, dataCol = 1, steppe
         }
 
         out.push(aValue)
-        console.log(f+": "+out[f]);
+        // console.log(f+": "+out[f]);
         f++;
         for (var i = aFrame + 1; i < bFrame; i++) {
             if (stepped)
