@@ -77,7 +77,7 @@ export class CNodeGUIValue extends CNodeGUIConstant {
 
                 this.recalculateCascade()
                 if (this.onChange !== undefined) {
-                    this.onChange(value)
+                    this.onChange(this.getValueFrame(0)) // use getValue to account for unitType
                 }
                // console.log("GUIValue.onChange."+this.id);
                 EventManager.dispatchEvent("GUIValue.onChange."+this.id, value)
