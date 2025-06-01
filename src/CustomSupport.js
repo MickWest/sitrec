@@ -146,14 +146,14 @@ export class CCustomManager {
                 keypress: "4",
                 mainView: {visible: true, left: 0.0, top: 0, width: 0.333, height: 1},
                 video:    {visible: true, left: 0.333, top: 0, width: 0.333, height: 1},
-                lookView: {visible: true, left: 0.666, top: 0.5, width: 0.333, height: 1},
+                lookView: {visible: true, left: 0.666, top: 0, width: 0.333, height: 1},
             },
 
             TallVideo: {
                 keypress: "5",
                 mainView: {visible: true, left: 0.0,  top: 0,   width: 0.50, height: 1},
                 video:    {visible: true, left: 0.5,  top: 0,   width: 0.25, height: 1},
-                lookView: {visible: true, left: 0.75, top: 0.5, width: 0.25, height: 1},
+                lookView: {visible: true, left: 0.75, top: 0, width: 0.25, height: 1},
 
             },
         }
