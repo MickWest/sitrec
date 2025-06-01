@@ -245,4 +245,21 @@ export default class extends three.Sprite {
 
         return this;
     }
+
+    dispose() {
+        if (this.material.map) {
+            this.material.map.dispose();
+        }
+        this.material.dispose();
+        // remove canvas from the DOM
+        if (this._canvas && this._canvas.parentNode) {
+            this._canvas.parentNode.removeChild(this._canvas);
+        }
+        // Dispose of the canvas texture
+        if (this._canvas) {
+            this._canvas.width = 0;
+            this._canvas.height = 0;
+            this._canvas = null; // Allow garbage collection
+        }
+    }
 }

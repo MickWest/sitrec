@@ -233,11 +233,17 @@ export class CTLEData {
                 }
             }
         } else {
+            console.log("CTLEData: TLE file has three lines per satellite. Num of lines: " + lines.length);
+
+
             for (let i = 0; i < lines.length; i += 3) {
                 // const tleLine1 = lines[i + 1];
                 // const tleLine2 = lines[i + 2];
 
+    //            if (i === 80475) debugger;
+
                 if (lines[i + 1] !== undefined && lines[i + 2] !== undefined) {
+                    //console.log(lines[i])
                     const tleLine1 = fixTLELine(lines[i + 1], tleComboFieldEnds1);
                     const tleLine2 = fixTLELine(lines[i + 2], tleComboFieldEnds2);
 
@@ -249,18 +255,27 @@ export class CTLEData {
                         satrecName = satrecName.substring(2)
                     }
 
+                    const satrecNumber = parseInt(satrec.satnum);
+
+                    // there are multiple satellites that have the same name, but diferent numbers.
+                    // E.g.
+                    // 0 ATLAS 5 CENTAUR R/B
+                    // is 40978, 39575, and 31702
+                    // So we need to use the NORAD number as the key
+
                     if (this.satData[satrecName] === undefined) {
+                        //console.log(satrecName + " " + satrec.satnum + " ");
                         // it's a new satData entry
                         // so create a new one with the name and the satrec array, which has one satrec
-                        this.satData[satrecName] = {
+                        this.satData[satrecNumber] = {
                             name: satrecName,
-                            number: parseInt(satrec.satnum),
+                            number: satrecNumber,
                             visible: true,
                             satrecs: [satrec]
                         };
                     } else {
                         // entry already exists, so just add the satrec to the array
-                        this.satData[satrecName].satrecs.push(satrec);
+                        this.satData[satrecNumber].satrecs.push(satrec);
                     }
 
 
@@ -268,8 +283,9 @@ export class CTLEData {
             }
         }
 
-        // after building the arrays of multiple satrecs using the name as the key,
-        // convert to an indexed array
+        // after building the arrays of multiple satrecs using the number as the key,
+        // convert to an indexed array (i.e. just and array with no keys other than the position in the array, which is meaningless)
+        // we do this so that we can iterate over the satData array easily
         const indexedSatData = []
         for (const [index, satData] of Object.entries(this.satData)) {
             indexedSatData.push(satData)
@@ -282,6 +298,7 @@ export class CTLEData {
         this.endDate = new Date("1950");
 
         // now create an array of the satData indexed by the NORAD number
+        // so we can quickly look up a satellite by its NORAD number
         this.noradIndex = []
         for (let i = 0; i < this.satData.length; i++) {
 
@@ -306,7 +323,7 @@ export class CTLEData {
 
         }
 
-        console.log("CTLEData: loaded " + this.satData.length + " satellites with " +
+        console.log("CTLEData: loaded " + this.satData.length + " satellites with max " +
             this.noradIndex.length + " NORAD numbers, start date: " + this.startDate.toISOString() +
             ", end date: " + this.endDate.toISOString());
 

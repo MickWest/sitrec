@@ -463,6 +463,7 @@ export class CNodeView3D extends CNodeViewCanvas {
 
 
                 // Render the scene to the off-screen canvas or render target
+
                 this.renderer.render(GlobalScene, this.camera);
 
                 if (this.layers !== undefined) {

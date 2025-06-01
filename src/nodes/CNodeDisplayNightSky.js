@@ -267,9 +267,9 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         this.addSimpleSerial("satCutOff");
 
 
-        this.arrowRange = 2000
-        satGUI.add(this,"arrowRange",10,10000,1).name("Arrow Range (km)").listen()
-            .tooltip("arrows beyond this distance will not be displayed")
+        this.arrowRange = 4000
+        satGUI.add(this,"arrowRange",10,10000,1).name("Display Range (km)").listen()
+            .tooltip("Satellites beyond this distance will not have their names or arrows displayed")
             .onChange(() => {
                 this.filterSatellites();
                 par.renderOne = true;
@@ -1126,6 +1126,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
             removeDebugArrow(satData.name + "_g");
 
             satData.visible = false;
+            satData.userFiltered = false;
             let filterHit = false;
 
             if (!this.showSatellites)
@@ -1144,6 +1145,7 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 filterHit = true;
                 if (this.showISS) {
                     satData.visible = true;
+                    satData.userFiltered = true;
                     continue;
                 }
             }
@@ -1154,6 +1156,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                     if (satData.number === parseInt(num)) {
                         filterHit = true;
                             satData.visible = true;
+                            satData.userFiltered = true;
+
                             continue;
                         }
                 }
@@ -1166,6 +1170,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                     if (satData.number === parseInt(number)) {
                         filterHit = true;
                         satData.visible = true;
+                        satData.userFiltered = true;
+
                         continue;
                     }
                 }
@@ -1202,7 +1208,8 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
         // note this is NOT a dynamic file
         // it fixed based on the date
         // so we don't need to rehost it
-        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr+"&type=LEO";
+//        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr+"&type=LEO";
+        const url = SITREC_SERVER+"proxyStarlink.php?request="+dateStr+"&type=LEOALL";
 
         // TODO: remove the old starlink from the file manager.
 
@@ -1453,8 +1460,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 // TODO: the first few
                 if (!satData.visible) {
                     magnitudes[i] = 0
-                    const spriteText = satData.spriteText;
-
                     continue;
                 }
 
@@ -1474,10 +1479,6 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 assert(satData.eus !== undefined, `satData.eus is undefined, i= ${i}, this.TLEData.satData.length = ${this.TLEData.satData.length} `)
 
                 const satPosition = satData.eus;
-
-                const camToSat = satPosition.clone().sub(this.camera.position)
-
-
 
                 let scale = 0.1;                // base value for scale
                 let darknessMultiplier = 0.3    // if in dark, multiply by this
@@ -1568,6 +1569,13 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
     // per-viewport satellite sprite text update for scale and screen offset
     updateSatelliteText(view) {
+        const layerMask = this.satelliteTextGroup.layers.mask;
+        if (!layerMask) {
+            // if not visible in either the main or helpers layer, skip the update
+            return;
+        }
+
+
         const camera = view.camera;
         const cameraForward = new Vector3(0,0,-1).applyQuaternion(camera.quaternion);
         const cameraPos = camera.position;
@@ -1582,11 +1590,32 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
 
         assert(this.TLEData !== undefined, "TLEData is undefined in updateSatelliteText")
 
+        const lookPos = NodeMan.get("lookCamera").camera.position;
         const numSats = this.TLEData.satData.length;
         for (let i = 0; i < numSats; i++) {
             const satData = this.TLEData.satData[i];
-            const sprite = satData.spriteText;
-            if (satData.visible) {
+
+            // if the satellite is not visible, skip it
+            // user filtered sats are either in the list, or ar e the brightest or the ISS (if those are enabled)
+            // if the satellite is not user filtered, skip it
+            if (satData.visible && ( satData.userFiltered || satData.eus.distanceTo(lookPos) < this.arrowRange*1000)) {
+            //if (satData.visible) {
+                if (!satData.spriteText) {
+                    // if the sprite is not created, create it
+                    // this is done in the TLEData constructor, but might not be called
+                    // if the TLEData is loaded after the CNodeDisplayNightSky is created
+                    var name = satData.name.replace("0 STARLINK", "SL").replace("STARLINK", "SL");
+                    // strip whitespae off the end
+                    name = name.replace(/\s+$/, '');
+                    satData.spriteText = new SpriteText(name, 0.01, "white", {depthTest:true} );
+
+                    // propagate the layer mask
+                    satData.spriteText.layers.mask = layerMask;
+
+                    this.satelliteTextGroup.add(satData.spriteText);
+                }
+                const sprite = satData.spriteText;
+
                 const satPosition = satData.eus;
                 // scaling based on the view camera
                 // whereas satellite dot scaling is done with the look Camera?????
@@ -1600,7 +1629,16 @@ export class CNodeDisplayNightSky extends CNode3DGroup {
                 const offsetPost = view.offsetScreenPixels(pos, 0, 30);
                 sprite.position.copy(offsetPost);
             } else {
-               satData.spriteText.scale.set(0,0,0);
+               // if not visible dispose it
+               if (satData.spriteText) {
+                    // remove the sprite from the group
+                    this.satelliteTextGroup.remove(satData.spriteText);
+                    satData.spriteText.dispose();
+                    satData.spriteText = null;
+               }
+
+
+               //satData.spriteText.scale.set(0,0,0);
             }
         }
     }
@@ -2074,9 +2112,11 @@ void main() {
                 // this.satelliteGroup.remove(sat.sprite)
                 //sat.sprite = null;
 
-                satData.spriteText.material.dispose();
-                this.satelliteTextGroup.remove(satData.spriteText)
-                satData.spriteText = null;
+                if (satData.spriteText) {
+                    satData.spriteText.dispose();
+                    this.satelliteTextGroup.remove(satData.spriteText)
+                    satData.spriteText = null;
+                }
             }
             this.satData = undefined;
         }
@@ -2149,7 +2189,7 @@ void main() {
         gl_FragDepthEXT = z * 0.5 + 0.5;
     }`;
 
-        // Material with shaders
+        // Custom material for satellites
         this.satelliteMaterial = new ShaderMaterial({
             vertexShader: customVertexShader,
             fragmentShader: customFragmentShader,
@@ -2166,6 +2206,7 @@ void main() {
             depthTest: true,
         });
 
+        // uodate colors and add the satellite texst sprites
         for (let i = 0; i < this.TLEData.satData.length; i++) {
             const sat = this.TLEData.satData[i];
 
@@ -2182,15 +2223,17 @@ void main() {
 
             sat.eus = V3();
 
-            // Manage sprite text separately
+
+            // colro of the sprite is based on the name length
+            // TODO: this is for Starlink, but we can generalize it
             var name = sat.name.replace("0 STARLINK", "SL").replace("STARLINK", "SL");
             // strip whitespae off the end
             name = name.replace(/\s+$/, '');
-            const spriteText = new SpriteText(name, 0.01, "white", {depthTest:true} );
-            spriteText.layers.mask = LAYER.MASK_LOOK  ;
-
-            sat.spriteText = spriteText;
-            textGroup.add(spriteText);
+            // const spriteText = new SpriteText(name, 0.01, "white", {depthTest:true} );
+            // spriteText.layers.mask = LAYER.MASK_LOOK  ;
+            //
+            // sat.spriteText = spriteText;
+            // textGroup.add(spriteText);
 
             // Assign a color to each satellite (example: random color)
 
@@ -2480,7 +2523,10 @@ void main() {
                     satData.invalidPosition = false;
 
                     satData.currentPosition = satData.eus.clone();
-                    satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
+
+                    if (satData.spriteText) {
+                        satData.spriteText.position.set(satData.eus.x, satData.eus.y, satData.eus.z);
+                    }
 
                     if (satData.visible && satData.eusA.distanceTo(lookPos) < this.arrowRange*1000) {
                         // draw an arrow from the satellite in the direction of its velocity (yellow)
