@@ -42,7 +42,7 @@ if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $request)) {
 }
 
 // Whitelist the allowed types explicitly
-$allowed_types = ["", "LEO"];
+$allowed_types = ["", "LEO","ALL", "LEOALL"];
 
 $type = isset($_GET["type"]) ? $_GET["type"] : "";
 if (!in_array($type, $allowed_types, true)) {
@@ -56,9 +56,19 @@ $nextDay = date('Y-m-d', strtotime($request . ' +2 days'));
 // the default STARLINK query
 $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/" . $request . "--" . $nextDay . "/orderby/NORAD_CAT_ID,EPOCH/format/3le/OBJECT_NAME/STARLINK~~";
 
-// override for LEO query
+// LEO is Low Earth object, but here filter for payloads only
 if ($type == "LEO") {
     $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/EPOCH/" . $request . "--" . $nextDay . "/MEAN_MOTION/>11.25/ECCENTRICITY/<0.25/OBJECT_TYPE/payload/orderby/NORAD_CAT_ID,EPOCH/format/3le";
+}
+
+// LEOALL is all the LEO objects, including payloads and debris
+if ($type == "LEOALL") {
+    $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/EPOCH/" . $request . "--" . $nextDay . "/MEAN_MOTION/>11.25/ECCENTRICITY/<0.25/format/3le";
+}
+
+// override for ALL query
+if ($type == "ALL") {
+    $url = "https://www.space-track.org/basicspacedata/query/class/gp_history/CREATION_DATE/" . $request . "--" . $nextDay . "/orderby/NORAD_CAT_ID,EPOCH/format/3le";
 }
 
 // encode angle brackets for compatibility with cURL
