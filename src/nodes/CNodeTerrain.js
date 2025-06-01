@@ -78,6 +78,12 @@ export class CNodeTerrainUI extends CNode {
                     return SITREC_APP + "data/images/grey-256x256.png?v=1";
                 },
             },
+            OceanSurface: {
+                name: "Ocean Surface",
+                mapURL: (z, x, y) => {
+                    return SITREC_APP + "data/images/28_sea water texture-seamless.jpg?v=3";
+                },
+            }
         }
 
         // local debugging, add a color test map
