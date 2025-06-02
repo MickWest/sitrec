@@ -455,7 +455,11 @@ class CDragDropHandler {
         } else {
             let isATrack = false;
             let isASitch = false;
-            if (fileManagerEntry.dataType === "json" || fileExt === "kml" || fileExt === "srt" || fileExt === "csv" || fileExt === "klv") {
+            if (fileManagerEntry.dataType === "json"
+                || fileExt === "kml"
+                || fileExt === "srt"
+                || ( fileExt === "csv" && fileManagerEntry.dataType !== "Unknown")
+                || fileExt === "klv") {
                 isATrack = true;
             }
 

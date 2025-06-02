@@ -21,7 +21,7 @@ import {assert} from "./assert.js";
 import {writeToClipboard} from "./urlUtils";
 import {textSitchToObject} from "./RegisterSitches";
 import {addOptionToGUIMenu, removeOptionFromGUIMenu} from "./lil-gui-extras";
-import {isCustom1, parseCustom1CSV, parseCustomFLLCSV} from "./ParseCustom1CSV";
+import {isCustom1, isFR24CSV, parseCustom1CSV, parseCustomFLLCSV, parseFR24CSV} from "./ParseCustom1CSV";
 import {stripDuplicateTimes} from "./ParseUtils";
 import {isConsole, isLocal, SITREC_APP, SITREC_DOMAIN, SITREC_SERVER} from "./configUtils";
 import {resetGlobalOrigin} from "./ResetOrigin";
@@ -1024,7 +1024,8 @@ export class CFileManager extends CManager {
                         parsed = parseCustom1CSV(parsed);
                     } else if (dataType === "CUSTOM_FLL") {
                         parsed = parseCustomFLLCSV(parsed);
-                    }
+                    } else if (dataType = "FR24CSV")
+                        parsed = parseFR24CSV(parsed);
 
                     // most of them will resolve to a MISB type array
                     // so strip duplicate times from those
@@ -1225,6 +1226,10 @@ export function detectCSVType(csv) {
 
     if (isCustom1(csv)) {
         return "CUSTOM1";
+    }
+
+    if (isFR24CSV(csv)) {
+        return "FR24CSV";
     }
 
     if ((csv[0][0].toLowerCase() === "frame" || csv[0][0].toLowerCase() === "time")

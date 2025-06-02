@@ -3,6 +3,7 @@
 import {findColumn, parseISODate} from "./ParseUtils";
 import {MISB, MISBFields} from "./MISBUtils";
 import {GlobalDateTimeNode, Sit} from "./Globals";
+import {f2m} from "./utils";
 
 
 // For a custom format we have a list of acceptable column headers
@@ -126,3 +127,44 @@ export function parseCustomFLLCSV(csv) {
 
     return MISBArray;
 }
+
+
+// FR24 headers are Timestamp, UTC, Callsign, Position, Altitude, Speed, Direction
+export function isFR24CSV(csv) {
+    // check the first row for the headers
+    const header = csv[0];
+    // check in the exact position
+    return header[0] === "Timestamp" && header[1] === "UTC" &&
+        header[2] === "Callsign" && header[3] === "Position" &&
+        header[4] === "Altitude" && header[5] === "Speed" &&
+        header[6] === "Direction";
+}
+
+export function parseFR24CSV(csv) {
+    const rows = csv.length;
+    let MISBArray = new Array(rows - 1);
+
+    for (let i = 1; i < rows; i++) {
+        MISBArray[i - 1] = new Array(MISBFields).fill(null);
+
+        MISBArray[i - 1][MISB.UnixTimeStamp] = Number(csv[i][0])*1000;
+
+        const postiion = csv[i][3].split(",");
+        if (postiion.length !== 2) {
+            console.error("Invalid position format in FR24 CSV at row " + i);
+            continue;
+        }
+        MISBArray[i - 1][MISB.SensorLatitude] = Number(postiion[0]);
+        MISBArray[i - 1][MISB.SensorLongitude] = Number(postiion[1]);
+
+        const altitude = f2m(Number(csv[i][4]));
+        MISBArray[i - 1][MISB.SensorTrueAltitude] = isNaN(altitude) ? null : altitude;
+
+        MISBArray[i - 1][MISB.PlatformTailNumber] = csv[i][2]; // Callsign
+
+    }
+
+    return MISBArray;
+}
+
+
