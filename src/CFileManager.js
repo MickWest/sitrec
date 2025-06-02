@@ -1024,7 +1024,7 @@ export class CFileManager extends CManager {
                         parsed = parseCustom1CSV(parsed);
                     } else if (dataType === "CUSTOM_FLL") {
                         parsed = parseCustomFLLCSV(parsed);
-                    } else if (dataType = "FR24CSV")
+                    } else if (dataType === "FR24CSV")
                         parsed = parseFR24CSV(parsed);
 
                     // most of them will resolve to a MISB type array
