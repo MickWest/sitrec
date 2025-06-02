@@ -130,7 +130,8 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
                 if (when === undefined) {
                     // skip if we don't need the data
                     // i.e. just checking if it's a valid track
-                    return false;
+                    console.log("FR24 KML track detected")
+                    return true;
                 }
                 // FR24 format
                 info.name = kml.kml.Document.name["#text"];
@@ -154,7 +155,7 @@ export function getKMLTrackWhenCoord(kml, trackIndex, when, coord, info) {
                     coord.push({lat: lat, lon: lon, alt: alt})
                 }
 
-                return;
+                return true;
 
             }
         }
@@ -675,6 +676,17 @@ export function extractKMLObjects(root, kml=root, depth=0) {
 // iterate over the k,v pairs in the kml object, this will also iterate over the arrays
     for (let [key, value] of Object.entries(kml)) {
       //  console.log("  ".repeat(depth),  key, value);
+
+        // we want to ignore the "Trail" line associated with the FR24 KML
+        // So if this is a folder with 2 entries, and the first one is "Route" and the second one is "Trail", then skip it
+        if (key === "Folder" && Array.isArray(value) && value.length === 2) {
+            if (value[0].name["#text"] === "Route" && value[1].name["#text"] === "Trail") {
+                // skip this folder
+                continue;
+            }
+        }
+
+
         // parse it if it something we know how to parse
         if (key === "LineString") {
 //            console.log("LineString")
