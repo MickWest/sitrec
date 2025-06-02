@@ -850,6 +850,11 @@ export function addTracks(trackFiles, removeDuplicates = false, sphereMask = LAY
                     const south = getLocalSouthVector(ground);
                     cameraTarget.add(south.clone().multiplyScalar(cameraHeight));
                     mainCamera.position.copy(cameraTarget);
+
+                    // set the up vector to the local up vector
+                    mainCamera.up.copy(up);
+
+                    // and look at the ground point
                     mainCamera.lookAt(ground);
 
                     // since we've set the camera default postion for this track, store it
