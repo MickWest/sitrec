@@ -103,10 +103,10 @@ export class CSituation {
         // in case there are new things that were missing in the old one (like a new menu item)
         // NOTE, possible risk of missing menu items as it's a shallow copy
         // MAYBE: try to do a deep copy of immutable parts of the custom sitch
-        if (props.name === "custom" && isLocal && !Globals.regression) {
-            const defaultCustom = SitchMan.get("custom");
-            props = {...defaultCustom, ...props};
-        }
+        // if (props.name === "custom" && isLocal && !Globals.regression) {
+        //     const defaultCustom = SitchMan.get("custom");
+        //     props = {...defaultCustom, ...props};
+        // }
 
 
 //        console.log("Setting units to: ",this.units)

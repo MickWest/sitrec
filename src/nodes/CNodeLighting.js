@@ -4,6 +4,7 @@ import {GlobalScene} from "../LocalFrame";
 import {CNode} from "./CNode";
 import * as LAYER from "../LayerMasks";
 import {assert} from "../assert";
+import {loadNightTexture, updateNightTexture} from "../Globe";
 
 // by default this will live in one node "lighting"
 export class CNodeLighting extends CNode {
@@ -17,6 +18,7 @@ export class CNodeLighting extends CNode {
         this.ambientOnly = v.ambientOnly ?? false;
         this.atmosphere = v.atmosphere ?? true;
         this.noMainLighting = v.noMainLighting ?? false;
+        this.noCityLights = Sit.noCityLights ?? false;
 
         this.gui = guiMenus.lighting;
 
@@ -34,6 +36,11 @@ export class CNodeLighting extends CNode {
             .tooltip("If true, then the atmosphere is rendered.\nSet to false to see the stars in daytime");
         this.addGUIBoolean("noMainLighting", "No Lighting in Main View")
             .tooltip("If true, then no lighting is used in the main view.\nThis is useful for debugging, but not recommended for normal use");
+        this.addGUIBoolean("noCityLights", "No City Lights on Globe")
+            .tooltip("If true, then don't render the city lights on the globe.")
+            .onChange((value) => { updateNightTexture(value) });
+
+
 
         Globals.ambientLight = new AmbientLight(0xFFFFFF, this.ambientIntensity * Math.PI);
         Globals.ambientLight.layers.mask = LAYER.MASK_LIGHTING

@@ -41,6 +41,7 @@ sitch = {
     fps: 30,
 
     ambientLight: 0.0,
+    noCityLights: true, // no city lights by default, as this is a custom sitch
 
     // if we are loading a video, then we want to extract frames from it
     framesFromVideo: true,

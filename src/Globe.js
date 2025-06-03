@@ -2,11 +2,12 @@ import {Color, Group, Mesh, MeshPhongMaterial, ShaderMaterial, SphereGeometry, T
 import {GlobalScene} from "./LocalFrame";
 import {wgs84} from "./LLA-ECEF-ENU";
 import {radians} from "./utils";
-import {Globals, Sit} from "./Globals";
+import {Globals, NodeMan, Sit} from "./Globals";
 import {sharedUniforms} from "./js/map33/material/QuadTextureMaterial";
 import {renderOne} from "./par";
 
 import {SITREC_APP} from "./configUtils";
+import {Texture} from "three/src/textures/Texture";
 
 export function createSphere(radius, radius1, segments) {
     const sphere = new Mesh(
@@ -23,13 +24,6 @@ export function createSphere(radius, radius1, segments) {
             shininess: 3,
         })
 
-        //  new MeshBasicMaterial({
-        //      //map:  new TextureLoader().load('images/2_no_clouds_4k.jpg'),
-        //      map:  new TextureLoader().load('images/galaxy_starfield.png'),
-        // //     side: BackSide
-        //  })
-
-
     );
     sphere.scale.set(1,radius1/radius,1)
     return sphere
@@ -37,18 +31,86 @@ export function createSphere(radius, radius1, segments) {
 
 
 export var globeMaterial;
+let    nullNightTexture = null; // cache the night texture to avoid reloading it
+export var nightTexture = new Texture(); // just a dummy texture to avoid null checks
+
+let nightTextureLoaded = false; //
+
+export function updateNightTexture(noNightLights) {
+    //nightTexture = new TextureLoader().load(SITREC_APP+'data/images/Earthlights_2002.jpg',renderOne);
+
+    if (noNightLights) {
+        // if no night lights, just set the night texture to null
+        if (globeMaterial) {
+            globeMaterial.uniforms.nightTexture.value = nullNightTexture;
+            globeMaterial.uniforms.nightLoaded.value = false;
+            globeMaterial.needsUpdate = true;
+        }
+        return;
+    }
+
+    // we want night lights, so check if the texture is already loaded
+    // and if so, just use it
+
+    if (nightTextureLoaded) {
+        if (globeMaterial) {
+            globeMaterial.uniforms.nightTexture.value = nightTexture;
+            globeMaterial.uniforms.nightLoaded.value = true;
+            globeMaterial.needsUpdate = true;
+        }
+        return;
+    }
+
+    // otherwise, start to laod it
+
+    // load it asynchronously
+    const loader = new TextureLoader();
+        loader
+        .loadAsync(SITREC_APP + 'data/images/Earthlights_2002.jpg')
+        .then((texture) => {
+            nightTexture = texture;
+            // Set the color space to SRGB to avoid gamma correction
+            //nightTexture.colorSpace = THREE.SRGBColorSpace;
+            // Set the texture to be used in the globe material
+            if (globeMaterial) {
+                globeMaterial.uniforms.nightTexture.value = nightTexture;
+                globeMaterial.uniforms.nightLoaded.value = true; // indicate that the night texture is loaded
+                globeMaterial.needsUpdate = true;
+            }
+            nightTextureLoaded = true;
+            console.log('Night texture loaded successfully');
+        })
+        .catch((err) => {
+            console.error('Failed to load texture:', err);
+        });
+
+
+}
 
 export function createSphereDayNight(radius, radius1, segments) {
 
     const loader = new TextureLoader();
     const dayTexture = loader.load('data/images/2_no_clouds_4k.jpg',renderOne);
-    const nightTexture = loader.load('data/images/Earthlights_2002.jpg',renderOne);
+
+    // const nightTexture = loader.load('data/images/Earthlights_2002.jpg',renderOne);
+    // make a dummy night texture, just a black texture with a slight blue tint
+    //loadNightTexture();
+
+
+    // get the lighting node
+    const lightingNode = NodeMan.get("lighting");
+    if (!lightingNode.noCityLights) {
+        updateNightTexture();
+    }
+
+
 
     globeMaterial = new ShaderMaterial({
         uniforms: {
             dayTexture: { value: dayTexture },
             nightTexture: { value: nightTexture },
             sunDirection: { value: Globals.sunLight.position}, // reference, so normalize before use
+            nightLoaded: { value: false },
             ...sharedUniforms,
         },
         vertexShader: `
@@ -66,9 +128,12 @@ export function createSphereDayNight(radius, radius1, segments) {
         uniform sampler2D dayTexture;
         uniform sampler2D nightTexture;
         uniform vec3 sunDirection;
+        uniform float sunGlobalTotal;
+        uniform float sunAmbientIntensity;
         uniform float nearPlane;
         uniform float farPlane;
         uniform bool useDayNight;
+        uniform bool nightLoaded;
         varying vec2 vUv;
         
         varying vec3 vNormal;
@@ -81,14 +146,25 @@ export function createSphereDayNight(radius, radius1, segments) {
             // Smooth transition in the penumbra area
             float blendFactor = smoothstep(-0.1, 0.1, intensity);
             
-            vec4 dayColor = texture2D(dayTexture, vUv);
-            vec4 nightColor = texture2D(nightTexture, vUv);
+            vec4 dayColor = texture2D(dayTexture, vUv) * sunGlobalTotal;
+            vec4 nightColor;
+            
+            if (nightLoaded) {
+                nightColor = texture2D(nightTexture, vUv) * sunGlobalTotal;  
+            } else {
+                nightColor =  texture2D(dayTexture, vUv) * sunAmbientIntensity;
+            }
+            
+            // clear alpha channel
+            dayColor.a = 1.0;
+            nightColor.a = 1.0;
             
             if (useDayNight) {
                 gl_FragColor = mix(nightColor, dayColor, blendFactor);
             } else {
                 gl_FragColor = dayColor;
             }
+            
             
             // Logarithmic depth calculation
             float w = vPosition.w;

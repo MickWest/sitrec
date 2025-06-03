@@ -392,6 +392,16 @@ export class CNodeView3D extends CNodeViewCanvas {
                 sharedUniforms.useDayNight.value = !lightingNode.noMainLighting;
 
 
+
+                //
+                sharedUniforms.sunGlobalTotal.value =
+                    lightingNode.sunIntensity
+                    + lightingNode.sunIntensity * lightingNode.sunScattering
+                    + lightingNode.ambientIntensity;
+
+                sharedUniforms.sunAmbientIntensity.value = lightingNode.ambientIntensity;
+
+
                 // update the sun node, which controls the global scene lighting
                 const sunNode = NodeMan.get("theSun", true);
                 if (sunNode !== undefined) {
