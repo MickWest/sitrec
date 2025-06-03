@@ -150,7 +150,7 @@ export function createSphereDayNight(radius, radius1, segments) {
             vec4 nightColor;
             
             if (nightLoaded) {
-                nightColor = texture2D(nightTexture, vUv) * sunGlobalTotal;  
+                nightColor = texture2D(nightTexture, vUv) * 0.5;  
             } else {
                 nightColor =  texture2D(dayTexture, vUv) * sunAmbientIntensity;
             }

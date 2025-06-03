@@ -72,8 +72,15 @@ const situationDefaults = {
     lighting: {
         kind: "Lighting",
         ambientIntensity: 0.2,
-        sunIntensity: 0.7,
-        sunScattering: 0.6,
+        // sunIntensity: 0.7,
+        // sunScattering: 0.6,
+
+        // balanced thes so totol light = 1.0
+        // totalt = ambient + sunIntensity * (1 + sunScattering)
+        // 0.2 + 0.55 * (1 + 0.45) = 0.2 + 0.55 * 1.45 = 0.2 + 0.7975 = 0.9975
+        sunIntensity: 0.55,
+        sunScattering: 0.45,
+
         ambientOnly: false,
 
     },
