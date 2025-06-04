@@ -408,11 +408,16 @@ class MetaBezierCurveEditor {
                     return;
                 }
 
+                const leftMargin = 70;
+                const rightMargin = 30;
+                const topMargin = 30;
+                const bottomMargin = 50;
+
                 this.g = {
-                    x: 50,
-                    y: 5,
-                    w: this.c.width - 58,
-                    h: this.c.height - 54,
+                    x: leftMargin,
+                    y: topMargin,
+                    w: this.c.width - (leftMargin + rightMargin+1),
+                    h: this.c.height - (topMargin + bottomMargin+1),
                 };
                 if (this.xLabel2 != undefined) {
                     this.g.y += 20;
@@ -632,7 +637,10 @@ class MetaBezierCurveEditor {
         if (this.dynamicX) {
             // update to match the current frame count
             // need in/out handling eventually
-            this.max.x = Sit.frames;
+            //this.max.x = Sit.frames;
+
+            this.min.x = Sit.aFrame;
+            this.max.x = Sit.bFrame+1; // +1 so we get the last graph line drawn
 
             if (this.compareNode) {
                 // iterate over the nodes in the compareNode array

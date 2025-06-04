@@ -596,7 +596,7 @@ sitch = {
         method: "moving",
         window: {
             kind: "GUIValue",
-            value: 20,
+            value: 0,               // We don't actually want to smooth the traverse track if it's ging over the LOS
             start: 0,
             end: 1000,
             step: 1,
