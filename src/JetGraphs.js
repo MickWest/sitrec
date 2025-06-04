@@ -427,7 +427,7 @@ export function AddValueGraph(v) {
     const yStep = v.yStep ?? 5000;
     const xStep = v.xStep ?? 200;
     const dynamicY = v.dynamicY ?? false;
-    const yLabel = v.yLabel ?? "Value";
+    const yLabel = v.label ?? "Value";
     const xLabel = v.xLabel ?? "Frame";
     const xLabel2 = v.title ?? "Value";
     const yLabel2 = v.yLabel2 ?? "Value";
