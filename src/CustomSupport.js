@@ -519,6 +519,8 @@ export class CCustomManager {
             "satCutOff",
             "markerIndex",
             "sitchName",  // the same for the save file of the custom sitch
+            "aFrame",
+            "bFrame",
         ]
 
         const globalsNeeded = [

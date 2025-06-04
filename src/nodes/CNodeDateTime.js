@@ -262,8 +262,8 @@ export class CNodeDateTime extends CNode {
         this.guiAFrame.max(Sit.frames-1);
         this.guiBFrame.max(Sit.frames-1);
 
-        // and set the bFrame to the new max
-        Sit.bFrame = Sit.frames-1;
+        // clamp the bFrame to the new max
+        Sit.bFrame = Math.min(Sit.bFrame,Sit.frames-1);
 
         // if aFrame is greater than bFrame, then set it to zero
         if (Sit.aFrame > Sit.bFrame) Sit.aFrame = 0;

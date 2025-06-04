@@ -3,6 +3,14 @@ import {assert} from "./assert";
 
 export function updateSitFrames() {
     if (Sit.framesFromVideo) {
+
+        if (Sit.bFrame === Sit.frames-1) {
+            // if bFrame is at the end of the old range
+            // then we need to update it to the new range
+            // otherwise, leave it alone
+            Sit.bFrame = Sit.videoFrames - 1;
+        }
+
         console.log(`updateSitFrames() setting Sit.frames to Sit.videoFrames=${Sit.videoFrames}`)
         assert(Sit.videoFrames !== undefined, "Sit.videoFrames is undefined")
         Sit.frames = Sit.videoFrames;
