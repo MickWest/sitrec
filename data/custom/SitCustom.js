@@ -663,6 +663,9 @@ sitch = {
     displayLOS: {kind: "DisplayLOS", LOS: "JetLOS", color: "red", width: 0.5, spacing : 30, maxLines: 500},
 
 
+    // display an arrow in the direction of the movement of the camera, based on the last position
+  //  displayGroundMovement: {kind: "DisplayGroundMovement"},
+
     focusTracks:{
         "Ground (no track)": "default",
         "Sensor (camera) track": "cameraTrackSwitchSmooth",

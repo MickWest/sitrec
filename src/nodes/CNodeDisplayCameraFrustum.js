@@ -2,7 +2,7 @@ import {radians, tan, unitsToMeters} from "../utils";
 import {LineGeometry} from "three/addons/lines/LineGeometry.js";
 import {Line2} from "three/addons/lines/Line2.js";
 import {CNode3DGroup} from "./CNode3DGroup";
-import {dispose} from "../threeExt";
+import {DebugArrow, DebugArrowAB, dispose, removeDebugArrow} from "../threeExt";
 import {NodeMan} from "../Globals";
 import {disposeMatLine, makeMatLine} from "../MatLines";
 import {LineSegmentsGeometry} from "three/addons/lines/LineSegmentsGeometry.js";
@@ -154,27 +154,6 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
         }
 
 
-        function terrainCollideCameraRelative(terrain, camera, localPos) {
-            const pos = camera.localToWorld(localPos);
-            const rayCaster = new Raycaster(camera.position, pos.sub(camera.position).normalize());
-            const ground = terrain.getClosestIntersect(rayCaster);
-            if (ground !== null) {
-                return ground.point;
-            }
-            return null;
-        }
-
-        function sphereCollideCameraRelative(sphere, camera, localPos) {
-            const pos = camera.localToWorld(localPos);
-            const ray = new Ray(camera.position, pos.sub(camera.position).normalize());
-            const sphereCollision = new Vector3();
-            if (intersectSphere2(ray, sphere, sphereCollision))
-                return sphereCollision;
-            return null;
-
-        }
-
-
 // WORK IN PROGRESS.  calculating the ground quadrilateral intersecting the frustum with the ground
 
         if (this.showQuad) {
@@ -304,6 +283,92 @@ export class CNodeDisplayCameraFrustum extends CNode3DGroup {
             this.rebuild();
     //    }
     }
+}
+
+
+export class CNodeDisplayGroundMovement extends CNode3DGroup {
+    constructor(v) {
+        const cameraNode = NodeMan.get(v.camera ?? "lookCamera")
+        if (v.id === undefined) {
+            v.id = cameraNode.id+"_Frustum";
+        }
+
+        v.color ??= "white";
+        v.layers ??= LAYER.MASK_LOOKRENDER;
+
+        super(v);
+        this.cameraNode = cameraNode;
+        this.camera = this.cameraNode.camera;
+
+        this.p1 = new Vector3(0, 0, 0);
+        this.p2 = new Vector3(0, 0, 0);
+
+        this.rebuild();
+
+
+
+    }
+
+    update(f) {
+        this.rebuild();
+
+    }
+
+
+    rebuild() {
+
+        this.p1.copy(this.p2);
+        let center = null
+        if (NodeMan.exists("TerrainModel")) {
+            let terrainNode = NodeMan.get("TerrainModel")
+            center = terrainCollideCameraRelative(terrainNode, this.camera, new Vector3(0, 0, -1000));
+        }
+        if (center === null) {
+            // if we don't have a terrain model, then we can use the globe
+            center = sphereCollideCameraRelative(new Sphere(new Vector3(0, -wgs84.RADIUS, 0), wgs84.RADIUS), this.camera, new Vector3(0, 0, -1000));
+        }
+        if (center === null) {
+//            console.warn("CNodeDisplayGroundMovement: No ground found for camera at "+this.camera.position);
+            removeDebugArrow(this.id+"_Arrow");
+            return;
+        }
+        const localUp = getLocalUpVector(center);
+        center.add(localUp); // add a little bit to the center to avoid z-fighting with the ground
+
+
+        this.p2.copy(center);
+
+        let dir = this.p2.clone().sub(this.p1);
+        const length = this.p1.distanceTo(this.p2) * 30;
+
+        if (length >0.1) {
+            // export function DebugArrow(name, direction, origin, _length = 100, color="#FFFFFF", visible=true, parent, _headLength=20, layerMask=LAYER.MASK_HELPERS) {
+            DebugArrow(this.id + "_Arrow", dir, this.p2, length, '#FFFF00', true, this.container, 10, LAYER.MASK_LOOKRENDER);
+        }
+
+    }
+}
+
+
+
+function terrainCollideCameraRelative(terrain, camera, localPos) {
+    const pos = camera.localToWorld(localPos);
+    const rayCaster = new Raycaster(camera.position, pos.sub(camera.position).normalize());
+    const ground = terrain.getClosestIntersect(rayCaster);
+    if (ground !== null) {
+        return ground.point;
+    }
+    return null;
+}
+
+function sphereCollideCameraRelative(sphere, camera, localPos) {
+    const pos = camera.localToWorld(localPos);
+    const ray = new Ray(camera.position, pos.sub(camera.position).normalize());
+    const sphereCollision = new Vector3();
+    if (intersectSphere2(ray, sphere, sphereCollision))
+        return sphereCollision;
+    return null;
+
 }
 
 
