@@ -1,8 +1,7 @@
-// attempt to traverse the LOS in a stright line (straight in the horizontal plane, i.e. viewed from above)
+// attempt to traverse the LOS in a straight line (straight in the horizontal plane, i.e. viewed from above)
 // given start distance and a heading track
-import {metersFromMiles, radians} from "../utils";
+import { radians} from "../utils";
 import {Color, Plane, Ray} from "three";
-import {wgs84} from "../LLA-ECEF-ENU";
 import {CNodeTrack} from "./CNodeTrack";
 import {assert} from "../assert.js";
 import {V3} from "../threeUtils";
@@ -19,15 +18,13 @@ export class CNodeLOSTraverseStraightLine extends CNodeTrack {
         this.array = [];
         this.frames = this.in.LOS.frames
         let startDistance = this.in.startDist.v(0)
-        var position, startPosition;
-        var oldDistance;
-//        const radius = metersFromMiles(this.in.radius.v0)
-        const radius = wgs84.RADIUS;
-        for (var f = 0; f < this.frames; f++) {
+        let position, startPosition;
+        let oldDistance;
+        for (let f = 0; f < this.frames; f++) {
 
             const los = this.in.LOS.v(f)
 
-            var result = {}
+            const result = {}
             if (f === 0) {
                 // First frame, we just take the start Distance
                 position = los.position.clone();
@@ -62,7 +59,7 @@ export class CNodeLOSTraverseStraightLine extends CNodeTrack {
                 }
 
                 //
-                var rightAxis = V3()
+                const rightAxis = V3()
                 rightAxis.crossVectors(upAxis, fwd)  // right is calculated as being at right angles to up and fwd
 
                 // does not seem like this would do anything
@@ -76,11 +73,11 @@ export class CNodeLOSTraverseStraightLine extends CNodeTrack {
                 // The dot product of the rightAxis with the position gives the distance to the plane from the origin
                 // assuming "position" is a point in the the plane, and rightAxis is the normal of the plane
 
-                // Note, this Plane is CONSTANT if we use startposition as the point in te lane
+                // Note, this Plane is CONSTANT if we use startPosition as the point in te lane
                 // and theoretically constant if we pick "position"
                 // as that should be another point in the plane
                 // but is seems not
-                var planeDistance = startPosition.dot(rightAxis)
+                const planeDistance = startPosition.dot(rightAxis)
 //                var planeDistance = position.dot(rightAxis)
 
                 rightAxis.negate()   // always?
@@ -124,10 +121,13 @@ export class CNodeLOSTraverseStraightLine extends CNodeTrack {
 }
 
 
+// this is a legacy node that only works near the origin
+// and so is not suitable for use in the real world (i.e. with Custom Sitches)
+// It's a straight line with constant speed
 export class CNodeLOSTraverseStraightLineFixed extends CNodeTrack {
     constructor(v) {
         super(v);
-        this.requireInputs(["LOS", "speed", "startDist", "lineHeading", "radius"])
+        this.requireInputs(["LOS", "speed", "startDist", "lineHeading"])
         this.array = []
         this.recalculate()
     }
@@ -139,7 +139,6 @@ export class CNodeLOSTraverseStraightLineFixed extends CNodeTrack {
         var position, startPosition;
         var oldDistance;
         let perFrameMotion = this.in.speed.v(f) / this.fps
-        const radius = metersFromMiles(this.in.radius.v0)
         for (var f = 0; f < this.frames; f++) {
 
             const los = this.in.LOS.v(f)
@@ -200,12 +199,12 @@ export class CNodeLOSTraverseWind extends CNodeTrack {
         this.array = [];
         this.frames = this.in.LOS.frames
         let startDistance = this.in.startDist.v(0)
-        var position, startPosition;
-        for (var f = 0; f < this.frames; f++) {
+        let position, startPosition;
+        for (let f = 0; f < this.frames; f++) {
 
             const los = this.in.LOS.v(f)
 
-            var result = {}
+            const result = {}
             if (f === 0) {
                 // First frame, we just take the start Distance or the target start
                 if (this.in.targetStart) {
@@ -223,7 +222,7 @@ export class CNodeLOSTraverseWind extends CNodeTrack {
             } else {
 
                 // we need to set the wind position
-                // otherswise we get the wind at the origin
+                // otherwise we get the wind at the origin
                 // and that can be a long way away, and the angle
                 this.in.wind.setPosition(startPosition);
 
