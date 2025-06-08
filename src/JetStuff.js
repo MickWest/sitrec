@@ -764,7 +764,6 @@ export function CreateTraverseNodes(idExtra="", los = "JetLOS") {
         id: "LOSTraverseStraightLineFixed"+idExtra,
         LOS: los,  // we just need the first LOS
         startDist: "startDistance",
-        radius: "radiusMiles",
         lineHeading: "targetActualHeading",
         speed: "speedScaled",
     })
