@@ -25,15 +25,18 @@ export async function getConfigFromServer() {
     } else {
         return null;
     }
-} // Use a simple regex to consider both "localhost" and "192.168.*" as local.
-
+}
 
 export let isLocal = false;
 
 export function checkLocal() {
+    const localPatterns = [process.env.LOCALHOST, 'localhost', '192\\.168'];
+    const regex = new RegExp(`^(${localPatterns.join('|')})`);
+
     isLocal =
         !isConsole &&
-        (/^(localhost|192\.168)/).test(window.location.hostname);
+        regex.test(window.location.hostname);
+    console.log("isLocal: " + isLocal);
 }
 
 export let SITREC_DOMAIN;

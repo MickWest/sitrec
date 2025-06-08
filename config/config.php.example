@@ -56,7 +56,7 @@ function getUserIDCustom()
     // and for if there's no xenforo
     $user_id = 99999999;
 
-    if ($_SERVER['HTTP_HOST'] === 'localhost' || $_SERVER['SERVER_NAME'] === 'localhost') {
+    if ($_SERVER['HTTP_HOST'] === getenv('LOCALHOST') || $_SERVER['SERVER_NAME'] === getenv('LOCALHOST')) {
         // for local testing
     } else {
         $fileDir = getenv('XENFORO_PATH');

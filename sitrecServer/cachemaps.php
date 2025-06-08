@@ -2,7 +2,7 @@
 
 // Example usage
 // https://metabunk.org/sitrec/sitrecServer/cachemaps.php?url=https://mickwest.com/wp-content/uploads/2019/11/tftrh_3000x_podcast-art@025x.png
-// http://localhost/sitrec/sitrecServer/cachemaps.php?url=https://mickwest.com/wp-content/uploads/2019/11/tftrh_3000x_podcast-art@025x.png
+// http://local.metabunk.org/sitrec/sitrecServer/cachemaps.php?url=https://mickwest.com/wp-content/uploads/2019/11/tftrh_3000x_podcast-art@025x.png
 //
 //
 // Actual usage: https://www.metabunk.org/sitrecServer/cachemaps.php?url=https%3A%2F%2Fs3.amazonaws.com%2Felevation-tiles-prod%2Fterrarium%2F9%2F129%2F191.png

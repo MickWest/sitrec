@@ -815,6 +815,19 @@ export class CFileManager extends CManager {
                 filename = SITREC_DOMAIN + '/' + filename.slice(18);
                 console.log("Redirecting debug local URL to " + filename);
             }
+
+            // same for https://local.metabunk.org/
+            if (!isLocal && filename.startsWith("https://local.metabunk.org/")) {
+                filename = SITREC_DOMAIN + '/' + filename.slice(27);
+                console.log("Redirecting debug local URL to " + filename);
+            }
+
+            // and the specified process.env.LOCALHOST
+            if (!isLocal && filename.startsWith(process.env.LOCALHOST)) {
+                filename = SITREC_DOMAIN + '/' + filename.slice(process.env.LOCALHOST.length);
+                console.log("Redirecting debug local URL to " + filename);
+            }
+
         }
 
         Globals.parsing++;

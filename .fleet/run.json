@@ -10,7 +10,7 @@
 {
     "type": "browser",
     "name": "Browser configuration",
-    "url": "https://localhost/sitrec",
+    "url": "https://local.metabunk.org/sitrec",
 },
 
     ]

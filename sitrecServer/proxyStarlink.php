@@ -24,7 +24,7 @@ if (!file_exists($starlink_cache)) {
     mkdir($starlink_cache);
 }
 
-// called like: localhost/sitrec/sitrecServer/proxyStarlink.php?request=2024-07-18
+// called like: local.metabunk.org/sitrec/sitrecServer/proxyStarlink.php?request=2024-07-18
 $request = isset($_GET["request"]) ? $_GET["request"] : null;
 
 // the request code might have a ?v=8234823958235 parameter at the end (with a random string)
