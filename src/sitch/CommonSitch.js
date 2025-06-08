@@ -183,7 +183,6 @@ export const commonMoveAlongTrack = {
 //         kind: "LOSTraverseStraightLineFixed",
 //         LOS: "JetLOS",  // we just need the first LOS
 //         startDist: "startDistance",
-//         radius: "radiusMiles",
 //         lineHeading: "targetActualHeading",
 //         speed: "speedScaled",
 //     },
