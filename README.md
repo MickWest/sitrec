@@ -1,5 +1,12 @@
 # Sitrec
 
+> **Sitrec has reached end of life
+>
+> Development continues as Sitrec2, which is now running on ![Metabunk][https://www.metabunk.org/sitrec
+> while it's free to use, I'm keeping future development private while I consider licensing option.
+> Sitrec verion 1 remains MIT licensed
+> The following documentation is for Sitrec1, and will be increasingly out of date for Sitrec2.
+
 ![sitrec](https://github.com/mickwest/sitrec/actions/workflows/ci.yml/badge.svg?event=push)
 
 Sitrec (Situation recreation) is a web application that allows for the real-time interactive 3D recreation of various situations. It was created initially to analyze the US Navy UAP/UFO video (Gimbal, GoFast, and FLIR1/Nimitz), but has expanded to include several other situations (referred to as "sitches"). It's written mostly by [Mick West](https://github.com/MickWest), with a lot of input from the members of [Metabunk](https://www.metabunk.org).
