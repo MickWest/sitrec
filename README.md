@@ -1,6 +1,6 @@
 # Sitrec
 
-> **Sitrec has reached end of life
+> **Sitrec has reached end of life**
 >
 > Development continues as Sitrec2, which is now running on ![Metabunk][https://www.metabunk.org/sitrec
 > while it's free to use, I'm keeping future development private while I consider licensing option.
