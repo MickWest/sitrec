@@ -2,7 +2,7 @@
 
 > **Sitrec has reached end of life**
 >
-> Development continues as Sitrec2, which is now running on ![Metabunk][https://www.metabunk.org/sitrec
+> Development continues as Sitrec2, which is now running on [Metabunk](https://www.metabunk.org/sitrec)
 > while it's free to use, I'm keeping future development private while I consider licensing option.
 > Sitrec verion 1 remains MIT licensed
 > The following documentation is for Sitrec1, and will be increasingly out of date for Sitrec2.
