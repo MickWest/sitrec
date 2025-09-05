@@ -2,8 +2,7 @@
 
 > **Sitrec has reached end of life**
 >
-> Development continues as Sitrec2, which is now running on [Metabunk](https://www.metabunk.org/sitrec)
-> while it's free to use, I'm keeping future development private while I consider licensing option.
+> Development continues as [Sitrec2](https://github.com/MickWest/sitrec2), which is now running on [Metabunk](https://www.metabunk.org/sitrec)
 > Sitrec verion 1 remains MIT licensed
 > The following documentation is for Sitrec1, and will be increasingly out of date for Sitrec2.
 
@@ -396,4 +395,5 @@ The shortening functionality is not available in the docker container, as this d
 
 
 City Location and population data from: https://simplemaps.com/data/us-cities
+
 
